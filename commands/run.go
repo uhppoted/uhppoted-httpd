@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
+
+	"github.com/uhppoted/uhppoted-httpd/httpd"
 )
 
 type RunCmd struct {
@@ -40,7 +42,11 @@ func (cmd *RunCmd) FlagSet() *flag.FlagSet {
 }
 
 func (cmd *RunCmd) Execute(ctx context.Context) error {
-	fmt.Println("   ... running (sort of)")
+	h := httpd.HTTPD{
+		Dir: "html",
+	}
 
-	return fmt.Errorf("NOT IMPLEMENTED")
+	h.Run()
+
+	return nil
 }
