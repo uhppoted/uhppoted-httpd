@@ -18,6 +18,7 @@ format:
 build: format
 	mkdir -p bin
 	go build -o bin ./...
+	sass html/sass:html/css/
 
 test: build
 	go test ./...
@@ -51,6 +52,9 @@ release-tar: release
 
 debug: build
 	$(CMD) 
+
+sass:
+	sass --watch html/sass:html/css
 
 version: build
 	$(CMD) version
