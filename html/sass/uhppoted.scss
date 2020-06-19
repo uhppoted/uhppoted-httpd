@@ -42,46 +42,43 @@ body {
     border-radius: 4px;
 }
 
-#login div {
-    display: grid;
-    grid-template-columns: max-content max-content;
-    grid-auto-rows: auto auto auto; 
-    grid-gap: 2px 8px;   
-    margin: 8px;
-}
-
-#login legend {
-    font-size: 0.9em;  
-    font-style: italic;
-}
-
-#login label {
-    font-size: 0.9em;  
-    font-style: italic;
-    padding-top: 2px;
-    padding-bottom: 2px;
+#login form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;    
+    align-items: center;
+    padding-top: 4px;
+    padding-left: 8px;
     padding-right: 8px;
 }
 
-#login input {
+#login legend {
+    font-size: 0.9em;  
+    font-style: italic;
+}
+
+.field {
     font-size: 0.8em;  
-    padding-top: 2px;
-    padding-bottom: 2px;
-    padding-left: 6px;
-    padding-right: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    border: theme.$field-border;
     border-radius: 4px;
 }
 
-#login button {
-    grid-column: 2;
+.field::placeholder {
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+form button {
     font-size: 0.75em;  
     margin-top: 8px;
-    padding: 4px 4px 4px 4px;
-    border: 1px solid red;
+    padding: 4px 16px 4px 16px;
+    border: theme.$button-border;
     border-radius: 4px;
-}
-
-#login legend {
-    padding: 8px;  
 }
 
