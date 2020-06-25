@@ -1,9 +1,15 @@
 package httpd
 
 import (
+	"context"
+	"encoding/json"
+	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"path/filepath"
 	"strings"
 )
 
@@ -11,14 +17,95 @@ type HTTPD struct {
 	Dir string
 }
 
+type dispatcher struct {
+	fs http.Handler
+}
+
 func (h *HTTPD) Run() {
 	fs := httpdFileSystem{
 		FileSystem: http.Dir(h.Dir),
 	}
 
-	http.Handle("/", http.FileServer(fs))
+	d := dispatcher{
+		fs: http.FileServer(fs),
+	}
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	srv := http.Server{
+		Addr: ":8080",
+	}
+
+	shutdown := make(chan struct{})
+
+	go func() {
+		sigint := make(chan os.Signal, 1)
+		signal.Notify(sigint, os.Interrupt)
+		<-sigint
+
+		if err := srv.Shutdown(context.Background()); err != nil {
+			log.Printf("WARN  HTTP server shutdown error: %v", err)
+		}
+
+		close(shutdown)
+	}()
+
+	http.Handle("/", &d)
+
+	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+		log.Fatalf("ERROR: %v", err)
+	}
+
+	<-shutdown
+}
+
+func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+
+	if path == "/" {
+		path = "/index.html"
+	}
+
+	if !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+
+	if strings.HasSuffix(path, ".html") {
+
+		handlePage(path, w, r)
+		return
+	}
+
+	d.fs.ServeHTTP(w, r)
+}
+
+func handlePage(path string, w http.ResponseWriter, r *http.Request) {
+	dir := "html"
+	filename := filepath.Join(dir, path[1:])
+	translation := filepath.Join("translations", "en", "index.json")
+
+	// TODO verify file is in a subdirectory
+	// TODO igore . paths
+
+	bytes, err := ioutil.ReadFile(translation)
+	if err != nil {
+		http.Error(w, "Gone Missing It Has", http.StatusNotFound)
+		return
+	}
+
+	t, err := template.ParseFiles(filename)
+	if err != nil {
+		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)
+		return
+	}
+
+	page := map[string]interface{}{}
+
+	err = json.Unmarshal(bytes, &page)
+	if err != nil {
+		http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
+		return
+	}
+
+	t.Execute(w, &page)
 }
 
 type httpdFileSystem struct {

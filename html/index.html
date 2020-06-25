@@ -26,8 +26,8 @@
         <fieldset id="login">
           <legend>Login</legend>
           <form>
-            <input id="uid" type="text"     class="field" size="28" placeholder="User ID"  required />
-            <input id="pwd" type="password" class="field" size="28" placeholder="Password" required />
+            <input id="uid" type="text"     class="field" size="28" placeholder="{{.Login.UserID.Hint}}"  required />
+            <input id="pwd" type="password" class="field" size="28" placeholder="{{.Login.Password.Hint}}" required />
             <button>Login</button>
           </form>
         </fieldset>
