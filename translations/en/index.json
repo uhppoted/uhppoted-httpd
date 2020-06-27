@@ -5,6 +5,9 @@
         },
         "Password": {
             "Hint": "Password"
+        },
+        "Ok": {
+            "Label": "Ok"
         }
     }
 }

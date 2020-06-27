@@ -3,6 +3,7 @@ package httpd
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -93,6 +94,7 @@ func handlePage(path string, w http.ResponseWriter, r *http.Request) {
 
 	t, err := template.ParseFiles(filename)
 	if err != nil {
+		warn(fmt.Sprintf("Error parsing template '%s' (%w)", filename, err))
 		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)
 		return
 	}
@@ -101,6 +103,7 @@ func handlePage(path string, w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(bytes, &page)
 	if err != nil {
+		warn(fmt.Sprintf("Error unmarshalling translation '%s' (%w)", translation, err))
 		http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
 		return
 	}
@@ -141,4 +144,8 @@ func (f httpdFile) Readdir(n int) (fis []os.FileInfo, err error) {
 	}
 
 	return
+}
+
+func warn(message string) {
+	log.Printf("%-5s %s", "WARN", message)
 }
