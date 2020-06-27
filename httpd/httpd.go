@@ -19,7 +19,8 @@ type HTTPD struct {
 }
 
 type dispatcher struct {
-	fs http.Handler
+	root string
+	fs   http.Handler
 }
 
 func (h *HTTPD) Run() {
@@ -28,7 +29,8 @@ func (h *HTTPD) Run() {
 	}
 
 	d := dispatcher{
-		fs: http.FileServer(fs),
+		root: h.Dir,
+		fs:   http.FileServer(fs),
 	}
 
 	srv := http.Server{
@@ -59,6 +61,21 @@ func (h *HTTPD) Run() {
 }
 
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	debug(fmt.Sprintf("%v", r.URL))
+	debug(fmt.Sprintf("%v", r.Method))
+
+	switch strings.ToUpper(r.Method) {
+	case http.MethodGet:
+		d.get(w, r)
+	case http.MethodPost:
+		d.post(w, r)
+	default:
+		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
+	}
+
+}
+
+func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 
 	if path == "/" {
@@ -70,31 +87,80 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if strings.HasSuffix(path, ".html") {
+		var auth []string
 
-		handlePage(path, w, r)
+		for k, v := range r.Header {
+			if strings.ToLower(k) == "authorization" {
+				auth = v
+			}
+		}
+
+		var file string
+
+		if err := authorize(auth); err != nil {
+			warn("Not authorized", err)
+			file = filepath.Clean(filepath.Join(d.root, "login.html"))
+		} else {
+			file = filepath.Clean(filepath.Join(d.root, path[1:]))
+		}
+
+		getPage(file, w)
 		return
 	}
 
 	d.fs.ServeHTTP(w, r)
 }
 
-func handlePage(path string, w http.ResponseWriter, r *http.Request) {
-	dir := "html"
-	filename := filepath.Join(dir, path[1:])
-	translation := filepath.Join("translations", "en", "index.json")
+func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
 
+	if path == "/login" {
+		r.ParseForm()
+
+		if uid, ok := r.Form["uid"]; ok && len(uid) > 0 && uid[0] == "admin" {
+			if pwd, ok := r.Form["pwd"]; ok && len(pwd) > 0 && pwd[0] == "uhppoted" {
+				file := filepath.Clean(filepath.Join(d.root, "index.html"))
+				getPage(file, w)
+				return
+			}
+		}
+
+		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
+		return
+	}
+
+	http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
+}
+
+func getPage(file string, w http.ResponseWriter) {
 	// TODO verify file is in a subdirectory
 	// TODO igore . paths
 
+	translate(file, w)
+}
+
+func authorize(header []string) error {
+	if len(header) == 0 {
+		return fmt.Errorf("Empty 'Authorization' header")
+	}
+
+	return nil
+}
+
+func translate(filename string, w http.ResponseWriter) {
+	base := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
+	translation := filepath.Join("translations", "en", base+".json")
+
 	bytes, err := ioutil.ReadFile(translation)
 	if err != nil {
+		warn(fmt.Sprintf("Error reading translation '%s'", translation), err)
 		http.Error(w, "Gone Missing It Has", http.StatusNotFound)
 		return
 	}
 
 	t, err := template.ParseFiles(filename)
 	if err != nil {
-		warn(fmt.Sprintf("Error parsing template '%s' (%w)", filename, err))
+		warn(fmt.Sprintf("Error parsing template '%s'", filename), err)
 		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)
 		return
 	}
@@ -103,7 +169,7 @@ func handlePage(path string, w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(bytes, &page)
 	if err != nil {
-		warn(fmt.Sprintf("Error unmarshalling translation '%s' (%w)", translation, err))
+		warn(fmt.Sprintf("Error unmarshalling translation '%s')", translation), err)
 		http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
 		return
 	}
@@ -146,6 +212,14 @@ func (f httpdFile) Readdir(n int) (fis []os.FileInfo, err error) {
 	return
 }
 
-func warn(message string) {
-	log.Printf("%-5s %s", "WARN", message)
+func debug(message string) {
+	log.Printf("%-5s %s", "DEBUG", message)
+}
+func warn(message string, err error) {
+	if err == nil {
+		log.Printf("%-5s %s", "WARN", message)
+	} else {
+		log.Printf("%-5s %s", "WARN", message)
+		log.Printf("%-5s %v", "", err)
+	}
 }

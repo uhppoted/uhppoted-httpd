@@ -21,6 +21,17 @@
       <div></div>
       
       <div id="main">
+
+        <!-- LOGIN -->
+        <fieldset id="login">
+          <legend>Login</legend>
+          <form action="/login" method="POST"> 
+            <input id="uid" name="uid" type="text" class="field" size="28" placeholder="{{.Login.UserID.Hint}}"  required value="admin" />
+            <input id="pwd" name="pwd" type="password" class="field" size="28" placeholder="{{.Login.Password.Hint}}" required value="uhppoted" />
+            <button action="submit">{{.Login.Ok.Label}}</button>
+          </form>
+        </fieldset>
+
       </div>
     </div>
   </body>
