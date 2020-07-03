@@ -12,6 +12,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type HTTPD struct {
@@ -62,20 +63,35 @@ func (h *HTTPD) Run() {
 
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	debug(fmt.Sprintf("%v", r.URL))
-	debug(fmt.Sprintf("%v", r.Method))
+
+	authorized := false
+	cookie, err := r.Cookie("uhppoted-httpd-auth")
+	if err != nil {
+		debug(err.Error())
+	} else if cookie.Value == "qwerty" {
+			authorized = true
+	}
+
+	// var auth []string
+
+	// for k, v := range r.Header {
+	// 	if strings.ToLower(k) == "authorization" {
+	// 		auth = v
+	// 	}
+	// }
 
 	switch strings.ToUpper(r.Method) {
 	case http.MethodGet:
-		d.get(w, r)
+		d.get(w, r, authorized)
 	case http.MethodPost:
-		d.post(w, r)
+		d.post(w, r, authorized)
 	default:
 		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
 	}
 
 }
 
-func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
+func (d *dispatcher) get(w http.ResponseWriter, r *http.Request, authorized bool) {
 	path := r.URL.Path
 
 	if path == "/" {
@@ -87,49 +103,50 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if strings.HasSuffix(path, ".html") {
-		var auth []string
-
-		for k, v := range r.Header {
-			if strings.ToLower(k) == "authorization" {
-				auth = v
-			}
-		}
-
 		var file string
 
-		if err := authorize(auth); err != nil {
-			warn("Not authorized", err)
-			file = filepath.Clean(filepath.Join(d.root, "login.html"))
-		} else {
+		if authorized || path == "/login.html" {
 			file = filepath.Clean(filepath.Join(d.root, path[1:]))
+			getPage(file, w)
+			return
 		}
 
-		getPage(file, w)
+		http.Redirect(w, r, "/login.html", http.StatusFound)
 		return
 	}
 
 	d.fs.ServeHTTP(w, r)
 }
 
-func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
+func (d *dispatcher) post(w http.ResponseWriter, r *http.Request, authorized bool) {
 	path := r.URL.Path
 
-	if path == "/login" {
+	if path == "/auth" {
 		r.ParseForm()
 
 		if uid, ok := r.Form["uid"]; ok && len(uid) > 0 && uid[0] == "admin" {
 			if pwd, ok := r.Form["pwd"]; ok && len(pwd) > 0 && pwd[0] == "uhppoted" {
-				file := filepath.Clean(filepath.Join(d.root, "index.html"))
-				getPage(file, w)
+				cookie := http.Cookie{
+					Name:     "uhppoted-httpd-auth",
+					Value:    "qwerty",
+					Path:     "/",
+					Expires:  time.Now().Add(5 * time.Minute),
+					MaxAge:   int((10 * time.Minute).Seconds()),
+					HttpOnly: true,
+					SameSite: http.SameSiteStrictMode,
+					// Secure:   true,
+				}
+
+				http.SetCookie(w, &cookie)
+				http.Redirect(w, r, "/index.html", http.StatusFound)
 				return
 			}
 		}
 
 		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
-		return
+	} else {
+		http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
 	}
-
-	http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
 }
 
 func getPage(file string, w http.ResponseWriter) {

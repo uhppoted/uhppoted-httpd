@@ -4,8 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <title>uhppoted-httpd</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
-    <link rel="icon" type="image/png" sizes="64x64" href="images/favicon-64.png">
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <link rel="stylesheet" href="css/uhppoted.css" type="text/css">
   </head>
 
@@ -25,7 +24,7 @@
         <!-- LOGIN -->
         <fieldset id="login">
           <legend>Login</legend>
-          <form action="/login" method="POST"> 
+          <form action="/auth" method="POST"> 
             <input id="uid" name="uid" type="text" class="field" size="28" placeholder="{{.Login.UserID.Hint}}"  required value="admin" />
             <input id="pwd" name="pwd" type="password" class="field" size="28" placeholder="{{.Login.Password.Hint}}" required value="uhppoted" />
             <button action="submit">{{.Login.Ok.Label}}</button>
