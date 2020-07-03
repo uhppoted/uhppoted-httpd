@@ -69,7 +69,7 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		debug(err.Error())
 	} else if cookie.Value == "qwerty" {
-			authorized = true
+		authorized = true
 	}
 
 	// var auth []string
