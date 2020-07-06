@@ -54,7 +54,7 @@ debug: build
 	$(CMD) 
 
 sass:
-	sass --watch html/sass:html/css
+	sass --watch html/sass/css:html/css
 
 version: build
 	$(CMD) version

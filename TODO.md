@@ -4,9 +4,10 @@
 
 - [ ] login page
       - get session cookie max-age and expiry from config
+      - get JWT expiry from config
       - salt + SubtleCrypto for password
-      - show/hide password (https://www.toptal.com/designers/ux/password-ux)
-      - Validate against user DB (https://github.com/boltdb/bolt)
+      - Add SVG icons to SASS
+      - Validate against user DB (https://github.com/boltdb/bolt (?))
       - Roles/rights
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - Support alternative auth providers e.g. auth0

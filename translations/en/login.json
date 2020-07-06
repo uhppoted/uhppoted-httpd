@@ -1,5 +1,6 @@
 {
     "Login": {
+        "Legend": "Login",
         "UserID": {
             "Hint": "User ID"
         },
