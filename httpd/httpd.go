@@ -13,6 +13,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/uhppoted/uhppoted-httpd/auth"
 )
 
 type HTTPD struct {
@@ -65,20 +67,13 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	debug(fmt.Sprintf("%v", r.URL))
 
 	authorized := false
-	cookie, err := r.Cookie("uhppoted-httpd-auth")
-	if err != nil {
-		debug(err.Error())
-	} else if cookie.Value == "qwerty" {
-		authorized = true
+	if cookie, err := r.Cookie("uhppoted-httpd-auth"); err == nil {
+		if err := auth.Verify(cookie.Value); err != nil {
+			info(err.Error())
+		} else {
+			authorized = true
+		}
 	}
-
-	// var auth []string
-
-	// for k, v := range r.Header {
-	// 	if strings.ToLower(k) == "authorization" {
-	// 		auth = v
-	// 	}
-	// }
 
 	switch strings.ToUpper(r.Method) {
 	case http.MethodGet:
@@ -121,29 +116,38 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request, authorized bool
 func (d *dispatcher) post(w http.ResponseWriter, r *http.Request, authorized bool) {
 	path := r.URL.Path
 
-	if path == "/auth" {
+	if path == "/authorize" {
 		r.ParseForm()
 
-		if uid, ok := r.Form["uid"]; ok && len(uid) > 0 && uid[0] == "admin" {
-			if pwd, ok := r.Form["pwd"]; ok && len(pwd) > 0 && pwd[0] == "uhppoted" {
-				cookie := http.Cookie{
-					Name:     "uhppoted-httpd-auth",
-					Value:    "qwerty",
-					Path:     "/",
-					Expires:  time.Now().Add(5 * time.Minute),
-					MaxAge:   int((10 * time.Minute).Seconds()),
-					HttpOnly: true,
-					SameSite: http.SameSiteStrictMode,
-					// Secure:   true,
-				}
-
-				http.SetCookie(w, &cookie)
-				http.Redirect(w, r, "/index.html", http.StatusFound)
-				return
-			}
+		uid := ""
+		if v, ok := r.Form["uid"]; ok && len(v) > 0 {
+			uid = v[0]
 		}
 
-		http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
+		pwd := ""
+		if v, ok := r.Form["pwd"]; ok && len(v) > 0 {
+			pwd = v[0]
+		}
+
+		token, err := auth.Authorize(uid, pwd)
+		if err != nil {
+			http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
+			return
+		}
+		cookie := http.Cookie{
+			Name:     "uhppoted-httpd-auth",
+			Value:    token,
+			Path:     "/",
+			Expires:  time.Now().Add(5 * time.Minute),
+			MaxAge:   int((10 * time.Minute).Seconds()),
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+			// Secure:   true,
+		}
+
+		http.SetCookie(w, &cookie)
+		http.Redirect(w, r, "/index.html", http.StatusFound)
+		return
 	} else {
 		http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
 	}
@@ -232,6 +236,11 @@ func (f httpdFile) Readdir(n int) (fis []os.FileInfo, err error) {
 func debug(message string) {
 	log.Printf("%-5s %s", "DEBUG", message)
 }
+
+func info(message string) {
+	log.Printf("%-5s %s", "INFO", message)
+}
+
 func warn(message string, err error) {
 	if err == nil {
 		log.Printf("%-5s %s", "WARN", message)

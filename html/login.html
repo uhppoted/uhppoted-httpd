@@ -27,7 +27,7 @@
         <!-- LOGIN -->
         <fieldset id="login">
           <legend>Login</legend>
-          <form action="/auth" method="POST"> 
+          <form action="/authorize" method="POST"> 
             <input id="uid" name="uid" type="text" class="field" size="28" placeholder="{{.Login.UserID.Hint}}"  required value="admin" />
             <input id="pwd" name="pwd" type="password" class="field" size="28" placeholder="{{.Login.Password.Hint}}" required value="uhppoted" />
             <button action="submit">{{.Login.Ok.Label}}</button>

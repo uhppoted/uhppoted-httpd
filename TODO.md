@@ -3,20 +3,20 @@
 ## IN PROGRESS
 
 - [ ] login page
-      - JWT
-      - MD5 Authorization header
-      - Validate against user DB
-      - Roles/rights
+      - get session cookie max-age and expiry from config
+      - salt + SubtleCrypto for password
       - show/hide password (https://www.toptal.com/designers/ux/password-ux)
+      - Validate against user DB (https://github.com/boltdb/bolt)
+      - Roles/rights
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
-      - Support auth providers e.g. auth0
+      - Support alternative auth providers e.g. auth0
+- [ ] TLS
 
 - [ ] favicon
       - convert text to paths and cleanup SVG
       - Safari
 
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
-- [ ] TLS
 - [ ] Dashboard look 'n feel ? e.g. https://www.toptal.com/designers/ux/notification-design
 - [ ] Lighthouse
 - [ ] Hamburger menu (?)
