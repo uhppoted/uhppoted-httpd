@@ -1,14 +1,8 @@
-github.com/cristalhq/jwt v1.2.0 h1:fHmMkFJvEbS4o04aQP8BmtJg7fqkYvd7r8er3sUdS4Q=
 github.com/cristalhq/jwt/v3 v3.0.0 h1:0PtBLOa6XEZj6powOaneZCxU3+yiFSYwVeL2wmbavnY=
 github.com/cristalhq/jwt/v3 v3.0.0/go.mod h1:XOnIXst8ozq/esy5N1XOlSyQqBd+84fxJ99FK+1jgL8=
-github.com/fsnotify/fsnotify v1.4.9 h1:hsms1Qyu0jgnwNXIxa+/V/PDsU6CfLf6CNO8H7IWoS4=
-github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
 github.com/google/uuid v1.1.1 h1:Gkbcsh/GbpXz7lPftLA3P6TYMwjCLYm83jiFQZF/3gY=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/uhppoted/uhppote-core v0.6.3 h1:sEiNeQh7B3lVFqntHvtKkcwTAzvWstKSOQNw1M+KvY8=
 github.com/uhppoted/uhppote-core v0.6.3/go.mod h1:vNtTfp28e+/hhDtHXdlCEhdqt8063rlnA06wbzWSuz0=
-github.com/uhppoted/uhppoted-api v0.6.3 h1:j5+9kEWoZWi9Z8u8tlysSHHMbqauoxYyJTZZG8zykbA=
-github.com/uhppoted/uhppoted-api v0.6.3/go.mod h1:kVNgZuStC9SSbeMMyxQwXEdV/aHwM6evBl7Uq/ABETc=
-golang.org/x/sys v0.0.0-20191005200804-aed5e4c7ecf9/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae h1:/WDfKMnPU+m5M4xB+6x4kaepxRw6jWvR5iDRdvjHgy8=
 golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
