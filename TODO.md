@@ -3,16 +3,15 @@
 ## IN PROGRESS
 
 - [ ] login page
+      - Handle 'Not Authorized' response from login
+      - SHA256 stored passwords
       - get session cookie max-age and expiry from config
-      - get JWT expiry from config
-      - salt + SubtleCrypto for password
+      - salt + SubtleCrypto for password (https://tools.ietf.org/html/rfc5802)
       - Add SVG icons to SASS
-      - Validate against user DB (https://github.com/boltdb/bolt (?))
       - Roles/rights
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
-      - Support alternative auth providers e.g. auth0
-- [ ] TLS
 
+- [ ] TLS
 - [ ] favicon
       - convert text to paths and cleanup SVG
       - Safari
@@ -30,6 +29,7 @@
 - [ ] Zootier input fields (e.g. https://css-tricks.com/float-labels-css)
 - [ ] [Gradient borders](https://css-tricks.com/gradient-borders-in-css/)
 - [ ] [JWK](https://tools.ietf.org/html/rfc7517)
+- [ ] Support alternative auth providers e.g. auth0
 
 ## NOTES
 
