@@ -5,13 +5,17 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 )
 
 type RunCmd struct {
+	AuthDB string
 }
 
-var RUN = RunCmd{}
+var RUN = RunCmd{
+	AuthDB: "/usr/local/etc/com.github.twystd.uhppoted/httpd/users.json",
+}
 
 func (cmd *RunCmd) Name() string {
 	return "run"
@@ -42,8 +46,14 @@ func (cmd *RunCmd) FlagSet() *flag.FlagSet {
 }
 
 func (cmd *RunCmd) Execute(ctx context.Context) error {
+	auth, err := auth.NewAuthProvider(cmd.AuthDB)
+	if err != nil {
+		return err
+	}
+
 	h := httpd.HTTPD{
-		Dir: "html",
+		Dir:          "html",
+		AuthProvider: auth,
 	}
 
 	h.Run()
