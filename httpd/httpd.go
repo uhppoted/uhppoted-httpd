@@ -18,12 +18,14 @@ import (
 )
 
 type HTTPD struct {
-	Dir string
+	Dir          string
+	AuthProvider auth.IAuth
 }
 
 type dispatcher struct {
 	root string
 	fs   http.Handler
+	auth auth.IAuth
 }
 
 func (h *HTTPD) Run() {
@@ -34,6 +36,7 @@ func (h *HTTPD) Run() {
 	d := dispatcher{
 		root: h.Dir,
 		fs:   http.FileServer(fs),
+		auth: h.AuthProvider,
 	}
 
 	srv := http.Server{
@@ -68,7 +71,7 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	authorized := false
 	if cookie, err := r.Cookie("uhppoted-httpd-auth"); err == nil {
-		if err := auth.Verify(cookie.Value); err != nil {
+		if err := d.auth.Verify(cookie.Value); err != nil {
 			info(err.Error())
 		} else {
 			authorized = true
@@ -129,7 +132,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request, authorized boo
 			pwd = v[0]
 		}
 
-		token, err := auth.Authorize(uid, pwd)
+		token, err := d.auth.Authorize(uid, pwd)
 		if err != nil {
 			http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
 			return
