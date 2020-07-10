@@ -3,7 +3,6 @@
 ## IN PROGRESS
 
 - [ ] login page
-      - Handle 'Not Authorized' response from login
       - SHA256 stored passwords
       - get session cookie max-age and expiry from config
       - salt + SubtleCrypto for password (https://tools.ietf.org/html/rfc5802)

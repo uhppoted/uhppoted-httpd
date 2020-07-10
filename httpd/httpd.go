@@ -119,41 +119,77 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request, authorized bool
 func (d *dispatcher) post(w http.ResponseWriter, r *http.Request, authorized bool) {
 	path := r.URL.Path
 
-	if path == "/authorize" {
-		r.ParseForm()
+	if path == "/authenticate" {
+		d.authenticate(w, r)
+		return
+	}
 
-		uid := ""
+	http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
+}
+
+func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
+	var uid string
+	var pwd string
+	var contentType string
+
+	for k, h := range r.Header {
+		if strings.TrimSpace(strings.ToLower(k)) == "content-type" {
+			for _, v := range h {
+				contentType = strings.TrimSpace(strings.ToLower(v))
+			}
+		}
+	}
+
+	switch contentType {
+	case "application/x-www-form-urlencoded":
+		r.ParseForm()
 		if v, ok := r.Form["uid"]; ok && len(v) > 0 {
 			uid = v[0]
 		}
 
-		pwd := ""
 		if v, ok := r.Form["pwd"]; ok && len(v) > 0 {
 			pwd = v[0]
 		}
 
-		token, err := d.auth.Authorize(uid, pwd)
+	case "application/json":
+		blob, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			http.Error(w, "Invalid Credentials", http.StatusUnauthorized)
+			http.Error(w, "Error reading request", http.StatusInternalServerError)
 			return
 		}
-		cookie := http.Cookie{
-			Name:     "uhppoted-httpd-auth",
-			Value:    token,
-			Path:     "/",
-			Expires:  time.Now().Add(5 * time.Minute),
-			MaxAge:   int((10 * time.Minute).Seconds()),
-			HttpOnly: true,
-			SameSite: http.SameSiteStrictMode,
-			// Secure:   true,
+
+		body := struct {
+			UserId   string `json:"uid"`
+			Password string `json:"pwd"`
+		}{}
+
+		if err := json.Unmarshal(blob, &body); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
 		}
 
-		http.SetCookie(w, &cookie)
-		http.Redirect(w, r, "/index.html", http.StatusFound)
-		return
-	} else {
-		http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
+		uid = body.UserId
+		pwd = body.Password
 	}
+
+	token, err := d.auth.Authorize(uid, pwd)
+	if err != nil {
+		http.Error(w, "Invalid user ID or password", http.StatusUnauthorized)
+		return
+	}
+	cookie := http.Cookie{
+		Name:     "uhppoted-httpd-auth",
+		Value:    token,
+		Path:     "/",
+		Expires:  time.Now().Add(5 * time.Minute),
+		MaxAge:   int((10 * time.Minute).Seconds()),
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		// Secure:   true,
+	}
+
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
 func getPage(file string, w http.ResponseWriter) {
