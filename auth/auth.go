@@ -5,6 +5,6 @@ type IAuth interface {
 	Verify(token string) error
 }
 
-func NewAuthProvider(config string) (IAuth, error) {
-	return NewLocalAuthProvider(config)
+func NewAuthProvider(config string, sessionExpiry string) (IAuth, error) {
+	return NewLocalAuthProvider(config, sessionExpiry)
 }

@@ -3,7 +3,6 @@
 ## IN PROGRESS
 
 - [ ] login page
-      - get session cookie max-age and expiry from config
       - Roles/rights
 
 - [ ] TLS

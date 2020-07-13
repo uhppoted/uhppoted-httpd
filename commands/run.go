@@ -4,32 +4,26 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 
+	"github.com/uhppoted/uhppoted-api/config"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 )
 
-type RunCmd struct {
-	AuthDB string
-}
-
-var RUN = RunCmd{
-	AuthDB: "/usr/local/etc/com.github.twystd.uhppoted/httpd/users.json",
-}
-
-func (cmd *RunCmd) Name() string {
+func (cmd *Run) Name() string {
 	return "run"
 }
 
-func (cmd *RunCmd) Description() string {
+func (cmd *Run) Description() string {
 	return "Runs the uhppoted-httpd daemon/service until terminated by the system service manager"
 }
 
-func (cmd *RunCmd) Usage() string {
+func (cmd *Run) Usage() string {
 	return "uhppoted-httpd [--debug] [--config <file>] [--logfile <file>] [--logfilesize <bytes>] [--pid <file>]"
 }
 
-func (cmd *RunCmd) Help() {
+func (cmd *Run) Help() {
 	fmt.Println()
 	fmt.Println("  Usage: uhppoted-httpd <options>")
 	fmt.Println()
@@ -41,12 +35,13 @@ func (cmd *RunCmd) Help() {
 	fmt.Println()
 }
 
-func (cmd *RunCmd) FlagSet() *flag.FlagSet {
-	return flag.NewFlagSet("run", flag.ExitOnError)
-}
+func (cmd *Run) Execute(ctx context.Context) error {
+	conf := config.NewConfig()
+	if err := conf.Load(cmd.configuration); err != nil {
+		log.Printf("%5s Could not load configuration (%v)", "WARN", err)
+	}
 
-func (cmd *RunCmd) Execute(ctx context.Context) error {
-	auth, err := auth.NewAuthProvider(cmd.AuthDB)
+	auth, err := auth.NewAuthProvider(conf.HTTPD.AuthDB, conf.HTTPD.SessionExpiry)
 	if err != nil {
 		return err
 	}
@@ -54,6 +49,7 @@ func (cmd *RunCmd) Execute(ctx context.Context) error {
 	h := httpd.HTTPD{
 		Dir:          "html",
 		AuthProvider: auth,
+		CookieMaxAge: conf.HTTPD.CookieMaxAge,
 	}
 
 	h.Run()

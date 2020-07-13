@@ -17,7 +17,7 @@ import (
 type Local struct {
 	Key         string           `json:"key"`
 	Users       map[string]*user `json:"users"`
-	TokenExpiry expiry           `json:"token-expiry"`
+	tokenExpiry time.Duration
 
 	guard sync.Mutex
 }
@@ -31,32 +31,18 @@ type user struct {
 	Password string `json:"password"`
 }
 
-type expiry time.Duration
-
-func (x *expiry) UnmarshalJSON(bytes []byte) error {
-	var s string
-
-	err := json.Unmarshal(bytes, &s)
-	if err != nil {
-		return err
-	}
-
-	dt, err := time.ParseDuration(s)
-	if err != nil {
-		return err
-	}
-
-	*x = expiry(dt)
-
-	return nil
-}
-
-func NewLocalAuthProvider(file string) (*Local, error) {
+func NewLocalAuthProvider(file string, sessionExpiry string) (*Local, error) {
 	provider := Local{}
 	if err := provider.load(file); err != nil {
 		return nil, err
 	}
 
+	t, err := time.ParseDuration(sessionExpiry)
+	if err != nil {
+		return nil, err
+	}
+
+	provider.tokenExpiry = t
 	provider.watch(file)
 
 	return &provider, nil
@@ -66,7 +52,7 @@ func (p *Local) Authorize(uid, pwd string) (string, error) {
 	p.guard.Lock()
 	secret := []byte(p.Key)
 	users := p.Users
-	expiry := p.TokenExpiry
+	expiry := p.tokenExpiry
 	p.guard.Unlock()
 
 	hash := fmt.Sprintf("%0x", sha256.Sum256([]byte(pwd)))
@@ -86,6 +72,8 @@ func (p *Local) Authorize(uid, pwd string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	fmt.Printf(">> TOKEN: %v\n", jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))))
 
 	claims := &claims{
 		StandardClaims: jwt.StandardClaims{

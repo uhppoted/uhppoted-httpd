@@ -20,12 +20,14 @@ import (
 type HTTPD struct {
 	Dir          string
 	AuthProvider auth.IAuth
+	CookieMaxAge int
 }
 
 type dispatcher struct {
-	root string
-	fs   http.Handler
-	auth auth.IAuth
+	root         string
+	fs           http.Handler
+	auth         auth.IAuth
+	cookieMaxAge int
 }
 
 func (h *HTTPD) Run() {
@@ -34,9 +36,10 @@ func (h *HTTPD) Run() {
 	}
 
 	d := dispatcher{
-		root: h.Dir,
-		fs:   http.FileServer(fs),
-		auth: h.AuthProvider,
+		root:         h.Dir,
+		fs:           http.FileServer(fs),
+		auth:         h.AuthProvider,
+		cookieMaxAge: h.CookieMaxAge,
 	}
 
 	srv := http.Server{
@@ -177,12 +180,12 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid user ID or password", http.StatusUnauthorized)
 		return
 	}
+
 	cookie := http.Cookie{
 		Name:     "uhppoted-httpd-auth",
 		Value:    token,
 		Path:     "/",
-		Expires:  time.Now().Add(5 * time.Minute),
-		MaxAge:   int((10 * time.Minute).Seconds()),
+		MaxAge:   d.cookieMaxAge * int(time.Hour.Seconds()),
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 		// Secure:   true,
