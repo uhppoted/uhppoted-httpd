@@ -97,6 +97,7 @@
       event.preventDefault();
 
       message.innerText = "";
+      message.classList.remove("warning");
 
       let credentials = { 
         uid: document.getElementById('uid').value,
@@ -111,7 +112,10 @@
               return response.text()
             }
           })
-        .then(msg => { message.innerText = msg })
+        .then(msg => { 
+            message.innerText = msg;
+            message.classList.add("warning");
+        })
         .catch(function(err) { console.error(err) });
 
       // postAsJSON('/authenticate', credentials)

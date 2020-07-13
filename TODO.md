@@ -3,12 +3,8 @@
 ## IN PROGRESS
 
 - [ ] login page
-      - SHA256 stored passwords
       - get session cookie max-age and expiry from config
-      - salt + SubtleCrypto for password (https://tools.ietf.org/html/rfc5802)
-      - Add SVG icons to SASS
       - Roles/rights
-      - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
 - [ ] TLS
 - [ ] favicon
@@ -17,11 +13,14 @@
 
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
 - [ ] Dashboard look 'n feel ? e.g. https://www.toptal.com/designers/ux/notification-design
-- [ ] Lighthouse
+- [ ] Lighthouse test (Chrome dev tools)
 - [ ] Hamburger menu (?)
+- [ ] Add SVG icons to SASS
 
 - [x] SASS/CSS
 - [x] Templatize HTML and set label text etc from file
+- [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
+      - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
 ## TODO
 

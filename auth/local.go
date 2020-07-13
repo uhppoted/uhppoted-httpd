@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -68,9 +69,11 @@ func (p *Local) Authorize(uid, pwd string) (string, error) {
 	expiry := p.TokenExpiry
 	p.guard.Unlock()
 
+	hash := fmt.Sprintf("%0x", sha256.Sum256([]byte(pwd)))
+
 	if u, ok := users[uid]; !ok {
 		return "", fmt.Errorf("Invalid login credentials")
-	} else if pwd != u.Password {
+	} else if hash != u.Password {
 		return "", fmt.Errorf("Invalid login credentials")
 	}
 
