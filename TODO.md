@@ -3,7 +3,7 @@
 ## IN PROGRESS
 
 - [ ] login page
-      - Roles/rights
+      - Not Authorized page
 
 - [ ] TLS
 - [ ] favicon

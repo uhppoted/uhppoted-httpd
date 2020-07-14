@@ -72,27 +72,50 @@ func (h *HTTPD) Run() {
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	debug(fmt.Sprintf("%v", r.URL))
 
-	authorized := false
-	if cookie, err := r.Cookie("uhppoted-httpd-auth"); err == nil {
-		if err := d.auth.Verify(cookie.Value); err != nil {
-			info(err.Error())
-		} else {
-			authorized = true
-		}
-	}
-
 	switch strings.ToUpper(r.Method) {
 	case http.MethodGet:
-		d.get(w, r, authorized)
+		d.get(w, r)
 	case http.MethodPost:
-		d.post(w, r, authorized)
+		d.post(w, r)
 	default:
 		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
 	}
 
 }
 
-func (d *dispatcher) get(w http.ResponseWriter, r *http.Request, authorized bool) {
+func (d *dispatcher) authenticated(r *http.Request) bool {
+	if cookie, err := r.Cookie("uhppoted-httpd-auth"); err == nil {
+		if err := d.auth.Verify(cookie.Value); err != nil {
+			info(err.Error())
+		} else {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (d *dispatcher) authorised(r *http.Request, path string) bool {
+	if path == "/login.html" {
+		return true
+	}
+
+	if strings.HasSuffix(path, ".html") {
+		if cookie, err := r.Cookie("uhppoted-httpd-auth"); err == nil {
+			if err := d.auth.Authorized(cookie.Value, path); err != nil {
+				info(err.Error())
+			} else {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	return true
+}
+
+func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 
 	if path == "/" {
@@ -103,23 +126,28 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request, authorized bool
 		path = "/" + path
 	}
 
-	if strings.HasSuffix(path, ".html") {
-		var file string
-
-		if authorized || path == "/login.html" {
-			file = filepath.Clean(filepath.Join(d.root, path[1:]))
-			getPage(file, w)
+	if !d.authorised(r, path) {
+		if !d.authenticated(r) {
+			http.Redirect(w, r, "/login.html", http.StatusFound)
 			return
 		}
 
-		http.Redirect(w, r, "/login.html", http.StatusFound)
+		http.Error(w, "Not Authorised", http.StatusUnauthorized)
+		return
+	}
+
+	if strings.HasSuffix(path, ".html") {
+		var file string
+
+		file = filepath.Clean(filepath.Join(d.root, path[1:]))
+		getPage(file, w)
 		return
 	}
 
 	d.fs.ServeHTTP(w, r)
 }
 
-func (d *dispatcher) post(w http.ResponseWriter, r *http.Request, authorized bool) {
+func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 
 	if path == "/authenticate" {
@@ -188,7 +216,7 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 		MaxAge:   d.cookieMaxAge * int(time.Hour.Seconds()),
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
-		// Secure:   true,
+		//	Secure:   true,
 	}
 
 	http.SetCookie(w, &cookie)

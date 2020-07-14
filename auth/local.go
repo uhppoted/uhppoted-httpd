@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"regexp"
 	"sync"
 	"time"
 
@@ -17,18 +18,54 @@ import (
 type Local struct {
 	Key         string           `json:"key"`
 	Users       map[string]*user `json:"users"`
+	Resources   []resource       `json:"resources"`
 	tokenExpiry time.Duration
 
-	guard sync.Mutex
+	guard    sync.Mutex
+	resource []resource
 }
 
 type claims struct {
 	jwt.StandardClaims
 	LoggedInAs string `json:"uid"`
+	Role       string `json:"role"`
 }
 
 type user struct {
 	Password string `json:"password"`
+	Role     string `json:"role"`
+}
+
+type resource struct {
+	Path       *regexp.Regexp `json:"path"`
+	Authorised *regexp.Regexp `json:"authorised"`
+}
+
+func (r *resource) UnmarshalJSON(bytes []byte) error {
+	x := struct {
+		Path       string `json:"path"`
+		Authorised string `json:"authorised"`
+	}{}
+
+	err := json.Unmarshal(bytes, &x)
+	if err != nil {
+		return err
+	}
+
+	path, err := regexp.Compile(x.Path)
+	if err != nil {
+		return err
+	}
+
+	authorised, err := regexp.Compile(x.Authorised)
+	if err != nil {
+		return err
+	}
+
+	r.Path = path
+	r.Authorised = authorised
+
+	return nil
 }
 
 func NewLocalAuthProvider(file string, sessionExpiry string) (*Local, error) {
@@ -57,7 +94,8 @@ func (p *Local) Authorize(uid, pwd string) (string, error) {
 
 	hash := fmt.Sprintf("%0x", sha256.Sum256([]byte(pwd)))
 
-	if u, ok := users[uid]; !ok {
+	u, ok := users[uid]
+	if !ok {
 		return "", fmt.Errorf("Invalid login credentials")
 	} else if hash != u.Password {
 		return "", fmt.Errorf("Invalid login credentials")
@@ -73,8 +111,6 @@ func (p *Local) Authorize(uid, pwd string) (string, error) {
 		return "", err
 	}
 
-	fmt.Printf(">> TOKEN: %v\n", jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))))
-
 	claims := &claims{
 		StandardClaims: jwt.StandardClaims{
 			ID:        uuid.String(),
@@ -82,6 +118,7 @@ func (p *Local) Authorize(uid, pwd string) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))),
 		},
 		LoggedInAs: uid,
+		Role:       u.Role,
 	}
 
 	token, err := jwt.NewBuilder(signer).Build(claims)
@@ -125,6 +162,55 @@ func (p *Local) Verify(cookie string) error {
 	}
 
 	return nil
+}
+
+func (p *Local) Authorized(cookie, resource string) error {
+	p.guard.Lock()
+	secret := []byte(p.Key)
+	p.guard.Unlock()
+
+	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
+	if err != nil {
+		return err
+	}
+
+	token, err := jwt.ParseAndVerifyString(cookie, verifier)
+	if err != nil {
+		return err
+	}
+
+	if err := verifier.Verify(token.Payload(), token.Signature()); err != nil {
+		return err
+	}
+
+	var claims claims
+	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
+		return err
+	}
+
+	if !claims.IsForAudience("admin") {
+		return fmt.Errorf("Invalid audience in JWT claims")
+	}
+
+	if !claims.IsValidAt(time.Now()) {
+		return fmt.Errorf("JWT token expired")
+	}
+
+	if !p.authorised(claims.Role, resource) {
+		return fmt.Errorf("%v not authorized for %s", claims.LoggedInAs, resource)
+	}
+
+	return nil
+}
+
+func (p *Local) authorised(role, resource string) bool {
+	for _, r := range p.Resources {
+		if r.Path.Match([]byte(resource)) && r.Authorised.Match([]byte(role)) {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (p *Local) load(file string) error {
