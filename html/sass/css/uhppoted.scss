@@ -98,6 +98,39 @@ form button {
   border-radius: 4px;
 }
 
+#unauthorized {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    
+  align-items: center;
+
+  border: 1px solid theme.$warning-colour;;
+  margin-top: 64px;
+  padding: 12px 32px 12px 32px;    
+  border-radius: 4px;
+}
+
+#unauthorized p {
+  color: theme.$warning-colour;
+  font-size: 1.0em;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+#unauthorized a {
+  color: theme.$link-colour;
+  font-size: 0.9em;
+  font-weight: normal;
+  font-style: italic;
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 2px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
 .message {  
   font-size: 0.8em;
   font-weight: bold;

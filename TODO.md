@@ -2,9 +2,6 @@
 
 ## IN PROGRESS
 
-- [ ] login page
-      - Not Authorized page
-
 - [ ] TLS
 - [ ] favicon
       - convert text to paths and cleanup SVG
@@ -16,6 +13,7 @@
 - [ ] Hamburger menu (?)
 - [ ] Add SVG icons to SASS
 
+- [x] login page
 - [x] SASS/CSS
 - [x] Templatize HTML and set label text etc from file
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)

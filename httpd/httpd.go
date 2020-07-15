@@ -100,6 +100,10 @@ func (d *dispatcher) authorised(r *http.Request, path string) bool {
 		return true
 	}
 
+	if path == "/unauthorized.html" {
+		return true
+	}
+
 	if strings.HasSuffix(path, ".html") {
 		if cookie, err := r.Cookie("uhppoted-httpd-auth"); err == nil {
 			if err := d.auth.Authorized(cookie.Value, path); err != nil {
@@ -132,7 +136,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		http.Error(w, "Not Authorised", http.StatusUnauthorized)
+		d.unauthorized(w, r)
 		return
 	}
 
@@ -156,6 +160,10 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
+}
+
+func (d *dispatcher) unauthorized(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/unauthorized.html", http.StatusFound)
 }
 
 func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
@@ -205,7 +213,7 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 
 	token, err := d.auth.Authorize(uid, pwd)
 	if err != nil {
-		http.Error(w, "Invalid user ID or password", http.StatusUnauthorized)
+		d.unauthorized(w, r)
 		return
 	}
 
