@@ -4,13 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -80,7 +78,6 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
 	}
-
 }
 
 func (d *dispatcher) authenticated(r *http.Request) bool {
@@ -119,36 +116,16 @@ func (d *dispatcher) authorised(r *http.Request, path string) bool {
 	return true
 }
 
-func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
-
-	if path == "/" {
-		path = "/index.html"
-	}
-
-	if !strings.HasPrefix(path, "/") {
-		path = "/" + path
-	}
-
-	if !d.authorised(r, path) {
-		if !d.authenticated(r) {
-			http.Redirect(w, r, "/login.html", http.StatusFound)
-			return
+func (d *dispatcher) user(r *http.Request) string {
+	if cookie, err := r.Cookie("uhppoted-httpd-auth"); err == nil {
+		if uid, err := d.auth.User(cookie.Value); err != nil {
+			info(err.Error())
+		} else {
+			return uid
 		}
-
-		d.unauthorized(w, r)
-		return
 	}
 
-	if strings.HasSuffix(path, ".html") {
-		var file string
-
-		file = filepath.Clean(filepath.Join(d.root, path[1:]))
-		getPage(file, w)
-		return
-	}
-
-	d.fs.ServeHTTP(w, r)
+	return ""
 }
 
 func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
@@ -231,49 +208,12 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
-func getPage(file string, w http.ResponseWriter) {
-	// TODO verify file is in a subdirectory
-	// TODO igore . paths
-
-	translate(file, w)
-}
-
 func authorize(header []string) error {
 	if len(header) == 0 {
 		return fmt.Errorf("Empty 'Authorization' header")
 	}
 
 	return nil
-}
-
-func translate(filename string, w http.ResponseWriter) {
-	base := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
-	translation := filepath.Join("translations", "en", base+".json")
-
-	bytes, err := ioutil.ReadFile(translation)
-	if err != nil {
-		warn(fmt.Sprintf("Error reading translation '%s'", translation), err)
-		http.Error(w, "Gone Missing It Has", http.StatusNotFound)
-		return
-	}
-
-	t, err := template.ParseFiles(filename)
-	if err != nil {
-		warn(fmt.Sprintf("Error parsing template '%s'", filename), err)
-		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)
-		return
-	}
-
-	page := map[string]interface{}{}
-
-	err = json.Unmarshal(bytes, &page)
-	if err != nil {
-		warn(fmt.Sprintf("Error unmarshalling translation '%s')", translation), err)
-		http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
-		return
-	}
-
-	t.Execute(w, &page)
 }
 
 type httpdFileSystem struct {

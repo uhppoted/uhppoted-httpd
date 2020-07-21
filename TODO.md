@@ -2,6 +2,11 @@
 
 ## IN PROGRESS
 
+- [ ] Take a look at [Shoelace](https://shoelace.style)
+
+- [ ] Sign out
+- [ ] Automatic logout
+- [ ] Show logged in user
 - [ ] TLS
 - [ ] favicon
       - convert text to paths and cleanup SVG
