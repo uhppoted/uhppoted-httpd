@@ -24,10 +24,12 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	if !d.authorised(r, path) {
 		if !d.authenticated(r) {
 			http.Redirect(w, r, "/login.html", http.StatusFound)
-			return
+		} else if s := d.session(r); s == nil {
+			http.Redirect(w, r, "/login.html", http.StatusFound)
+		} else {
+			d.unauthorized(w, r)
 		}
 
-		d.unauthorized(w, r)
 		return
 	}
 
@@ -59,14 +61,14 @@ func translate(filename string, context map[string]interface{}, w http.ResponseW
 
 	bytes, err := ioutil.ReadFile(translation)
 	if err != nil {
-		warn(fmt.Sprintf("Error reading translation '%s'", translation), err)
+		warn(fmt.Errorf("Error reading translation '%s' (%w)", translation, err))
 		http.Error(w, "Gone Missing It Has", http.StatusNotFound)
 		return
 	}
 
 	t, err := template.ParseFiles(filename)
 	if err != nil {
-		warn(fmt.Sprintf("Error parsing template '%s'", filename), err)
+		warn(fmt.Errorf("Error parsing template '%s' (%w)", filename, err))
 		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)
 		return
 	}
@@ -75,7 +77,7 @@ func translate(filename string, context map[string]interface{}, w http.ResponseW
 
 	err = json.Unmarshal(bytes, &page)
 	if err != nil {
-		warn(fmt.Sprintf("Error unmarshalling translation '%s')", translation), err)
+		warn(fmt.Errorf("Error unmarshalling translation '%s' (%w)", translation, err))
 		http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
 		return
 	}

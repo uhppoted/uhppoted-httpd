@@ -2,11 +2,10 @@
 
 ## IN PROGRESS
 
-- [ ] Take a look at [Shoelace](https://shoelace.style)
-
-- [ ] Sign out
 - [ ] Automatic logout
-- [ ] Show logged in user
+- [ ] Check file system path for getPage
+- [ ] Fix 'message' bar 
+- [ ] Take a look at [Shoelace](https://shoelace.style)
 - [ ] TLS
 - [ ] favicon
       - convert text to paths and cleanup SVG
@@ -16,13 +15,15 @@
 - [ ] Dashboard look 'n feel ? e.g. https://www.toptal.com/designers/ux/notification-design
 - [ ] Lighthouse test (Chrome dev tools)
 - [ ] Hamburger menu (?)
-- [ ] Add SVG icons to SASS
+- [ ] Style SVG icons with SASS
+- [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
+      - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
+- [x] Show logged in user
+- [x] Sign out
 - [x] login page
 - [x] SASS/CSS
 - [x] Templatize HTML and set label text etc from file
-- [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
-      - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
 ## TODO
 

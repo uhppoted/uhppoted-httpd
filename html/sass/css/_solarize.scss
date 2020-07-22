@@ -16,11 +16,13 @@ $solarize-cyan:    #2aa198;
 $solarize-green:   #859900;
 
 $content-background: $solarize-base3;
+$content-message-background: $solarize-base2;
 
 $controls-background:          $solarize-base2;
 $controls-menu-background:     $solarize-base2;
 $controls-menu-item:           $solarize-base01;
-$controls-menu-item-highlight: $solarize-orange;
+$controls-menu-item-highlight: $solarize-base2;
+$controls-menu-item-highlight-background: $solarize-base1;
 
 $tab-background: $solarize-base2;
 $tab-background-selected: $solarize-base1;

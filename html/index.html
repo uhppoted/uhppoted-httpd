@@ -27,7 +27,7 @@
           <img id="avatar" src="images/user-cog-solid.svg" />
           </div>
           <div class="menu">
-            <a href="#">Sign out</a>
+            <a href="#" onclick="logout(event)">Sign out</a>
           </div>
         </div>
       </div>
@@ -72,12 +72,32 @@
        </div>
       </div>
     </div>
+    <div class="message"><p id="message">  </p></div>
   </body>
 
   <!-- SCRIPTS -->
  
+  <script src="./javascript/uhppoted.js"></script>
+
   <script>
+    function logout(event) {
+      event.preventDefault();
+
+      postAsJSON('/logout', {})
+        .then(response => { 
+            if (response.status == 200 && response.redirected) {
+              window.location = response.url;
+            } else {
+              return response.text()
+            }
+        })
+        .then(msg => { 
+            warning(msg);
+        })
+        .catch(function(err) { console.error(err) });
+    }
   </script>
+
 </html>
 
 

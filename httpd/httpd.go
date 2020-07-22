@@ -21,11 +21,15 @@ type HTTPD struct {
 	CookieMaxAge int
 }
 
+type session struct {
+}
+
 type dispatcher struct {
 	root         string
 	fs           http.Handler
 	auth         auth.IAuth
 	cookieMaxAge int
+	sessions     map[string]*session
 }
 
 func (h *HTTPD) Run() {
@@ -38,6 +42,7 @@ func (h *HTTPD) Run() {
 		fs:           http.FileServer(fs),
 		auth:         h.AuthProvider,
 		cookieMaxAge: h.CookieMaxAge,
+		sessions:     map[string]*session{},
 	}
 
 	srv := http.Server{
@@ -81,7 +86,7 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) authenticated(r *http.Request) bool {
-	if cookie, err := r.Cookie("uhppoted-httpd-auth"); err == nil {
+	if cookie, err := r.Cookie("uhppoted-httpd-jwt"); err == nil {
 		if err := d.auth.Verify(cookie.Value); err != nil {
 			info(err.Error())
 		} else {
@@ -102,41 +107,57 @@ func (d *dispatcher) authorised(r *http.Request, path string) bool {
 	}
 
 	if strings.HasSuffix(path, ".html") {
-		if cookie, err := r.Cookie("uhppoted-httpd-auth"); err == nil {
-			if err := d.auth.Authorized(cookie.Value, path); err != nil {
-				info(err.Error())
-			} else {
-				return true
-			}
+		cookie, err := r.Cookie("uhppoted-httpd-jwt")
+		if err != nil {
+			return false
 		}
 
-		return false
+		if err := d.auth.Authorized(cookie.Value, path); err != nil {
+			info(err.Error())
+			return false
+		}
+
+		user := d.user(r)
+		if user == "" {
+			warn(fmt.Errorf("Invalid user ID '%s'", user))
+			return false
+		}
+
+		if _, ok := d.sessions[user]; !ok {
+			warn(fmt.Errorf("No extant session for user ID '%s'", user))
+			return false
+		}
 	}
 
 	return true
 }
 
 func (d *dispatcher) user(r *http.Request) string {
-	if cookie, err := r.Cookie("uhppoted-httpd-auth"); err == nil {
+	if cookie, err := r.Cookie("uhppoted-httpd-jwt"); err == nil {
 		if uid, err := d.auth.User(cookie.Value); err != nil {
 			info(err.Error())
 		} else {
-			return uid
+			return strings.TrimSpace(uid)
 		}
 	}
 
 	return ""
 }
 
-func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
-
-	if path == "/authenticate" {
-		d.authenticate(w, r)
-		return
+func (d *dispatcher) session(r *http.Request) *session {
+	user := d.user(r)
+	if user == "" {
+		warn(fmt.Errorf("Invalid user ID '%s'", user))
+		return nil
 	}
 
-	http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
+	s, ok := d.sessions[user]
+	if !ok {
+		warn(fmt.Errorf("No extant session for user ID '%s'", user))
+		return nil
+	}
+
+	return s
 }
 
 func (d *dispatcher) unauthorized(w http.ResponseWriter, r *http.Request) {
@@ -195,7 +216,7 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookie := http.Cookie{
-		Name:     "uhppoted-httpd-auth",
+		Name:     "uhppoted-httpd-jwt",
 		Value:    token,
 		Path:     "/",
 		MaxAge:   d.cookieMaxAge * int(time.Hour.Seconds()),
@@ -204,8 +225,17 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 		//	Secure:   true,
 	}
 
+	d.sessions[uid] = &session{}
+
 	http.SetCookie(w, &cookie)
 	http.Redirect(w, r, "/index.html", http.StatusFound)
+}
+
+func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
+	delete(d.sessions, d.user(r))
+
+	//	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/login.html", http.StatusFound)
 }
 
 func authorize(header []string) error {
@@ -259,11 +289,6 @@ func info(message string) {
 	log.Printf("%-5s %s", "INFO", message)
 }
 
-func warn(message string, err error) {
-	if err == nil {
-		log.Printf("%-5s %s", "WARN", message)
-	} else {
-		log.Printf("%-5s %s", "WARN", message)
-		log.Printf("%-5s %v", "", err)
-	}
+func warn(err error) {
+	log.Printf("%-5s %v", "WARN", err)
 }

@@ -46,6 +46,8 @@
 
   <!-- SCRIPTS -->
  
+  <script src="./javascript/uhppoted.js"></script>
+
   <script>
     function showHidePassword() {
       let pwd = document.getElementById("pwd");
@@ -60,44 +62,8 @@
        }
     }
 
-    async function postAsForm(url='', data={}) {
-      let pairs = [];
-      for (name in data) {
-        pairs.push(encodeURIComponent(name) + '=' + encodeURIComponent(data[name]));
-      }
-
-      const response = await fetch(url, { method: 'POST', 
-                                          mode: 'cors',
-                                          cache: 'no-cache',
-                                          credentials: 'same-origin',
-                                          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                                          redirect: 'follow', 
-                                          referrerPolicy: 'no-referrer', 
-                                          body: pairs.join('&').replace( /%20/g,'+')
-                                        });
-      return response; 
-    }
-
-    async function postAsJSON(url='', data={}) {
-      const response = await fetch(url, { method: 'POST', 
-                                          mode: 'cors',
-                                          cache: 'no-cache',
-                                          credentials: 'same-origin',
-                                          headers: { 'Content-Type': 'application/json' },
-                                          redirect: 'follow', 
-                                          referrerPolicy: 'no-referrer', 
-                                          body: JSON.stringify(data)
-                                        });
-      return response; 
-    }
-
     function login(event) {
-      let message = document.getElementById('message')
-
       event.preventDefault();
-
-      message.innerText = "";
-      message.classList.remove("warning");
 
       let credentials = { 
         uid: document.getElementById('uid').value,
@@ -113,8 +79,7 @@
             }
           })
         .then(msg => { 
-            message.innerText = msg;
-            message.classList.add("warning");
+            warning(msg);
         })
         .catch(function(err) { console.error(err) });
 
@@ -126,7 +91,9 @@
       //           return response.text()
       //         }
       //     })
-      //   .then(msg => { message.innerText = msg })
+      //   .then(msg => { 
+      //         warning(msg);
+      //   })
       //   .catch(function(err) { console.error(err) });
     }
 
