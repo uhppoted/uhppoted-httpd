@@ -3,7 +3,6 @@
 ## IN PROGRESS
 
 - [ ] Check file system path for getPage
-- [ ] Automatic logout
 - [ ] Fix 'message' bar 
 - [ ] Take a look at [Shoelace](https://shoelace.style)
 - [ ] TLS
@@ -11,6 +10,8 @@
       - convert text to paths and cleanup SVG
       - Safari
 
+- [ ] User settings
+      - automatic logout enabled/timeout
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
 - [ ] Dashboard look 'n feel ? e.g. https://www.toptal.com/designers/ux/notification-design
 - [ ] Lighthouse test (Chrome dev tools)
@@ -19,6 +20,7 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
+- [x] Automatic logout
 - [x] Implement session
 - [x] Show logged in user
 - [x] Sign out

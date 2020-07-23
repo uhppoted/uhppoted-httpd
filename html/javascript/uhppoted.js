@@ -1,3 +1,21 @@
+var idleTimer;
+
+document.addEventListener('mousedown', event => {
+  resetIdle(event);
+});
+
+document.addEventListener('click', event => {
+  resetIdle(event);
+});
+
+document.addEventListener('scroll', event => {
+  resetIdle(event);
+});
+
+document.addEventListener('keypress', event => {
+  resetIdle(event);
+});
+
 async function postAsForm(url='', data={}) {
   let pairs = [];
   for (name in data) {
@@ -29,6 +47,25 @@ async function postAsJSON(url='', data={}) {
   return response; 
 }
 
+function logout(event) {
+  if (event != null) {
+     event.preventDefault();    
+  }
+
+  postAsJSON('/logout', {})
+    .then(response => { 
+        if (response.status == 200 && response.redirected) {
+           window.location = response.url;
+        } else {
+           return response.text()
+        }
+    })
+    .then(msg => { 
+        warning(msg);
+    })
+    .catch(function(err) { console.error(err) });
+}
+
 function warning(msg) {
   let message = document.getElementById('message');
   
@@ -40,5 +77,15 @@ function warning(msg) {
   }
 }
 
+function onIdle() {
+  logout();
+}
 
+function resetIdle() {
+  if (idleTimer != null) {
+      clearTimeout(idleTimer);
+  }
+  
+  idleTimer = setTimeout(onIdle, 15*60*1000);    
+}
 

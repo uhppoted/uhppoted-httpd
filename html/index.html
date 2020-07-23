@@ -80,22 +80,7 @@
   <script src="./javascript/uhppoted.js"></script>
 
   <script>
-    function logout(event) {
-      event.preventDefault();
-
-      postAsJSON('/logout', {})
-        .then(response => { 
-            if (response.status == 200 && response.redirected) {
-              window.location = response.url;
-            } else {
-              return response.text()
-            }
-        })
-        .then(msg => { 
-            warning(msg);
-        })
-        .catch(function(err) { console.error(err) });
-    }
+    resetIdle();
   </script>
 
 </html>
