@@ -12,7 +12,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
+)
+
+const (
+	JWTCookie = "uhppoted-httpd-jwt"
 )
 
 type HTTPD struct {
@@ -22,6 +28,8 @@ type HTTPD struct {
 }
 
 type session struct {
+	id   uuid.UUID
+	user string
 }
 
 type dispatcher struct {
@@ -29,7 +37,7 @@ type dispatcher struct {
 	fs           http.Handler
 	auth         auth.IAuth
 	cookieMaxAge int
-	sessions     map[string]*session
+	sessions     map[uuid.UUID]*session
 }
 
 func (h *HTTPD) Run() {
@@ -42,7 +50,7 @@ func (h *HTTPD) Run() {
 		fs:           http.FileServer(fs),
 		auth:         h.AuthProvider,
 		cookieMaxAge: h.CookieMaxAge,
-		sessions:     map[string]*session{},
+		sessions:     map[uuid.UUID]*session{},
 	}
 
 	srv := http.Server{
@@ -86,7 +94,7 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) authenticated(r *http.Request) bool {
-	if cookie, err := r.Cookie("uhppoted-httpd-jwt"); err == nil {
+	if cookie, err := r.Cookie(JWTCookie); err == nil {
 		if err := d.auth.Verify(cookie.Value); err != nil {
 			info(err.Error())
 		} else {
@@ -107,24 +115,25 @@ func (d *dispatcher) authorised(r *http.Request, path string) bool {
 	}
 
 	if strings.HasSuffix(path, ".html") {
-		cookie, err := r.Cookie("uhppoted-httpd-jwt")
+		cookie, err := r.Cookie(JWTCookie)
 		if err != nil {
+			warn(fmt.Errorf("No JWT cookie in request"))
 			return false
 		}
 
 		if err := d.auth.Authorized(cookie.Value, path); err != nil {
-			info(err.Error())
+			warn(err)
 			return false
 		}
 
-		user := d.user(r)
-		if user == "" {
-			warn(fmt.Errorf("Invalid user ID '%s'", user))
+		session, err := d.session(r)
+		if err != nil {
+			warn(err)
 			return false
 		}
 
-		if _, ok := d.sessions[user]; !ok {
-			warn(fmt.Errorf("No extant session for user ID '%s'", user))
+		if session == nil {
+			warn(fmt.Errorf("No extant session for request"))
 			return false
 		}
 	}
@@ -132,32 +141,27 @@ func (d *dispatcher) authorised(r *http.Request, path string) bool {
 	return true
 }
 
-func (d *dispatcher) user(r *http.Request) string {
-	if cookie, err := r.Cookie("uhppoted-httpd-jwt"); err == nil {
-		if uid, err := d.auth.User(cookie.Value); err != nil {
-			info(err.Error())
-		} else {
-			return strings.TrimSpace(uid)
-		}
+func (d *dispatcher) session(r *http.Request) (*session, error) {
+	cookie, err := r.Cookie(JWTCookie)
+	if err != nil {
+		return nil, err
 	}
 
-	return ""
-}
-
-func (d *dispatcher) session(r *http.Request) *session {
-	user := d.user(r)
-	if user == "" {
-		warn(fmt.Errorf("Invalid user ID '%s'", user))
-		return nil
+	sid, err := d.auth.Session(cookie.Value)
+	if err != nil {
+		return nil, err
 	}
 
-	s, ok := d.sessions[user]
+	if sid == nil {
+		return nil, fmt.Errorf("Invalid session ID (%v)", sid)
+	}
+
+	s, ok := d.sessions[*sid]
 	if !ok {
-		warn(fmt.Errorf("No extant session for user ID '%s'", user))
-		return nil
+		return nil, fmt.Errorf("No extant session for session ID '%v'", *sid)
 	}
 
-	return s
+	return s, nil
 }
 
 func (d *dispatcher) unauthorized(w http.ResponseWriter, r *http.Request) {
@@ -165,6 +169,7 @@ func (d *dispatcher) unauthorized(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
+	var sessionId = uuid.New()
 	var uid string
 	var pwd string
 	var contentType string
@@ -209,14 +214,14 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 		pwd = body.Password
 	}
 
-	token, err := d.auth.Authorize(uid, pwd)
+	token, err := d.auth.Authorize(uid, pwd, sessionId)
 	if err != nil {
 		d.unauthorized(w, r)
 		return
 	}
 
 	cookie := http.Cookie{
-		Name:     "uhppoted-httpd-jwt",
+		Name:     JWTCookie,
 		Value:    token,
 		Path:     "/",
 		MaxAge:   d.cookieMaxAge * int(time.Hour.Seconds()),
@@ -225,17 +230,21 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 		//	Secure:   true,
 	}
 
-	d.sessions[uid] = &session{}
+	d.sessions[sessionId] = &session{
+		id:   sessionId,
+		user: uid,
+	}
 
 	http.SetCookie(w, &cookie)
 	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
 func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
-	delete(d.sessions, d.user(r))
+	if s, _ := d.session(r); s != nil {
+		delete(d.sessions, s.id)
+	}
 
-	//	http.SetCookie(w, &cookie)
-	http.Redirect(w, r, "/login.html", http.StatusFound)
+	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
 func authorize(header []string) error {

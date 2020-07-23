@@ -2,8 +2,8 @@
 
 ## IN PROGRESS
 
-- [ ] Automatic logout
 - [ ] Check file system path for getPage
+- [ ] Automatic logout
 - [ ] Fix 'message' bar 
 - [ ] Take a look at [Shoelace](https://shoelace.style)
 - [ ] TLS
@@ -19,6 +19,7 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
+- [x] Implement session
 - [x] Show logged in user
 - [x] Sign out
 - [x] login page
@@ -43,3 +44,4 @@
 - https://golangcode.com/api-auth-with-jwt/
 - https://github.com/cristalhq/jwt
 - [CSS Tabs](https://codepen.io/axelaredz/pen/ipome)
+- [WenAuthN](https://trustfoundry.net/passwords-are-dead-long-live-webauthn)

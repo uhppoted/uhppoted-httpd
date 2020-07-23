@@ -27,8 +27,9 @@ type Local struct {
 
 type claims struct {
 	jwt.StandardClaims
-	LoggedInAs string `json:"uid"`
-	Role       string `json:"role"`
+	LoggedInAs string    `json:"uid"`
+	SessionId  uuid.UUID `json:"session-id"`
+	Role       string    `json:"role"`
 }
 
 type user struct {
@@ -68,13 +69,13 @@ func (r *resource) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
-func NewLocalAuthProvider(file string, sessionExpiry string) (*Local, error) {
+func NewLocalAuthProvider(file string, expiry string) (*Local, error) {
 	provider := Local{}
 	if err := provider.load(file); err != nil {
 		return nil, err
 	}
 
-	t, err := time.ParseDuration(sessionExpiry)
+	t, err := time.ParseDuration(expiry)
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +86,7 @@ func NewLocalAuthProvider(file string, sessionExpiry string) (*Local, error) {
 	return &provider, nil
 }
 
-func (p *Local) Authorize(uid, pwd string) (string, error) {
+func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) {
 	p.guard.Lock()
 	secret := []byte(p.Key)
 	users := p.Users
@@ -118,6 +119,7 @@ func (p *Local) Authorize(uid, pwd string) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))),
 		},
 		LoggedInAs: uid,
+		SessionId:  sessionId,
 		Role:       u.Role,
 	}
 
@@ -203,39 +205,39 @@ func (p *Local) Authorized(cookie, resource string) error {
 	return nil
 }
 
-func (p *Local) User(cookie string) (string, error) {
+func (p *Local) Session(cookie string) (*uuid.UUID, error) {
 	p.guard.Lock()
 	secret := []byte(p.Key)
 	p.guard.Unlock()
 
 	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	token, err := jwt.ParseAndVerifyString(cookie, verifier)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if err := verifier.Verify(token.Payload(), token.Signature()); err != nil {
-		return "", err
+		return nil, err
 	}
 
 	var claims claims
 	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if !claims.IsForAudience("admin") {
-		return "", fmt.Errorf("Invalid audience in JWT claims")
+		return nil, fmt.Errorf("Invalid audience in JWT claims")
 	}
 
 	if !claims.IsValidAt(time.Now()) {
-		return "", fmt.Errorf("JWT token expired")
+		return nil, fmt.Errorf("JWT token expired")
 	}
 
-	return claims.LoggedInAs, nil
+	return &claims.SessionId, nil
 }
 
 func (p *Local) authorised(role, resource string) bool {

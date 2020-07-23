@@ -15,7 +15,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	if !d.authorised(r, path) {
 		if !d.authenticated(r) {
 			http.Redirect(w, r, "/login.html", http.StatusFound)
-		} else if s := d.session(r); s == nil {
+		} else if s, err := d.session(r); err != nil || s == nil {
 			http.Redirect(w, r, "/login.html", http.StatusFound)
 		} else {
 			d.unauthorized(w, r)

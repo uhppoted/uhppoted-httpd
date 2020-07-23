@@ -24,7 +24,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	if !d.authorised(r, path) {
 		if !d.authenticated(r) {
 			http.Redirect(w, r, "/login.html", http.StatusFound)
-		} else if s := d.session(r); s == nil {
+		} else if s, err := d.session(r); err != nil || s == nil {
 			http.Redirect(w, r, "/login.html", http.StatusFound)
 		} else {
 			d.unauthorized(w, r)
@@ -34,13 +34,14 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if strings.HasSuffix(path, ".html") {
-		var file string
+		context := map[string]interface{}{}
 
-		context := map[string]interface{}{
-			"User": d.user(r),
+		s, err := d.session(r)
+		if err == nil && s != nil {
+			context["User"] = s.user
 		}
 
-		file = filepath.Clean(filepath.Join(d.root, path[1:]))
+		file := filepath.Clean(filepath.Join(d.root, path[1:]))
 		getPage(file, context, w)
 		return
 	}
