@@ -2,6 +2,8 @@ package httpd
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -22,9 +24,14 @@ const (
 )
 
 type HTTPD struct {
-	Dir          string
-	AuthProvider auth.IAuth
-	CookieMaxAge int
+	Dir            string
+	AuthProvider   auth.IAuth
+	CookieMaxAge   int
+	HTTPEnabled    bool
+	HTTPSEnabled   bool
+	CACertificate  string
+	TLSCertificate string
+	TLSKey         string
 }
 
 type session struct {
@@ -53,8 +60,47 @@ func (h *HTTPD) Run() {
 		sessions:     map[uuid.UUID]*session{},
 	}
 
-	srv := http.Server{
-		Addr: ":8080",
+	var srv *http.Server
+	var srvs *http.Server
+
+	if h.HTTPEnabled {
+		srv = &http.Server{
+			Addr: ":8080",
+		}
+	}
+
+	if h.HTTPSEnabled {
+		ca, err := ioutil.ReadFile(h.CACertificate)
+		if err != nil {
+			log.Fatal(fmt.Errorf("Error reading CA certificate file '%s' (%v)", h.CACertificate, err))
+		}
+
+		certificates := x509.NewCertPool()
+		if !certificates.AppendCertsFromPEM(ca) {
+			log.Fatal("Unable failed to parse CA certificate")
+		}
+
+		println(certificates)
+		tlsConfig := tls.Config{
+			//				ClientAuth: tls.RequireAndVerifyClientCert,
+			//				ClientCAs:  certificates,
+			CipherSuites: []uint16{
+				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+			},
+			PreferServerCipherSuites: true,
+			MinVersion:               tls.VersionTLS12,
+		}
+
+		tlsConfig.BuildNameToCertificate()
+
+		srvs = &http.Server{
+			Addr:      ":8443",
+			TLSConfig: &tlsConfig,
+		}
+
 	}
 
 	shutdown := make(chan struct{})
@@ -64,8 +110,16 @@ func (h *HTTPD) Run() {
 		signal.Notify(sigint, os.Interrupt)
 		<-sigint
 
-		if err := srv.Shutdown(context.Background()); err != nil {
-			log.Printf("WARN  HTTP server shutdown error: %v", err)
+		if srv != nil {
+			if err := srv.Shutdown(context.Background()); err != nil {
+				log.Printf("WARN  HTTP  server shutdown error: %v", err)
+			}
+		}
+
+		if srvs != nil {
+			if err := srvs.Shutdown(context.Background()); err != nil {
+				log.Printf("WARN  HTTPS server shutdown error: %v", err)
+			}
 		}
 
 		close(shutdown)
@@ -73,8 +127,22 @@ func (h *HTTPD) Run() {
 
 	http.Handle("/", &d)
 
-	if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatalf("ERROR: %v", err)
+	if srv != nil {
+		go func() {
+			log.Printf("INFO  HTTP  server starting on port %v", srv.Addr)
+			if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+				log.Fatalf("ERROR: %v", err)
+			}
+		}()
+	}
+
+	if srvs != nil {
+		go func() {
+			log.Printf("INFO  HTTPS server starting on port %v", srvs.Addr)
+			if err := srvs.ListenAndServeTLS(h.TLSCertificate, h.TLSKey); err != http.ErrServerClosed {
+				log.Fatalf("ERROR: %v", err)
+			}
+		}()
 	}
 
 	<-shutdown

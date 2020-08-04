@@ -47,9 +47,14 @@ func (cmd *Run) Execute(ctx context.Context) error {
 	}
 
 	h := httpd.HTTPD{
-		Dir:          "html",
-		AuthProvider: auth,
-		CookieMaxAge: conf.HTTPD.CookieMaxAge,
+		Dir:            "html",
+		AuthProvider:   auth,
+		CookieMaxAge:   conf.HTTPD.CookieMaxAge,
+		HTTPEnabled:    conf.HTTPD.HttpEnabled,
+		HTTPSEnabled:   conf.HTTPD.HttpsEnabled,
+		CACertificate:  conf.HTTPD.CACertificate,
+		TLSCertificate: conf.HTTPD.TLSCertificate,
+		TLSKey:         conf.HTTPD.TLSKey,
 	}
 
 	h.Run()

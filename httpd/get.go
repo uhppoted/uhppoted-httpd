@@ -43,7 +43,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 
 		file := filepath.Clean(filepath.Join(d.root, path[1:]))
 
-	translate(file, context, w)
+		translate(file, context, w)
 		return
 	}
 
