@@ -3,6 +3,7 @@
 ## IN PROGRESS
 
 - [ ] TLS
+      - client certificates
 - [ ] Fix 'message' bar 
 - [ ] Take a look at [Shoelace](https://shoelace.style)
 
