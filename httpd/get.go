@@ -42,18 +42,12 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		}
 
 		file := filepath.Clean(filepath.Join(d.root, path[1:]))
-		getPage(file, context, w)
+
+	translate(file, context, w)
 		return
 	}
 
 	d.fs.ServeHTTP(w, r)
-}
-
-func getPage(file string, context map[string]interface{}, w http.ResponseWriter) {
-	// TODO verify file is in a subdirectory
-	// TODO igore . paths
-
-	translate(file, context, w)
 }
 
 func translate(filename string, context map[string]interface{}, w http.ResponseWriter) {

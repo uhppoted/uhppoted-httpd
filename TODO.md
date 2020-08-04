@@ -2,14 +2,13 @@
 
 ## IN PROGRESS
 
-- [ ] Check file system path for getPage
+- [ ] TLS
 - [ ] Fix 'message' bar 
 - [ ] Take a look at [Shoelace](https://shoelace.style)
-- [ ] TLS
+
 - [ ] favicon
       - convert text to paths and cleanup SVG
       - Safari
-
 - [ ] User settings
       - automatic logout enabled/timeout
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
