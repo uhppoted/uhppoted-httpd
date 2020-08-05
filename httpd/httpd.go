@@ -24,14 +24,15 @@ const (
 )
 
 type HTTPD struct {
-	Dir            string
-	AuthProvider   auth.IAuth
-	CookieMaxAge   int
-	HTTPEnabled    bool
-	HTTPSEnabled   bool
-	CACertificate  string
-	TLSCertificate string
-	TLSKey         string
+	Dir                      string
+	AuthProvider             auth.IAuth
+	CookieMaxAge             int
+	HTTPEnabled              bool
+	HTTPSEnabled             bool
+	CACertificate            string
+	TLSCertificate           string
+	TLSKey                   string
+	RequireClientCertificate bool
 }
 
 type session struct {
@@ -80,10 +81,8 @@ func (h *HTTPD) Run() {
 			log.Fatal("Unable failed to parse CA certificate")
 		}
 
-		println(certificates)
 		tlsConfig := tls.Config{
-			//				ClientAuth: tls.RequireAndVerifyClientCert,
-			//				ClientCAs:  certificates,
+			ClientCAs: certificates,
 			CipherSuites: []uint16{
 				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
 				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
@@ -92,6 +91,12 @@ func (h *HTTPD) Run() {
 			},
 			PreferServerCipherSuites: true,
 			MinVersion:               tls.VersionTLS12,
+		}
+
+		if h.RequireClientCertificate {
+			tlsConfig.ClientAuth = tls.RequireAndVerifyClientCert
+		} else {
+			tlsConfig.ClientAuth = tls.VerifyClientCertIfGiven
 		}
 
 		tlsConfig.BuildNameToCertificate()

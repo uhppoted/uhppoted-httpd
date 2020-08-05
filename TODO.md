@@ -2,8 +2,6 @@
 
 ## IN PROGRESS
 
-- [ ] TLS
-      - client certificates
 - [ ] Fix 'message' bar 
 - [ ] Take a look at [Shoelace](https://shoelace.style)
 
@@ -20,6 +18,7 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
+- [x] TLS
 - [x] Automatic logout
 - [x] Implement session
 - [x] Show logged in user
