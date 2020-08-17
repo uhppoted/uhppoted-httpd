@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -12,7 +11,6 @@ import (
 	"os"
 	"os/signal"
 	"strings"
-	"time"
 
 	"github.com/google/uuid"
 
@@ -20,7 +18,8 @@ import (
 )
 
 const (
-	JWTCookie = "uhppoted-httpd-jwt"
+	LoginCookie   = "uhppoted-httpd-login"
+	SessionCookie = "uhppoted-httpd-session"
 )
 
 type HTTPD struct {
@@ -45,6 +44,7 @@ type dispatcher struct {
 	fs           http.Handler
 	auth         auth.IAuth
 	cookieMaxAge int
+	logins       map[uuid.UUID]bool
 	sessions     map[uuid.UUID]*session
 }
 
@@ -58,6 +58,7 @@ func (h *HTTPD) Run() {
 		fs:           http.FileServer(fs),
 		auth:         h.AuthProvider,
 		cookieMaxAge: h.CookieMaxAge,
+		logins:       map[uuid.UUID]bool{},
 		sessions:     map[uuid.UUID]*session{},
 	}
 
@@ -166,18 +167,6 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *dispatcher) authenticated(r *http.Request) bool {
-	if cookie, err := r.Cookie(JWTCookie); err == nil {
-		if err := d.auth.Verify(cookie.Value); err != nil {
-			info(err.Error())
-		} else {
-			return true
-		}
-	}
-
-	return false
-}
-
 func (d *dispatcher) authorised(r *http.Request, path string) bool {
 	if path == "/login.html" {
 		return true
@@ -188,7 +177,7 @@ func (d *dispatcher) authorised(r *http.Request, path string) bool {
 	}
 
 	if strings.HasSuffix(path, ".html") {
-		cookie, err := r.Cookie(JWTCookie)
+		cookie, err := r.Cookie(SessionCookie)
 		if err != nil {
 			warn(fmt.Errorf("No JWT cookie in request"))
 			return false
@@ -215,12 +204,12 @@ func (d *dispatcher) authorised(r *http.Request, path string) bool {
 }
 
 func (d *dispatcher) session(r *http.Request) (*session, error) {
-	cookie, err := r.Cookie(JWTCookie)
+	cookie, err := r.Cookie(SessionCookie)
 	if err != nil {
 		return nil, err
 	}
 
-	sid, err := d.auth.Session(cookie.Value)
+	sid, err := d.auth.GetSessionId(cookie.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -239,77 +228,6 @@ func (d *dispatcher) session(r *http.Request) (*session, error) {
 
 func (d *dispatcher) unauthorized(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/unauthorized.html", http.StatusFound)
-}
-
-func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
-	var sessionId = uuid.New()
-	var uid string
-	var pwd string
-	var contentType string
-
-	for k, h := range r.Header {
-		if strings.TrimSpace(strings.ToLower(k)) == "content-type" {
-			for _, v := range h {
-				contentType = strings.TrimSpace(strings.ToLower(v))
-			}
-		}
-	}
-
-	switch contentType {
-	case "application/x-www-form-urlencoded":
-		r.ParseForm()
-		if v, ok := r.Form["uid"]; ok && len(v) > 0 {
-			uid = v[0]
-		}
-
-		if v, ok := r.Form["pwd"]; ok && len(v) > 0 {
-			pwd = v[0]
-		}
-
-	case "application/json":
-		blob, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, "Error reading request", http.StatusInternalServerError)
-			return
-		}
-
-		body := struct {
-			UserId   string `json:"uid"`
-			Password string `json:"pwd"`
-		}{}
-
-		if err := json.Unmarshal(blob, &body); err != nil {
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
-			return
-		}
-
-		uid = body.UserId
-		pwd = body.Password
-	}
-
-	token, err := d.auth.Authorize(uid, pwd, sessionId)
-	if err != nil {
-		d.unauthorized(w, r)
-		return
-	}
-
-	cookie := http.Cookie{
-		Name:     JWTCookie,
-		Value:    token,
-		Path:     "/",
-		MaxAge:   d.cookieMaxAge * int(time.Hour.Seconds()),
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-		//	Secure:   true,
-	}
-
-	d.sessions[sessionId] = &session{
-		id:   sessionId,
-		user: uid,
-	}
-
-	http.SetCookie(w, &cookie)
-	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
 func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {

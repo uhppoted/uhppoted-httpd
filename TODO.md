@@ -1,7 +1,12 @@
 ## v0.7.x
 
-## IN PROGRESS
+### IN PROGRESS
 
+- [ ] Login token
+      - prune login/session stores
+      - include salt with login.html
+      - time limited single use salt for password hash
+- [ ] Salt stored password hashes
 - [ ] Fix 'message' bar 
 - [ ] Take a look at [Shoelace](https://shoelace.style)
 

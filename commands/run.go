@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -35,13 +34,13 @@ func (cmd *Run) Help() {
 	fmt.Println()
 }
 
-func (cmd *Run) Execute(ctx context.Context) error {
+func (cmd *Run) Execute(args ...interface{}) error {
 	conf := config.NewConfig()
 	if err := conf.Load(cmd.configuration); err != nil {
 		log.Printf("%5s Could not load configuration (%v)", "WARN", err)
 	}
 
-	auth, err := auth.NewAuthProvider(conf.HTTPD.AuthDB, conf.HTTPD.SessionExpiry)
+	auth, err := auth.NewAuthProvider(conf.HTTPD.AuthDB, conf.HTTPD.LoginExpiry, conf.HTTPD.SessionExpiry)
 	if err != nil {
 		return err
 	}

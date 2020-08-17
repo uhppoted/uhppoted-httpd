@@ -1,15 +1,18 @@
 package main
 
 import (
-	"context"
 	"fmt"
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-api/command"
 	"github.com/uhppoted/uhppoted-httpd/commands"
 	"os"
 )
 
 var cli = []uhppoted.Command{
-	&uhppoted.VERSION,
+	&uhppoted.Version{
+		Application: commands.SERVICE,
+		Version:     uhppote.VERSION,
+	},
 }
 
 var help = uhppoted.NewHelp(commands.SERVICE, cli, &commands.RUN)
@@ -21,8 +24,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	ctx := context.Background()
-	if err = cmd.Execute(ctx); err != nil {
+	if err = cmd.Execute(); err != nil {
 		fmt.Printf("\nERROR: %v\n\n", err)
 		os.Exit(1)
 	}

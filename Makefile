@@ -4,6 +4,8 @@ DIST   ?= development
 DEBUG  ?= --debug
 CMD     = ./bin/uhppoted-httpd
 
+.PHONY: bump
+
 all: test      \
 	 benchmark \
      coverage
@@ -49,6 +51,13 @@ release: build-all
 	find . -name ".DS_Store" -delete
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 	cd dist; zip --recurse-paths $(DIST).zip $(DIST)
+
+bump:
+	go get -u github.com/uhppoted/uhppote-core
+	go get -u github.com/uhppoted/uhppoted-api
+	go get -u github.com/cristalhq/jwt/v3
+	go get -u github.com/google/uuid
+	go get -u golang.org/x/sys
 
 debug: build
 	$(CMD) 

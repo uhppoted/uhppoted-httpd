@@ -1,9 +1,11 @@
 package auth
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -15,17 +17,27 @@ import (
 	"github.com/google/uuid"
 )
 
+const SALT_LENGTH = 32
+
 type Local struct {
-	Key         string           `json:"key"`
-	Users       map[string]*user `json:"users"`
-	Resources   []resource       `json:"resources"`
-	tokenExpiry time.Duration
+	Key           string           `json:"key"`
+	Users         map[string]*user `json:"users"`
+	Resources     []resource       `json:"resources"`
+	loginExpiry   time.Duration
+	sessionExpiry time.Duration
 
 	guard    sync.Mutex
 	resource []resource
 }
 
-type claims struct {
+type login struct {
+	jwt.StandardClaims
+	LoggedInAs string    `json:"uid"`
+	LoginId    uuid.UUID `json:"login-id"`
+	Salt       []byte    `json:"salt"`
+}
+
+type session struct {
 	jwt.StandardClaims
 	LoggedInAs string    `json:"uid"`
 	SessionId  uuid.UUID `json:"session-id"`
@@ -69,28 +81,79 @@ func (r *resource) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
-func NewLocalAuthProvider(file string, expiry string) (*Local, error) {
+func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
 	provider := Local{}
 	if err := provider.load(file); err != nil {
 		return nil, err
 	}
 
-	t, err := time.ParseDuration(expiry)
-	if err != nil {
-		return nil, err
+	{
+		t, err := time.ParseDuration(loginExpiry)
+		if err != nil {
+			return nil, err
+		}
+
+		provider.loginExpiry = t
 	}
 
-	provider.tokenExpiry = t
+	{
+		t, err := time.ParseDuration(sessionExpiry)
+		if err != nil {
+			return nil, err
+		}
+
+		provider.sessionExpiry = t
+	}
+
 	provider.watch(file)
 
 	return &provider, nil
+}
+
+func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
+	p.guard.Lock()
+	secret := []byte(p.Key)
+	expiry := p.loginExpiry
+	p.guard.Unlock()
+
+	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
+	if err != nil {
+		return "", err
+	}
+
+	uuid, err := uuid.NewUUID()
+	if err != nil {
+		return "", err
+	}
+
+	salt := make([]byte, SALT_LENGTH)
+	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
+		return "", err
+	}
+
+	claims := &login{
+		StandardClaims: jwt.StandardClaims{
+			ID:        uuid.String(),
+			Audience:  []string{"login"},
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))),
+		},
+		LoginId: loginId,
+		Salt:    salt,
+	}
+
+	token, err := jwt.NewBuilder(signer).Build(claims)
+	if err != nil {
+		return "", err
+	}
+
+	return token.String(), nil
 }
 
 func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) {
 	p.guard.Lock()
 	secret := []byte(p.Key)
 	users := p.Users
-	expiry := p.tokenExpiry
+	expiry := p.sessionExpiry
 	p.guard.Unlock()
 
 	hash := fmt.Sprintf("%0x", sha256.Sum256([]byte(pwd)))
@@ -112,7 +175,7 @@ func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) 
 		return "", err
 	}
 
-	claims := &claims{
+	claims := &session{
 		StandardClaims: jwt.StandardClaims{
 			ID:        uuid.String(),
 			Audience:  []string{"admin"},
@@ -131,7 +194,7 @@ func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) 
 	return token.String(), nil
 }
 
-func (p *Local) Verify(cookie string) error {
+func (p *Local) Verify(tokenType TokenType, cookie string) error {
 	p.guard.Lock()
 	secret := []byte(p.Key)
 	p.guard.Unlock()
@@ -150,13 +213,21 @@ func (p *Local) Verify(cookie string) error {
 		return err
 	}
 
-	var claims claims
+	var claims session
 	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
 		return err
 	}
 
-	if !claims.IsForAudience("admin") {
-		return fmt.Errorf("Invalid audience in JWT claims")
+	switch tokenType {
+	case Login:
+		if !claims.IsForAudience("login") {
+			return fmt.Errorf("Invalid audience in JWT claims")
+		}
+
+	case Session:
+		if !claims.IsForAudience("admin") {
+			return fmt.Errorf("Invalid audience in JWT claims")
+		}
 	}
 
 	if !claims.IsValidAt(time.Now()) {
@@ -185,7 +256,7 @@ func (p *Local) Authorized(cookie, resource string) error {
 		return err
 	}
 
-	var claims claims
+	var claims session
 	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
 		return err
 	}
@@ -205,7 +276,7 @@ func (p *Local) Authorized(cookie, resource string) error {
 	return nil
 }
 
-func (p *Local) Session(cookie string) (*uuid.UUID, error) {
+func (p *Local) GetLoginId(cookie string) (*uuid.UUID, error) {
 	p.guard.Lock()
 	secret := []byte(p.Key)
 	p.guard.Unlock()
@@ -224,7 +295,42 @@ func (p *Local) Session(cookie string) (*uuid.UUID, error) {
 		return nil, err
 	}
 
-	var claims claims
+	var claims login
+	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
+		return nil, err
+	}
+
+	if !claims.IsForAudience("login") {
+		return nil, fmt.Errorf("Invalid audience in JWT claims")
+	}
+
+	if !claims.IsValidAt(time.Now()) {
+		return nil, fmt.Errorf("JWT token expired")
+	}
+
+	return &claims.LoginId, nil
+}
+
+func (p *Local) GetSessionId(cookie string) (*uuid.UUID, error) {
+	p.guard.Lock()
+	secret := []byte(p.Key)
+	p.guard.Unlock()
+
+	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := jwt.ParseAndVerifyString(cookie, verifier)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := verifier.Verify(token.Payload(), token.Signature()); err != nil {
+		return nil, err
+	}
+
+	var claims session
 	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
 		return nil, err
 	}
