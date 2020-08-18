@@ -31,7 +31,10 @@ func (d *dispatcher) unauthenticated(w http.ResponseWriter, r *http.Request) {
 		//	Secure:   true,
 	}
 
-	d.logins[loginId] = true
+	d.logins[loginId] = &login{
+		id:      loginId,
+		touched: time.Now(),
+	}
 
 	http.SetCookie(w, &cookie)
 	http.Redirect(w, r, "/login.html", http.StatusFound)
@@ -106,8 +109,9 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	d.sessions[sessionId] = &session{
-		id:   sessionId,
-		user: uid,
+		id:      sessionId,
+		user:    uid,
+		touched: time.Now(),
 	}
 
 	http.SetCookie(w, &cookie)

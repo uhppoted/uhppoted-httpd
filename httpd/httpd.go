@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -32,11 +33,18 @@ type HTTPD struct {
 	TLSCertificate           string
 	TLSKey                   string
 	RequireClientCertificate bool
+	StaleTime                time.Duration
+}
+
+type login struct {
+	id      uuid.UUID
+	touched time.Time
 }
 
 type session struct {
-	id   uuid.UUID
-	user string
+	id      uuid.UUID
+	user    string
+	touched time.Time
 }
 
 type dispatcher struct {
@@ -44,8 +52,9 @@ type dispatcher struct {
 	fs           http.Handler
 	auth         auth.IAuth
 	cookieMaxAge int
-	logins       map[uuid.UUID]bool
+	logins       map[uuid.UUID]*login
 	sessions     map[uuid.UUID]*session
+	stale        time.Duration
 }
 
 func (h *HTTPD) Run() {
@@ -58,8 +67,9 @@ func (h *HTTPD) Run() {
 		fs:           http.FileServer(fs),
 		auth:         h.AuthProvider,
 		cookieMaxAge: h.CookieMaxAge,
-		logins:       map[uuid.UUID]bool{},
+		logins:       map[uuid.UUID]*login{},
 		sessions:     map[uuid.UUID]*session{},
+		stale:        h.StaleTime,
 	}
 
 	var srv *http.Server
@@ -106,7 +116,6 @@ func (h *HTTPD) Run() {
 			Addr:      ":8443",
 			TLSConfig: &tlsConfig,
 		}
-
 	}
 
 	shutdown := make(chan struct{})
@@ -151,7 +160,43 @@ func (h *HTTPD) Run() {
 		}()
 	}
 
+	ticker := time.NewTicker(5 * time.Second)
+	done := make(chan struct{})
+
+	go func() {
+		for {
+			select {
+			case <-done:
+				return
+
+			case <-ticker.C:
+				d.sweep()
+			}
+		}
+	}()
+
 	<-shutdown
+
+	ticker.Stop()
+	close(done)
+}
+
+func (d *dispatcher) sweep() {
+	cutoff := time.Now().Add(-d.stale)
+
+	for k, v := range d.logins {
+		if v.touched.Before(cutoff) {
+			info(fmt.Sprintf("Removing stale login ID for %v", k))
+			delete(d.logins, k)
+		}
+	}
+
+	for k, v := range d.sessions {
+		if v.touched.Before(cutoff) {
+			info(fmt.Sprintf("Removing stale session ID for %v", k))
+			delete(d.sessions, k)
+		}
+	}
 }
 
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -198,6 +243,8 @@ func (d *dispatcher) authorised(r *http.Request, path string) bool {
 			warn(fmt.Errorf("No extant session for request"))
 			return false
 		}
+
+		session.touched = time.Now()
 	}
 
 	return true

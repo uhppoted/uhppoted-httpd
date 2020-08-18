@@ -2,13 +2,13 @@
 
 ### IN PROGRESS
 
-- [ ] Login token
-      - prune login/session stores
-      - include salt with login.html
-      - time limited single use salt for password hash
+- [ ] Double GET index.html on login (?)
 - [ ] Salt stored password hashes
 - [ ] Fix 'message' bar 
-- [ ] Take a look at [Shoelace](https://shoelace.style)
+- [ ] Take a look at:
+      - [Shoelace](https://shoelace.style)
+      - [WebFlow](https://www.toptal.com/designers/webflow/webflow-advantages)
+      - [ExpertX](https://www.toptal.com/designers/webflow/webflow-advantages)
 
 - [ ] favicon
       - convert text to paths and cleanup SVG
@@ -23,6 +23,7 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
+- [x] Login token
 - [x] TLS
 - [x] Automatic logout
 - [x] Implement session
