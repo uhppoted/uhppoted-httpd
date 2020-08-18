@@ -72,8 +72,12 @@
 
       postAsForm('/authenticate', credentials)
         .then(response => { 
-            if (response.status == 200 && response.redirected) {
-              window.location = response.url;
+            if (response.status == 200) {
+              if (response.redirected) {
+                window.location = response.url;
+              } else {
+                window.location = '/';                
+              }
             } else {
               return response.text()
             }
@@ -85,8 +89,12 @@
 
       // postAsJSON('/authenticate', credentials)
       //   .then(response => { 
-      //         if (response.status == 200 && response.redirected) {
-      //           window.location = response.url;
+      //         if (response.status == 200) {
+      //            if (response.redirected) {
+      //               window.location = response.url;
+      //            } else {
+      //               window.location = '/';                
+      //            }
       //         } else {
       //           return response.text()
       //         }

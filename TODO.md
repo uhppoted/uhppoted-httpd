@@ -2,7 +2,6 @@
 
 ### IN PROGRESS
 
-- [ ] Double GET index.html on login (?)
 - [ ] Salt stored password hashes
 - [ ] Fix 'message' bar 
 - [ ] Take a look at:
@@ -23,6 +22,7 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
+- [x] Double GET index.html on login (?)
 - [x] Login token
 - [x] TLS
 - [x] Automatic logout

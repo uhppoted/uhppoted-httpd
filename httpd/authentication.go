@@ -115,7 +115,6 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &cookie)
-	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
 func (d *dispatcher) authenticated(r *http.Request) bool {
