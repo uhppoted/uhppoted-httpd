@@ -2,7 +2,6 @@
 
 ### IN PROGRESS
 
-- [ ] Salt stored password hashes
 - [ ] Fix 'message' bar 
 - [ ] Take a look at:
       - [Shoelace](https://shoelace.style)
@@ -14,6 +13,7 @@
       - Safari
 - [ ] User settings
       - automatic logout enabled/timeout
+      - change password
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
 - [ ] Dashboard look 'n feel ? e.g. https://www.toptal.com/designers/ux/notification-design
 - [ ] Lighthouse test (Chrome dev tools)
@@ -22,6 +22,7 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
+- [x] Salt stored password hashes
 - [x] Double GET index.html on login (?)
 - [x] Login token
 - [x] TLS

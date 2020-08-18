@@ -3,6 +3,7 @@ package auth
 import (
 	"crypto/rand"
 	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -30,6 +31,8 @@ type Local struct {
 	resource []resource
 }
 
+type salt []byte
+
 type login struct {
 	jwt.StandardClaims
 	LoggedInAs string    `json:"uid"`
@@ -45,6 +48,7 @@ type session struct {
 }
 
 type user struct {
+	Salt     salt   `json:"salt"`
 	Password string `json:"password"`
 	Role     string `json:"role"`
 }
@@ -52,6 +56,34 @@ type user struct {
 type resource struct {
 	Path       *regexp.Regexp `json:"path"`
 	Authorised *regexp.Regexp `json:"authorised"`
+}
+
+func (s *salt) MarshalJSON() ([]byte, error) {
+	bytes := []byte{}
+
+	if s != nil {
+		bytes = []byte(*s)
+	}
+
+	return json.Marshal(hex.EncodeToString(bytes[:]))
+}
+
+func (s *salt) UnmarshalJSON(bytes []byte) error {
+	re := regexp.MustCompile(`^"([0-9a-fA-F]*)"$`)
+	match := re.FindSubmatch(bytes)
+
+	if len(match) < 2 {
+		return fmt.Errorf("Invalid salt '%s'", string(bytes))
+	}
+
+	b, err := hex.DecodeString(string(match[1]))
+	if err != nil {
+		return err
+	}
+
+	*s = b
+
+	return nil
 }
 
 func (r *resource) UnmarshalJSON(bytes []byte) error {
@@ -156,12 +188,18 @@ func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) 
 	expiry := p.sessionExpiry
 	p.guard.Unlock()
 
-	hash := fmt.Sprintf("%0x", sha256.Sum256([]byte(pwd)))
-
 	u, ok := users[uid]
 	if !ok {
 		return "", fmt.Errorf("Invalid login credentials")
-	} else if hash != u.Password {
+	}
+
+	h := sha256.New()
+	h.Write(u.Salt)
+	h.Write([]byte(pwd))
+
+	hash := fmt.Sprintf("%0x", h.Sum(nil))
+	if hash != u.Password {
+		println(hash)
 		return "", fmt.Errorf("Invalid login credentials")
 	}
 
@@ -371,7 +409,7 @@ func (p *Local) load(file string) error {
 	return nil
 }
 
-// NOTE: interim file watcher implementation pending fsnotify in Go 1.4
+// NOTE: interim file watcher implementation pending fsnotify in Go v?.?
 //       (https://github.com/fsnotify/fsnotify requires workarounds for
 //        files updated atomically by renaming)
 func (p *Local) watch(filepath string) {
