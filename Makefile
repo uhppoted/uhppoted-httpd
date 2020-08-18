@@ -5,6 +5,7 @@ DEBUG  ?= --debug
 CMD     = ./bin/uhppoted-httpd
 
 .PHONY: bump
+.PHONY: build-all
 
 all: test      \
 	 benchmark \
@@ -37,7 +38,11 @@ benchmark: build
 coverage: build
 	go test -cover ./...
 
-build-all: test vet
+build-all: 
+	mkdir -p bin
+	go build -o bin ./...
+	go test ./...
+	go vet ./...
 	mkdir -p dist/$(DIST)/windows
 	mkdir -p dist/$(DIST)/darwin
 	mkdir -p dist/$(DIST)/linux
