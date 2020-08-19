@@ -2,11 +2,12 @@
 
 ### IN PROGRESS
 
-- [ ] Fix 'message' bar 
 - [ ] Take a look at:
       - [Shoelace](https://shoelace.style)
       - [WebFlow](https://www.toptal.com/designers/webflow/webflow-advantages)
       - [ExpertX](https://www.toptal.com/designers/webflow/webflow-advantages)
+      - [gridstack](https://gridstackjs.com)
+      - [toptal](https://www.toptal.com/designers/ux/notification-design)
 
 - [ ] favicon
       - convert text to paths and cleanup SVG
@@ -15,13 +16,14 @@
       - automatic logout enabled/timeout
       - change password
 - [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
-- [ ] Dashboard look 'n feel ? e.g. https://www.toptal.com/designers/ux/notification-design
 - [ ] Lighthouse test (Chrome dev tools)
 - [ ] Hamburger menu (?)
 - [ ] Style SVG icons with SASS
+- [ ] Structure CSS somehow :-(
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
+- [x] Fix 'message' bar 
 - [x] Salt stored password hashes
 - [x] Double GET index.html on login (?)
 - [x] Login token

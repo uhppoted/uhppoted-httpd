@@ -14,29 +14,11 @@ import (
 )
 
 func (d *dispatcher) unauthenticated(w http.ResponseWriter, r *http.Request) {
-	loginId := uuid.New()
-	token, err := d.auth.Preauthenticate(loginId)
-	if err != nil {
-		http.Error(w, "Invalid login token", http.StatusInternalServerError)
+	if err := d.setLoginCookie(w); err != nil {
+		warn(err)
 		return
 	}
 
-	cookie := http.Cookie{
-		Name:     LoginCookie,
-		Value:    token,
-		Path:     "/",
-		MaxAge:   d.cookieMaxAge * int(time.Hour.Seconds()),
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-		//	Secure:   true,
-	}
-
-	d.logins[loginId] = &login{
-		id:      loginId,
-		touched: time.Now(),
-	}
-
-	http.SetCookie(w, &cookie)
 	http.Redirect(w, r, "/login.html", http.StatusFound)
 }
 
@@ -94,7 +76,13 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 
 	token, err := d.auth.Authorize(uid, pwd, sessionId)
 	if err != nil {
-		d.unauthorized(w, r)
+		warn(err)
+		if err := d.setLoginCookie(w); err != nil {
+			warn(err)
+			return
+		}
+
+		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
@@ -127,6 +115,34 @@ func (d *dispatcher) authenticated(r *http.Request) bool {
 	}
 
 	return false
+}
+
+func (d *dispatcher) setLoginCookie(w http.ResponseWriter) error {
+	loginId := uuid.New()
+	token, err := d.auth.Preauthenticate(loginId)
+	if err != nil {
+		http.Error(w, "Invalid login token", http.StatusInternalServerError)
+		return nil
+	}
+
+	cookie := http.Cookie{
+		Name:     LoginCookie,
+		Value:    token,
+		Path:     "/",
+		MaxAge:   d.cookieMaxAge * int(time.Hour.Seconds()),
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		//	Secure:   true,
+	}
+
+	d.logins[loginId] = &login{
+		id:      loginId,
+		touched: time.Now(),
+	}
+
+	http.SetCookie(w, &cookie)
+
+	return nil
 }
 
 func (d *dispatcher) validateLoginCookie(r *http.Request) error {

@@ -9,6 +9,7 @@
         },
         "Ok": {
             "Label": "Ok"
-        }
+        },
+        "Unauthorized": "Invalid user ID or password"
     }
 }

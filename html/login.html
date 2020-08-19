@@ -37,9 +37,8 @@
             </div>
             <button action="submit">{{.Login.Ok.Label}}</button>
           </form>
-          <div class="message"><p id="message"></p></div>
+          <div id="message"></div>
         </fieldset>
-
       </div>
     </div>
   </body>
@@ -70,18 +69,27 @@
         pwd: document.getElementById('pwd').value
       }
 
+      document.getElementById('message').style.display = "none";
+
       postAsForm('/authenticate', credentials)
         .then(response => { 
-            if (response.status == 200) {
+          console.log("STATUS", response.status)
+          switch (response.status) {
+            case 200:
               if (response.redirected) {
-                window.location = response.url;
+                window.location = response.url
               } else {
-                window.location = '/';                
+                window.location = '/'
               }
-            } else {
+              break;
+
+            case 401:
+              return {{.Login.Unauthorized}}
+            
+            default:
               return response.text()
-            }
-          })
+          }
+        })
         .then(msg => { 
             warning(msg);
         })

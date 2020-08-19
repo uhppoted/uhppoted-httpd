@@ -199,7 +199,6 @@ func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) 
 
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
 	if hash != u.Password {
-		println(hash)
 		return "", fmt.Errorf("Invalid login credentials")
 	}
 

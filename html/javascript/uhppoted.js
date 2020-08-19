@@ -72,6 +72,7 @@ function warning(msg) {
   if (message != null) {
       message.innerText = msg;
       message.classList.add("warning");
+      message.style.display = "block";
   } else {
       alert(msg);
   }

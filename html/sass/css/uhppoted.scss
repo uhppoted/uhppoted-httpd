@@ -17,18 +17,6 @@ body {
   padding: 0px;
 }
 
-body #message { 
-  background: theme.$content-message-background;
-  position: absolute; 
-  width: 95%;
-  bottom: 0px; 
-  text-align: center;
-  font-size: 1.1em;
-  font-weight: normal;
-  margin: 0px;
-  padding: 8px 32px 8px 32px;
-} 
-
 #content {
   display: grid;
   grid-template-columns: 120px 1fr 120px;
@@ -204,18 +192,37 @@ form button {
 }
 
 .message {  
-  font-size: 0.8em;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 8px;
-  margin-bottom: 2px;
-  padding-left: 8px;
-  padding-right: 8px;
+  background-color: theme.$content-message-background;
+  position: absolute; 
+  width: 100%;
+  bottom: 0px; 
+  margin: 0;
+  padding: 0;
 }
 
 .warning {
   color: theme.$warning-colour;
 }
+
+body #message { 
+  min-height: 1em;
+  text-align: center;
+  font-size: 1em;
+  font-weight: normal;
+  margin: 0px 16px 0px 16px;
+  padding: 8px 0px 8px 0px;
+} 
+
+#login #message { 
+  background-color: theme.$content-message-background;
+  display: none;
+  font-size: 0.8em;
+  font-weight: normal;
+  margin: 8px 0px 0px 8px;
+  padding: 4px 0px 4px 0px;
+  border: solid 1px theme.$warning-colour;
+  border-radius: 4px;
+} 
 
 .tabs {
   margin: 0;
