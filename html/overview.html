@@ -9,7 +9,6 @@
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
     <link rel="stylesheet"       href="css/uhppoted.css" type="text/css">
-    <link rel="stylesheet"       href="css/tabular.css"  type="text/css">
   </head>
 
   <body> 
@@ -35,32 +34,42 @@
 
       <!-- MAIN -->
       <div id="main">
-        <table class="tabular">
-          <thead>
-            <tr>
-              <th rowspan="2">Name</th>
-              <th rowspan="2">Card Number</th>
-              <th colspan="2">Validity</th>
-              <th colspan="10">Groups</th>
-            </tr>
-            <tr>
-              <th>From</th>
-              <th>To</th>{{range .db.Groups}}
-              <th>{{.}}</th>{{end}}
-            </tr>
-          </thead>
-          <tbody>{{range .db.CardHolders}}
-             <tr>
-              <td>{{.Name}}</td>
-              <td>{{.CardNumber}}</td>
-              <td>{{.From.Format "2006-01-02"}}</td>
-              <td>{{.To.Format "2006-01-02" }}</td>{{range .Groups}}
-              <td class="group">{{if .}}Y{{else}}N{{end}}</td>{{end}}
-             </tr>{{end}}
-          </tbody>
-          <tfoot>
-          </tfoot>
-        </table>
+        <div class="tabs">
+          <input type="radio" id="system" name="tab" class="tab-content-first" checked>
+          <label for="system">System</label>       
+
+          <input type="radio" id="acl" name="tab" class="tab-content-2">
+          <label for="acl">ACL</label>       
+
+          <input type="radio" id="groups" name="tab" class="tab-content-3">
+          <label for="groups">Groups</label>       
+
+          <input type="radio" id="people" name="tab" class="tab-content-last">
+          <label for="people">People</label>       
+
+          <ul>
+            <li class="tab-content tab-content-first">
+              <h1>System</h1>
+              <p><i> -- system information -- </i></p>
+            </li>
+          
+          <li class="tab-content tab-content-2">
+            <h1>ACL</h1>
+            <p><i> -- access control list -- </i></p>
+          </li>
+          
+          <li class="tab-content tab-content-3">
+            <h1>Groups</h1>
+            <p><i> --  groups and roles -- </i></p>
+          </li>
+          
+          <li class="tab-content tab-content-last">
+            <h1>People</h1>
+            <p><i> -- people information -- </i></p>
+          </li>
+        </ul>
+
+       </div>
       </div>
     </div>
     <div class="message"><p id="message"></p></div>

@@ -1,0 +1,37 @@
+@use 'solarize' as theme;
+
+.tabular {
+  background-color: theme.$content-table-background;
+  border-collapse: collapse;
+  border: 1px solid theme.$content-table-border;
+}
+
+.tabular tbody tr:nth-child(odd) {
+  background: theme.$content-table-background-odd;
+}
+
+.tabular tbody tr:nth-child(even) {
+  background: theme.$content-table-background-even;
+}
+
+.tabular th {
+  border: 1px solid theme.$content-table-border;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.9em;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.tabular td {
+  border: 1px solid theme.$content-table-border;
+  padding: 0.5rem;
+  text-align: left;
+  font-size: 0.9em;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.tabular td.group{
+  text-align: center;
+}

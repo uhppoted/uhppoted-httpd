@@ -2,6 +2,21 @@
 
 ### IN PROGRESS
 
+- [ ] eslint
+- [ ] Card holders
+      - labels from translations
+      - scroll horizontally
+      - scroll vertically
+      - freeze header rows and columns
+      - edit
+      - add
+      - delete
+
+- [ ] Implement 'no authentication'
+- [ ] Login
+      - submit on Enter
+      - login.css
+
 - [ ] Take a look at:
       - [Shoelace](https://shoelace.style)
       - [WebFlow](https://www.toptal.com/designers/webflow/webflow-advantages)
@@ -9,6 +24,7 @@
       - [gridstack](https://gridstackjs.com)
       - [toptal](https://www.toptal.com/designers/ux/notification-design)
 
+- [ ] Fonts
 - [ ] favicon
       - convert text to paths and cleanup SVG
       - Safari

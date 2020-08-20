@@ -78,6 +78,7 @@ func translate(filename string, context map[string]interface{}, w http.ResponseW
 	}
 
 	page["context"] = context
+	page["db"] = NewDB()
 
 	t.Execute(w, &page)
 }
