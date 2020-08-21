@@ -2,8 +2,8 @@
 
 ### IN PROGRESS
 
-- [ ] eslint
 - [ ] Card holders
+      - checkboxes for rights
       - labels from translations
       - scroll horizontally
       - scroll vertically
@@ -11,11 +11,14 @@
       - edit
       - add
       - delete
-
+      - [Tabulator](http://tabulator.info)
+      
+- [ ] Javascript modules
 - [ ] Implement 'no authentication'
 - [ ] Login
       - submit on Enter
       - login.css
+      - include login cookie when redirecting to login.html to avoid the initial double click
 
 - [ ] Take a look at:
       - [Shoelace](https://shoelace.style)
@@ -39,6 +42,7 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
+- [x] eslint
 - [x] Fix 'message' bar 
 - [x] Salt stored password hashes
 - [x] Double GET index.html on login (?)

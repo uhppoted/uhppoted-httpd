@@ -22,6 +22,7 @@ build: format
 	mkdir -p bin
 	go build -o bin ./...
 	sass html/sass:html/css/
+	npx eslint html/javascript/*.js
 
 test: build
 	go test ./...
@@ -31,6 +32,7 @@ vet: build
 
 lint: build
 	golint ./...
+	npx eslint html/javascript/*.js
 
 benchmark: build
 	go test -bench ./...

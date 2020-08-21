@@ -7,7 +7,9 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/uhppoted/uhppote-core v0.6.4
 	github.com/uhppoted/uhppoted-api v0.6.4
+	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/sys v0.0.0-20200812155832-6a926be9bd1d
+	golang.org/x/tools v0.0.0-20200821200730-1e23e48ab93b // indirect
 )
 
 replace github.com/uhppoted/uhppoted-api => ../uhppoted-api
