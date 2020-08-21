@@ -18,6 +18,7 @@ document.addEventListener('keypress', event => {
 
 export async function postAsForm (url = '', data = {}) {
   const pairs = []
+
   for (const name in data) {
     pairs.push(encodeURIComponent(name) + '=' + encodeURIComponent(data[name]))
   }
@@ -32,6 +33,7 @@ export async function postAsForm (url = '', data = {}) {
     referrerPolicy: 'no-referrer',
     body: pairs.join('&').replace(/%20/g, '+')
   })
+
   return response
 }
 
@@ -46,10 +48,23 @@ export async function postAsJSON (url = '', data = {}) {
     referrerPolicy: 'no-referrer',
     body: JSON.stringify(data)
   })
+
   return response
 }
 
-function logout (event) {
+export function warning (msg) {
+  const message = document.getElementById('message')
+
+  if (message != null) {
+    message.innerText = msg
+    message.classList.add('warning')
+    message.style.display = 'block'
+  } else {
+    alert(msg)
+  }
+}
+
+export function onSignOut (event) {
   if (event != null) {
     event.preventDefault()
   }
@@ -68,26 +83,33 @@ function logout (event) {
     .catch(function (err) { console.error(err) })
 }
 
-function warning (msg) {
-  const message = document.getElementById('message')
-
-  if (message != null) {
-    message.innerText = msg
-    message.classList.add('warning')
-    message.style.display = 'block'
-  } else {
-    alert(msg)
-  }
+export function onIdle () {
+  onSignOut()
 }
 
-function onIdle () {
-  logout()
-}
-
-function resetIdle () {
+export function resetIdle () {
   if (idleTimer != null) {
     clearTimeout(idleTimer)
   }
 
   idleTimer = setTimeout(onIdle, 15 * 60 * 1000)
+}
+
+export function onEdit (event, value) {
+  const element = document.getElementById(event.target.id)
+
+  if (value) {
+    element.parentElement.innerHTML = '<input id="' + event.target.id + '" type="checkbox" value="Y" onclick="return onTick(event)" checked>'
+  } else {
+    element.parentElement.innerHTML = '<input id="' + event.target.id + '" type="checkbox" value="N" onclick="return onTick(event)">'
+  }
+}
+
+export function onTick (event) {
+  console.log('onTick', event.target.checked, event.target.indeterminate)
+
+  // event.target.checked = false
+  // event.target.indeterminate = true
+  // event.stopPropagation()
+  return true
 }

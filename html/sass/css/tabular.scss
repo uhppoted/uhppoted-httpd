@@ -35,3 +35,9 @@
 .tabular td.group{
   text-align: center;
 }
+
+.tabular td.group span {
+  border: 1px solid red;
+  padding: 0px 4px 0px 4px;
+  background-color: #ff000040;
+}

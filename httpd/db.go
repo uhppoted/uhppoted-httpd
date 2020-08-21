@@ -5,11 +5,17 @@ import (
 )
 
 type db struct {
-	Groups      []string
+	Groups      []*Group
 	CardHolders []*CardHolder
 }
 
+type Group struct {
+	ID   uint32
+	Name string
+}
+
 type CardHolder struct {
+	ID         uint32
 	Name       string
 	CardNumber uint32
 	From       *time.Time
@@ -24,13 +30,27 @@ func today() *time.Time {
 }
 
 func NewDB() *db {
-	groups := []string{"Teacher", "Staff", "Student", "Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin", "Mage", "Muggle", "Pet"}
+	groups := []*Group{
+		&Group{1, "Teacher"},
+		&Group{2, "Staff"},
+		&Group{3, "Student"},
+		&Group{4, "Gryffindor"},
+		&Group{5, "Hufflepuff"},
+		&Group{6, "Ravenclaw"},
+		&Group{7, "Slytherin"},
+		&Group{8, "Mage"},
+		&Group{9, "Muggle"},
+		&Group{10, "Pet"},
+	}
+
+	cardholders := []*CardHolder{
+		&CardHolder{1, "Albus Dumbledore", 1000101, today(), today(), make([]bool, len(groups))},
+		&CardHolder{2, "Tom Riddle", 2000101, today(), today(), make([]bool, len(groups))},
+		&CardHolder{3, "Harry Potter", 600010, today(), today(), make([]bool, len(groups))},
+	}
+
 	return &db{
-		Groups: []string{"Teacher", "Staff", "Student", "Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin", "Mage", "Muggle", "Pet"},
-		CardHolders: []*CardHolder{
-			&CardHolder{"Albus Dumbledore", 1000101, today(), today(), make([]bool, len(groups))},
-			&CardHolder{"Tom Riddle", 2000101, today(), today(), make([]bool, len(groups))},
-			&CardHolder{"Harry Potter", 600010, today(), today(), make([]bool, len(groups))},
-		},
+		Groups:      groups,
+		CardHolders: cardholders,
 	}
 }

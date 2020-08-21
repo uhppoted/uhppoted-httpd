@@ -3,7 +3,7 @@
 ### IN PROGRESS
 
 - [ ] Card holders
-      - checkboxes for rights
+      - tri-state (Y/N/cancel) checkboxes for card holder groups
       - labels from translations
       - scroll horizontally
       - scroll vertically

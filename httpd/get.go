@@ -54,10 +54,10 @@ func translate(filename string, context map[string]interface{}, w http.ResponseW
 	base := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
 	translation := filepath.Join("translations", "en", base+".json")
 
-	bytes, err := ioutil.ReadFile(translation)
+	html, err := ioutil.ReadFile(translation)
 	if err != nil {
 		warn(fmt.Errorf("Error reading translation '%s' (%w)", translation, err))
-		http.Error(w, "Gone Missing It Has", http.StatusNotFound)
+		http.Error(w, "Page Not Found", http.StatusNotFound)
 		return
 	}
 
@@ -70,7 +70,7 @@ func translate(filename string, context map[string]interface{}, w http.ResponseW
 
 	page := map[string]interface{}{}
 
-	err = json.Unmarshal(bytes, &page)
+	err = json.Unmarshal(html, &page)
 	if err != nil {
 		warn(fmt.Errorf("Error unmarshalling translation '%s' (%w)", translation, err))
 		http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
@@ -80,5 +80,13 @@ func translate(filename string, context map[string]interface{}, w http.ResponseW
 	page["context"] = context
 	page["db"] = NewDB()
 
-	t.Execute(w, &page)
+	var s strings.Builder
+
+	if err := t.Execute(&s, &page); err != nil {
+		warn(fmt.Errorf("Error formatting page '%s' (%w)", filename, err))
+		http.Error(w, "Error formatting page", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "%s", s.String())
 }

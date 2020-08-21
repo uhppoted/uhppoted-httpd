@@ -28,7 +28,7 @@
           <img id="avatar" src="images/user-cog-solid.svg" />
           </div>
           <div class="menu">
-            <a href="#" onclick="logout(event)">Sign out</a>
+            <a href="#" onclick="onSignOut(event)">Sign out</a>
           </div>
         </div>
       </div>
@@ -46,16 +46,16 @@
             <tr>
               <th>From</th>
               <th>To</th>{{range .db.Groups}}
-              <th>{{.}}</th>{{end}}
+              <th>{{.Name}}</th>{{end}}
             </tr>
           </thead>
-          <tbody>{{range .db.CardHolders}}
+          <tbody>{{range $cid,$cardholder := .db.CardHolders}}
              <tr>
-              <td>{{.Name}}</td>
-              <td>{{.CardNumber}}</td>
-              <td>{{.From.Format "2006-01-02"}}</td>
-              <td>{{.To.Format "2006-01-02" }}</td>{{range .Groups}}
-              <td class="group">{{if .}}Y{{else}}N{{end}}</td>{{end}}
+              <td>{{$cardholder.Name}}</td>
+              <td>{{$cardholder.CardNumber}}</td>
+              <td>{{$cardholder.From.Format "2006-01-02"}}</td>
+              <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$permission := $cardholder.Groups}}
+              <td class="group"><span id="G{{$cid}}.{{$gid}}" onclick="onEdit(event, {{$permission}})">{{if $permission}}Y{{else}}N{{end}}</span></td>{{end}}
              </tr>{{end}}
           </tbody>
           <tfoot>
@@ -68,12 +68,16 @@
 
   <!-- SCRIPTS -->
  
-  <script src="./javascript/uhppoted.js"></script>
+  <script type="module" src="./javascript/uhppoted.js"></script>
 
-  <script>
+  <script type="module">
+    import { resetIdle, onEdit, onTick, onSignOut } from "./javascript/uhppoted.js"
+
+    window.onSignOut = onSignOut
+    window.onEdit = onEdit
+    window.onTick = onTick
+
     resetIdle();
   </script>
 
 </html>
-
-

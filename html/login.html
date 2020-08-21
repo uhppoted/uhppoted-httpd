@@ -45,9 +45,14 @@
 
   <!-- SCRIPTS -->
  
-  <script src="./javascript/uhppoted.js"></script>
+  <script type="module" src="./javascript/uhppoted.js"></script>
 
-  <script>
+  <script type="module">
+    import { postAsForm, warning } from './javascript/uhppoted.js'
+
+    window.showHidePassword = showHidePassword
+    window.login = login
+
     function showHidePassword() {
       let pwd = document.getElementById("pwd");
       let eye = document.getElementById("eye");
@@ -73,27 +78,28 @@
 
       postAsForm('/authenticate', credentials)
         .then(response => { 
-          console.log("STATUS", response.status)
+          console.log('response', response)
           switch (response.status) {
             case 200:
               if (response.redirected) {
-                window.location = response.url
+                return response.url
               } else {
-                window.location = '/'
+                return '/'
               }
               break;
 
             case 401:
-              return {{.Login.Unauthorized}}
+              throw new Error('{{.Login.Unauthorized}}')
             
             default:
-              return response.text()
+              throw new Error(response.text())
           }
         })
-        .then(msg => { 
-            warning(msg);
+        .then(url => { 
+          console.log('redirecting', url)
+          window.location = url
         })
-        .catch(function(err) { console.error(err) });
+        .catch(function(err) { warning(err); });
 
       // postAsJSON('/authenticate', credentials)
       //   .then(response => { 
