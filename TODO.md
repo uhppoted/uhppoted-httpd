@@ -16,7 +16,6 @@
 - [ ] Javascript modules
 - [ ] Implement 'no authentication'
 - [ ] Login
-      - submit on Enter
       - login.css
       - include login cookie when redirecting to login.html to avoid the initial double click
 

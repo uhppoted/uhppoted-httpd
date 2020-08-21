@@ -53,6 +53,17 @@
     window.showHidePassword = showHidePassword
     window.login = login
 
+    document.addEventListener('keydown', event => {
+      if ((event.code === 'Enter') && !event.repeat) {
+        const uid = document.getElementById('uid').value
+        const pwd = document.getElementById('pwd').value
+
+        if ((uid !== '') && (pwd !== '')) {
+          login(event)
+        }
+      }
+    })
+
     function showHidePassword() {
       let pwd = document.getElementById("pwd");
       let eye = document.getElementById("eye");
