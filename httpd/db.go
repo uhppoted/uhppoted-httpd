@@ -46,8 +46,10 @@ func NewDB() *db {
 	cardholders := []*CardHolder{
 		&CardHolder{1, "Albus Dumbledore", 1000101, today(), today(), make([]bool, len(groups))},
 		&CardHolder{2, "Tom Riddle", 2000101, today(), today(), make([]bool, len(groups))},
-		&CardHolder{3, "Harry Potter", 600010, today(), today(), make([]bool, len(groups))},
+		&CardHolder{3, "Harry Potter", 6000101, today(), today(), make([]bool, len(groups))},
 	}
+
+	cardholders[0].Groups[3] = true
 
 	return &db{
 		Groups:      groups,

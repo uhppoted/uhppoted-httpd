@@ -95,21 +95,63 @@ export function resetIdle () {
   idleTimer = setTimeout(onIdle, 15 * 60 * 1000)
 }
 
-export function onEdit (event, value) {
-  const element = document.getElementById(event.target.id)
+export function onCommit (event) {
+  const re = /C(.*?)\.commit/
+  const match = event.target.id.match(re)
 
-  if (value) {
-    element.parentElement.innerHTML = '<input id="' + event.target.id + '" type="checkbox" value="Y" onclick="return onTick(event)" checked>'
-  } else {
-    element.parentElement.innerHTML = '<input id="' + event.target.id + '" type="checkbox" value="N" onclick="return onTick(event)">'
+  if (match.length === 2) {
+    const cid = match[1]
+    const row = document.getElementById('R' + cid)
+
+    if (row && row.hasChildNodes) {
+      console.log('commit', row.childNodes)
+    }
+  }
+}
+
+export function onRollback (event) {
+  const re = /C(.*?)\.rollback/
+  const match = event.target.id.match(re)
+
+  if (match.length === 2) {
+    const cid = match[1]
+    const row = document.getElementById('R' + cid)
+
+    if (row && row.hasChildNodes) {
+      console.log('rollback', row.childNodes)
+    }
   }
 }
 
 export function onTick (event) {
-  console.log('onTick', event.target.checked, event.target.indeterminate)
+  const re = /G(.*?)\.(.*)/
+  const match = event.target.id.match(re)
 
-  // event.target.checked = false
-  // event.target.indeterminate = true
-  // event.stopPropagation()
-  return true
+  if (match.length === 3) {
+    const cid = match[1]
+    const commit = document.getElementById('C' + cid + '.commit')
+    const rollback = document.getElementById('C' + cid + '.rollback')
+    const group = document.getElementById(event.target.id)
+    const original = group.dataset.original === 'true'
+    const value = group.dataset.value === 'true'
+    const granted = !value
+
+    if (granted) {
+      group.dataset.value = 'true'
+      group.innerText = 'Y'
+    } else {
+      group.dataset.value = 'false'
+      group.innerText = 'N'
+    }
+
+    if (original !== granted) {
+      group.dataset.changed = 'true'
+      commit.dataset.enabled = 'true'
+      rollback.dataset.enabled = 'true'
+    } else {
+      group.dataset.changed = 'false'
+      commit.dataset.enabled = 'false'
+      rollback.dataset.enabled = 'false'
+    }
+  }
 }

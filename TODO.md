@@ -3,15 +3,16 @@
 ### IN PROGRESS
 
 - [ ] Card holders
-      - tri-state (Y/N/cancel) checkboxes for card holder groups
+      - commit/rollback
+      - card number
+      - from
+      - to
+      - add
+      - delete
       - labels from translations
       - scroll horizontally
       - scroll vertically
       - freeze header rows and columns
-      - edit
-      - add
-      - delete
-      - [Tabulator](http://tabulator.info)
       
 - [ ] Javascript modules
 - [ ] Implement 'no authentication'
@@ -25,6 +26,7 @@
       - [ExpertX](https://www.toptal.com/designers/webflow/webflow-advantages)
       - [gridstack](https://gridstackjs.com)
       - [toptal](https://www.toptal.com/designers/ux/notification-design)
+      - [Tabulator](http://tabulator.info)
 
 - [ ] Fonts
 - [ ] favicon

@@ -38,7 +38,7 @@
         <table class="tabular">
           <thead>
             <tr>
-              <th rowspan="2">Name</th>
+              <th rowspan="2" colspan="2">Name</th>
               <th rowspan="2">Card Number</th>
               <th colspan="2">Validity</th>
               <th colspan="10">Groups</th>
@@ -50,12 +50,16 @@
             </tr>
           </thead>
           <tbody>{{range $cid,$cardholder := .db.CardHolders}}
-             <tr>
-              <td>{{$cardholder.Name}}</td>
+             <tr id="R{{$cid}}">
+              <td class="name">{{$cardholder.Name}}</td>
+              <td class="buttons">
+                <span class="commit" id="C{{$cid}}.commit" onclick="onCommit(event)" data-enabled="false">&#9745;</span>
+                <span class="rollback" id="C{{$cid}}.rollback" onclick="onRollback(event)" data-enabled="false">&#9746;</span>
+              </td>
               <td>{{$cardholder.CardNumber}}</td>
               <td>{{$cardholder.From.Format "2006-01-02"}}</td>
               <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$permission := $cardholder.Groups}}
-              <td class="group"><span id="G{{$cid}}.{{$gid}}" onclick="onEdit(event, {{$permission}})">{{if $permission}}Y{{else}}N{{end}}</span></td>{{end}}
+              <td class="group"><span id="G{{$cid}}.{{$gid}}" data-original="{{$permission}}" data-value="{{$permission}}" data-changed="false" onclick="onTick(event)">{{if $permission}}Y{{else}}N{{end}}</span></td>{{end}}
              </tr>{{end}}
           </tbody>
           <tfoot>
@@ -71,10 +75,11 @@
   <script type="module" src="./javascript/uhppoted.js"></script>
 
   <script type="module">
-    import { resetIdle, onEdit, onTick, onSignOut } from "./javascript/uhppoted.js"
+    import { resetIdle, onCommit, onRollback, onTick, onSignOut } from "./javascript/uhppoted.js"
 
     window.onSignOut = onSignOut
-    window.onEdit = onEdit
+    window.onCommit = onCommit
+    window.onRollback = onRollback
     window.onTick = onTick
 
     resetIdle();

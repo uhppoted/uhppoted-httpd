@@ -32,12 +32,64 @@
   font-style: normal;
 }
 
+.tabular td.name {
+  border-right: 0;
+}
+
+.tabular td.buttons {
+  border-left: 0;
+  border-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+}
+
+.tabular td.buttons span {
+  padding: 0px 0px 0px 0px;
+  font-size: 1.5rem;  
+  font-weight: bold;
+  visibility: hidden;
+}
+
+.tabular td.buttons span[data-enabled='true'] {
+  visibility: visible;
+}
+
+.tabular td.buttons span.commit {
+  color: theme.$content-table-commit;  
+}
+
+.tabular td.buttons span.rollback {
+  color: theme.$content-table-rollback;  
+}
+
 .tabular td.group{
   text-align: center;
 }
 
 .tabular td.group span {
-  border: 1px solid red;
   padding: 0px 4px 0px 4px;
-  background-color: #ff000040;
+  user-select: none;
 }
+
+.tabular td.group span[data-value='true'] {
+  color: theme.$content-table-yes;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.tabular td.group span[data-value='false'] {
+  color: theme.$content-table-no;
+  font-style: italic;
+  font-weight: 100;
+}
+
+.tabular td.group span[data-changed='false'] {
+}
+
+.tabular td.group span[data-changed='true'] {
+  border: 2px solid red;
+  border-radius: 3px;
+}
+
