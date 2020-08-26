@@ -2,7 +2,10 @@
 
 ### IN PROGRESS
 
+- [ ] Abstract authentication/authorization
+      - Implement 'no authentication'
 - [ ] Card holders
+      - 'hover' style for groups/commit/rollback
       - commit/rollback
       - card number
       - from
@@ -15,7 +18,6 @@
       - freeze header rows and columns
       
 - [ ] Javascript modules
-- [ ] Implement 'no authentication'
 - [ ] Login
       - login.css
       - include login cookie when redirecting to login.html to avoid the initial double click

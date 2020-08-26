@@ -21,26 +21,13 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		path = "/" + path
 	}
 
-	if !d.authorised(r, path) {
-		if !d.authenticated(r) {
-			d.unauthenticated(w, r)
-		} else if s, err := d.session(r); err != nil || s == nil {
-			d.unauthenticated(w, r)
-		} else {
-			d.unauthorized(w, r)
-		}
-
+	if !d.authorized(w, r, path) {
 		return
 	}
 
 	if strings.HasSuffix(path, ".html") {
 		context := map[string]interface{}{}
-
-		s, err := d.session(r)
-		if err == nil && s != nil {
-			context["User"] = s.user
-		}
-
+		context["User"] = d.user(r)
 		file := filepath.Clean(filepath.Join(d.root, path[1:]))
 
 		translate(file, context, w)

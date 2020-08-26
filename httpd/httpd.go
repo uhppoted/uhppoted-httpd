@@ -13,19 +13,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-
-	"github.com/uhppoted/uhppoted-httpd/auth"
-)
-
-const (
-	LoginCookie   = "uhppoted-httpd-login"
-	SessionCookie = "uhppoted-httpd-session"
+	provider "github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
 type HTTPD struct {
 	Dir                      string
-	AuthProvider             auth.IAuth
+	AuthProvider             provider.IAuth
 	CookieMaxAge             int
 	HTTPEnabled              bool
 	HTTPSEnabled             bool
@@ -36,25 +30,10 @@ type HTTPD struct {
 	StaleTime                time.Duration
 }
 
-type login struct {
-	id      uuid.UUID
-	touched time.Time
-}
-
-type session struct {
-	id      uuid.UUID
-	user    string
-	touched time.Time
-}
-
 type dispatcher struct {
-	root         string
-	fs           http.Handler
-	auth         auth.IAuth
-	cookieMaxAge int
-	logins       map[uuid.UUID]*login
-	sessions     map[uuid.UUID]*session
-	stale        time.Duration
+	root string
+	fs   http.Handler
+	auth auth.IAuth
 }
 
 func (h *HTTPD) Run() {
@@ -63,13 +42,9 @@ func (h *HTTPD) Run() {
 	}
 
 	d := dispatcher{
-		root:         h.Dir,
-		fs:           http.FileServer(fs),
-		auth:         h.AuthProvider,
-		cookieMaxAge: h.CookieMaxAge,
-		logins:       map[uuid.UUID]*login{},
-		sessions:     map[uuid.UUID]*session{},
-		stale:        h.StaleTime,
+		root: h.Dir,
+		fs:   http.FileServer(fs),
+		auth: auth.NewBasicAuthenticator(h.AuthProvider, h.CookieMaxAge, h.StaleTime),
 	}
 
 	var srv *http.Server
@@ -182,21 +157,7 @@ func (h *HTTPD) Run() {
 }
 
 func (d *dispatcher) sweep() {
-	cutoff := time.Now().Add(-d.stale)
-
-	for k, v := range d.logins {
-		if v.touched.Before(cutoff) {
-			info(fmt.Sprintf("Removing stale login ID for %v", k))
-			delete(d.logins, k)
-		}
-	}
-
-	for k, v := range d.sessions {
-		if v.touched.Before(cutoff) {
-			info(fmt.Sprintf("Removing stale session ID for %v", k))
-			delete(d.sessions, k)
-		}
-	}
+	d.auth.Sweep()
 }
 
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -212,85 +173,24 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *dispatcher) authorised(r *http.Request, path string) bool {
-	if path == "/login.html" {
-		return true
-	}
-
-	if path == "/unauthorized.html" {
-		return true
-	}
-
-	if strings.HasSuffix(path, ".html") {
-		cookie, err := r.Cookie(SessionCookie)
-		if err != nil {
-			warn(fmt.Errorf("No JWT cookie in request"))
-			return false
-		}
-
-		if err := d.auth.Authorized(cookie.Value, path); err != nil {
-			warn(err)
-			return false
-		}
-
-		session, err := d.session(r)
-		if err != nil {
-			warn(err)
-			return false
-		}
-
-		if session == nil {
-			warn(fmt.Errorf("No extant session for request"))
-			return false
-		}
-
-		session.touched = time.Now()
-	}
-
-	return true
+func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
+	d.auth.Authenticate(w, r)
 }
 
-func (d *dispatcher) session(r *http.Request) (*session, error) {
-	cookie, err := r.Cookie(SessionCookie)
-	if err != nil {
-		return nil, err
-	}
-
-	sid, err := d.auth.GetSessionId(cookie.Value)
-	if err != nil {
-		return nil, err
-	}
-
-	if sid == nil {
-		return nil, fmt.Errorf("Invalid session ID (%v)", sid)
-	}
-
-	s, ok := d.sessions[*sid]
-	if !ok {
-		return nil, fmt.Errorf("No extant session for session ID '%v'", *sid)
-	}
-
-	return s, nil
+func (d *dispatcher) authorized(w http.ResponseWriter, r *http.Request, path string) bool {
+	return d.auth.Authorized(w, r, path)
 }
 
-func (d *dispatcher) unauthorized(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/unauthorized.html", http.StatusFound)
+func (d *dispatcher) user(r *http.Request) string {
+	if s, err := d.auth.Session(r); err == nil && s != nil {
+		return s.User
+	}
+
+	return ""
 }
 
 func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
-	if s, _ := d.session(r); s != nil {
-		delete(d.sessions, s.id)
-	}
-
-	http.Redirect(w, r, "/index.html", http.StatusFound)
-}
-
-func authorize(header []string) error {
-	if len(header) == 0 {
-		return fmt.Errorf("Empty 'Authorization' header")
-	}
-
-	return nil
+	d.auth.Logout(w, r)
 }
 
 func debug(message string) {
