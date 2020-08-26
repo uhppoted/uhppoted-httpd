@@ -128,13 +128,15 @@ export function onTick (event) {
   const match = event.target.id.match(re)
 
   if (match.length === 3) {
-    const cid = match[1]
-    const commit = document.getElementById('C' + cid + '.commit')
-    const rollback = document.getElementById('C' + cid + '.rollback')
+    const id = match[1]
+    const row = document.getElementById('R' + id)
+    const commit = document.getElementById('C' + id + '.commit')
+    const rollback = document.getElementById('C' + id + '.rollback')
     const group = document.getElementById(event.target.id)
     const original = group.dataset.original === 'true'
     const value = group.dataset.value === 'true'
     const granted = !value
+    let modified = (row.dataset.modified && parseInt(row.dataset.modified)) | 0
 
     if (granted) {
       group.dataset.value = 'true'
@@ -145,11 +147,19 @@ export function onTick (event) {
     }
 
     if (original !== granted) {
+      modified += 1
       group.dataset.changed = 'true'
+    } else {
+      modified -= 1
+      group.dataset.changed = 'false'
+    }
+
+    if (modified > 0) {
+      row.dataset.modified = modified.toString()
       commit.dataset.enabled = 'true'
       rollback.dataset.enabled = 'true'
     } else {
-      group.dataset.changed = 'false'
+      delete row.dataset.modified
       commit.dataset.enabled = 'false'
       rollback.dataset.enabled = 'false'
     }

@@ -2,10 +2,9 @@
 
 ### IN PROGRESS
 
-
 - [ ] Card holders
-      - 'hover' style for groups/commit/rollback
-      - commit/rollback
+      - rollback
+      - commit
       - card number
       - from
       - to

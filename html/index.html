@@ -51,17 +51,17 @@
               <th>{{.Name}}</th>{{end}}
             </tr>
           </thead>
-          <tbody>{{range $cid,$cardholder := .db.CardHolders}}
-             <tr id="R{{$cid}}">
+          <tbody>{{range $id,$cardholder := .db.CardHolders}}
+             <tr id="R{{$id}}">
               <td class="name">{{$cardholder.Name}}</td>
               <td class="buttons">
-                <span class="commit" id="C{{$cid}}.commit" onclick="onCommit(event)" data-enabled="false">&#9745;</span>
-                <span class="rollback" id="C{{$cid}}.rollback" onclick="onRollback(event)" data-enabled="false">&#9746;</span>
+                <span class="commit" id="C{{$id}}.commit" onclick="onCommit(event)" data-enabled="false">&#9745;</span>
+                <span class="rollback" id="C{{$id}}.rollback" onclick="onRollback(event)" data-enabled="false">&#9746;</span>
               </td>
               <td>{{$cardholder.CardNumber}}</td>
               <td>{{$cardholder.From.Format "2006-01-02"}}</td>
               <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$permission := $cardholder.Groups}}
-              <td class="group"><span id="G{{$cid}}.{{$gid}}" data-original="{{$permission}}" data-value="{{$permission}}" data-changed="false" onclick="onTick(event)">{{if $permission}}Y{{else}}N{{end}}</span></td>{{end}}
+              <td class="group"><span id="G{{$id}}.{{$gid}}" data-original="{{$permission}}" data-value="{{$permission}}" data-changed="false" onclick="onTick(event)">{{if $permission}}Y{{else}}N{{end}}</span></td>{{end}}
              </tr>{{end}}
           </tbody>
           <tfoot>
