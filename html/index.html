@@ -61,7 +61,7 @@
               <td>{{$cardholder.CardNumber}}</td>
               <td>{{$cardholder.From.Format "2006-01-02"}}</td>
               <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$permission := $cardholder.Groups}}
-              <td class="group"><span id="G{{$id}}.{{$gid}}" data-original="{{$permission}}" data-value="{{$permission}}" data-changed="false" onclick="onTick(event)">{{if $permission}}Y{{else}}N{{end}}</span></td>{{end}}
+              <td class="group"><span id="G{{$id}}.{{$gid}}" data-original="{{$permission}}" data-value="{{$permission}}" onclick="onTick(event)">{{if $permission}}Y{{else}}N{{end}}</span></td>{{end}}
              </tr>{{end}}
           </tbody>
           <tfoot>

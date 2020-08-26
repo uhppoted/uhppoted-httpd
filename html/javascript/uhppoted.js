@@ -96,12 +96,12 @@ export function resetIdle () {
 }
 
 export function onCommit (event) {
-  const re = /C(.*?)\.commit/
+  const re = /C(.+?)\.commit/
   const match = event.target.id.match(re)
 
   if (match.length === 2) {
-    const cid = match[1]
-    const row = document.getElementById('R' + cid)
+    const id = match[1]
+    const row = document.getElementById('R' + id)
 
     if (row && row.hasChildNodes) {
       console.log('commit', row.childNodes)
@@ -110,21 +110,44 @@ export function onCommit (event) {
 }
 
 export function onRollback (event) {
-  const re = /C(.*?)\.rollback/
+  const re = /C(.+?)\.rollback/
   const match = event.target.id.match(re)
 
   if (match.length === 2) {
-    const cid = match[1]
-    const row = document.getElementById('R' + cid)
+    const id = match[1]
+    const row = document.getElementById('R' + id)
+    const commit = document.getElementById('C' + id + '.commit')
+    const rollback = document.getElementById('C' + id + '.rollback')
 
-    if (row && row.hasChildNodes) {
-      console.log('rollback', row.childNodes)
+    if (row) {
+      const groups = row.querySelectorAll('.group span')
+      const re = new RegExp('^G' + id + '.(.+)$')
+
+      groups.forEach((group) => {
+        const match = group.id.match(re)
+
+        if (match.length === 2) {
+          group.dataset.value = group.dataset.original
+
+          if (group.dataset.value === 'true') {
+            group.innerText = 'Y'
+          } else {
+            group.innerText = 'N'
+          }
+
+          delete (group.dataset.modified)
+        }
+      })
+
+      delete (row.dataset.modified)
+      commit.dataset.enabled = 'false'
+      rollback.dataset.enabled = 'false'
     }
   }
 }
 
 export function onTick (event) {
-  const re = /G(.*?)\.(.*)/
+  const re = /G(.+?)\.(.+)/
   const match = event.target.id.match(re)
 
   if (match.length === 3) {
@@ -147,11 +170,11 @@ export function onTick (event) {
     }
 
     if (original !== granted) {
+      group.dataset.modified = 'true'
       modified += 1
-      group.dataset.changed = 'true'
     } else {
+      delete (group.dataset.modified)
       modified -= 1
-      group.dataset.changed = 'false'
     }
 
     if (modified > 0) {

@@ -91,10 +91,7 @@
   font-weight: 100;
 }
 
-.tabular td.group span[data-changed='false'] {
-}
-
-.tabular td.group span[data-changed='true'] {
+.tabular td.group span[data-modified] {
   border: 2px solid red;
   border-radius: 3px;
 }

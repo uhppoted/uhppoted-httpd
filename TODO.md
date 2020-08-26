@@ -3,7 +3,6 @@
 ### IN PROGRESS
 
 - [ ] Card holders
-      - rollback
       - commit
       - card number
       - from
