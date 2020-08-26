@@ -13,21 +13,18 @@ import (
 	"strings"
 	"time"
 
-	provider "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
 type HTTPD struct {
 	Dir                      string
-	AuthProvider             provider.IAuth
-	CookieMaxAge             int
+	AuthProvider             auth.IAuth
 	HTTPEnabled              bool
 	HTTPSEnabled             bool
 	CACertificate            string
 	TLSCertificate           string
 	TLSKey                   string
 	RequireClientCertificate bool
-	StaleTime                time.Duration
 }
 
 type dispatcher struct {
@@ -44,7 +41,7 @@ func (h *HTTPD) Run() {
 	d := dispatcher{
 		root: h.Dir,
 		fs:   http.FileServer(fs),
-		auth: auth.NewBasicAuthenticator(h.AuthProvider, h.CookieMaxAge, h.StaleTime),
+		auth: h.AuthProvider,
 	}
 
 	var srv *http.Server

@@ -6,8 +6,9 @@ import (
 	"log"
 
 	"github.com/uhppoted/uhppoted-api/config"
-	"github.com/uhppoted/uhppoted-httpd/auth"
+	provider "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
+	auth "github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
 func (cmd *Run) Name() string {
@@ -40,22 +41,30 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		log.Printf("%5s Could not load configuration (%v)", "WARN", err)
 	}
 
-	auth, err := auth.NewAuthProvider(conf.HTTPD.AuthDB, conf.HTTPD.LoginExpiry, conf.HTTPD.SessionExpiry)
-	if err != nil {
-		return err
+	var authentication auth.IAuth
+
+	switch conf.HTTPD.Security.Auth {
+	case "none":
+		authentication = auth.NewNoneAuthenticator()
+
+	default:
+		p, err := provider.NewAuthProvider(conf.HTTPD.Security.AuthDB, conf.HTTPD.Security.LoginExpiry, conf.HTTPD.Security.SessionExpiry)
+		if err != nil {
+			return err
+		}
+
+		authentication = auth.NewBasicAuthenticator(p, conf.HTTPD.Security.CookieMaxAge, conf.HTTPD.Security.StaleTime)
 	}
 
 	h := httpd.HTTPD{
 		Dir:                      "html",
-		AuthProvider:             auth,
-		CookieMaxAge:             conf.HTTPD.CookieMaxAge,
+		AuthProvider:             authentication,
 		HTTPEnabled:              conf.HTTPD.HttpEnabled,
 		HTTPSEnabled:             conf.HTTPD.HttpsEnabled,
 		CACertificate:            conf.HTTPD.CACertificate,
 		TLSCertificate:           conf.HTTPD.TLSCertificate,
 		TLSKey:                   conf.HTTPD.TLSKey,
 		RequireClientCertificate: conf.HTTPD.RequireClientCertificate,
-		StaleTime:                conf.HTTPD.StaleTime,
 	}
 
 	h.Run()

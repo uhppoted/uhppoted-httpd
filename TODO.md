@@ -2,8 +2,7 @@
 
 ### IN PROGRESS
 
-- [ ] Abstract authentication/authorization
-      - Implement 'no authentication'
+
 - [ ] Card holders
       - 'hover' style for groups/commit/rollback
       - commit/rollback
@@ -17,7 +16,6 @@
       - scroll vertically
       - freeze header rows and columns
       
-- [ ] Javascript modules
 - [ ] Login
       - login.css
       - include login cookie when redirecting to login.html to avoid the initial double click
@@ -45,6 +43,8 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
 
+- [x] Abstract authentication/authorization
+- [x] Javascript modules
 - [x] eslint
 - [x] Fix 'message' bar 
 - [x] Salt stored password hashes
