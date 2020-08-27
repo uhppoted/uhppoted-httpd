@@ -13,6 +13,8 @@
       - scroll horizontally
       - scroll vertically
       - freeze header rows and columns
+      - simultaneous editing (?) 
+        -- CRDT ??
       
 - [ ] Login
       - login.css

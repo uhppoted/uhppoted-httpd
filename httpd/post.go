@@ -20,7 +20,13 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	case "/logout":
 		d.logout(w, r)
 
+	case "/update":
+		d.update(w, r)
+
 	default:
 		http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
 	}
+}
+
+func (d *dispatcher) update(w http.ResponseWriter, r *http.Request) {
 }
