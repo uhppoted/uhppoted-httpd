@@ -46,9 +46,10 @@
   <!-- SCRIPTS -->
  
   <script type="module" src="./javascript/uhppoted.js"></script>
+  <script type="module" src="./javascript/login.js"></script>
 
   <script type="module">
-    import { postAsForm, warning } from './javascript/uhppoted.js'
+    import { showHidePassword, login } from "./javascript/login.js"
 
     window.showHidePassword = showHidePassword
     window.login = login
@@ -63,73 +64,6 @@
         }
       }
     })
-
-    function showHidePassword() {
-      let pwd = document.getElementById("pwd");
-      let eye = document.getElementById("eye");
-
-      if (pwd.type === 'password') {
-          pwd.type = 'text';
-          eye.src  = "images/eye-slash-solid.svg"
-       } else {
-          pwd.type = 'password';
-          eye.src  = "images/eye-solid.svg"
-       }
-    }
-
-    function login(event) {
-      event.preventDefault();
-
-      let credentials = { 
-        uid: document.getElementById('uid').value,
-        pwd: document.getElementById('pwd').value
-      }
-
-      document.getElementById('message').style.display = "none";
-
-      postAsForm('/authenticate', credentials)
-        .then(response => { 
-          console.log('response', response)
-          switch (response.status) {
-            case 200:
-              if (response.redirected) {
-                return response.url
-              } else {
-                return '/'
-              }
-              break;
-
-            case 401:
-              throw new Error('{{.Login.Unauthorized}}')
-            
-            default:
-              throw new Error(response.text())
-          }
-        })
-        .then(url => { 
-          console.log('redirecting', url)
-          window.location = url
-        })
-        .catch(function(err) { warning(err); });
-
-      // postAsJSON('/authenticate', credentials)
-      //   .then(response => { 
-      //         if (response.status == 200) {
-      //            if (response.redirected) {
-      //               window.location = response.url;
-      //            } else {
-      //               window.location = '/';                
-      //            }
-      //         } else {
-      //           return response.text()
-      //         }
-      //     })
-      //   .then(msg => { 
-      //         warning(msg);
-      //   })
-      //   .catch(function(err) { console.error(err) });
-    }
-
   </script>
 </html>
 
