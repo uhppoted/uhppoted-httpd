@@ -13,6 +13,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/db"
+	"github.com/uhppoted/uhppoted-httpd/db/memdb"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
@@ -30,6 +32,7 @@ type HTTPD struct {
 type dispatcher struct {
 	root string
 	fs   http.Handler
+	db   db.DB
 	auth auth.IAuth
 }
 
@@ -41,6 +44,7 @@ func (h *HTTPD) Run() {
 	d := dispatcher{
 		root: h.Dir,
 		fs:   http.FileServer(fs),
+		db:   memdb.NewDB(),
 		auth: h.AuthProvider,
 	}
 

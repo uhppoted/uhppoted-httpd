@@ -36,20 +36,22 @@ export function onCommit (event) {
               const item = row.querySelector('#' + k)
 
               if (item) {
-                item.dataset.original = v
-                item.dataset.value = v
-                item.innerHTML = v ? 'Y' : 'N'
+                // item.dataset.original = v
+                // item.dataset.value = v
+                item.innerHTML = '?'
                 delete (item.dataset.modified)
               }
             })
 
-            return 'ok'
+            return ''
           } else {
             return response.text()
           }
         })
         .then(msg => {
-          warning(msg)
+          if (msg !== '') {
+            warning(msg)
+          }
         })
         .catch(function (err) {
           console.log(err)

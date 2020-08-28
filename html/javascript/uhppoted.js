@@ -17,6 +17,8 @@ document.addEventListener('keypress', event => {
 })
 
 export async function postAsForm (url = '', data = {}) {
+  busy()
+
   const pairs = []
 
   for (const name in data) {
@@ -38,6 +40,8 @@ export async function postAsForm (url = '', data = {}) {
 }
 
 export async function postAsJSON (url = '', data = {}) {
+  busy()
+
   const response = await fetch(url, {
     method: 'POST',
     mode: 'cors',
@@ -52,13 +56,23 @@ export async function postAsJSON (url = '', data = {}) {
   return response
 }
 
+export function busy() {
+  const message = document.getElementById('warning')
+
+  if (message != null) {
+    message.innerText = 'msg'
+    message.classList.remove('warning')
+    message.parentElement.style.display = 'none'
+  }
+}
+
 export function warning (msg) {
-  const message = document.getElementById('message')
+  const message = document.getElementById('warning')
 
   if (message != null) {
     message.innerText = msg
     message.classList.add('warning')
-    message.style.display = 'block'
+    message.parentElement.style.display = 'block'
   } else {
     alert(msg)
   }

@@ -30,14 +30,14 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		context["User"] = d.user(r)
 		file := filepath.Clean(filepath.Join(d.root, path[1:]))
 
-		translate(file, context, w)
+		d.translate(file, context, w)
 		return
 	}
 
 	d.fs.ServeHTTP(w, r)
 }
 
-func translate(filename string, context map[string]interface{}, w http.ResponseWriter) {
+func (d *dispatcher) translate(filename string, context map[string]interface{}, w http.ResponseWriter) {
 	base := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
 	translation := filepath.Join("translations", "en", base+".json")
 
@@ -65,7 +65,7 @@ func translate(filename string, context map[string]interface{}, w http.ResponseW
 	}
 
 	page["context"] = context
-	page["db"] = NewDB()
+	page["db"] = d.db
 
 	var s strings.Builder
 

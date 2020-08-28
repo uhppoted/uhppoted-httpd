@@ -37,39 +37,43 @@
 
       <!-- MAIN -->
       <div id="main">
-        <table class="tabular">
-          <thead>
-            <tr>
-              <th rowspan="2" colspan="2">Name</th>
-              <th rowspan="2">Card Number</th>
-              <th colspan="2">Validity</th>
-              <th colspan="10">Groups</th>
-            </tr>
-            <tr>
-              <th>From</th>
-              <th>To</th>{{range .db.Groups}}
-              <th>{{.Name}}</th>{{end}}
-            </tr>
-          </thead>
-          <tbody>{{range $id,$cardholder := .db.CardHolders}}
-             <tr id="R{{$id}}">
-              <td class="name">{{$cardholder.Name}}</td>
-              <td class="buttons">
-                <span class="commit" id="C{{$id}}_commit" onclick="onCommit(event)" data-enabled="false">&#9745;</span>
-                <span class="rollback" id="C{{$id}}_rollback" onclick="onRollback(event)" data-enabled="false">&#9746;</span>
-              </td>
-              <td>{{$cardholder.CardNumber}}</td>
-              <td>{{$cardholder.From.Format "2006-01-02"}}</td>
-              <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$permission := $cardholder.Groups}}
-              <td class="group"><span id="G{{$id}}_{{$gid}}" data-original="{{$permission}}" data-value="{{$permission}}" onclick="onTick(event)">{{if $permission}}Y{{else}}N{{end}}</span></td>{{end}}
-             </tr>{{end}}
-          </tbody>
-          <tfoot>
-          </tfoot>
-        </table>
+        <div>
+          <div class="message"><p id="warning">asdfasd</p></div>
+          <table class="tabular">
+            <thead>
+              <tr>
+                <th rowspan="2" colspan="2">Name</th>
+                <th rowspan="2">Card Number</th>
+                <th colspan="2">Validity</th>
+                <th colspan="10">Groups</th>
+              </tr>
+              <tr>
+                <th>From</th>
+                <th>To</th>{{range .db.Groups}}
+                <th>{{.Name}}</th>{{end}}
+              </tr>
+            </thead>
+            <tbody>{{range $cardholder := .db.CardHolders}}
+               {{$cid := $cardholder.ID}}
+               <tr id="R{{$cid}}">
+                <td class="name">{{$cardholder.Name}}</td>
+                <td class="buttons">
+                  <span class="commit" id="C{{$cid}}_commit" onclick="onCommit(event)" data-enabled="false">&#9745;</span>
+                  <span class="rollback" id="C{{$cid}}_rollback" onclick="onRollback(event)" data-enabled="false">&#9746;</span>
+                </td>
+                <td>{{$cardholder.CardNumber}}</td>
+                <td>{{$cardholder.From.Format "2006-01-02"}}</td>
+                <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$permission := $cardholder.Groups}}
+                <td class="group"><span id="G{{$cid}}_{{$gid}}" data-original="{{$permission}}" data-value="{{$permission}}" onclick="onTick(event)  ">{{if $permission}}Y{{else}}N{{end}}</span></td>{{end}}
+               </tr>{{end}}
+            </tbody>
+            <tfoot>
+            </tfoot>
+          </table>
+        </div>
       </div>
     </div>
-    <div class="message"><p id="message"></p></div>
+    <div class="footer"><p>v0.0.0</p></div>
   </body>
 
   <!-- SCRIPTS -->

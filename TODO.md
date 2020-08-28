@@ -3,7 +3,13 @@
 ### IN PROGRESS
 
 - [ ] Card holders
+      - make warning message dismissable
       - commit
+        -- use field property for ID
+        -- return updated values
+        -- change dataset 'modified' to 'edited'
+        -- highlight unexpectedly modified values
+      - persist to file
       - card number
       - from
       - to
@@ -19,6 +25,7 @@
 - [ ] Login
       - login.css
       - include login cookie when redirecting to login.html to avoid the initial double click
+      - restyle avatar to have a border and be a bit floaty (i.e. not be glued to top-right)
 
 - [ ] Take a look at:
       - [Shoelace](https://shoelace.style)
@@ -27,6 +34,7 @@
       - [gridstack](https://gridstackjs.com)
       - [toptal](https://www.toptal.com/designers/ux/notification-design)
       - [Tabulator](http://tabulator.info)
+      - [Arwes](https://arwes.dev)
 
 - [ ] Fonts
 - [ ] favicon
@@ -35,7 +43,9 @@
 - [ ] User settings
       - automatic logout enabled/timeout
       - change password
-- [ ] Logo (https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible)
+- [ ] Logo 
+      - https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible
+      - https://jn3008.tumblr.com/post/618100274778783744
 - [ ] Lighthouse test (Chrome dev tools)
 - [ ] Hamburger menu (?)
 - [ ] Style SVG icons with SASS
