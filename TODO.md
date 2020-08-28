@@ -3,7 +3,6 @@
 ### IN PROGRESS
 
 - [ ] Card holders
-      - make warning message dismissable
       - commit
         -- use field property for ID
         -- return updated values

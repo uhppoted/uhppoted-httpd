@@ -16,8 +16,30 @@ document.addEventListener('keypress', event => {
   resetIdle(event)
 })
 
+export function warning (msg) {
+  const message = document.getElementById('message')
+  const text = document.getElementById('warning')
+
+  if (text != null) {
+    text.innerText = msg
+    message.style.display = 'block'
+  } else {
+    alert(msg)
+  }
+}
+
+export function dismiss () {
+  const message = document.getElementById('message')
+  const text = document.getElementById('warning')
+
+  if (text != null) {
+    text.innerText = 'msg'
+    message.style.display = 'none'
+  }
+}
+
 export async function postAsForm (url = '', data = {}) {
-  busy()
+  dismiss()
 
   const pairs = []
 
@@ -40,7 +62,7 @@ export async function postAsForm (url = '', data = {}) {
 }
 
 export async function postAsJSON (url = '', data = {}) {
-  busy()
+  dismiss()
 
   const response = await fetch(url, {
     method: 'POST',
@@ -54,28 +76,6 @@ export async function postAsJSON (url = '', data = {}) {
   })
 
   return response
-}
-
-export function busy() {
-  const message = document.getElementById('warning')
-
-  if (message != null) {
-    message.innerText = 'msg'
-    message.classList.remove('warning')
-    message.parentElement.style.display = 'none'
-  }
-}
-
-export function warning (msg) {
-  const message = document.getElementById('warning')
-
-  if (message != null) {
-    message.innerText = msg
-    message.classList.add('warning')
-    message.parentElement.style.display = 'block'
-  } else {
-    alert(msg)
-  }
 }
 
 export function onSignOut (event) {

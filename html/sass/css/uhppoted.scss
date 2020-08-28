@@ -206,23 +206,36 @@ form button {
   display: none;
   background-color: theme.$content-message-background;
   margin-bottom: 4px;
-  padding: 6px 32px 6px 32px;
+  padding: 4px 4px 4px 4px;
   text-align: center;
   font-size: 0.9em;
+  font-weight: normal;
+}
+
+.message div {  
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.message .warning {  
+  flex: auto;
 }
 
 .warning {
   color: theme.$warning-colour;
 }
 
-body #message { 
-  min-height: 1em;
-  text-align: center;
-  font-size: 1em;
-  font-weight: normal;
-  margin: 0px 16px 0px 16px;
-  padding: 8px 0px 8px 0px;
-} 
+.dismiss {  
+  flex: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  font-size: 1.5em;
+  cursor: pointer;
+}
 
 #login #message { 
   background-color: theme.$content-message-background;

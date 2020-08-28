@@ -38,7 +38,13 @@
       <!-- MAIN -->
       <div id="main">
         <div>
-          <div class="message"><p id="warning">asdfasd</p></div>
+          <div id="message" class="message">
+            <div>
+              <span class="warning" id="warning"></span>
+              <button class="dismiss" onclick="dismiss()">&#9746;</button>
+            </div>
+          </div>
+
           <table class="tabular">
             <thead>
               <tr>
@@ -82,9 +88,10 @@
   <script type="module" src="./javascript/cardholders.js"></script>
 
   <script type="module">
-    import { resetIdle, onSignOut } from "./javascript/uhppoted.js"
+    import { dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
     import { onCommit, onRollback, onTick } from "./javascript/cardholders.js"
 
+    window.dismiss = dismiss
     window.onSignOut = onSignOut
     window.onCommit = onCommit
     window.onRollback = onRollback
