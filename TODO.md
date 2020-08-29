@@ -4,9 +4,9 @@
 
 - [ ] Card holders
       - commit
-        -- wrap DB requests in goroutine with timeout
         -- use field property for ID
         -- return updated values
+        -- wrap post requests in goroutine with timeout
         -- change dataset 'modified' to 'edited'
         -- highlight unexpectedly modified values
       - wrap templating in a decent error handler

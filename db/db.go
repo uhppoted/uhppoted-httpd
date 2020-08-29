@@ -6,7 +6,7 @@ import (
 
 type DB interface {
 	Groups() []Group
-	CardHolders() []CardHolder
+	CardHolders() []*CardHolder
 	Update(map[string]interface{}) error
 }
 
@@ -24,5 +24,10 @@ type CardHolder struct {
 	CardNumber uint32
 	From       *time.Time
 	To         *time.Time
-	Groups     []bool
+	Groups     []*BoolVar
+}
+
+type BoolVar struct {
+	ID    string
+	Value bool
 }

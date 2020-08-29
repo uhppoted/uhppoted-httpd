@@ -14,7 +14,7 @@ export function onCommit (event) {
 
     if (row) {
       const groups = row.querySelectorAll('.group span')
-      const re = new RegExp('^G' + id + '_(.+)$')
+      const re = new RegExp('^C' + id + 'G(.+)$')
       const update = {}
 
       groups.forEach((group) => {
@@ -53,9 +53,7 @@ export function onCommit (event) {
             warning(msg)
           }
         })
-        .catch(function (err) {
-          console.log(err)
-        })
+        .catch(function (err) { console.log(err) })
     }
   }
 }
@@ -72,7 +70,7 @@ export function onRollback (event) {
 
     if (row) {
       const groups = row.querySelectorAll('.group span')
-      const re = new RegExp('^G' + id + '_(.+)$')
+      const re = new RegExp('^C' + id + 'G(.+)$')
 
       groups.forEach((group) => {
         const match = group.id.match(re)
@@ -98,7 +96,7 @@ export function onRollback (event) {
 }
 
 export function onTick (event) {
-  const re = /G(.+?)_(.+)/
+  const re = /C(.+?)G(.+)/
   const match = event.target.id.match(re)
 
   if (match.length === 3) {

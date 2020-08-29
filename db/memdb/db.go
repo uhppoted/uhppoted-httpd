@@ -13,7 +13,7 @@ import (
 type fdb struct {
 	sync.RWMutex
 	groups      []db.Group
-	cardHolders []db.CardHolder
+	cardHolders []*db.CardHolder
 }
 
 func today() *time.Time {
@@ -36,13 +36,22 @@ func NewDB() *fdb {
 		db.Group{ID: 10, Name: "Pet"},
 	}
 
-	cardholders := []db.CardHolder{
-		db.CardHolder{ID: 1, Name: "Albus Dumbledore", CardNumber: 1000101, From: today(), To: today(), Groups: make([]bool, len(groups))},
-		db.CardHolder{ID: 2, Name: "Tom Riddle", CardNumber: 2000101, From: today(), To: today(), Groups: make([]bool, len(groups))},
-		db.CardHolder{ID: 3, Name: "Harry Potter", CardNumber: 6000101, From: today(), To: today(), Groups: make([]bool, len(groups))},
+	cardholders := []*db.CardHolder{
+		&db.CardHolder{ID: 1, Name: "Albus Dumbledore", CardNumber: 1000101, From: today(), To: today(), Groups: []*db.BoolVar{}},
+		&db.CardHolder{ID: 2, Name: "Tom Riddle", CardNumber: 2000101, From: today(), To: today(), Groups: []*db.BoolVar{}},
+		&db.CardHolder{ID: 3, Name: "Harry Potter", CardNumber: 6000101, From: today(), To: today(), Groups: []*db.BoolVar{}},
 	}
 
-	cardholders[0].Groups[3] = true
+	for _, c := range cardholders {
+		for _, g := range groups {
+			c.Groups = append(c.Groups, &db.BoolVar{
+				ID:    fmt.Sprintf("C%vG%v", c.ID, g.ID),
+				Value: false,
+			})
+		}
+	}
+
+	cardholders[0].Groups[3].Value = true
 
 	return &fdb{
 		groups:      groups,
@@ -58,7 +67,7 @@ func (d *fdb) Groups() []db.Group {
 	return d.groups
 }
 
-func (d *fdb) CardHolders() []db.CardHolder {
+func (d *fdb) CardHolders() []*db.CardHolder {
 	d.RLock()
 
 	defer d.RUnlock()
@@ -67,26 +76,26 @@ func (d *fdb) CardHolders() []db.CardHolder {
 }
 
 func (d *fdb) Update(u map[string]interface{}) error {
-	if len(u) == 1 {
-		return fmt.Errorf("WTF?????")
-	}
+	//	if len(u) == 1 {
+	//		return fmt.Errorf("WTF?????")
+	//	}
 
 	d.Lock()
 
 	defer d.Unlock()
 
-	re := regexp.MustCompile("G([0-9]+)_([0-9]+)")
+	re := regexp.MustCompile("C([0-9]+)G([0-9]+)")
 	for k, v := range u {
 		if match := re.FindStringSubmatch(k); len(match) == 3 {
 			cid, _ := strconv.ParseUint(match[1], 10, 32)
-			gid, _ := strconv.ParseUint(match[2], 10, 32)
+			gid := k
 
 			if value, ok := v.(bool); ok {
 				for _, c := range d.cardHolders {
 					if c.ID == uint32(cid) {
-						for ix, _ := range c.Groups {
-							if uint32(ix) == uint32(gid) {
-								c.Groups[ix] = value
+						for _, g := range c.Groups {
+							if g.ID == gid {
+								g.Value = value
 							}
 						}
 					}
