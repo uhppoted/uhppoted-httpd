@@ -22,22 +22,22 @@ func today() *time.Time {
 
 func NewDB() *fdb {
 	groups := []db.Group{
-		db.Group{1, "Teacher"},
-		db.Group{2, "Staff"},
-		db.Group{3, "Student"},
-		db.Group{4, "Gryffindor"},
-		db.Group{5, "Hufflepuff"},
-		db.Group{6, "Ravenclaw"},
-		db.Group{7, "Slytherin"},
-		db.Group{8, "Mage"},
-		db.Group{9, "Muggle"},
-		db.Group{10, "Pet"},
+		db.Group{ID: 1, Name: "Teacher"},
+		db.Group{ID: 2, Name: "Staff"},
+		db.Group{ID: 3, Name: "Student"},
+		db.Group{ID: 4, Name: "Gryffindor"},
+		db.Group{ID: 5, Name: "Hufflepuff"},
+		db.Group{ID: 6, Name: "Ravenclaw"},
+		db.Group{ID: 7, Name: "Slytherin"},
+		db.Group{ID: 8, Name: "Mage"},
+		db.Group{ID: 9, Name: "Muggle"},
+		db.Group{ID: 10, Name: "Pet"},
 	}
 
 	cardholders := []db.CardHolder{
-		db.CardHolder{1, "Albus Dumbledore", 1000101, today(), today(), make([]bool, len(groups))},
-		db.CardHolder{2, "Tom Riddle", 2000101, today(), today(), make([]bool, len(groups))},
-		db.CardHolder{3, "Harry Potter", 6000101, today(), today(), make([]bool, len(groups))},
+		db.CardHolder{ID: 1, Name: "Albus Dumbledore", CardNumber: 1000101, From: today(), To: today(), Groups: make([]bool, len(groups))},
+		db.CardHolder{ID: 2, Name: "Tom Riddle", CardNumber: 2000101, From: today(), To: today(), Groups: make([]bool, len(groups))},
+		db.CardHolder{ID: 3, Name: "Harry Potter", CardNumber: 6000101, From: today(), To: today(), Groups: make([]bool, len(groups))},
 	}
 
 	cardholders[0].Groups[3] = true

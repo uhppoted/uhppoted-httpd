@@ -4,6 +4,7 @@
 
 - [ ] Card holders
       - commit
+        -- lock DB for updates
         -- use field property for ID
         -- return updated values
         -- change dataset 'modified' to 'edited'
@@ -19,6 +20,7 @@
       - scroll vertically
       - freeze header rows and columns
       - simultaneous editing (?) 
+        -- use hash of DB to identify changes
         -- CRDT ??
       
 - [ ] Login
