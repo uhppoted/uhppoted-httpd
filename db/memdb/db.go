@@ -4,14 +4,16 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/db"
 )
 
 type fdb struct {
-	Groups      []db.Group
-	CardHolders []db.CardHolder
+	sync.RWMutex
+	groups      []db.Group
+	cardHolders []db.CardHolder
 }
 
 func today() *time.Time {
@@ -43,15 +45,35 @@ func NewDB() *fdb {
 	cardholders[0].Groups[3] = true
 
 	return &fdb{
-		Groups:      groups,
-		CardHolders: cardholders,
+		groups:      groups,
+		cardHolders: cardholders,
 	}
+}
+
+func (d *fdb) Groups() []db.Group {
+	d.RLock()
+
+	defer d.RUnlock()
+
+	return d.groups
+}
+
+func (d *fdb) CardHolders() []db.CardHolder {
+	d.RLock()
+
+	defer d.RUnlock()
+
+	return d.cardHolders
 }
 
 func (d *fdb) Update(u map[string]interface{}) error {
 	if len(u) == 1 {
 		return fmt.Errorf("WTF?????")
 	}
+
+	d.Lock()
+
+	defer d.Unlock()
 
 	re := regexp.MustCompile("G([0-9]+)_([0-9]+)")
 	for k, v := range u {
@@ -60,7 +82,7 @@ func (d *fdb) Update(u map[string]interface{}) error {
 			gid, _ := strconv.ParseUint(match[2], 10, 32)
 
 			if value, ok := v.(bool); ok {
-				for _, c := range d.CardHolders {
+				for _, c := range d.cardHolders {
 					if c.ID == uint32(cid) {
 						for ix, _ := range c.Groups {
 							if uint32(ix) == uint32(gid) {

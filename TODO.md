@@ -4,12 +4,13 @@
 
 - [ ] Card holders
       - commit
-        -- lock DB for updates
+        -- wrap DB requests in goroutine with timeout
         -- use field property for ID
         -- return updated values
         -- change dataset 'modified' to 'edited'
         -- highlight unexpectedly modified values
-      - persist to file
+      - wrap templating in a decent error handler
+      - persist DB to file
       - card number
       - from
       - to

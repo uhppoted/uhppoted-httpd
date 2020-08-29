@@ -5,6 +5,8 @@ import (
 )
 
 type DB interface {
+	Groups() []Group
+	CardHolders() []CardHolder
 	Update(map[string]interface{}) error
 }
 
