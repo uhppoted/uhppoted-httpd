@@ -4,9 +4,8 @@
 
 - [ ] Card holders
       - commit
-        -- use field property for ID
         -- return updated values
-        -- wrap post requests in goroutine with timeout
+        -- timeout on post requests
         -- change dataset 'modified' to 'edited'
         -- highlight unexpectedly modified values
       - wrap templating in a decent error handler
@@ -54,6 +53,7 @@
 - [ ] Structure CSS somehow :-(
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
+      - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
 - [x] Abstract authentication/authorization
 - [x] Javascript modules

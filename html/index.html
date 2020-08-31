@@ -61,16 +61,16 @@
             </thead>
             <tbody>{{range $cardholder := .db.CardHolders}}
                {{$cid := $cardholder.ID}}
-               <tr id="R{{$cid}}">
+               <tr id="{{$cid}}">
                 <td class="name">{{$cardholder.Name}}</td>
                 <td class="buttons">
-                  <span class="commit" id="C{{$cid}}_commit" onclick="onCommit(event)" data-enabled="false">&#9745;</span>
-                  <span class="rollback" id="C{{$cid}}_rollback" onclick="onRollback(event)" data-enabled="false">&#9746;</span>
+                  <span class="commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
+                  <span class="rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
                 </td>
                 <td>{{$cardholder.CardNumber}}</td>
                 <td>{{$cardholder.From.Format "2006-01-02"}}</td>
                 <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$member := $cardholder.Groups}}
-                <td class="group"><span id="{{$member.ID}}" data-original="{{$member.Value}}" data-value="{{$member.Value}}" onclick="onTick(event)  ">{{if $member.Value}}Y{{else}}N{{end}}</span></td>{{end}}
+                <td class="group"><span id="{{$member.ID}}" data-record="{{$cid}}" data-original="{{$member.Value}}" data-value="{{$member.Value}}" onclick="onTick(event)">{{if $member.Value}}Y{{else}}N{{end}}</span></td>{{end}}
                </tr>{{end}}
             </tbody>
             <tfoot>

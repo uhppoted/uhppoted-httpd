@@ -14,12 +14,12 @@ type ID interface {
 }
 
 type Group struct {
-	ID   uint32
+	ID   string
 	Name string
 }
 
 type CardHolder struct {
-	ID         uint32
+	ID         string
 	Name       string
 	CardNumber uint32
 	From       *time.Time
