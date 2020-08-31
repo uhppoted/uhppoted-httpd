@@ -42,8 +42,7 @@ func (d *dispatcher) update(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	switch contentType {
-	case "application/json":
+	if contentType == "application/json" {
 		blob, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			warn(err)
@@ -59,11 +58,20 @@ func (d *dispatcher) update(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if err := d.db.Update(body); err != nil {
+		updated, err := d.db.Update(body)
+		if err != nil {
 			warn(err)
 			http.Error(w, "Error updating data", http.StatusInternalServerError)
 			return
 		}
-	}
 
+		b, err := json.Marshal(updated)
+		if err != nil {
+			http.Error(w, "Error generating response", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(b)
+	}
 }

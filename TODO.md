@@ -4,11 +4,11 @@
 
 - [ ] Card holders
       - commit
-        -- return updated values
+        -- highlight unexpectedly modified/unmodified values
         -- timeout on post requests
         -- change dataset 'modified' to 'edited'
-        -- highlight unexpectedly modified values
       - wrap templating in a decent error handler
+      - gzip response
       - persist DB to file
       - card number
       - from

@@ -43,7 +43,7 @@ func NewDB() *fdb {
 	for _, c := range cardholders {
 		for _, g := range groups {
 			c.Groups = append(c.Groups, &db.BoolVar{
-				ID:    fmt.Sprintf("%vG%v", c.ID, g.ID),
+				ID:    fmt.Sprintf("%v%v", c.ID, g.ID),
 				Value: false,
 			})
 		}
@@ -73,10 +73,12 @@ func (d *fdb) CardHolders() []*db.CardHolder {
 	return d.cardHolders
 }
 
-func (d *fdb) Update(u map[string]interface{}) error {
+func (d *fdb) Update(u map[string]interface{}) (map[string]interface{}, error) {
 	d.Lock()
 
 	defer d.Unlock()
+
+	updated := map[string]interface{}{}
 
 	for k, v := range u {
 		gid := k
@@ -86,11 +88,12 @@ func (d *fdb) Update(u map[string]interface{}) error {
 				for _, g := range c.Groups {
 					if g.ID == gid {
 						g.Value = value
+						updated[gid] = g.Value
 					}
 				}
 			}
 		}
 	}
 
-	return nil
+	return updated, nil
 }
