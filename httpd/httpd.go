@@ -27,13 +27,15 @@ type HTTPD struct {
 	TLSCertificate           string
 	TLSKey                   string
 	RequireClientCertificate bool
+	RequestTimeout           time.Duration
 }
 
 type dispatcher struct {
-	root string
-	fs   http.Handler
-	db   db.DB
-	auth auth.IAuth
+	root    string
+	fs      http.Handler
+	db      db.DB
+	auth    auth.IAuth
+	timeout time.Duration
 }
 
 func (h *HTTPD) Run() {
@@ -42,10 +44,11 @@ func (h *HTTPD) Run() {
 	}
 
 	d := dispatcher{
-		root: h.Dir,
-		fs:   http.FileServer(fs),
-		db:   memdb.NewDB(),
-		auth: h.AuthProvider,
+		root:    h.Dir,
+		fs:      http.FileServer(fs),
+		db:      memdb.NewDB(),
+		auth:    h.AuthProvider,
+		timeout: h.RequestTimeout,
 	}
 
 	var srv *http.Server

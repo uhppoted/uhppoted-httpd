@@ -4,7 +4,8 @@
 
 - [ ] Card holders
       - commit
-        -- timeout on post requests
+        -- windmill while updating
+        -- extend windmill for queued updates
       - wrap templating in a decent error handler
       - gzip response
       - persist DB to file

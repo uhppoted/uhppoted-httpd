@@ -65,6 +65,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		TLSCertificate:           conf.HTTPD.TLSCertificate,
 		TLSKey:                   conf.HTTPD.TLSKey,
 		RequireClientCertificate: conf.HTTPD.RequireClientCertificate,
+		RequestTimeout:           conf.HTTPD.RequestTimeout,
 	}
 
 	h.Run()

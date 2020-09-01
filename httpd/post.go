@@ -1,6 +1,7 @@
 package httpd
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -58,17 +59,35 @@ func (d *dispatcher) update(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		updated, err := d.db.Update(body)
-		if err != nil {
-			warn(err)
-			http.Error(w, "Error updating data", http.StatusInternalServerError)
-			return
-		}
+		ctx, cancel := context.WithTimeout(context.Background(), d.timeout)
 
-		response := struct {
-			DB interface{} `json:"db"`
-		}{
-			DB: updated,
+		defer cancel()
+
+		var response interface{}
+
+		go func() {
+			updated, err := d.db.Update(body)
+			if err != nil {
+				warn(err)
+				http.Error(w, "Error updating data", http.StatusInternalServerError)
+				return
+			}
+
+			response = struct {
+				DB interface{} `json:"db"`
+			}{
+				DB: updated,
+			}
+
+			cancel()
+		}()
+
+		<-ctx.Done()
+
+		if err := ctx.Err(); err != context.Canceled {
+			warn(err)
+			http.Error(w, "Timeout waiting for confirmation from system", http.StatusInternalServerError)
+			return
 		}
 
 		b, err := json.Marshal(response)
