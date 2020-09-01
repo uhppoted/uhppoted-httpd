@@ -95,5 +95,7 @@ func (d *fdb) Update(u map[string]interface{}) (map[string]interface{}, error) {
 		}
 	}
 
+	updated["C03G09"] = true
+
 	return updated, nil
 }

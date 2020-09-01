@@ -6,7 +6,6 @@
       - commit
         -- highlight unexpectedly modified/unmodified values
         -- timeout on post requests
-        -- change dataset 'modified' to 'edited'
       - wrap templating in a decent error handler
       - gzip response
       - persist DB to file

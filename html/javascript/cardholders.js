@@ -5,8 +5,6 @@ export function onCommit (event) {
 
   const id = event.target.dataset.record
   const row = document.getElementById(id)
-  const commit = document.getElementById(id + '_commit')
-  const rollback = document.getElementById(id + '_rollback')
 
   if (row) {
     const update = {}
@@ -23,11 +21,8 @@ export function onCommit (event) {
         switch (response.status) {
           case 200:
             response.json().then(object => {
+              delete (row.dataset.edited)
               updated(object)
-
-              delete (row.dataset.modified)
-              commit.dataset.enabled = 'false'
-              rollback.dataset.enabled = 'false'
             })
             break
 
@@ -46,8 +41,6 @@ export function onCommit (event) {
 export function onRollback (event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
-  const commit = document.getElementById(id + '_commit')
-  const rollback = document.getElementById(id + '_rollback')
 
   if (row) {
     const groups = row.querySelectorAll('.group span')
@@ -61,26 +54,22 @@ export function onRollback (event) {
           group.innerText = 'N'
         }
 
-        delete (group.dataset.modified)
+        delete (group.dataset.edited)
       }
     })
 
-    delete (row.dataset.modified)
-    commit.dataset.enabled = 'false'
-    rollback.dataset.enabled = 'false'
+    delete (row.dataset.edited)
   }
 }
 
 export function onTick (event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
-  const commit = document.getElementById(id + '_commit')
-  const rollback = document.getElementById(id + '_rollback')
   const group = document.getElementById(event.target.id)
   const original = group.dataset.original === 'true'
   const value = group.dataset.value === 'true'
   const granted = !value
-  let modified = (row.dataset.modified && parseInt(row.dataset.modified)) | 0
+  let edited = (row.dataset.edited && parseInt(row.dataset.edited)) | 0
 
   if (granted) {
     group.dataset.value = 'true'
@@ -91,21 +80,17 @@ export function onTick (event) {
   }
 
   if (original !== granted) {
-    group.dataset.modified = 'true'
-    modified += 1
+    group.dataset.edited = 'true'
+    edited += 1
   } else {
-    delete (group.dataset.modified)
-    modified -= 1
+    delete (group.dataset.edited)
+    edited -= 1
   }
 
-  if (modified > 0) {
-    row.dataset.modified = modified.toString()
-    commit.dataset.enabled = 'true'
-    rollback.dataset.enabled = 'true'
+  if (edited > 0) {
+    row.dataset.edited = edited.toString()
   } else {
-    delete row.dataset.modified
-    commit.dataset.enabled = 'false'
-    rollback.dataset.enabled = 'false'
+    delete row.dataset.edited
   }
 }
 
@@ -118,7 +103,7 @@ function updated (list) {
       item.dataset.value = v
       item.innerHTML = v ? 'Y' : 'N'
 
-      delete (item.dataset.modified)
+      delete (item.dataset.edited)
     }
   }
 }

@@ -14,8 +14,8 @@
   background: theme.$content-table-background-even;
 }
 
-.tabular tbody tr[data-modified] {
-  background: theme.$content-table-background-modified;
+.tabular tbody tr[data-edited] {
+  background: theme.$content-table-background-edited;
 }
 
 .tabular th {
@@ -57,16 +57,16 @@
   cursor: pointer;
 }
 
-.tabular td.buttons span[data-enabled='true'] {
-  visibility: visible;
-}
-
 .tabular td.buttons span.commit {
   color: theme.$content-table-commit;  
 }
 
 .tabular td.buttons span.rollback {
   color: theme.$content-table-rollback;  
+}
+
+.tabular tbody tr[data-edited] td.buttons span {
+  visibility: visible;
 }
 
 .tabular td.group{
@@ -91,7 +91,7 @@
   font-weight: 100;
 }
 
-.tabular td.group span[data-modified] {
+.tabular td.group span[data-edited] {
   border: 2px solid red;
   border-radius: 3px;
 }
