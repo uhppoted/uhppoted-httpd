@@ -65,7 +65,13 @@ func (d *dispatcher) update(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		b, err := json.Marshal(updated)
+		response := struct {
+			DB interface{} `json:"db"`
+		}{
+			DB: updated,
+		}
+
+		b, err := json.Marshal(response)
 		if err != nil {
 			http.Error(w, "Error generating response", http.StatusInternalServerError)
 			return

@@ -22,7 +22,7 @@ export function onCommit (event) {
           case 200:
             response.json().then(object => {
               delete (row.dataset.edited)
-              updated(object)
+              updated(object.db.updated)
             })
             break
 
@@ -99,6 +99,12 @@ function updated (list) {
     const item = document.getElementById(k)
 
     if (item) {
+      if (item.dataset.value !== v.toString()) {
+        item.dataset.modified = 'true'
+      } else {
+        delete (item.dataset.modified)
+      }
+
       item.dataset.original = v
       item.dataset.value = v
       item.innerHTML = v ? 'Y' : 'N'

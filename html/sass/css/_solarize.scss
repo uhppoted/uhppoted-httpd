@@ -18,16 +18,17 @@ $solarize-green:   #859900;
 $content-background: $solarize-base3;
 $content-message-background: $solarize-base2;
 
-$content-table-background:        $solarize-base2;
-$content-table-background-odd:    $solarize-base3;
-$content-table-background-even:   $solarize-base2;
-$content-table-background-edited: lighten($solarize-yellow, 50%);
-$content-table-border:            $solarize-blue;
-$content-table-yes:               $solarize-base02;
-$content-table-no:                $solarize-base0;
-$content-table-changed:           $solarize-red;
-$content-table-commit:            $solarize-green;
-$content-table-rollback:          $solarize-red;
+$content-table-background:          $solarize-base2;
+$content-table-background-odd:      $solarize-base3;
+$content-table-background-even:     $solarize-base2;
+$content-table-background-edited:   lighten($solarize-yellow, 50%);
+$content-table-background-modified: transparentize($solarize-orange, 0.75);
+$content-table-border:              $solarize-blue;
+$content-table-yes:                 $solarize-base02;
+$content-table-no:                  $solarize-base0;
+$content-table-changed:             $solarize-red;
+$content-table-commit:              $solarize-green;
+$content-table-rollback:            $solarize-red;
 
 $controls-background:          $solarize-base2;
 $controls-menu-background:     $solarize-base2;

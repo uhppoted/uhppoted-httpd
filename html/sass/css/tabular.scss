@@ -96,3 +96,7 @@
   border-radius: 3px;
 }
 
+.tabular td.group span[data-modified='true'] {
+  border-radius: 3px;
+  background-color: theme.$content-table-background-modified;
+}

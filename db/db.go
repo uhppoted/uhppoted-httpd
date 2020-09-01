@@ -7,7 +7,7 @@ import (
 type DB interface {
 	Groups() []Group
 	CardHolders() []*CardHolder
-	Update(map[string]interface{}) (map[string]interface{}, error)
+	Update(map[string]interface{}) (interface{}, error)
 }
 
 type ID interface {

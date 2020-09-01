@@ -4,7 +4,6 @@
 
 - [ ] Card holders
       - commit
-        -- highlight unexpectedly modified/unmodified values
         -- timeout on post requests
       - wrap templating in a decent error handler
       - gzip response
@@ -20,6 +19,7 @@
       - freeze header rows and columns
       - simultaneous editing (?) 
         -- use hash of DB to identify changes
+        -- refresh button to remove 'modified' markers
         -- CRDT ??
       
 - [ ] Login
