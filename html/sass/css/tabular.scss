@@ -40,16 +40,13 @@
   border-right: 0;
 }
 
-.tabular td.buttons {
+.tabular td.controls {
   border-left: 0;
   border-right: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 0.2rem;
-  padding-right: 0.2rem;
+  padding: 0 0.2rem 0 0.2rem;
 }
 
-.tabular td.buttons span {
+.tabular td.controls span {
   padding: 0px 0px 0px 0px;
   font-size: 1.5rem;  
   font-weight: bold;
@@ -57,15 +54,23 @@
   cursor: pointer;
 }
 
-.tabular td.buttons span.commit {
+.tabular td.controls span.commit {
   color: theme.$content-table-commit;  
 }
 
-.tabular td.buttons span.rollback {
+.tabular td.controls span.rollback {
   color: theme.$content-table-rollback;  
 }
 
-.tabular tbody tr[data-edited] td.buttons span {
+.tabular tbody tr[data-edited] td.controls span.commit {
+  visibility: visible;
+}
+
+.tabular tbody tr[data-edited] td.controls span.rollback {
+  visibility: visible;
+}
+
+.tabular tbody tr[data-edited] td.controls span.windmill {
   visibility: visible;
 }
 
@@ -100,3 +105,4 @@
   border-radius: 3px;
   background-color: theme.$content-table-background-modified;
 }
+

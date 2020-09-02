@@ -22,17 +22,20 @@
       
       <!-- DASHBOARD -->
       <div id="dashboard">
-        {{if ne .context.User ""}}
-        <div id="user">
-          <div id="avatar">
-          <p>{{.context.User}}</p>
-          <img id="avatar" src="images/user-cog-solid.svg" />
+        <div id="stuff">
+          <span class="windmill" id="windmill" ></span>
+          {{if ne .context.User ""}}
+          <div id="user">
+            <div id="avatar">
+            <p>{{.context.User}}</p>
+            <img id="avatar" src="images/user-cog-solid.svg" />
+            </div>
+            <div class="menu">
+              <a href="#" onclick="onSignOut(event)">Sign out</a>
+            </div>
           </div>
-          <div class="menu">
-            <a href="#" onclick="onSignOut(event)">Sign out</a>
-          </div>
+          {{end}}
         </div>
-        {{end}}
       </div>
 
       <!-- MAIN -->
@@ -63,7 +66,7 @@
                {{$cid := $cardholder.ID}}
                <tr id="{{$cid}}">
                 <td class="name">{{$cardholder.Name}}</td>
-                <td class="buttons">
+                <td class="controls">
                   <span class="commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
                   <span class="rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
                 </td>

@@ -5,7 +5,7 @@
 - [ ] Card holders
       - commit
         -- windmill while updating
-        -- extend windmill for queued updates
+        -- hide window after all updates are done
       - wrap templating in a decent error handler
       - gzip response
       - persist DB to file

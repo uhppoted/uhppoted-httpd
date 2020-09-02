@@ -38,6 +38,40 @@ body {
   grid-column: 2/4;
 }
 
+#dashboard #stuff {
+  float: right;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;    
+  align-items: center;
+  padding: 0;
+}
+
+.windmill {
+  position: relative;
+  display: none;
+  margin-left: 12px;
+  margin-right: 32px;
+}
+
+.windmill:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  border-radius: 50%;
+  border-top: 2px solid theme.$dashboard-windmill;
+  border-right: 2px solid transparent;
+  animation: windmill 0.6s linear infinite;
+}
+
+@keyframes windmill {
+  to {transform: rotate(360deg);}
+}
+ 
 #dashboard #user {
   background: theme.$controls-background;
   float: right;
@@ -247,89 +281,3 @@ form button {
   border: solid 1px theme.$warning-colour;
   border-radius: 4px;
 } 
-
-.tabs {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: none;
-}
-
-.tabs > input {
-  position: absolute;
-  left: -9999px;
-}
-
-.tabs label {
-  position: relative;
-  display: inline-block;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: none;
-  cursor: pointer;
-}
-
-.tabs > label {   
-  background: theme.$tab-background;
-  font-size: 0.9em;
-  padding: 8px 16px 8px 16px;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-}
-
-.tabs > label:hover {
-  background: #f2f2f2;
-}
-
-.tabs > input:checked + label {
-  cursor: default;
-  background: theme.$tab-background-selected;
-}
-
-.tabs > ul {
-  background: #fff;
-  text-align: left;
-}
-
-.tabs-steps > label:hover {
-  background: #e5e5e5;    
-}
-
-.tabs > ul {
-  list-style: none;
-  position: relative;
-  display: block;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: none;
-}
-
-.tabs > ul,
-.tabs > ul > li {
-  height: 370px;
-}
-
-.tabs > ul > li {
-  opacity: 0;
-  position: absolute;
-  width: 100%;
-  overflow: auto;
-  padding: 30px 40px 40px;
-  box-sizing: border-box;
-  transition: all 0.5s;
-}
-
-.tabs > .tab-content-first:checked ~ ul .tab-content-first,
-.tabs > .tab-content-2:checked     ~ ul .tab-content-2,
-.tabs > .tab-content-3:checked     ~ ul .tab-content-3,
-.tabs > .tab-content-last:checked ~ ul .tab-content-last {
-    z-index: 1;
-    top: 0;
-    left: 0;
-    opacity: 1;
-}
-
-

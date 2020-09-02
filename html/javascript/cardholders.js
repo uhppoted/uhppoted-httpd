@@ -9,6 +9,7 @@ export function onCommit (event) {
   if (row) {
     const update = {}
     const groups = row.querySelectorAll('.group span')
+    const windmill = document.getElementById('windmill')
 
     groups.forEach((group) => {
       if ((group.dataset.record === id) && (group.dataset.value !== group.dataset.original)) {
@@ -16,12 +17,20 @@ export function onCommit (event) {
       }
     })
 
+    delete (row.dataset.edited)
+
+    windmill.style.display = 'block'
+    windmill.style.visibility = 'visible'
+
     postAsJSON('/update', update)
       .then(response => {
+
+        windmill.style.display = 'none'
+        windmill.style.visibility = 'hidden'
+
         switch (response.status) {
           case 200:
             response.json().then(object => {
-              delete (row.dataset.edited)
               updated(object.db.updated)
             })
             break
