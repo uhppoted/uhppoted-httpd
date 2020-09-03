@@ -10,6 +10,7 @@ export function onCommit (event) {
     const update = {}
     const groups = row.querySelectorAll('.group span')
     const windmill = document.getElementById('windmill')
+    const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
 
     groups.forEach((group) => {
       if ((group.dataset.record === id) && (group.dataset.value !== group.dataset.original)) {
@@ -19,14 +20,16 @@ export function onCommit (event) {
 
     delete (row.dataset.edited)
 
-    windmill.style.display = 'block'
-    windmill.style.visibility = 'visible'
+    windmill.dataset.count = (queued + 1).toString()
 
     postAsJSON('/update', update)
       .then(response => {
-
-        windmill.style.display = 'none'
-        windmill.style.visibility = 'hidden'
+        const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+        if (queued > 1) {
+          windmill.dataset.count = (queued - 1).toString()
+        } else {
+          delete (windmill.dataset.count)
+        }
 
         switch (response.status) {
           case 200:

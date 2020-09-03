@@ -4,8 +4,8 @@
 
 - [ ] Card holders
       - commit
-        -- windmill while updating
-        -- hide window after all updates are done
+        -- display 'possibly uncommitted values'
+        -- (?) refresh on error to get current state (?)
       - wrap templating in a decent error handler
       - gzip response
       - persist DB to file
