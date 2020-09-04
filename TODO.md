@@ -4,11 +4,11 @@
 
 - [ ] Card holders
       - commit
-        -- display 'possibly uncommitted values'
         -- (?) refresh on error to get current state (?)
       - wrap templating in a decent error handler
       - gzip response
       - persist DB to file
+      - update card lists
       - card number
       - from
       - to

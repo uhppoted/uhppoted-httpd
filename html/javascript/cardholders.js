@@ -13,8 +13,11 @@ export function onCommit (event) {
     const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
 
     groups.forEach((group) => {
+      delete (group.dataset.edited)
+
       if ((group.dataset.record === id) && (group.dataset.value !== group.dataset.original)) {
         update[group.id] = group.dataset.value === 'true'
+        group.dataset.pending = 'true'
       }
     })
 
@@ -30,6 +33,10 @@ export function onCommit (event) {
         } else {
           delete (windmill.dataset.count)
         }
+
+        groups.forEach((group) => {
+          delete (group.dataset.pending)
+        })
 
         switch (response.status) {
           case 200:

@@ -22,6 +22,7 @@ $content-table-background:          $solarize-base2;
 $content-table-background-odd:      $solarize-base3;
 $content-table-background-even:     $solarize-base2;
 $content-table-background-edited:   lighten($solarize-yellow, 50%);
+$content-table-background-pending:  transparentize($solarize-violet, 0.5);
 $content-table-background-modified: transparentize($solarize-orange, 0.75);
 $content-table-border:              $solarize-blue;
 $content-table-yes:                 $solarize-base02;
