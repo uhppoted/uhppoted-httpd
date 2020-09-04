@@ -113,6 +113,9 @@ export function onTick (event) {
   }
 }
 
+export function onRefresh (event) {
+}
+
 function updated (list) {
   for (const [k, v] of Object.entries(list)) {
     const item = document.getElementById(k)

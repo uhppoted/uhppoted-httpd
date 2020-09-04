@@ -8,8 +8,9 @@
     <link rel="mask-icon"        href="images/favicon-mask.svg" color="#000000">
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
-    <link rel="stylesheet"       href="css/uhppoted.css" type="text/css">
-    <link rel="stylesheet"       href="css/tabular.css"  type="text/css">
+    <link rel="stylesheet"       href="css/uhppoted.css"  type="text/css">
+    <link rel="stylesheet"       href="css/dashboard.css" type="text/css">
+    <link rel="stylesheet"       href="css/tabular.css"   type="text/css">
   </head>
 
   <body> 
@@ -41,44 +42,49 @@
       <!-- MAIN -->
       <div id="main">
         <div>
-          <div id="message" class="message">
-            <div>
-              <span class="warning" id="warning"></span>
-              <button class="dismiss" onclick="dismiss()">&#9746;</button>
+          <div id="controls">
+            <div id="message" class="message">
+              <div>
+                <span class="warning" id="warning"></span>
+                <button class="dismiss" onclick="dismiss()">&#9746;</button>
+              </div>
             </div>
+            <img id="refresh" src="images/sync-alt-solid.svg" onclick="onRefresh()" />
           </div>
 
-          <table class="tabular">
-            <thead>
-              <tr>
-                <th rowspan="2" colspan="2">Name</th>
-                <th rowspan="2">Card Number</th>
-                <th colspan="2">Validity</th>
-                <th colspan="10">Groups</th>
-              </tr>
-              <tr>
-                <th>From</th>
-                <th>To</th>{{range .db.Groups}}
-                <th>{{.Name}}</th>{{end}}
-              </tr>
-            </thead>
-            <tbody>{{range $cardholder := .db.CardHolders}}
-               {{$cid := $cardholder.ID}}
-               <tr id="{{$cid}}">
-                <td class="name">{{$cardholder.Name}}</td>
-                <td class="controls">
-                  <span class="commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
-                  <span class="rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
-                </td>
-                <td>{{$cardholder.CardNumber}}</td>
-                <td>{{$cardholder.From.Format "2006-01-02"}}</td>
-                <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$member := $cardholder.Groups}}
-                <td class="group"><span id="{{$member.ID}}" data-record="{{$cid}}" data-original="{{$member.Value}}" data-value="{{$member.Value}}" onclick="onTick(event)">{{if $member.Value}}Y{{else}}N{{end}}</span></td>{{end}}
-               </tr>{{end}}
-            </tbody>
-            <tfoot>
-            </tfoot>
-          </table>
+          <div id="table">
+            <table class="tabular">
+              <thead>
+                <tr>
+                  <th rowspan="2" colspan="2">Name</th>
+                  <th rowspan="2">Card Number</th>
+                  <th colspan="2">Validity</th>
+                  <th colspan="10">Groups</th>
+                </tr>
+                <tr>
+                  <th>From</th>
+                  <th>To</th>{{range .db.Groups}}
+                  <th>{{.Name}}</th>{{end}}
+                </tr>
+              </thead>
+              <tbody>{{range $cardholder := .db.CardHolders}}
+                 {{$cid := $cardholder.ID}}
+                 <tr id="{{$cid}}">
+                  <td class="name">{{$cardholder.Name}}</td>
+                  <td class="controls">
+                    <span class="commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
+                    <span class="rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
+                  </td>
+                  <td>{{$cardholder.CardNumber}}</td>
+                  <td>{{$cardholder.From.Format "2006-01-02"}}</td>
+                  <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$member := $cardholder.Groups}}
+                  <td class="group"><span id="{{$member.ID}}" data-record="{{$cid}}" data-original="{{$member.Value}}" data-value="{{$member.Value}}" onclick="onTick(event)">{{if $member.Value}}Y{{else}}N{{end}}</span></td>{{end}}
+                </tr>{{end}}
+              </tbody>
+              <tfoot>
+              </tfoot>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -92,13 +98,14 @@
 
   <script type="module">
     import { dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
-    import { onCommit, onRollback, onTick } from "./javascript/cardholders.js"
+    import { onCommit, onRollback, onTick, onRefresh } from "./javascript/cardholders.js"
 
     window.dismiss = dismiss
     window.onSignOut = onSignOut
     window.onCommit = onCommit
     window.onRollback = onRollback
     window.onTick = onTick
+    window.onRefresh = onRefresh
 
     resetIdle();
   </script>

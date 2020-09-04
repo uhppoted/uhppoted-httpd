@@ -2,9 +2,9 @@
 
 ### IN PROGRESS
 
+- [ ] Fix 'login unauthorized'
 - [ ] Card holders
-      - commit
-        -- (?) refresh on error to get current state (?)
+      - refresh
       - wrap templating in a decent error handler
       - gzip response
       - persist DB to file
