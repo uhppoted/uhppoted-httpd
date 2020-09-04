@@ -12,7 +12,6 @@ export function login (event) {
 
   postAsForm('/authenticate', credentials)
     .then(response => {
-      console.log('response', response)
       switch (response.status) {
         case 200:
           if (response.redirected) {
@@ -29,10 +28,11 @@ export function login (event) {
       }
     })
     .then(url => {
-      console.log('redirecting', url)
       window.location = url
     })
-    .catch(function (err) { warning(err) })
+    .catch(function (err) {
+      warning(err)
+    })
 }
 
 export function showHidePassword () {

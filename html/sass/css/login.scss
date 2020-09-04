@@ -1,0 +1,109 @@
+@use 'solarize' as theme;
+
+#login {
+  display: block;
+  border: 1px solid silver;
+  margin-top: 64px;
+  padding: 8px;    
+  border-radius: 4px;
+}
+
+#login form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    
+  align-items: center;
+  padding-top: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+#login legend {
+  font-size: 0.9em;  
+  font-style: italic;
+}
+
+.field {
+  box-sizing: content-box;
+  width: 100%;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border: theme.$field-border;
+  border-radius: 4px;
+}
+
+.field > input {
+  font-size: 0.8em;  
+  padding-left: 12px;
+  padding-right: 12px;
+  border: none;
+  outline: none;
+}
+
+.field > img {
+  display: inline-block;
+  width: 16px;
+  height: 100%;
+  padding-left: 8px;
+  padding-right: 8px;
+  vertical-align: middle;
+}
+
+.field > input::placeholder {
+  font-style: italic;
+}
+
+form button {
+  font-size: 0.75em;
+  min-width: 96px;  
+  margin-top: 8px;
+  padding: 4px 16px 4px 16px;
+  border: theme.$button-border;
+  border-radius: 4px;
+}
+
+#unauthorized {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    
+  align-items: center;
+
+  border: 1px solid theme.$warning-colour;;
+  margin-top: 64px;
+  padding: 12px 32px 12px 32px;    
+  border-radius: 4px;
+}
+
+#unauthorized p {
+  color: theme.$warning-colour;
+  font-size: 1.0em;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+#unauthorized a {
+  color: theme.$link-colour;
+  font-size: 0.9em;
+  font-weight: normal;
+  font-style: italic;
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 2px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+#login #message { 
+  background-color: theme.$content-message-background;
+  display: none;
+  font-size: 0.8em;
+  font-weight: normal;
+  margin: 8px 8px 0px 8px;
+  padding: 4px 0px 4px 0px;
+  border: solid 1px theme.$warning-colour;
+  border-radius: 4px;
+} 

@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
+	"mime"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -25,11 +27,12 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if strings.HasSuffix(path, ".html") {
+	if strings.HasSuffix(path, ".html") || strings.HasSuffix(path, ".js") {
 		context := map[string]interface{}{}
 		context["User"] = d.user(r)
 		file := filepath.Clean(filepath.Join(d.root, path[1:]))
 
+		w.Header().Set("Content-Type", mime.TypeByExtension(filepath.Ext(path)))
 		d.translate(file, context, w)
 		return
 	}
@@ -40,12 +43,32 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 func (d *dispatcher) translate(filename string, context map[string]interface{}, w http.ResponseWriter) {
 	base := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
 	translation := filepath.Join("translations", "en", base+".json")
+	page := map[string]interface{}{}
 
-	html, err := ioutil.ReadFile(translation)
-	if err != nil {
-		warn(fmt.Errorf("Error reading translation '%s' (%w)", translation, err))
-		http.Error(w, "Page Not Found", http.StatusNotFound)
+	page["context"] = context
+	page["db"] = d.db
+
+	info, err := os.Stat(translation)
+	if err != nil && !os.IsNotExist(err) {
+		warn(fmt.Errorf("Error locating translation '%s' (%w)", translation, err))
+		http.Error(w, "Sadly, Most Of The Wheels All Came Off", http.StatusInternalServerError)
 		return
+	}
+
+	if err == nil && !info.IsDir() {
+		replacements, err := ioutil.ReadFile(translation)
+		if err != nil {
+			warn(fmt.Errorf("Error reading translation '%s' (%w)", translation, err))
+			http.Error(w, "Page Not Found", http.StatusNotFound)
+			return
+		}
+
+		err = json.Unmarshal(replacements, &page)
+		if err != nil {
+			warn(fmt.Errorf("Error unmarshalling translation '%s' (%w)", translation, err))
+			http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	t, err := template.ParseFiles(filename)
@@ -55,25 +78,9 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 		return
 	}
 
-	page := map[string]interface{}{}
-
-	err = json.Unmarshal(html, &page)
-	if err != nil {
-		warn(fmt.Errorf("Error unmarshalling translation '%s' (%w)", translation, err))
-		http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
-		return
-	}
-
-	page["context"] = context
-	page["db"] = d.db
-
-	var s strings.Builder
-
-	if err := t.Execute(&s, &page); err != nil {
+	if err := t.Execute(w, &page); err != nil {
 		warn(fmt.Errorf("Error formatting page '%s' (%w)", filename, err))
 		http.Error(w, "Error formatting page", http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Fprintf(w, "%s", s.String())
 }

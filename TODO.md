@@ -2,7 +2,6 @@
 
 ### IN PROGRESS
 
-- [ ] Fix 'login unauthorized'
 - [ ] Card holders
       - refresh
       - wrap templating in a decent error handler
@@ -55,6 +54,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Fix 'login unauthorized'
 - [x] Abstract authentication/authorization
 - [x] Javascript modules
 - [x] eslint

@@ -1,0 +1,94 @@
+@use 'solarize' as theme;
+
+#dashboard {
+  grid-column: 2/4;
+}
+
+#dashboard #stuff {
+  float: right;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;    
+  align-items: center;
+  padding: 0;
+}
+
+.windmill {
+  position: relative;
+  display: none;
+  visibility: hidden;
+  margin-left: 12px;
+  margin-right: 32px;
+}
+
+.windmill:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  border-radius: 50%;
+  border-top: 2px solid theme.$dashboard-windmill;
+  border-right: 2px solid transparent;
+  animation: windmill 0.6s linear infinite;
+}
+
+.windmill[data-count] {
+  display: block;
+  visibility: visible;
+}
+
+@keyframes windmill {
+  to {transform: rotate(360deg);}
+}
+ 
+#dashboard #user {
+  background: theme.$controls-background;
+  float: right;
+  padding: 2px 0px 2px 0px;
+}
+
+#avatar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;    
+  align-items: center;
+  padding-right: 8px;
+}
+
+#dashboard #user p {
+  font-size: 0.9em;  
+  padding-left: 8px;
+  padding-right: 12px;
+}
+
+#dashboard #user img {
+  width: 32px;
+  height: 32px;
+}
+
+#user .menu {
+  background-color: theme.$controls-menu-background;
+  display: none;
+  z-index: 1;
+}
+
+#user:hover .menu {
+  display: block;
+}
+
+.menu a {
+  color: theme.$controls-menu-item;
+  font-size: 0.9em;  
+  text-decoration: none;
+  display: block;
+  padding: 3px 12px 3px 4px;
+  text-align: right;
+}
+
+.menu a:hover {
+  color: theme.$controls-menu-item-highlight;
+  background-color: theme.$controls-menu-item-highlight-background;
+}

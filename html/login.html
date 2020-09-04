@@ -33,12 +33,14 @@
               <input id="uid" name="uid" type="text" size="28" placeholder="{{.Login.UserID.Hint}}"  required value="admin" />
             </div>
             <div class="field">
-              <input id="pwd" name="pwd" type="password" size="28" placeholder="{{.Login.Password.Hint}}" required value="uhppoted" />
+              <input id="pwd" name="pwd" type="password" size="28" placeholder="{{.Login.Password.Hint}}" required value="uhppotex" />
               <img id="eye" src="images/eye-solid.svg" onclick="showHidePassword()"/>
             </div>
             <button action="submit">{{.Login.Ok.Label}}</button>
           </form>
-          <div id="message"></div>
+          <div id="message" class="message">
+            <span class="warning" id="warning"></span>
+          </div>
         </fieldset>
       </div>
     </div>
