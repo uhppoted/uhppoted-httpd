@@ -10,6 +10,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/uhppoted/uhppoted-httpd/httpd/cardholders"
 )
 
 func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
@@ -24,6 +26,12 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !d.authorized(w, r, path) {
+		return
+	}
+
+	switch path {
+	case "/cardholders":
+		cardholders.Fetch(d.db, w, r, d.timeout)
 		return
 	}
 

@@ -6,7 +6,7 @@ import (
 
 type DB interface {
 	Groups() []Group
-	CardHolders() []*CardHolder
+	CardHolders() ([]*CardHolder, error)
 	Update(map[string]interface{}) (interface{}, error)
 }
 

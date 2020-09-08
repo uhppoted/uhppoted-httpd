@@ -65,12 +65,12 @@ func (d *fdb) Groups() []db.Group {
 	return d.groups
 }
 
-func (d *fdb) CardHolders() []*db.CardHolder {
+func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 	d.RLock()
 
 	defer d.RUnlock()
 
-	return d.cardHolders
+	return d.cardHolders, nil
 }
 
 func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {

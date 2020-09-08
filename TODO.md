@@ -3,11 +3,9 @@
 ### IN PROGRESS
 
 - [ ] Card holders
-      - refresh
       - wrap templating in a decent error handler
       - gzip response
       - persist DB to file
-      - update card lists
       - card number
       - from
       - to
@@ -19,7 +17,6 @@
       - freeze header rows and columns
       - simultaneous editing (?) 
         -- use hash of DB to identify changes
-        -- refresh button to remove 'modified' markers
         -- CRDT ??
       
 - [ ] Login
@@ -35,6 +32,7 @@
       - [toptal](https://www.toptal.com/designers/ux/notification-design)
       - [Tabulator](http://tabulator.info)
       - [Arwes](https://arwes.dev)
+      - https://blog.datawrapper.de/beautifulcolors/
 
 - [ ] Fonts
 - [ ] favicon

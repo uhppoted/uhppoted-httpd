@@ -1,8 +1,6 @@
-import { postAsJSON, warning } from './uhppoted.js'
+import { getAsJSON, postAsJSON, warning } from './uhppoted.js'
 
 export function onCommit (event) {
-  event.preventDefault()
-
   const id = event.target.dataset.record
   const row = document.getElementById(id)
 
@@ -25,7 +23,7 @@ export function onCommit (event) {
 
     windmill.dataset.count = (queued + 1).toString()
 
-    postAsJSON('/update', update)
+    postAsJSON('/cardholders', update)
       .then(response => {
         const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
         if (queued > 1) {
@@ -114,6 +112,36 @@ export function onTick (event) {
 }
 
 export function onRefresh (event) {
+  const windmill = document.getElementById('windmill')
+  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+
+  windmill.dataset.count = (queued + 1).toString()
+
+  getAsJSON('/cardholders')
+    .then(response => {
+      const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+      if (queued > 1) {
+        windmill.dataset.count = (queued - 1).toString()
+      } else {
+        delete (windmill.dataset.count)
+      }
+
+      switch (response.status) {
+        case 200:
+          response.json().then(object => {
+            refresh(object.db)
+          })
+          break
+
+        default:
+          response.text().then(message => {
+            warning(message)
+          })
+      }
+    })
+    .catch(function (err) {
+      console.log(err)
+    })
 }
 
 function updated (list) {
@@ -134,4 +162,30 @@ function updated (list) {
       delete (item.dataset.edited)
     }
   }
+}
+
+function refresh (db) {
+  const records = db.cardholders
+
+  records.forEach((record) => {
+    const row = document.getElementById(record.ID)
+
+    if (row) {
+      delete (row.dataset.edited)
+    }
+
+    record.Groups.forEach((group) => {
+      const v = group.Value
+      const g = document.getElementById(group.ID)
+
+      if (g) {
+        g.dataset.original = v
+        g.dataset.value = v
+        g.innerHTML = v ? 'Y' : 'N'
+
+        delete (g.dataset.modified)
+        delete (g.dataset.edited)
+      }
+    })
+  })
 }
