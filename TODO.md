@@ -3,9 +3,13 @@
 ### IN PROGRESS
 
 - [ ] Card holders
-      - wrap templating in a decent error handler
-      - gzip response
       - persist DB to file
+        - rollback on persist error
+        - error updating DB should revert displayed values
+        - restore from file
+      - wrap templating in a decent error handler
+      - translate to ACL
+      - gzip response
       - card number
       - from
       - to
@@ -15,6 +19,8 @@
       - scroll horizontally
       - scroll vertically
       - freeze header rows and columns
+      - filter columns
+      - apply to all columns
       - simultaneous editing (?) 
         -- use hash of DB to identify changes
         -- CRDT ??

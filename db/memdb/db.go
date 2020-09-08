@@ -1,7 +1,11 @@
 package memdb
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -10,8 +14,17 @@ import (
 
 type fdb struct {
 	sync.RWMutex
-	groups      []db.Group
-	cardHolders []*db.CardHolder
+	file string
+	data data
+}
+
+type data struct {
+	Tables tables `json:"tables"`
+}
+
+type tables struct {
+	Groups      []db.Group       `json:"groups"`
+	CardHolders []*db.CardHolder `json:"cardholders"`
 }
 
 func today() *time.Time {
@@ -52,8 +65,13 @@ func NewDB() *fdb {
 	cardholders[0].Groups[3].Value = true
 
 	return &fdb{
-		groups:      groups,
-		cardHolders: cardholders,
+		file: "/usr/local/var/com.github.uhppoted/httpd/memdb/db.json",
+		data: data{
+			Tables: tables{
+				Groups:      groups,
+				CardHolders: cardholders,
+			},
+		},
 	}
 }
 
@@ -62,7 +80,7 @@ func (d *fdb) Groups() []db.Group {
 
 	defer d.RUnlock()
 
-	return d.groups
+	return d.data.Tables.Groups
 }
 
 func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
@@ -70,7 +88,7 @@ func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 
 	defer d.RUnlock()
 
-	return d.cardHolders, nil
+	return d.data.Tables.CardHolders, nil
 }
 
 func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
@@ -88,7 +106,7 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 		gid := k
 
 		if value, ok := v.(bool); ok {
-			for _, c := range d.cardHolders {
+			for _, c := range d.data.Tables.CardHolders {
 				for _, g := range c.Groups {
 					if g.ID == gid {
 						g.Value = value
@@ -99,7 +117,37 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 		}
 	}
 
-	updated.Updated["C03G10"] = true
+	if err := d.save(); err != nil {
+		return updated, err
+	}
 
 	return updated, nil
+}
+
+func (d *fdb) save() error {
+	b, err := json.Marshal(d.data)
+	if err != nil {
+		return err
+	}
+
+	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-*.db")
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(b); err != nil {
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(d.file), 0770); err != nil {
+		return err
+	}
+
+	return os.Rename(tmp.Name(), d.file)
 }

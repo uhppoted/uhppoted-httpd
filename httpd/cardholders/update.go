@@ -42,9 +42,9 @@ func Update(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durat
 
 		defer cancel()
 
-		var response interface{}
-
 		go func() {
+			defer cancel()
+
 			updated, err := db.Update(body)
 			if err != nil {
 				warn(err)
@@ -52,13 +52,21 @@ func Update(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durat
 				return
 			}
 
-			response = struct {
+			response := struct {
 				DB interface{} `json:"db"`
 			}{
 				DB: updated,
 			}
 
-			cancel()
+			b, err := json.Marshal(response)
+			if err != nil {
+				warn(err)
+				http.Error(w, "Error generating response", http.StatusInternalServerError)
+				return
+			}
+
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(b)
 		}()
 
 		<-ctx.Done()
@@ -68,14 +76,5 @@ func Update(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durat
 			http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 			return
 		}
-
-		b, err := json.Marshal(response)
-		if err != nil {
-			http.Error(w, "Error generating response", http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(b)
 	}
 }
