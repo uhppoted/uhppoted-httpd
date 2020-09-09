@@ -43,10 +43,15 @@ func (h *HTTPD) Run() {
 		FileSystem: http.Dir(h.Dir),
 	}
 
+	db, err := memdb.NewDB()
+	if err != nil {
+		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
+	}
+
 	d := dispatcher{
 		root:    h.Dir,
 		fs:      http.FileServer(fs),
-		db:      memdb.NewDB(),
+		db:      db,
 		auth:    h.AuthProvider,
 		timeout: h.RequestTimeout,
 	}

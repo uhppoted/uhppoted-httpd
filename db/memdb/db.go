@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
-	"time"
+	//	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/db"
 )
@@ -45,53 +45,22 @@ func (d *data) copy() *data {
 	return &shadow
 }
 
-func NewDB() *fdb {
-	groups := []*db.Group{
-		&db.Group{ID: "G01", Name: "Teacher"},
-		&db.Group{ID: "G02", Name: "Staff"},
-		&db.Group{ID: "G03", Name: "Student"},
-		&db.Group{ID: "G04", Name: "Gryffindor"},
-		&db.Group{ID: "G05", Name: "Hufflepuff"},
-		&db.Group{ID: "G06", Name: "Ravenclaw"},
-		&db.Group{ID: "G07", Name: "Slytherin"},
-		&db.Group{ID: "G08", Name: "Mage"},
-		&db.Group{ID: "G09", Name: "Muggle"},
-		&db.Group{ID: "G10", Name: "Pet"},
-	}
-
-	cardholders := []*db.CardHolder{
-		&db.CardHolder{
-			ID:         "C01",
-			Name:       "Albus Dumbledore",
-			CardNumber: 1000101,
-			From:       time.Now(),
-			To:         time.Now(),
-			Groups: []*db.BoolVar{
-				&db.BoolVar{ID: "C01G01", Value: false},
-				&db.BoolVar{ID: "C01G02", Value: false},
-				&db.BoolVar{ID: "C01G03", Value: false},
-				&db.BoolVar{ID: "C01G04", Value: true},
-				&db.BoolVar{ID: "C01G05", Value: false},
-				&db.BoolVar{ID: "C01G06", Value: false},
-				&db.BoolVar{ID: "C01G07", Value: false},
-				&db.BoolVar{ID: "C01G08", Value: false},
-				&db.BoolVar{ID: "C01G09", Value: false},
-				&db.BoolVar{ID: "C01G10", Value: false},
-			},
-		},
-		//		&db.CardHolder{ID: "C02", Name: "Tom Riddle", CardNumber: 2000101, From: today(), To: today(), Groups: []*db.BoolVar{}},
-		//		&db.CardHolder{ID: "C03", Name: "Harry Potter", CardNumber: 6000101, From: today(), To: today(), Groups: []*db.BoolVar{}},
-	}
-
-	return &fdb{
-		file: "/usr/local/var/com.github.uhppoted/httpd/memdb/db.json",
+func NewDB() (*fdb, error) {
+	f := fdb{
+		file: "/usr/local/var/com.github.uhppoted/httpd/memdb/dbx.json",
 		data: data{
 			Tables: tables{
-				Groups:      groups,
-				CardHolders: cardholders,
+				Groups:      []*db.Group{},
+				CardHolders: []*db.CardHolder{},
 			},
 		},
 	}
+
+	if err := load(&f.data, f.file); err != nil {
+		return nil, err
+	}
+
+	return &f, nil
 }
 
 func (d *fdb) Groups() []*db.Group {
@@ -173,4 +142,17 @@ func save(data interface{}, file string) error {
 	}
 
 	return os.Rename(tmp.Name(), file)
+}
+
+func load(data interface{}, file string) error {
+	b, err := ioutil.ReadFile(file)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+
+		return err
+	}
+
+	return json.Unmarshal(b, data)
 }

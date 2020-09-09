@@ -56,15 +56,15 @@
             <table class="tabular">
               <thead>
                 <tr>
-                  <th rowspan="2" colspan="2">Name</th>
-                  <th rowspan="2">Card Number</th>
-                  <th colspan="2">Validity</th>
-                  <th colspan="10">Groups</th>
+                  <th class="name" rowspan="2" colspan="2">Name</th>
+                  <th class="cardnumber" rowspan="2">Card Number</th>
+                  <th class="validity" colspan="2">Validity</th>
+                  <th class="groups" colspan="10">Groups</th>
                 </tr>
                 <tr>
-                  <th>From</th>
-                  <th>To</th>{{range .db.Groups}}
-                  <th>{{.Name}}</th>{{end}}
+                  <th class="from">From</th>
+                  <th class="to">To</th>{{range .db.Groups}}
+                  <th>{{.Name}}</th>{{else}}<th/>{{end}}
                 </tr>
               </thead>
               <tbody>{{range $cardholder := .db.CardHolders}}
@@ -79,7 +79,7 @@
                   <td>{{$cardholder.From.Format "2006-01-02"}}</td>
                   <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$member := $cardholder.Groups}}
                   <td class="group"><span id="{{$member.ID}}" data-record="{{$cid}}" data-original="{{$member.Value}}" data-value="{{$member.Value}}" onclick="onTick(event)">{{if $member.Value}}Y{{else}}N{{end}}</span></td>{{end}}
-                </tr>{{end}}
+                </tr>{{else}}<tr class="empty"><td/><td/><td/><td/><td/><td/></tr>{{end}}
               </tbody>
               <tfoot>
               </tfoot>
