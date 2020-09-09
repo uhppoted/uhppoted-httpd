@@ -4,9 +4,9 @@
 
 - [ ] Card holders
       - persist DB to file
-        - rollback on persist error
-        - error updating DB should revert displayed values
         - restore from file
+        - error updating DB should revert displayed values
+        - set filepath in config
       - wrap templating in a decent error handler
       - translate to ACL
       - gzip response
