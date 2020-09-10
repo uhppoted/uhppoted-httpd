@@ -28,6 +28,9 @@ type HTTPD struct {
 	TLSKey                   string
 	RequireClientCertificate bool
 	RequestTimeout           time.Duration
+	DB                       struct {
+		File string
+	}
 }
 
 type dispatcher struct {
@@ -43,7 +46,7 @@ func (h *HTTPD) Run() {
 		FileSystem: http.Dir(h.Dir),
 	}
 
-	db, err := memdb.NewDB()
+	db, err := memdb.NewDB(h.DB.File)
 	if err != nil {
 		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
 	}

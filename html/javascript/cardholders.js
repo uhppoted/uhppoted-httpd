@@ -21,6 +21,18 @@ export function onCommit (event) {
 
     delete (row.dataset.edited)
 
+    const rollback = function () {
+      Object.entries(update).forEach(([k, v]) => {
+        const g = document.getElementById(k)
+
+        if (g) {
+          g.dataset.value = g.dataset.original
+          g.dataset.modified = 'true'
+          g.innerText = g.dataset.value === 'true' ? 'Y' : 'N'
+        }
+      })
+    }
+
     windmill.dataset.count = (queued + 1).toString()
 
     postAsJSON('/cardholders', update)
@@ -44,6 +56,7 @@ export function onCommit (event) {
             break
 
           default:
+            rollback()
             response.text().then(message => {
               warning(message)
             })
@@ -65,11 +78,7 @@ export function onRollback (event) {
     groups.forEach((group) => {
       if (group.dataset.record === id) {
         group.dataset.value = group.dataset.original
-        if (group.dataset.value === 'true') {
-          group.innerText = 'Y'
-        } else {
-          group.innerText = 'N'
-        }
+        group.innerText = group.dataset.value === 'true' ? 'Y' : 'N'
 
         delete (group.dataset.edited)
       }
@@ -88,13 +97,8 @@ export function onTick (event) {
   const granted = !value
   let edited = (row.dataset.edited && parseInt(row.dataset.edited)) | 0
 
-  if (granted) {
-    group.dataset.value = 'true'
-    group.innerText = 'Y'
-  } else {
-    group.dataset.value = 'false'
-    group.innerText = 'N'
-  }
+  group.dataset.value = granted ? 'true' : false
+  group.innerText = granted ? 'Y' : 'N'
 
   if (original !== granted) {
     group.dataset.edited = 'true'

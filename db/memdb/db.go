@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
-	//	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/db"
 )
@@ -22,7 +21,7 @@ type data struct {
 }
 
 type tables struct {
-	Groups      []*db.Group      `json:"-"`
+	Groups      []*db.Group      `json:"groups"`
 	CardHolders []*db.CardHolder `json:"cardholders"`
 }
 
@@ -45,9 +44,9 @@ func (d *data) copy() *data {
 	return &shadow
 }
 
-func NewDB() (*fdb, error) {
+func NewDB(file string) (*fdb, error) {
 	f := fdb{
-		file: "/usr/local/var/com.github.uhppoted/httpd/memdb/dbx.json",
+		file: file,
 		data: data{
 			Tables: tables{
 				Groups:      []*db.Group{},
@@ -108,7 +107,7 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 	}
 
 	if err := save(shadow, d.file); err != nil {
-		return list, err
+		return nil, err
 	}
 
 	d.data = *shadow

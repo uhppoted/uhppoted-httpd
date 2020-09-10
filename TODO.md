@@ -3,9 +3,8 @@
 ### IN PROGRESS
 
 - [ ] Card holders
-      - persist DB to file
-        - set filepath in config
-        - error updating DB should revert displayed values
+      - commit-all
+      - rollback-all
       - wrap templating in a decent error handler
       - translate to ACL
       - gzip response

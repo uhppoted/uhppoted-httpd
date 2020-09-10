@@ -66,6 +66,11 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		TLSKey:                   conf.HTTPD.TLSKey,
 		RequireClientCertificate: conf.HTTPD.RequireClientCertificate,
 		RequestTimeout:           conf.HTTPD.RequestTimeout,
+		DB: struct {
+			File string
+		}{
+			File: conf.HTTPD.DB.File,
+		},
 	}
 
 	h.Run()
