@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/db"
+	"github.com/uhppoted/uhppoted-httpd/sys"
 )
 
 func Update(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Duration) {
@@ -76,5 +77,13 @@ func Update(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durat
 			http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 			return
 		}
+
+		acl, err := db.ACL()
+		if err != nil {
+			warn(err)
+			return
+		}
+
+		system.Update(acl)
 	}
 }

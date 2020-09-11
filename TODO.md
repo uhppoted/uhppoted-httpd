@@ -2,11 +2,13 @@
 
 ### IN PROGRESS
 
+- [ ] ACL
 - [ ] Card holders
+      - translate to ACL
+      - wrap templating in a decent error handler
       - commit-all
       - rollback-all
-      - wrap templating in a decent error handler
-      - translate to ACL
+      - search & pin
       - gzip response
       - card number
       - from
@@ -55,6 +57,8 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
+
+- [ ] gitdb (?)
 
 - [x] Fix 'login unauthorized'
 - [x] Abstract authentication/authorization

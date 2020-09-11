@@ -2,12 +2,16 @@ package db
 
 import (
 	"time"
+
+	"github.com/uhppoted/uhppoted-httpd/acl"
 )
 
 type DB interface {
 	Groups() []*Group
 	CardHolders() ([]*CardHolder, error)
 	Update(map[string]interface{}) (interface{}, error)
+
+	ACL() (acl.ACL, error)
 }
 
 type ID interface {

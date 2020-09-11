@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/uhppoted/uhppoted-httpd/acl"
 	"github.com/uhppoted/uhppoted-httpd/db"
 )
 
@@ -23,6 +24,9 @@ type data struct {
 type tables struct {
 	Groups      []*db.Group      `json:"groups"`
 	CardHolders []*db.CardHolder `json:"cardholders"`
+}
+
+type permissions struct {
 }
 
 func (d *data) copy() *data {
@@ -42,6 +46,10 @@ func (d *data) copy() *data {
 	}
 
 	return &shadow
+}
+
+func (p *permissions) Permissions() map[uint32]acl.Permissions {
+	return map[uint32]acl.Permissions{}
 }
 
 func NewDB(file string) (*fdb, error) {
@@ -76,6 +84,14 @@ func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 	defer d.RUnlock()
 
 	return d.data.Tables.CardHolders, nil
+}
+
+func (d *fdb) ACL() (acl.ACL, error) {
+	d.RLock()
+
+	defer d.RUnlock()
+
+	return &permissions{}, nil
 }
 
 func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
