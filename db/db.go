@@ -18,8 +18,9 @@ type ID interface {
 }
 
 type Door struct {
-	ID   string
-	Name string
+	ID     string
+	DoorID string
+	Name   string
 }
 
 type Group struct {
@@ -45,8 +46,9 @@ type Permission struct {
 
 func (d *Door) Copy() *Door {
 	return &Door{
-		ID:   d.ID,
-		Name: d.Name,
+		ID:     d.ID,
+		DoorID: d.DoorID,
+		Name:   d.Name,
 	}
 }
 

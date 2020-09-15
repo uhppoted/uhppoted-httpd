@@ -3,8 +3,12 @@
 ### IN PROGRESS
 
 - [ ] ACL
+      - convert recordset to ACL
+
+- [ ] MemDB
+      - convert tables to maps
+
 - [ ] Card holders
-      - translate to ACL
       - wrap templating in a decent error handler
       - commit-all
       - rollback-all

@@ -102,7 +102,7 @@ func (d *fdb) ACL() ([]system.Permissions, error) {
 						for _, doorID := range group.Doors {
 							for _, door := range d.data.Tables.Doors {
 								if doorID == door.ID {
-									doors = append(doors, door.Name)
+									doors = append(doors, door.DoorID)
 								}
 							}
 						}
