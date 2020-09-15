@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/uhppoted/uhppoted-httpd/acl"
 	"github.com/uhppoted/uhppoted-httpd/db"
+	"github.com/uhppoted/uhppoted-httpd/sys"
 )
 
 type fdb struct {
@@ -22,19 +22,22 @@ type data struct {
 }
 
 type tables struct {
+	Doors       []*db.Door       `json:"doors"`
 	Groups      []*db.Group      `json:"groups"`
 	CardHolders []*db.CardHolder `json:"cardholders"`
-}
-
-type permissions struct {
 }
 
 func (d *data) copy() *data {
 	shadow := data{
 		Tables: tables{
+			Doors:       make([]*db.Door, len(d.Tables.Doors)),
 			Groups:      make([]*db.Group, len(d.Tables.Groups)),
 			CardHolders: make([]*db.CardHolder, len(d.Tables.CardHolders)),
 		},
+	}
+
+	for i, v := range d.Tables.Doors {
+		shadow.Tables.Doors[i] = v.Copy()
 	}
 
 	for i, v := range d.Tables.Groups {
@@ -46,10 +49,6 @@ func (d *data) copy() *data {
 	}
 
 	return &shadow
-}
-
-func (p *permissions) Permissions() map[uint32]acl.Permissions {
-	return map[uint32]acl.Permissions{}
 }
 
 func NewDB(file string) (*fdb, error) {
@@ -86,12 +85,41 @@ func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 	return d.data.Tables.CardHolders, nil
 }
 
-func (d *fdb) ACL() (acl.ACL, error) {
+func (d *fdb) ACL() ([]system.Permissions, error) {
 	d.RLock()
 
 	defer d.RUnlock()
 
-	return &permissions{}, nil
+	list := []system.Permissions{}
+
+	for _, c := range d.data.Tables.CardHolders {
+		doors := []string{}
+
+		for _, p := range c.Groups {
+			if p.Value {
+				for _, group := range d.data.Tables.Groups {
+					if p.GID == group.ID {
+						for _, doorID := range group.Doors {
+							for _, door := range d.data.Tables.Doors {
+								if doorID == door.ID {
+									doors = append(doors, door.Name)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		list = append(list, system.Permissions{
+			CardNumber: c.CardNumber,
+			From:       c.From,
+			To:         c.To,
+			Doors:      doors,
+		})
+	}
+
+	return list, nil
 }
 
 func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {

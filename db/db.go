@@ -3,7 +3,7 @@ package db
 import (
 	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/acl"
+	"github.com/uhppoted/uhppoted-httpd/sys"
 )
 
 type DB interface {
@@ -11,15 +11,21 @@ type DB interface {
 	CardHolders() ([]*CardHolder, error)
 	Update(map[string]interface{}) (interface{}, error)
 
-	ACL() (acl.ACL, error)
+	ACL() ([]system.Permissions, error)
 }
 
 type ID interface {
 }
 
-type Group struct {
+type Door struct {
 	ID   string
 	Name string
+}
+
+type Group struct {
+	ID    string
+	Name  string
+	Doors []string
 }
 
 type CardHolder struct {
@@ -28,19 +34,32 @@ type CardHolder struct {
 	CardNumber uint32
 	From       time.Time
 	To         time.Time
-	Groups     []*BoolVar
+	Groups     []*Permission
 }
 
-type BoolVar struct {
+type Permission struct {
 	ID    string
+	GID   string
 	Value bool
 }
 
-func (g *Group) Copy() *Group {
-	return &Group{
-		ID:   g.ID,
-		Name: g.Name,
+func (d *Door) Copy() *Door {
+	return &Door{
+		ID:   d.ID,
+		Name: d.Name,
 	}
+}
+
+func (g *Group) Copy() *Group {
+	replicant := Group{
+		ID:    g.ID,
+		Name:  g.Name,
+		Doors: make([]string, len(g.Doors)),
+	}
+
+	copy(replicant.Doors, g.Doors)
+
+	return &replicant
 }
 
 func (c *CardHolder) Copy() *CardHolder {
@@ -50,7 +69,7 @@ func (c *CardHolder) Copy() *CardHolder {
 		CardNumber: c.CardNumber,
 		From:       c.From.Add(10000000 * time.Second),
 		To:         c.To.Add(20000000 * time.Second),
-		Groups:     make([]*BoolVar, len(c.Groups)),
+		Groups:     make([]*Permission, len(c.Groups)),
 	}
 
 	for i, g := range c.Groups {
@@ -60,9 +79,10 @@ func (c *CardHolder) Copy() *CardHolder {
 	return replicant
 }
 
-func (b *BoolVar) Copy() *BoolVar {
-	return &BoolVar{
-		ID:    b.ID,
-		Value: b.Value,
+func (p *Permission) Copy() *Permission {
+	return &Permission{
+		ID:    p.ID,
+		GID:   p.GID,
+		Value: p.Value,
 	}
 }

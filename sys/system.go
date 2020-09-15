@@ -4,37 +4,42 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
-	api "github.com/uhppoted/uhppoted-api/acl"
-	acl "github.com/uhppoted/uhppoted-httpd/acl"
+	"github.com/uhppoted/uhppoted-api/acl"
 )
 
 type System interface {
-	Update(permissions acl.ACL)
+	Update(permissions []Permissions)
+}
+
+type Permissions struct {
+	CardNumber uint32
+	From       time.Time
+	To         time.Time
+	Doors      []string
 }
 
 var local = Local{}
 
-func Update(permissions acl.ACL) {
+func Update(permissions []Permissions) {
 	local.Update(permissions)
 }
 
-func permissionsToTable(p acl.ACL) (*api.Table, error) {
+func consolidate(list []Permissions) (*acl.Table, error) {
 	header := []string{"Card Number", "From", "To"}
 	records := [][]string{}
 	index := map[string]int{}
 
-	list := p.Permissions()
-
 	for _, q := range list {
 		fmt.Printf(">> PERMISSION %v", q)
-		if q.From == nil {
-			return nil, fmt.Errorf("Card %v: missing 'start-date'", q.CardNumber)
-		}
+		// if q.From == nil {
+		// 	return nil, fmt.Errorf("Card %v: missing 'start-date'", q.CardNumber)
+		// }
 
-		if q.To == nil {
-			return nil, fmt.Errorf("Card %v: missing 'end-date'", q.CardNumber)
-		}
+		// if q.To == nil {
+		// 	return nil, fmt.Errorf("Card %v: missing 'end-date'", q.CardNumber)
+		// }
 
 		for _, door := range q.Doors {
 			d := clean(door)
@@ -66,7 +71,7 @@ func permissionsToTable(p acl.ACL) (*api.Table, error) {
 	//     records = append(records, record)
 	// }
 
-	table := api.Table{
+	table := acl.Table{
 		Header:  header,
 		Records: records,
 	}
