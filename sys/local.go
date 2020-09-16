@@ -5,7 +5,8 @@ import (
 	"log"
 
 	"github.com/uhppoted/uhppote-core/uhppote"
-	"github.com/uhppoted/uhppoted-api/acl"
+	//	"github.com/uhppoted/uhppoted-api/acl"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Local struct {
@@ -14,33 +15,32 @@ type Local struct {
 	devices []*uhppote.Device
 }
 
-func (l *Local) Update(permissions []Permissions) {
+func (l *Local) Update(permissions []types.Permissions) {
 	log.Printf("Updating ACL")
 
-	fmt.Printf(">> PERMISSIONS\n%v\n", permissions)
-
-	table, err := consolidate(permissions)
+	acl, err := consolidate(permissions)
 	if err != nil {
 		warn(err)
 		return
-	}
-
-	fmt.Printf(">> TABLE\n%v\n", table)
-
-	list, _, err := acl.ParseTable(table, l.devices, true)
-	if err != nil {
-		warn(err)
+	} else if acl == nil {
+		warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
 		return
 	}
 
-	fmt.Printf(">> ACL\n%v\n", list)
-
-	rpt, err := acl.PutACL(&l.u, *list, false)
-	if err != nil {
-		warn(err)
-		return
+	fmt.Printf(">> >> ACL\n")
+	for k, v := range *acl {
+		fmt.Printf(">> >> %v\n", k)
+		for _, w := range v {
+			fmt.Printf("         %v\n", w)
+		}
 	}
+
+	//rpt, err := acl.PutACL(&l.u, *list, false)
+	//if err != nil {
+	//	warn(err)
+	//	return
+	//}
 
 	log.Printf("ACL updated")
-	log.Printf("%v", rpt)
+	//log.Printf("%v", rpt)
 }

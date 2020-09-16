@@ -30,7 +30,6 @@
         -- CRDT ??
       
 - [ ] Login
-      - login.css
       - include login cookie when redirecting to login.html to avoid the initial double click
       - restyle avatar to have a border and be a bit floaty (i.e. not be glued to top-right)
 
@@ -43,6 +42,7 @@
       - [Tabulator](http://tabulator.info)
       - [Arwes](https://arwes.dev)
       - https://blog.datawrapper.de/beautifulcolors/
+      - http://csszengarden.com/219
 
 - [ ] Fonts
 - [ ] favicon
@@ -61,8 +61,6 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
-
-- [ ] gitdb (?)
 
 - [x] Fix 'login unauthorized'
 - [x] Abstract authentication/authorization
@@ -87,6 +85,7 @@
 - [ ] [Gradient borders](https://css-tricks.com/gradient-borders-in-css/)
 - [ ] [JWK](https://tools.ietf.org/html/rfc7517)
 - [ ] Support alternative auth providers e.g. auth0
+- [ ] gitdb (?)
 
 ## NOTES
 

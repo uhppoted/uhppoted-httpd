@@ -1,9 +1,7 @@
 package db
 
 import (
-	"time"
-
-	"github.com/uhppoted/uhppoted-httpd/sys"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type DB interface {
@@ -11,16 +9,7 @@ type DB interface {
 	CardHolders() ([]*CardHolder, error)
 	Update(map[string]interface{}) (interface{}, error)
 
-	ACL() ([]system.Permissions, error)
-}
-
-type ID interface {
-}
-
-type Door struct {
-	ID     string
-	DoorID string
-	Name   string
+	ACL() ([]types.Permissions, error)
 }
 
 type Group struct {
@@ -33,8 +22,8 @@ type CardHolder struct {
 	ID         string
 	Name       string
 	CardNumber uint32
-	From       time.Time
-	To         time.Time
+	From       types.Date
+	To         types.Date
 	Groups     []*Permission
 }
 
@@ -42,14 +31,6 @@ type Permission struct {
 	ID    string
 	GID   string
 	Value bool
-}
-
-func (d *Door) Copy() *Door {
-	return &Door{
-		ID:     d.ID,
-		DoorID: d.DoorID,
-		Name:   d.Name,
-	}
 }
 
 func (g *Group) Copy() *Group {
@@ -69,8 +50,8 @@ func (c *CardHolder) Copy() *CardHolder {
 		ID:         c.ID,
 		Name:       c.Name,
 		CardNumber: c.CardNumber,
-		From:       c.From.Add(10000000 * time.Second),
-		To:         c.To.Add(20000000 * time.Second),
+		From:       c.From,
+		To:         c.To,
 		Groups:     make([]*Permission, len(c.Groups)),
 	}
 

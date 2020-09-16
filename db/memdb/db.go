@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/db"
-	"github.com/uhppoted/uhppoted-httpd/sys"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type fdb struct {
@@ -22,7 +22,6 @@ type data struct {
 }
 
 type tables struct {
-	Doors       []*db.Door       `json:"doors"`
 	Groups      []*db.Group      `json:"groups"`
 	CardHolders []*db.CardHolder `json:"cardholders"`
 }
@@ -30,14 +29,9 @@ type tables struct {
 func (d *data) copy() *data {
 	shadow := data{
 		Tables: tables{
-			Doors:       make([]*db.Door, len(d.Tables.Doors)),
 			Groups:      make([]*db.Group, len(d.Tables.Groups)),
 			CardHolders: make([]*db.CardHolder, len(d.Tables.CardHolders)),
 		},
-	}
-
-	for i, v := range d.Tables.Doors {
-		shadow.Tables.Doors[i] = v.Copy()
 	}
 
 	for i, v := range d.Tables.Groups {
@@ -85,12 +79,12 @@ func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 	return d.data.Tables.CardHolders, nil
 }
 
-func (d *fdb) ACL() ([]system.Permissions, error) {
+func (d *fdb) ACL() ([]types.Permissions, error) {
 	d.RLock()
 
 	defer d.RUnlock()
 
-	list := []system.Permissions{}
+	list := []types.Permissions{}
 
 	for _, c := range d.data.Tables.CardHolders {
 		doors := []string{}
@@ -99,19 +93,13 @@ func (d *fdb) ACL() ([]system.Permissions, error) {
 			if p.Value {
 				for _, group := range d.data.Tables.Groups {
 					if p.GID == group.ID {
-						for _, doorID := range group.Doors {
-							for _, door := range d.data.Tables.Doors {
-								if doorID == door.ID {
-									doors = append(doors, door.DoorID)
-								}
-							}
-						}
+						doors = append(doors, group.Doors...)
 					}
 				}
 			}
 		}
 
-		list = append(list, system.Permissions{
+		list = append(list, types.Permissions{
 			CardNumber: c.CardNumber,
 			From:       c.From,
 			To:         c.To,
