@@ -2,9 +2,11 @@ package system
 
 import (
 	"log"
+	"net"
 	"strings"
 
-	uhppote "github.com/uhppoted/uhppote-core/types"
+	core "github.com/uhppoted/uhppote-core/types"
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -67,7 +69,23 @@ var sys = System{
 	},
 }
 
-var local = Local{}
+var local = Local{
+	u: uhppote.UHPPOTE{
+		BindAddress:      resolve("192.168.1.100:0"),
+		BroadcastAddress: resolve("192.168.1.255:60000"),
+		ListenAddress:    resolve("192.168.1.100:60001"),
+		Devices:          map[uint32]*uhppote.Device{},
+		Debug:            false,
+	},
+
+	devices: []*uhppote.Device{},
+}
+
+func resolve(address string) *net.UDPAddr {
+	addr, _ := net.ResolveUDPAddr("udp", address)
+
+	return addr
+}
 
 func Update(permissions []types.Permissions) {
 	local.Update(permissions)
@@ -78,7 +96,7 @@ func consolidate(list []types.Permissions) (*acl.ACLN, error) {
 
 	for _, d := range sys.Doors {
 		if _, ok := acl[d.ControllerID]; !ok {
-			acl[d.ControllerID] = make(map[uint32]uhppote.CardN)
+			acl[d.ControllerID] = make(map[uint32]core.CardN)
 		}
 	}
 
@@ -86,10 +104,10 @@ func consolidate(list []types.Permissions) (*acl.ACLN, error) {
 		for k, l := range acl {
 			card, ok := l[p.CardNumber]
 			if !ok {
-				from := uhppote.Date(p.From)
-				to := uhppote.Date(p.To)
+				from := core.Date(p.From)
+				to := core.Date(p.To)
 
-				card = uhppote.CardN{
+				card = core.CardN{
 					CardNumber: p.CardNumber,
 					From:       &from,
 					To:         &to,

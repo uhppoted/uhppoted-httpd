@@ -9,6 +9,8 @@
       - convert tables to maps
 
 - [ ] Card holders
+      - audit trail
+      - virtual DOM
       - wrap templating in a decent error handler
       - commit-all
       - rollback-all
