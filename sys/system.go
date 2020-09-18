@@ -9,80 +9,19 @@ import (
 	"strings"
 
 	core "github.com/uhppoted/uhppote-core/types"
-	"github.com/uhppoted/uhppote-core/uhppote"
+	//	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type System struct {
 	Doors map[string]types.Door `json:"doors"`
+	Local []Local               `json:"local"`
 }
 
 var sys = System{
 	Doors: map[string]types.Door{},
-	//	Doors: map[string]types.Door{
-	//		"D11": types.Door{
-	//			ID:           "D11",
-	//			ControllerID: 405419896,
-	//			Door:         1,
-	//			Name:         "Great Hall",
-	//		},
-	//		"D12": types.Door{
-	//			ID:           "D12",
-	//			ControllerID: 405419896,
-	//			Door:         2,
-	//			Name:         "Kitchen",
-	//		},
-	//		"D13": types.Door{
-	//			ID:           "D13",
-	//			ControllerID: 405419896,
-	//			Door:         3,
-	//			Name:         "Dungeon",
-	//		},
-	//		"D14": types.Door{
-	//			ID:           "D14",
-	//			ControllerID: 405419896,
-	//			Door:         4,
-	//			Name:         "Hogsmeade",
-	//		},
-	//
-	//		"D21": types.Door{
-	//			ID:           "D21",
-	//			ControllerID: 303986753,
-	//			Door:         1,
-	//			Name:         "Gryffindor",
-	//		},
-	//		"D22": types.Door{
-	//			ID:           "D22",
-	//			ControllerID: 303986753,
-	//			Door:         2,
-	//			Name:         "Hufflepuff",
-	//		},
-	//		"D23": types.Door{
-	//			ID:           "D23",
-	//			ControllerID: 303986753,
-	//			Door:         3,
-	//			Name:         "Ravenclaw",
-	//		},
-	//		"D24": types.Door{
-	//			ID:           "D24",
-	//			ControllerID: 303986753,
-	//			Door:         4,
-	//			Name:         "Slytherin",
-	//		},
-	//	},
-}
-
-var local = Local{
-	u: uhppote.UHPPOTE{
-		BindAddress:      resolve("192.168.1.100:0"),
-		BroadcastAddress: resolve("192.168.1.255:60000"),
-		ListenAddress:    resolve("192.168.1.100:60001"),
-		Devices:          map[uint32]*uhppote.Device{},
-		Debug:            false,
-	},
-
-	devices: []*uhppote.Device{},
+	Local: []Local{},
 }
 
 func resolve(address string) *net.UDPAddr {
@@ -106,7 +45,9 @@ func Init(conf string) error {
 }
 
 func Update(permissions []types.Permissions) {
-	local.Update(permissions)
+	for _, l := range sys.Local {
+		l.Update(permissions)
+	}
 }
 
 func consolidate(list []types.Permissions) (*acl.ACLN, error) {

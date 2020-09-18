@@ -2,8 +2,10 @@ package system
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"sort"
 
 	"github.com/uhppoted/uhppote-core/uhppote"
@@ -12,9 +14,30 @@ import (
 )
 
 type Local struct {
-	u uhppote.UHPPOTE
+	BindAddress      *address            `json:"bind-address"`
+	BroadcastAddress *address            `json:"broadcast-address"`
+	ListenAddress    *address            `json:"listen-address"`
+	Controllers      map[uint32]*address `json:"controllers"`
+	Debug            bool                `json:"debug"`
+}
 
-	devices []*uhppote.Device
+type address net.UDPAddr
+
+func (a *address) UnmarshalJSON(bytes []byte) error {
+	var s string
+
+	if err := json.Unmarshal(bytes, &s); err != nil {
+		return err
+	}
+
+	addr, err := net.ResolveUDPAddr("udp", s)
+	if err != nil {
+		return err
+	}
+
+	*a = address(*addr)
+
+	return nil
 }
 
 func (l *Local) Update(permissions []types.Permissions) {
@@ -31,7 +54,26 @@ func (l *Local) Update(permissions []types.Permissions) {
 		return
 	}
 
-	rpt, err := uhppoted.PutACLN(&l.u, *acl, false)
+	// TODO: move to local.Init()
+	u := uhppote.UHPPOTE{
+		BindAddress:      (*net.UDPAddr)(l.BindAddress),
+		BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),
+		ListenAddress:    (*net.UDPAddr)(l.ListenAddress),
+		Devices:          map[uint32]*uhppote.Device{},
+		Debug:            l.Debug,
+	}
+
+	for k, v := range l.Controllers {
+		u.Devices[k] = &uhppote.Device{
+			DeviceID: k,
+			Address:  (*net.UDPAddr)(v),
+			Rollover: 100000,
+			Doors:    []string{},
+		}
+	}
+    // TODO END
+
+	rpt, err := uhppoted.PutACLN(&u, *acl, false)
 	if err != nil {
 		warn(err)
 		return

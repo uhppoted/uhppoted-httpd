@@ -3,7 +3,6 @@
 ### IN PROGRESS
 
 - [ ] ACL
-      - configure system from uhppoted.conf
       - clean up unholy card type mess :-(
 
 - [ ] MemDB
