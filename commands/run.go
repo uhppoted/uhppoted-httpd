@@ -9,6 +9,7 @@ import (
 	provider "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 	auth "github.com/uhppoted/uhppoted-httpd/httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/sys"
 )
 
 func (cmd *Run) Name() string {
@@ -71,6 +72,10 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		}{
 			File: conf.HTTPD.DB.File,
 		},
+	}
+
+	if err := system.Init(conf.HTTPD.System.File); err != nil {
+		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 
 	h.Run()

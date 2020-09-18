@@ -3,7 +3,8 @@
 ### IN PROGRESS
 
 - [ ] ACL
-      - convert recordset to ACL
+      - configure system from uhppoted.conf
+      - clean up unholy card type mess :-(
 
 - [ ] MemDB
       - convert tables to maps
