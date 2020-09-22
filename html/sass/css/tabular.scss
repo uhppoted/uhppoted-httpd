@@ -18,8 +18,8 @@
   height: 32px;
 }
 
-.tabular tbody tr[data-edited] {
-  background: theme.$content-table-background-edited;
+.tabular tbody tr[data-modified] {
+  background: theme.$content-table-row-modified;
 }
 
 .tabular th {
@@ -86,15 +86,22 @@
   color: theme.$content-table-rollback;  
 }
 
-.tabular tbody tr[data-edited] td.controls span.commit {
+.tabular td.cardnumber input {
+  width: 96px;
+  padding: 2px 4px 2px 4px;
+  border: 1px solid red;
+  border-radius: 3px;
+}
+
+.tabular tbody tr[data-modified] td.controls span.commit {
   visibility: visible;
 }
 
-.tabular tbody tr[data-edited] td.controls span.rollback {
+.tabular tbody tr[data-modified] td.controls span.rollback {
   visibility: visible;
 }
 
-.tabular tbody tr[data-edited] td.controls span.windmill {
+.tabular tbody tr[data-modified] td.controls span.windmill {
   visibility: visible;
 }
 
@@ -120,7 +127,7 @@
   font-weight: 100;
 }
 
-.tabular td.group span[data-edited] {
+.tabular td[data-modified].group span {
   border: 2px solid red;
   border-radius: 3px;
 }
@@ -129,8 +136,8 @@
   background-color: theme.$content-table-background-pending;
 }
 
-.tabular td.group span[data-modified='true'] {
+.tabular td[data-conflict].group span {
   border-radius: 3px;
-  background-color: theme.$content-table-background-modified;
+  background-color: theme.$content-table-item-conflict;
 }
 

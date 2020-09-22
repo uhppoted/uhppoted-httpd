@@ -75,10 +75,22 @@
                     <span class="commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
                     <span class="rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
                   </td>
-                  <td>{{$cardholder.CardNumber}}</td>
+                  
+                  <td class="cardnumber"                     
+                      data-record="{{$cid}}"
+                      data-original="{{$cardholder.CardNumber}}"
+                      data-value="{{$cardholder.CardNumber}}"><span onclick="onEdit(event)">{{$cardholder.CardNumber}}</span></td>
+
                   <td>{{$cardholder.From.Format "2006-01-02"}}</td>
                   <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$member := $cardholder.Groups}}
-                  <td class="group"><span id="{{$member.ID}}" data-record="{{$cid}}" data-original="{{$member.Value}}" data-value="{{$member.Value}}" onclick="onTick(event)">{{if $member.Value}}Y{{else}}N{{end}}</span></td>{{end}}
+                  
+                  <td class="group">
+                    <span id="{{$member.ID}}" 
+                          onclick="onTick(event)"
+                          data-record="{{$cid}}" 
+                          data-original="{{$member.Value}}" 
+                          data-value="{{$member.Value}}">{{if $member.Value}}Y{{else}}N{{end}}</span>
+                  </td>{{end}}
                 </tr>{{else}}<tr class="empty"><td/><td/><td/><td/><td/><td/></tr>{{end}}
               </tbody>
               <tfoot>
@@ -98,13 +110,15 @@
 
   <script type="module">
     import { dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
-    import { onCommit, onRollback, onTick, onRefresh } from "./javascript/cardholders.js"
+    import { onCommit, onRollback, onEdit, onEdited, onTick, onRefresh } from "./javascript/cardholders.js"
 
     window.dismiss = dismiss
     window.onSignOut = onSignOut
+    window.onEdit = onEdit
+    window.onEdited = onEdited
+    window.onTick = onTick
     window.onCommit = onCommit
     window.onRollback = onRollback
-    window.onTick = onTick
     window.onRefresh = onRefresh
 
     resetIdle();

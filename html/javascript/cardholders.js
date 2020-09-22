@@ -1,5 +1,73 @@
 import { getAsJSON, postAsJSON, warning } from './uhppoted.js'
 
+export function onEdit (event) {
+  const span = event.target
+  const td = span.parentElement
+  const cardnumber = td.dataset.value
+
+  td.innerHTML = '<input onchange="onEdited(event)" type="number" value="" />'
+
+  td.firstChild.focus()
+  td.firstChild.value = cardnumber // to move the cursor to end of the text in case you were wondering
+}
+
+export function onEdited (event) {
+  const input = event.target
+  const td = event.target.parentElement
+  const id = td.dataset.record
+  const row = document.getElementById(id)
+  const original = td.dataset.original
+  const value = input.value
+
+  if (value !== original) {
+    td.dataset.modified = 'true'
+  } else {
+    delete td.dataset.modified
+  }
+
+  if (isModified(row)) {
+    row.dataset.modified = 'true'
+  } else {
+    delete row.dataset.modified
+  }
+}
+
+export function onTick (event) {
+  const id = event.target.dataset.record
+  const row = document.getElementById(id)
+  const group = document.getElementById(event.target.id)
+  const td = group.parentElement
+  const original = group.dataset.original === 'true'
+  const value = group.dataset.value === 'true'
+  const granted = !value
+
+  group.dataset.value = granted ? 'true' : false
+  group.innerText = granted ? 'Y' : 'N'
+
+  if (original !== granted) {
+    td.dataset.modified = 'true'
+  } else {
+    delete (td.dataset.modified)
+  }
+
+  if (isModified(row)) {
+    row.dataset.modified = 'true'
+  } else {
+    delete row.dataset.modified
+  }
+}
+
+function isModified (row) {
+  let modified = false
+  Array.from(row.children).forEach((item) => {
+    if (item.dataset.modified) {
+      modified = true
+    }
+  })
+
+  return modified
+}
+
 export function onCommit (event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
@@ -11,7 +79,7 @@ export function onCommit (event) {
     const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
 
     groups.forEach((group) => {
-      delete (group.dataset.edited)
+      delete (group.parentElement.dataset.modified)
 
       if ((group.dataset.record === id) && (group.dataset.value !== group.dataset.original)) {
         update[group.id] = group.dataset.value === 'true'
@@ -19,7 +87,7 @@ export function onCommit (event) {
       }
     })
 
-    delete (row.dataset.edited)
+    delete (row.dataset.modifie)
 
     const rollback = function () {
       Object.entries(update).forEach(([k, v]) => {
@@ -80,38 +148,11 @@ export function onRollback (event) {
         group.dataset.value = group.dataset.original
         group.innerText = group.dataset.value === 'true' ? 'Y' : 'N'
 
-        delete (group.dataset.edited)
+        delete (group.parentElement.dataset.modified)
       }
     })
 
-    delete (row.dataset.edited)
-  }
-}
-
-export function onTick (event) {
-  const id = event.target.dataset.record
-  const row = document.getElementById(id)
-  const group = document.getElementById(event.target.id)
-  const original = group.dataset.original === 'true'
-  const value = group.dataset.value === 'true'
-  const granted = !value
-  let edited = (row.dataset.edited && parseInt(row.dataset.edited)) | 0
-
-  group.dataset.value = granted ? 'true' : false
-  group.innerText = granted ? 'Y' : 'N'
-
-  if (original !== granted) {
-    group.dataset.edited = 'true'
-    edited += 1
-  } else {
-    delete (group.dataset.edited)
-    edited -= 1
-  }
-
-  if (edited > 0) {
-    row.dataset.edited = edited.toString()
-  } else {
-    delete row.dataset.edited
+    delete (row.dataset.modified)
   }
 }
 
@@ -163,7 +204,7 @@ function updated (list) {
       item.dataset.value = v
       item.innerHTML = v ? 'Y' : 'N'
 
-      delete (item.dataset.edited)
+      delete (item.dataset.modified)
     }
   }
 }
@@ -175,7 +216,7 @@ function refresh (db) {
     const row = document.getElementById(record.ID)
 
     if (row) {
-      delete (row.dataset.edited)
+      delete (row.dataset.modified)
     }
 
     record.Groups.forEach((group) => {
@@ -188,7 +229,7 @@ function refresh (db) {
         g.innerHTML = v ? 'Y' : 'N'
 
         delete (g.dataset.modified)
-        delete (g.dataset.edited)
+        delete (g.dataset.modified)
       }
     })
   })

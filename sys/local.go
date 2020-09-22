@@ -71,7 +71,7 @@ func (l *Local) Update(permissions []types.Permissions) {
 			Doors:    []string{},
 		}
 	}
-    // TODO END
+	// TODO END
 
 	rpt, err := uhppoted.PutACLN(&u, *acl, false)
 	if err != nil {

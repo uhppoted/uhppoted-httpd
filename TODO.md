@@ -4,29 +4,38 @@
 
 - [ ] ACL
       - clean up unholy card type mess :-(
+      - rework door/button states as map[uint8]bool
+      - groups => rules => permissions
 
 - [ ] MemDB
       - convert tables to maps
 
 - [ ] Card holders
-      - audit trail
-      - virtual DOM
-      - wrap templating in a decent error handler
-      - commit-all
-      - rollback-all
-      - search & pin
-      - gzip response
       - card number
+        - commit
+        - rollback
+        - check number is not duplicated
+        - commit multiple rows (so you can e.g. switch card numbers)
+        - conflicts!
+      - wrap templating in a decent error handler
+      - name
       - from
       - to
       - add
       - delete
+      - audit trail
+      - virtual DOM
+      - commit-all
+      - rollback-all
+      - search & pin
+      - gzip response
       - labels from translations
       - scroll horizontally
       - scroll vertically
       - freeze header rows and columns
       - filter columns
-      - apply to all columns
+        -- pins!
+      - apply to all (pinned ?) columns
       - simultaneous editing (?) 
         -- use hash of DB to identify changes
         -- CRDT ??
