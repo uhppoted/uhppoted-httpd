@@ -3,7 +3,6 @@
 ### IN PROGRESS
 
 - [ ] ACL
-      - clean up unholy card type mess :-(
       - rework door/button states as map[uint8]bool
       - groups => rules => permissions
 
@@ -12,11 +11,9 @@
 
 - [ ] Card holders
       - card number
-        - commit
-        - rollback
+        - conflicts!
         - check number is not duplicated
         - commit multiple rows (so you can e.g. switch card numbers)
-        - conflicts!
       - wrap templating in a decent error handler
       - name
       - from

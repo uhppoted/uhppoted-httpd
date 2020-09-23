@@ -1,22 +1,23 @@
 import { getAsJSON, postAsJSON, warning } from './uhppoted.js'
 
 export function onEdit (event) {
-  const span = event.target
-  const td = span.parentElement
-  const cardnumber = td.dataset.value
+  const input = event.target
 
-  td.innerHTML = '<input onchange="onEdited(event)" type="number" value="" />'
+  input.removeAttribute('readonly')
+}
 
-  td.firstChild.focus()
-  td.firstChild.value = cardnumber // to move the cursor to end of the text in case you were wondering
+export function onBlur (event) {
+  const input = event.target
+
+  input.setAttribute('readonly', '')
 }
 
 export function onEdited (event) {
   const input = event.target
-  const td = event.target.parentElement
-  const id = td.dataset.record
+  const td = input.parentElement
+  const id = input.dataset.record
   const row = document.getElementById(id)
-  const original = td.dataset.original
+  const original = input.dataset.original
   const value = input.value
 
   if (value !== original) {
@@ -74,9 +75,17 @@ export function onCommit (event) {
 
   if (row) {
     const update = {}
+    const card = row.querySelector('.cardnumber input')
     const groups = row.querySelectorAll('.group span')
     const windmill = document.getElementById('windmill')
     const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+
+    delete (card.parentElement.dataset.modified)
+
+    if ((card.dataset.record === id) && (card.value !== card.dataset.original)) {
+      update[card.id] = card.value
+      card.dataset.pending = 'true'
+    }
 
     groups.forEach((group) => {
       delete (group.parentElement.dataset.modified)
@@ -91,12 +100,21 @@ export function onCommit (event) {
 
     const rollback = function () {
       Object.entries(update).forEach(([k, v]) => {
-        const g = document.getElementById(k)
+        const e = document.getElementById(k)
 
-        if (g) {
-          g.dataset.value = g.dataset.original
-          g.dataset.modified = 'true'
-          g.innerText = g.dataset.value === 'true' ? 'Y' : 'N'
+        if (e) {
+          switch (e.tagName) {
+            case 'input':
+              e.value = e.dataset.original
+              e.parentElement.dataset.modified = 'true'
+              break
+
+            case 'span':
+              e.dataset.value = e.dataset.original
+              e.innerText = e.dataset.value === 'true' ? 'Y' : 'N'
+              e.parentElement.dataset.modified = 'true'
+              break
+          }
         }
       })
     }
@@ -141,7 +159,14 @@ export function onRollback (event) {
   const row = document.getElementById(id)
 
   if (row) {
+    const card = row.querySelector('.cardnumber input')
     const groups = row.querySelectorAll('.group span')
+
+    if (card.dataset.record === id) {
+      card.value = card.dataset.original
+
+      delete (card.parentElement.dataset.modified)
+    }
 
     groups.forEach((group) => {
       if (group.dataset.record === id) {
@@ -190,21 +215,36 @@ export function onRefresh (event) {
 }
 
 function updated (list) {
+  const rows = new Set()
+
   for (const [k, v] of Object.entries(list)) {
     const item = document.getElementById(k)
 
     if (item) {
-      if (item.dataset.value !== v.toString()) {
-        item.dataset.modified = 'true'
-      } else {
-        delete (item.dataset.modified)
-      }
+      console.log(v)
+      //      if (item.dataset.value !== v.toString()) {
+      //        item.dataset.modified = 'true'
+      //      } else {
+      //        delete (item.dataset.modified)
+      //      }
 
-      item.dataset.original = v
-      item.dataset.value = v
-      item.innerHTML = v ? 'Y' : 'N'
+      //      item.dataset.original = v
+      //      item.dataset.value = v
+      //      item.innerHTML = v ? 'Y' : 'N'
 
-      delete (item.dataset.modified)
+      delete (item.parentElement.dataset.modified)
+
+      rows.add(item.dataset.record)
+    }
+  }
+
+  for (const id of rows) {
+    const row = document.getElementById(id)
+
+    if (isModified(row)) {
+      row.dataset.modified = 'true'
+    } else {
+      delete row.dataset.modified
     }
   }
 }

@@ -53,7 +53,7 @@
 
 .tabular td {
   border: 1px solid theme.$content-table-border;
-  padding: 0.5rem;
+  padding: 0.3rem 0.5rem 0.3rem 0.5rem;
   text-align: left;
   font-size: 0.9em;
   font-weight: normal;
@@ -89,8 +89,19 @@
 .tabular td.cardnumber input {
   width: 96px;
   padding: 2px 4px 2px 4px;
-  border: 1px solid red;
+  border: 1px solid transparent;
   border-radius: 3px;
+  outline: none;
+  readonly: true;
+}
+
+.tabular td[data-modified].cardnumber input {
+  border: 2px solid red;
+  border-radius: 3px;
+}
+
+.tabular td.cardnumber input:focus {
+  border: 1px solid red;
 }
 
 .tabular tbody tr[data-modified] td.controls span.commit {

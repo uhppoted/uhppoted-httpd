@@ -12,6 +12,11 @@ type DB interface {
 	ACL() ([]types.Permissions, error)
 }
 
+type Card struct {
+	ID     string
+	Number uint32
+}
+
 type Group struct {
 	ID    string
 	Name  string
@@ -19,12 +24,12 @@ type Group struct {
 }
 
 type CardHolder struct {
-	ID         string
-	Name       string
-	CardNumber uint32
-	From       types.Date
-	To         types.Date
-	Groups     []*Permission
+	ID     string
+	Name   string
+	Card   Card
+	From   types.Date
+	To     types.Date
+	Groups []*Permission
 }
 
 type Permission struct {
@@ -47,12 +52,15 @@ func (g *Group) Copy() *Group {
 
 func (c *CardHolder) Copy() *CardHolder {
 	replicant := &CardHolder{
-		ID:         c.ID,
-		Name:       c.Name,
-		CardNumber: c.CardNumber,
-		From:       c.From,
-		To:         c.To,
-		Groups:     make([]*Permission, len(c.Groups)),
+		ID:   c.ID,
+		Name: c.Name,
+		Card: Card{
+			ID:     c.Card.ID,
+			Number: c.Card.Number,
+		},
+		From:   c.From,
+		To:     c.To,
+		Groups: make([]*Permission, len(c.Groups)),
 	}
 
 	for i, g := range c.Groups {

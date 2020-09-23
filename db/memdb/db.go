@@ -2,9 +2,11 @@ package memdb
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/db"
@@ -100,7 +102,7 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 		}
 
 		list = append(list, types.Permissions{
-			CardNumber: c.CardNumber,
+			CardNumber: c.Card.Number,
 			From:       c.From,
 			To:         c.To,
 			Doors:      doors,
@@ -124,14 +126,27 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 	shadow := d.data.copy()
 
 	for k, v := range u {
-		gid := k
+		id := k
 
-		if value, ok := v.(bool); ok {
-			for _, c := range shadow.Tables.CardHolders {
-				for _, g := range c.Groups {
-					if g.ID == gid {
+		for _, c := range shadow.Tables.CardHolders {
+			if c.Card.ID == id {
+				if _, ok := v.(string); ok {
+					if value, err := strconv.ParseUint(v.(string), 10, 32); err != nil {
+						return nil, err
+					} else {
+						c.Card.Number = uint32(value)
+						list.Updated[id] = c.Card.Number
+					}
+				}
+			}
+
+			for _, g := range c.Groups {
+				if g.ID == id {
+					if value, ok := v.(bool); !ok {
+						return nil, fmt.Errorf("Invalid value for %v - expected bool, got %v", id, v)
+					} else {
 						g.Value = value
-						list.Updated[gid] = g.Value
+						list.Updated[id] = g.Value
 					}
 				}
 			}
