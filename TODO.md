@@ -10,14 +10,21 @@
       - convert tables to maps
 
 - [ ] Card holders
+      - flag modified/conflicted fields with e.g. small red rectangle (not overbearing and overloaded border)
+        -- https://css-tricks.com/a-complete-guide-to-data-attributes
+        -- move dataset.modified back down to items
       - card number
-        - conflicts!
+        - https://stackoverflow.com/questions/13107118/how-to-remove-the-arrows-from-inputtype-number-in-opera
+        - generalize fields
+          -- 'set/get' (?): looks up parent cell/row from dataset
         - check number is not duplicated
         - commit multiple rows (so you can e.g. switch card numbers)
+      - use internal DB rather than JS dataset (?)
       - wrap templating in a decent error handler
-      - name
+      - rework 'groups' as checkboxes
       - from
       - to
+      - name
       - add
       - delete
       - audit trail

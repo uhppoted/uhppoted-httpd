@@ -14,16 +14,17 @@ export function onBlur (event) {
 
 export function onEdited (event) {
   const input = event.target
-  const td = input.parentElement
   const id = input.dataset.record
   const row = document.getElementById(id)
   const original = input.dataset.original
   const value = input.value
 
+  input.dataset.value = value
+
   if (value !== original) {
-    td.dataset.modified = 'true'
+    input.parentElement.dataset.modified = 'true'
   } else {
-    delete td.dataset.modified
+    delete input.parentElement.dataset.modified
   }
 
   if (isModified(row)) {
@@ -37,18 +38,17 @@ export function onTick (event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
   const group = document.getElementById(event.target.id)
-  const td = group.parentElement
   const original = group.dataset.original === 'true'
   const value = group.dataset.value === 'true'
   const granted = !value
 
-  group.dataset.value = granted ? 'true' : false
+  group.dataset.value = granted ? 'true' : 'false'
   group.innerText = granted ? 'Y' : 'N'
 
   if (original !== granted) {
-    td.dataset.modified = 'true'
+    group.parentElement.dataset.modified = 'true'
   } else {
-    delete (td.dataset.modified)
+    delete (group.parentElement.dataset.modified)
   }
 
   if (isModified(row)) {
@@ -82,7 +82,7 @@ export function onCommit (event) {
 
     delete (card.parentElement.dataset.modified)
 
-    if ((card.dataset.record === id) && (card.value !== card.dataset.original)) {
+    if ((card.dataset.record === id) && (card.dataset.value !== card.dataset.original)) {
       update[card.id] = card.value
       card.dataset.pending = 'true'
     }
@@ -103,8 +103,9 @@ export function onCommit (event) {
         const e = document.getElementById(k)
 
         if (e) {
-          switch (e.tagName) {
+          switch (e.tagName.toLowerCase()) {
             case 'input':
+              e.dataset.value = e.dataset.original
               e.value = e.dataset.original
               e.parentElement.dataset.modified = 'true'
               break
@@ -163,6 +164,7 @@ export function onRollback (event) {
     const groups = row.querySelectorAll('.group span')
 
     if (card.dataset.record === id) {
+      card.dataset.value = card.dataset.original
       card.value = card.dataset.original
 
       delete (card.parentElement.dataset.modified)
@@ -221,18 +223,24 @@ function updated (list) {
     const item = document.getElementById(k)
 
     if (item) {
-      console.log(v)
-      //      if (item.dataset.value !== v.toString()) {
-      //        item.dataset.modified = 'true'
-      //      } else {
-      //        delete (item.dataset.modified)
-      //      }
+      if (item.dataset.value !== v.toString()) {
+        item.parentElement.dataset.state = 'conflict'
+      } else {
+        delete (item.parentElement.dataset.state)
+      }
 
-      //      item.dataset.original = v
-      //      item.dataset.value = v
-      //      item.innerHTML = v ? 'Y' : 'N'
+      item.dataset.original = v
+      item.dataset.value = v
 
-      delete (item.parentElement.dataset.modified)
+      switch (item.tagName.toLowerCase()) {
+        case 'input':
+          item.value = v
+          break
+
+        case 'span':
+          item.innerHTML = v ? 'Y' : 'N'
+          break
+      }
 
       rows.add(item.dataset.record)
     }
@@ -259,6 +267,18 @@ function refresh (db) {
       delete (row.dataset.modified)
     }
 
+    const card = document.getElementById(record.Card.ID)
+    if (card) {
+      const v = record.Card.Number
+
+      card.dataset.original = v
+      card.dataset.value = v
+      card.value = v
+
+      delete (card.parentElement.dataset.modified)
+      delete (card.parentElement.dataset.state)
+    }
+
     record.Groups.forEach((group) => {
       const v = group.Value
       const g = document.getElementById(group.ID)
@@ -268,8 +288,8 @@ function refresh (db) {
         g.dataset.value = v
         g.innerHTML = v ? 'Y' : 'N'
 
-        delete (g.dataset.modified)
-        delete (g.dataset.modified)
+        delete (g.parentElement.dataset.modified)
+        delete (g.parentElement.dataset.state)
       }
     })
   })

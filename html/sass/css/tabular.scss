@@ -100,6 +100,10 @@
   border-radius: 3px;
 }
 
+.tabular td[data-state='conflict'].cardnumber input {
+  background-color: theme.$content-table-item-conflict;
+}
+
 .tabular td.cardnumber input:focus {
   border: 1px solid red;
 }
@@ -141,6 +145,10 @@
 .tabular td[data-modified].group span {
   border: 2px solid red;
   border-radius: 3px;
+}
+
+.tabular td[data-state='conflict'].group span {
+  background-color: theme.$content-table-item-conflict;
 }
 
 .tabular td.group span[data-pending] {
