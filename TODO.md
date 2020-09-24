@@ -14,7 +14,6 @@
         -- https://css-tricks.com/a-complete-guide-to-data-attributes
         -- move dataset.modified back down to items
       - card number
-        - https://stackoverflow.com/questions/13107118/how-to-remove-the-arrows-from-inputtype-number-in-opera
         - generalize fields
           -- 'set/get' (?): looks up parent cell/row from dataset
         - check number is not duplicated

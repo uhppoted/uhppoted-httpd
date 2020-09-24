@@ -92,7 +92,12 @@
   border: 1px solid transparent;
   border-radius: 3px;
   outline: none;
-  readonly: true;
+}
+
+.tabular td.cardnumber input::-webkit-inner-spin-button, 
+.tabular td.cardnumber input::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
 }
 
 .tabular td[data-modified].cardnumber input {

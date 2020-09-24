@@ -80,13 +80,10 @@
                     <input id="{{$cardholder.Card.ID}}" 
                            type="number" 
                            value="{{$cardholder.Card.Number}}"
-                           onclick="onEdit(event)" 
-                           onblur="onBlur(event)"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$cardholder.Card.Number}}"
-                           data-value="{{$cardholder.Card.Number}}"
-                           readonly />
+                           data-value="{{$cardholder.Card.Number}}" />
                   </td>
 
                   <td>{{$cardholder.From.Format "2006-01-02"}}</td>
@@ -118,12 +115,10 @@
 
   <script type="module">
     import { dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
-    import { onCommit, onRollback, onEdit, onBlur, onEdited, onTick, onRefresh } from "./javascript/cardholders.js"
+    import { onCommit, onRollback, onEdited, onTick, onRefresh } from "./javascript/cardholders.js"
 
     window.dismiss = dismiss
     window.onSignOut = onSignOut
-    window.onEdit = onEdit
-    window.onBlur = onBlur
     window.onEdited = onEdited
     window.onTick = onTick
     window.onCommit = onCommit

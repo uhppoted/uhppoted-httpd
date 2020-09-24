@@ -1,17 +1,5 @@
 import { getAsJSON, postAsJSON, warning } from './uhppoted.js'
 
-export function onEdit (event) {
-  const input = event.target
-
-  input.removeAttribute('readonly')
-}
-
-export function onBlur (event) {
-  const input = event.target
-
-  input.setAttribute('readonly', '')
-}
-
 export function onEdited (event) {
   const input = event.target
   const id = input.dataset.record
