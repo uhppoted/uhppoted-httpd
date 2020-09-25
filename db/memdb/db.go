@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -123,6 +124,8 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 		Updated: map[string]interface{}{},
 	}
 
+	// update 'shadow' copy
+
 	shadow := d.data.copy()
 
 	for k, v := range u {
@@ -131,23 +134,50 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 		for _, c := range shadow.Tables.CardHolders {
 			if c.Card.ID == id {
 				if _, ok := v.(string); ok {
-					if value, err := strconv.ParseUint(v.(string), 10, 32); err != nil {
-						return nil, err
-					} else {
-						c.Card.Number = uint32(value)
-						list.Updated[id] = c.Card.Number
+					value, err := strconv.ParseUint(v.(string), 10, 32)
+					if err != nil {
+						return nil, &types.HttpdError{
+							Status: http.StatusBadRequest,
+							Err:    fmt.Errorf("Invalid card number (%v)", v),
+							Detail: fmt.Errorf("Error parsing card number %v: %w", v, err),
+						}
 					}
+
+					c.Card.Number = uint32(value)
+					list.Updated[id] = c.Card.Number
 				}
 			}
 
 			for _, g := range c.Groups {
 				if g.ID == id {
-					if value, ok := v.(bool); !ok {
-						return nil, fmt.Errorf("Invalid value for %v - expected bool, got %v", id, v)
-					} else {
-						g.Value = value
-						list.Updated[id] = g.Value
+					value, ok := v.(bool)
+					if !ok {
+						return nil, &types.HttpdError{
+							Status: http.StatusBadRequest,
+							Err:    fmt.Errorf("Invalid group value (%v)", v),
+							Detail: fmt.Errorf("Error parsing group value for group-id %v - expected:bool, got:%v", id, v),
+						}
 					}
+
+					g.Value = value
+					list.Updated[id] = g.Value
+				}
+			}
+		}
+	}
+
+	// check integrity of updated data
+
+	N := len(shadow.Tables.CardHolders)
+	for i := 0; i < N; i++ {
+		p := shadow.Tables.CardHolders[i]
+		for j := i + 1; j < N; j++ {
+			q := shadow.Tables.CardHolders[j]
+			if p.Card.Number == q.Card.Number {
+				return nil, &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Duplicate card number (%v)", p.Card.Number),
+					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", p.Card.Number, p.ID, q.ID),
 				}
 			}
 		}
