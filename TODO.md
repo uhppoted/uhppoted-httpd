@@ -10,10 +10,11 @@
       - convert tables to maps
 
 - [ ] Card holders
+      - check conflicts (again)
+      - weird 'row gets bigger' on submit
       - card number
-        - UI behaves weirdly after error 
         - generalize fields
-          -- 'set/get' (?): looks up parent cell/row from dataset
+          -- e.g. 'set/get' (?): looks up parent cell/row from dataset
         - unit test for memdb.update
         - commit multiple rows (so you can e.g. switch card numbers)
       - JS timeout (if e.g. httpd isn't running any more)

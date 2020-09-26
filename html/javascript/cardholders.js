@@ -1,4 +1,4 @@
-import { getAsJSON, postAsJSON, warning } from './uhppoted.js'
+import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
 
 export function onEdited (event) {
   const input = event.target
@@ -10,8 +10,10 @@ export function onEdited (event) {
   input.dataset.value = value
 
   if (value !== original) {
+    input.parentElement.dataset.state = 'modified'
     input.parentElement.dataset.modified = 'true'
   } else {
+    input.parentElement.dataset.state = ''
     delete input.parentElement.dataset.modified
   }
 
@@ -34,8 +36,10 @@ export function onTick (event) {
   group.innerText = granted ? 'Y' : 'N'
 
   if (original !== granted) {
+    group.parentElement.dataset.state = 'modified'
     group.parentElement.dataset.modified = 'true'
   } else {
+    group.parentElement.dataset.state = ''
     delete (group.parentElement.dataset.modified)
   }
 
@@ -72,7 +76,9 @@ export function onCommit (event) {
 
     if ((card.dataset.record === id) && (card.dataset.value !== card.dataset.original)) {
       update[card.id] = card.value
+      card.dataset.value = card.value
       card.dataset.pending = 'true'
+      card.parentElement.dataset.state = 'pending'
     }
 
     groups.forEach((group) => {
@@ -81,31 +87,32 @@ export function onCommit (event) {
       if ((group.dataset.record === id) && (group.dataset.value !== group.dataset.original)) {
         update[group.id] = group.dataset.value === 'true'
         group.dataset.pending = 'true'
+        group.parentElement.dataset.state = 'pending'
       }
     })
 
-    delete (row.dataset.modifie)
+    delete (row.dataset.modified)
 
-    const rollback = function () {
+    const reset = function () {
       Object.entries(update).forEach(([k, v]) => {
         const e = document.getElementById(k)
 
         if (e) {
           switch (e.tagName.toLowerCase()) {
             case 'input':
-              e.dataset.value = e.dataset.original
-              e.value = e.dataset.original
+              e.parentElement.dataset.state = 'modified'
               e.parentElement.dataset.modified = 'true'
               break
 
             case 'span':
-              e.dataset.value = e.dataset.original
-              e.innerText = e.dataset.value === 'true' ? 'Y' : 'N'
+              e.parentElement.dataset.state = 'modified'
               e.parentElement.dataset.modified = 'true'
               break
           }
         }
       })
+
+      row.dataset.modified = 'true'
     }
 
     windmill.dataset.count = (queued + 1).toString()
@@ -131,7 +138,7 @@ export function onCommit (event) {
             break
 
           default:
-            rollback()
+            reset()
             response.text().then(message => {
               warning(message)
             })
@@ -155,6 +162,7 @@ export function onRollback (event) {
       card.dataset.value = card.dataset.original
       card.value = card.dataset.original
 
+      card.parentElement.dataset.state = ''
       delete (card.parentElement.dataset.modified)
     }
 
@@ -163,6 +171,7 @@ export function onRollback (event) {
         group.dataset.value = group.dataset.original
         group.innerText = group.dataset.value === 'true' ? 'Y' : 'N'
 
+        group.parentElement.dataset.state = ''
         delete (group.parentElement.dataset.modified)
       }
     })
@@ -176,6 +185,8 @@ export function onRefresh (event) {
   const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
 
   windmill.dataset.count = (queued + 1).toString()
+
+  dismiss()
 
   getAsJSON('/cardholders')
     .then(response => {
@@ -212,9 +223,10 @@ function updated (list) {
 
     if (item) {
       if (item.dataset.value !== v.toString()) {
+        console.log('whoa', item.dataset.value, v.toString())
         item.parentElement.dataset.state = 'conflict'
       } else {
-        delete (item.parentElement.dataset.state)
+        item.parentElement.dataset.state = ''
       }
 
       item.dataset.original = v

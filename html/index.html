@@ -77,6 +77,7 @@
                   </td>
                   
                   <td class="cardnumber">                  
+                    <img class="flag" />
                     <input id="{{$cardholder.Card.ID}}" 
                            type="number" 
                            value="{{$cardholder.Card.Number}}"
@@ -90,6 +91,7 @@
                   <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$member := $cardholder.Groups}}
                   
                   <td class="group">
+                    <img class="flag" />
                     <span id="{{$member.ID}}" 
                           onclick="onTick(event)"
                           data-record="{{$cid}}" 

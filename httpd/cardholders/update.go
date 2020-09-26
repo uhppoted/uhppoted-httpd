@@ -85,7 +85,7 @@ func Update(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durat
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(b)
-		ch <- err
+		ch <- nil
 	}()
 
 	select {
