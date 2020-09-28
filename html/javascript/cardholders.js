@@ -1,64 +1,42 @@
 import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
 
 export function onEdited (event) {
-  const input = event.target
-  const id = input.dataset.record
-  const row = document.getElementById(id)
-  const original = input.dataset.original
-  const value = input.value
-
-  input.dataset.value = value
-
-  if (value !== original) {
-    input.parentElement.dataset.state = 'modified'
-    input.parentElement.dataset.modified = 'true'
-  } else {
-    input.parentElement.dataset.state = ''
-    delete input.parentElement.dataset.modified
-  }
-
-  if (isModified(row)) {
-    row.dataset.modified = 'true'
-  } else {
-    delete row.dataset.modified
-  }
+  set(event.target, event.target.value)
 }
 
 export function onTick (event) {
-  const id = event.target.dataset.record
-  const row = document.getElementById(id)
-  const group = document.getElementById(event.target.id)
-  const original = group.dataset.original === 'true'
-  const value = group.dataset.value === 'true'
-  const granted = !value
+  const value = !(event.target.dataset.value === 'true')
+  event.target.innerText = value ? 'Y' : 'N'
 
-  group.dataset.value = granted ? 'true' : 'false'
-  group.innerText = granted ? 'Y' : 'N'
-
-  if (original !== granted) {
-    group.parentElement.dataset.state = 'modified'
-    group.parentElement.dataset.modified = 'true'
-  } else {
-    group.parentElement.dataset.state = ''
-    delete (group.parentElement.dataset.modified)
-  }
-
-  if (isModified(row)) {
-    row.dataset.modified = 'true'
-  } else {
-    delete row.dataset.modified
-  }
+  set(event.target, value)
 }
 
-function isModified (row) {
+function set (element, value) {
+  const rowid = element.dataset.record
+  const row = document.getElementById(rowid)
+  const original = element.dataset.original
+  const v = value.toString()
+
+  element.dataset.value = v
+
+  if (v !== original) {
+    element.parentElement.dataset.state = 'modified'
+  } else {
+    element.parentElement.dataset.state = ''
+  }
+
   let modified = false
   Array.from(row.children).forEach((item) => {
-    if (item.dataset.modified) {
+    if (item.dataset.state === 'modified') {
       modified = true
     }
   })
 
-  return modified
+  if (modified) {
+    row.dataset.modified = 'true'
+  } else {
+    delete row.dataset.modified
+  }
 }
 
 export function onCommit (event) {
@@ -223,7 +201,6 @@ function updated (list) {
 
     if (item) {
       if (item.dataset.value !== v.toString()) {
-        console.log('whoa', item.dataset.value, v.toString())
         item.parentElement.dataset.state = 'conflict'
       } else {
         item.parentElement.dataset.state = ''
@@ -243,16 +220,6 @@ function updated (list) {
       }
 
       rows.add(item.dataset.record)
-    }
-  }
-
-  for (const id of rows) {
-    const row = document.getElementById(id)
-
-    if (isModified(row)) {
-      row.dataset.modified = 'true'
-    } else {
-      delete row.dataset.modified
     }
   }
 }
