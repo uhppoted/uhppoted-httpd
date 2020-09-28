@@ -16,6 +16,7 @@ function set (element, value) {
   const row = document.getElementById(rowid)
   const original = element.dataset.original
   const v = value.toString()
+  let modified = false
 
   element.dataset.value = v
 
@@ -25,7 +26,6 @@ function set (element, value) {
     element.parentElement.dataset.state = ''
   }
 
-  let modified = false
   Array.from(row.children).forEach((item) => {
     if (item.dataset.state === 'modified') {
       modified = true
@@ -47,25 +47,13 @@ export function onCommit (event) {
     const update = {}
     const card = row.querySelector('.cardnumber input')
     const groups = row.querySelectorAll('.group span')
-    const windmill = document.getElementById('windmill')
-    const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+    const list = [card, ...groups]
 
-    delete (card.parentElement.dataset.modified)
+    list.forEach((item) => {
+      if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
+        update[item.id] = item.dataset.value
 
-    if ((card.dataset.record === id) && (card.dataset.value !== card.dataset.original)) {
-      update[card.id] = card.value
-      card.dataset.value = card.value
-      card.dataset.pending = 'true'
-      card.parentElement.dataset.state = 'pending'
-    }
-
-    groups.forEach((group) => {
-      delete (group.parentElement.dataset.modified)
-
-      if ((group.dataset.record === id) && (group.dataset.value !== group.dataset.original)) {
-        update[group.id] = group.dataset.value === 'true'
-        group.dataset.pending = 'true'
-        group.parentElement.dataset.state = 'pending'
+        item.parentElement.dataset.state = 'pending'
       }
     })
 
@@ -73,25 +61,14 @@ export function onCommit (event) {
 
     const reset = function () {
       Object.entries(update).forEach(([k, v]) => {
-        const e = document.getElementById(k)
-
-        if (e) {
-          switch (e.tagName.toLowerCase()) {
-            case 'input':
-              e.parentElement.dataset.state = 'modified'
-              e.parentElement.dataset.modified = 'true'
-              break
-
-            case 'span':
-              e.parentElement.dataset.state = 'modified'
-              e.parentElement.dataset.modified = 'true'
-              break
-          }
-        }
+        document.getElementById(k).parentElement.dataset.state = 'modified'
       })
 
       row.dataset.modified = 'true'
     }
+
+    const windmill = document.getElementById('windmill')
+    const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
 
     windmill.dataset.count = (queued + 1).toString()
 
@@ -104,22 +81,14 @@ export function onCommit (event) {
           delete (windmill.dataset.count)
         }
 
-        groups.forEach((group) => {
-          delete (group.dataset.pending)
-        })
-
         switch (response.status) {
           case 200:
-            response.json().then(object => {
-              updated(object.db.updated)
-            })
+            response.json().then(object => { updated(object.db.updated) })
             break
 
           default:
             reset()
-            response.text().then(message => {
-              warning(message)
-            })
+            response.text().then(message => { warning(message) })
         }
       })
       .catch(function (err) {
@@ -135,22 +104,22 @@ export function onRollback (event) {
   if (row) {
     const card = row.querySelector('.cardnumber input')
     const groups = row.querySelectorAll('.group span')
+    const list = [card, ...groups]
 
-    if (card.dataset.record === id) {
-      card.dataset.value = card.dataset.original
-      card.value = card.dataset.original
+    list.forEach((item) => {
+      if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
+        item.dataset.value = item.dataset.original
+        item.parentElement.dataset.state = ''
 
-      card.parentElement.dataset.state = ''
-      delete (card.parentElement.dataset.modified)
-    }
+        switch (item.tagName.toLowerCase()) {
+          case 'input':
+            item.value = item.dataset.value
+            break
 
-    groups.forEach((group) => {
-      if (group.dataset.record === id) {
-        group.dataset.value = group.dataset.original
-        group.innerText = group.dataset.value === 'true' ? 'Y' : 'N'
-
-        group.parentElement.dataset.state = ''
-        delete (group.parentElement.dataset.modified)
+          case 'span':
+            item.innerHTML = item.dataset.value ? 'Y' : 'N'
+            break
+        }
       }
     })
 
@@ -177,15 +146,11 @@ export function onRefresh (event) {
 
       switch (response.status) {
         case 200:
-          response.json().then(object => {
-            refresh(object.db)
-          })
+          response.json().then(object => { refresh(object.db) })
           break
 
         default:
-          response.text().then(message => {
-            warning(message)
-          })
+          response.text().then(message => { warning(message) })
       }
     })
     .catch(function (err) {
@@ -236,27 +201,16 @@ function refresh (db) {
 
     const card = document.getElementById(record.Card.ID)
     if (card) {
-      const v = record.Card.Number
-
-      card.dataset.original = v
-      card.dataset.value = v
-      card.value = v
-
-      delete (card.parentElement.dataset.modified)
-      delete (card.parentElement.dataset.state)
+      card.value = record.Card.Number
+      set(card, record.Card.Number)
     }
 
     record.Groups.forEach((group) => {
-      const v = group.Value
       const g = document.getElementById(group.ID)
 
       if (g) {
-        g.dataset.original = v
-        g.dataset.value = v
-        g.innerHTML = v ? 'Y' : 'N'
-
-        delete (g.parentElement.dataset.modified)
-        delete (g.parentElement.dataset.state)
+        g.innerHTML = group.Value ? 'Y' : 'N'
+        set(g, group.Value)
       }
     })
   })

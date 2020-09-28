@@ -11,6 +11,7 @@
 
 - [ ] Card holders
       - check conflicts (again)
+      - check 'pending'
       - weird 'row gets bigger' on submit
       - card number
         - generalize fields

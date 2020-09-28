@@ -150,17 +150,25 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 
 			for _, g := range c.Groups {
 				if g.ID == id {
-					value, ok := v.(bool)
-					if !ok {
-						return nil, &types.HttpdError{
-							Status: http.StatusBadRequest,
-							Err:    fmt.Errorf("Invalid group value (%v)", v),
-							Detail: fmt.Errorf("Error parsing group value for group-id %v - expected:bool, got:%v", id, v),
+					if value, ok := v.(bool); ok {
+						g.Value = value
+						list.Updated[id] = g.Value
+						continue
+					}
+
+					if value, ok := v.(string); ok {
+						if b, err := strconv.ParseBool(value); err == nil {
+							g.Value = b
+							list.Updated[id] = b
+							continue
 						}
 					}
 
-					g.Value = value
-					list.Updated[id] = g.Value
+					return nil, &types.HttpdError{
+						Status: http.StatusBadRequest,
+						Err:    fmt.Errorf("Invalid group value (%v)", v),
+						Detail: fmt.Errorf("Error parsing group value for group-id %v - expected:bool, got:%v", id, v),
+					}
 				}
 			}
 		}
