@@ -159,32 +159,31 @@ export function onRefresh (event) {
 }
 
 function updated (list) {
-  const rows = new Set()
-
   for (const [k, v] of Object.entries(list)) {
     const item = document.getElementById(k)
 
     if (item) {
+      item.dataset.original = v
+
+      if (item.parentElement.dataset.state !== 'modified') {
+        switch (item.tagName.toLowerCase()) {
+          case 'input':
+            item.value = v
+            break
+
+          case 'span':
+            item.innerHTML = v ? 'Y' : 'N'
+            break
+        }
+      }
+
       if (item.dataset.value !== v.toString()) {
         item.parentElement.dataset.state = 'conflict'
-      } else {
+      }
+
+      if (item.parentElement.dataset === 'pending') {
         item.parentElement.dataset.state = ''
       }
-
-      item.dataset.original = v
-      item.dataset.value = v
-
-      switch (item.tagName.toLowerCase()) {
-        case 'input':
-          item.value = v
-          break
-
-        case 'span':
-          item.innerHTML = v ? 'Y' : 'N'
-          break
-      }
-
-      rows.add(item.dataset.record)
     }
   }
 }

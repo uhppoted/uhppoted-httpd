@@ -159,7 +159,7 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 					if value, ok := v.(string); ok {
 						if b, err := strconv.ParseBool(value); err == nil {
 							g.Value = b
-							list.Updated[id] = b
+							list.Updated[id] = g.Value
 							continue
 						}
 					}

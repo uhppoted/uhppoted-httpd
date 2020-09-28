@@ -10,24 +10,18 @@
       - convert tables to maps
 
 - [ ] Card holders
-      - check conflicts (again)
-      - check 'pending'
-      - weird 'row gets bigger' on submit
+      - JS timeout (if e.g. httpd isn't running any more)
       - card number
-        - generalize fields
-          -- e.g. 'set/get' (?): looks up parent cell/row from dataset
         - unit test for memdb.update
         - commit multiple rows (so you can e.g. switch card numbers)
-      - JS timeout (if e.g. httpd isn't running any more)
       - wrap ACL update in goroutine
       - flag modified/conflicted fields with e.g. small red rectangle (not overbearing and overloaded border)
         -- https://css-tricks.com/a-complete-guide-to-data-attributes
-        -- move dataset.modified back down to items
         -- dataset.state = none, modified, pending, conflict (DAG ? go back to previous on rollback?)
 
+      - rework 'groups' as checkboxes
       - use internal DB rather than JS dataset (?)
       - wrap templating in a decent error handler
-      - rework 'groups' as checkboxes
       - from
       - to
       - name
