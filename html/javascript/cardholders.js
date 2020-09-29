@@ -67,19 +67,11 @@ export function onCommit (event) {
       row.dataset.modified = 'true'
     }
 
-    const windmill = document.getElementById('windmill')
-    const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
-
-    windmill.dataset.count = (queued + 1).toString()
+    busy()
 
     postAsJSON('/cardholders', update)
       .then(response => {
-        const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
-        if (queued > 1) {
-          windmill.dataset.count = (queued - 1).toString()
-        } else {
-          delete (windmill.dataset.count)
-        }
+        unbusy()
 
         switch (response.status) {
           case 200:
@@ -92,7 +84,9 @@ export function onCommit (event) {
         }
       })
       .catch(function (err) {
-        console.log(err)
+        unbusy()
+        reset()
+        warning(`Error committing update (ERR:${err.message.toLowerCase()})`)
       })
   }
 }
@@ -128,21 +122,12 @@ export function onRollback (event) {
 }
 
 export function onRefresh (event) {
-  const windmill = document.getElementById('windmill')
-  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
-
-  windmill.dataset.count = (queued + 1).toString()
-
+  busy()
   dismiss()
 
   getAsJSON('/cardholders')
     .then(response => {
-      const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
-      if (queued > 1) {
-        windmill.dataset.count = (queued - 1).toString()
-      } else {
-        delete (windmill.dataset.count)
-      }
+      unbusy()
 
       switch (response.status) {
         case 200:
@@ -181,7 +166,7 @@ function updated (list) {
         item.parentElement.dataset.state = 'conflict'
       }
 
-      if (item.parentElement.dataset === 'pending') {
+      if (item.parentElement.dataset.state === 'pending') {
         item.parentElement.dataset.state = ''
       }
     }
@@ -213,4 +198,22 @@ function refresh (db) {
       }
     })
   })
+}
+
+function busy () {
+  const windmill = document.getElementById('windmill')
+  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+
+  windmill.dataset.count = (queued + 1).toString()
+}
+
+function unbusy () {
+  const windmill = document.getElementById('windmill')
+  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+
+  if (queued > 1) {
+    windmill.dataset.count = (queued - 1).toString()
+  } else {
+    delete (windmill.dataset.count)
+  }
 }

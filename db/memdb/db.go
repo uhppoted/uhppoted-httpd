@@ -133,6 +133,12 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 
 		for _, c := range shadow.Tables.CardHolders {
 			if c.Card.ID == id {
+				if value, ok := v.(uint32); ok {
+					c.Card.Number = uint32(value)
+					list.Updated[id] = c.Card.Number
+					continue
+				}
+
 				if _, ok := v.(string); ok {
 					value, err := strconv.ParseUint(v.(string), 10, 32)
 					if err != nil {
@@ -145,6 +151,13 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 
 					c.Card.Number = uint32(value)
 					list.Updated[id] = c.Card.Number
+					continue
+				}
+
+				return nil, &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Invalid card number (%v)", v),
+					Detail: fmt.Errorf("Error parsing card number for card %v - expected:uint32/string, got:%v", id, v),
 				}
 			}
 
@@ -201,6 +214,10 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 }
 
 func save(data interface{}, file string) error {
+	if file == "" {
+		return nil
+	}
+
 	b, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
 		return err
