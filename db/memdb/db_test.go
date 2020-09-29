@@ -59,8 +59,8 @@ func TestCardNumberUpdate(t *testing.T) {
 		t.Errorf("Incorrect return value: expected:%#v, got:%#v", expected, result)
 	}
 
-	if !reflect.DeepEqual(dbt, updated) {
-		t.Errorf("DB updated incorrectly: expected:%v, got:%v", updated, dbt)
+	if !reflect.DeepEqual(dbt.data, updated.data) {
+		t.Errorf("DB updated incorrectly: expected:%v, got:%v", updated.data, dbt.data)
 	}
 }
 
@@ -102,8 +102,8 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 		t.Errorf("Incorrect return value: expected:%#v, got:%#v", nil, result)
 	}
 
-	if !reflect.DeepEqual(dbt, updated) {
-		t.Errorf("DB updated incorrectly: expected:%v, got:%v", updated, dbt)
+	if !reflect.DeepEqual(dbt.data, updated.data) {
+		t.Errorf("DB updated incorrectly: expected:%v, got:%v", updated.data, dbt.data)
 	}
 }
 
@@ -155,7 +155,7 @@ func TestCardNumberSwap(t *testing.T) {
 		t.Errorf("Incorrect return value: expected:%#v, got:%#v", expected, result)
 	}
 
-	if !reflect.DeepEqual(dbt, updated) {
-		t.Errorf("DB updated incorrectly: expected:%v, got:%v", updated, dbt)
+	if !reflect.DeepEqual(dbt.data, updated.data) {
+		t.Errorf("DB updated incorrectly: expected:%v, got:%v", updated.data, dbt.data)
 	}
 }
