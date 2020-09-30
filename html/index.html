@@ -92,11 +92,14 @@
                   
                   <td class="group">
                     <img class="flag" />
-                    <span id="{{$member.ID}}" 
-                          onclick="onTick(event)"
-                          data-record="{{$cid}}" 
-                          data-original="{{$member.Value}}" 
-                          data-value="{{$member.Value}}">{{if $member.Value}}Y{{else}}N{{end}}</span>
+                    <input id="{{$member.ID}}"
+                           type="checkbox" 
+                           onclick="onTick(event)"
+                           data-record="{{$cid}}" 
+                           data-original="{{$member.Value}}" 
+                           data-value="{{$member.Value}}" 
+                           {{if $member.Value}}checked{{end}}/>
+                    <label for="{{$member.ID}}"><img /></label>
                   </td>{{end}}
                 </tr>{{else}}<tr class="empty"><td/><td/><td/><td/><td/><td/></tr>{{end}}
               </tbody>

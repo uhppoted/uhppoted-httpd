@@ -4,17 +4,19 @@
 
 - [ ] ACL
       - groups => rules => permissions
+      - wrap ACL update in goroutine
+        -- error handling ??
 
 - [ ] MemDB
       - convert tables to maps
 
 - [ ] Card holders
+      - mark modified fields for querySelectAll
+      - JS: throw error if response code != 200 (?)
       - dataset.state = none, modified, pending, conflict (DAG ? go back to previous on rollback?)
-      - wrap ACL update in goroutine
-        -- error handling ??
+      - DAG (????)
 
       - commit multiple rows
-      - rework 'groups' as checkboxes
       - use internal DB rather than JS dataset (?)
       - wrap templating in a decent error handler
       - from

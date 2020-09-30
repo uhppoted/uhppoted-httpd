@@ -149,8 +149,29 @@
   border: 1px solid red;
 }
 
-.tabular td.group{
+.tabular td.group {
   text-align: center;
+}
+
+.tabular td.group input[type="checkbox"] {
+  display: none;
+}
+
+.tabular td.group input[type="checkbox"] + label {
+  cursor: pointer;  
+}
+
+.tabular td.group label img {
+  width: 14x;
+  height: 14px;
+  padding: 2px;
+  content: url('http://127.0.0.1:8080/images/times-solid.svg');  
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+
+.tabular td.group input[type="checkbox"]:checked + label img {
+  content: url('http://127.0.0.1:8080/images/check-solid.svg');  
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%)
 }
 
 .tabular td.group span {

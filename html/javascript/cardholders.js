@@ -5,10 +5,7 @@ export function onEdited (event) {
 }
 
 export function onTick (event) {
-  const value = !(event.target.dataset.value === 'true')
-  event.target.innerText = value ? 'Y' : 'N'
-
-  set(event.target, value)
+  set(event.target, event.target.checked)
 }
 
 function set (element, value) {
@@ -46,7 +43,7 @@ export function onCommit (event) {
   if (row) {
     const update = {}
     const card = row.querySelector('.cardnumber input')
-    const groups = row.querySelectorAll('.group span')
+    const groups = row.querySelectorAll('.group input')
     const list = [card, ...groups]
 
     list.forEach((item) => {
@@ -97,7 +94,7 @@ export function onRollback (event) {
 
   if (row) {
     const card = row.querySelector('.cardnumber input')
-    const groups = row.querySelectorAll('.group span')
+    const groups = row.querySelectorAll('.group input')
     const list = [card, ...groups]
 
     list.forEach((item) => {
@@ -105,13 +102,13 @@ export function onRollback (event) {
         item.dataset.value = item.dataset.original
         item.parentElement.dataset.state = ''
 
-        switch (item.tagName.toLowerCase()) {
-          case 'input':
+        switch (item.getAttribute('type').toLowerCase()) {
+          case 'number':
             item.value = item.dataset.value
             break
 
-          case 'span':
-            item.innerHTML = item.dataset.value ? 'Y' : 'N'
+          case 'checkbox':
+            item.checked = item.dataset.value === 'true'
             break
         }
       }
@@ -151,13 +148,13 @@ function updated (list) {
       item.dataset.original = v
 
       if (item.parentElement.dataset.state !== 'modified') {
-        switch (item.tagName.toLowerCase()) {
-          case 'input':
+        switch (item.getAttribute('type').toLowerCase()) {
+          case 'number':
             item.value = v
             break
 
-          case 'span':
-            item.innerHTML = v ? 'Y' : 'N'
+          case 'checkbox':
+            item.checked = item.dataset.value === 'true'
             break
         }
       }
@@ -193,7 +190,7 @@ function refresh (db) {
       const g = document.getElementById(group.ID)
 
       if (g) {
-        g.innerHTML = group.Value ? 'Y' : 'N'
+        g.checked = group.Value
         set(g, group.Value)
       }
     })
