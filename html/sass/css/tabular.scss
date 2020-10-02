@@ -149,6 +149,24 @@
   border: 1px solid red;
 }
 
+.tabular td.from input {
+  width: 116px;
+  padding: 2px 4px 2px 4px;
+  margin-right: 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font: 400 0.9em Arial;
+  outline: none;
+}
+
+.tabular td[data-state='conflict'].from input {
+  background-color: theme.$content-table-item-conflict;
+}
+
+.tabular td.from input:focus {
+  border: 1px solid red;
+}
+
 .tabular td.group {
   text-align: center;
 }

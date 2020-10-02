@@ -11,6 +11,9 @@
       - convert tables to maps
 
 - [ ] Card holders
+      - from
+        - make composite type with unique ID
+
       - mark modified fields for querySelectAll
       - JS: throw error if response code != 200 (?)
       - dataset.state = none, modified, pending, conflict (DAG ? go back to previous on rollback?)
@@ -19,7 +22,6 @@
       - commit multiple rows
       - use internal DB rather than JS dataset (?)
       - wrap templating in a decent error handler
-      - from
       - to
       - name
       - add
@@ -98,6 +100,7 @@
 - [ ] [JWK](https://tools.ietf.org/html/rfc7517)
 - [ ] Support alternative auth providers e.g. auth0
 - [ ] gitdb (?)
+- [ ] [CRDT's](https://josephg.com/blog/crdts-are-the-future)
 
 ## NOTES
 

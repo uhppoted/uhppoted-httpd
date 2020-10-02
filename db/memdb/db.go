@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -129,6 +130,7 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 	shadow := d.data.copy()
 
 	for k, v := range u {
+		fmt.Printf(">> DEBUG: %v\n", k)
 		id := k
 
 		for _, c := range shadow.Tables.CardHolders {
@@ -158,6 +160,29 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 					Status: http.StatusBadRequest,
 					Err:    fmt.Errorf("Invalid card number (%v)", v),
 					Detail: fmt.Errorf("Error parsing card number for card %v - expected:uint32/string, got:%v", id, v),
+				}
+			}
+
+			if c.ID+".from" == id {
+				if _, ok := v.(string); ok {
+					value, err := time.Parse("2006-01-02", v.(string))
+					if err != nil {
+						return nil, &types.HttpdError{
+							Status: http.StatusBadRequest,
+							Err:    fmt.Errorf("Invalid 'from' date (%v)", v),
+							Detail: fmt.Errorf("Error parsing 'from' date %v: %w", v, err),
+						}
+					}
+
+					c.From = types.Date(value)
+					list.Updated[id] = c.From
+					continue
+				}
+
+				return nil, &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Invalid 'from' date (%v)", v),
+					Detail: fmt.Errorf("Error parsing 'from' date %v for card - expected:YYYY-MM-DD, got:%v", id, v),
 				}
 			}
 

@@ -43,8 +43,9 @@ export function onCommit (event) {
   if (row) {
     const update = {}
     const card = row.querySelector('.cardnumber input')
+    const from = row.querySelector('.from input')
     const groups = row.querySelectorAll('.group input')
-    const list = [card, ...groups]
+    const list = [card, from, ...groups]
 
     list.forEach((item) => {
       if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
