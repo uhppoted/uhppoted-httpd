@@ -89,13 +89,14 @@
 
                   <td class="from">
                     <img class="flag" />
-                    <input id="{{$cardholder.ID}}.from" 
+                    <input id="{{$cardholder.From.ID}}" 
                            type="date" 
                            value="{{$cardholder.From.Format "2006-01-02"}}"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$cardholder.From.Format "2006-01-02"}}"
-                           data-value="{{$cardholder.From.Format "2006-01-02"}}" />
+                           data-value="{{$cardholder.From.Format "2006-01-02"}}" 
+                           required />
                   </td>
 
                   <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$member := $cardholder.Groups}}

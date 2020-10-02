@@ -130,7 +130,6 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 	shadow := d.data.copy()
 
 	for k, v := range u {
-		fmt.Printf(">> DEBUG: %v\n", k)
 		id := k
 
 		for _, c := range shadow.Tables.CardHolders {
@@ -163,7 +162,7 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 				}
 			}
 
-			if c.ID+".from" == id {
+			if c.From.ID == id {
 				if _, ok := v.(string); ok {
 					value, err := time.Parse("2006-01-02", v.(string))
 					if err != nil {
@@ -174,8 +173,8 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 						}
 					}
 
-					c.From = types.Date(value)
-					list.Updated[id] = c.From
+					c.From.Date = value
+					list.Updated[id] = c.From.Format("2006-01-02")
 					continue
 				}
 

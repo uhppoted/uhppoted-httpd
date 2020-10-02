@@ -9,10 +9,10 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func date(s string) types.Date {
+func date(s string) time.Time {
 	date, _ := time.ParseInLocation("2006-01-02", s, time.Local)
 
-	return types.Date(date)
+	return date
 }
 
 func TestCardNumberUpdate(t *testing.T) {
@@ -21,7 +21,14 @@ func TestCardNumberUpdate(t *testing.T) {
 			Tables: tables{
 				Groups: []*db.Group{},
 				CardHolders: []*db.CardHolder{
-					&db.CardHolder{ID: "C01", Name: "Hagrid", Card: db.Card{ID: "CARD01", Number: 6514231}, From: date("2021-01-02"), To: date("2021-12-31"), Groups: []*db.Permission{}},
+					&db.CardHolder{
+						ID:     "C01",
+						Name:   "Hagrid",
+						Card:   db.Card{ID: "CARD01", Number: 6514231},
+						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
+						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
+						Groups: []*db.Permission{},
+					},
 				},
 			},
 		},
@@ -44,7 +51,14 @@ func TestCardNumberUpdate(t *testing.T) {
 			Tables: tables{
 				Groups: []*db.Group{},
 				CardHolders: []*db.CardHolder{
-					&db.CardHolder{ID: "C01", Name: "Hagrid", Card: db.Card{ID: "CARD01", Number: 1234567}, From: date("2021-01-02"), To: date("2021-12-31"), Groups: []*db.Permission{}},
+					&db.CardHolder{
+						ID:     "C01",
+						Name:   "Hagrid",
+						Card:   db.Card{ID: "CARD01", Number: 1234567},
+						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
+						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
+						Groups: []*db.Permission{},
+					},
 				},
 			},
 		},
@@ -70,8 +84,24 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 			Tables: tables{
 				Groups: []*db.Group{},
 				CardHolders: []*db.CardHolder{
-					&db.CardHolder{ID: "C01", Name: "Hagrid", Card: db.Card{ID: "CARD01", Number: 6514231}, From: date("2021-01-02"), To: date("2021-12-31"), Groups: []*db.Permission{}},
-					&db.CardHolder{ID: "C02", Name: "Dobby", Card: db.Card{ID: "CARD02", Number: 1234567}, From: date("2021-01-02"), To: date("2021-12-31"), Groups: []*db.Permission{}},
+					&db.CardHolder{
+						ID:   "C01",
+						Name: "Hagrid",
+						Card: db.Card{ID: "CARD01",
+							Number: 6514231},
+						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
+						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
+						Groups: []*db.Permission{},
+					},
+
+					&db.CardHolder{
+						ID:   "C02",
+						Name: "Dobby",
+						Card: db.Card{ID: "CARD02",
+							Number: 1234567},
+						From:   types.Date{ID: "C02.from", Date: date("2021-01-02")},
+						To:     types.Date{ID: "C02.to", Date: date("2021-12-31")},
+						Groups: []*db.Permission{}},
 				},
 			},
 		},
@@ -86,8 +116,23 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 			Tables: tables{
 				Groups: []*db.Group{},
 				CardHolders: []*db.CardHolder{
-					&db.CardHolder{ID: "C01", Name: "Hagrid", Card: db.Card{ID: "CARD01", Number: 6514231}, From: date("2021-01-02"), To: date("2021-12-31"), Groups: []*db.Permission{}},
-					&db.CardHolder{ID: "C02", Name: "Dobby", Card: db.Card{ID: "CARD02", Number: 1234567}, From: date("2021-01-02"), To: date("2021-12-31"), Groups: []*db.Permission{}},
+					&db.CardHolder{
+						ID:     "C01",
+						Name:   "Hagrid",
+						Card:   db.Card{ID: "CARD01", Number: 6514231},
+						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
+						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
+						Groups: []*db.Permission{},
+					},
+
+					&db.CardHolder{
+						ID:     "C02",
+						Name:   "Dobby",
+						Card:   db.Card{ID: "CARD02", Number: 1234567},
+						From:   types.Date{ID: "C02.from", Date: date("2021-01-02")},
+						To:     types.Date{ID: "C02.to", Date: date("2021-12-31")},
+						Groups: []*db.Permission{},
+					},
 				},
 			},
 		},
@@ -113,8 +158,23 @@ func TestCardNumberSwap(t *testing.T) {
 			Tables: tables{
 				Groups: []*db.Group{},
 				CardHolders: []*db.CardHolder{
-					&db.CardHolder{ID: "C01", Name: "Hagrid", Card: db.Card{ID: "CARD01", Number: 6514231}, From: date("2021-01-02"), To: date("2021-12-31"), Groups: []*db.Permission{}},
-					&db.CardHolder{ID: "C02", Name: "Dobby", Card: db.Card{ID: "CARD02", Number: 1234567}, From: date("2021-01-02"), To: date("2021-12-31"), Groups: []*db.Permission{}},
+					&db.CardHolder{
+						ID:     "C01",
+						Name:   "Hagrid",
+						Card:   db.Card{ID: "CARD01", Number: 6514231},
+						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
+						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
+						Groups: []*db.Permission{},
+					},
+
+					&db.CardHolder{
+						ID:     "C02",
+						Name:   "Dobby",
+						Card:   db.Card{ID: "CARD02", Number: 1234567},
+						From:   types.Date{ID: "C02.from", Date: date("2021-01-02")},
+						To:     types.Date{ID: "C02.to", Date: date("2021-12-31")},
+						Groups: []*db.Permission{},
+					},
 				},
 			},
 		},
@@ -139,8 +199,23 @@ func TestCardNumberSwap(t *testing.T) {
 			Tables: tables{
 				Groups: []*db.Group{},
 				CardHolders: []*db.CardHolder{
-					&db.CardHolder{ID: "C01", Name: "Hagrid", Card: db.Card{ID: "CARD01", Number: 1234567}, From: date("2021-01-02"), To: date("2021-12-31"), Groups: []*db.Permission{}},
-					&db.CardHolder{ID: "C02", Name: "Dobby", Card: db.Card{ID: "CARD02", Number: 6514231}, From: date("2021-01-02"), To: date("2021-12-31"), Groups: []*db.Permission{}},
+					&db.CardHolder{
+						ID:     "C01",
+						Name:   "Hagrid",
+						Card:   db.Card{ID: "CARD01", Number: 1234567},
+						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
+						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
+						Groups: []*db.Permission{},
+					},
+
+					&db.CardHolder{
+						ID:     "C02",
+						Name:   "Dobby",
+						Card:   db.Card{ID: "CARD02", Number: 6514231},
+						From:   types.Date{ID: "C02.from", Date: date("2021-01-02")},
+						To:     types.Date{ID: "C02.to", Date: date("2021-12-31")},
+						Groups: []*db.Permission{},
+					},
 				},
 			},
 		},

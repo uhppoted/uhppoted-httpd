@@ -9,12 +9,15 @@
 
 - [ ] MemDB
       - convert tables to maps
+      - JSON field names to lowercase
 
 - [ ] Card holders
-      - from
-        - make composite type with unique ID
-
+      - to
+      - Change indicator to little triangle in top left (?)
+      - Firefox not displaying ticks
       - mark modified fields for querySelectAll
+      - generize Go:CardHolder fields to implement e.g. Value and return update as list<Value>
+      - rename Go:Permissions to e.g. Membership
       - JS: throw error if response code != 200 (?)
       - dataset.state = none, modified, pending, conflict (DAG ? go back to previous on rollback?)
       - DAG (????)
@@ -22,7 +25,6 @@
       - commit multiple rows
       - use internal DB rather than JS dataset (?)
       - wrap templating in a decent error handler
-      - to
       - name
       - add
       - delete
