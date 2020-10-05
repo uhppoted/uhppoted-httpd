@@ -42,12 +42,9 @@ export function onCommit (event) {
 
   if (row) {
     const update = {}
-    const card = row.querySelector('.cardnumber input')
-    const from = row.querySelector('.from input')
-    const groups = row.querySelectorAll('.group input')
-    const list = [card, from, ...groups]
+    const fields = row.querySelectorAll('.field')
 
-    list.forEach((item) => {
+    fields.forEach((item) => {
       if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
         update[item.id] = item.dataset.value
 
@@ -94,17 +91,19 @@ export function onRollback (event) {
   const row = document.getElementById(id)
 
   if (row) {
-    const card = row.querySelector('.cardnumber input')
-    const groups = row.querySelectorAll('.group input')
-    const list = [card, ...groups]
+    const fields = row.querySelectorAll('.field')
 
-    list.forEach((item) => {
+    fields.forEach((item) => {
       if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
         item.dataset.value = item.dataset.original
         item.parentElement.dataset.state = ''
 
         switch (item.getAttribute('type').toLowerCase()) {
           case 'number':
+            item.value = item.dataset.value
+            break
+
+          case 'date':
             item.value = item.dataset.value
             break
 
@@ -154,6 +153,10 @@ function updated (list) {
             item.value = v
             break
 
+          case 'date':
+            item.value = v
+            break
+
           case 'checkbox':
             item.checked = item.dataset.value === 'true'
             break
@@ -185,6 +188,18 @@ function refresh (db) {
     if (card) {
       card.value = record.Card.Number
       set(card, record.Card.Number)
+    }
+
+    const from = document.getElementById(record.From.ID)
+    if (from) {
+      from.value = record.From.Date
+      set(from, record.From.Date)
+    }
+
+    const to = document.getElementById(record.To.ID)
+    if (to) {
+      to.value = record.To.Date
+      set(to, record.To.Date)
     }
 
     record.Groups.forEach((group) => {

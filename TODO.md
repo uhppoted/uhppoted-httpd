@@ -10,12 +10,13 @@
 - [ ] MemDB
       - convert tables to maps
       - JSON field names to lowercase
+      - JSON field value name should be 'value' or somesuch
 
 - [ ] Card holders
-      - to
+      - weird formatting issue on dates after submit/updated
+      - mark modified fields for querySelectAll
       - Change indicator to little triangle in top left (?)
       - Firefox not displaying ticks
-      - mark modified fields for querySelectAll
       - generize Go:CardHolder fields to implement e.g. Value and return update as list<Value>
       - rename Go:Permissions to e.g. Membership
       - JS: throw error if response code != 200 (?)

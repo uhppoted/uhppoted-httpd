@@ -12,6 +12,15 @@ type DB interface {
 	ACL() ([]types.Permissions, error)
 }
 
+type CardHolder struct {
+	ID     string
+	Name   string
+	Card   Card
+	From   types.Date
+	To     types.Date
+	Groups []*Permission
+}
+
 type Card struct {
 	ID     string
 	Number uint32
@@ -21,15 +30,6 @@ type Group struct {
 	ID    string
 	Name  string
 	Doors []string
-}
-
-type CardHolder struct {
-	ID     string
-	Name   string
-	Card   Card
-	From   types.Date
-	To     types.Date
-	Groups []*Permission
 }
 
 type Permission struct {

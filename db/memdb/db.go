@@ -185,6 +185,29 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 				}
 			}
 
+			if c.To.ID == id {
+				if _, ok := v.(string); ok {
+					value, err := time.Parse("2006-01-02", v.(string))
+					if err != nil {
+						return nil, &types.HttpdError{
+							Status: http.StatusBadRequest,
+							Err:    fmt.Errorf("Invalid 'to' date (%v)", v),
+							Detail: fmt.Errorf("Error parsing 'to' date %v: %w", v, err),
+						}
+					}
+
+					c.To.Date = value
+					list.Updated[id] = c.To.Format("2006-01-02")
+					continue
+				}
+
+				return nil, &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Invalid 'to' date (%v)", v),
+					Detail: fmt.Errorf("Error parsing 'to' date %v for card - expected:YYYY-MM-DD, got:%v", id, v),
+				}
+			}
+
 			for _, g := range c.Groups {
 				if g.ID == id {
 					if value, ok := v.(bool); ok {

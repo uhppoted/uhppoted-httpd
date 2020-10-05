@@ -79,6 +79,7 @@
                   <td class="cardnumber">                  
                     <img class="flag" />
                     <input id="{{$cardholder.Card.ID}}" 
+                           class="field"
                            type="number" 
                            value="{{$cardholder.Card.Number}}"
                            onchange="onEdited(event)" 
@@ -90,6 +91,7 @@
                   <td class="from">
                     <img class="flag" />
                     <input id="{{$cardholder.From.ID}}" 
+                           class="field"
                            type="date" 
                            value="{{$cardholder.From.Format "2006-01-02"}}"
                            onchange="onEdited(event)" 
@@ -99,11 +101,24 @@
                            required />
                   </td>
 
-                  <td>{{$cardholder.To.Format "2006-01-02" }}</td>{{range $gid,$member := $cardholder.Groups}}
-                  
+                  <td class="to">
+                    <img class="flag" />
+                    <input id="{{$cardholder.To.ID}}" 
+                           class="field"
+                           type="date" 
+                           value="{{$cardholder.To.Format "2006-01-02"}}"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{$cardholder.To.Format "2006-01-02"}}"
+                           data-value="{{$cardholder.To.Format "2006-01-02"}}" 
+                           required />
+                  </td>
+
+                  {{range $gid,$member := $cardholder.Groups}}
                   <td class="group">
                     <img class="flag" />
                     <input id="{{$member.ID}}"
+                           class="field"
                            type="checkbox" 
                            onclick="onTick(event)"
                            data-record="{{$cid}}" 
