@@ -23,7 +23,7 @@ func TestCardNumberUpdate(t *testing.T) {
 				CardHolders: []*db.CardHolder{
 					&db.CardHolder{
 						ID:     "C01",
-						Name:   "Hagrid",
+						Name:   db.Name{ID: "C01.name", Name: "Hagrid"},
 						Card:   db.Card{ID: "CARD01", Number: 6514231},
 						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
 						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
@@ -53,7 +53,7 @@ func TestCardNumberUpdate(t *testing.T) {
 				CardHolders: []*db.CardHolder{
 					&db.CardHolder{
 						ID:     "C01",
-						Name:   "Hagrid",
+						Name:   db.Name{ID: "C01.name", Name: "Hagrid"},
 						Card:   db.Card{ID: "CARD01", Number: 1234567},
 						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
 						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
@@ -85,20 +85,18 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 				Groups: []*db.Group{},
 				CardHolders: []*db.CardHolder{
 					&db.CardHolder{
-						ID:   "C01",
-						Name: "Hagrid",
-						Card: db.Card{ID: "CARD01",
-							Number: 6514231},
+						ID:     "C01",
+						Name:   db.Name{ID: "C01.name", Name: "Hagrid"},
+						Card:   db.Card{ID: "CARD01", Number: 6514231},
 						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
 						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
 						Groups: []*db.Permission{},
 					},
 
 					&db.CardHolder{
-						ID:   "C02",
-						Name: "Dobby",
-						Card: db.Card{ID: "CARD02",
-							Number: 1234567},
+						ID:     "C02",
+						Name:   db.Name{ID: "C02.name", Name: "Dobby"},
+						Card:   db.Card{ID: "CARD02", Number: 1234567},
 						From:   types.Date{ID: "C02.from", Date: date("2021-01-02")},
 						To:     types.Date{ID: "C02.to", Date: date("2021-12-31")},
 						Groups: []*db.Permission{}},
@@ -118,7 +116,7 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 				CardHolders: []*db.CardHolder{
 					&db.CardHolder{
 						ID:     "C01",
-						Name:   "Hagrid",
+						Name:   db.Name{ID: "C01.name", Name: "Hagrid"},
 						Card:   db.Card{ID: "CARD01", Number: 6514231},
 						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
 						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
@@ -127,7 +125,7 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 
 					&db.CardHolder{
 						ID:     "C02",
-						Name:   "Dobby",
+						Name:   db.Name{ID: "C02.name", Name: "Dobby"},
 						Card:   db.Card{ID: "CARD02", Number: 1234567},
 						From:   types.Date{ID: "C02.from", Date: date("2021-01-02")},
 						To:     types.Date{ID: "C02.to", Date: date("2021-12-31")},
@@ -160,7 +158,7 @@ func TestCardNumberSwap(t *testing.T) {
 				CardHolders: []*db.CardHolder{
 					&db.CardHolder{
 						ID:     "C01",
-						Name:   "Hagrid",
+						Name:   db.Name{ID: "C01.name", Name: "Hagrid"},
 						Card:   db.Card{ID: "CARD01", Number: 6514231},
 						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
 						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
@@ -169,8 +167,8 @@ func TestCardNumberSwap(t *testing.T) {
 
 					&db.CardHolder{
 						ID:     "C02",
-						Name:   "Dobby",
-						Card:   db.Card{ID: "CARD02", Number: 1234567},
+						Card:   db.Card{ID: "CARD02", Number: 6514231},
+						Name:   db.Name{ID: "C02.name", Name: "Dobby"},
 						From:   types.Date{ID: "C02.from", Date: date("2021-01-02")},
 						To:     types.Date{ID: "C02.to", Date: date("2021-12-31")},
 						Groups: []*db.Permission{},
@@ -201,7 +199,7 @@ func TestCardNumberSwap(t *testing.T) {
 				CardHolders: []*db.CardHolder{
 					&db.CardHolder{
 						ID:     "C01",
-						Name:   "Hagrid",
+						Name:   db.Name{ID: "C01.name", Name: "Hagrid"},
 						Card:   db.Card{ID: "CARD01", Number: 1234567},
 						From:   types.Date{ID: "C01.from", Date: date("2021-01-02")},
 						To:     types.Date{ID: "C01.to", Date: date("2021-12-31")},
@@ -210,7 +208,7 @@ func TestCardNumberSwap(t *testing.T) {
 
 					&db.CardHolder{
 						ID:     "C02",
-						Name:   "Dobby",
+						Name:   db.Name{ID: "C02.name", Name: "Dobby"},
 						Card:   db.Card{ID: "CARD02", Number: 6514231},
 						From:   types.Date{ID: "C02.from", Date: date("2021-01-02")},
 						To:     types.Date{ID: "C02.to", Date: date("2021-12-31")},
