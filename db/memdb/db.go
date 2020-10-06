@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -133,6 +134,20 @@ func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
 		id := k
 
 		for _, c := range shadow.Tables.CardHolders {
+			if c.Name.ID == id {
+				if value, ok := v.(string); ok {
+					c.Name.Name = strings.TrimSpace(value)
+					list.Updated[id] = c.Name.Name
+					continue
+				}
+
+				return nil, &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Invalid card holder name (%v)", v),
+					Detail: fmt.Errorf("Error parsing card holder name for card %v - string, got:%v", id, v),
+				}
+			}
+
 			if c.Card.ID == id {
 				if value, ok := v.(uint32); ok {
 					c.Card.Number = uint32(value)

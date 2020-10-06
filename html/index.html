@@ -70,7 +70,18 @@
               <tbody>{{range $cardholder := .db.CardHolders}}
                  {{$cid := $cardholder.ID}}
                  <tr id="{{$cid}}">
-                  <td class="name">{{$cardholder.Name}}</td>
+                  <td class="name">
+                    <img class="flag" />
+                    <input id="{{$cardholder.Name.ID}}" 
+                           class="field"
+                           type="text" 
+                           value="{{$cardholder.Name.Name}}"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{$cardholder.Name.Name}}"
+                           data-value="{{$cardholder.Name.Name}}" />
+                  </td>
+
                   <td class="controls">
                     <span class="commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
                     <span class="rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>

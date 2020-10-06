@@ -14,11 +14,16 @@ type DB interface {
 
 type CardHolder struct {
 	ID     string
-	Name   string
+	Name   Name
 	Card   Card
 	From   types.Date
 	To     types.Date
 	Groups []*Permission
+}
+
+type Name struct {
+	ID   string
+	Name string
 }
 
 type Card struct {
@@ -52,8 +57,11 @@ func (g *Group) Copy() *Group {
 
 func (c *CardHolder) Copy() *CardHolder {
 	replicant := &CardHolder{
-		ID:   c.ID,
-		Name: c.Name,
+		ID: c.ID,
+		Name: Name{
+			ID:   c.Name.ID,
+			Name: c.Name.Name,
+		},
 		Card: Card{
 			ID:     c.Card.ID,
 			Number: c.Card.Number,

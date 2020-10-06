@@ -92,6 +92,22 @@
   border-right: 0;
 }
 
+.tabular td.name input {
+  width: 120px;
+  padding: 2px 4px 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  outline: none;
+}
+
+.tabular td[data-state='conflict'].name input {
+  background-color: theme.$content-table-item-conflict;
+}
+
+.tabular td.name input:focus {
+  border: 1px solid red;
+}
+
 .tabular td.controls {
   border-left: 0;
   border-right: 0;
@@ -150,7 +166,7 @@
 }
 
 .tabular td.from input {
-  width: 116px;
+  width: 120px;
   padding: 2px 4px 2px 4px;
   margin-right: 4px;
   border: 1px solid transparent;
@@ -168,7 +184,7 @@
 }
 
 .tabular td.to input {
-  width: 116px;
+  width: 120px;
   padding: 2px 4px 2px 4px;
   margin-right: 4px;
   border: 1px solid transparent;
@@ -201,12 +217,12 @@
   width: 14x;
   height: 14px;
   padding: 2px;
-  content: url('http://127.0.0.1:8080/images/times-solid.svg');  
+  content: url('../images/times-solid.svg');  
   filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
 }
 
 .tabular td.group input[type="checkbox"]:checked + label img {
-  content: url('http://127.0.0.1:8080/images/check-solid.svg');  
+  content: url('../images/check-solid.svg');  
   filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%)
 }
 

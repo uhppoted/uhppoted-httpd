@@ -99,10 +99,8 @@ export function onRollback (event) {
         item.parentElement.dataset.state = ''
 
         switch (item.getAttribute('type').toLowerCase()) {
+          case 'text':
           case 'number':
-            item.value = item.dataset.value
-            break
-
           case 'date':
             item.value = item.dataset.value
             break
@@ -149,10 +147,8 @@ function updated (list) {
 
       if (item.parentElement.dataset.state !== 'modified') {
         switch (item.getAttribute('type').toLowerCase()) {
+          case 'text':
           case 'number':
-            item.value = v
-            break
-
           case 'date':
             item.value = v
             break
@@ -182,6 +178,12 @@ function refresh (db) {
 
     if (row) {
       delete (row.dataset.modified)
+    }
+
+    const name = document.getElementById(record.Name.ID)
+    if (name) {
+      name.value = record.Name.Name
+      set(name, record.Name.Name)
     }
 
     const card = document.getElementById(record.Card.ID)
