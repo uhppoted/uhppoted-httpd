@@ -136,7 +136,10 @@
                            data-original="{{$member.Value}}" 
                            data-value="{{$member.Value}}" 
                            {{if $member.Value}}checked{{end}}/>
-                    <label for="{{$member.ID}}"><img /></label>
+                    <label for="{{$member.ID}}">
+                      <img class="no"  src="images/times-solid.svg" />
+                      <img class="yes" src="images/check-solid.svg" />
+                    </label>
                   </td>{{end}}
                 </tr>{{else}}<tr class="empty"><td/><td/><td/><td/><td/><td/></tr>{{end}}
               </tbody>

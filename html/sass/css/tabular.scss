@@ -202,7 +202,6 @@
 }
 
 .tabular td.group {
-  text-align: center;
 }
 
 .tabular td.group input[type="checkbox"] {
@@ -211,54 +210,31 @@
 
 .tabular td.group input[type="checkbox"] + label {
   cursor: pointer;  
+  background:blue;
 }
 
 .tabular td.group label img {
-  width: 14x;
+  width: 14px;
   height: 14px;
   padding: 2px;
-  content: url('../images/times-solid.svg');  
-  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+  margin: auto;
 }
 
-.tabular td.group input[type="checkbox"]:checked + label img {
-  content: url('../images/check-solid.svg');  
+.tabular td.group label img.yes {
+  display: none;
   filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%)
 }
 
-.tabular td.group span {
-  padding: 0px 4px 0px 4px;
-  user-select: none;
-  cursor: pointer;
+.tabular td.group label img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
 }
 
-.tabular td.group span[data-value='true'] {
-  color: theme.$content-table-yes;
-  font-style: normal;
-  font-weight: bold;
+.tabular td.group input[type="checkbox"]:checked + label img.yes {
+  display: block;
 }
 
-.tabular td.group span[data-value='false'] {
-  color: theme.$content-table-no;
-  font-style: italic;
-  font-weight: 100;
-}
-
-.tabular td[data-state='modified'].group span {
-  border: 2px solid red;
-  border-radius: 3px;
-}
-
-.tabular td[data-state='conflict'].group span {
-  background-color: theme.$content-table-item-conflict;
-}
-
-.tabular td.group span[data-pending] {
-  background-color: theme.$content-table-background-pending;
-}
-
-.tabular td[data-conflict].group span {
-  border-radius: 3px;
-  background-color: theme.$content-table-item-conflict;
+.tabular td.group input[type="checkbox"]:checked + label img.no {
+  display: none;
 }
 

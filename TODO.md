@@ -12,7 +12,6 @@
       - JSON field names to lowercase
 
 - [ ] Card holders
-      - Firefox not displaying ticks
       - genericize JS:refresh
       - font/tick colours: modified: orange(?), pending: blue, conflict: red
         -- https://css-tricks.com/replace-the-image-in-an-img-with-css/
