@@ -64,29 +64,27 @@
 // Ref. https://stackoverflow.com/questions/22252472/how-to-change-the-color-of-an-svg-element/53336754#53336754
 .tabular td img.flag {
   position: absolute;
-  right: 2px;
-  top: 2px;
-  width: 8px;
-  height: 8px;
-  content: url('http://127.0.0.1:8080/images/star-solid.svg');  
-  filter: invert(99%) sepia(14%) saturate(1022%) hue-rotate(322deg) brightness(95%) contrast(95%);
+  left: 0px;
+  top: 0px;
+  width: 10px;
+  height: 10px;
   visibility: hidden;
  }
 
 .tabular td[data-state='modified'] img.flag {
   filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
   visibility: visible;
- }
+}
 
 .tabular td[data-state='pending'] img.flag {
   filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
   visibility: visible;
- }
+}
 
 .tabular td[data-state='conflict'] img.flag {
   filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
   visibility: visible;
- }
+}
 
 .tabular td.name {
   border-right: 0;
@@ -145,7 +143,6 @@
 .tabular td.cardnumber input {
   width: 80px;
   padding: 2px 4px 2px 4px;
-  margin-right: 8px;
   border: 1px solid transparent;
   border-radius: 3px;
   outline: none;
@@ -168,7 +165,6 @@
 .tabular td.from input {
   width: 120px;
   padding: 2px 4px 2px 4px;
-  margin-right: 4px;
   border: 1px solid transparent;
   border-radius: 3px;
   font: 400 0.9em Arial;
@@ -186,7 +182,6 @@
 .tabular td.to input {
   width: 120px;
   padding: 2px 4px 2px 4px;
-  margin-right: 4px;
   border: 1px solid transparent;
   border-radius: 3px;
   font: 400 0.9em Arial;

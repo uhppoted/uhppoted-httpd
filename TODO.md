@@ -12,11 +12,8 @@
       - JSON field names to lowercase
 
 - [ ] Card holders
+      - refresh after other-browser-edit flags fields as edited :-(
       - genericize JS:refresh
-      - font/tick colours: modified: orange(?), pending: blue, conflict: red
-        -- https://css-tricks.com/replace-the-image-in-an-img-with-css/
-      - mark modified fields for querySelectAll
-      - Change indicator to little triangle in top left (?)
       - generize Go:CardHolder fields to implement e.g. Value and return update as list<Value>
       - rename Go:Permissions to e.g. Membership
       - JS: throw error if response code != 200 (?)
@@ -24,14 +21,16 @@
       - DAG (????)
 
       - commit multiple rows
+      - commit-all
+      - rollback-all
       - use internal DB rather than JS dataset (?)
       - wrap templating in a decent error handler
       - add
       - delete
+      - scroll horizontally
+      - scroll vertically
       - audit trail
       - virtual DOM
-      - commit-all
-      - rollback-all
       - search & pin
       - gzip response
       - labels from translations

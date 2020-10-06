@@ -71,7 +71,7 @@
                  {{$cid := $cardholder.ID}}
                  <tr id="{{$cid}}">
                   <td class="name">
-                    <img class="flag" />
+                    <img class="flag" src="images/corner.svg" />
                     <input id="{{$cardholder.Name.ID}}" 
                            class="field"
                            type="text" 
@@ -88,7 +88,7 @@
                   </td>
                   
                   <td class="cardnumber">                  
-                    <img class="flag" />
+                    <img class="flag" src="images/corner.svg" />
                     <input id="{{$cardholder.Card.ID}}" 
                            class="field"
                            type="number" 
@@ -100,7 +100,7 @@
                   </td>
 
                   <td class="from">
-                    <img class="flag" />
+                    <img class="flag" src="images/corner.svg" />
                     <input id="{{$cardholder.From.ID}}" 
                            class="field"
                            type="date" 
@@ -113,7 +113,7 @@
                   </td>
 
                   <td class="to">
-                    <img class="flag" />
+                    <img class="flag" src="images/corner.svg" />
                     <input id="{{$cardholder.To.ID}}" 
                            class="field"
                            type="date" 
@@ -127,7 +127,7 @@
 
                   {{range $gid,$member := $cardholder.Groups}}
                   <td class="group">
-                    <img class="flag" />
+                    <img class="flag" src="images/corner.svg" />
                     <input id="{{$member.ID}}"
                            class="field"
                            type="checkbox" 
