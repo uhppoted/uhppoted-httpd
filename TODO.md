@@ -12,13 +12,11 @@
       - JSON field names to lowercase
 
 - [ ] Card holders
-      - refresh after other-browser-edit flags fields as edited :-(
+      - replace dataset.value with get()
+      - draw out local record state transitions
       - genericize JS:refresh
-      - generize Go:CardHolder fields to implement e.g. Value and return update as list<Value>
       - rename Go:Permissions to e.g. Membership
       - JS: throw error if response code != 200 (?)
-      - dataset.state = none, modified, pending, conflict (DAG ? go back to previous on rollback?)
-      - DAG (????)
 
       - commit multiple rows
       - commit-all

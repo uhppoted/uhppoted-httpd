@@ -13,26 +13,20 @@ function set (element, value) {
   const row = document.getElementById(rowid)
   const original = element.dataset.original
   const v = value.toString()
-  let modified = false
 
   element.dataset.value = v
 
   if (v !== original) {
-    element.parentElement.dataset.state = 'modified'
+    element.parentElement.classList.add('modified')
   } else {
-    element.parentElement.dataset.state = ''
+    element.parentElement.classList.remove('modified')
   }
 
-  Array.from(row.children).forEach((item) => {
-    if (item.dataset.state === 'modified') {
-      modified = true
-    }
-  })
-
-  if (modified) {
-    row.dataset.modified = 'true'
+  const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
+  if (unmodified) {
+    row.classList.remove('modified')
   } else {
-    delete row.dataset.modified
+    row.classList.add('modified')
   }
 }
 
@@ -48,18 +42,20 @@ export function onCommit (event) {
       if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
         update[item.id] = item.dataset.value
 
-        item.parentElement.dataset.state = 'pending'
+        item.parentElement.classList.add('pending')
+        item.parentElement.classList.remove('modified')
       }
     })
 
-    delete (row.dataset.modified)
+    row.classList.remove('modified')
 
     const reset = function () {
       Object.entries(update).forEach(([k, v]) => {
-        document.getElementById(k).parentElement.dataset.state = 'modified'
+        document.getElementById(k).parentElement.classList.remove('pending')
+        document.getElementById(k).parentElement.classList.add('modified')
       })
 
-      row.dataset.modified = 'true'
+      row.classList.add('modified')
     }
 
     busy()
@@ -96,7 +92,7 @@ export function onRollback (event) {
     fields.forEach((item) => {
       if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
         item.dataset.value = item.dataset.original
-        item.parentElement.dataset.state = ''
+        item.parentElement.classList.remove('modified')
 
         switch (item.getAttribute('type').toLowerCase()) {
           case 'text':
@@ -112,7 +108,7 @@ export function onRollback (event) {
       }
     })
 
-    delete (row.dataset.modified)
+    row.classList.remove('modified')
   }
 }
 
@@ -140,33 +136,7 @@ export function onRefresh (event) {
 
 function updated (list) {
   for (const [k, v] of Object.entries(list)) {
-    const item = document.getElementById(k)
-
-    if (item) {
-      item.dataset.original = v
-
-      if (item.parentElement.dataset.state !== 'modified') {
-        switch (item.getAttribute('type').toLowerCase()) {
-          case 'text':
-          case 'number':
-          case 'date':
-            item.value = v
-            break
-
-          case 'checkbox':
-            item.checked = item.dataset.value === 'true'
-            break
-        }
-      }
-
-      if (item.dataset.value !== v.toString()) {
-        item.parentElement.dataset.state = 'conflict'
-      }
-
-      if (item.parentElement.dataset.state === 'pending') {
-        item.parentElement.dataset.state = ''
-      }
-    }
+    update(document.getElementById(k), v)
   }
 }
 
@@ -174,45 +144,69 @@ function refresh (db) {
   const records = db.cardholders
 
   records.forEach((record) => {
-    const row = document.getElementById(record.ID)
-
-    if (row) {
-      delete (row.dataset.modified)
-    }
-
     const name = document.getElementById(record.Name.ID)
-    if (name) {
-      name.value = record.Name.Name
-      set(name, record.Name.Name)
-    }
-
     const card = document.getElementById(record.Card.ID)
-    if (card) {
-      card.value = record.Card.Number
-      set(card, record.Card.Number)
-    }
-
     const from = document.getElementById(record.From.ID)
-    if (from) {
-      from.value = record.From.Date
-      set(from, record.From.Date)
-    }
-
     const to = document.getElementById(record.To.ID)
-    if (to) {
-      to.value = record.To.Date
-      set(to, record.To.Date)
+
+    update(name, record.Name.Name)
+    update(card, record.Card.Number)
+    update(from, record.From.Date)
+    update(to, record.To.Date)
+
+    record.Groups.forEach((group) => { update(document.getElementById(group.ID), group.Value) })
+  })
+}
+
+function update (element, value) {
+  const v = value.toString()
+
+  if (element) {
+    element.dataset.original = v
+
+    // check for conflicts with concurrently modified fields
+
+    if (element.parentElement.classList.contains('modified')) {
+      element.parentElement.classList.remove('pending')
+
+      if (element.dataset.value !== v.toString()) {
+        element.parentElement.classList.add('conflict')
+      } else {
+        element.parentElement.classList.remove('modified')
+        element.parentElement.classList.remove('conflict')
+      }
+
+      return
     }
 
-    record.Groups.forEach((group) => {
-      const g = document.getElementById(group.ID)
+    // mark fields with unexpected values after submit
 
-      if (g) {
-        g.checked = group.Value
-        set(g, group.Value)
+    if (element.parentElement.classList.contains('pending')) {
+      element.parentElement.classList.remove('pending')
+
+      if (element.dataset.value !== v.toString()) {
+        element.parentElement.classList.add('conflict')
+      } else {
+        element.parentElement.classList.remove('conflict')
       }
-    })
-  })
+    }
+
+    // update unmodified fields
+
+    switch (element.getAttribute('type').toLowerCase()) {
+      case 'text':
+      case 'number':
+      case 'date':
+        element.value = v
+        break
+
+      case 'checkbox':
+        element.checked = v
+        break
+    }
+
+    set(element, value)
+  }
 }
 
 function busy () {

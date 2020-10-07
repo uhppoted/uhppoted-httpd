@@ -1,3 +1,5 @@
+// Ref. https://stackoverflow.com/questions/22252472/how-to-change-the-color-of-an-svg-element/53336754#53336754
+
 @use 'solarize' as theme;
 
 .tabular {
@@ -18,7 +20,7 @@
   height: 32px;
 }
 
-.tabular tbody tr[data-modified] {
+.tabular tbody tr.modified {
   background: theme.$content-table-row-modified;
 }
 
@@ -61,7 +63,6 @@
   font-style: normal;
 }
 
-// Ref. https://stackoverflow.com/questions/22252472/how-to-change-the-color-of-an-svg-element/53336754#53336754
 .tabular td img.flag {
   position: absolute;
   left: 0px;
@@ -71,19 +72,19 @@
   visibility: hidden;
  }
 
-.tabular td[data-state='modified'] img.flag {
-  filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
-  visibility: visible;
+.tabular td.modified img.flag {
+   filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+   visibility: visible;
 }
 
-.tabular td[data-state='pending'] img.flag {
-  filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
-  visibility: visible;
+.tabular td.pending img.flag {
+   filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
+   visibility: visible;
 }
 
-.tabular td[data-state='conflict'] img.flag {
-  filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
-  visibility: visible;
+.tabular td.conflict img.flag {
+   filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
+   visibility: visible;
 }
 
 .tabular td.name {
@@ -98,7 +99,7 @@
   outline: none;
 }
 
-.tabular td[data-state='conflict'].name input {
+.tabular td.name.conflict input {
   background-color: theme.$content-table-item-conflict;
 }
 
@@ -128,15 +129,11 @@
   color: theme.$content-table-rollback;  
 }
 
-.tabular tbody tr[data-modified] td.controls span.commit {
+.tabular tbody tr.modified td.controls span.commit {
   visibility: visible;
 }
 
-.tabular tbody tr[data-modified] td.controls span.rollback {
-  visibility: visible;
-}
-
-.tabular tbody tr[data-modified] td.controls span.windmill {
+.tabular tbody tr.modified td.controls span.rollback {
   visibility: visible;
 }
 
@@ -154,7 +151,7 @@
   margin: 0; 
 }
 
-.tabular td[data-state='conflict'].cardnumber input {
+.tabular td.cardnumber.conflict input {
   background-color: theme.$content-table-item-conflict;
 }
 
@@ -171,7 +168,7 @@
   outline: none;
 }
 
-.tabular td[data-state='conflict'].from input {
+.tabular td.from.conflict input {
   background-color: theme.$content-table-item-conflict;
 }
 
@@ -188,7 +185,7 @@
   outline: none;
 }
 
-.tabular td[data-state='conflict'].toinput {
+.tabular td.to.conflict input {
   background-color: theme.$content-table-item-conflict;
 }
 
