@@ -124,12 +124,11 @@ export function onAdd (event) {
     const to = row.insertCell()
     const groups = []
 
-    // eslint-disable-next-line
+    /* eslint-disable */
     {{ range.db.Groups }} 
-    // eslint-disable-next-line
     groups.push(row.insertCell())
-    // eslint-disable-next-line
     {{ end }}
+    /* eslint-enable */
 
     name.classList.add('name')
     controls.classList.add('controls')
