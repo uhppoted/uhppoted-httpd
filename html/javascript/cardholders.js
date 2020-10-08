@@ -112,6 +112,34 @@ export function onRollback (event) {
   }
 }
 
+export function onAdd (event) {
+  const tbody = document.getElementById('table').querySelector('table tbody')
+
+  if (tbody) {
+    const row  = tbody.insertRow()
+    const name = row.insertCell()
+    const controls = row.insertCell()
+    const card = row.insertCell()
+    const from = row.insertCell()
+    const to = row.insertCell()
+    const groups = []
+
+    {{range .db.Groups}}
+    groups.push(row.insertCell())
+    {{end}}
+
+    name.classList.add('name')
+    controls.classList.add('controls')
+    card.classList.add('card')
+    from.classList.add('from')
+    to.classList.add('to')
+    groups.forEach(g => g.classList.add('group'))
+
+    name.innerHTML = '<img class="flag" src="images/corner.svg" />' +
+                     '<input class="field" type="text" value="" onchange="onEdited(event)" data-record="" data-original="" data-value="" />'
+  }
+}
+
 export function onRefresh (event) {
   busy()
   dismiss()
@@ -154,7 +182,9 @@ function refresh (db) {
     update(from, record.From.Date)
     update(to, record.To.Date)
 
-    record.Groups.forEach((group) => { update(document.getElementById(group.ID), group.Value) })
+    record.Groups.forEach((group) => { 
+      update(document.getElementById(group.ID), group.Value) 
+    })
   })
 }
 
@@ -201,7 +231,7 @@ function update (element, value) {
         break
 
       case 'checkbox':
-        element.checked = v
+        element.checked = v == 'true' ? true : false
         break
     }
 

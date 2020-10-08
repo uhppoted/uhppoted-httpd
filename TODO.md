@@ -2,6 +2,8 @@
 
 ### IN PROGRESS
 
+- [ ] Loading bar a la cybercode
+
 - [ ] ACL
       - groups => rules => permissions
       - wrap ACL update in goroutine
@@ -12,6 +14,8 @@
       - JSON field names to lowercase
 
 - [ ] Card holders
+      - add
+      - move commit/rollback out of name field (?)
       - replace dataset.value with get()
       - draw out local record state transitions
       - genericize JS:refresh
@@ -23,7 +27,6 @@
       - rollback-all
       - use internal DB rather than JS dataset (?)
       - wrap templating in a decent error handler
-      - add
       - delete
       - scroll horizontally
       - scroll vertically
