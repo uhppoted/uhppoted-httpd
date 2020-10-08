@@ -116,7 +116,7 @@ export function onAdd (event) {
   const tbody = document.getElementById('table').querySelector('table tbody')
 
   if (tbody) {
-    const row  = tbody.insertRow()
+    const row = tbody.insertRow()
     const name = row.insertCell()
     const controls = row.insertCell()
     const card = row.insertCell()
@@ -124,9 +124,12 @@ export function onAdd (event) {
     const to = row.insertCell()
     const groups = []
 
-    {{range .db.Groups}}
+    // eslint-disable-next-line
+    {{ range.db.Groups }} 
+    // eslint-disable-next-line
     groups.push(row.insertCell())
-    {{end}}
+    // eslint-disable-next-line
+    {{ end }}
 
     name.classList.add('name')
     controls.classList.add('controls')
@@ -182,8 +185,8 @@ function refresh (db) {
     update(from, record.From.Date)
     update(to, record.To.Date)
 
-    record.Groups.forEach((group) => { 
-      update(document.getElementById(group.ID), group.Value) 
+    record.Groups.forEach((group) => {
+      update(document.getElementById(group.ID), group.Value)
     })
   })
 }
@@ -231,7 +234,7 @@ function update (element, value) {
         break
 
       case 'checkbox':
-        element.checked = v == 'true' ? true : false
+        element.checked = (v === 'true')
         break
     }
 
