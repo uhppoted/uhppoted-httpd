@@ -87,11 +87,7 @@
    visibility: visible;
 }
 
-.tabular td.name {
-  border-right: 0;
-}
-
-.tabular td.name input {
+.tabular td input.name {
   width: 120px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
@@ -99,21 +95,15 @@
   outline: none;
 }
 
-.tabular td.name.conflict input {
+.tabular td.conflict input.name {
   background-color: theme.$content-table-item-conflict;
 }
 
-.tabular td.name input:focus {
+.tabular td input.name:focus {
   border: 1px solid red;
 }
 
-.tabular td.controls {
-  border-left: 0;
-  border-right: 0;
-  padding: 0 0.2rem 0 0.2rem;
-}
-
-.tabular td.controls span {
+.tabular td span.control {
   padding: 0px 0px 0px 0px;
   font-size: 1.5rem;  
   font-weight: bold;
@@ -121,23 +111,23 @@
   cursor: pointer;
 }
 
-.tabular td.controls span.commit {
+.tabular td span.commit {
   color: theme.$content-table-commit;  
 }
 
-.tabular td.controls span.rollback {
+.tabular td span.rollback {
   color: theme.$content-table-rollback;  
 }
 
-.tabular tbody tr.modified td.controls span.commit {
+.tabular tbody tr.modified td span.commit {
   visibility: visible;
 }
 
-.tabular tbody tr.modified td.controls span.rollback {
+.tabular tbody tr.modified td span.rollback {
   visibility: visible;
 }
 
-.tabular td.cardnumber input {
+.tabular td input.cardnumber {
   width: 80px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
@@ -159,8 +149,8 @@
   border: 1px solid red;
 }
 
-.tabular td.from input {
-  width: 120px;
+.tabular input.from {
+  width: 124px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -168,16 +158,16 @@
   outline: none;
 }
 
-.tabular td.from.conflict input {
+.tabular td.conflict input.from {
   background-color: theme.$content-table-item-conflict;
 }
 
-.tabular td.from input:focus {
+.tabular td input.from:focus {
   border: 1px solid red;
 }
 
-.tabular td.to input {
-  width: 120px;
+.tabular td input.to {
+  width: 124px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -185,48 +175,44 @@
   outline: none;
 }
 
-.tabular td.to.conflict input {
+.tabular td.conflict input.to {
   background-color: theme.$content-table-item-conflict;
 }
 
-.tabular td.to input:focus {
+.tabular td input.to:focus {
   border: 1px solid red;
 }
 
-.tabular td.group {
+.tabular td label.group {
+  cursor: pointer;  
 }
 
-.tabular td.group input[type="checkbox"] {
+.tabular td label.group input[type="checkbox"] {
   display: none;
 }
 
-.tabular td.group input[type="checkbox"] + label {
-  cursor: pointer;  
-  background:blue;
-}
-
-.tabular td.group label img {
+.tabular td label.group img {
   width: 14px;
   height: 14px;
   padding: 2px;
   margin: auto;
 }
 
-.tabular td.group label img.yes {
+.tabular td label.group img.yes {
   display: none;
   filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%)
 }
 
-.tabular td.group label img.no {
+.tabular td label.group img.no {
   display: block;
   filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
 }
 
-.tabular td.group input[type="checkbox"]:checked + label img.yes {
+.tabular td label.group input[type="checkbox"]:checked ~ img.yes {
   display: block;
 }
 
-.tabular td.group input[type="checkbox"]:checked + label img.no {
+.tabular td label.group input[type="checkbox"]:checked ~ img.no {
   display: none;
 }
 

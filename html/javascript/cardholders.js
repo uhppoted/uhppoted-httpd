@@ -13,20 +13,29 @@ function set (element, value) {
   const row = document.getElementById(rowid)
   const original = element.dataset.original
   const v = value.toString()
+  let td = element.parentElement
+
+  // FIXME: infinite loop potential but Golang templating causes havoc with 'for' loop less-than sign
+  //       (look for parent 'field' maybe ?)
+  while (td.tagName.toLowerCase() !== 'td') {
+    td = td.parentElement
+  }
 
   element.dataset.value = v
 
   if (v !== original) {
-    element.parentElement.classList.add('modified')
+    td.classList.add('modified')
   } else {
-    element.parentElement.classList.remove('modified')
+    td.classList.remove('modified')
   }
 
-  const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
-  if (unmodified) {
-    row.classList.remove('modified')
-  } else {
-    row.classList.add('modified')
+  if (row) {
+    const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
+    if (unmodified) {
+      row.classList.remove('modified')
+    } else {
+      row.classList.add('modified')
+    }
   }
 }
 
@@ -124,21 +133,41 @@ export function onAdd (event) {
     const to = row.insertCell()
     const groups = []
 
+    // FIXME: Go templating for JS creates more problems than it solves :-(
     /* eslint-disable */
     {{ range.db.Groups }} 
     groups.push(row.insertCell())
     {{ end }}
     /* eslint-enable */
 
-    name.classList.add('name')
     controls.classList.add('controls')
-    card.classList.add('card')
-    from.classList.add('from')
-    to.classList.add('to')
-    groups.forEach(g => g.classList.add('group'))
+
+    name.style = 'border-right:0;'
+    controls.style = 'border-left:0'
 
     name.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-                     '<input class="field" type="text" value="" onchange="onEdited(event)" data-record="" data-original="" data-value="" />'
+                     '<input class="field name" type="text" value="" onchange="onEdited(event)" data-record="" data-original="" data-value="" placeholder="-" />'
+
+    controls.innerHTML = '<span class="control commit"   onclick="onCommit(event)"   data-record="" data-enabled="false">&#9745;</span>' +
+                         '<span class="control rollback" onclick="onRollback(event)" data-record="" data-enabled="false">&#9746;</span>'
+
+    card.innerHTML = '<img class="flag" src="images/corner.svg" />' +
+                     '<input class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="" data-original="" data-value="" placeholder="6152346" />'
+
+    from.innerHTML = '<img class="flag" src="images/corner.svg" />' +
+                     '<input class="field from" type="date" value="" onchange="onEdited(event)" data-record="" data-original="" data-value="" required />'
+
+    to.innerHTML = '<img class="flag" src="images/corner.svg" />' +
+                   '<input class="field from" type="date" value="" onchange="onEdited(event)" data-record="" data-original="" data-value="" required />'
+
+    groups.forEach(g => {
+      g.innerHTML = '<img class="flag" src="images/corner.svg" />' +
+                    '<label class="group">' +
+                    '<input class="field" type="checkbox" onclick="onTick(event)" data-record="" data-original="" data-value="" />' +
+                    '<img class="no"  src="images/times-solid.svg" />' +
+                    '<img class="yes" src="images/check-solid.svg" />' +
+                    '</label>'
+    })
   }
 }
 
