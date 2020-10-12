@@ -35,7 +35,8 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if strings.HasSuffix(path, ".html") || strings.HasSuffix(path, ".js") {
+	//if strings.HasSuffix(path, ".html") || strings.HasSuffix(path, ".js") {
+	if strings.HasSuffix(path, ".html") {
 		context := map[string]interface{}{}
 		context["User"] = d.user(r)
 		file := filepath.Clean(filepath.Join(d.root, path[1:]))

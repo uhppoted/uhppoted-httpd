@@ -100,21 +100,20 @@ export function onRollback (event) {
 
     fields.forEach((item) => {
       if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
-        item.dataset.value = item.dataset.original
-        item.parentElement.classList.remove('modified')
-
         switch (item.getAttribute('type').toLowerCase()) {
           case 'text':
           case 'number':
           case 'date':
-            item.value = item.dataset.value
+            item.value = item.dataset.original
             break
 
           case 'checkbox':
-            item.checked = item.dataset.value === 'true'
+            item.checked = item.dataset.original === 'true'
             break
         }
       }
+
+      set(item, item.dataset.original)
     })
 
     row.classList.remove('modified')
@@ -132,42 +131,44 @@ export function onAdd (event) {
     const from = row.insertCell()
     const to = row.insertCell()
     const groups = []
+    const uuid = uuidv4()
 
-    // FIXME: Go templating for JS creates more problems than it solves :-(
-    /* eslint-disable */
-    {{ range.db.Groups }} 
-    groups.push(row.insertCell())
-    {{ end }}
-    /* eslint-enable */
+    // FIXME get from template somehow
+    for (let i = 0; i < 10; i++) {
+      groups.push(row.insertCell())
+    }
 
-    controls.classList.add('controls')
+    row.id = uuid
 
     name.style = 'border-right:0;'
-    controls.style = 'border-left:0'
+    controls.classList.add('controls')
 
     name.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-                     '<input class="field name" type="text" value="" onchange="onEdited(event)" data-record="" data-original="" data-value="" placeholder="-" />'
+                     '<input id="' + uuid + '.name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />'
 
-    controls.innerHTML = '<span class="control commit"   onclick="onCommit(event)"   data-record="" data-enabled="false">&#9745;</span>' +
-                         '<span class="control rollback" onclick="onRollback(event)" data-record="" data-enabled="false">&#9746;</span>'
+    controls.innerHTML = '<span id="' + uuid + '.commit"   class="control commit"   onclick="onCommit(event)"   data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
+                         '<span id="' + uuid + '.rollback" class="control rollback" onclick="onRollback(event)" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
 
     card.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-                     '<input class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="" data-original="" data-value="" placeholder="6152346" />'
+                     '<input id="' + uuid + '.card" class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="6152346" />'
 
     from.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-                     '<input class="field from" type="date" value="" onchange="onEdited(event)" data-record="" data-original="" data-value="" required />'
+                     '<input id="' + uuid + '.from" class="field from" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
 
     to.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-                   '<input class="field from" type="date" value="" onchange="onEdited(event)" data-record="" data-original="" data-value="" required />'
+                   '<input id="' + uuid + '.to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
 
-    groups.forEach(g => {
+    for (let i=0; i<groups.length; i++) {
+      const g = groups[i]
+      const id = uuid + '.G' + (i+1)
+
       g.innerHTML = '<img class="flag" src="images/corner.svg" />' +
                     '<label class="group">' +
-                    '<input class="field" type="checkbox" onclick="onTick(event)" data-record="" data-original="" data-value="" />' +
+                    '<input id="' + id + '" class="field" type="checkbox" onclick="onTick(event)" data-record="' + uuid + '" data-original="false" data-value="false" />' +
                     '<img class="no"  src="images/times-solid.svg" />' +
                     '<img class="yes" src="images/check-solid.svg" />' +
                     '</label>'
-    })
+    }
   }
 }
 
@@ -286,4 +287,11 @@ function unbusy () {
   } else {
     delete (windmill.dataset.count)
   }
+}
+
+// Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
+function uuidv4 () {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
 }

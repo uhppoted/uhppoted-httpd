@@ -16,10 +16,12 @@
 - [ ] Card holders
       - add
         - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
-        - commit/rollback/refresh (temporary ID ?)
-        - FIXME in cardholder.js
+        - commit
+        - refresh
+        - FIXME's in cardholder.js
         - Golang templating plays havoc with JS :-(
 
+      - custom webelement (https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
       - move commit/rollback out of name field (?)
       - replace dataset.value with get()
       - draw out local record state transitions
