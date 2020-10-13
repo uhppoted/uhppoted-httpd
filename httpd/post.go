@@ -2,6 +2,7 @@ package httpd
 
 import (
 	"net/http"
+	"regexp"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/cardholders"
 )
@@ -18,14 +19,15 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch path {
-	case "/logout":
+	if path == "/logout" {
 		d.logout(w, r)
-
-	case "/cardholders":
-		cardholders.Update(d.db, w, r, d.timeout)
-
-	default:
-		http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
+		return
 	}
+
+	if match, err := regexp.MatchString(`/cardholders/\S+`, path); err == nil && match {
+		cardholders.Update(d.db, w, r, d.timeout)
+		return
+	}
+
+	http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
 }

@@ -115,7 +115,7 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 	return list, nil
 }
 
-func (d *fdb) Update(u map[string]interface{}) (interface{}, error) {
+func (d *fdb) Post(id string, u map[string]interface{}) (interface{}, error) {
 	d.Lock()
 
 	defer d.Unlock()

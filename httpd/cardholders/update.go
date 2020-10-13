@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -21,6 +22,18 @@ func Update(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durat
 	defer cancel()
 
 	go func() {
+		match := regexp.MustCompile(`/cardholders/(\S+)`).FindStringSubmatch(r.URL.Path)
+		if match == nil || len(match) < 2 {
+			ch <- &types.HttpdError{
+				Status: http.StatusBadRequest,
+				Err:    fmt.Errorf("Invalid request"),
+				Detail: fmt.Errorf("Missing request record ID (%v)", r.URL.Path),
+			}
+			return
+		}
+
+		id := match[1]
+
 		var contentType string
 
 		for k, h := range r.Header {
@@ -61,7 +74,7 @@ func Update(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durat
 			return
 		}
 
-		updated, err := db.Update(body)
+		updated, err := db.Post(id, body)
 		if err != nil {
 			ch <- err
 			return

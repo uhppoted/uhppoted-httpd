@@ -7,7 +7,7 @@ import (
 type DB interface {
 	Groups() []*Group
 	CardHolders() ([]*CardHolder, error)
-	Update(map[string]interface{}) (interface{}, error)
+	Post(string, map[string]interface{}) (interface{}, error)
 
 	ACL() ([]types.Permissions, error)
 }

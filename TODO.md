@@ -15,11 +15,11 @@
 
 - [ ] Card holders
       - add
-        - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
         - commit
+        - rework requests as GraphQL'ish objects (????????)
+        - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
         - refresh
-        - FIXME's in cardholder.js
-        - Golang templating plays havoc with JS :-(
+      - add/update/delete authorisation
 
       - custom webelement (https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
       - move commit/rollback out of name field (?)

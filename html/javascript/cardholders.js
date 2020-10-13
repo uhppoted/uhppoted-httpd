@@ -1,3 +1,5 @@
+/* global constants */
+
 import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
 
 export function onEdited (event) {
@@ -15,9 +17,11 @@ function set (element, value) {
   const v = value.toString()
   let td = element.parentElement
 
-  // FIXME: infinite loop potential but Golang templating causes havoc with 'for' loop less-than sign
-  //       (look for parent 'field' maybe ?)
-  while (td.tagName.toLowerCase() !== 'td') {
+  for (let i = 0; i < 10; i++) {
+    if (td.tagName.toLowerCase() === 'td') {
+      break
+    }
+
     td = td.parentElement
   }
 
@@ -69,7 +73,7 @@ export function onCommit (event) {
 
     busy()
 
-    postAsJSON('/cardholders', update)
+    postAsJSON('/cardholders/' + id, update)
       .then(response => {
         unbusy()
 
@@ -120,7 +124,7 @@ export function onRollback (event) {
   }
 }
 
-export function onAdd (event) {
+export function onNew (event) {
   const tbody = document.getElementById('table').querySelector('table tbody')
 
   if (tbody) {
@@ -133,8 +137,8 @@ export function onAdd (event) {
     const groups = []
     const uuid = uuidv4()
 
-    // FIXME get from template somehow
-    for (let i = 0; i < 10; i++) {
+    // 'constants' is a global object initialised by the Go template
+    for (let i = 0; i < constants.groups.length; i++) {
       groups.push(row.insertCell())
     }
 
@@ -158,9 +162,9 @@ export function onAdd (event) {
     to.innerHTML = '<img class="flag" src="images/corner.svg" />' +
                    '<input id="' + uuid + '.to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
 
-    for (let i=0; i<groups.length; i++) {
+    for (let i = 0; i < groups.length; i++) {
       const g = groups[i]
-      const id = uuid + '.G' + (i+1)
+      const id = uuid + '.' + constants.groups[i]
 
       g.innerHTML = '<img class="flag" src="images/corner.svg" />' +
                     '<label class="group">' +

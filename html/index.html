@@ -49,7 +49,7 @@
                 <button class="dismiss" onclick="dismiss()">&#9746;</button>
               </div>
             </div>
-            <img id="add"     class='button' src="images/plus-solid.svg" onclick="onAdd()" />
+            <img id="add"     class='button' src="images/plus-solid.svg" onclick="onNew()" />
             <img id="refresh" class='button' src="images/sync-alt-solid.svg" onclick="onRefresh()" />
           </div>
 
@@ -164,7 +164,7 @@
 
   <script type="module">
     import { dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
-    import { onCommit, onRollback, onEdited, onTick, onAdd, onRefresh } from "./javascript/cardholders.js"
+    import { onCommit, onRollback, onEdited, onTick, onNew, onRefresh } from "./javascript/cardholders.js"
 
     window.dismiss = dismiss
     window.onSignOut = onSignOut
@@ -172,10 +172,17 @@
     window.onTick = onTick
     window.onCommit = onCommit
     window.onRollback = onRollback
-    window.onAdd = onAdd
+    window.onNew = onNew
     window.onRefresh = onRefresh
 
     resetIdle();
+  </script>
+
+  <!-- global information initialised by Go template -->
+  <script>
+    var constants = {
+      groups: [ {{range .db.Groups}}{{.ID}},{{end}} ]
+    }
   </script>
 
 </html>

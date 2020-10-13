@@ -1,3 +1,5 @@
+/* global messages */
+
 import { postAsForm, warning } from './uhppoted.js'
 
 export function login (event) {
@@ -21,7 +23,7 @@ export function login (event) {
           }
 
         case 401:
-          throw new Error('{{.Login.Unauthorized}}')
+          throw new Error(messages.unauthorized)
 
         default:
           throw new Error(response.text())
