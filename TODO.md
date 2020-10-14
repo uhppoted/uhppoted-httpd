@@ -66,6 +66,7 @@
       - [Arwes](https://arwes.dev)
       - https://blog.datawrapper.de/beautifulcolors/
       - http://csszengarden.com/219
+      - Colorways (for themes)
 
 - [ ] Fonts
 - [ ] favicon

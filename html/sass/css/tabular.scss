@@ -24,6 +24,10 @@
   background: theme.$content-table-row-modified;
 }
 
+.tabular tbody tr.new {
+  background: theme.$content-table-row-new;
+}
+
 .tabular th {
   border: 1px solid theme.$content-table-border;
   padding: 0.5rem;
@@ -87,16 +91,16 @@
    visibility: visible;
 }
 
+.tabular td.conflict input {
+  background-color: theme.$content-table-item-conflict;
+}
+
 .tabular td input.name {
   width: 120px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
   outline: none;
-}
-
-.tabular td.conflict input.name {
-  background-color: theme.$content-table-item-conflict;
 }
 
 .tabular td input.name:focus {
@@ -127,6 +131,10 @@
   visibility: visible;
 }
 
+.tabular tbody tr.new td span.rollback {
+  visibility: visible;
+}
+
 .tabular td input.cardnumber {
   width: 80px;
   padding: 2px 4px 2px 4px;
@@ -139,10 +147,6 @@
 .tabular td.cardnumber input::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
-}
-
-.tabular td.cardnumber.conflict input {
-  background-color: theme.$content-table-item-conflict;
 }
 
 .tabular td.cardnumber input:focus {
@@ -158,10 +162,6 @@
   outline: none;
 }
 
-.tabular td.conflict input.from {
-  background-color: theme.$content-table-item-conflict;
-}
-
 .tabular td input.from:focus {
   border: 1px solid red;
 }
@@ -173,10 +173,6 @@
   border-radius: 3px;
   font: 400 0.9em Arial;
   outline: none;
-}
-
-.tabular td.conflict input.to {
-  background-color: theme.$content-table-item-conflict;
 }
 
 .tabular td input.to:focus {
@@ -215,4 +211,5 @@
 .tabular td label.group input[type="checkbox"]:checked ~ img.no {
   display: none;
 }
+
 

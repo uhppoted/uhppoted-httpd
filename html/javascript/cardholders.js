@@ -43,7 +43,59 @@ function set (element, value) {
   }
 }
 
-export function onCommit (event) {
+export function onCommit (event, op) {
+  if (op && op === 'add') {
+    onAdd(event)
+    return
+  }
+
+  onUpdate(event)
+}
+
+export function onAdd (event) {
+  const id = event.target.dataset.record
+  const row = document.getElementById(id)
+
+  if (row) {
+    const record = {
+      id: id,
+      name: row.querySelector('#' + id  + '-name').value,
+      card: row.querySelector('#' + id  + '-card').value,
+      from: row.querySelector('#' + id  + '-from').value,
+      to: row.querySelector('#' + id  + '-to').value,
+      groups: {}
+    }
+
+    constants.groups.forEach((gid) => {
+      record.groups[gid] = row.querySelector('#' + id  + '-' + gid).checked
+    })
+
+    busy()
+
+    postAsJSON('/cardholders/' + id, record)
+      .then(response => {
+        unbusy()
+
+        switch (response.status) {
+          case 200:
+            console.log('ok')
+            // response.json().then(object => { updated(object.db.updated) })
+            break
+
+          default:
+            // reset()
+            response.text().then(message => { warning(message) })
+        }
+      })
+      .catch(function (err) {
+        unbusy()
+        // reset()
+        warning(`Error committing update (ERR:${err.message.toLowerCase()})`)
+      })
+  }
+}
+
+export function onUpdate (event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
 
@@ -95,7 +147,33 @@ export function onCommit (event) {
   }
 }
 
-export function onRollback (event) {
+export function onRollback (event, op) {
+  if (op && op === 'delete') {
+    onDelete(event)
+    return
+  }
+
+  onRevert(event)
+}
+
+export function onDelete (event) {
+  const id = event.target.dataset.record
+  const tbody = document.getElementById('table').querySelector('table tbody')
+  const row = document.getElementById(id)
+
+  if (row) {
+    const rows = tbody.rows
+
+    for (let ix=0; ix<rows.length; ix++) {
+      if (rows[ix].id === id) {
+        tbody.deleteRow(ix)
+        break
+      }
+    }
+  }
+}
+
+export function onRevert (event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
 
@@ -135,7 +213,7 @@ export function onNew (event) {
     const from = row.insertCell()
     const to = row.insertCell()
     const groups = []
-    const uuid = uuidv4()
+    const uuid = 'U' + uuidv4()
 
     // 'constants' is a global object initialised by the Go template
     for (let i = 0; i < constants.groups.length; i++) {
@@ -143,28 +221,30 @@ export function onNew (event) {
     }
 
     row.id = uuid
+    row.classList.add('new')
 
     name.style = 'border-right:0;'
+    controls.style = 'border-left:0;'
     controls.classList.add('controls')
 
     name.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-                     '<input id="' + uuid + '.name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />'
+                     '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />'
 
-    controls.innerHTML = '<span id="' + uuid + '.commit"   class="control commit"   onclick="onCommit(event)"   data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
-                         '<span id="' + uuid + '.rollback" class="control rollback" onclick="onRollback(event)" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
+    controls.innerHTML = '<span id="' + uuid + '-commit"   class="control commit"   onclick="onCommit(event,\'add\')"   data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
+                         '<span id="' + uuid + '-rollback" class="control rollback" onclick="onRollback(event,\'delete\')" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
 
     card.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-                     '<input id="' + uuid + '.card" class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="6152346" />'
+                     '<input id="' + uuid + '-card" class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="6152346" />'
 
     from.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-                     '<input id="' + uuid + '.from" class="field from" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
+                     '<input id="' + uuid + '-from" class="field from" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
 
     to.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-                   '<input id="' + uuid + '.to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
+                   '<input id="' + uuid + '-to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
 
     for (let i = 0; i < groups.length; i++) {
       const g = groups[i]
-      const id = uuid + '.' + constants.groups[i]
+      const id = uuid + '-' + constants.groups[i]
 
       g.innerHTML = '<img class="flag" src="images/corner.svg" />' +
                     '<label class="group">' +
