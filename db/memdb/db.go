@@ -120,6 +120,63 @@ func (d *fdb) Post(id string, u map[string]interface{}) (interface{}, error) {
 
 	defer d.Unlock()
 
+	// add/update ?
+
+	var record *db.CardHolder
+
+	for _, c := range d.data.Tables.CardHolders {
+		if c.ID == id {
+			record = c
+			break
+		}
+	}
+
+	if record != nil {
+		return d.update(id, u)
+	}
+
+	return d.add(id, object(u))
+}
+
+func (d *fdb) add(id string, o object) (interface{}, error) {
+	name, err := o.name()
+	if err != nil {
+		return nil, err
+	}
+
+	card, err := o.card()
+	if err != nil {
+		return nil, err
+	}
+
+	from, err := o.from()
+	if err != nil {
+		return nil, err
+	}
+
+	to, err := o.to()
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf(">>> name:%v card:%v from:%v to:%v\n", name, card, from, to)
+
+	if name == "" && card == "" {
+		return nil, &types.HttpdError{
+			Status: http.StatusBadRequest,
+			Err:    fmt.Errorf("Name and card number cannot both be empty"),
+			Detail: fmt.Errorf("Card holder and card number cannot both be blank"),
+		}
+	}
+
+	return nil, &types.HttpdError{
+		Status: http.StatusNotImplemented,
+		Err:    fmt.Errorf("ADD: not implemented yet"),
+		Detail: fmt.Errorf("ADD: not implemented yet"),
+	}
+}
+
+func (d *fdb) update(id string, u map[string]interface{}) (interface{}, error) {
 	list := struct {
 		Updated map[string]interface{} `json:"updated"`
 	}{

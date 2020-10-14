@@ -64,7 +64,7 @@ func TestCardNumberUpdate(t *testing.T) {
 		},
 	}
 
-	result, err := dbt.Post("", u)
+	result, err := dbt.update("", u)
 	if err != nil {
 		t.Fatalf("Unexpected error updating DB: %v", err)
 	}
@@ -136,7 +136,7 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 		},
 	}
 
-	result, err := dbt.Post("", u)
+	result, err := dbt.update("", u)
 	if err == nil {
 		t.Errorf("Expected error updating DB, got %v", err)
 	}
@@ -219,7 +219,7 @@ func TestCardNumberSwap(t *testing.T) {
 		},
 	}
 
-	result, err := dbt.Post("", u)
+	result, err := dbt.update("", u)
 	if err != nil {
 		t.Fatalf("Unexpected error updating DB: %v", err)
 	}

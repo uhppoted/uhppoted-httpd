@@ -24,10 +24,10 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if match, err := regexp.MatchString(`/cardholders/\S+`, path); err == nil && match {
-		cardholders.Update(d.db, w, r, d.timeout)
+	if match, err := regexp.MatchString(`/cardholders(?:/.*)?`, path); err == nil && match {
+		cardholders.Post(d.db, w, r, d.timeout)
 		return
 	}
 
-	http.Error(w, "NOT IMPLEMENTED", http.StatusNotImplemented)
+	http.Error(w, "API not implemented", http.StatusNotImplemented)
 }

@@ -58,16 +58,15 @@ export function onAdd (event) {
 
   if (row) {
     const record = {
-      id: id,
-      name: row.querySelector('#' + id  + '-name').value,
-      card: row.querySelector('#' + id  + '-card').value,
-      from: row.querySelector('#' + id  + '-from').value,
-      to: row.querySelector('#' + id  + '-to').value,
+      name: row.querySelector('#' + id + '-name').value,
+      card: row.querySelector('#' + id + '-card').value,
+      from: row.querySelector('#' + id + '-from').value,
+      to: row.querySelector('#' + id + '-to').value,
       groups: {}
     }
 
     constants.groups.forEach((gid) => {
-      record.groups[gid] = row.querySelector('#' + id  + '-' + gid).checked
+      record.groups[gid] = row.querySelector('#' + id + '-' + gid).checked
     })
 
     busy()
@@ -164,7 +163,7 @@ export function onDelete (event) {
   if (row) {
     const rows = tbody.rows
 
-    for (let ix=0; ix<rows.length; ix++) {
+    for (let ix = 0; ix < rows.length; ix++) {
       if (rows[ix].id === id) {
         tbody.deleteRow(ix)
         break
