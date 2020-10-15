@@ -58,16 +58,32 @@ export function onAdd (event) {
 
   if (row) {
     const record = {
-      name: row.querySelector('#' + id + '-name').value,
-      card: row.querySelector('#' + id + '-card').value,
-      from: row.querySelector('#' + id + '-from').value,
-      to: row.querySelector('#' + id + '-to').value,
-      groups: {}
+      id: id,
+      name: {
+        id: id + '-name',
+        name: row.querySelector('#' + id + '-name').value
+      }
+      // card: {
+      //   id: id + '-card',
+      //   card: Number(row.querySelector('#' + id + '-card').value)
+      // },
+      // from: {
+      //   id: id + '-from',
+      //   date: row.querySelector('#' + id + '-from').value
+      // },
+      // to: {
+      //   id: id + '-to',
+      //   date: row.querySelector('#' + id + '-to').value
+      // },
+      // groups: {}
     }
 
-    constants.groups.forEach((gid) => {
-      record.groups[gid] = row.querySelector('#' + id + '-' + gid).checked
-    })
+    // constants.groups.forEach((gid) => {
+    //   record.groups[gid] = {
+    //     id: id + '-' + gid,
+    //     member: row.querySelector('#' + id + '-' + gid).checked
+    //   }
+    // })
 
     busy()
 

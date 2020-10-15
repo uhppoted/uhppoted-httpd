@@ -91,26 +91,26 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 
 	list := []types.Permissions{}
 
-	for _, c := range d.data.Tables.CardHolders {
-		doors := []string{}
-
-		for _, p := range c.Groups {
-			if p.Value {
-				for _, group := range d.data.Tables.Groups {
-					if p.GID == group.ID {
-						doors = append(doors, group.Doors...)
-					}
-				}
-			}
-		}
-
-		list = append(list, types.Permissions{
-			CardNumber: c.Card.Number,
-			From:       c.From,
-			To:         c.To,
-			Doors:      doors,
-		})
-	}
+	//	for _, c := range d.data.Tables.CardHolders {
+	//		doors := []string{}
+	//
+	//		for _, p := range c.Groups {
+	//			if p.Value {
+	//				for _, group := range d.data.Tables.Groups {
+	//					if p.GID == group.ID {
+	//						doors = append(doors, group.Doors...)
+	//					}
+	//				}
+	//			}
+	//		}
+	//
+	//		list = append(list, types.Permissions{
+	//			CardNumber: c.Card.Number,
+	//			From:       c.From,
+	//			To:         c.To,
+	//			Doors:      doors,
+	//		})
+	//	}
 
 	return list, nil
 }
@@ -135,33 +135,39 @@ func (d *fdb) Post(id string, u map[string]interface{}) (interface{}, error) {
 		return d.update(id, u)
 	}
 
-	return d.add(id, object(u))
+	return d.add(id, u)
 }
 
-func (d *fdb) add(id string, o object) (interface{}, error) {
-	name, err := o.name()
-	if err != nil {
-		return nil, err
+func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
+	o := struct {
+		ID   string
+		Name *struct {
+			ID   string
+			Name string
+		}
+		Card *struct {
+			ID   string
+			Card uint32
+		}
+		From *struct {
+			ID   string
+			Date types.Date
+		}
+		To *struct {
+			ID   string
+			Date types.Date
+		}
+	}{}
+
+	if err := unpack(m, &o); err != nil {
+		return nil, &types.HttpdError{
+			Status: http.StatusBadRequest,
+			Err:    fmt.Errorf("Invalid 'add' request"),
+			Detail: fmt.Errorf("Error unpacking 'add' request (%w)", err),
+		}
 	}
 
-	card, err := o.card()
-	if err != nil {
-		return nil, err
-	}
-
-	from, err := o.from()
-	if err != nil {
-		return nil, err
-	}
-
-	to, err := o.to()
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Printf(">>> name:%v card:%v from:%v to:%v\n", name, card, from, to)
-
-	if name == "" && card == "" {
+	if (o.Name == nil || o.Name.Name == "") && (o.Card == nil || o.Card.Card <= 0) {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
 			Err:    fmt.Errorf("Name and card number cannot both be empty"),
@@ -169,11 +175,34 @@ func (d *fdb) add(id string, o object) (interface{}, error) {
 		}
 	}
 
-	return nil, &types.HttpdError{
-		Status: http.StatusNotImplemented,
-		Err:    fmt.Errorf("ADD: not implemented yet"),
-		Detail: fmt.Errorf("ADD: not implemented yet"),
+	record := db.CardHolder{ID: id}
+
+	if o.Name != nil {
+		record.Name = &db.Name{
+			ID:   o.Name.ID,
+			Name: o.Name.Name,
+		}
 	}
+
+	// ... append to DB
+
+	list := struct {
+		Added map[string]interface{} `json:"added"`
+	}{
+		Added: map[string]interface{}{},
+	}
+
+	shadow := d.data.copy()
+
+	shadow.Tables.CardHolders = append(shadow.Tables.CardHolders, &record)
+
+	// if err := save(shadow, d.file); err != nil {
+	// 	return nil, err
+	// }
+
+	d.data = *shadow
+
+	return list, nil
 }
 
 func (d *fdb) update(id string, u map[string]interface{}) (interface{}, error) {
@@ -375,4 +404,13 @@ func load(data interface{}, file string) error {
 	}
 
 	return json.Unmarshal(b, data)
+}
+
+func unpack(m map[string]interface{}, o interface{}) error {
+	blob, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(blob, o)
 }

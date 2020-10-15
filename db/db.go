@@ -14,10 +14,10 @@ type DB interface {
 
 type CardHolder struct {
 	ID     string
-	Name   Name
-	Card   Card
-	From   types.Date
-	To     types.Date
+	Name   *Name
+	Card   *Card
+	From   *types.Date
+	To     *types.Date
 	Groups []*Permission
 }
 
@@ -56,23 +56,35 @@ func (g *Group) Copy() *Group {
 }
 
 func (c *CardHolder) Copy() *CardHolder {
-	replicant := &CardHolder{
-		ID: c.ID,
-		Name: Name{
+	var name *Name
+	var card *Card
+	var groups = make([]*Permission, len(c.Groups))
+
+	if c.Name != nil {
+		name = &Name{
 			ID:   c.Name.ID,
 			Name: c.Name.Name,
-		},
-		Card: Card{
+		}
+	}
+
+	if c.Card != nil {
+		card = &Card{
 			ID:     c.Card.ID,
 			Number: c.Card.Number,
-		},
-		From:   c.From,
-		To:     c.To,
-		Groups: make([]*Permission, len(c.Groups)),
+		}
 	}
 
 	for i, g := range c.Groups {
-		replicant.Groups[i] = g.Copy()
+		groups[i] = g.Copy()
+	}
+
+	replicant := &CardHolder{
+		ID:     c.ID,
+		Name:   name,
+		Card:   card,
+		From:   c.From,
+		To:     c.To,
+		Groups: groups,
 	}
 
 	return replicant
