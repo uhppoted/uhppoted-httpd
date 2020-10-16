@@ -81,7 +81,61 @@ func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 
 	defer d.RUnlock()
 
-	return d.data.Tables.CardHolders, nil
+	list := []*db.CardHolder{}
+
+	for _, record := range d.data.Tables.CardHolders {
+		name := db.Name{}
+		if record.Name != nil {
+			name.ID = record.Name.ID
+			name.Name = record.Name.Name
+		}
+
+		card := db.Card{}
+		if record.Card != nil {
+			card.ID = record.Card.ID
+			card.Number = record.Card.Number
+		}
+
+		from := types.Date{}
+		if record.From != nil {
+			from.ID = record.From.ID
+			from.Date = record.From.Date
+		}
+
+		to := types.Date{}
+		if record.To != nil {
+			to.ID = record.To.ID
+			to.Date = record.To.Date
+		}
+
+		groups := []*db.Permission{}
+		for _, g := range d.data.Tables.Groups {
+			groups = append(groups, &db.Permission{
+				GID:   g.ID,
+				Value: false,
+			})
+		}
+
+		for _, g := range groups {
+			for _, gg := range record.Groups {
+				if g.GID == gg.GID {
+					g.ID = gg.ID
+					g.Value = gg.Value
+				}
+			}
+		}
+
+		list = append(list, &db.CardHolder{
+			ID:     record.ID,
+			Name:   &name,
+			Card:   &card,
+			From:   &from,
+			To:     &to,
+			Groups: groups,
+		})
+	}
+
+	return list, nil
 }
 
 func (d *fdb) ACL() ([]types.Permissions, error) {
@@ -146,16 +200,14 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 			Name string
 		}
 		Card *struct {
-			ID   string
-			Card uint32
+			ID     string
+			Number uint32
 		}
-		From *struct {
-			ID   string
-			Date types.Date
-		}
-		To *struct {
-			ID   string
-			Date types.Date
+		From   *types.Date
+		To     *types.Date
+		Groups map[string]struct {
+			ID     string
+			Member bool
 		}
 	}{}
 
@@ -167,7 +219,7 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 		}
 	}
 
-	if (o.Name == nil || o.Name.Name == "") && (o.Card == nil || o.Card.Card <= 0) {
+	if (o.Name == nil || o.Name.Name == "") && (o.Card == nil || o.Card.Number <= 0) {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
 			Err:    fmt.Errorf("Name and card number cannot both be empty"),
@@ -175,12 +227,49 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 		}
 	}
 
-	record := db.CardHolder{ID: id}
+	record := db.CardHolder{
+		ID:     id,
+		Groups: []*db.Permission{},
+	}
 
 	if o.Name != nil {
 		record.Name = &db.Name{
 			ID:   o.Name.ID,
 			Name: o.Name.Name,
+		}
+	}
+
+	if o.Card != nil {
+		record.Card = &db.Card{
+			ID:     o.Card.ID,
+			Number: o.Card.Number,
+		}
+	}
+
+	if o.From != nil {
+		record.From = &types.Date{
+			ID:   o.From.ID,
+			Date: o.From.Date,
+		}
+	}
+
+	if o.To != nil {
+		record.To = &types.Date{
+			ID:   o.To.ID,
+			Date: o.To.Date,
+		}
+	}
+
+	for _, g := range d.data.Tables.Groups {
+		for gid, gg := range o.Groups {
+			if gid == g.ID {
+				record.Groups = append(record.Groups, &db.Permission{
+					ID:    gg.ID,
+					GID:   g.ID,
+					Value: gg.Member,
+				})
+				break
+			}
 		}
 	}
 
