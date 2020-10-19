@@ -57,43 +57,7 @@ export function onAdd (event) {
   const row = document.getElementById(id)
 
   if (row) {
-    const name = row.querySelector('#' + id + '-name')
-    const card = row.querySelector('#' + id + '-card')
-    const from = row.querySelector('#' + id + '-from')
-    const to = row.querySelector('#' + id + '-to')
-
-    const record = {
-      id: id,
-      groups: {}
-    }
-
-    if (name && name.dataset.value !== name.dataset.original) {
-      record.name = row.querySelector('#' + id + '-name').value
-    }
-
-    if (card && card.dataset.value !== card.dataset.original) {
-      record.card = Number(row.querySelector('#' + id + '-card').value)
-    }
-
-    if (from && from.dataset.value !== from.dataset.original) {
-      record.from = row.querySelector('#' + id + '-from').value
-    }
-
-    if (to && to.dataset.value !== to.dataset.original) {
-      record.to = row.querySelector('#' + id + '-to').value
-    }
-
-    constants.groups.forEach((gid) => {
-      const group = row.querySelector('#' + id + '-' + gid)
-      if (group && group.dataset.value !== group.dataset.original) {
-        record.groups[gid] = {
-          id: id + '-' + gid,
-          member: group.checked
-        }
-      }
-    })
-
-    console.log(JSON.stringify(record, null, '  '))
+    const record = rowToRecord(id, row)
 
     busy()
 
@@ -121,6 +85,39 @@ export function onAdd (event) {
 }
 
 export function onUpdate (event) {
+  const id = event.target.dataset.record
+  const row = document.getElementById(id)
+
+  if (row) {
+    const record = rowToRecord(id, row)
+
+    console.log(JSON.stringify(record, null, '  '))
+
+    busy()
+
+    postAsJSON('/cardholders/' + id, record)
+      .then(response => {
+        unbusy()
+
+        switch (response.status) {
+          case 200:
+            // response.json().then(object => { updated(object.db.updated) })
+            break
+
+          default:
+            // reset()
+            response.text().then(message => { warning(message) })
+        }
+      })
+      .catch(function (err) {
+        unbusy()
+        // reset()
+        warning(`Error committing update (ERR:${err.message.toLowerCase()})`)
+      })
+  }
+}
+
+export function onUpdateX (event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
 
@@ -396,6 +393,45 @@ function unbusy () {
   } else {
     delete (windmill.dataset.count)
   }
+}
+
+function rowToRecord (id, row) {
+  const name = row.querySelector('#' + id + '-name')
+  const card = row.querySelector('#' + id + '-card')
+  const from = row.querySelector('#' + id + '-from')
+  const to = row.querySelector('#' + id + '-to')
+
+  const record = {
+    id: id,
+    groups: {}
+  }
+
+  if (name && name.dataset.value !== name.dataset.original) {
+    record.name = row.querySelector('#' + id + '-name').value
+  }
+
+  if (card && card.dataset.value !== card.dataset.original) {
+    record.card = Number(row.querySelector('#' + id + '-card').value)
+  }
+
+  if (from && from.dataset.value !== from.dataset.original) {
+    record.from = row.querySelector('#' + id + '-from').value
+  }
+
+  if (to && to.dataset.value !== to.dataset.original) {
+    record.to = row.querySelector('#' + id + '-to').value
+  }
+
+  constants.groups.forEach((gid) => {
+    const group = row.querySelector('#' + id + '-' + gid)
+    if (group && group.dataset.value !== group.dataset.original) {
+      record.groups[gid] = {
+        member: group.checked
+      }
+    }
+  })
+
+  return record
 }
 
 // Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid

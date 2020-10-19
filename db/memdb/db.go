@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/db"
@@ -84,21 +83,21 @@ func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 		to := record.To.Copy()
 
 		groups := []*db.Permission{}
-		for _, g := range d.data.Tables.Groups {
-			groups = append(groups, &db.Permission{
-				GID:   g.ID,
-				Value: false,
-			})
-		}
-
-		for _, g := range groups {
-			for _, gg := range record.Groups {
-				if g.GID == gg.GID {
-					g.ID = gg.ID
-					g.Value = gg.Value
-				}
-			}
-		}
+		//		for _, g := range d.data.Tables.Groups {
+		//			groups = append(groups, &db.Permission{
+		//				GID:   g.ID,
+		//				Value: false,
+		//			})
+		//		}
+		//
+		//		for _, g := range groups {
+		//			for _, gg := range record.Groups {
+		//				if g.GID == gg.GID {
+		//					g[GID] = gg.ID
+		//					g.Value = gg.Value
+		//				}
+		//			}
+		//		}
 
 		list = append(list, &db.CardHolder{
 			ID:     record.ID,
@@ -180,8 +179,6 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 		}
 	}{}
 
-	fmt.Printf("DEBUG: %+v\n", m)
-
 	if err := unpack(m, &o); err != nil {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
@@ -208,18 +205,18 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 	record.From = o.From.Copy()
 	record.To = o.To.Copy()
 
-	for _, g := range d.data.Tables.Groups {
-		for gid, gg := range o.Groups {
-			if gid == g.ID {
-				record.Groups = append(record.Groups, &db.Permission{
-					ID:    gg.ID,
-					GID:   g.ID,
-					Value: gg.Member,
-				})
-				break
-			}
-		}
-	}
+	//	for _, g := range d.data.Tables.Groups {
+	//		for gid, gg := range o.Groups {
+	//			if gid == g.ID {
+	//				record.Groups = append(record.Groups, &db.Permission{
+	//					ID:    gg.ID,
+	//					GID:   g.ID,
+	//					Value: gg.Member,
+	//				})
+	//				break
+	//			}
+	//		}
+	//	}
 
 	// ... append to DB
 
@@ -242,156 +239,95 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 	return list, nil
 }
 
-func (d *fdb) update(id string, u map[string]interface{}) (interface{}, error) {
+func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
+	o := struct {
+		ID     string
+		Name   *types.Name
+		Card   *types.Card
+		From   *types.Date
+		To     *types.Date
+		Groups map[string]struct {
+			ID     string
+			Member bool
+		}
+	}{}
+
+	if err := unpack(m, &o); err != nil {
+		return nil, &types.HttpdError{
+			Status: http.StatusBadRequest,
+			Err:    fmt.Errorf("Invalid 'add' request"),
+			Detail: fmt.Errorf("Error unpacking 'add' request (%w)", err),
+		}
+	}
+
+	// update 'shadow' copy
+
+	var record *db.CardHolder
+
 	list := struct {
 		Updated map[string]interface{} `json:"updated"`
 	}{
 		Updated: map[string]interface{}{},
 	}
 
-	// update 'shadow' copy
-
 	shadow := d.data.copy()
 
-	for k, v := range u {
-		id := k
-
-		for _, c := range shadow.Tables.CardHolders {
-			//			if c.Name.ID == id {
-			//				if value, ok := v.(string); ok {
-			//					c.Name.Name = strings.TrimSpace(value)
-			//					list.Updated[id] = c.Name.Name
-			//					continue
-			//				}
-			//
-			//				return nil, &types.HttpdError{
-			//					Status: http.StatusBadRequest,
-			//					Err:    fmt.Errorf("Invalid card holder name (%v)", v),
-			//					Detail: fmt.Errorf("Error parsing card holder name for card %v - string, got:%v", id, v),
-			//				}
-			//			}
-
-			//if c.Card.ID == id {
-			//	if value, ok := v.(uint32); ok {
-			//		c.Card.Number = uint32(value)
-			//		list.Updated[id] = c.Card.Number
-			//		continue
-			//	}
-			//
-			//	if _, ok := v.(string); ok {
-			//		value, err := strconv.ParseUint(v.(string), 10, 32)
-			//		if err != nil {
-			//			return nil, &types.HttpdError{
-			//				Status: http.StatusBadRequest,
-			//				Err:    fmt.Errorf("Invalid card number (%v)", v),
-			//				Detail: fmt.Errorf("Error parsing card number %v: %w", v, err),
-			//			}
-			//		}
-			//
-			//		c.Card.Number = uint32(value)
-			//		list.Updated[id] = c.Card.Number
-			//		continue
-			//	}
-			//
-			//	return nil, &types.HttpdError{
-			//		Status: http.StatusBadRequest,
-			//		Err:    fmt.Errorf("Invalid card number (%v)", v),
-			//		Detail: fmt.Errorf("Error parsing card number for card %v - expected:uint32/string, got:%v", id, v),
-			//	}
-			//}
-			//
-			//			if c.From.ID == id {
-			//				if _, ok := v.(string); ok {
-			//					value, err := time.Parse("2006-01-02", v.(string))
-			//					if err != nil {
-			//						return nil, &types.HttpdError{
-			//							Status: http.StatusBadRequest,
-			//							Err:    fmt.Errorf("Invalid 'from' date (%v)", v),
-			//							Detail: fmt.Errorf("Error parsing 'from' date %v: %w", v, err),
-			//						}
-			//					}
-			//
-			//					c.From.Date = value
-			//					list.Updated[id] = c.From.Format("2006-01-02")
-			//					continue
-			//				}
-			//
-			//				return nil, &types.HttpdError{
-			//					Status: http.StatusBadRequest,
-			//					Err:    fmt.Errorf("Invalid 'from' date (%v)", v),
-			//					Detail: fmt.Errorf("Error parsing 'from' date %v for card - expected:YYYY-MM-DD, got:%v", id, v),
-			//				}
-			//			}
-			//
-			//			if c.To.ID == id {
-			//				if _, ok := v.(string); ok {
-			//					value, err := time.Parse("2006-01-02", v.(string))
-			//					if err != nil {
-			//						return nil, &types.HttpdError{
-			//							Status: http.StatusBadRequest,
-			//							Err:    fmt.Errorf("Invalid 'to' date (%v)", v),
-			//							Detail: fmt.Errorf("Error parsing 'to' date %v: %w", v, err),
-			//						}
-			//					}
-			//
-			//					c.To.Date = value
-			//					list.Updated[id] = c.To.Format("2006-01-02")
-			//					continue
-			//				}
-			//
-			//				return nil, &types.HttpdError{
-			//					Status: http.StatusBadRequest,
-			//					Err:    fmt.Errorf("Invalid 'to' date (%v)", v),
-			//					Detail: fmt.Errorf("Error parsing 'to' date %v for card - expected:YYYY-MM-DD, got:%v", id, v),
-			//				}
-			//			}
-
-			for _, g := range c.Groups {
-				if g.ID == id {
-					if value, ok := v.(bool); ok {
-						g.Value = value
-						list.Updated[id] = g.Value
-						continue
-					}
-
-					if value, ok := v.(string); ok {
-						if b, err := strconv.ParseBool(value); err == nil {
-							g.Value = b
-							list.Updated[id] = g.Value
-							continue
-						}
-					}
-
-					return nil, &types.HttpdError{
-						Status: http.StatusBadRequest,
-						Err:    fmt.Errorf("Invalid group value (%v)", v),
-						Detail: fmt.Errorf("Error parsing group value for group-id %v - expected:bool, got:%v", id, v),
-					}
-				}
-			}
+	for _, c := range shadow.Tables.CardHolders {
+		if c.ID == id {
+			record = c
+			break
 		}
 	}
 
-	// check integrity of updated data
-
-	N := len(shadow.Tables.CardHolders)
-	for i := 0; i < N; i++ {
-		p := shadow.Tables.CardHolders[i]
-		for j := i + 1; j < N; j++ {
-			q := shadow.Tables.CardHolders[j]
-			if p.Card != nil && q.Card != nil && p.Card == q.Card {
-				return nil, &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Duplicate card number (%v)", p.Card),
-					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", p.Card, p.ID, q.ID),
-				}
-			}
+	fmt.Printf("GOTCHA: %+v\n", record)
+	if record != nil {
+		if o.Name != nil {
+			record.Name = o.Name
 		}
-	}
+		if o.Card != nil {
+			record.Card = o.Card
+		}
+		if o.From != nil {
+			record.From = o.From
+		}
+		if o.To != nil {
+			record.To = o.To
+		}
 
-	if err := save(shadow, d.file); err != nil {
-		return nil, err
+		//for gid, gg := range o.Groups {
+		//	for _, g := range shadow.Tables.Groups {
+		//		if gid == g.ID {
+		//			//					record.Groups = append(record.Groups, &db.Permission{
+		//			//						ID:    gg.ID,
+		//			//						GID:   g.ID,
+		//			//						Value: gg.Member,
+		//			//					})
+		//			break
+		//		}
+		//	}
+		//}
 	}
+	//
+	//	// check integrity of updated data
+	//
+	//	N := len(shadow.Tables.CardHolders)
+	//	for i := 0; i < N; i++ {
+	//		p := shadow.Tables.CardHolders[i]
+	//		for j := i + 1; j < N; j++ {
+	//			q := shadow.Tables.CardHolders[j]
+	//			if p.Card != nil && q.Card != nil && p.Card == q.Card {
+	//				return nil, &types.HttpdError{
+	//					Status: http.StatusBadRequest,
+	//					Err:    fmt.Errorf("Duplicate card number (%v)", p.Card),
+	//					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", p.Card, p.ID, q.ID),
+	//				}
+	//			}
+	//		}
+	//	}
+	//
+	//	if err := save(shadow, d.file); err != nil {
+	//		return nil, err
+	//	}
 
 	d.data = *shadow
 
