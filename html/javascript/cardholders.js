@@ -68,31 +68,19 @@ export function onAdd (event) {
     }
 
     if (name && name.dataset.value !== name.dataset.original) {
-      record.name = {
-        id: id + '-name',
-        name: row.querySelector('#' + id + '-name').value
-      }
+      record.name = row.querySelector('#' + id + '-name').value
     }
 
     if (card && card.dataset.value !== card.dataset.original) {
-      record.card = {
-        id: id + '-card',
-        number: Number(row.querySelector('#' + id + '-card').value)
-      }
+      record.card = Number(row.querySelector('#' + id + '-card').value)
     }
 
     if (from && from.dataset.value !== from.dataset.original) {
-      record.from = {
-        id: id + '-from',
-        date: row.querySelector('#' + id + '-from').value
-      }
+      record.from = row.querySelector('#' + id + '-from').value
     }
 
     if (to && to.dataset.value !== to.dataset.original) {
-      record.to = {
-        id: id + '-to',
-        date: row.querySelector('#' + id + '-to').value
-      }
+      record.to = row.querySelector('#' + id + '-to').value
     }
 
     constants.groups.forEach((gid) => {

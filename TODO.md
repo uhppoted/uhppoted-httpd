@@ -16,8 +16,6 @@
 - [ ] Card holders
       - add
         - update record state after commit
-        - what to do about missing fields ?????? fix on DB load ? record create ?
-        - invalid card/from/to fields on browser
         - refresh/get should always return complete records (e.g. after 'name only' add)
         - rework requests as GraphQL'ish objects (????????)
         - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)

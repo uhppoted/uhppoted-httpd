@@ -73,15 +73,15 @@
                  <tr id="{{$cid}}">
                   <td style="border-right:0">
                     <img class="flag" src="images/corner.svg" />
-                    <input id="{{$cardholder.Name.ID}}" 
+                    <input id="{{$cid}}-name" 
                            class="field name"
                            type="text"                            
-                           value="{{$cardholder.Name.Name}}"
+                           value="{{$cardholder.Name}}"
                            placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original="{{$cardholder.Name.Name}}"
-                           data-value="{{$cardholder.Name.Name}}" />
+                           data-original="{{$cardholder.Name}}"
+                           data-value="{{$cardholder.Name}}" />
                   </td>
 
                   <td style="border-left:0" class="controls">
@@ -91,21 +91,21 @@
                   
                   <td>                  
                     <img class="flag" src="images/corner.svg" />
-                    <input id="{{$cardholder.Card.ID}}" 
+                    <input id="{{$cid}}-card" 
                            class="field cardnumber"
                            type="number" 
                            min="0"
-                           value="{{$cardholder.Card.Number}}"
+                           value="{{$cardholder.Card}}"
                            placeholder="6152346"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original="{{$cardholder.Card.Number}}"
-                           data-value="{{$cardholder.Card.Number}}" />
+                           data-original="{{$cardholder.Card}}"
+                           data-value="{{$cardholder.Card}}" />
                   </td>
 
                   <td>
                     <img class="flag" src="images/corner.svg" />
-                    <input id="{{$cardholder.From.ID}}" 
+                    <input id="{{$cid}}-from" 
                            class="field from"
                            type="date" 
                            value="{{$cardholder.From.Format "2006-01-02"}}"
@@ -118,7 +118,7 @@
 
                   <td>
                     <img class="flag" src="images/corner.svg" />
-                    <input id="{{$cardholder.To.ID}}" 
+                    <input id="{{$cid}}-to" 
                            class="field to"
                            type="date" 
                            value="{{$cardholder.To.Format "2006-01-02"}}"

@@ -8,9 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"sync"
-	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -27,20 +25,16 @@ type data struct {
 }
 
 type tables struct {
-	Groups      []*db.Group      `json:"groups"`
+	Groups      types.Groups     `json:"groups"`
 	CardHolders []*db.CardHolder `json:"cardholders"`
 }
 
 func (d *data) copy() *data {
 	shadow := data{
 		Tables: tables{
-			Groups:      make([]*db.Group, len(d.Tables.Groups)),
+			Groups:      d.Tables.Groups.Copy(),
 			CardHolders: make([]*db.CardHolder, len(d.Tables.CardHolders)),
 		},
-	}
-
-	for i, v := range d.Tables.Groups {
-		shadow.Tables.Groups[i] = v.Copy()
 	}
 
 	for i, v := range d.Tables.CardHolders {
@@ -55,7 +49,7 @@ func NewDB(file string) (*fdb, error) {
 		file: file,
 		data: data{
 			Tables: tables{
-				Groups:      []*db.Group{},
+				Groups:      types.Groups{},
 				CardHolders: []*db.CardHolder{},
 			},
 		},
@@ -68,7 +62,7 @@ func NewDB(file string) (*fdb, error) {
 	return &f, nil
 }
 
-func (d *fdb) Groups() []*db.Group {
+func (d *fdb) Groups() types.Groups {
 	d.RLock()
 
 	defer d.RUnlock()
@@ -84,29 +78,10 @@ func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 	list := []*db.CardHolder{}
 
 	for _, record := range d.data.Tables.CardHolders {
-		name := db.Name{}
-		if record.Name != nil {
-			name.ID = record.Name.ID
-			name.Name = record.Name.Name
-		}
-
-		card := db.Card{}
-		if record.Card != nil {
-			card.ID = record.Card.ID
-			card.Number = record.Card.Number
-		}
-
-		from := types.Date{}
-		if record.From != nil {
-			from.ID = record.From.ID
-			from.Date = record.From.Date
-		}
-
-		to := types.Date{}
-		if record.To != nil {
-			to.ID = record.To.ID
-			to.Date = record.To.Date
-		}
+		name := record.Name.Copy()
+		card := record.Card.Copy()
+		from := record.From.Copy()
+		to := record.To.Copy()
 
 		groups := []*db.Permission{}
 		for _, g := range d.data.Tables.Groups {
@@ -127,10 +102,10 @@ func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 
 		list = append(list, &db.CardHolder{
 			ID:     record.ID,
-			Name:   &name,
-			Card:   &card,
-			From:   &from,
-			To:     &to,
+			Name:   name,
+			Card:   card,
+			From:   from,
+			To:     to,
 			Groups: groups,
 		})
 	}
@@ -194,15 +169,9 @@ func (d *fdb) Post(id string, u map[string]interface{}) (interface{}, error) {
 
 func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 	o := struct {
-		ID   string
-		Name *struct {
-			ID   string
-			Name string
-		}
-		Card *struct {
-			ID     string
-			Number uint32
-		}
+		ID     string
+		Name   *types.Name
+		Card   *types.Card
 		From   *types.Date
 		To     *types.Date
 		Groups map[string]struct {
@@ -210,6 +179,8 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 			Member bool
 		}
 	}{}
+
+	fmt.Printf("DEBUG: %+v\n", m)
 
 	if err := unpack(m, &o); err != nil {
 		return nil, &types.HttpdError{
@@ -219,7 +190,7 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 		}
 	}
 
-	if (o.Name == nil || o.Name.Name == "") && (o.Card == nil || o.Card.Number <= 0) {
+	if !o.Name.IsValid() && !o.Card.IsValid() {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
 			Err:    fmt.Errorf("Name and card number cannot both be empty"),
@@ -232,33 +203,10 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 		Groups: []*db.Permission{},
 	}
 
-	if o.Name != nil {
-		record.Name = &db.Name{
-			ID:   o.Name.ID,
-			Name: o.Name.Name,
-		}
-	}
-
-	if o.Card != nil {
-		record.Card = &db.Card{
-			ID:     o.Card.ID,
-			Number: o.Card.Number,
-		}
-	}
-
-	if o.From != nil {
-		record.From = &types.Date{
-			ID:   o.From.ID,
-			Date: o.From.Date,
-		}
-	}
-
-	if o.To != nil {
-		record.To = &types.Date{
-			ID:   o.To.ID,
-			Date: o.To.Date,
-		}
-	}
+	record.Name = o.Name.Copy()
+	record.Card = o.Card.Copy()
+	record.From = o.From.Copy()
+	record.To = o.To.Copy()
 
 	for _, g := range d.data.Tables.Groups {
 		for gid, gg := range o.Groups {
@@ -309,94 +257,94 @@ func (d *fdb) update(id string, u map[string]interface{}) (interface{}, error) {
 		id := k
 
 		for _, c := range shadow.Tables.CardHolders {
-			if c.Name.ID == id {
-				if value, ok := v.(string); ok {
-					c.Name.Name = strings.TrimSpace(value)
-					list.Updated[id] = c.Name.Name
-					continue
-				}
+			//			if c.Name.ID == id {
+			//				if value, ok := v.(string); ok {
+			//					c.Name.Name = strings.TrimSpace(value)
+			//					list.Updated[id] = c.Name.Name
+			//					continue
+			//				}
+			//
+			//				return nil, &types.HttpdError{
+			//					Status: http.StatusBadRequest,
+			//					Err:    fmt.Errorf("Invalid card holder name (%v)", v),
+			//					Detail: fmt.Errorf("Error parsing card holder name for card %v - string, got:%v", id, v),
+			//				}
+			//			}
 
-				return nil, &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Invalid card holder name (%v)", v),
-					Detail: fmt.Errorf("Error parsing card holder name for card %v - string, got:%v", id, v),
-				}
-			}
-
-			if c.Card.ID == id {
-				if value, ok := v.(uint32); ok {
-					c.Card.Number = uint32(value)
-					list.Updated[id] = c.Card.Number
-					continue
-				}
-
-				if _, ok := v.(string); ok {
-					value, err := strconv.ParseUint(v.(string), 10, 32)
-					if err != nil {
-						return nil, &types.HttpdError{
-							Status: http.StatusBadRequest,
-							Err:    fmt.Errorf("Invalid card number (%v)", v),
-							Detail: fmt.Errorf("Error parsing card number %v: %w", v, err),
-						}
-					}
-
-					c.Card.Number = uint32(value)
-					list.Updated[id] = c.Card.Number
-					continue
-				}
-
-				return nil, &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Invalid card number (%v)", v),
-					Detail: fmt.Errorf("Error parsing card number for card %v - expected:uint32/string, got:%v", id, v),
-				}
-			}
-
-			if c.From.ID == id {
-				if _, ok := v.(string); ok {
-					value, err := time.Parse("2006-01-02", v.(string))
-					if err != nil {
-						return nil, &types.HttpdError{
-							Status: http.StatusBadRequest,
-							Err:    fmt.Errorf("Invalid 'from' date (%v)", v),
-							Detail: fmt.Errorf("Error parsing 'from' date %v: %w", v, err),
-						}
-					}
-
-					c.From.Date = value
-					list.Updated[id] = c.From.Format("2006-01-02")
-					continue
-				}
-
-				return nil, &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Invalid 'from' date (%v)", v),
-					Detail: fmt.Errorf("Error parsing 'from' date %v for card - expected:YYYY-MM-DD, got:%v", id, v),
-				}
-			}
-
-			if c.To.ID == id {
-				if _, ok := v.(string); ok {
-					value, err := time.Parse("2006-01-02", v.(string))
-					if err != nil {
-						return nil, &types.HttpdError{
-							Status: http.StatusBadRequest,
-							Err:    fmt.Errorf("Invalid 'to' date (%v)", v),
-							Detail: fmt.Errorf("Error parsing 'to' date %v: %w", v, err),
-						}
-					}
-
-					c.To.Date = value
-					list.Updated[id] = c.To.Format("2006-01-02")
-					continue
-				}
-
-				return nil, &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Invalid 'to' date (%v)", v),
-					Detail: fmt.Errorf("Error parsing 'to' date %v for card - expected:YYYY-MM-DD, got:%v", id, v),
-				}
-			}
+			//if c.Card.ID == id {
+			//	if value, ok := v.(uint32); ok {
+			//		c.Card.Number = uint32(value)
+			//		list.Updated[id] = c.Card.Number
+			//		continue
+			//	}
+			//
+			//	if _, ok := v.(string); ok {
+			//		value, err := strconv.ParseUint(v.(string), 10, 32)
+			//		if err != nil {
+			//			return nil, &types.HttpdError{
+			//				Status: http.StatusBadRequest,
+			//				Err:    fmt.Errorf("Invalid card number (%v)", v),
+			//				Detail: fmt.Errorf("Error parsing card number %v: %w", v, err),
+			//			}
+			//		}
+			//
+			//		c.Card.Number = uint32(value)
+			//		list.Updated[id] = c.Card.Number
+			//		continue
+			//	}
+			//
+			//	return nil, &types.HttpdError{
+			//		Status: http.StatusBadRequest,
+			//		Err:    fmt.Errorf("Invalid card number (%v)", v),
+			//		Detail: fmt.Errorf("Error parsing card number for card %v - expected:uint32/string, got:%v", id, v),
+			//	}
+			//}
+			//
+			//			if c.From.ID == id {
+			//				if _, ok := v.(string); ok {
+			//					value, err := time.Parse("2006-01-02", v.(string))
+			//					if err != nil {
+			//						return nil, &types.HttpdError{
+			//							Status: http.StatusBadRequest,
+			//							Err:    fmt.Errorf("Invalid 'from' date (%v)", v),
+			//							Detail: fmt.Errorf("Error parsing 'from' date %v: %w", v, err),
+			//						}
+			//					}
+			//
+			//					c.From.Date = value
+			//					list.Updated[id] = c.From.Format("2006-01-02")
+			//					continue
+			//				}
+			//
+			//				return nil, &types.HttpdError{
+			//					Status: http.StatusBadRequest,
+			//					Err:    fmt.Errorf("Invalid 'from' date (%v)", v),
+			//					Detail: fmt.Errorf("Error parsing 'from' date %v for card - expected:YYYY-MM-DD, got:%v", id, v),
+			//				}
+			//			}
+			//
+			//			if c.To.ID == id {
+			//				if _, ok := v.(string); ok {
+			//					value, err := time.Parse("2006-01-02", v.(string))
+			//					if err != nil {
+			//						return nil, &types.HttpdError{
+			//							Status: http.StatusBadRequest,
+			//							Err:    fmt.Errorf("Invalid 'to' date (%v)", v),
+			//							Detail: fmt.Errorf("Error parsing 'to' date %v: %w", v, err),
+			//						}
+			//					}
+			//
+			//					c.To.Date = value
+			//					list.Updated[id] = c.To.Format("2006-01-02")
+			//					continue
+			//				}
+			//
+			//				return nil, &types.HttpdError{
+			//					Status: http.StatusBadRequest,
+			//					Err:    fmt.Errorf("Invalid 'to' date (%v)", v),
+			//					Detail: fmt.Errorf("Error parsing 'to' date %v for card - expected:YYYY-MM-DD, got:%v", id, v),
+			//				}
+			//			}
 
 			for _, g := range c.Groups {
 				if g.ID == id {
@@ -431,11 +379,11 @@ func (d *fdb) update(id string, u map[string]interface{}) (interface{}, error) {
 		p := shadow.Tables.CardHolders[i]
 		for j := i + 1; j < N; j++ {
 			q := shadow.Tables.CardHolders[j]
-			if p.Card.Number == q.Card.Number {
+			if p.Card != nil && q.Card != nil && p.Card == q.Card {
 				return nil, &types.HttpdError{
 					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Duplicate card number (%v)", p.Card.Number),
-					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", p.Card.Number, p.ID, q.ID),
+					Err:    fmt.Errorf("Duplicate card number (%v)", p.Card),
+					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", p.Card, p.ID, q.ID),
 				}
 			}
 		}
