@@ -81,23 +81,17 @@ func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 		card := record.Card.Copy()
 		from := record.From.Copy()
 		to := record.To.Copy()
+		groups := map[string]bool{}
 
-		groups := []*db.Permission{}
-		//		for _, g := range d.data.Tables.Groups {
-		//			groups = append(groups, &db.Permission{
-		//				GID:   g.ID,
-		//				Value: false,
-		//			})
-		//		}
-		//
-		//		for _, g := range groups {
-		//			for _, gg := range record.Groups {
-		//				if g.GID == gg.GID {
-		//					g[GID] = gg.ID
-		//					g.Value = gg.Value
-		//				}
-		//			}
-		//		}
+		for _, g := range d.data.Tables.Groups {
+			groups[g.ID] = false
+		}
+
+		for gid, gg := range record.Groups {
+			if _, ok := groups[gid]; ok {
+				groups[gid] = gg
+			}
+		}
 
 		list = append(list, &db.CardHolder{
 			ID:     record.ID,
@@ -173,10 +167,7 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 		Card   *types.Card
 		From   *types.Date
 		To     *types.Date
-		Groups map[string]struct {
-			ID     string
-			Member bool
-		}
+		Groups map[string]bool
 	}{}
 
 	if err := unpack(m, &o); err != nil {
@@ -187,17 +178,9 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 		}
 	}
 
-	if !o.Name.IsValid() && !o.Card.IsValid() {
-		return nil, &types.HttpdError{
-			Status: http.StatusBadRequest,
-			Err:    fmt.Errorf("Name and card number cannot both be empty"),
-			Detail: fmt.Errorf("Card holder and card number cannot both be blank"),
-		}
-	}
-
 	record := db.CardHolder{
 		ID:     id,
-		Groups: []*db.Permission{},
+		Groups: map[string]bool{},
 	}
 
 	record.Name = o.Name.Copy()
@@ -205,18 +188,14 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 	record.From = o.From.Copy()
 	record.To = o.To.Copy()
 
-	//	for _, g := range d.data.Tables.Groups {
-	//		for gid, gg := range o.Groups {
-	//			if gid == g.ID {
-	//				record.Groups = append(record.Groups, &db.Permission{
-	//					ID:    gg.ID,
-	//					GID:   g.ID,
-	//					Value: gg.Member,
-	//				})
-	//				break
-	//			}
-	//		}
-	//	}
+	for gid, v := range o.Groups {
+		for _, g := range d.data.Tables.Groups {
+			if gid == g.ID {
+				record.Groups[gid] = v
+				break
+			}
+		}
+	}
 
 	// ... append to DB
 
@@ -230,9 +209,13 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 
 	shadow.Tables.CardHolders = append(shadow.Tables.CardHolders, &record)
 
-	// if err := save(shadow, d.file); err != nil {
-	// 	return nil, err
-	// }
+	if err := validate(shadow); err != nil {
+		return nil, err
+	}
+
+	if err := save(shadow, d.file); err != nil {
+		return nil, err
+	}
 
 	d.data = *shadow
 
@@ -246,10 +229,7 @@ func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
 		Card   *types.Card
 		From   *types.Date
 		To     *types.Date
-		Groups map[string]struct {
-			ID     string
-			Member bool
-		}
+		Groups map[string]bool
 	}{}
 
 	if err := unpack(m, &o); err != nil {
@@ -279,7 +259,6 @@ func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
 		}
 	}
 
-	fmt.Printf("GOTCHA: %+v\n", record)
 	if record != nil {
 		if o.Name != nil {
 			record.Name = o.Name
@@ -294,44 +273,56 @@ func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
 			record.To = o.To
 		}
 
-		//for gid, gg := range o.Groups {
-		//	for _, g := range shadow.Tables.Groups {
-		//		if gid == g.ID {
-		//			//					record.Groups = append(record.Groups, &db.Permission{
-		//			//						ID:    gg.ID,
-		//			//						GID:   g.ID,
-		//			//						Value: gg.Member,
-		//			//					})
-		//			break
-		//		}
-		//	}
-		//}
+		for gid, gg := range o.Groups {
+			for _, g := range shadow.Tables.Groups {
+				if gid == g.ID {
+					record.Groups[gid] = gg
+					break
+				}
+			}
+		}
 	}
-	//
-	//	// check integrity of updated data
-	//
-	//	N := len(shadow.Tables.CardHolders)
-	//	for i := 0; i < N; i++ {
-	//		p := shadow.Tables.CardHolders[i]
-	//		for j := i + 1; j < N; j++ {
-	//			q := shadow.Tables.CardHolders[j]
-	//			if p.Card != nil && q.Card != nil && p.Card == q.Card {
-	//				return nil, &types.HttpdError{
-	//					Status: http.StatusBadRequest,
-	//					Err:    fmt.Errorf("Duplicate card number (%v)", p.Card),
-	//					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", p.Card, p.ID, q.ID),
-	//				}
-	//			}
-	//		}
-	//	}
-	//
-	//	if err := save(shadow, d.file); err != nil {
-	//		return nil, err
-	//	}
+
+	if err := validate(shadow); err != nil {
+		return nil, err
+	}
+
+	if err := save(shadow, d.file); err != nil {
+		return nil, err
+	}
 
 	d.data = *shadow
 
 	return list, nil
+}
+
+func validate(d *data) error {
+	cards := map[uint32]string{}
+
+	for _, r := range d.Tables.CardHolders {
+		if !r.Name.IsValid() && !r.Card.IsValid() {
+			return &types.HttpdError{
+				Status: http.StatusBadRequest,
+				Err:    fmt.Errorf("Name and card number cannot both be empty"),
+				Detail: fmt.Errorf("record %v: Card holder and card number cannot both be blank", r.ID),
+			}
+		}
+
+		if r.Card != nil {
+			card := uint32(*r.Card)
+			if id, ok := cards[card]; ok {
+				return &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Duplicate card number (%v)", card),
+					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", card, id, r.ID),
+				}
+			}
+
+			cards[card] = r.ID
+		}
+	}
+
+	return nil
 }
 
 func save(data interface{}, file string) error {

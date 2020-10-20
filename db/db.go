@@ -18,21 +18,17 @@ type CardHolder struct {
 	Card   *types.Card
 	From   *types.Date
 	To     *types.Date
-	Groups []*Permission
-}
-
-type Permission struct {
-	Value bool
+	Groups map[string]bool
 }
 
 func (c *CardHolder) Copy() *CardHolder {
 	name := c.Name.Copy()
 	card := c.Card.Copy()
-	var groups = []*Permission{}
+	var groups = map[string]bool{}
 
-	//	for gid, g := range c.Groups {
-	//		groups[gid] = g.Copy()
-	//	}
+	for gid, g := range c.Groups {
+		groups[gid] = g
+	}
 
 	replicant := &CardHolder{
 		ID:     c.ID,
@@ -44,10 +40,4 @@ func (c *CardHolder) Copy() *CardHolder {
 	}
 
 	return replicant
-}
-
-func (p *Permission) Copy() *Permission {
-	return &Permission{
-		Value: p.Value,
-	}
 }

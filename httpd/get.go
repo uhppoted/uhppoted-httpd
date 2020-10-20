@@ -1,6 +1,7 @@
 package httpd
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -87,9 +88,12 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 		return
 	}
 
-	if err := t.Execute(w, &page); err != nil {
+	var b bytes.Buffer
+	if err := t.Execute(&b, &page); err != nil {
 		warn(fmt.Errorf("Error formatting page '%s' (%w)", filename, err))
 		http.Error(w, "Error formatting page", http.StatusInternalServerError)
 		return
 	}
+
+	w.Write(b.Bytes())
 }

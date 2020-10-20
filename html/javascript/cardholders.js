@@ -425,9 +425,7 @@ function rowToRecord (id, row) {
   constants.groups.forEach((gid) => {
     const group = row.querySelector('#' + id + '-' + gid)
     if (group && group.dataset.value !== group.dataset.original) {
-      record.groups[gid] = {
-        member: group.checked
-      }
+      record.groups[gid] = group.checked
     }
   })
 

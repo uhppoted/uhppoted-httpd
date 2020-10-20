@@ -15,6 +15,7 @@
 
 - [ ] Card holders
       - add
+        - 127.0.0.1/:932 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range (add.postAsJSON).
         - rework update
         - update record state after commit
         - unit tests for memdb
@@ -23,9 +24,10 @@
         - shadow DOM ???
         - refresh
       - add/update/delete authorisation
+      - wrap templating in a decent error handler
+        - redirect to error page
 
       - custom webelement (https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
-      - move commit/rollback out of name field (?)
       - replace dataset.value with get()
       - draw out local record state transitions
       - genericize JS:refresh
@@ -36,7 +38,6 @@
       - commit-all
       - rollback-all
       - use internal DB rather than JS dataset (?)
-      - wrap templating in a decent error handler
       - delete
       - scroll horizontally
       - scroll vertically
