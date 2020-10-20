@@ -161,15 +161,6 @@ func (d *fdb) Post(id string, u map[string]interface{}) (interface{}, error) {
 }
 
 func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
-	//o := struct {
-	//	ID     string
-	//	Name   *types.Name
-	//	Card   *types.Card
-	//	From   *types.Date
-	//	To     *types.Date
-	//	Groups map[string]bool
-	//}{}
-
 	record, err := unpack(id, m)
 	if err != nil {
 		return nil, &types.HttpdError{
@@ -179,40 +170,17 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 		}
 	}
 
-	//	record := db.CardHolder{
-	//		ID:     id,
-	//		Groups: map[string]bool{},
-	//	}
-	//
-	//	record.Name = o.Name.Copy()
-	//	record.Card = o.Card.Copy()
-	//	record.From = o.From.Copy()
-	//	record.To = o.To.Copy()
-	//
-	//	for gid, v := range o.Groups {
-	//		for _, g := range d.data.Tables.Groups {
-	//			if gid == g.ID {
-	//				record.Groups[gid] = v
-	//				break
-	//			}
-	//		}
-	//	}
-
 	// ... append to DB
 
 	list := struct {
-		Added map[string]interface{} `json:"added"`
+		Added []interface{} `json:"added"`
 	}{
-		Added: map[string]interface{}{},
+		Added: []interface{}{},
 	}
 
 	shadow := d.data.copy()
 
 	shadow.Tables.CardHolders = append(shadow.Tables.CardHolders, record)
-
-	if err := validate(shadow); err != nil {
-		return nil, err
-	}
 
 	if err := save(shadow, d.file); err != nil {
 		return nil, err
@@ -220,25 +188,18 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 
 	d.data = *shadow
 
+	list.Added = append(list.Added, record)
+
 	return list, nil
 }
 
 func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
-	//	o := struct {
-	//		ID     string
-	//		Name   *types.Name
-	//		Card   *types.Card
-	//		From   *types.Date
-	//		To     *types.Date
-	//		Groups map[string]bool
-	//	}{}
-
 	r, err := unpack(id, m)
 	if err != nil {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
-			Err:    fmt.Errorf("Invalid 'add' request"),
-			Detail: fmt.Errorf("Error unpacking 'add' request (%w)", err),
+			Err:    fmt.Errorf("Invalid 'update' request"),
+			Detail: fmt.Errorf("Error unpacking 'update' request (%w)", err),
 		}
 	}
 
@@ -247,9 +208,9 @@ func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
 	var record *db.CardHolder
 
 	list := struct {
-		Updated map[string]interface{} `json:"updated"`
+		Updated []interface{} `json:"updated"`
 	}{
-		Updated: map[string]interface{}{},
+		Updated: []interface{}{},
 	}
 
 	shadow := d.data.copy()
@@ -286,67 +247,33 @@ func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
 				}
 			}
 		}
-	}
 
-	if err := validate(shadow); err != nil {
-		return nil, err
-	}
+		if err := save(shadow, d.file); err != nil {
+			return nil, err
+		}
 
-	if err := save(shadow, d.file); err != nil {
-		return nil, err
-	}
+		d.data = *shadow
 
-	d.data = *shadow
+		list.Updated = append(list.Updated, record)
+	}
 
 	return list, nil
 }
 
-func validate(d *data) error {
-	cards := map[uint32]string{}
-	groups := map[string]string{}
-
-	for _, k := range d.Tables.Groups {
-		groups[k.ID] = k.Name
+func save(d *data, file string) error {
+	if err := validate(d); err != nil {
+		return err
 	}
 
-	for _, r := range d.Tables.CardHolders {
-		if !r.Name.IsValid() && !r.Card.IsValid() {
-			return &types.HttpdError{
-				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Name and card number cannot both be empty"),
-				Detail: fmt.Errorf("record %v: Card holder and card number cannot both be blank", r.ID),
-			}
-		}
-
-		if r.Card != nil {
-			card := uint32(*r.Card)
-			if id, ok := cards[card]; ok {
-				return &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Duplicate card number (%v)", card),
-					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", card, id, r.ID),
-				}
-			}
-
-			cards[card] = r.ID
-		}
-
-		for gid, _ := range r.Groups {
-			if _, ok := groups[gid]; !ok {
-				delete(r.Groups, gid)
-			}
-		}
+	if err := clean(d); err != nil {
+		return err
 	}
 
-	return nil
-}
-
-func save(data interface{}, file string) error {
 	if file == "" {
 		return nil
 	}
 
-	b, err := json.MarshalIndent(data, "", "  ")
+	b, err := json.MarshalIndent(d, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -384,6 +311,53 @@ func load(data interface{}, file string) error {
 	}
 
 	return json.Unmarshal(b, data)
+}
+
+func validate(d *data) error {
+	cards := map[uint32]string{}
+
+	for _, r := range d.Tables.CardHolders {
+		if !r.Name.IsValid() && !r.Card.IsValid() {
+			return &types.HttpdError{
+				Status: http.StatusBadRequest,
+				Err:    fmt.Errorf("Name and card number cannot both be empty"),
+				Detail: fmt.Errorf("record %v: Card holder and card number cannot both be blank", r.ID),
+			}
+		}
+
+		if r.Card != nil {
+			card := uint32(*r.Card)
+			if id, ok := cards[card]; ok {
+				return &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Duplicate card number (%v)", card),
+					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", card, id, r.ID),
+				}
+			}
+
+			cards[card] = r.ID
+		}
+	}
+
+	return nil
+}
+
+func clean(d *data) error {
+	groups := map[string]string{}
+
+	for _, k := range d.Tables.Groups {
+		groups[k.ID] = k.Name
+	}
+
+	for _, r := range d.Tables.CardHolders {
+		for gid, _ := range r.Groups {
+			if _, ok := groups[gid]; !ok {
+				delete(r.Groups, gid)
+			}
+		}
+	}
+
+	return nil
 }
 
 func unpack(id string, m map[string]interface{}) (*db.CardHolder, error) {

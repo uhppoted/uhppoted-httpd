@@ -15,10 +15,9 @@
 
 - [ ] Card holders
       - add
-        - update record state after commit
+        - refresh/get should always return complete records (e.g. after 'name only' add)
         - 127.0.0.1/:932 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range (add.postAsJSON).
         - unit tests for memdb
-        - refresh/get should always return complete records (e.g. after 'name only' add)
         - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
         - shadow DOM ???
         - refresh

@@ -68,7 +68,7 @@ export function onAdd (event) {
         switch (response.status) {
           case 200:
             console.log('ok')
-            // response.json().then(object => { updated(object.db.updated) })
+            response.json().then(object => { updated(object.db.added) })
             break
 
           default:
@@ -91,8 +91,6 @@ export function onUpdate (event) {
   if (row) {
     const record = rowToRecord(id, row)
 
-    console.log(JSON.stringify(record, null, '  '))
-
     busy()
 
     postAsJSON('/cardholders/' + id, record)
@@ -101,7 +99,7 @@ export function onUpdate (event) {
 
         switch (response.status) {
           case 200:
-            // response.json().then(object => { updated(object.db.updated) })
+            response.json().then(object => { updated(object.db.updated) })
             break
 
           default:
@@ -117,57 +115,57 @@ export function onUpdate (event) {
   }
 }
 
-export function onUpdateX (event) {
-  const id = event.target.dataset.record
-  const row = document.getElementById(id)
-
-  if (row) {
-    const update = {}
-    const fields = row.querySelectorAll('.field')
-
-    fields.forEach((item) => {
-      if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
-        update[item.id] = item.dataset.value
-
-        item.parentElement.classList.add('pending')
-        item.parentElement.classList.remove('modified')
-      }
-    })
-
-    row.classList.remove('modified')
-
-    const reset = function () {
-      Object.entries(update).forEach(([k, v]) => {
-        document.getElementById(k).parentElement.classList.remove('pending')
-        document.getElementById(k).parentElement.classList.add('modified')
-      })
-
-      row.classList.add('modified')
-    }
-
-    busy()
-
-    postAsJSON('/cardholders/' + id, update)
-      .then(response => {
-        unbusy()
-
-        switch (response.status) {
-          case 200:
-            response.json().then(object => { updated(object.db.updated) })
-            break
-
-          default:
-            reset()
-            response.text().then(message => { warning(message) })
-        }
-      })
-      .catch(function (err) {
-        unbusy()
-        reset()
-        warning(`Error committing update (ERR:${err.message.toLowerCase()})`)
-      })
-  }
-}
+// export function onUpdateX (event) {
+//   const id = event.target.dataset.record
+//   const row = document.getElementById(id)
+//
+//   if (row) {
+//     const update = {}
+//     const fields = row.querySelectorAll('.field')
+//
+//     fields.forEach((item) => {
+//       if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
+//         update[item.id] = item.dataset.value
+//
+//         item.parentElement.classList.add('pending')
+//         item.parentElement.classList.remove('modified')
+//       }
+//     })
+//
+//     row.classList.remove('modified')
+//
+//     const reset = function () {
+//       Object.entries(update).forEach(([k, v]) => {
+//         document.getElementById(k).parentElement.classList.remove('pending')
+//         document.getElementById(k).parentElement.classList.add('modified')
+//       })
+//
+//       row.classList.add('modified')
+//     }
+//
+//     busy()
+//
+//     postAsJSON('/cardholders/' + id, update)
+//       .then(response => {
+//         unbusy()
+//
+//         switch (response.status) {
+//           case 200:
+//             response.json().then(object => { updated(object.db.updated) })
+//             break
+//
+//           default:
+//             reset()
+//             response.text().then(message => { warning(message) })
+//         }
+//       })
+//       .catch(function (err) {
+//         unbusy()
+//         reset()
+//         warning(`Error committing update (ERR:${err.message.toLowerCase()})`)
+//       })
+//   }
+// }
 
 export function onRollback (event, op) {
   if (op && op === 'delete') {
@@ -301,29 +299,49 @@ export function onRefresh (event) {
 }
 
 function updated (list) {
-  for (const [k, v] of Object.entries(list)) {
-    update(document.getElementById(k), v)
-  }
+  list.forEach((record) => {
+    const id = record.ID
+
+    if (record.Name) {
+      update(document.getElementById(id + '-name'), record.Name)
+    }
+
+    if (record.Card) {
+      update(document.getElementById(id + '-card'), record.Card)
+    }
+
+    if (record.From) {
+      update(document.getElementById(id + '-from'), record.From)
+    }
+
+    if (record.To) {
+      update(document.getElementById(id + '-to'), record.To)
+    }
+
+    Object.entries(record.Groups).forEach(([k, v]) => {
+      update(document.getElementById(id + '-' + k), v)
+    })
+  })
 }
 
 function refresh (db) {
-  const records = db.cardholders
-
-  records.forEach((record) => {
-    const name = document.getElementById(record.Name.ID)
-    const card = document.getElementById(record.Card.ID)
-    const from = document.getElementById(record.From.ID)
-    const to = document.getElementById(record.To.ID)
-
-    update(name, record.Name.Name)
-    update(card, record.Card.Number)
-    update(from, record.From.Date)
-    update(to, record.To.Date)
-
-    record.Groups.forEach((group) => {
-      update(document.getElementById(group.ID), group.Value)
-    })
-  })
+  // const records = db.cardholders
+  //
+  // records.forEach((record) => {
+  //   const name = document.getElementById(record.Name.ID)
+  //   const card = document.getElementById(record.Card.ID)
+  //   const from = document.getElementById(record.From.ID)
+  //   const to = document.getElementById(record.To.ID)
+  //
+  //   update(name, record.Name.Name)
+  //   update(card, record.Card.Number)
+  //   update(from, record.From.Date)
+  //   update(to, record.To.Date)
+  //
+  //   record.Groups.forEach((group) => {
+  //     update(document.getElementById(group.ID), group.Value)
+  //   })
+  // })
 }
 
 function update (element, value) {
