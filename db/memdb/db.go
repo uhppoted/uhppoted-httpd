@@ -113,26 +113,31 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 
 	list := []types.Permissions{}
 
-	//	for _, c := range d.data.Tables.CardHolders {
-	//		doors := []string{}
-	//
-	//		for _, p := range c.Groups {
-	//			if p.Value {
-	//				for _, group := range d.data.Tables.Groups {
-	//					if p.GID == group.ID {
-	//						doors = append(doors, group.Doors...)
-	//					}
-	//				}
-	//			}
-	//		}
-	//
-	//		list = append(list, types.Permissions{
-	//			CardNumber: c.Card.Number,
-	//			From:       c.From,
-	//			To:         c.To,
-	//			Doors:      doors,
-	//		})
-	//	}
+	for _, c := range d.data.Tables.CardHolders {
+		if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
+			card := uint32(*c.Card)
+			from := *c.From
+			to := *c.To
+			doors := []string{}
+
+			for gid, p := range c.Groups {
+				if p {
+					for _, group := range d.data.Tables.Groups {
+						if gid == group.ID {
+							doors = append(doors, group.Doors...)
+						}
+					}
+				}
+			}
+
+			list = append(list, types.Permissions{
+				CardNumber: card,
+				From:       from,
+				To:         to,
+				Doors:      doors,
+			})
+		}
+	}
 
 	return list, nil
 }

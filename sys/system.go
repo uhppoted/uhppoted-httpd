@@ -63,16 +63,14 @@ func consolidate(list []types.Permissions) (*acl.ACLN, error) {
 	for _, p := range list {
 		for _, l := range acl {
 			if _, ok := l[p.CardNumber]; !ok {
-				if p.From != nil && p.To != nil {
-					from := core.Date(*p.From)
-					to := core.Date(*p.To)
+				from := core.Date(p.From)
+				to := core.Date(p.To)
 
-					l[p.CardNumber] = core.CardN{
-						CardNumber: p.CardNumber,
-						From:       &from,
-						To:         &to,
-						Doors:      map[uint8]bool{1: false, 2: false, 3: false, 4: false},
-					}
+				l[p.CardNumber] = core.CardN{
+					CardNumber: p.CardNumber,
+					From:       &from,
+					To:         &to,
+					Doors:      map[uint8]bool{1: false, 2: false, 3: false, 4: false},
 				}
 			}
 		}
