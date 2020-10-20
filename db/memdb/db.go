@@ -161,16 +161,17 @@ func (d *fdb) Post(id string, u map[string]interface{}) (interface{}, error) {
 }
 
 func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
-	o := struct {
-		ID     string
-		Name   *types.Name
-		Card   *types.Card
-		From   *types.Date
-		To     *types.Date
-		Groups map[string]bool
-	}{}
+	//o := struct {
+	//	ID     string
+	//	Name   *types.Name
+	//	Card   *types.Card
+	//	From   *types.Date
+	//	To     *types.Date
+	//	Groups map[string]bool
+	//}{}
 
-	if err := unpack(m, &o); err != nil {
+	record, err := unpack(id, m)
+	if err != nil {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
 			Err:    fmt.Errorf("Invalid 'add' request"),
@@ -178,24 +179,24 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 		}
 	}
 
-	record := db.CardHolder{
-		ID:     id,
-		Groups: map[string]bool{},
-	}
-
-	record.Name = o.Name.Copy()
-	record.Card = o.Card.Copy()
-	record.From = o.From.Copy()
-	record.To = o.To.Copy()
-
-	for gid, v := range o.Groups {
-		for _, g := range d.data.Tables.Groups {
-			if gid == g.ID {
-				record.Groups[gid] = v
-				break
-			}
-		}
-	}
+	//	record := db.CardHolder{
+	//		ID:     id,
+	//		Groups: map[string]bool{},
+	//	}
+	//
+	//	record.Name = o.Name.Copy()
+	//	record.Card = o.Card.Copy()
+	//	record.From = o.From.Copy()
+	//	record.To = o.To.Copy()
+	//
+	//	for gid, v := range o.Groups {
+	//		for _, g := range d.data.Tables.Groups {
+	//			if gid == g.ID {
+	//				record.Groups[gid] = v
+	//				break
+	//			}
+	//		}
+	//	}
 
 	// ... append to DB
 
@@ -207,7 +208,7 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 
 	shadow := d.data.copy()
 
-	shadow.Tables.CardHolders = append(shadow.Tables.CardHolders, &record)
+	shadow.Tables.CardHolders = append(shadow.Tables.CardHolders, record)
 
 	if err := validate(shadow); err != nil {
 		return nil, err
@@ -223,16 +224,17 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 }
 
 func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
-	o := struct {
-		ID     string
-		Name   *types.Name
-		Card   *types.Card
-		From   *types.Date
-		To     *types.Date
-		Groups map[string]bool
-	}{}
+	//	o := struct {
+	//		ID     string
+	//		Name   *types.Name
+	//		Card   *types.Card
+	//		From   *types.Date
+	//		To     *types.Date
+	//		Groups map[string]bool
+	//	}{}
 
-	if err := unpack(m, &o); err != nil {
+	r, err := unpack(id, m)
+	if err != nil {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
 			Err:    fmt.Errorf("Invalid 'add' request"),
@@ -260,20 +262,23 @@ func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
 	}
 
 	if record != nil {
-		if o.Name != nil {
-			record.Name = o.Name
-		}
-		if o.Card != nil {
-			record.Card = o.Card
-		}
-		if o.From != nil {
-			record.From = o.From
-		}
-		if o.To != nil {
-			record.To = o.To
+		if r.Name != nil {
+			record.Name = r.Name
 		}
 
-		for gid, gg := range o.Groups {
+		if r.Card != nil {
+			record.Card = r.Card
+		}
+
+		if r.From != nil {
+			record.From = r.From
+		}
+
+		if r.To != nil {
+			record.To = r.To
+		}
+
+		for gid, gg := range r.Groups {
 			for _, g := range shadow.Tables.Groups {
 				if gid == g.ID {
 					record.Groups[gid] = gg
@@ -298,6 +303,11 @@ func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
 
 func validate(d *data) error {
 	cards := map[uint32]string{}
+	groups := map[string]string{}
+
+	for _, k := range d.Tables.Groups {
+		groups[k.ID] = k.Name
+	}
 
 	for _, r := range d.Tables.CardHolders {
 		if !r.Name.IsValid() && !r.Card.IsValid() {
@@ -319,6 +329,12 @@ func validate(d *data) error {
 			}
 
 			cards[card] = r.ID
+		}
+
+		for gid, _ := range r.Groups {
+			if _, ok := groups[gid]; !ok {
+				delete(r.Groups, gid)
+			}
 		}
 	}
 
@@ -370,11 +386,37 @@ func load(data interface{}, file string) error {
 	return json.Unmarshal(b, data)
 }
 
-func unpack(m map[string]interface{}, o interface{}) error {
+func unpack(id string, m map[string]interface{}) (*db.CardHolder, error) {
+	o := struct {
+		Name   *types.Name
+		Card   *types.Card
+		From   *types.Date
+		To     *types.Date
+		Groups map[string]bool
+	}{}
+
 	blob, err := json.Marshal(m)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return json.Unmarshal(blob, o)
+	if err := json.Unmarshal(blob, &o); err != nil {
+		return nil, err
+	}
+
+	record := db.CardHolder{
+		ID:     id,
+		Groups: map[string]bool{},
+	}
+
+	record.Name = o.Name.Copy()
+	record.Card = o.Card.Copy()
+	record.From = o.From.Copy()
+	record.To = o.To.Copy()
+
+	for gid, v := range o.Groups {
+		record.Groups[gid] = v
+	}
+
+	return &record, nil
 }
