@@ -6,40 +6,8 @@ import (
 
 type DB interface {
 	Groups() types.Groups
-	CardHolders() (CardHolders, error)
-	Post(string, map[string]interface{}) (interface{}, error)
+	CardHolders() (types.CardHolders, error)
 
 	ACL() ([]types.Permissions, error)
-}
-
-type CardHolders map[string]*CardHolder
-
-type CardHolder struct {
-	ID     string
-	Name   *types.Name
-	Card   *types.Card
-	From   *types.Date
-	To     *types.Date
-	Groups map[string]bool
-}
-
-func (c *CardHolder) Clone() *CardHolder {
-	name := c.Name.Copy()
-	card := c.Card.Copy()
-	var groups = map[string]bool{}
-
-	for gid, g := range c.Groups {
-		groups[gid] = g
-	}
-
-	replicant := &CardHolder{
-		ID:     c.ID,
-		Name:   name,
-		Card:   card,
-		From:   c.From,
-		To:     c.To,
-		Groups: groups,
-	}
-
-	return replicant
+	Post(string, map[string]interface{}) (interface{}, error)
 }

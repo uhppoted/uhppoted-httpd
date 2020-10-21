@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -24,15 +23,15 @@ type data struct {
 }
 
 type tables struct {
-	Groups      types.Groups   `json:"groups"`
-	CardHolders db.CardHolders `json:"cardholders"`
+	Groups      types.Groups      `json:"groups"`
+	CardHolders types.CardHolders `json:"cardholders"`
 }
 
 func (d *data) copy() *data {
 	shadow := data{
 		Tables: tables{
 			Groups:      d.Tables.Groups.Clone(),
-			CardHolders: db.CardHolders{},
+			CardHolders: types.CardHolders{},
 		},
 	}
 
@@ -49,7 +48,7 @@ func NewDB(file string) (*fdb, error) {
 		data: data{
 			Tables: tables{
 				Groups:      types.Groups{},
-				CardHolders: db.CardHolders{},
+				CardHolders: types.CardHolders{},
 			},
 		},
 	}
@@ -69,12 +68,12 @@ func (d *fdb) Groups() types.Groups {
 	return d.data.Tables.Groups
 }
 
-func (d *fdb) CardHolders() (db.CardHolders, error) {
+func (d *fdb) CardHolders() (types.CardHolders, error) {
 	d.RLock()
 
 	defer d.RUnlock()
 
-	list := db.CardHolders{}
+	list := types.CardHolders{}
 
 	for cid, record := range d.data.Tables.CardHolders {
 		list[cid] = record.Clone()
@@ -124,7 +123,7 @@ func (d *fdb) Post(id string, u map[string]interface{}) (interface{}, error) {
 
 	// add/update ?
 
-	var record *db.CardHolder
+	var record *types.CardHolder
 
 	for _, c := range d.data.Tables.CardHolders {
 		if c.ID == id {
@@ -185,7 +184,7 @@ func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
 
 	// update 'shadow' copy
 
-	var record *db.CardHolder
+	var record *types.CardHolder
 
 	list := struct {
 		Updated []interface{} `json:"updated"`
@@ -331,7 +330,7 @@ func clean(d *data) error {
 	return nil
 }
 
-func unpack(id string, m map[string]interface{}) (*db.CardHolder, error) {
+func unpack(id string, m map[string]interface{}) (*types.CardHolder, error) {
 	o := struct {
 		Name   *types.Name
 		Card   *types.Card
@@ -349,7 +348,7 @@ func unpack(id string, m map[string]interface{}) (*db.CardHolder, error) {
 		return nil, err
 	}
 
-	record := db.CardHolder{
+	record := types.CardHolder{
 		ID:     id,
 		Groups: map[string]bool{},
 	}
