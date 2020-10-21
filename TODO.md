@@ -14,11 +14,12 @@
 
 - [ ] Card holders
       - add
-        - unit tests for memdb
+        - unit tests
         - 127.0.0.1/:932 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range (add.postAsJSON).
         - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
         - shadow DOM ???
       - add/update/delete authorisation
+      - card swap ?????
       - wrap templating in a decent error handler
         - redirect to error page
 

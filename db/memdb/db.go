@@ -27,6 +27,11 @@ type tables struct {
 	CardHolders types.CardHolders `json:"cardholders"`
 }
 
+type result struct {
+	Added   []interface{} `json:"added"`
+	Updated []interface{} `json:"updated"`
+}
+
 func (d *data) copy() *data {
 	shadow := data{
 		Tables: tables{
@@ -151,12 +156,7 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 
 	// ... append to DB
 
-	list := struct {
-		Added []interface{} `json:"added"`
-	}{
-		Added: []interface{}{},
-	}
-
+	list := result{}
 	shadow := d.data.copy()
 
 	shadow.Tables.CardHolders[id] = record
@@ -186,12 +186,7 @@ func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
 
 	var record *types.CardHolder
 
-	list := struct {
-		Updated []interface{} `json:"updated"`
-	}{
-		Updated: []interface{}{},
-	}
-
+	list := result{}
 	shadow := d.data.copy()
 
 	for _, c := range shadow.Tables.CardHolders {
