@@ -298,6 +298,10 @@ export function onRefresh (event) {
     })
 }
 
+function refresh (db) {
+  updated(Object.values(db.cardholders))
+}
+
 function updated (list) {
   list.forEach((record) => {
     const id = record.ID
@@ -322,26 +326,6 @@ function updated (list) {
       update(document.getElementById(id + '-' + k), v)
     })
   })
-}
-
-function refresh (db) {
-  // const records = db.cardholders
-  //
-  // records.forEach((record) => {
-  //   const name = document.getElementById(record.Name.ID)
-  //   const card = document.getElementById(record.Card.ID)
-  //   const from = document.getElementById(record.From.ID)
-  //   const to = document.getElementById(record.To.ID)
-  //
-  //   update(name, record.Name.Name)
-  //   update(card, record.Card.Number)
-  //   update(from, record.From.Date)
-  //   update(to, record.To.Date)
-  //
-  //   record.Groups.forEach((group) => {
-  //     update(document.getElementById(group.ID), group.Value)
-  //   })
-  // })
 }
 
 function update (element, value) {

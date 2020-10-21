@@ -14,12 +14,10 @@
 
 - [ ] Card holders
       - add
-        - refresh/get should always return complete records (e.g. after 'name only' add)
         - unit tests for memdb
         - 127.0.0.1/:932 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range (add.postAsJSON).
         - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
         - shadow DOM ???
-        - refresh
       - add/update/delete authorisation
       - wrap templating in a decent error handler
         - redirect to error page
