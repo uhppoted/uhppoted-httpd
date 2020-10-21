@@ -31,13 +31,13 @@ type tables struct {
 func (d *data) copy() *data {
 	shadow := data{
 		Tables: tables{
-			Groups:      d.Tables.Groups.Copy(),
+			Groups:      d.Tables.Groups.Clone(),
 			CardHolders: make([]*db.CardHolder, len(d.Tables.CardHolders)),
 		},
 	}
 
 	for i, v := range d.Tables.CardHolders {
-		shadow.Tables.CardHolders[i] = v.Copy()
+		shadow.Tables.CardHolders[i] = v.Clone()
 	}
 
 	return &shadow
@@ -83,8 +83,8 @@ func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
 		to := record.To.Copy()
 		groups := map[string]bool{}
 
-		for _, g := range d.data.Tables.Groups {
-			groups[g.ID] = false
+		for gid, _ := range d.data.Tables.Groups {
+			groups[gid] = false
 		}
 
 		for gid, gg := range record.Groups {
@@ -122,10 +122,8 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 
 			for gid, p := range c.Groups {
 				if p {
-					for _, group := range d.data.Tables.Groups {
-						if gid == group.ID {
-							doors = append(doors, group.Doors...)
-						}
+					if group, ok := d.data.Tables.Groups[gid]; ok {
+						doors = append(doors, group.Doors...)
 					}
 				}
 			}
@@ -245,11 +243,8 @@ func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
 		}
 
 		for gid, gg := range r.Groups {
-			for _, g := range shadow.Tables.Groups {
-				if gid == g.ID {
-					record.Groups[gid] = gg
-					break
-				}
+			if _, ok := shadow.Tables.Groups[gid]; ok {
+				record.Groups[gid] = gg
 			}
 		}
 
@@ -348,15 +343,9 @@ func validate(d *data) error {
 }
 
 func clean(d *data) error {
-	groups := map[string]string{}
-
-	for _, k := range d.Tables.Groups {
-		groups[k.ID] = k.Name
-	}
-
 	for _, r := range d.Tables.CardHolders {
 		for gid, _ := range r.Groups {
-			if _, ok := groups[gid]; !ok {
+			if _, ok := d.Tables.Groups[gid]; !ok {
 				delete(r.Groups, gid)
 			}
 		}

@@ -6,9 +6,9 @@ type Group struct {
 	Doors []string
 }
 
-type Groups []*Group
+type Groups map[string]*Group
 
-func (g *Group) Copy() *Group {
+func (g *Group) Clone() *Group {
 	replicant := Group{
 		ID:    g.ID,
 		Name:  g.Name,
@@ -20,12 +20,12 @@ func (g *Group) Copy() *Group {
 	return &replicant
 }
 
-func (g *Groups) Copy() Groups {
+func (g *Groups) Clone() Groups {
 	if g != nil {
-		groups := make([]*Group, len(*g))
+		groups := map[string]*Group{}
 
-		for i, v := range *g {
-			groups[i] = v.Copy()
+		for gid, v := range *g {
+			groups[gid] = v.Clone()
 		}
 
 		return groups

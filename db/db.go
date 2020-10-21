@@ -21,7 +21,7 @@ type CardHolder struct {
 	Groups map[string]bool
 }
 
-func (c *CardHolder) Copy() *CardHolder {
+func (c *CardHolder) Clone() *CardHolder {
 	name := c.Name.Copy()
 	card := c.Card.Copy()
 	var groups = map[string]bool{}
