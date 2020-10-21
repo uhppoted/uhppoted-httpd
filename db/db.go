@@ -6,11 +6,13 @@ import (
 
 type DB interface {
 	Groups() types.Groups
-	CardHolders() ([]*CardHolder, error)
+	CardHolders() (CardHolders, error)
 	Post(string, map[string]interface{}) (interface{}, error)
 
 	ACL() ([]types.Permissions, error)
 }
+
+type CardHolders map[string]*CardHolder
 
 type CardHolder struct {
 	ID     string

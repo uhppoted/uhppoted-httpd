@@ -10,7 +10,6 @@
         -- error handling ??
 
 - [ ] MemDB
-      - convert tables to maps
       - JSON field names to lowercase
 
 - [ ] Card holders

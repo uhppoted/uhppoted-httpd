@@ -24,20 +24,20 @@ type data struct {
 }
 
 type tables struct {
-	Groups      types.Groups     `json:"groups"`
-	CardHolders []*db.CardHolder `json:"cardholders"`
+	Groups      types.Groups   `json:"groups"`
+	CardHolders db.CardHolders `json:"cardholders"`
 }
 
 func (d *data) copy() *data {
 	shadow := data{
 		Tables: tables{
 			Groups:      d.Tables.Groups.Clone(),
-			CardHolders: make([]*db.CardHolder, len(d.Tables.CardHolders)),
+			CardHolders: db.CardHolders{},
 		},
 	}
 
-	for i, v := range d.Tables.CardHolders {
-		shadow.Tables.CardHolders[i] = v.Clone()
+	for cid, v := range d.Tables.CardHolders {
+		shadow.Tables.CardHolders[cid] = v.Clone()
 	}
 
 	return &shadow
@@ -49,7 +49,7 @@ func NewDB(file string) (*fdb, error) {
 		data: data{
 			Tables: tables{
 				Groups:      types.Groups{},
-				CardHolders: []*db.CardHolder{},
+				CardHolders: db.CardHolders{},
 			},
 		},
 	}
@@ -69,38 +69,15 @@ func (d *fdb) Groups() types.Groups {
 	return d.data.Tables.Groups
 }
 
-func (d *fdb) CardHolders() ([]*db.CardHolder, error) {
+func (d *fdb) CardHolders() (db.CardHolders, error) {
 	d.RLock()
 
 	defer d.RUnlock()
 
-	list := []*db.CardHolder{}
+	list := db.CardHolders{}
 
-	for _, record := range d.data.Tables.CardHolders {
-		name := record.Name.Copy()
-		card := record.Card.Copy()
-		from := record.From.Copy()
-		to := record.To.Copy()
-		groups := map[string]bool{}
-
-		for gid, _ := range d.data.Tables.Groups {
-			groups[gid] = false
-		}
-
-		for gid, gg := range record.Groups {
-			if _, ok := groups[gid]; ok {
-				groups[gid] = gg
-			}
-		}
-
-		list = append(list, &db.CardHolder{
-			ID:     record.ID,
-			Name:   name,
-			Card:   card,
-			From:   from,
-			To:     to,
-			Groups: groups,
-		})
+	for cid, record := range d.data.Tables.CardHolders {
+		list[cid] = record.Clone()
 	}
 
 	return list, nil
@@ -183,7 +160,7 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 
 	shadow := d.data.copy()
 
-	shadow.Tables.CardHolders = append(shadow.Tables.CardHolders, record)
+	shadow.Tables.CardHolders[id] = record
 
 	if err := save(shadow, d.file); err != nil {
 		return nil, err
