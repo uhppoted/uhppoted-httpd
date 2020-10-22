@@ -10,39 +10,6 @@ export function onTick (event) {
   set(event.target, event.target.checked)
 }
 
-function set (element, value) {
-  const rowid = element.dataset.record
-  const row = document.getElementById(rowid)
-  const original = element.dataset.original
-  const v = value.toString()
-  let td = element.parentElement
-
-  for (let i = 0; i < 10; i++) {
-    if (td.tagName.toLowerCase() === 'td') {
-      break
-    }
-
-    td = td.parentElement
-  }
-
-  element.dataset.value = v
-
-  if (v !== original) {
-    td.classList.add('modified')
-  } else {
-    td.classList.remove('modified')
-  }
-
-  if (row) {
-    const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
-    if (unmodified) {
-      row.classList.remove('modified')
-    } else {
-      row.classList.add('modified')
-    }
-  }
-}
-
 export function onCommit (event, op) {
   if (op && op === 'add') {
     onAdd(event)
@@ -59,6 +26,7 @@ export function onAdd (event) {
   if (row) {
     const record = rowToRecord(id, row)
 
+    row.classList.remove('modified')
     busy()
 
     postAsJSON('/cardholders/' + id, record)
@@ -67,7 +35,6 @@ export function onAdd (event) {
 
         switch (response.status) {
           case 200:
-            console.log('ok')
             response.json().then(object => { updated(object.db.added) })
             break
 
@@ -91,6 +58,7 @@ export function onUpdate (event) {
   if (row) {
     const record = rowToRecord(id, row)
 
+    row.classList.remove('modified')
     busy()
 
     postAsJSON('/cardholders/' + id, record)
@@ -303,29 +271,69 @@ function refresh (db) {
 }
 
 function updated (list) {
-  list.forEach((record) => {
-    const id = record.ID
+  if (list) {
+    list.forEach((record) => {
+      const id = record.ID
+      const row = document.getElementById(id)
 
-    if (record.Name) {
-      update(document.getElementById(id + '-name'), record.Name)
-    }
+      if (row) {
+        row.classList.remove('new')
+      }
 
-    if (record.Card) {
-      update(document.getElementById(id + '-card'), record.Card)
-    }
+      if (record.Name) {
+        update(document.getElementById(id + '-name'), record.Name)
+      }
 
-    if (record.From) {
-      update(document.getElementById(id + '-from'), record.From)
-    }
+      if (record.Card) {
+        update(document.getElementById(id + '-card'), record.Card)
+      }
 
-    if (record.To) {
-      update(document.getElementById(id + '-to'), record.To)
-    }
+      if (record.From) {
+        update(document.getElementById(id + '-from'), record.From)
+      }
 
-    Object.entries(record.Groups).forEach(([k, v]) => {
-      update(document.getElementById(id + '-' + k), v)
+      if (record.To) {
+        update(document.getElementById(id + '-to'), record.To)
+      }
+
+      Object.entries(record.Groups).forEach(([k, v]) => {
+        update(document.getElementById(id + '-' + k), v)
+      })
     })
-  })
+  }
+}
+
+function set (element, value) {
+  const rowid = element.dataset.record
+  const row = document.getElementById(rowid)
+  const original = element.dataset.original
+  const v = value.toString()
+  let td = element.parentElement
+
+  for (let i = 0; i < 10; i++) {
+    if (td.tagName.toLowerCase() === 'td') {
+      break
+    }
+
+    td = td.parentElement
+  }
+
+  element.dataset.value = v
+
+  if (v !== original) {
+    td.classList.add('modified')
+  } else {
+    td.classList.remove('modified')
+  }
+
+  if (row) {
+    const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
+    if (unmodified) {
+      row.classList.remove('modified')
+    } else {
+      row.classList.add('modified')
+    }
+  }
 }
 
 function update (element, value) {

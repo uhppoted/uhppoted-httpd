@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
+	//	"path/filepath"
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -126,6 +126,8 @@ func (d *fdb) Post(id string, u map[string]interface{}) (interface{}, error) {
 
 	defer d.Unlock()
 
+	fmt.Printf("post: %v\n", u)
+
 	// add/update ?
 
 	var record *types.CardHolder
@@ -240,35 +242,36 @@ func save(d *data, file string) error {
 		return err
 	}
 
-	if file == "" {
-		return nil
-	}
-
-	b, err := json.MarshalIndent(d, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-*.db")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), file)
+	return nil
+	//	if file == "" {
+	//		return nil
+	//	}
+	//
+	//	b, err := json.MarshalIndent(d, "", "  ")
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-*.db")
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	defer os.Remove(tmp.Name())
+	//
+	//	if _, err := tmp.Write(b); err != nil {
+	//		return err
+	//	}
+	//
+	//	if err := tmp.Close(); err != nil {
+	//		return err
+	//	}
+	//
+	//	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
+	//		return err
+	//	}
+	//
+	//	return os.Rename(tmp.Name(), file)
 }
 
 func load(data interface{}, file string) error {
