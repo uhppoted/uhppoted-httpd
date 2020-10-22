@@ -13,23 +13,10 @@
       - JSON field names to lowercase
 
 - [ ] Card holders
+      - delete
       - add
-        - 127.0.0.1/:932 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range
-          index.html
-           <input id="Uda71d788-912d-4973-a640-889f5b074070-card" 
-                           class="field cardnumber"
-                           type="number" 
-                           min="0"
-                           value="&lt;nil&gt;"
-                           placeholder="6152346"
-                           onchange="onEdited(event)" 
-                           data-record="Uda71d788-912d-4973-a640-889f5b074070"
-                           data-original="&lt;nil&gt;"
-                           data-value="&lt;nil&gt;" />
-
         - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
         - shadow DOM ???
-      - delete
       - add/update/delete authorisation
       - wrap templating in a decent error handler
         - redirect to error page

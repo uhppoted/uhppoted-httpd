@@ -1,6 +1,18 @@
 package types
 
+import (
+	"fmt"
+)
+
 type Card uint32
+
+func (c *Card) String() string {
+	if c == nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%v", *c)
+}
 
 func (c *Card) Copy() *Card {
 	if c == nil {
