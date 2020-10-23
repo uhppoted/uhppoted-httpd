@@ -8,6 +8,18 @@ export function onEdited (event) {
 
 export function onTick (event) {
   set(event.target, event.target.checked)
+
+  const rowid = event.target.dataset.record
+  const row = document.getElementById(rowid)
+
+  if (row) {
+    const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
+    if (unmodified) {
+      row.classList.remove('modified')
+    } else {
+      row.classList.add('modified')
+    }
+  }
 }
 
 export function onCommit (event, op) {
@@ -27,15 +39,16 @@ export function onAdd (event) {
     const record = rowToRecord(id, row)
 
     row.classList.remove('modified')
+    Array.from(row.children).forEach(item => item.classList.remove('modified'))
     busy()
 
-    postAsJSON('/cardholders/' + id, record)
+    postAsJSON('/cardholders', { cardholders: [record] })
       .then(response => {
         unbusy()
 
         switch (response.status) {
           case 200:
-            response.json().then(object => { updated(object.db.added) })
+            response.json().then(object => { updated(object.db.updated) })
             break
 
           default:
@@ -59,9 +72,10 @@ export function onUpdate (event) {
     const record = rowToRecord(id, row)
 
     row.classList.remove('modified')
+    Array.from(row.children).forEach(item => item.classList.remove('modified'))
     busy()
 
-    postAsJSON('/cardholders/' + id, record)
+    postAsJSON('/cardholders', { cardholders: [record] })
       .then(response => {
         unbusy()
 

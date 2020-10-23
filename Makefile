@@ -4,6 +4,7 @@ DIST   ?= development
 DEBUG  ?= --debug
 CMD     = ./bin/uhppoted-httpd
 
+.PHONY: reset
 .PHONY: bump
 .PHONY: build-all
 
@@ -67,7 +68,7 @@ bump:
 	go get -u golang.org/x/sys
 
 debug: build
-	$(CMD) 
+	go test -v ./... -run "TestCardAdd"
 
 sass:
 	sass --watch html/sass/css:html/css
@@ -89,3 +90,6 @@ undaemonize: build
 
 run: build
 	$(CMD) --console
+
+reset:
+	cp /usr/local/var/com.github.uhppoted/httpd/memdb/db.orig /usr/local/var/com.github.uhppoted/httpd/memdb/db.json

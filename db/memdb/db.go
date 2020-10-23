@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -28,7 +29,6 @@ type tables struct {
 }
 
 type result struct {
-	Added   []interface{} `json:"added"`
 	Updated []interface{} `json:"updated"`
 }
 
@@ -121,47 +121,53 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 	return list, nil
 }
 
-func (d *fdb) Post(id string, u map[string]interface{}) (interface{}, error) {
+func (d *fdb) Post(m map[string]interface{}) (interface{}, error) {
 	d.Lock()
 
 	defer d.Unlock()
 
-	fmt.Printf("post: %v\n", u)
-
 	// add/update ?
 
-	var record *types.CardHolder
-
-	for _, c := range d.data.Tables.CardHolders {
-		if c.ID == id {
-			record = c
-			break
-		}
-	}
-
-	if record != nil {
-		return d.update(id, u)
-	}
-
-	return d.add(id, u)
-}
-
-func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
-	record, err := unpack(id, m)
+	cardholders, err := unpack(m)
 	if err != nil {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
-			Err:    fmt.Errorf("Invalid 'add' request"),
-			Detail: fmt.Errorf("Error unpacking 'add' request (%w)", err),
+			Err:    fmt.Errorf("Invalid request"),
+			Detail: fmt.Errorf("Error unpacking 'post' request (%w)", err),
 		}
 	}
-
-	// ... append to DB
 
 	list := result{}
 	shadow := d.data.copy()
 
-	shadow.Tables.CardHolders[id] = record
+loop:
+	for _, c := range cardholders {
+		if c.ID == "" {
+			return nil, &types.HttpdError{
+				Status: http.StatusBadRequest,
+				Err:    fmt.Errorf("Invalid cardholder ID"),
+				Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid cardholder ID '%v'", c.ID)),
+			}
+		}
+
+		for _, record := range d.data.Tables.CardHolders {
+			if record.ID == c.ID {
+				if r, err := d.update(shadow, c); err != nil {
+					return nil, err
+				} else if r != nil {
+					list.Updated = append(list.Updated, r)
+				}
+
+				continue loop
+			}
+		}
+
+		if r, err := d.add(shadow, c); err != nil {
+			return nil, err
+		} else if r != nil {
+			list.Updated = append(list.Updated, r)
+		}
+	}
 
 	if err := save(shadow, d.file); err != nil {
 		return nil, err
@@ -169,68 +175,46 @@ func (d *fdb) add(id string, m map[string]interface{}) (interface{}, error) {
 
 	d.data = *shadow
 
-	list.Added = append(list.Added, record)
-
 	return list, nil
 }
 
-func (d *fdb) update(id string, m map[string]interface{}) (interface{}, error) {
-	r, err := unpack(id, m)
-	if err != nil {
-		return nil, &types.HttpdError{
-			Status: http.StatusBadRequest,
-			Err:    fmt.Errorf("Invalid 'update' request"),
-			Detail: fmt.Errorf("Error unpacking 'update' request (%w)", err),
-		}
-	}
+func (d *fdb) add(shadow *data, ch types.CardHolder) (interface{}, error) {
+	record := ch.Clone()
+	shadow.Tables.CardHolders[record.ID] = record
 
-	// update 'shadow' copy
+	return record, nil
+}
 
-	var record *types.CardHolder
-
-	list := result{}
-	shadow := d.data.copy()
-
-	for _, c := range shadow.Tables.CardHolders {
-		if c.ID == id {
-			record = c
-			break
-		}
-	}
-
-	if record != nil {
-		if r.Name != nil {
-			record.Name = r.Name
-		}
-
-		if r.Card != nil {
-			record.Card = r.Card
-		}
-
-		if r.From != nil {
-			record.From = r.From
-		}
-
-		if r.To != nil {
-			record.To = r.To
-		}
-
-		for gid, gg := range r.Groups {
-			if _, ok := shadow.Tables.Groups[gid]; ok {
-				record.Groups[gid] = gg
+func (d *fdb) update(shadow *data, ch types.CardHolder) (interface{}, error) {
+	for _, record := range shadow.Tables.CardHolders {
+		if record.ID == ch.ID {
+			if ch.Name != nil {
+				record.Name = ch.Name
 			}
+
+			if ch.Card != nil {
+				record.Card = ch.Card
+			}
+
+			if ch.From != nil {
+				record.From = ch.From
+			}
+
+			if ch.To != nil {
+				record.To = ch.To
+			}
+
+			for gid, gg := range ch.Groups {
+				if _, ok := shadow.Tables.Groups[gid]; ok {
+					record.Groups[gid] = gg
+				}
+			}
+
+			return record, nil
 		}
-
-		if err := save(shadow, d.file); err != nil {
-			return nil, err
-		}
-
-		d.data = *shadow
-
-		list.Updated = append(list.Updated, record)
 	}
 
-	return list, nil
+	return nil, nil
 }
 
 func save(d *data, file string) error {
@@ -327,13 +311,16 @@ func clean(d *data) error {
 	return nil
 }
 
-func unpack(id string, m map[string]interface{}) (*types.CardHolder, error) {
+func unpack(m map[string]interface{}) ([]types.CardHolder, error) {
 	o := struct {
-		Name   *types.Name
-		Card   *types.Card
-		From   *types.Date
-		To     *types.Date
-		Groups map[string]bool
+		CardHolders []struct {
+			ID     string
+			Name   *types.Name
+			Card   *types.Card
+			From   *types.Date
+			To     *types.Date
+			Groups map[string]bool
+		}
 	}{}
 
 	blob, err := json.Marshal(m)
@@ -345,19 +332,25 @@ func unpack(id string, m map[string]interface{}) (*types.CardHolder, error) {
 		return nil, err
 	}
 
-	record := types.CardHolder{
-		ID:     id,
-		Groups: map[string]bool{},
+	cardholders := []types.CardHolder{}
+
+	for _, r := range o.CardHolders {
+		record := types.CardHolder{
+			ID:     strings.TrimSpace(r.ID),
+			Groups: map[string]bool{},
+		}
+
+		record.Name = r.Name.Copy()
+		record.Card = r.Card.Copy()
+		record.From = r.From.Copy()
+		record.To = r.To.Copy()
+
+		for gid, v := range r.Groups {
+			record.Groups[gid] = v
+		}
+
+		cardholders = append(cardholders, record)
 	}
 
-	record.Name = o.Name.Copy()
-	record.Card = o.Card.Copy()
-	record.From = o.From.Copy()
-	record.To = o.To.Copy()
-
-	for gid, v := range o.Groups {
-		record.Groups[gid] = v
-	}
-
-	return &record, nil
+	return cardholders, nil
 }

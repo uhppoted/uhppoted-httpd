@@ -29,7 +29,6 @@
       - JS: throw error if response code != 200 (?)
 
       - commit multiple rows
-        - card swap
         - commit-all
         - rollback-all
       - use internal DB rather than element dataset (?)

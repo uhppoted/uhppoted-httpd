@@ -1,100 +1,69 @@
 package memdb
 
 import (
-	"fmt"
-	"reflect"
+	"encoding/json"
 	"testing"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func TestCardAdd(t *testing.T) {
-	dbt := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{
-					"G05": types.Group{},
-				},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 6514231),
-				},
-			},
-		},
-	}
+var hagrid = cardholder("C01", "Hagrid", 6514231)
+var dobby = cardholder("C02", "Dobby", 1234567, "G05")
 
-	final := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{
-					"G05": types.Group{},
-				},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 6514231),
-					"C02": cardholder("C02", "Dobby", 1234567, "G05"),
+func TestCardAdd(t *testing.T) {
+	dbt := db(hagrid)
+	final := db(hagrid, dobby)
+
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C02",
+				"name": "Dobby",
+				"card": 1234567,
+				"from": "2021-01-02",
+				"to":   "2021-12-30",
+				"groups": map[string]bool{
+					"G05": true,
 				},
 			},
 		},
 	}
 
 	expected := result{
-		Added: []interface{}{
+		Updated: []interface{}{
 			cardholder("C02", "Dobby", 1234567, "G05"),
 		},
 	}
 
-	r, err := dbt.add("C02", map[string]interface{}{
-		"name": "Dobby",
-		"card": 1234567,
-		"from": "2021-01-02",
-		"to":   "2021-12-30",
-		"groups": map[string]bool{
-			"G05": true,
-		},
-	})
+	r, err := dbt.Post(rq)
 
 	if err != nil {
 		t.Fatalf("Unexpected error adding card holder to DB: %v", err)
 	}
 
-	compare(r, &expected, t)
-	compareDB(&dbt, &final, t)
+	compare(r, expected, t)
+	compareDB(dbt, final, t)
 }
 
 func TestCardAddWithBlankNameAndCard(t *testing.T) {
-	dbt := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{
-					"G05": types.Group{},
-				},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 6514231),
+	dbt := db(hagrid)
+	final := db(cardholder("C01", "Hagrid", 6514231))
+
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C02",
+				"from": "2021-01-02",
+				"to":   "2021-12-30",
+				"groups": map[string]bool{
+					"G05": true,
 				},
 			},
 		},
 	}
 
-	final := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{
-					"G05": types.Group{},
-				},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 6514231),
-				},
-			},
-		},
-	}
-
-	r, err := dbt.add("C02", map[string]interface{}{
-		"from": "2021-01-02",
-		"to":   "2021-12-30",
-		"groups": map[string]bool{
-			"G05": true,
-		},
-	})
+	r, err := dbt.Post(rq)
 
 	if err == nil {
 		t.Errorf("Expected error adding invalid card holder to DB, got:%v", err)
@@ -104,79 +73,53 @@ func TestCardAddWithBlankNameAndCard(t *testing.T) {
 		t.Errorf("Expected <nil> result adding invalid card holder to DB, got:%v", r)
 	}
 
-	compareDB(&dbt, &final, t)
+	compareDB(dbt, final, t)
 }
 
 func TestCardAddWithInvalidGroup(t *testing.T) {
-	dbt := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{
-					"G05": types.Group{},
-				},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 6514231),
-				},
-			},
-		},
-	}
+	dbt := db(hagrid)
+	final := db(hagrid, cardholder("C02", "Dobby", 1234567))
 
-	final := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{
-					"G05": types.Group{},
-				},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 6514231),
-					"C02": cardholder("C02", "Dobby", 1234567),
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C02",
+				"name": "Dobby",
+				"card": 1234567,
+				"from": "2021-01-02",
+				"to":   "2021-12-30",
+				"groups": map[string]bool{
+					"G16": true,
 				},
 			},
 		},
 	}
 
 	expected := result{
-		Added: []interface{}{
+		Updated: []interface{}{
 			cardholder("C02", "Dobby", 1234567),
 		},
 	}
 
-	r, err := dbt.add("C02", map[string]interface{}{
-		"name": "Dobby",
-		"card": 1234567,
-		"from": "2021-01-02",
-		"to":   "2021-12-30",
-		"groups": map[string]bool{
-			"G16": true,
-		},
-	})
+	r, err := dbt.Post(rq)
 	if err != nil {
 		t.Fatalf("Unexpected error adding card holder to DB: %v", err)
 	}
 
-	compare(r, &expected, t)
-	compareDB(&dbt, &final, t)
+	compare(r, expected, t)
+	compareDB(dbt, final, t)
 }
 
 func TestCardNumberUpdate(t *testing.T) {
-	dbt := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 6514231),
-				},
-			},
-		},
-	}
+	dbt := db(hagrid)
+	final := db(cardholder("C01", "Hagrid", 1234567))
 
-	final := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 1234567),
-				},
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C01",
+				"name": "Hagrid",
+				"card": 1234567,
 			},
 		},
 	}
@@ -187,41 +130,29 @@ func TestCardNumberUpdate(t *testing.T) {
 		},
 	}
 
-	r, err := dbt.update("C01", map[string]interface{}{"card": 1234567})
+	r, err := dbt.Post(rq)
 	if err != nil {
 		t.Fatalf("Unexpected error updating DB: %v", err)
 	}
 
-	compare(r, &expected, t)
-	compareDB(&dbt, &final, t)
+	compare(r, expected, t)
+	compareDB(dbt, final, t)
 }
 
 func TestDuplicateCardNumberUpdate(t *testing.T) {
-	dbt := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 6514231),
-					"C02": cardholder("C02", "Dobby", 1234567),
-				},
+	dbt := db(hagrid, dobby)
+	final := db(hagrid, dobby)
+
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C01",
+				"card": 1234567,
 			},
 		},
 	}
 
-	final := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 6514231),
-					"C02": cardholder("C02", "Dobby", 1234567),
-				},
-			},
-		},
-	}
-
-	r, err := dbt.update("C01", map[string]interface{}{"card": 1234567})
+	r, err := dbt.Post(rq)
 	if err == nil {
 		t.Errorf("Expected error updating DB, got %v", err)
 	}
@@ -230,31 +161,24 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 		t.Errorf("Incorrect return value: expected:%#v, got:%#v", nil, r)
 	}
 
-	compareDB(&dbt, &final, t)
+	compareDB(dbt, final, t)
 }
 
 func TestCardNumberSwap(t *testing.T) {
-	t.Skip() // FIXME DOESN'T WORK ANY MORE
-	dbt := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 6514231),
-					"C02": cardholder("C02", "Dobby", 1234567),
-				},
-			},
-		},
-	}
+	dbt := db(hagrid, dobby)
+	final := db(cardholder("C01", "Hagrid", 1234567), cardholder("C02", "Dobby", 6514231, "G05"))
 
-	final := fdb{
-		data: data{
-			Tables: tables{
-				Groups: types.Groups{},
-				CardHolders: types.CardHolders{
-					"C01": cardholder("C01", "Hagrid", 1234567),
-					"C02": cardholder("C02", "Dobby", 6514231),
-				},
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C01",
+				"name": "Hagrid",
+				"card": 1234567,
+			},
+			map[string]interface{}{
+				"id":   "C02",
+				"name": "Dobby",
+				"card": 65414231,
 			},
 		},
 	}
@@ -262,20 +186,17 @@ func TestCardNumberSwap(t *testing.T) {
 	expected := result{
 		Updated: []interface{}{
 			cardholder("C01", "Hagrid", 1234567),
-			cardholder("C02", "Dobby", 65414231),
+			cardholder("C02", "Dobby", 65414231, "G05"),
 		},
 	}
 
-	r, err := dbt.update("C01", map[string]interface{}{
-		"C01": map[string]interface{}{"card": 1234567},
-		"C02": map[string]interface{}{"card": 6514231},
-	})
+	r, err := dbt.Post(rq)
 	if err != nil {
 		t.Fatalf("Unexpected error updating DB: %v", err)
 	}
 
-	compare(r, &expected, t)
-	compareDB(&dbt, &final, t)
+	compare(r, expected, t)
+	compare(dbt, final, t)
 }
 
 func date(s string) *types.Date {
@@ -285,7 +206,35 @@ func date(s string) *types.Date {
 	return &d
 }
 
-func cardholder(id, name string, card uint32, groups ...string) *types.CardHolder {
+func db(cardholders ...types.CardHolder) fdb {
+	p := fdb{
+		data: data{
+			Tables: tables{
+				Groups: types.Groups{
+					"G05": group("G05"),
+				},
+				CardHolders: types.CardHolders{},
+			},
+		},
+	}
+
+	for i, _ := range cardholders {
+		c := cardholders[i].Clone()
+		p.data.Tables.CardHolders[c.ID] = c
+	}
+
+	return p
+}
+
+func group(id string) types.Group {
+	return types.Group{
+		ID:    id,
+		Name:  "",
+		Doors: []string{},
+	}
+}
+
+func cardholder(id, name string, card uint32, groups ...string) types.CardHolder {
 	n := types.Name(name)
 	c := types.Card(card)
 
@@ -302,86 +251,18 @@ func cardholder(id, name string, card uint32, groups ...string) *types.CardHolde
 		cardholder.Groups[g] = true
 	}
 
-	return &cardholder
+	return cardholder
 }
 
 func compare(got, expected interface{}, t *testing.T) {
-	p := got.(result)
-	q := expected.(*result)
+	p, _ := json.Marshal(got)
+	q, _ := json.Marshal(expected)
 
-	if len(p.Added) != len(q.Added) {
-		t.Errorf("Incorrect return 'added' list\n   expected:%#v\n   got:     %#v", q, p)
-	} else {
-		for i := range q.Added {
-			v := p.Added[i].(*types.CardHolder)
-			w := q.Added[i].(*types.CardHolder)
-
-			compareCardHolder(v, w, t)
-		}
-	}
-
-	if len(p.Updated) != len(q.Updated) {
-		t.Errorf("Incorrect return 'updated' list\n   expected:%#v\n   got:     %#v", q, p)
-	} else {
-		for i := range q.Updated {
-			v := p.Updated[i].(*types.CardHolder)
-			w := q.Updated[i].(*types.CardHolder)
-
-			compareCardHolder(v, w, t)
-		}
+	if string(p) != string(q) {
+		t.Errorf("'got' does not match 'expected'\nexpected:%s\ngot:     %s", string(q), string(p))
 	}
 }
 
-func compareDB(db, expected *fdb, t *testing.T) {
-	g := fmt.Sprint(db.data.Tables.Groups)
-	h := fmt.Sprint(expected.data.Tables.Groups)
-	if g != h {
-		t.Errorf("DB groups do not match\n   expected:%v\n   got:     %v", h, g)
-	}
-
-	p := db.data.Tables.CardHolders
-	q := expected.data.Tables.CardHolders
-
-	if len(p) != len(q) {
-		t.Errorf("DB cardholders do not match\n   expected:%v\n   got:     %v", q, p)
-	} else {
-		for k, w := range q {
-			v := p[k]
-			compareCardHolder(v, w, t)
-		}
-	}
-}
-
-func compareCardHolder(got, expected *types.CardHolder, t *testing.T) {
-	if *got.Name != *expected.Name {
-		t.Errorf("Updated cardholder %v - name does not match\n   expected:%v\n   got:     %v", expected.ID, *expected.Name, *got.Name)
-	}
-
-	if *got.Card != *expected.Card {
-		t.Errorf("Updated cardholder %v - card does not match\n   expected:%v\n   got:     %v", expected.ID, *expected.Card, *got.Card)
-	}
-
-	if got.From != expected.From {
-		if got.From != nil && expected.From != nil {
-			if *got.From != *expected.From {
-				t.Errorf("Updated cardholder %v - 'from' date does not match\n   expected:%v\n   got:     %v", expected.ID, expected.From.String(), got.From.String())
-			}
-		} else {
-			t.Errorf("Updated cardholder %v - 'from' date does not match\n   expected:%v\n   got:     %v", expected.ID, expected.From, got.From)
-		}
-	}
-
-	if got.To != expected.To {
-		if got.To != nil && expected.To != nil {
-			if *got.To != *expected.To {
-				t.Errorf("Updated cardholder %v - 'to' date does not match\n   expected:%v\n   got:     %v", expected.ID, expected.To.String(), got.To.String())
-			}
-		} else {
-			t.Errorf("Updated cardholder %v - 'to' date does not match\n   expected:%v\n   got:     %v", expected.ID, expected.To, got.To)
-		}
-	}
-
-	if !reflect.DeepEqual(got.Groups, expected.Groups) {
-		t.Errorf("Updated cardholder %v - groups do not match\n   expected:%v\n   got:     %v", expected.ID, expected.Groups, got.Groups)
-	}
+func compareDB(db, expected fdb, t *testing.T) {
+	compare(db.data.Tables, expected.data.Tables, t)
 }
