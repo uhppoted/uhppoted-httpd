@@ -178,7 +178,7 @@ func TestCardNumberSwap(t *testing.T) {
 			map[string]interface{}{
 				"id":   "C02",
 				"name": "Dobby",
-				"card": 65414231,
+				"card": 6514231,
 			},
 		},
 	}
@@ -186,7 +186,7 @@ func TestCardNumberSwap(t *testing.T) {
 	expected := result{
 		Updated: []interface{}{
 			cardholder("C01", "Hagrid", 1234567),
-			cardholder("C02", "Dobby", 65414231, "G05"),
+			cardholder("C02", "Dobby", 6514231, "G05"),
 		},
 	}
 
@@ -196,7 +196,7 @@ func TestCardNumberSwap(t *testing.T) {
 	}
 
 	compare(r, expected, t)
-	compare(dbt, final, t)
+	compareDB(dbt, final, t)
 }
 
 func date(s string) *types.Date {
@@ -206,7 +206,7 @@ func date(s string) *types.Date {
 	return &d
 }
 
-func db(cardholders ...types.CardHolder) fdb {
+func db(cardholders ...types.CardHolder) *fdb {
 	p := fdb{
 		data: data{
 			Tables: tables{
@@ -223,7 +223,7 @@ func db(cardholders ...types.CardHolder) fdb {
 		p.data.Tables.CardHolders[c.ID] = c
 	}
 
-	return p
+	return &p
 }
 
 func group(id string) types.Group {
@@ -263,6 +263,6 @@ func compare(got, expected interface{}, t *testing.T) {
 	}
 }
 
-func compareDB(db, expected fdb, t *testing.T) {
+func compareDB(db, expected *fdb, t *testing.T) {
 	compare(db.data.Tables, expected.data.Tables, t)
 }
