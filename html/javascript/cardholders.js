@@ -48,7 +48,10 @@ export function onAdd (event) {
 
         switch (response.status) {
           case 200:
-            response.json().then(object => { updated(object.db.updated) })
+            response.json().then(object => { 
+              updated(object.db.updated) 
+              deleted(object.db.deleted) 
+            })
             break
 
           default:
@@ -81,7 +84,10 @@ export function onUpdate (event) {
 
         switch (response.status) {
           case 200:
-            response.json().then(object => { updated(object.db.updated) })
+            response.json().then(object => { 
+              updated(object.db.updated) 
+              deleted(object.db.deleted) 
+            })
             break
 
           default:
@@ -313,6 +319,27 @@ function updated (list) {
       Object.entries(record.Groups).forEach(([k, v]) => {
         update(document.getElementById(id + '-' + k), v)
       })
+    })
+  }
+}
+
+function deleted (list) {
+  const tbody = document.getElementById('table').querySelector('table tbody')
+
+  if (tbody && list) {
+    list.forEach((record) => {
+      const id = record.ID
+      const row = document.getElementById(id)
+
+      if (row) {
+        const rows = tbody.rows
+        for (let i=0; i<rows.length; i++) {
+          if (rows[i].id === id) {
+            tbody.deleteRow(i)
+            break
+          }
+        }
+      }
     })
   }
 }

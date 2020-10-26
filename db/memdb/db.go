@@ -30,6 +30,7 @@ type tables struct {
 
 type result struct {
 	Updated []interface{} `json:"updated"`
+	Deleted []interface{} `json:"deleted"`
 }
 
 func (d *data) copy() *data {
@@ -152,6 +153,15 @@ loop:
 
 		for _, record := range d.data.Tables.CardHolders {
 			if record.ID == c.ID {
+				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
+					if r, err := d.delete(shadow, c); err != nil {
+						return nil, err
+					} else if r != nil {
+						list.Deleted = append(list.Deleted, r)
+						continue loop
+					}
+				}
+
 				if r, err := d.update(shadow, c); err != nil {
 					return nil, err
 				} else if r != nil {
@@ -186,32 +196,40 @@ func (d *fdb) add(shadow *data, ch types.CardHolder) (interface{}, error) {
 }
 
 func (d *fdb) update(shadow *data, ch types.CardHolder) (interface{}, error) {
-	for _, record := range shadow.Tables.CardHolders {
-		if record.ID == ch.ID {
-			if ch.Name != nil {
-				record.Name = ch.Name
-			}
-
-			if ch.Card != nil {
-				record.Card = ch.Card
-			}
-
-			if ch.From != nil {
-				record.From = ch.From
-			}
-
-			if ch.To != nil {
-				record.To = ch.To
-			}
-
-			for gid, gg := range ch.Groups {
-				if _, ok := shadow.Tables.Groups[gid]; ok {
-					record.Groups[gid] = gg
-				}
-			}
-
-			return record, nil
+	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
+		if ch.Name != nil {
+			record.Name = ch.Name
 		}
+
+		if ch.Card != nil {
+			record.Card = ch.Card
+		}
+
+		if ch.From != nil {
+			record.From = ch.From
+		}
+
+		if ch.To != nil {
+			record.To = ch.To
+		}
+
+		for gid, gg := range ch.Groups {
+			if _, ok := shadow.Tables.Groups[gid]; ok {
+				record.Groups[gid] = gg
+			}
+		}
+
+		return record, nil
+	}
+
+	return nil, nil
+}
+
+func (d *fdb) delete(shadow *data, ch types.CardHolder) (interface{}, error) {
+	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
+		delete(shadow.Tables.CardHolders, ch.ID)
+
+		return record, nil
 	}
 
 	return nil, nil

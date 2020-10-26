@@ -14,6 +14,11 @@
 
 - [ ] Card holders
       - delete
+      - add + rollback should un-add
+      - reinstate JS 'reset' on add/update/delete error
+      - change table id from 'table' to 'cardholders'
+      - default row order should be by 'created'
+      - card type should probably be a string (because otherwise 0 is a reserved number)
       - add
         - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
         - shadow DOM ???
@@ -31,6 +36,7 @@
       - commit multiple rows
         - commit-all
         - rollback-all
+      - undo/revert (?)
       - use internal DB rather than element dataset (?)
       - scroll horizontally
       - scroll vertically
