@@ -36,33 +36,42 @@ export function onAdd (event) {
   const row = document.getElementById(id)
 
   if (row) {
-    const record = rowToRecord(id, row)
+    const [record, fields] = rowToRecord(id, row)
 
-    row.classList.remove('modified')
-    Array.from(row.children).forEach(item => item.classList.remove('modified'))
+    const reset = function () {
+      row.classList.add('new')
+      row.classList.add('modified')
+      fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
+    }
+
     busy()
+    row.classList.remove('new')
+    row.classList.remove('modified')
+    fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
+    fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
 
     postAsJSON('/cardholders', { cardholders: [record] })
       .then(response => {
-        unbusy()
-
         switch (response.status) {
           case 200:
-            response.json().then(object => { 
-              updated(object.db.updated) 
-              deleted(object.db.deleted) 
+            response.json().then(object => {
+              updated(object.db.updated)
+              deleted(object.db.deleted)
             })
             break
 
           default:
-            // reset()
+            reset()
             response.text().then(message => { warning(message) })
         }
       })
       .catch(function (err) {
+        reset()
+        warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+      })
+      .finally(() => {
         unbusy()
-        // reset()
-        warning(`Error committing update (ERR:${err.message.toLowerCase()})`)
+        fields.forEach(f => { apply(f, (c) => { c.classList.remove('pending') }) })
       })
   }
 }
@@ -72,88 +81,43 @@ export function onUpdate (event) {
   const row = document.getElementById(id)
 
   if (row) {
-    const record = rowToRecord(id, row)
+    const [record, fields] = rowToRecord(id, row)
 
-    row.classList.remove('modified')
-    Array.from(row.children).forEach(item => item.classList.remove('modified'))
+    const reset = function () {
+      row.classList.add('modified')
+      fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
+    }
+
     busy()
+    row.classList.remove('modified')
+    fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
+    fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
 
     postAsJSON('/cardholders', { cardholders: [record] })
       .then(response => {
-        unbusy()
-
         switch (response.status) {
           case 200:
-            response.json().then(object => { 
-              updated(object.db.updated) 
-              deleted(object.db.deleted) 
+            response.json().then(object => {
+              updated(object.db.updated)
+              deleted(object.db.deleted)
             })
             break
 
           default:
-            // reset()
+            reset()
             response.text().then(message => { warning(message) })
         }
       })
       .catch(function (err) {
+        reset()
+        warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+      })
+      .finally(() => {
         unbusy()
-        // reset()
-        warning(`Error committing update (ERR:${err.message.toLowerCase()})`)
+        fields.forEach(f => { apply(f, (c) => { c.classList.remove('pending') }) })
       })
   }
 }
-
-// export function onUpdateX (event) {
-//   const id = event.target.dataset.record
-//   const row = document.getElementById(id)
-//
-//   if (row) {
-//     const update = {}
-//     const fields = row.querySelectorAll('.field')
-//
-//     fields.forEach((item) => {
-//       if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
-//         update[item.id] = item.dataset.value
-//
-//         item.parentElement.classList.add('pending')
-//         item.parentElement.classList.remove('modified')
-//       }
-//     })
-//
-//     row.classList.remove('modified')
-//
-//     const reset = function () {
-//       Object.entries(update).forEach(([k, v]) => {
-//         document.getElementById(k).parentElement.classList.remove('pending')
-//         document.getElementById(k).parentElement.classList.add('modified')
-//       })
-//
-//       row.classList.add('modified')
-//     }
-//
-//     busy()
-//
-//     postAsJSON('/cardholders/' + id, update)
-//       .then(response => {
-//         unbusy()
-//
-//         switch (response.status) {
-//           case 200:
-//             response.json().then(object => { updated(object.db.updated) })
-//             break
-//
-//           default:
-//             reset()
-//             response.text().then(message => { warning(message) })
-//         }
-//       })
-//       .catch(function (err) {
-//         unbusy()
-//         reset()
-//         warning(`Error committing update (ERR:${err.message.toLowerCase()})`)
-//       })
-//   }
-// }
 
 export function onRollback (event, op) {
   if (op && op === 'delete') {
@@ -166,7 +130,7 @@ export function onRollback (event, op) {
 
 export function onDelete (event) {
   const id = event.target.dataset.record
-  const tbody = document.getElementById('table').querySelector('table tbody')
+  const tbody = document.getElementById('cardholders').querySelector('table tbody')
   const row = document.getElementById(id)
 
   if (row) {
@@ -211,7 +175,7 @@ export function onRevert (event) {
 }
 
 export function onNew (event) {
-  const tbody = document.getElementById('table').querySelector('table tbody')
+  const tbody = document.getElementById('cardholders').querySelector('table tbody')
 
   if (tbody) {
     const row = tbody.insertRow()
@@ -297,6 +261,7 @@ function updated (list) {
       const row = document.getElementById(id)
 
       if (row) {
+        console.log('oops')
         row.classList.remove('new')
       }
 
@@ -324,7 +289,7 @@ function updated (list) {
 }
 
 function deleted (list) {
-  const tbody = document.getElementById('table').querySelector('table tbody')
+  const tbody = document.getElementById('cardholders').querySelector('table tbody')
 
   if (tbody && list) {
     list.forEach((record) => {
@@ -333,7 +298,7 @@ function deleted (list) {
 
       if (row) {
         const rows = tbody.rows
-        for (let i=0; i<rows.length; i++) {
+        for (let i = 0; i < rows.length; i++) {
           if (rows[i].id === id) {
             tbody.deleteRow(i)
             break
@@ -349,22 +314,13 @@ function set (element, value) {
   const row = document.getElementById(rowid)
   const original = element.dataset.original
   const v = value.toString()
-  let td = element.parentElement
-
-  for (let i = 0; i < 10; i++) {
-    if (td.tagName.toLowerCase() === 'td') {
-      break
-    }
-
-    td = td.parentElement
-  }
 
   element.dataset.value = v
 
   if (v !== original) {
-    td.classList.add('modified')
+    apply(element, (c) => { c.classList.add('modified') })
   } else {
-    td.classList.remove('modified')
+    apply(element, (c) => { c.classList.remove('modified') })
   }
 
   if (row) {
@@ -381,18 +337,17 @@ function update (element, value) {
   const v = value.toString()
 
   if (element) {
+    const td = cell(element)
     element.dataset.original = v
 
     // check for conflicts with concurrently modified fields
 
-    if (element.parentElement.classList.contains('modified')) {
-      element.parentElement.classList.remove('pending')
-
+    if (td && td.classList.contains('modified')) {
       if (element.dataset.value !== v.toString()) {
-        element.parentElement.classList.add('conflict')
+        td.classList.add('conflict')
       } else {
-        element.parentElement.classList.remove('modified')
-        element.parentElement.classList.remove('conflict')
+        td.classList.remove('modified')
+        td.classList.remove('conflict')
       }
 
       return
@@ -400,13 +355,11 @@ function update (element, value) {
 
     // mark fields with unexpected values after submit
 
-    if (element.parentElement.classList.contains('pending')) {
-      element.parentElement.classList.remove('pending')
-
+    if (td && td.classList.contains('pending')) {
       if (element.dataset.value !== v.toString()) {
-        element.parentElement.classList.add('conflict')
+        td.classList.add('conflict')
       } else {
-        element.parentElement.classList.remove('conflict')
+        td.classList.remove('conflict')
       }
     }
 
@@ -446,11 +399,34 @@ function unbusy () {
   }
 }
 
+function cell (element) {
+  let td = element
+
+  for (let i = 0; i < 10; i++) {
+    if (td.tagName.toLowerCase() === 'td') {
+      return td
+    }
+
+    td = td.parentElement
+  }
+
+  return null
+}
+
+function apply (element, f) {
+  const td = cell(element)
+
+  if (td) {
+    f(td)
+  }
+}
+
 function rowToRecord (id, row) {
   const name = row.querySelector('#' + id + '-name')
   const card = row.querySelector('#' + id + '-card')
   const from = row.querySelector('#' + id + '-from')
   const to = row.querySelector('#' + id + '-to')
+  const fields = []
 
   const record = {
     id: id,
@@ -458,29 +434,38 @@ function rowToRecord (id, row) {
   }
 
   if (name && name.dataset.value !== name.dataset.original) {
-    record.name = row.querySelector('#' + id + '-name').value
+    const field = row.querySelector('#' + id + '-name')
+    record.name = field.value
+    fields.push(field)
   }
 
   if (card && card.dataset.value !== card.dataset.original) {
-    record.card = Number(row.querySelector('#' + id + '-card').value)
+    const field = row.querySelector('#' + id + '-card')
+    record.card = Number(field.value)
+    fields.push(field)
   }
 
   if (from && from.dataset.value !== from.dataset.original) {
-    record.from = row.querySelector('#' + id + '-from').value
+    const field = row.querySelector('#' + id + '-from')
+    record.from = field.value
+    fields.push(field)
   }
 
   if (to && to.dataset.value !== to.dataset.original) {
-    record.to = row.querySelector('#' + id + '-to').value
+    const field = row.querySelector('#' + id + '-to')
+    record.to = field.value
+    fields.push(field)
   }
 
   constants.groups.forEach((gid) => {
-    const group = row.querySelector('#' + id + '-' + gid)
-    if (group && group.dataset.value !== group.dataset.original) {
-      record.groups[gid] = group.checked
+    const field = row.querySelector('#' + id + '-' + gid)
+    if (field && field.dataset.value !== field.dataset.original) {
+      record.groups[gid] = field.checked
+      fields.push(field)
     }
   })
 
-  return record
+  return [record, fields]
 }
 
 // Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
