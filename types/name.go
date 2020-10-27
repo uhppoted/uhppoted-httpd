@@ -23,3 +23,15 @@ func (n *Name) IsValid() bool {
 
 	return false
 }
+
+func (n *Name) Equals(name *Name) bool {
+	if n == nil && name == nil {
+		return true
+	}
+
+	if n != nil && name != nil {
+		return string(*n) == string(*name)
+	}
+
+	return false
+}

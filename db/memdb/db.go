@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -122,7 +123,7 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 	return list, nil
 }
 
-func (d *fdb) Post(m map[string]interface{}) (interface{}, error) {
+func (d *fdb) Post(m map[string]interface{}, auth db.IAuth) (interface{}, error) {
 	d.Lock()
 
 	defer d.Unlock()
@@ -154,7 +155,7 @@ loop:
 		for _, record := range d.data.Tables.CardHolders {
 			if record.ID == c.ID {
 				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
-					if r, err := d.delete(shadow, c); err != nil {
+					if r, err := d.delete(shadow, c, auth); err != nil {
 						return nil, err
 					} else if r != nil {
 						list.Deleted = append(list.Deleted, r)
@@ -162,7 +163,7 @@ loop:
 					}
 				}
 
-				if r, err := d.update(shadow, c); err != nil {
+				if r, err := d.update(shadow, c, auth); err != nil {
 					return nil, err
 				} else if r != nil {
 					list.Updated = append(list.Updated, r)
@@ -172,7 +173,7 @@ loop:
 			}
 		}
 
-		if r, err := d.add(shadow, c); err != nil {
+		if r, err := d.add(shadow, c, auth); err != nil {
 			return nil, err
 		} else if r != nil {
 			list.Updated = append(list.Updated, r)
@@ -188,14 +189,25 @@ loop:
 	return list, nil
 }
 
-func (d *fdb) add(shadow *data, ch types.CardHolder) (interface{}, error) {
+func (d *fdb) add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
 	record := ch.Clone()
+
+	if auth != nil {
+		if err := auth.CanAddCardHolder(record); err != nil {
+			return nil, &types.HttpdError{
+				Status: http.StatusUnauthorized,
+				Err:    fmt.Errorf("Not authorized to add card holder"),
+				Detail: fmt.Errorf("Not authorized (%w)", err),
+			}
+		}
+	}
+
 	shadow.Tables.CardHolders[record.ID] = record
 
 	return record, nil
 }
 
-func (d *fdb) update(shadow *data, ch types.CardHolder) (interface{}, error) {
+func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
 	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
 		if ch.Name != nil {
 			record.Name = ch.Name
@@ -219,14 +231,33 @@ func (d *fdb) update(shadow *data, ch types.CardHolder) (interface{}, error) {
 			}
 		}
 
+		if auth != nil {
+			if err := auth.CanUpdateCardHolder(d.data.Tables.CardHolders[ch.ID], record); err != nil {
+				return nil, &types.HttpdError{
+					Status: http.StatusUnauthorized,
+					Err:    fmt.Errorf("Not authorized to update card holder"),
+					Detail: fmt.Errorf("Not authorized (%w)", err),
+				}
+			}
+		}
+
 		return record, nil
 	}
 
 	return nil, nil
 }
 
-func (d *fdb) delete(shadow *data, ch types.CardHolder) (interface{}, error) {
+func (d *fdb) delete(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
 	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
+		if auth != nil {
+			if err := auth.CanDeleteCardHolder(record); err != nil {
+				return nil, &types.HttpdError{
+					Status: http.StatusUnauthorized,
+					Err:    fmt.Errorf("Not authorized to delete card holder"),
+					Detail: fmt.Errorf("Not authorized (%w)", err),
+				}
+			}
+		}
 		delete(shadow.Tables.CardHolders, ch.ID)
 
 		return record, nil

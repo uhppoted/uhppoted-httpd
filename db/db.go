@@ -9,5 +9,5 @@ type DB interface {
 	CardHolders() (types.CardHolders, error)
 
 	ACL() ([]types.Permissions, error)
-	Post(map[string]interface{}) (interface{}, error)
+	Post(map[string]interface{}, IAuth) (interface{}, error)
 }

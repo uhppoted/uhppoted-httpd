@@ -31,3 +31,15 @@ func (c *Card) IsValid() bool {
 
 	return false
 }
+
+func (c *Card) Equals(card *Card) bool {
+	if c == nil && card == nil {
+		return true
+	}
+
+	if c != nil && card != nil {
+		return uint32(*c) == uint32(*card)
+	}
+
+	return false
+}

@@ -16,30 +16,29 @@
       - default row order should be by 'created'
 
 - [ ] Card holders
-      - onAdd - rollback not disappearing after commit click
+      - audit trail
+      - add/update/delete authorisation
+      - commit multiple rows
+        - commit-all
+        - rollback-all
       - card type should probably be a string (because otherwise 0 is a reserved number)
       - add
         - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
         - shadow DOM ???
-      - add/update/delete authorisation
       - wrap templating in a decent error handler
         - redirect to error page
 
       - custom webelement (https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
       - replace dataset.value with get()
-      - draw out local record state transitions
+      - draw out local record FSM
+        -- add -> rollback deletes, commit only enabled after modified
       - genericize JS:refresh
       - rename Go:Permissions to e.g. Membership
-      - JS: throw error if response code != 200 (?)
 
-      - commit multiple rows
-        - commit-all
-        - rollback-all
       - undo/revert (?)
       - use internal DB rather than element dataset (?)
       - scroll horizontally
       - scroll vertically
-      - audit trail
       - virtual DOM
       - search & pin
       - gzip response

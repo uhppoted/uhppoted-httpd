@@ -12,8 +12,8 @@ var hagrid = cardholder("C01", "Hagrid", 6514231)
 var dobby = cardholder("C02", "Dobby", 1234567, "G05")
 
 func TestCardAdd(t *testing.T) {
-	dbt := db(hagrid)
-	final := db(hagrid, dobby)
+	dbt := dbx(hagrid)
+	final := dbx(hagrid, dobby)
 
 	rq := map[string]interface{}{
 		"cardholders": []map[string]interface{}{
@@ -36,7 +36,7 @@ func TestCardAdd(t *testing.T) {
 		},
 	}
 
-	r, err := dbt.Post(rq)
+	r, err := dbt.Post(rq, nil)
 
 	if err != nil {
 		t.Fatalf("Unexpected error adding card holder to DB: %v", err)
@@ -47,8 +47,8 @@ func TestCardAdd(t *testing.T) {
 }
 
 func TestCardAddWithBlankNameAndCard(t *testing.T) {
-	dbt := db(hagrid)
-	final := db(cardholder("C01", "Hagrid", 6514231))
+	dbt := dbx(hagrid)
+	final := dbx(cardholder("C01", "Hagrid", 6514231))
 
 	rq := map[string]interface{}{
 		"cardholders": []map[string]interface{}{
@@ -63,7 +63,7 @@ func TestCardAddWithBlankNameAndCard(t *testing.T) {
 		},
 	}
 
-	r, err := dbt.Post(rq)
+	r, err := dbt.Post(rq, nil)
 
 	if err == nil {
 		t.Errorf("Expected error adding invalid card holder to DB, got:%v", err)
@@ -77,8 +77,8 @@ func TestCardAddWithBlankNameAndCard(t *testing.T) {
 }
 
 func TestCardAddWithInvalidGroup(t *testing.T) {
-	dbt := db(hagrid)
-	final := db(hagrid, cardholder("C02", "Dobby", 1234567))
+	dbt := dbx(hagrid)
+	final := dbx(hagrid, cardholder("C02", "Dobby", 1234567))
 
 	rq := map[string]interface{}{
 		"cardholders": []map[string]interface{}{
@@ -101,7 +101,7 @@ func TestCardAddWithInvalidGroup(t *testing.T) {
 		},
 	}
 
-	r, err := dbt.Post(rq)
+	r, err := dbt.Post(rq, nil)
 	if err != nil {
 		t.Fatalf("Unexpected error adding card holder to DB: %v", err)
 	}
@@ -111,8 +111,8 @@ func TestCardAddWithInvalidGroup(t *testing.T) {
 }
 
 func TestCardNumberUpdate(t *testing.T) {
-	dbt := db(hagrid)
-	final := db(cardholder("C01", "Hagrid", 1234567))
+	dbt := dbx(hagrid)
+	final := dbx(cardholder("C01", "Hagrid", 1234567))
 
 	rq := map[string]interface{}{
 		"cardholders": []map[string]interface{}{
@@ -130,7 +130,7 @@ func TestCardNumberUpdate(t *testing.T) {
 		},
 	}
 
-	r, err := dbt.Post(rq)
+	r, err := dbt.Post(rq, nil)
 	if err != nil {
 		t.Fatalf("Unexpected error updating DB: %v", err)
 	}
@@ -140,8 +140,8 @@ func TestCardNumberUpdate(t *testing.T) {
 }
 
 func TestDuplicateCardNumberUpdate(t *testing.T) {
-	dbt := db(hagrid, dobby)
-	final := db(hagrid, dobby)
+	dbt := dbx(hagrid, dobby)
+	final := dbx(hagrid, dobby)
 
 	rq := map[string]interface{}{
 		"cardholders": []map[string]interface{}{
@@ -152,7 +152,7 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 		},
 	}
 
-	r, err := dbt.Post(rq)
+	r, err := dbt.Post(rq, nil)
 	if err == nil {
 		t.Errorf("Expected error updating DB, got %v", err)
 	}
@@ -165,8 +165,8 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 }
 
 func TestCardNumberSwap(t *testing.T) {
-	dbt := db(hagrid, dobby)
-	final := db(cardholder("C01", "Hagrid", 1234567), cardholder("C02", "Dobby", 6514231, "G05"))
+	dbt := dbx(hagrid, dobby)
+	final := dbx(cardholder("C01", "Hagrid", 1234567), cardholder("C02", "Dobby", 6514231, "G05"))
 
 	rq := map[string]interface{}{
 		"cardholders": []map[string]interface{}{
@@ -190,7 +190,7 @@ func TestCardNumberSwap(t *testing.T) {
 		},
 	}
 
-	r, err := dbt.Post(rq)
+	r, err := dbt.Post(rq, nil)
 	if err != nil {
 		t.Fatalf("Unexpected error updating DB: %v", err)
 	}
@@ -206,7 +206,7 @@ func date(s string) *types.Date {
 	return &d
 }
 
-func db(cardholders ...types.CardHolder) *fdb {
+func dbx(cardholders ...types.CardHolder) *fdb {
 	p := fdb{
 		data: data{
 			Tables: tables{
