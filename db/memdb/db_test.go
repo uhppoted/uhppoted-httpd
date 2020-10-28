@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -216,6 +217,7 @@ func dbx(cardholders ...types.CardHolder) *fdb {
 				CardHolders: types.CardHolders{},
 			},
 		},
+		audit: audit.NewAuditTrail(),
 	}
 
 	for i, _ := range cardholders {

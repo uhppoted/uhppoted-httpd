@@ -15,8 +15,8 @@ type LogEntry struct {
 	Info      interface{}
 }
 
-func NewAuditTrail() *Log {
-	return &Log{}
+func NewAuditTrail() Log {
+	return Log{}
 }
 
 func (l *Log) Write(entry LogEntry) {

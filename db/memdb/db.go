@@ -19,7 +19,7 @@ type fdb struct {
 	sync.RWMutex
 	file  string
 	data  data
-	audit *audit.Log
+	audit audit.Log
 }
 
 type data struct {
@@ -193,9 +193,12 @@ loop:
 }
 
 func (d *fdb) add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
+	uid := ""
 	record := ch.Clone()
 
 	if auth != nil {
+		uid = auth.UID()
+
 		if err := auth.CanAddCardHolder(record); err != nil {
 			return nil, &types.HttpdError{
 				Status: http.StatusUnauthorized,
@@ -203,12 +206,13 @@ func (d *fdb) add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}
 				Detail: fmt.Errorf("Not authorized (%w)", err),
 			}
 		}
+
 	}
 
 	shadow.Tables.CardHolders[record.ID] = record
 
 	d.audit.Write(audit.LogEntry{
-		UID:       auth.UID(),
+		UID:       uid,
 		Module:    "memdb",
 		Operation: "add",
 		Info:      record,
@@ -218,6 +222,7 @@ func (d *fdb) add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}
 }
 
 func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
+	uid := ""
 	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
 		if ch.Name != nil {
 			record.Name = ch.Name
@@ -243,6 +248,8 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 
 		current := d.data.Tables.CardHolders[ch.ID]
 		if auth != nil {
+			uid = auth.UID()
+
 			if err := auth.CanUpdateCardHolder(current, record); err != nil {
 				return nil, &types.HttpdError{
 					Status: http.StatusUnauthorized,
@@ -253,7 +260,7 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 		}
 
 		d.audit.Write(audit.LogEntry{
-			UID:       auth.UID(),
+			UID:       uid,
 			Module:    "memdb",
 			Operation: "update",
 			Info:      map[string]interface{}{"original": current, "updated": record},
@@ -266,8 +273,11 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 }
 
 func (d *fdb) delete(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
+	uid := ""
 	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
 		if auth != nil {
+			uid = auth.UID()
+
 			if err := auth.CanDeleteCardHolder(record); err != nil {
 				return nil, &types.HttpdError{
 					Status: http.StatusUnauthorized,
@@ -280,7 +290,7 @@ func (d *fdb) delete(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 		delete(shadow.Tables.CardHolders, ch.ID)
 
 		d.audit.Write(audit.LogEntry{
-			UID:       auth.UID(),
+			UID:       uid,
 			Module:    "memdb",
 			Operation: "delete",
 			Info:      record,
