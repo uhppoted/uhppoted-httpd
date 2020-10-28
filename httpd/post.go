@@ -15,7 +15,8 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !d.authorized(w, r, path) {
+	uid, ok := d.authorized(w, r, path)
+	if !ok {
 		return
 	}
 
@@ -25,7 +26,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if match, err := regexp.MatchString(`/cardholders(?:/.*)?`, path); err == nil && match {
-		cardholders.Post(d.db, w, r, d.timeout)
+		cardholders.Post(uid, d.db, w, r, d.timeout)
 		return
 	}
 

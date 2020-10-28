@@ -26,8 +26,11 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		path = "/" + path
 	}
 
-	if !d.authorized(w, r, path) {
-		return
+	if strings.HasSuffix(path, ".html") {
+		_, ok := d.authorized(w, r, path)
+		if !ok {
+			return
+		}
 	}
 
 	switch path {
@@ -36,7 +39,6 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//if strings.HasSuffix(path, ".html") || strings.HasSuffix(path, ".js") {
 	if strings.HasSuffix(path, ".html") {
 		context := map[string]interface{}{}
 		context["User"] = d.user(r)

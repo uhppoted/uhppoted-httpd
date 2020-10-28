@@ -3,6 +3,7 @@
 ### IN PROGRESS
 
 - [ ] Loading bar a la cybercode
+- [ ] Not redirecting to login.html after restart
 
 - [ ] ACL
       - groups => rules => permissions
@@ -17,10 +18,13 @@
 
 - [ ] Card holders
       - audit trail
-      - add/update/delete authorisation
+        - to file
       - commit multiple rows
         - commit-all
         - rollback-all
+      - add/update/delete authorisation
+        - initialise from config
+        - unit tests
       - card type should probably be a string (because otherwise 0 is a reserved number)
       - add
         - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)

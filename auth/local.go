@@ -274,43 +274,43 @@ func (p *Local) Verify(tokenType TokenType, cookie string) error {
 	return nil
 }
 
-func (p *Local) Authorized(cookie, resource string) error {
+func (p *Local) Authorized(cookie, resource string) (string, error) {
 	p.guard.Lock()
 	secret := []byte(p.Key)
 	p.guard.Unlock()
 
 	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	token, err := jwt.ParseAndVerifyString(cookie, verifier)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if err := verifier.Verify(token.Payload(), token.Signature()); err != nil {
-		return err
+		return "", err
 	}
 
 	var claims session
 	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
-		return err
+		return "", err
 	}
 
 	if !claims.IsForAudience("admin") {
-		return fmt.Errorf("Invalid audience in JWT claims")
+		return "", fmt.Errorf("Invalid audience in JWT claims")
 	}
 
 	if !claims.IsValidAt(time.Now()) {
-		return fmt.Errorf("JWT token expired")
+		return "", fmt.Errorf("JWT token expired")
 	}
 
 	if !p.authorised(claims.Role, resource) {
-		return fmt.Errorf("%v not authorized for %s", claims.LoggedInAs, resource)
+		return "", fmt.Errorf("%v not authorized for %s", claims.LoggedInAs, resource)
 	}
 
-	return nil
+	return claims.LoggedInAs, nil
 }
 
 func (p *Local) GetLoginId(cookie string) (*uuid.UUID, error) {

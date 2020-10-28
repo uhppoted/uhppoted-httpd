@@ -15,6 +15,15 @@ import (
 )
 
 type authorizator struct {
+	uid string
+}
+
+func (a *authorizator) UID() string {
+	if a != nil {
+		return a.uid
+	}
+
+	return "?"
 }
 
 func (a *authorizator) CanAddCardHolder(ch *types.CardHolder) error {
@@ -47,9 +56,7 @@ func (a *authorizator) CanDeleteCardHolder(ch *types.CardHolder) error {
 	return fmt.Errorf("Nope, no can do, sorry compadre")
 }
 
-var auth = authorizator{}
-
-func Post(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Duration) {
+func Post(uid string, db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Duration) {
 	ch := make(chan error)
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 
@@ -96,7 +103,7 @@ func Post(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Duratio
 			return
 		}
 
-		updated, err := db.Post(body, &auth)
+		updated, err := db.Post(body, &authorizator{uid})
 		if err != nil {
 			ch <- err
 			return

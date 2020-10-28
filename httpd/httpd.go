@@ -189,7 +189,7 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 	d.auth.Authenticate(w, r)
 }
 
-func (d *dispatcher) authorized(w http.ResponseWriter, r *http.Request, path string) bool {
+func (d *dispatcher) authorized(w http.ResponseWriter, r *http.Request, path string) (string, bool) {
 	return d.auth.Authorized(w, r, path)
 }
 

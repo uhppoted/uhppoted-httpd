@@ -10,14 +10,16 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type fdb struct {
 	sync.RWMutex
-	file string
-	data data
+	file  string
+	data  data
+	audit *audit.Log
 }
 
 type data struct {
@@ -58,6 +60,7 @@ func NewDB(file string) (*fdb, error) {
 				CardHolders: types.CardHolders{},
 			},
 		},
+		audit: audit.NewAuditTrail(),
 	}
 
 	if err := load(&f.data, f.file); err != nil {
@@ -204,6 +207,13 @@ func (d *fdb) add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}
 
 	shadow.Tables.CardHolders[record.ID] = record
 
+	d.audit.Write(audit.LogEntry{
+		UID:       auth.UID(),
+		Module:    "memdb",
+		Operation: "add",
+		Info:      record,
+	})
+
 	return record, nil
 }
 
@@ -231,8 +241,9 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 			}
 		}
 
+		current := d.data.Tables.CardHolders[ch.ID]
 		if auth != nil {
-			if err := auth.CanUpdateCardHolder(d.data.Tables.CardHolders[ch.ID], record); err != nil {
+			if err := auth.CanUpdateCardHolder(current, record); err != nil {
 				return nil, &types.HttpdError{
 					Status: http.StatusUnauthorized,
 					Err:    fmt.Errorf("Not authorized to update card holder"),
@@ -240,6 +251,13 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 				}
 			}
 		}
+
+		d.audit.Write(audit.LogEntry{
+			UID:       auth.UID(),
+			Module:    "memdb",
+			Operation: "update",
+			Info:      map[string]interface{}{"original": current, "updated": record},
+		})
 
 		return record, nil
 	}
@@ -258,7 +276,15 @@ func (d *fdb) delete(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 				}
 			}
 		}
+
 		delete(shadow.Tables.CardHolders, ch.ID)
+
+		d.audit.Write(audit.LogEntry{
+			UID:       auth.UID(),
+			Module:    "memdb",
+			Operation: "delete",
+			Info:      record,
+		})
 
 		return record, nil
 	}

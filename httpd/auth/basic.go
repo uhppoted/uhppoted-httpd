@@ -117,8 +117,10 @@ func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &cookie)
 }
 
-func (b *Basic) Authorized(w http.ResponseWriter, r *http.Request, path string) bool {
-	if !b.authorized(r, path) {
+func (b *Basic) Authorized(w http.ResponseWriter, r *http.Request, path string) (string, bool) {
+	uid, ok := b.authorized(r, path)
+
+	if !ok {
 		if !b.authenticated(r) {
 			b.unauthenticated(w, r)
 		} else if s, err := b.session(r); err != nil || s == nil {
@@ -127,10 +129,10 @@ func (b *Basic) Authorized(w http.ResponseWriter, r *http.Request, path string) 
 			b.unauthorized(w, r)
 		}
 
-		return false
+		return "", false
 	}
 
-	return true
+	return uid, true
 }
 
 func (b *Basic) Logout(w http.ResponseWriter, r *http.Request) {
@@ -178,42 +180,41 @@ func (b *Basic) authenticated(r *http.Request) bool {
 	return true
 }
 
-func (b *Basic) authorized(r *http.Request, path string) bool {
+func (b *Basic) authorized(r *http.Request, path string) (string, bool) {
 	if path == "/login.html" {
-		return true
+		return "", true
 	}
 
 	if path == "/unauthorized.html" {
-		return true
+		return "", true
 	}
 
-	if strings.HasSuffix(path, ".html") {
-		cookie, err := r.Cookie(SessionCookie)
-		if err != nil {
-			warn(fmt.Errorf("No JWT cookie in request"))
-			return false
-		}
-
-		if err := b.auth.Authorized(cookie.Value, path); err != nil {
-			warn(err)
-			return false
-		}
-
-		session, err := b.session(r)
-		if err != nil {
-			warn(err)
-			return false
-		}
-
-		if session == nil {
-			warn(fmt.Errorf("No extant session for request"))
-			return false
-		}
-
-		session.touched = time.Now()
+	cookie, err := r.Cookie(SessionCookie)
+	if err != nil {
+		warn(fmt.Errorf("No JWT cookie in request"))
+		return "", false
 	}
 
-	return true
+	uid, err := b.auth.Authorized(cookie.Value, path)
+	if err != nil {
+		warn(err)
+		return "", false
+	}
+
+	session, err := b.session(r)
+	if err != nil {
+		warn(err)
+		return "", false
+	}
+
+	if session == nil {
+		warn(fmt.Errorf("No extant session for request"))
+		return "", false
+	}
+
+	session.touched = time.Now()
+
+	return uid, true
 }
 
 func (b *Basic) unauthenticated(w http.ResponseWriter, r *http.Request) {

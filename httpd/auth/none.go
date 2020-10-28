@@ -17,8 +17,8 @@ func NewNoneAuthenticator() *None {
 func (n *None) Authenticate(w http.ResponseWriter, r *http.Request) {
 }
 
-func (n *None) Authorized(w http.ResponseWriter, r *http.Request, path string) bool {
-	return true
+func (n *None) Authorized(w http.ResponseWriter, r *http.Request, path string) (string, bool) {
+	return "-", true
 }
 
 func (n *None) Logout(w http.ResponseWriter, r *http.Request) {
