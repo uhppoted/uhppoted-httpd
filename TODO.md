@@ -3,7 +3,6 @@
 ### IN PROGRESS
 
 - [ ] Loading bar a la cybercode
-- [ ] Not redirecting to login.html after restart
 
 - [ ] ACL
       - groups => rules => permissions
@@ -91,6 +90,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Not redirecting to login.html after restart
 - [x] Fix 'login unauthorized'
 - [x] Abstract authentication/authorization
 - [x] Javascript modules

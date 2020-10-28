@@ -52,17 +52,21 @@ export function onAdd (event) {
 
     postAsJSON('/cardholders', { cardholders: [record] })
       .then(response => {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              updated(object.db.updated)
-              deleted(object.db.deleted)
-            })
-            break
+        if (response.redirected) {
+          window.location = response.url
+        } else {
+          switch (response.status) {
+            case 200:
+              response.json().then(object => {
+                updated(object.db.updated)
+                deleted(object.db.deleted)
+              })
+              break
 
-          default:
-            reset()
-            response.text().then(message => { warning(message) })
+            default:
+              reset()
+              response.text().then(message => { warning(message) })
+          }
         }
       })
       .catch(function (err) {
@@ -95,17 +99,21 @@ export function onUpdate (event) {
 
     postAsJSON('/cardholders', { cardholders: [record] })
       .then(response => {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              updated(object.db.updated)
-              deleted(object.db.deleted)
-            })
-            break
+        if (response.redirected) {
+          window.location = response.url
+        } else {
+          switch (response.status) {
+            case 200:
+              response.json().then(object => {
+                updated(object.db.updated)
+                deleted(object.db.deleted)
+              })
+              break
 
-          default:
-            reset()
-            response.text().then(message => { warning(message) })
+            default:
+              reset()
+              response.text().then(message => { warning(message) })
+          }
         }
       })
       .catch(function (err) {
@@ -261,7 +269,6 @@ function updated (list) {
       const row = document.getElementById(id)
 
       if (row) {
-        console.log('oops')
         row.classList.remove('new')
       }
 
