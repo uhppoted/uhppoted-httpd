@@ -12,6 +12,14 @@ import (
 var hagrid = cardholder("C01", "Hagrid", 6514231)
 var dobby = cardholder("C02", "Dobby", 1234567, "G05")
 
+type trail struct {
+	write func(e audit.LogEntry)
+}
+
+func (t *trail) Write(e audit.LogEntry) {
+	t.write(e)
+}
+
 func TestCardAdd(t *testing.T) {
 	dbt := dbx(hagrid)
 	final := dbx(hagrid, dobby)
@@ -200,6 +208,112 @@ func TestCardNumberSwap(t *testing.T) {
 	compareDB(dbt, final, t)
 }
 
+func TestCardAddWithAuditTrail(t *testing.T) {
+	var logentry []byte
+
+	dbt := dbx(hagrid)
+	dbt.audit = &trail{
+		write: func(e audit.LogEntry) {
+			logentry, _ = json.Marshal(e)
+		},
+	}
+
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C02",
+				"name": "Dobby",
+				"card": 1234567,
+				"from": "2021-01-02",
+				"to":   "2021-12-30",
+				"groups": map[string]bool{
+					"G05": true,
+				},
+			},
+		},
+	}
+
+	dbt.Post(rq, nil)
+
+	expected := `{"UID":"","Module":"memdb","Operation":"add","Info":{"ID":"C02","Name":"Dobby","Card":1234567,"From":"2021-01-02","To":"2021-12-30","Groups":{"G05":true}}}`
+
+	if logentry == nil {
+		t.Fatalf("Missing audit trail entry")
+	}
+
+	if string(logentry) != expected {
+		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected, string(logentry))
+	}
+}
+
+func TestCardUpdateWithAuditTrail(t *testing.T) {
+	var logentry []byte
+
+	dbt := dbx(hagrid)
+	dbt.audit = &trail{
+		write: func(e audit.LogEntry) {
+			logentry, _ = json.Marshal(e)
+		},
+	}
+
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C01",
+				"name": "Hagrid",
+				"card": 1234567,
+			},
+		},
+	}
+
+	dbt.Post(rq, nil)
+
+	expected := `{"UID":"","Module":"memdb","Operation":"update","Info":` +
+		`{"original":{"ID":"C01","Name":"Hagrid","Card":6514231,"From":"2021-01-02","To":"2021-12-30","Groups":{}},` +
+		`"updated":{"ID":"C01","Name":"Hagrid","Card":1234567,"From":"2021-01-02","To":"2021-12-30","Groups":{}}}}`
+
+	if logentry == nil {
+		t.Fatalf("Missing audit trail entry")
+	}
+
+	if string(logentry) != expected {
+		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected, string(logentry))
+	}
+}
+
+func TestCardDeleteWithAuditTrail(t *testing.T) {
+	var logentry []byte
+
+	dbt := dbx(hagrid)
+	dbt.audit = &trail{
+		write: func(e audit.LogEntry) {
+			logentry, _ = json.Marshal(e)
+		},
+	}
+
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C01",
+				"name": "",
+				"card": 0,
+			},
+		},
+	}
+
+	dbt.Post(rq, nil)
+
+	expected := `{"UID":"","Module":"memdb","Operation":"delete","Info":{"ID":"C01","Name":"Hagrid","Card":6514231,"From":"2021-01-02","To":"2021-12-30","Groups":{}}}`
+
+	if logentry == nil {
+		t.Fatalf("Missing audit trail entry")
+	}
+
+	if string(logentry) != expected {
+		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected, string(logentry))
+	}
+}
+
 func date(s string) *types.Date {
 	date, _ := time.ParseInLocation("2006-01-02", s, time.Local)
 	d := types.Date(date)
@@ -217,7 +331,6 @@ func dbx(cardholders ...types.CardHolder) *fdb {
 				CardHolders: types.CardHolders{},
 			},
 		},
-		audit: audit.NewAuditTrail(),
 	}
 
 	for i, _ := range cardholders {

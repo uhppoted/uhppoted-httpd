@@ -16,6 +16,8 @@
       - default row order should be by 'created'
 
 - [ ] Card holders
+      - delete
+        - unit tests
       - add/update/delete authorisation
         - initialise from config
         - unit tests
