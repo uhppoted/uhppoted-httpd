@@ -73,7 +73,7 @@ func (l *Local) Update(permissions []types.Permissions) {
 	}
 	// TODO END
 
-	rpt, err := uhppoted.PutACLN(&u, *acl, false)
+	rpt, err := uhppoted.PutACL(&u, *acl, false)
 	if err != nil {
 		warn(err)
 		return

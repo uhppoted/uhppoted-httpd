@@ -72,6 +72,11 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		}{
 			File: conf.HTTPD.DB.File,
 		},
+		Audit: struct {
+			File string
+		}{
+			File: conf.HTTPD.Audit.File,
+		},
 	}
 
 	if err := system.Init(conf.HTTPD.System.File); err != nil {

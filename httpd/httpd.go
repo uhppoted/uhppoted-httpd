@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/db/memdb"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
@@ -31,6 +32,9 @@ type HTTPD struct {
 	DB                       struct {
 		File string
 	}
+	Audit struct {
+		File string
+	}
 }
 
 type dispatcher struct {
@@ -46,7 +50,7 @@ func (h *HTTPD) Run() {
 		FileSystem: http.Dir(h.Dir),
 	}
 
-	db, err := memdb.NewDB(h.DB.File)
+	db, err := memdb.NewDB(h.DB.File, audit.NewAuditTrail(h.Audit.File))
 	if err != nil {
 		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
 	}

@@ -49,13 +49,13 @@ func Update(permissions []types.Permissions) {
 	}
 }
 
-func consolidate(list []types.Permissions) (*acl.ACLN, error) {
+func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	// initialise empty ACL
-	acl := make(acl.ACLN)
+	acl := make(acl.ACL)
 
 	for _, d := range sys.Doors {
 		if _, ok := acl[d.ControllerID]; !ok {
-			acl[d.ControllerID] = make(map[uint32]core.CardN)
+			acl[d.ControllerID] = make(map[uint32]core.Card)
 		}
 	}
 
@@ -66,7 +66,7 @@ func consolidate(list []types.Permissions) (*acl.ACLN, error) {
 				from := core.Date(p.From)
 				to := core.Date(p.To)
 
-				l[p.CardNumber] = core.CardN{
+				l[p.CardNumber] = core.Card{
 					CardNumber: p.CardNumber,
 					From:       &from,
 					To:         &to,

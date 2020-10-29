@@ -16,15 +16,15 @@
       - default row order should be by 'created'
 
 - [ ] Card holders
-      - audit trail
-        - to file
-      - commit multiple rows
-        - commit-all
-        - rollback-all
       - add/update/delete authorisation
         - initialise from config
         - unit tests
+      - commit multiple rows
+        - commit-all
+        - rollback-all
       - card type should probably be a string (because otherwise 0 is a reserved number)
+        -- 'nil' it if it's 0 ?
+        -- think it through anyway
       - add
         - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
         - shadow DOM ???

@@ -11,3 +11,9 @@ require (
 	golang.org/x/sys v0.0.0-20200812155832-6a926be9bd1d
 	golang.org/x/tools v0.0.0-20200821200730-1e23e48ab93b // indirect
 )
+
+replace (
+	github.com/uhppoted/uhppote-core => ../uhppote-core
+	github.com/uhppoted/uhppoted-api => ../uhppoted-api
+)
+

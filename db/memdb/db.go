@@ -19,7 +19,7 @@ type fdb struct {
 	sync.RWMutex
 	file  string
 	data  data
-	audit audit.Log
+	audit audit.Trail
 }
 
 type data struct {
@@ -51,7 +51,7 @@ func (d *data) copy() *data {
 	return &shadow
 }
 
-func NewDB(file string) (*fdb, error) {
+func NewDB(file string, trail audit.Trail) (*fdb, error) {
 	f := fdb{
 		file: file,
 		data: data{
@@ -60,7 +60,7 @@ func NewDB(file string) (*fdb, error) {
 				CardHolders: types.CardHolders{},
 			},
 		},
-		audit: audit.NewAuditTrail(),
+		audit: trail,
 	}
 
 	if err := load(&f.data, f.file); err != nil {
@@ -193,11 +193,9 @@ loop:
 }
 
 func (d *fdb) add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
-	uid := ""
 	record := ch.Clone()
 
 	if auth != nil {
-		uid = auth.UID()
 
 		if err := auth.CanAddCardHolder(record); err != nil {
 			return nil, &types.HttpdError{
@@ -210,19 +208,12 @@ func (d *fdb) add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}
 	}
 
 	shadow.Tables.CardHolders[record.ID] = record
-
-	d.audit.Write(audit.LogEntry{
-		UID:       uid,
-		Module:    "memdb",
-		Operation: "add",
-		Info:      record,
-	})
+	d.log("add", record, auth)
 
 	return record, nil
 }
 
 func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
-	uid := ""
 	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
 		if ch.Name != nil {
 			record.Name = ch.Name
@@ -248,8 +239,6 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 
 		current := d.data.Tables.CardHolders[ch.ID]
 		if auth != nil {
-			uid = auth.UID()
-
 			if err := auth.CanUpdateCardHolder(current, record); err != nil {
 				return nil, &types.HttpdError{
 					Status: http.StatusUnauthorized,
@@ -259,12 +248,7 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 			}
 		}
 
-		d.audit.Write(audit.LogEntry{
-			UID:       uid,
-			Module:    "memdb",
-			Operation: "update",
-			Info:      map[string]interface{}{"original": current, "updated": record},
-		})
+		d.log("update", map[string]interface{}{"original": current, "updated": record}, auth)
 
 		return record, nil
 	}
@@ -273,11 +257,8 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 }
 
 func (d *fdb) delete(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
-	uid := ""
 	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
 		if auth != nil {
-			uid = auth.UID()
-
 			if err := auth.CanDeleteCardHolder(record); err != nil {
 				return nil, &types.HttpdError{
 					Status: http.StatusUnauthorized,
@@ -289,12 +270,7 @@ func (d *fdb) delete(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 
 		delete(shadow.Tables.CardHolders, ch.ID)
 
-		d.audit.Write(audit.LogEntry{
-			UID:       uid,
-			Module:    "memdb",
-			Operation: "delete",
-			Info:      record,
-		})
+		d.log("delete", record, auth)
 
 		return record, nil
 	}
@@ -438,4 +414,20 @@ func unpack(m map[string]interface{}) ([]types.CardHolder, error) {
 	}
 
 	return cardholders, nil
+}
+
+func (d *fdb) log(op string, info interface{}, auth db.IAuth) {
+	if d.audit != nil {
+		uid := ""
+		if auth != nil {
+			uid = auth.UID()
+		}
+
+		d.audit.Write(audit.LogEntry{
+			UID:       uid,
+			Module:    "memdb",
+			Operation: op,
+			Info:      info,
+		})
+	}
 }
