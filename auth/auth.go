@@ -15,7 +15,7 @@ type IAuth interface {
 	Preauthenticate(loginId uuid.UUID) (string, error)
 	Authorize(uid, pwd string, sessionId uuid.UUID) (string, error)
 	Verify(tokenType TokenType, token string) error
-	Authorized(token, resource string) (string, error)
+	Authorized(token, resource string) (string, string, error)
 	GetLoginId(token string) (*uuid.UUID, error)
 	GetSessionId(token string) (*uuid.UUID, error)
 }

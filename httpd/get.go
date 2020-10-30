@@ -27,7 +27,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if strings.HasSuffix(path, ".html") {
-		_, ok := d.authorized(w, r, path)
+		_, _, ok := d.authorized(w, r, path)
 		if !ok {
 			return
 		}

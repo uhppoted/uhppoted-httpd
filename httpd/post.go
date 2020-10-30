@@ -15,7 +15,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uid, ok := d.authorized(w, r, path)
+	uid, role, ok := d.authorized(w, r, path)
 	if !ok {
 		return
 	}
@@ -25,8 +25,16 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	auth := authorizator{
+		uid:  uid,
+		role: role,
+		rules: []string{
+			`add::card::.*:[6-9][0-9]{6,}`,
+		},
+	}
+
 	if match, err := regexp.MatchString(`/cardholders(?:/.*)?`, path); err == nil && match {
-		cardholders.Post(uid, d.db, w, r, d.timeout)
+		cardholders.Post(w, r, d.timeout, d.db, &auth)
 		return
 	}
 

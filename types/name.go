@@ -16,6 +16,14 @@ func (n *Name) Copy() *Name {
 	return &name
 }
 
+func (n *Name) String() string {
+	if n == nil {
+		return ""
+	}
+
+	return string(*n)
+}
+
 func (n *Name) IsValid() bool {
 	if n != nil && strings.TrimSpace(string(*n)) != "" {
 		return true
