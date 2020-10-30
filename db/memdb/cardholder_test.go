@@ -42,11 +42,44 @@ func TestCardHolderAdd(t *testing.T) {
 	compareDB(dbt, final, t)
 }
 
+func TestCardHolderAddWithAuth(t *testing.T) {
+	dbt := dbx(hagrid)
+	final := dbx(hagrid)
+	auth := stub{}
+
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C02",
+				"name": "Dobby",
+				"card": 1234567,
+				"from": "2021-01-02",
+				"to":   "2021-12-30",
+				"groups": map[string]bool{
+					"G05": true,
+				},
+			},
+		},
+	}
+
+	r, err := dbt.Post(rq, &auth)
+
+	if err == nil {
+		t.Errorf("Expected 'not authorised' error adding card holder to DB, got:%v", err)
+	}
+
+	if r != nil {
+		t.Errorf("Unexpected return adding record without authorisation - expected:%v, got: %v", nil, err)
+	}
+
+	compareDB(dbt, final, t)
+}
+
 func TestCardHolderAddWithAuditTrail(t *testing.T) {
 	var logentry []byte
 
 	dbt := dbx(hagrid)
-	dbt.audit = &trail{
+	dbt.audit = &stub{
 		write: func(e audit.LogEntry) {
 			logentry, _ = json.Marshal(e)
 		},
@@ -173,11 +206,39 @@ func TestCardHolderUpdate(t *testing.T) {
 	compareDB(dbt, final, t)
 }
 
+func TestCardHolderUpdateWithAuth(t *testing.T) {
+	dbt := dbx(hagrid)
+	final := dbx(hagrid)
+	auth := stub{}
+
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C01",
+				"name": "Hagrid",
+				"card": 1234567,
+			},
+		},
+	}
+
+	r, err := dbt.Post(rq, &auth)
+
+	if err == nil {
+		t.Errorf("Expected 'not authorised' error updating card holder in DB, got:%v", err)
+	}
+
+	if r != nil {
+		t.Errorf("Unexpected return updating record without authorisation - expected:%v, got: %v", nil, err)
+	}
+
+	compareDB(dbt, final, t)
+}
+
 func TestCardHolderUpdateWithAuditTrail(t *testing.T) {
 	var logentry []byte
 
 	dbt := dbx(hagrid)
-	dbt.audit = &trail{
+	dbt.audit = &stub{
 		write: func(e audit.LogEntry) {
 			logentry, _ = json.Marshal(e)
 		},
@@ -297,11 +358,39 @@ func TestCardHolderDelete(t *testing.T) {
 	compareDB(dbt, final, t)
 }
 
+func TestCardHolderDeleteWithAuth(t *testing.T) {
+	dbt := dbx(hagrid, dobby)
+	final := dbx(hagrid, dobby)
+	auth := stub{}
+
+	rq := map[string]interface{}{
+		"cardholders": []map[string]interface{}{
+			map[string]interface{}{
+				"id":   "C01",
+				"name": "",
+				"card": 0,
+			},
+		},
+	}
+
+	r, err := dbt.Post(rq, &auth)
+
+	if err == nil {
+		t.Errorf("Expected 'not authorised' error deleting card holder in DB, got:%v", err)
+	}
+
+	if r != nil {
+		t.Errorf("Unexpected return deleting record without authorisation - expected:%v, got: %v", nil, err)
+	}
+
+	compareDB(dbt, final, t)
+}
+
 func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 	var logentry []byte
 
 	dbt := dbx(hagrid)
-	dbt.audit = &trail{
+	dbt.audit = &stub{
 		write: func(e audit.LogEntry) {
 			logentry, _ = json.Marshal(e)
 		},

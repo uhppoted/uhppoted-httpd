@@ -2,6 +2,7 @@ package memdb
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
@@ -12,12 +13,28 @@ import (
 var hagrid = cardholder("C01", "Hagrid", 6514231)
 var dobby = cardholder("C02", "Dobby", 1234567, "G05")
 
-type trail struct {
+type stub struct {
 	write func(e audit.LogEntry)
 }
 
-func (t *trail) Write(e audit.LogEntry) {
-	t.write(e)
+func (x *stub) UID() string {
+	return "stub"
+}
+
+func (x *stub) CanAddCardHolder(cardHolder *types.CardHolder) error {
+	return fmt.Errorf("not authorised")
+}
+
+func (x *stub) CanUpdateCardHolder(before, after *types.CardHolder) error {
+	return fmt.Errorf("not authorised")
+}
+
+func (x *stub) CanDeleteCardHolder(cardHolder *types.CardHolder) error {
+	return fmt.Errorf("not authorised")
+}
+
+func (x *stub) Write(e audit.LogEntry) {
+	x.write(e)
 }
 
 func date(s string) *types.Date {
