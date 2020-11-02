@@ -222,6 +222,11 @@ export function onNew (event) {
     to.innerHTML = '<img class="flag" src="images/corner.svg" />' +
                    '<input id="' + uuid + '-to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
 
+    name.querySelector('input').value = 'z'
+    name.querySelector('input').dataset.value = 'z'
+    card.querySelector('input').value = 6000001
+    card.querySelector('input').dataset.value = '6000001'
+
     for (let i = 0; i < groups.length; i++) {
       const g = groups[i]
       const id = uuid + '-' + constants.groups[i]

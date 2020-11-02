@@ -201,7 +201,7 @@ func (d *fdb) add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}
 			return nil, &types.HttpdError{
 				Status: http.StatusUnauthorized,
 				Err:    fmt.Errorf("Not authorized to add card holder"),
-				Detail: fmt.Errorf("Not authorized (%w)", err),
+				Detail: err,
 			}
 		}
 
@@ -243,7 +243,7 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 				return nil, &types.HttpdError{
 					Status: http.StatusUnauthorized,
 					Err:    fmt.Errorf("Not authorized to update card holder"),
-					Detail: fmt.Errorf("Not authorized (%w)", err),
+					Detail: err,
 				}
 			}
 		}
@@ -263,7 +263,7 @@ func (d *fdb) delete(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 				return nil, &types.HttpdError{
 					Status: http.StatusUnauthorized,
 					Err:    fmt.Errorf("Not authorized to delete card holder"),
-					Detail: fmt.Errorf("Not authorized (%w)", err),
+					Detail: err,
 				}
 			}
 		}
