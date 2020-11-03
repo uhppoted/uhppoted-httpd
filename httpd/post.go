@@ -25,18 +25,13 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth := authorizator{
-		uid:  uid,
-		role: role,
-		rules: []string{
-			`^add::card (.*?):[6-9][0-9]{6,}:(.*?):(.*?):((G01|G02|G03|G05|G06|G07|G08|G09|G10)(,?))*$`,
-			`^update::card (.*?):[6-9][0-9]{6,}:(.*?):(.*?):(.*?)* (.*?):[6-9][0-9]{6,}:(.*?):(.*?):((G02|G03|G04|G05|G06|G07|G08|G09|G10)(,?))*$`,
-			`^delete::card (.*?):[6-9][0-9]{6,}:(.*?):(.*?):((G02|G03|G04|G05|G06|G07|G08|G09|G10)(?:,?))*$`,
-		},
+	auth, err := NewAuthorizator(uid, role)
+	if err != nil {
+		http.Error(w, "Error executing request", http.StatusInternalServerError)
 	}
 
 	if match, err := regexp.MatchString(`/cardholders(?:/.*)?`, path); err == nil && match {
-		cardholders.Post(w, r, d.timeout, d.db, &auth)
+		cardholders.Post(w, r, d.timeout, d.db, auth)
 		return
 	}
 
