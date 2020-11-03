@@ -16,8 +16,6 @@
       - default row order should be by 'created'
 
 - [ ] Card holders
-      - add/update/delete authorisation
-        - initialise from config
       - commit multiple rows
         - commit-all
         - rollback-all

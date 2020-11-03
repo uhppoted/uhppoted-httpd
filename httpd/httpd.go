@@ -13,6 +13,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hyperjumptech/grule-rule-engine/ast"
+	"github.com/hyperjumptech/grule-rule-engine/builder"
+	"github.com/hyperjumptech/grule-rule-engine/pkg"
+
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/db/memdb"
@@ -30,7 +34,8 @@ type HTTPD struct {
 	RequireClientCertificate bool
 	RequestTimeout           time.Duration
 	DB                       struct {
-		File string
+		File  string
+		Rules string
 	}
 	Audit struct {
 		File string
@@ -42,6 +47,7 @@ type dispatcher struct {
 	fs      http.Handler
 	db      db.DB
 	auth    auth.IAuth
+	grule   *ast.KnowledgeLibrary
 	timeout time.Duration
 }
 
@@ -55,11 +61,21 @@ func (h *HTTPD) Run() {
 		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
 	}
 
+	//f := pkg.NewFileResource("/usr/local/etc/com.github.uhppoted/httpd/auth.grl")
+	f := pkg.NewFileResource(h.DB.Rules)
+	grule := ast.NewKnowledgeLibrary()
+	builder := builder.NewRuleBuilder(grule)
+
+	if err := builder.BuildRuleFromResource("uhppoted", "0.0.0", f); err != nil {
+		log.Fatal(fmt.Errorf("Error loading auth ruleset (%v)", err))
+	}
+
 	d := dispatcher{
 		root:    h.Dir,
 		fs:      http.FileServer(fs),
 		db:      db,
 		auth:    h.AuthProvider,
+		grule:   grule,
 		timeout: h.RequestTimeout,
 	}
 

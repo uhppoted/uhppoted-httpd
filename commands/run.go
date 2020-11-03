@@ -68,9 +68,11 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		RequireClientCertificate: conf.HTTPD.RequireClientCertificate,
 		RequestTimeout:           conf.HTTPD.RequestTimeout,
 		DB: struct {
-			File string
+			File  string
+			Rules string
 		}{
-			File: conf.HTTPD.DB.File,
+			File:  conf.HTTPD.DB.File,
+			Rules: conf.HTTPD.DB.Rules,
 		},
 		Audit: struct {
 			File string

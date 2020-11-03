@@ -2,36 +2,33 @@ package httpd
 
 import (
 	"fmt"
-	//	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/hyperjumptech/grule-rule-engine/ast"
-	"github.com/hyperjumptech/grule-rule-engine/builder"
 	"github.com/hyperjumptech/grule-rule-engine/engine"
-	"github.com/hyperjumptech/grule-rule-engine/pkg"
 
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type authorizator struct {
-	uid     string
-	role    string
-	rules   []string
-	library *ast.KnowledgeLibrary
+	uid   string
+	role  string
+	grule *ast.KnowledgeLibrary
 }
 
-type operation struct {
-	Operation string
-	Name      string
-	Card      int
-	Groups    []string
-	Allow     bool
-	Refuse     bool
-	op        string
+type card struct {
+	Name   string
+	Card   int
+	Groups []string
 }
 
-func (op *operation) HasGroup(g string) bool {
+type result struct {
+	Allow  bool
+	Refuse bool
+}
+
+func (op *card) HasGroup(g string) bool {
 	for _, p := range op.Groups {
 		if p == g {
 			return true
@@ -41,41 +38,11 @@ func (op *operation) HasGroup(g string) bool {
 	return false
 }
 
-var rules = `
-rule AddCheckCardNumber "Check the card number is greater than 6000000" {
-     when
-	     OP.Operation == "add" && OP.Card < 6000000
-	 then
-	     OP.Allow = false;
-         Retract("AddCheckCardNumber");
-}
-
-rule AddCheckGryffindor "Check that Gryffindor is not ticked" {
-     when
-         OP.Operation == "add" && OP.HasGroup("G04")
-     then
-        OP.Refuse = true;
-        Retract("AddCheckGryffindor");
- 	 }
-`
-
-func NewAuthorizator(uid, role string) (*authorizator, error) {
-	library := ast.NewKnowledgeLibrary()
-	builder := builder.NewRuleBuilder(library)
-
-	bytes := pkg.NewBytesResource([]byte(rules))
-	if err := builder.BuildRuleFromResource("uhppoted", "0.0.0", bytes); err != nil {
-		return nil, err
-	}
-
+func NewAuthorizator(uid, role string, grule *ast.KnowledgeLibrary) (*authorizator, error) {
 	return &authorizator{
-		uid:     uid,
-		role:    role,
-		library: library,
-		rules: []string{
-			`^update::card (.*?):[6-9][0-9]{6,}:(.*?):(.*?):(.*?)* (.*?):[6-9][0-9]{6,}:(.*?):(.*?):((G02|G03|G04|G05|G06|G07|G08|G09|G10)(,?))*$`,
-			`^delete::card (.*?):[6-9][0-9]{6,}:(.*?):(.*?):((G02|G03|G04|G05|G06|G07|G08|G09|G10)(?:,?))*$`,
-		},
+		uid:   uid,
+		role:  role,
+		grule: grule,
 	}, nil
 }
 
@@ -89,113 +56,122 @@ func (a *authorizator) UID() string {
 
 func (a *authorizator) CanAddCardHolder(ch *types.CardHolder) error {
 	if a != nil && ch != nil {
-		groups := []string{}
-		for k, v := range ch.Groups {
-			if v {
-				groups = append(groups, k)
-			}
+		r := result{
+			Allow:  false,
+			Refuse: false,
 		}
 
-		f := operation{
-			Operation: "add",
-			Name:      fmt.Sprintf("%v", ch.Name),
-			Card:      int(*ch.Card),
-			Groups:    groups,
-			Allow:     true,
-			Refuse:     false,
-			op:        fmt.Sprintf("add::card %v", cardHolderToString(ch)),
+		m := map[string]interface{}{
+			"CH": makeOP(*ch),
 		}
 
-		context := ast.NewDataContext()
-		if err := context.Add("OP", &f); err != nil {
+		if err := a.eval("add", &r, m); err != nil {
 			return err
 		}
 
-		kb := a.library.NewKnowledgeBaseInstance("uhppoted", "0.0.0")
-		enjin := engine.NewGruleEngine()
-		if err := enjin.Execute(context, kb); err != nil {
-			return err
-		}
-
-		if f.Allow  && !f.Refuse {
+		if r.Allow && !r.Refuse {
 			return nil
 		}
 
-		return fmt.Errorf("Not authorized for %s", f.op)
+		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::card %v", toString(ch)))
 	}
 
 	return fmt.Errorf("Not authorized for operation %s", "add::card")
 }
 
 func (a *authorizator) CanUpdateCardHolder(original, updated *types.CardHolder) error {
-	//	if a != nil && original != nil && updated != nil {
-	//		op := fmt.Sprintf("update::card %v %v", cardHolderToString(original), cardHolderToString(updated))
-	//
-	//		for _, s := range a.rules {
-	//			matched, err := regexp.Match(s, []byte(op))
-	//
-	//			if err != nil {
-	//				return err
-	//			}
-	//
-	//			if matched {
-	//				return nil
-	//			}
-	//		}
-	//		return fmt.Errorf("Not authorized for %s", op)
-	//	}
-	//
-	//	return fmt.Errorf("Not authorized for operation %s", "update::card")
-	return nil
+	if a != nil && original != nil && updated != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"ORIGINAL": makeOP(*original),
+			"UPDATED":  makeOP(*updated),
+		}
+
+		if err := a.eval("update", &r, m); err != nil {
+			return err
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::card %v %v", toString(original), toString(updated)))
+	}
+
+	return fmt.Errorf("Not authorized for operation %s", "update::card")
 }
 
 func (a *authorizator) CanDeleteCardHolder(ch *types.CardHolder) error {
-	//	if a != nil && ch != nil {
-	//		op := fmt.Sprintf("delete::card %v", cardHolderToString(ch))
-	//
-	//		for _, s := range a.rules {
-	//			matched, err := regexp.Match(s, []byte(op))
-	//
-	//			if err != nil {
-	//				return err
-	//			}
-	//
-	//			if matched {
-	//				return nil
-	//			}
-	//		}
-	//		return fmt.Errorf("Not authorized for %s", op)
-	//	}
-	//
-	//	return fmt.Errorf("Not authorized for operation %s", "delete::card")
+	if a != nil && ch != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"CH": makeOP(*ch),
+		}
+
+		if err := a.eval("delete", &r, m); err != nil {
+			return err
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("delete::card %v", toString(ch)))
+	}
+
+	return fmt.Errorf("Not authorized for operation %s", "delete::card")
+}
+
+func (a *authorizator) eval(op string, r *result, m map[string]interface{}) error {
+	context := ast.NewDataContext()
+
+	if err := context.Add("OP", op); err != nil {
+		return err
+	}
+
+	if err := context.Add("RESULT", r); err != nil {
+		return err
+	}
+
+	for k, v := range m {
+		if err := context.Add(k, v); err != nil {
+			return err
+		}
+	}
+
+	kb := a.grule.NewKnowledgeBaseInstance("uhppoted", "0.0.0")
+	enjin := engine.NewGruleEngine()
+	if err := enjin.Execute(context, kb); err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func groups(ch *types.CardHolder) string {
-	if ch == nil {
-		return ""
-	} else {
-		groups := []string{}
-		for k, v := range ch.Groups {
-			if v {
-				groups = append(groups, k)
-			}
+func makeOP(ch types.CardHolder) *card {
+	groups := []string{}
+	for k, v := range ch.Groups {
+		if v {
+			groups = append(groups, k)
 		}
+	}
 
-		if len(groups) > 0 {
-			sort.Strings(groups)
-			s := groups[0]
-			for _, g := range groups[1:] {
-				s += fmt.Sprintf(",%v", g)
-			}
-			return s
-		}
-
-		return ""
+	return &card{
+		Name:   fmt.Sprintf("%v", ch.Name),
+		Card:   int(*ch.Card),
+		Groups: groups,
 	}
 }
 
-func cardHolderToString(ch *types.CardHolder) string {
+func toString(ch *types.CardHolder) string {
 	if ch != nil {
 		name := strings.ReplaceAll(fmt.Sprintf("%v", ch.Name), ":", "")
 		card := strings.ReplaceAll(fmt.Sprintf("%v", ch.Card), ":", "")
