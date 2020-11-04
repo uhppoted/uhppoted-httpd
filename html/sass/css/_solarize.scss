@@ -34,6 +34,9 @@ $content-table-changed:             $solarize-red;
 $content-table-commit:              $solarize-green;
 $content-table-rollback:            $solarize-red;
 
+$content-svg-filter-commit:   invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
+$content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
+
 $controls-background:          $solarize-base2;
 $controls-menu-background:     $solarize-base2;
 $controls-menu-item:           $solarize-base01;

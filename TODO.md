@@ -18,7 +18,10 @@
 - [ ] Card holders
       - commit multiple rows
         - commit-all
+          -- commit new rows
         - rollback-all
+          -- rollback new rows
+        - rework login warning message
       - card type should probably be a string (because otherwise 0 is a reserved number)
         -- 'nil' it if it's 0 ?
         -- think it through anyway

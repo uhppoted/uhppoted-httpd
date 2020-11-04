@@ -43,6 +43,9 @@
       <div id="main">
         <div>
           <div id="controls">
+            <i class="fas fa-camera"></i>
+            <img id="commitall"   class='button' src="images/check-solid.svg" onclick="onCommitAll()" />
+            <img id="rollbackall" class='button' src="images/times-solid.svg" onclick="onRollbackAll()" />
             <div id="message" class="message">
               <div>
                 <span class="warning" id="warning"></span>
@@ -164,14 +167,16 @@
 
   <script type="module">
     import { dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
-    import { onCommit, onRollback, onEdited, onTick, onNew, onRefresh } from "./javascript/cardholders.js"
+    import { onEdited, onTick, onCommit, onCommitAll, onRollback, onRollbackAll, onNew, onRefresh } from "./javascript/cardholders.js"
 
     window.dismiss = dismiss
     window.onSignOut = onSignOut
     window.onEdited = onEdited
     window.onTick = onTick
     window.onCommit = onCommit
+    window.onCommitAll = onCommitAll
     window.onRollback = onRollback
+    window.onRollbackAll = onRollbackAll
     window.onNew = onNew
     window.onRefresh = onRefresh
 

@@ -55,30 +55,50 @@ body {
 #controls {  
   display: flex;
   justify-content: flex-end;
+  align-items: flex-end;
   margin-bottom: 4px;
 }
 
 #controls #message {
   flex-grow: 1;
+  margin-left: 6px;
+  margin-right: 6px;
 }
 
 #controls img.button {  
+  width: 16px;
   height: 16px;
   padding: 4px 4px 4px 4px;
-  margin-left: 8px;
   border: solid 1px theme.$content-controls-border;
   border-radius: 4px;
   cursor: pointer;
 }
 
+#controls #commitall {  
+  display: none;
+  margin-right: 6px;
+  filter: theme.$content-svg-filter-commit;
+}
+
+#controls #rollbackall {  
+  display: none;
+  filter: theme.$content-svg-filter-rollback;
+}
+
+#controls #refresh {  
+  margin-left: 6px;
+}
+
 .message {  
   background-color: theme.$content-message-background;
-  display: none;
-  padding: 4px 4px 4px 4px;
+  display: block;
+  height: 23px;
+  padding: 0px 4px 4px 0px;
   text-align: center;
   font-size: 0.9em;
   font-weight: normal;
   border-radius: 4px;
+  visibility: hidden;
 }
 
 .message div {  

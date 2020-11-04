@@ -28,7 +28,51 @@ export function onCommit (event, op) {
     return
   }
 
-  onUpdate(event)
+  onUpdate(event.target.dataset.record)
+}
+
+export function onCommitAll (event) {
+  const tbody = document.getElementById('cardholders').querySelector('table tbody')
+
+  if (tbody) {
+    const rows = tbody.rows
+    const list = []
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i]
+
+      if (row.classList.contains('modified')) {
+        list.push(row.id)
+      }
+    }
+
+    onUpdate(...list)
+  }
+}
+
+export function onRollback (event, op) {
+  if (op && op === 'delete') {
+    onDelete(event)
+    return
+  }
+
+  onRevert(event.target.dataset.record)
+}
+
+export function onRollbackAll (event) {
+  const tbody = document.getElementById('cardholders').querySelector('table tbody')
+
+  if (tbody) {
+    const rows = tbody.rows
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i]
+
+      if (row.classList.contains('modified')) {
+        onRevert(row.id)
+      }
+    }
+  }
 }
 
 export function onAdd (event) {
@@ -80,60 +124,60 @@ export function onAdd (event) {
   }
 }
 
-export function onUpdate (event) {
-  const id = event.target.dataset.record
-  const row = document.getElementById(id)
+export function onUpdate (...list) {
+  const rows = []
+  const records = []
+  const fields = []
 
-  if (row) {
-    const [record, fields] = rowToRecord(id, row)
+  list.forEach(id => {
+    const row = document.getElementById(id)
+    if (row) {
+      const [record, f] = rowToRecord(id, row)
 
-    const reset = function () {
-      row.classList.add('modified')
-      fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
+      rows.push(row)
+      records.push(record)
+      fields.push(...f)
     }
+  })
 
-    busy()
-    row.classList.remove('modified')
-    fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
-    fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
+  const reset = function () {
+    rows.forEach(r => r.classList.add('modified'))
+    fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
+  }
 
-    postAsJSON('/cardholders', { cardholders: [record] })
-      .then(response => {
-        if (response.redirected) {
-          window.location = response.url
-        } else {
-          switch (response.status) {
-            case 200:
-              response.json().then(object => {
-                updated(object.db.updated)
-                deleted(object.db.deleted)
-              })
-              break
+  busy()
 
-            default:
-              reset()
-              response.text().then(message => { warning(message) })
-          }
+  rows.forEach(r => r.classList.remove('modified'))
+  fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
+  fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
+
+  postAsJSON('/cardholders', { cardholders: records })
+    .then(response => {
+      if (response.redirected) {
+        window.location = response.url
+      } else {
+        switch (response.status) {
+          case 200:
+            response.json().then(object => {
+              updated(object.db.updated)
+              deleted(object.db.deleted)
+            })
+            break
+
+          default:
+            reset()
+            response.text().then(message => { warning(message) })
         }
-      })
-      .catch(function (err) {
-        reset()
-        warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-      })
-      .finally(() => {
-        unbusy()
-        fields.forEach(f => { apply(f, (c) => { c.classList.remove('pending') }) })
-      })
-  }
-}
-
-export function onRollback (event, op) {
-  if (op && op === 'delete') {
-    onDelete(event)
-    return
-  }
-
-  onRevert(event)
+      }
+    })
+    .catch(function (err) {
+      reset()
+      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+    })
+    .finally(() => {
+      unbusy()
+      fields.forEach(f => { apply(f, (c) => { c.classList.remove('pending') }) })
+    })
 }
 
 export function onDelete (event) {
@@ -153,8 +197,7 @@ export function onDelete (event) {
   }
 }
 
-export function onRevert (event) {
-  const id = event.target.dataset.record
+export function onRevert (id) {
   const row = document.getElementById(id)
 
   if (row) {
@@ -322,6 +365,7 @@ function deleted (list) {
 }
 
 function set (element, value) {
+  const tbody = document.getElementById('cardholders').querySelector('table tbody')
   const rowid = element.dataset.record
   const row = document.getElementById(rowid)
   const original = element.dataset.original
@@ -342,6 +386,20 @@ function set (element, value) {
     } else {
       row.classList.add('modified')
     }
+  }
+
+  if (tbody) {
+    const rows = tbody.rows
+    const commitall = document.getElementById('commitall')
+    const rollbackall = document.getElementById('rollbackall')
+    let count = 0
+
+    for (let i = 0; i < rows.length; i++) {
+      count += rows[i].classList.contains('modified') ? 1 : 0
+    }
+
+    commitall.style.display = count > 1 ? 'block' : 'none'
+    rollbackall.style.display = count > 1 ? 'block' : 'none'
   }
 }
 

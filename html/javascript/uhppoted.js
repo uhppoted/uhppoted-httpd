@@ -22,7 +22,7 @@ export function warning (msg) {
 
   if (text != null) {
     text.innerText = msg
-    message.style.display = 'block'
+    message.style.visibility = 'visible'
   } else {
     alert(msg)
   }
@@ -34,7 +34,7 @@ export function dismiss () {
 
   if (text != null) {
     text.innerText = 'msg'
-    message.style.display = 'none'
+    message.style.visibility = 'hidden'
   }
 }
 
