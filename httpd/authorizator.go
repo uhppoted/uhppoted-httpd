@@ -19,7 +19,7 @@ type authorizator struct {
 
 type card struct {
 	Name   string
-	Card   int
+	Card   uint32
 	Groups []string
 }
 
@@ -157,6 +157,11 @@ func (a *authorizator) eval(op string, r *result, m map[string]interface{}) erro
 }
 
 func makeOP(ch types.CardHolder) *card {
+	cardNumber := uint32(0)
+	if ch.Card != nil {
+		cardNumber = uint32(*ch.Card)
+	}
+
 	groups := []string{}
 	for k, v := range ch.Groups {
 		if v {
@@ -166,7 +171,7 @@ func makeOP(ch types.CardHolder) *card {
 
 	return &card{
 		Name:   fmt.Sprintf("%v", ch.Name),
-		Card:   int(*ch.Card),
+		Card:   cardNumber,
 		Groups: groups,
 	}
 }

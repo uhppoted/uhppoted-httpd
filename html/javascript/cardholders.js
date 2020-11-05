@@ -8,18 +8,6 @@ export function onEdited (event) {
 
 export function onTick (event) {
   set(event.target, event.target.checked)
-
-  const rowid = event.target.dataset.record
-  const row = document.getElementById(rowid)
-
-  if (row) {
-    const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
-    if (unmodified) {
-      row.classList.remove('modified')
-    } else {
-      row.classList.add('modified')
-    }
-  }
 }
 
 export function onCommit (event, op) {
@@ -41,7 +29,7 @@ export function onCommitAll (event) {
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]
 
-      if (row.classList.contains('modified')) {
+      if (row.classList.contains('modified') || row.classList.contains('new')) {
         list.push(row.id)
       }
     }
@@ -52,7 +40,7 @@ export function onCommitAll (event) {
 
 export function onRollback (event, op) {
   if (op && op === 'delete') {
-    onDelete(event)
+    onDelete(event.target.dataset.record)
     return
   }
 
@@ -68,7 +56,9 @@ export function onRollbackAll (event) {
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]
 
-      if (row.classList.contains('modified')) {
+      if (row.classList.contains('new')) {
+        onDelete(row.id)
+      } else if (row.classList.contains('modified')) {
         onRevert(row.id)
       }
     }
@@ -180,8 +170,7 @@ export function onUpdate (...list) {
     })
 }
 
-export function onDelete (event) {
-  const id = event.target.dataset.record
+export function onDelete (id) {
   const tbody = document.getElementById('cardholders').querySelector('table tbody')
   const row = document.getElementById(id)
 
@@ -264,11 +253,6 @@ export function onNew (event) {
 
     to.innerHTML = '<img class="flag" src="images/corner.svg" />' +
                    '<input id="' + uuid + '-to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
-
-    name.querySelector('input').value = 'z'
-    name.querySelector('input').dataset.value = 'z'
-    card.querySelector('input').value = 6000001
-    card.querySelector('input').dataset.value = '6000001'
 
     for (let i = 0; i < groups.length; i++) {
       const g = groups[i]
@@ -395,7 +379,9 @@ function set (element, value) {
     let count = 0
 
     for (let i = 0; i < rows.length; i++) {
-      count += rows[i].classList.contains('modified') ? 1 : 0
+      if (rows[i].classList.contains('modified') || rows[i].classList.contains('new')) {
+        count++
+      }
     }
 
     commitall.style.display = count > 1 ? 'block' : 'none'

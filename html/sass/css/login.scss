@@ -1,10 +1,17 @@
 @use 'solarize' as theme;
 
+#container {
+  display: flex; 
+  flex-direction: row; 
+  justify-content:center;
+}
+
 #login {
   display: block;
   border: 1px solid silver;
   margin-top: 64px;
-  padding: 8px;    
+  margin-bottom: 4px;
+  padding: 8px;      
   border-radius: 4px;
 }
 
@@ -97,13 +104,16 @@ form button {
   padding-right: 8px;
 }
 
-#login #message { 
+#message { 
   background-color: theme.$content-message-background;
-  display: none;
-  font-size: 0.8em;
+  display: flex;
+  align-items: center;
+  font-size: 0.85em;
   font-weight: normal;
-  margin: 8px 8px 0px 8px;
-  padding: 4px 0px 4px 0px;
-  border: solid 1px theme.$warning-colour;
-  border-radius: 4px;
+  margin: 0px;
+  padding: 4px 8px 4px 8px;
+  border: none;
+  border-radius: 3px;
+  visibility: hidden;
 } 
+

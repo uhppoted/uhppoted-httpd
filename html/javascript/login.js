@@ -1,6 +1,6 @@
 /* global messages */
 
-import { postAsForm, warning } from './uhppoted.js'
+import { postAsForm } from './uhppoted.js'
 
 export function login (event) {
   event.preventDefault()
@@ -9,8 +9,6 @@ export function login (event) {
     uid: document.getElementById('uid').value,
     pwd: document.getElementById('pwd').value
   }
-
-  document.getElementById('message').style.display = 'none'
 
   postAsForm('/authenticate', credentials)
     .then(response => {
@@ -47,5 +45,17 @@ export function showHidePassword () {
   } else {
     pwd.type = 'password'
     eye.src = 'images/eye-solid.svg'
+  }
+}
+
+function warning (msg) {
+  const message = document.getElementById('message')
+  const text = document.getElementById('warning')
+
+  if (text != null) {
+    text.innerText = msg
+    message.style.visibility = 'visible'
+  } else {
+    alert(msg)
   }
 }

@@ -61,7 +61,6 @@ func (h *HTTPD) Run() {
 		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
 	}
 
-	//f := pkg.NewFileResource("/usr/local/etc/com.github.uhppoted/httpd/auth.grl")
 	f := pkg.NewFileResource(h.DB.Rules)
 	grule := ast.NewKnowledgeLibrary()
 	builder := builder.NewRuleBuilder(grule)
