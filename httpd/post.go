@@ -30,7 +30,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error executing request", http.StatusInternalServerError)
 	}
 
-	if match, err := regexp.MatchString(`/cardholders(?:/.*)?`, path); err == nil && match {
+	if match, err := regexp.MatchString(`/cardholders`, path); err == nil && match {
 		cardholders.Post(w, r, d.timeout, d.db, auth)
 		return
 	}

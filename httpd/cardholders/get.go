@@ -1,9 +1,11 @@
 package cardholders
 
 import (
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/db"
@@ -13,6 +15,18 @@ func Fetch(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durati
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 
 	defer cancel()
+
+	acceptsGzip := false
+
+	for k, h := range r.Header {
+		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
+			for _, v := range h {
+				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
+					acceptsGzip = true
+				}
+			}
+		}
+	}
 
 	var response interface{}
 
@@ -58,5 +72,15 @@ func Fetch(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durati
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(b)
+
+	if acceptsGzip && len(b) > GZIP_MINIMUM {
+		w.Header().Set("Content-Encoding", "gzip")
+
+		gz := gzip.NewWriter(w)
+		gz.Write(b)
+		gz.Close()
+	} else {
+		w.Write(b)
+	}
+
 }

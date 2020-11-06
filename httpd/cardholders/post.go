@@ -1,6 +1,7 @@
 package cardholders
 
 import (
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -21,12 +22,21 @@ func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, db db.D
 	defer cancel()
 
 	go func() {
-		var contentType string
+		acceptsGzip := false
+		contentType := ""
 
 		for k, h := range r.Header {
 			if strings.TrimSpace(strings.ToLower(k)) == "content-type" {
 				for _, v := range h {
 					contentType = strings.TrimSpace(strings.ToLower(v))
+				}
+			}
+
+			if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
+				for _, v := range h {
+					if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
+						acceptsGzip = true
+					}
 				}
 			}
 		}
@@ -84,7 +94,17 @@ func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, db db.D
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(b)
+
+		if acceptsGzip && len(b) > GZIP_MINIMUM {
+			w.Header().Set("Content-Encoding", "gzip")
+
+			gz := gzip.NewWriter(w)
+			gz.Write(b)
+			gz.Close()
+		} else {
+			w.Write(b)
+		}
+
 		ch <- nil
 	}()
 

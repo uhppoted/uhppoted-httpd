@@ -12,11 +12,11 @@
 - [ ] MemDB
       - JSON field names to lowercase
       - add created and modified timestamps to records
-      - keep historical copies on save (for revert)
+      - keep historical copies on save (for undo/revert)
       - default row order should be by 'created'
 
 - [ ] Card holders
-      - table is now off-centre :-(
+      - grule for group -> doors
       - unit tests for auth rules
       - card type should probably be a string (because otherwise 0 is a reserved number)
         -- 'nil' it if it's 0 ?
@@ -29,24 +29,22 @@
 
       - custom webelement (https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
       - replace dataset.value with get()
-      - draw out local record FSM
+      - draw out (TLA+ ?) local record FSM
         -- add -> rollback deletes, commit only enabled after modified
       - genericize JS:refresh
-      - rename Go:Permissions to e.g. Membership
 
+      - freeze header rows and columns
+      - filter columns
+        -- pins!
       - undo/revert (?)
       - use internal DB rather than element dataset (?)
       - scroll horizontally
       - scroll vertically
       - virtual DOM
       - search & pin
-      - gzip response
       - labels from translations
       - scroll horizontally
       - scroll vertically
-      - freeze header rows and columns
-      - filter columns
-        -- pins!
       - apply to all (pinned ?) columns
       - simultaneous editing (?) 
         -- use hash of DB to identify changes

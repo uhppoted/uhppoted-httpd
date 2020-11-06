@@ -2,6 +2,7 @@ package httpd
 
 import (
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -14,6 +15,8 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/cardholders"
 )
+
+const GZIP_MINIMUM = 16384
 
 func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
@@ -33,6 +36,18 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	acceptsGzip := false
+
+	for k, h := range r.Header {
+		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
+			for _, v := range h {
+				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
+					acceptsGzip = true
+				}
+			}
+		}
+	}
+
 	switch path {
 	case "/cardholders":
 		cardholders.Fetch(d.db, w, r, d.timeout)
@@ -45,14 +60,14 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		file := filepath.Clean(filepath.Join(d.root, path[1:]))
 
 		w.Header().Set("Content-Type", mime.TypeByExtension(filepath.Ext(path)))
-		d.translate(file, context, w)
+		d.translate(file, context, w, acceptsGzip)
 		return
 	}
 
 	d.fs.ServeHTTP(w, r)
 }
 
-func (d *dispatcher) translate(filename string, context map[string]interface{}, w http.ResponseWriter) {
+func (d *dispatcher) translate(filename string, context map[string]interface{}, w http.ResponseWriter, acceptsGzip bool) {
 	base := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
 	translation := filepath.Join("translations", "en", base+".json")
 	page := map[string]interface{}{}
@@ -97,5 +112,13 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 		return
 	}
 
-	w.Write(b.Bytes())
+	if acceptsGzip && b.Len() > GZIP_MINIMUM {
+		w.Header().Set("Content-Encoding", "gzip")
+
+		gz := gzip.NewWriter(w)
+		gz.Write(b.Bytes())
+		gz.Close()
+	} else {
+		w.Write(b.Bytes())
+	}
 }
