@@ -147,7 +147,7 @@ func (a *authorizator) eval(op string, r *result, m map[string]interface{}) erro
 		}
 	}
 
-	kb := a.grule.NewKnowledgeBaseInstance("uhppoted", "0.0.0")
+	kb := a.grule.NewKnowledgeBaseInstance("cards", "0.0.0")
 	enjin := engine.NewGruleEngine()
 	if err := enjin.Execute(context, kb); err != nil {
 		return err

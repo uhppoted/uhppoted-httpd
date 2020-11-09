@@ -3,9 +3,10 @@
 ### IN PROGRESS
 
 - [ ] Loading bar a la cybercode
+      - progresss
+      - indefinite
 
 - [ ] ACL
-      - groups => rules => permissions
       - wrap ACL update in goroutine
         -- error handling ??
 
@@ -14,9 +15,13 @@
       - add created and modified timestamps to records
       - keep historical copies on save (for undo/revert)
       - default row order should be by 'created'
+      - unit tests for ACL rules
 
 - [ ] Card holders
-      - grule for group -> doors
+      - freeze header rows and columns
+      - scroll horizontally
+      - scroll vertically
+      - highlight current row (?)
       - unit tests for auth rules
       - card type should probably be a string (because otherwise 0 is a reserved number)
         -- 'nil' it if it's 0 ?
@@ -33,18 +38,13 @@
         -- add -> rollback deletes, commit only enabled after modified
       - genericize JS:refresh
 
-      - freeze header rows and columns
       - filter columns
         -- pins!
       - undo/revert (?)
       - use internal DB rather than element dataset (?)
-      - scroll horizontally
-      - scroll vertically
       - virtual DOM
       - search & pin
       - labels from translations
-      - scroll horizontally
-      - scroll vertically
       - apply to all (pinned ?) columns
       - simultaneous editing (?) 
         -- use hash of DB to identify changes

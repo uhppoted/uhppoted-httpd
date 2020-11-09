@@ -20,6 +20,7 @@ type fdb struct {
 	file  string
 	data  data
 	audit audit.Trail
+	rules db.IRules
 }
 
 type data struct {
@@ -51,7 +52,7 @@ func (d *data) copy() *data {
 	return &shadow
 }
 
-func NewDB(file string, trail audit.Trail) (*fdb, error) {
+func NewDB(file string, rules db.IRules, trail audit.Trail) (*fdb, error) {
 	f := fdb{
 		file: file,
 		data: data{
@@ -60,6 +61,7 @@ func NewDB(file string, trail audit.Trail) (*fdb, error) {
 				CardHolders: types.CardHolders{},
 			},
 		},
+		rules: rules,
 		audit: trail,
 	}
 
@@ -101,25 +103,24 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 
 	for _, c := range d.data.Tables.CardHolders {
 		if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
-			card := uint32(*c.Card)
-			from := *c.From
-			to := *c.To
-			doors := []string{}
+			var doors = []string{}
+			var err error
 
-			for gid, p := range c.Groups {
-				if p {
-					if group, ok := d.data.Tables.Groups[gid]; ok {
-						doors = append(doors, group.Doors...)
-					}
+			if d.rules != nil {
+				doors, err = d.rules.Eval(*c)
+				if err != nil {
+					return nil, err
 				}
 			}
 
-			list = append(list, types.Permissions{
-				CardNumber: card,
-				From:       from,
-				To:         to,
+			permission := types.Permissions{
+				CardNumber: uint32(*c.Card),
+				From:       *c.From,
+				To:         *c.To,
 				Doors:      doors,
-			})
+			}
+
+			list = append(list, permission)
 		}
 	}
 

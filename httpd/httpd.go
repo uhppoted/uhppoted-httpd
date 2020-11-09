@@ -19,6 +19,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/db"
+	"github.com/uhppoted/uhppoted-httpd/db/grule"
 	"github.com/uhppoted/uhppoted-httpd/db/memdb"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
@@ -34,8 +35,11 @@ type HTTPD struct {
 	RequireClientCertificate bool
 	RequestTimeout           time.Duration
 	DB                       struct {
-		File  string
-		Rules string
+		File   string
+		GRules struct {
+			ACL   string
+			Cards string
+		}
 	}
 	Audit struct {
 		File string
@@ -43,11 +47,14 @@ type HTTPD struct {
 }
 
 type dispatcher struct {
-	root    string
-	fs      http.Handler
-	db      db.DB
-	auth    auth.IAuth
-	grule   *ast.KnowledgeLibrary
+	root  string
+	fs    http.Handler
+	db    db.DB
+	auth  auth.IAuth
+	grule struct {
+		acl   *ast.KnowledgeLibrary
+		cards *ast.KnowledgeLibrary
+	}
 	timeout time.Duration
 }
 
@@ -56,17 +63,30 @@ func (h *HTTPD) Run() {
 		FileSystem: http.Dir(h.Dir),
 	}
 
-	db, err := memdb.NewDB(h.DB.File, audit.NewAuditTrail(h.Audit.File))
-	if err != nil {
-		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
+	rules := struct {
+		acl   *ast.KnowledgeLibrary
+		cards *ast.KnowledgeLibrary
+	}{
+		acl:   ast.NewKnowledgeLibrary(),
+		cards: ast.NewKnowledgeLibrary(),
 	}
 
-	f := pkg.NewFileResource(h.DB.Rules)
-	grule := ast.NewKnowledgeLibrary()
-	builder := builder.NewRuleBuilder(grule)
+	if err := builder.NewRuleBuilder(rules.acl).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(h.DB.GRules.ACL)); err != nil {
+		log.Fatal(fmt.Errorf("Error loading ACL ruleset (%v)", err))
+	}
 
-	if err := builder.BuildRuleFromResource("uhppoted", "0.0.0", f); err != nil {
-		log.Fatal(fmt.Errorf("Error loading auth ruleset (%v)", err))
+	if err := builder.NewRuleBuilder(rules.cards).BuildRuleFromResource("cards", "0.0.0", pkg.NewFileResource(h.DB.GRules.Cards)); err != nil {
+		log.Fatal(fmt.Errorf("Error loading card auth ruleset (%v)", err))
+	}
+
+	ruleset, err := grule.NewGrule(rules.acl)
+	if err != nil {
+		log.Fatal(fmt.Errorf("Error initialising ACL ruleset (%v)", err))
+	}
+
+	db, err := memdb.NewDB(h.DB.File, ruleset, audit.NewAuditTrail(h.Audit.File))
+	if err != nil {
+		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
 	}
 
 	d := dispatcher{
@@ -74,7 +94,7 @@ func (h *HTTPD) Run() {
 		fs:      http.FileServer(fs),
 		db:      db,
 		auth:    h.AuthProvider,
-		grule:   grule,
+		grule:   rules,
 		timeout: h.RequestTimeout,
 	}
 

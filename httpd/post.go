@@ -25,7 +25,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth, err := NewAuthorizator(uid, role, d.grule)
+	auth, err := NewAuthorizator(uid, role, d.grule.cards)
 	if err != nil {
 		http.Error(w, "Error executing request", http.StatusInternalServerError)
 	}

@@ -66,9 +66,8 @@ func dbx(cardholders ...types.CardHolder) *fdb {
 
 func group(id string) types.Group {
 	return types.Group{
-		ID:    id,
-		Name:  "",
-		Doors: []string{},
+		ID:   id,
+		Name: "",
 	}
 }
 

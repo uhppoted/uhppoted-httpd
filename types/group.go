@@ -1,23 +1,17 @@
 package types
 
 type Group struct {
-	ID    string
-	Name  string
-	Doors []string
+	ID   string
+	Name string
 }
 
 type Groups map[string]Group
 
 func (g *Group) Clone() Group {
-	replicant := Group{
-		ID:    g.ID,
-		Name:  g.Name,
-		Doors: make([]string, len(g.Doors)),
+	return Group{
+		ID:   g.ID,
+		Name: g.Name,
 	}
-
-	copy(replicant.Doors, g.Doors)
-
-	return replicant
 }
 
 func (g *Groups) Clone() Groups {
