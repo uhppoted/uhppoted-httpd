@@ -35,7 +35,8 @@
       - custom webelement (https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
       - replace dataset.value with get()
       - draw out (TLA+ ?) local record FSM
-        -- add -> rollback deletes, commit only enabled after modified
+        -- e.g. add -> delete on rollback deletes
+        -- e.g. add -> commit only enabled after modified
       - genericize JS:refresh
 
       - filter columns
