@@ -9,35 +9,30 @@
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
     <link rel="stylesheet"       href="css/uhppoted.css"  type="text/css">
-    <link rel="stylesheet"       href="css/dashboard.css" type="text/css">
     <link rel="stylesheet"       href="css/tabular.css"   type="text/css">
   </head>
 
   <body> 
     <div id="content">
-      
-      <!-- LOGO -->
-      <div id="logo">
-        <img src="images/logo.png"  />
-      </div>
-      
-      <!-- DASHBOARD -->
-      <div id="dashboard">
-        <div id="stuff">
-          <span class="windmill" id="windmill" ></span>
-          {{if ne .context.User ""}}
-          <div id="user">
-            <div id="avatar">
-            <p>{{.context.User}}</p>
-            <img id="avatar" src="images/user-cog-solid.svg" />
-            </div>
-            <div class="menu">
-              <a href="#" onclick="onSignOut(event)">Sign out</a>
-            </div>
-          </div>
-          {{end}}
+
+      <!-- HEADER -->
+      <header>
+        <img id="logo" src="images/logo.png"  />
+          
+        <div id="dashboard">
+          <span id="windmill"></span>
         </div>
-      </div>
+
+        <div id="user">
+          <div id="avatar">
+            <p>admin</p>
+            <img id="avatar" src="images/user-cog-solid.svg" />
+          </div>
+          <div class="menu">
+            <a href="#" onclick="onSignOut(event)">Sign out</a>
+          </div>
+        </div>
+      </header>
 
       <!-- MAIN -->
       <div id="main">
@@ -156,8 +151,12 @@
           </div>
         </div>
       </div>
+
+      <!-- FOOTER -->
+      <footer>
+        <p>v0.0.0</p>
+      </footer>
     </div>
-    <div class="footer"><p>v0.0.0</p></div>
   </body>
 
   <!-- SCRIPTS -->

@@ -6,6 +6,8 @@
   background-color: theme.$content-table-background;
   border-collapse: collapse;
   border: 1px solid theme.$content-table-border;
+  display: inline-block; 
+  overflow: auto; 
 }
 
 .tabular tbody tr:nth-child(odd) {
@@ -111,7 +113,7 @@
   padding: 0px 0px 0px 0px;
   font-size: 1.5rem;  
   font-weight: bold;
-  visibility: hidden;
+  visibility: visible;
   cursor: pointer;
 }
 

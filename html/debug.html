@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>uhppoted-httpd</title>
+    <link rel="icon"    href="images/favicon.svg">
+    <link rel="mask-icon"  href="images/favicon-mask.svg" color="#000000">
+    <link rel="apple-touch-icon" href="images/favicon-180x180.png">
+    <link rel="manifest"   href="manifest.json">
+    <link rel="stylesheet" href="css/debug.css"  type="text/css">
+  </head>
+
+  <body> 
+    <div class="container">
+      <!-- HEADER -->
+      <header>
+        <img id="logo" src="images/logo.png"  />
+          
+        <div id="dashboard">
+          <span id="windmill"></span>
+        </div>
+
+        <div id="user">
+          <div id="avatar">
+            <p>admin</p>
+            <img id="avatar" src="images/user-cog-solid.svg" />
+          </div>
+          <div class="menu">
+            <a href="#" onclick="onSignOut(event)">Sign out</a>
+          </div>
+        </div>
+      </header>
+      
+      <!-- NAVIGATION -->
+      <nav>
+      </nav>
+
+      <!-- MAIN -->
+      <main>
+        <div>
+            <table class="tabular" width="800" height="400">
+              <thead>
+                <tr>
+                  <th rowspan="2" colspan="2">Name</th>
+                  <th rowspan="2">Card Number</th>
+                  <th colspan="2">Validity</th>
+                  <th colspan="10">Groups</th>
+                </tr>
+                <tr>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Teacher</th>
+                  <th>Staff</th>
+                  <th>Student</th>
+                  <th>Gryffindor</th>
+                  <th>Hufflepuff</th>
+                  <th>Ravenclaw</th>
+                  <th>Slytherin</th>
+                  <th>Mage</th>
+                  <th>Muggle</th>
+                  <th>Pet</th>
+                </tr>
+              </thead>
+              <tbody>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="C01-name" type="text" value="Albus Dumbledore"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="C01-card" type="number" min="0" value="1000112" />
+                  </td>
+
+                  <td> <input id="C01-from" type="date" value="2020-01-01"  required />
+                  </td>
+
+                  <td> <input id="C01-to" type="date" value="2020-12-31"  required />
+                  </td>
+                  
+                  <td>
+                    <input id="C01-G01" type="checkbox"  checked />
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                    <input id="C01-G04" type="checkbox"  checked />
+                  </td>
+                  <td>
+                    <input id="C01-G05" type="checkbox"  checked />
+                  </td>
+                  <td>
+                    <input id="C01-G06" type="checkbox"  checked />
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="C02-name" type="text" value="Tom Riddle"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="C02-card" type="number" min="0" value="2000101"
+                            />
+                  </td>
+
+                  <td> <input id="C02-from" type="date" value="2020-01-01"  required />
+                  </td>
+
+                  <td> <input id="C02-to" type="date" value="2020-12-31"  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                    <input id="C02-G05" type="checkbox"  checked />
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                    <input id="C02-G10" type="checkbox"  checked />
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="C03-name" type="text" value="Harry Potter"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="C03-card" type="number" min="0" value="6000101"
+                            />
+                  </td>
+
+                  <td> <input id="C03-from" type="date" value="2020-01-01"  required />
+                  </td>
+
+                  <td> <input id="C03-to" type="date" value="2020-12-31"  required />
+                  </td>
+
+                  
+                  <td>
+                    <input id="C03-G01" type="checkbox"  checked />
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                    <input id="C03-G03" type="checkbox"  checked />
+                  </td>
+                  <td>
+                    <input id="C03-G04" type="checkbox"  checked />
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                    <input id="C03-G10" type="checkbox"  checked />
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="U1d12412d-71f8-43e9-8489-18aed7d27868-name" type="text" value="k"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="U1d12412d-71f8-43e9-8489-18aed7d27868-card" type="number" min="0" value="7000011"
+                            />
+                  </td>
+
+                  <td> <input id="U1d12412d-71f8-43e9-8489-18aed7d27868-from" type="date" value=""  required />
+                  </td>
+
+                  <td> <input id="U1d12412d-71f8-43e9-8489-18aed7d27868-to" type="date" value=""  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="U43e1b830-f9d8-4c34-968d-216ff259602e-name" type="text" value="b"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="U43e1b830-f9d8-4c34-968d-216ff259602e-card" type="number" min="0" value="7000002"
+                            />
+                  </td>
+
+                  <td> <input id="U43e1b830-f9d8-4c34-968d-216ff259602e-from" type="date" value=""  required />
+                  </td>
+
+                  <td> <input id="U43e1b830-f9d8-4c34-968d-216ff259602e-to" type="date" value=""  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="U4a6e1330-a902-492e-8147-ff48e2000769-name" type="text" value="r"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="U4a6e1330-a902-492e-8147-ff48e2000769-card" type="number" min="0" value="6000002"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="U4a6e1330-a902-492e-8147-ff48e2000769-from" type="date" value="2020-11-01"  required />
+                  </td>
+
+                  <td>
+                    <input id="U4a6e1330-a902-492e-8147-ff48e2000769-to" type="date" value="2020-11-30"  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="U4eeca957-8ca9-4fd5-8dbe-4973f2316ce7-name" type="text" value="c"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="U4eeca957-8ca9-4fd5-8dbe-4973f2316ce7-card" type="number" min="0" value="7000003"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="U4eeca957-8ca9-4fd5-8dbe-4973f2316ce7-from" type="date" value=""  required />
+                  </td>
+
+                  <td>
+                    <input id="U4eeca957-8ca9-4fd5-8dbe-4973f2316ce7-to" type="date" value=""  required />
+                  </td>
+
+                  
+                  <td>
+                    <input id="U4eeca957-8ca9-4fd5-8dbe-4973f2316ce7-G01" type="checkbox"  checked />
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="U5aa7114e-788f-48b5-8ee9-ab572300285c-name" type="text" value="e"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="U5aa7114e-788f-48b5-8ee9-ab572300285c-card" type="number" min="0" value="7000005"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="U5aa7114e-788f-48b5-8ee9-ab572300285c-from" type="date" value=""  required />
+                  </td>
+
+                  <td>
+                    <input id="U5aa7114e-788f-48b5-8ee9-ab572300285c-to" type="date" value=""  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="U61a3ef78-01c1-46cb-afd2-ce99c891949e-name" type="text" value="a"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="U61a3ef78-01c1-46cb-afd2-ce99c891949e-card" type="number" min="0" value="7000001"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="U61a3ef78-01c1-46cb-afd2-ce99c891949e-from" type="date" value=""  required />
+                  </td>
+
+                  <td>
+                    <input id="U61a3ef78-01c1-46cb-afd2-ce99c891949e-to" type="date" value=""  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="U84ddc0b7-31f7-4b80-9064-db6da9f1b978-name" type="text" value="g"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="U84ddc0b7-31f7-4b80-9064-db6da9f1b978-card" type="number" min="0" value="7000007"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="U84ddc0b7-31f7-4b80-9064-db6da9f1b978-from" type="date" value=""  required />
+                  </td>
+
+                  <td>
+                    <input id="U84ddc0b7-31f7-4b80-9064-db6da9f1b978-to" type="date" value=""  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="U89abe84d-8156-4804-9b3f-df9c790a89ec-name" type="text" value="f"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="U89abe84d-8156-4804-9b3f-df9c790a89ec-card" type="number" min="0" value="7000006"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="U89abe84d-8156-4804-9b3f-df9c790a89ec-from" type="date" value=""  required />
+                  </td>
+
+                  <td>
+                    <input id="U89abe84d-8156-4804-9b3f-df9c790a89ec-to" type="date" value=""  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="U93cb5792-8e12-481f-a81b-0a3326a98441-name" type="text" value="d"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="U93cb5792-8e12-481f-a81b-0a3326a98441-card" type="number" min="0" value="7000004"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="U93cb5792-8e12-481f-a81b-0a3326a98441-from" type="date" value=""  required />
+                  </td>
+
+                  <td>
+                    <input id="U93cb5792-8e12-481f-a81b-0a3326a98441-to" type="date" value=""  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="U9b163d69-3bbc-42dc-900e-dfdb8a62f23e-name" type="text" value="j"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="U9b163d69-3bbc-42dc-900e-dfdb8a62f23e-card" type="number" min="0" value="7000010"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="U9b163d69-3bbc-42dc-900e-dfdb8a62f23e-from" type="date" value=""  required />
+                  </td>
+
+                  <td>
+                    <input id="U9b163d69-3bbc-42dc-900e-dfdb8a62f23e-to" type="date" value=""  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="Ub4fc296c-8d52-43a4-ba14-a9dbcff736a8-name" type="text" value="i"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="Ub4fc296c-8d52-43a4-ba14-a9dbcff736a8-card" type="number" min="0" value="7000009"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="Ub4fc296c-8d52-43a4-ba14-a9dbcff736a8-from" type="date" value=""  required />
+                  </td>
+
+                  <td>
+                    <input id="Ub4fc296c-8d52-43a4-ba14-a9dbcff736a8-to" type="date" value=""  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-name" type="text" value="q"  />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-card" type="number" min="0" value="6000003"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-from" type="date" value="2020-11-01"  required />
+                  </td>
+
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-to" type="date" value="2020-11-30"  required />
+                  </td>
+
+                  
+                  <td>
+                  </td>
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-G02"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-G03"
+                           class="field"
+                           type="checkbox" 
+                           
+                           checked />
+                  </td>
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-G04"
+                           class="field"
+                           type="checkbox" 
+                           
+                           checked />
+                  </td>
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-G05"
+                           class="field"
+                           type="checkbox" 
+                           
+                           checked />
+                  </td>
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-G06"
+                           class="field"
+                           type="checkbox" 
+                           
+                           checked />
+                  </td>
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-G07"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-G08"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-G09"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Udccccf3c-99b0-48e3-9bf3-8bc1ce739f6c-G10"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                </tr>
+                 
+                 <tr>
+                  <td style="border-right:0">
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-name" 
+                           class="field name"
+                           type="text"    
+                           value="h"
+                            />
+                  </td>
+
+                  <td style="border-left:0" class="controls">
+                  </td>
+                  
+                  <td>                  
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-card" 
+                           class="field cardnumber"
+                           type="number" 
+                           min="0"
+                           value="7000008"
+                            />
+                  </td>
+
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-from" 
+                           class="field from"
+                           type="date" 
+                           value=""
+                            required />
+                  </td>
+
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-to" 
+                           class="field to"
+                           type="date" 
+                           value=""
+                            required />
+                  </td>
+
+                  
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-G01"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-G02"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-G03"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-G04"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-G05"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-G06"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-G07"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-G08"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-G09"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                  <td>
+                    <input id="Ueef79dc7-764e-4a91-8b2f-47ec5566d948-G10"
+                           class="field"
+                           type="checkbox" 
+                           />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+        </div>
+      </main>
+
+      <!-- SIDEBAR -->
+      <aside>
+      </aside>
+
+      <!-- FOOTER -->
+      <footer>
+        <p>v0.0.0</p>
+      </footer>
+    </div>
+  </body>
+
+  <!-- SCRIPTS -->
+ 
+  <script type="module" src="./javascript/uhppoted.js"></script>
+  <script type="module" src="./javascript/cardholders.js"></script>
+
+  <script type="module">
+    import { dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
+
+    window.dismiss = dismiss
+    window.onSignOut = onSignOut
+    window.onEdited = onEdited
+    window.onCommit = onCommit
+    window.onCommitAll = onCommitAll
+    window.onRollback = onRollback
+    window.onRollbackAll = onRollbackAll
+    window.onNew = onNew
+    window.onRefresh = onRefresh
+
+    resetIdle();
+  </script>
+
+  <!-- global information initialised by Go template -->
+  <script>
+    var constants = {
+      groups: [ {{range .db.Groups}}{{.ID}},{{end}} ]
+    }
+  </script>
+
+</html>

@@ -36,6 +36,32 @@ nav {
 
 main {
   grid-area: content;
+  background: red;
+}
+
+.tabular {
+  background: pink;  
+  display: block;
+}
+
+table {  
+  background: #00ff0020;  
+  display: block;
+  height: 400px;
+}
+
+thead {  
+  display: block;
+}
+
+tbody {  
+  display: block;
+  overflow: scroll;
+  height: 300px;
+}
+
+tbody tr {  
+  height: 48px;
 }
 
 aside {
