@@ -20,10 +20,15 @@
         <img id="logo" src="images/logo.png"  />
       </header>
 
+      <!-- NAV -->
+      <nav>
+      </nav>
+
       <!-- MAIN -->
-      <div id="main">
-        <div>
-          <div id="container">
+      <main>
+        <div id="container">
+          <div></div>
+          <div id="form">
             <fieldset id="login">
               <legend>{{.Login.Legend}}</legend>
               <form action="/authorize" method="POST" onsubmit="login(event)"> 
@@ -37,12 +42,17 @@
                 <button action="submit">{{.Login.Ok.Label}}</button>
               </form>
             </fieldset>
+            <div id="message" class="message">
+              <span class="warning" id="warning"></span>
+            </div>
           </div>
-          <div id="message" class="message">
-            <span class="warning" id="warning"></span>
-          </div>
-         </div>
-      </div>
+          <div></div>
+        </div>
+      </main>
+
+      <!-- SIDEBAR -->
+      <aside>
+      </aside>
 
       <!-- FOOTER -->
       <footer>

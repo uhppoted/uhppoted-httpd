@@ -6,8 +6,18 @@
   background-color: theme.$content-table-background;
   border-collapse: collapse;
   border: 1px solid theme.$content-table-border;
-  display: inline-block; 
+  display: block; 
+  height: 554px;
+  margin-bottom: 32px;
   overflow: auto; 
+}
+
+.tabular thead {
+  position: sticky; 
+  top: 0px; 
+}
+
+.tabular tbody {
 }
 
 .tabular tbody tr:nth-child(odd) {

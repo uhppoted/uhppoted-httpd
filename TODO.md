@@ -19,8 +19,9 @@
 
 - [ ] Card holders
       - freeze header rows and columns
+        -- https://escss.blogspot.com/2014/10/responsive-table-encabezado-fijo-scroll.html
+        -- https://nevcal.com/eclectic/UltimateScrollingTable.html
       - scroll horizontally
-      - scroll vertically
       - highlight current row (?)
       - unit tests for auth rules
       - card type should probably be a string (because otherwise 0 is a reserved number)
