@@ -32,17 +32,23 @@ body {
 header {
   grid-area: header;
   display: flex;
+  height: auto;
+  overflow: hidden;
 }
 
 main {
   display: flex;
   grid-area: content;
   justify-content: center;    
+  height: auto;
+  overflow: hidden;
 }
 
 footer {
   background-color: theme.$content-message-background;
   grid-area: footer;
+  height: auto;
+  overflow: hidden;
   padding: 6px 0px 6px 0px;
   text-align: center;
   font-size: 0.8em;
@@ -177,6 +183,11 @@ footer {
 
 #controls #refresh {  
   margin-left: 6px;
+}
+
+#cardholders {
+  display: block;
+  height: 100%;
 }
 
 .message {  

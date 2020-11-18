@@ -7,7 +7,7 @@
   border-collapse: collapse;
   border: 1px solid theme.$content-table-border;
   display: block; 
-  height: 554px;
+  height: 90%;
   margin-bottom: 32px;
   overflow: auto; 
 }
@@ -123,7 +123,7 @@
   padding: 0px 0px 0px 0px;
   font-size: 1.5rem;  
   font-weight: bold;
-  visibility: visible;
+  visibility: hidden;
   cursor: pointer;
 }
 

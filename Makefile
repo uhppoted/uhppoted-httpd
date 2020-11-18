@@ -22,7 +22,7 @@ format:
 build: format
 	mkdir -p bin
 	go build -o bin ./...
-	sass html/sass:html/css/
+	sass html/sass:html/css
 	npx eslint --fix html/javascript/*.js
 
 test: build
@@ -71,7 +71,7 @@ debug: build
 	go test -v ./... -run "TestCardAdd"
 
 sass:
-	sass --watch html/sass/css:html/css
+	sass --watch html/sass:html/css
 
 version: build
 	$(CMD) version
