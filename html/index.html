@@ -36,7 +36,7 @@
 
       <!-- MAIN -->
       <main>
-        <div>
+        <div style="width:100%;">
           <div id="controls">
             <i class="fas fa-camera"></i>
             <img id="commitall"   class='button' src="images/check-solid.svg" onclick="onCommitAll()" />
@@ -82,7 +82,7 @@
                            data-value="{{$cardholder.Name}}" />
                   </td>
 
-                  <td style="border-left:0" class="controls">
+                  <td class="controls">
                     <span class="control commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
                     <span class="control rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
                   </td>
@@ -139,8 +139,8 @@
                            data-original="{{index $cardholder.Groups .ID}}" 
                            data-value="{{index $cardholder.Groups .ID}}"{{if index $cardholder.Groups .ID}}
                            checked />{{else}}/>{{end}}
-                      <img class="no"  src="images/times-solid.svg" />
-                      <img class="yes" src="images/check-solid.svg" />
+                      <img class="no"  src="images/times-solid.svg" draggable="false" />
+                      <img class="yes" src="images/check-solid.svg" draggable="false" />
                     </label>
                   </td>{{end}}
                 </tr>{{else}}<tr class="empty"><td/><td/><td/><td/><td/><td/></tr>{{end}}

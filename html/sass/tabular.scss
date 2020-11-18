@@ -51,6 +51,7 @@
 
 .tabular th.name {
   min-width: 144px;
+  border-bottom: 1px;
 }
 
 .tabular th.cardnumber {
@@ -117,6 +118,14 @@
 
 .tabular td input.name:focus {
   border: 1px solid red;
+}
+
+.tabular td.controls {
+  display:flex; 
+  flex-direction:row;  
+  border-left: 1px;
+  border-right: 1px;
+  border-bottom: 1px;
 }
 
 .tabular td span.control {
