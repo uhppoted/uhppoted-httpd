@@ -3,7 +3,7 @@
 @use 'solarize' as theme;
 
 .tabular {
-  background-color: theme.$content-table-background;
+  background: theme.$content-table-background;
   border-collapse: collapse;
   border: 1px solid theme.$content-table-border;
   display: block; 
@@ -17,36 +17,40 @@
   top: 0px; 
 }
 
-.tabular tbody {
-}
-
-.tabular tbody tr:nth-child(odd) {
-  background: theme.$content-table-background-odd;
-}
-
-.tabular tbody tr:nth-child(even) {
-  background: theme.$content-table-background-even;
-}
-
-.tabular tbody tr.empty {
-  height: 32px;
-}
-
-.tabular tbody tr.modified {
-  background: theme.$content-table-row-modified;
-}
-
-.tabular tbody tr.new {
-  background: theme.$content-table-row-new;
-}
-
+/* Ref. https://css-tricks.com/position-sticky-and-table-headers */
 .tabular th {
   border: 1px solid theme.$content-table-border;
+  background: theme.$content-table-background-header;
   padding: 0.5rem;
   text-align: center;
   font-size: 0.9em;
   font-weight: 500;
   font-style: normal;
+}
+
+.tabular td.rowheader {
+background: white;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.tabular th.colheader {
+  background: theme.$content-table-background-header;
+  border-bottom: 1px solid theme.$content-table-border;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.tabular th.topleft {
+  background: theme.$content-table-background-header;
+  border-right: 1px solid theme.$content-table-border;
+  border-bottom: 1px solid theme.$content-table-border;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 3;
 }
 
 .tabular th.name {
@@ -68,6 +72,46 @@
 
 .tabular th.groups {
   min-width: 160px;
+}
+
+.tabular tbody {
+  z-index: 1;
+}
+
+.tabular tbody tr:nth-child(odd) {
+  background: theme.$content-table-background-odd;
+}
+
+.tabular tbody tr:nth-child(even) {
+  background: theme.$content-table-background-even;
+}
+
+.tabular tbody tr:nth-child(odd) td.rowheader {
+  background: theme.$content-table-background-odd;
+}
+
+.tabular tbody tr:nth-child(even) td.rowheader {
+  background: theme.$content-table-background-even;
+}
+
+.tabular tbody tr.empty {
+  height: 32px;
+}
+
+.tabular tbody tr.modified {
+  background: theme.$content-table-row-modified;
+}
+
+.tabular tbody tr:modified td.rowheader {
+  background: theme.$content-table-row-modified;
+}
+
+.tabular tbody tr.new {
+  background: theme.$content-table-row-new;
+}
+
+.tabular tbody tr.new td.rowheader {
+  background: theme.$content-table-row-new;
 }
 
 .tabular td {
