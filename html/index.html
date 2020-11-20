@@ -56,14 +56,14 @@
               <thead>
                 <tr>
                   <th class="topleft   name" rowspan="2" colspan="2">Name</th>
-                  <th class="colheader cardnumber" rowspan="2">Card Number</th>
+                  <th class="cardnumber colheader" rowspan="2">Card Number</th>
                   <th class="validity" colspan="2">Validity</th>
                   <th class="groups" colspan="10">Groups</th>
                 </tr>
                 <tr>
-                  <th class="colheader from">From</th>
-                  <th class="colheader to">To</th>{{range .db.Groups}}
-                  <th class="colheader">{{.Name}}</th>{{else}}<th/>{{end}}
+                  <th class="from   colheader">From</th>
+                  <th class="to     colheader">To</th>{{range .db.Groups}}
+                  <th class="grouph colheader">{{.Name}}</th>{{else}}<th/>{{end}}
                 </tr>
               </thead>
               <tbody>{{range $cardholder := .db.CardHolders}}

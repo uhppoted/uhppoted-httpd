@@ -31,15 +31,13 @@
 .tabular td.rowheader {
 background: white;
   position: sticky;
-  left: 0;
+  left: -1px;  // HACK: 0px displays the scrolled information if there is a border
   z-index: 2;
 }
 
 .tabular th.colheader {
-  background: theme.$content-table-background-header;
-  border-bottom: 1px solid theme.$content-table-border;
   position: sticky;
-  top: 0;
+  top: -1px;   // HACK: 0px displays the scrolled information if there is a border
   z-index: 2;
 }
 
@@ -48,8 +46,8 @@ background: white;
   border-right: 1px solid theme.$content-table-border;
   border-bottom: 1px solid theme.$content-table-border;
   position: sticky;
-  top: 0;
-  left: 0;
+  top: -1px;   // HACK: 0px displays the scrolled information if there is a border
+  left: -1px;  // HACK: 0px displays the scrolled information if there is a border
   z-index: 3;
 }
 

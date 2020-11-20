@@ -20,7 +20,6 @@
 - [ ] Card holders
       - freeze header rows/columns
         -- move commit/rollback into name column
-        -- tiny little bits of table visible behind headers
         -- header borders disappearing
         -- (maybe) shuffle CSS so that don't need to explicitly override tr-odd/even for headers
         -- https://stackoverflow.com/questions/44001954/css-only-sticky-table-headers-in-chrome
