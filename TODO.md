@@ -19,11 +19,11 @@
 
 - [ ] Card holders
       - freeze header rows/columns
-        -- move commit/rollback into name column
-        -- header borders disappearing
+        -- top/left mysteriously doesn't line up 
+        -- header borders disappearing (replace with solid colour ?)
+        -- table border is all weird
+        -- style scrollbar borders
         -- (maybe) shuffle CSS so that don't need to explicitly override tr-odd/even for headers
-        -- https://stackoverflow.com/questions/44001954/css-only-sticky-table-headers-in-chrome
-        -- https://stackoverflow.com/questions/24840074/how-to-stick-table-headerthead-on-top-while-scrolling-down-the-table-rows-with
       - highlight current row (?)
       - unit tests for auth rules
       - card type should probably be a string (because otherwise 0 is a reserved number)

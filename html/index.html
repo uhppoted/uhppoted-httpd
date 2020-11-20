@@ -55,7 +55,7 @@
             <table class="tabular">
               <thead>
                 <tr>
-                  <th class="topleft   name" rowspan="2" colspan="2">Name</th>
+                  <th class="name       topleft" rowspan="2">Name</th>
                   <th class="cardnumber colheader" rowspan="2">Card Number</th>
                   <th class="validity" colspan="2">Validity</th>
                   <th class="groups" colspan="10">Groups</th>
@@ -69,7 +69,7 @@
               <tbody>{{range $cardholder := .db.CardHolders}}
                  {{$cid := $cardholder.ID}}
                  <tr id="{{$cid}}">
-                  <td class="rowheader" style="border-right:0">
+                  <td class="rowheader" style="display:flex; flex-direction:row;">
                     <img class="flag" src="images/corner.svg" />
                     <input id="{{$cid}}-name" 
                            class="field name"
@@ -80,13 +80,10 @@
                            data-record="{{$cid}}"
                            data-original="{{$cardholder.Name}}"
                            data-value="{{$cardholder.Name}}" />
-                  </td>
-
-                  <td class="controls">
                     <span class="control commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
                     <span class="control rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
                   </td>
-                  
+
                   <td>                  
                     <img class="flag" src="images/corner.svg" />
                     <input id="{{$cid}}-card" 
