@@ -21,7 +21,7 @@
   position:relative;
   border: none; // 1px solid theme.$content-table-border;
   border-top: 1px solid theme.$content-table-border;
-  border-right: 1px solid theme.$content-table-border;
+  border-left: 1px solid theme.$content-table-border;
   padding: 0.3rem 0.5rem 0.3rem 0.5rem;
   text-align: left;
   font-size: 0.9em;
@@ -49,7 +49,6 @@
 .tabular th.topleft {
   background: theme.$content-table-background-header;
   border-left: 1px solid theme.$content-table-border;
-  border-right: 1px solid theme.$content-table-border;
   border-bottom: 1px solid theme.$content-table-border;
   position: sticky;
   top: -1px;   

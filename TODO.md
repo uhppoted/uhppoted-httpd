@@ -19,7 +19,6 @@
 
 - [ ] Card holders
       - freeze header rows/columns
-        -- top/left mysteriously doesn't line up 
         -- header borders disappearing (replace with solid colour ?)
         -- table border is all weird
         -- style scrollbar borders
