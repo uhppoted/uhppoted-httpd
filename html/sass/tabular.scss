@@ -19,9 +19,6 @@
 
 .tabular td {
   position:relative;
-  border: none; // 1px solid theme.$content-table-border;
-  border-top: 1px solid theme.$content-table-border;
-  border-left: 1px solid theme.$content-table-border;
   padding: 0.3rem 0.5rem 0.3rem 0.5rem;
   text-align: left;
   font-size: 0.9em;
@@ -31,7 +28,6 @@
 
 /* Ref. https://css-tricks.com/position-sticky-and-table-headers */
 .tabular th {
-  border: 1px solid theme.$content-table-border;
   background: theme.$content-table-background-header;
   padding: 0.5rem;
   text-align: center;
@@ -48,8 +44,6 @@
 
 .tabular th.topleft {
   background: theme.$content-table-background-header;
-  border-left: 1px solid theme.$content-table-border;
-  border-bottom: 1px solid theme.$content-table-border;
   position: sticky;
   top: -1px;   
   left: -1px;
@@ -57,7 +51,6 @@
 }
 
 .tabular tbody td.rowheader {
-  border-left: 1px solid theme.$content-table-border;
   position: sticky;
   left: -1px;
   z-index: 2;
@@ -70,7 +63,6 @@
 
 .tabular th.cardnumber {
   min-width: 96px;
-  border-left: 1px solid theme.$content-table-border;
 }
 
 .tabular th.from {
@@ -98,11 +90,11 @@
 }
 
 .tabular tbody tr:nth-child(odd) td.rowheader {
-  background: theme.$content-table-background-odd;
+  background: darken(theme.$content-table-background-odd,5%);
 }
 
 .tabular tbody tr:nth-child(even) td.rowheader {
-  background: theme.$content-table-background-even;
+  background: darken(theme.$content-table-background-even,5%);
 }
 
 .tabular tbody tr.empty {
@@ -163,14 +155,6 @@
 
 .tabular td input.name:focus {
   border: 1px solid red;
-}
-
-.tabular td.controls {
-  display:flex; 
-  flex-direction:row;  
-  border-left: 1px;
-  border-right: 1px;
-  border-bottom: 1px;
 }
 
 .tabular td span.control {

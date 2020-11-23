@@ -21,7 +21,7 @@ $content-message-background: $solarize-base2;
 $content-controls-border: $solarize-blue;
 
 $content-table-background:          $solarize-base2;
-$content-table-background-header:   $solarize-base2;
+$content-table-background-header:   darken($solarize-base2, 5%);
 $content-table-background-odd:      $solarize-base3;
 $content-table-background-even:     $solarize-base2;
 $content-table-row-modified:        lighten($solarize-yellow, 50%);

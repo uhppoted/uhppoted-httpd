@@ -18,11 +18,6 @@
       - unit tests for ACL rules
 
 - [ ] Card holders
-      - freeze header rows/columns
-        -- header borders disappearing (replace with solid colour ?)
-        -- table border is all weird
-        -- style scrollbar borders
-        -- (maybe) shuffle CSS so that don't need to explicitly override tr-odd/even for headers
       - highlight current row (?)
       - unit tests for auth rules
       - card type should probably be a string (because otherwise 0 is a reserved number)

@@ -55,15 +55,11 @@
             <table class="tabular">
               <thead>
                 <tr>
-                  <th class="name       topleft" rowspan="2">Name</th>
-                  <th class="cardnumber colheader" rowspan="2">Card Number</th>
-                  <th class="validity" colspan="2">Validity</th>
-                  <th class="groups" colspan="10">Groups</th>
-                </tr>
-                <tr>
-                  <th class="from   colheader">From</th>
-                  <th class="to     colheader">To</th>{{range .db.Groups}}
-                  <th class="grouph colheader">{{.Name}}</th>{{else}}<th/>{{end}}
+                  <th class="name       topleft">Name</th>
+                  <th class="cardnumber colheader">Card Number</th>
+                  <th class="from       colheader">From</th>
+                  <th class="to         colheader">To</th>{{range .db.Groups}}
+                  <th class="grouph     colheader">{{.Name}}</th>{{else}}<th/>{{end}}
                 </tr>
               </thead>
               <tbody>{{range $cardholder := .db.CardHolders}}
@@ -84,7 +80,7 @@
                     <span class="control rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
                   </td>
 
-                  <td>                  
+                  <td>
                     <img class="flag" src="images/corner.svg" />
                     <input id="{{$cid}}-card" 
                            class="field cardnumber"
