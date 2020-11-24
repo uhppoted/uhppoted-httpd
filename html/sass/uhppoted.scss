@@ -36,6 +36,10 @@ header {
   overflow: hidden;
 }
 
+nav {
+  grid-area: left;
+}
+
 main {
   display: flex;
   grid-area: content;
@@ -144,7 +148,21 @@ footer {
 
 .menu a:hover {
   color: theme.$controls-menu-item-highlight;
-  background-color: theme.$controls-menu-item-highlight-background;
+  background: theme.$controls-menu-item-highlight-background;
+}
+
+nav ul {
+  margin-top: 31px;
+  padding-left: 8px;
+  list-style-type: none;
+}
+
+nav ul li {
+  width: 80px;
+}
+
+nav ul li.selected {
+  padding-left: 12px;
 }
 
 #controls {  

@@ -2,13 +2,15 @@
 
 ### IN PROGRESS
 
-- [ ] Loading bar a la cybercode
-      - progresss
-      - indefinite
+- [ ] navigation
 
 - [ ] ACL
       - wrap ACL update in goroutine
         -- error handling ??
+
+- [ ] Loading bar a la cybercode
+      - progresss
+      - indefinite
 
 - [ ] MemDB
       - JSON field names to lowercase
