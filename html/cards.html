@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>uhppoted-httpd</title>
+    <link rel="icon"             href="images/favicon.svg">
+    <link rel="mask-icon"        href="images/favicon-mask.svg" color="#000000">
+    <link rel="apple-touch-icon" href="images/favicon-180x180.png">
+    <link rel="manifest"         href="manifest.json">
+    <link rel="stylesheet"       href="css/uhppoted.css" type="text/css">
+    <link rel="stylesheet"       href="css/tabular.css"  type="text/css">
+    <link rel="stylesheet"       href="css/cards.css"    type="text/css">
+  </head>
+
+  <body> 
+    <div id="content">
+
+      <!-- HEADER -->
+      <header>
+        <img id="logo" src="images/logo.png"  />
+          
+        <div id="dashboard">
+          <span id="windmill"></span>
+        </div>
+
+        <div id="user">
+          <div id="avatar">
+            <p>admin</p>
+            <img id="avatar" src="images/user-cog-solid.svg" />
+          </div>
+          <div class="menu">
+            <a href="#" onclick="onSignOut(event)">Sign out</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- NAV -->
+
+      <nav>
+        <ul>
+          <li><a href="index.html" draggable="false"><img src="images/nav-system.svg" draggable="false" /></a></li>
+          <li class="selected"><img src="images/nav-cards-selected.svg" draggable="false" /></li>
+          <li><img src="images/nav-doors.svg"  draggable="false" /></li>
+          <li><img src="images/nav-events.svg" draggable="false" /></li>
+          <li><img src="images/nav-logs.svg"   draggable="false" /></li>
+        </ul>
+      </nav>
+
+      <!-- MAIN -->
+      <main>
+        <div style="width:100%;">
+          <div id="controls">
+            <img id="commitall"   class='button' src="images/check-solid.svg" onclick="onCommitAll()" />
+            <img id="rollbackall" class='button' src="images/times-solid.svg" onclick="onRollbackAll()" />
+            <div id="message" class="message">
+              <div>
+                <span class="warning" id="warning"></span>
+                <button class="dismiss" onclick="dismiss()">&#9746;</button>
+              </div>
+            </div>
+            <img id="add"     class='button' src="images/plus-solid.svg" onclick="onNew()" />
+            <img id="refresh" class='button' src="images/sync-alt-solid.svg" onclick="onRefresh()" />
+          </div>
+
+          <div id="cardholders">
+            <table class="tabular">
+              <thead>
+                <tr>
+                  <th class="name       topleft">Name</th>
+                  <th class="cardnumber colheader">Card Number</th>
+                  <th class="from       colheader">From</th>
+                  <th class="to         colheader">To</th>{{range .db.Groups}}
+                  <th class="grouph     colheader">{{.Name}}</th>{{else}}</th>{{end}}
+                </tr>
+              </thead>
+              <tbody>{{range $cardholder := .db.CardHolders}}
+                 {{$cid := $cardholder.ID}}
+                 <tr id="{{$cid}}">
+                  <td class="rowheader" style="display:flex; flex-direction:row;">
+                    <img class="flag" src="images/corner.svg" />
+                    <input id="{{$cid}}-name" 
+                           class="field name"
+                           type="text"                            
+                           value="{{$cardholder.Name}}"
+                           placeholder="-"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{$cardholder.Name}}"
+                           data-value="{{$cardholder.Name}}" />
+                    <span class="control commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
+                    <span class="control rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
+                  </td>
+
+                  <td>
+                    <img class="flag" src="images/corner.svg" />
+                    <input id="{{$cid}}-card" 
+                           class="field cardnumber"
+                           type="number" 
+                           min="0"
+                           value="{{$cardholder.Card}}"
+                           placeholder="6152346"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{$cardholder.Card}}"
+                           data-value="{{$cardholder.Card}}" />
+                  </td>
+
+                  <td>
+                    <img class="flag" src="images/corner.svg" />
+                    <input id="{{$cid}}-from" 
+                           class="field from"
+                           type="date" 
+                           value="{{$cardholder.From.Format "2006-01-02"}}"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{$cardholder.From.Format "2006-01-02"}}"
+                           data-value="{{$cardholder.From.Format "2006-01-02"}}" 
+                           required />
+                  </td>
+
+                  <td>
+                    <img class="flag" src="images/corner.svg" />
+                    <input id="{{$cid}}-to" 
+                           class="field to"
+                           type="date" 
+                           value="{{$cardholder.To.Format "2006-01-02"}}"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{$cardholder.To.Format "2006-01-02"}}"
+                           data-value="{{$cardholder.To.Format "2006-01-02"}}" 
+                           required />
+                  </td>
+
+                  {{range $.db.Groups}}
+                  <td>
+                    <img class="flag" src="images/corner.svg" />
+                    <label class="group">
+                    <input id="{{$cid}}-{{.ID}}"
+                           class="field"
+                           type="checkbox" 
+                           onclick="onTick(event)"
+                           data-record="{{$cid}}" 
+                           data-original="{{index $cardholder.Groups .ID}}" 
+                           data-value="{{index $cardholder.Groups .ID}}"{{if index $cardholder.Groups .ID}}
+                           checked />{{else}}/>{{end}}
+                      <img class="no"  src="images/times-solid.svg" draggable="false" />
+                      <img class="yes" src="images/check-solid.svg" draggable="false" />
+                    </label>
+                  </td>{{end}}
+                </tr>{{else}}<tr class="empty"><td/><td/><td/><td/><td/><td/></tr>{{end}}
+              </tbody>
+              <tfoot>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer>
+        <p>v0.0.0</p>
+      </footer>
+    </div>
+  </body>
+
+  <!-- SCRIPTS -->
+ 
+  <script type="module" src="./javascript/uhppoted.js"></script>
+  <script type="module" src="./javascript/cardholders.js"></script>
+
+  <script type="module">
+    import { dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
+    import { onEdited, onTick, onCommit, onCommitAll, onRollback, onRollbackAll, onNew, onRefresh } from "./javascript/cardholders.js"
+
+    window.dismiss = dismiss
+    window.onSignOut = onSignOut
+    window.onEdited = onEdited
+    window.onTick = onTick
+    window.onCommit = onCommit
+    window.onCommitAll = onCommitAll
+    window.onRollback = onRollback
+    window.onRollbackAll = onRollbackAll
+    window.onNew = onNew
+    window.onRefresh = onRefresh
+
+    resetIdle();
+  </script>
+
+  <!-- global information initialised by Go template -->
+  <script>
+    var constants = {
+      groups: [ {{range .db.Groups}}{{.ID}},{{end}} ]
+    }
+  </script>
+
+</html>

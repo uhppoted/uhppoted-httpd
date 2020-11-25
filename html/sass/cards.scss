@@ -1,0 +1,111 @@
+@use 'solarize' as theme;
+
+th.name {
+  min-width: 144px;
+  border-bottom: 1px;
+}
+
+th.cardnumber {
+  min-width: 96px;
+}
+
+th.from {
+  min-width: 80px;
+}
+
+th.to {
+  min-width: 80px;
+}
+
+th.groups {
+  min-width: 160px;
+}
+
+td input.name {
+  width: 120px;
+  padding: 2px 4px 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  outline: none;
+}
+
+td input.name:focus {
+  border: 1px solid red;
+}
+
+td input.cardnumber {
+  width: 80px;
+  padding: 2px 4px 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  outline: none;
+}
+
+td.cardnumber input::-webkit-inner-spin-button, 
+td.cardnumber input::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+td.cardnumber input:focus {
+  border: 1px solid red;
+}
+
+input.from {
+  width: 124px;
+  padding: 2px 4px 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font: 400 0.9em Arial;
+  outline: none;
+}
+
+td input.from:focus {
+  border: 1px solid red;
+}
+
+td input.to {
+  width: 124px;
+  padding: 2px 4px 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font: 400 0.9em Arial;
+  outline: none;
+}
+
+td input.to:focus {
+  border: 1px solid red;
+}
+
+td label.group {
+  cursor: pointer;  
+}
+
+td label.group input[type="checkbox"] {
+  display: none;
+}
+
+td label.group img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  margin: auto;
+}
+
+td label.group img.yes {
+  display: none;
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%)
+}
+
+td label.group img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+
+td label.group input[type="checkbox"]:checked ~ img.yes {
+  display: block;
+}
+
+td label.group input[type="checkbox"]:checked ~ img.no {
+  display: none;
+}

@@ -3,5 +3,5 @@
     .item { font:normal 11px sans-serif; fill: #268bd2; }
   </style>
   <path fill="#eee8d5" stroke="#657b83" stroke-width="1.5" stroke-linejoin="round" stroke-opacity="0.25" d="M 1,1 60,1 70,8 60,16 1,16 Z"></path>
-  <text x="6" y="12.5" class="item">CARDS</text>
+  <text x="6" y="12.5" class="item">LOGS</text>
 </svg>

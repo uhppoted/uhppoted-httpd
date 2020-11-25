@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/cardholders"
+	"github.com/uhppoted/uhppoted-httpd/sys"
 )
 
 const GZIP_MINIMUM = 16384
@@ -73,6 +74,7 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 	page := map[string]interface{}{}
 
 	page["context"] = context
+	page["system"] = system.System()
 	page["db"] = d.db
 
 	info, err := os.Stat(translation)
