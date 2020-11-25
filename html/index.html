@@ -8,8 +8,9 @@
     <link rel="mask-icon"        href="images/favicon-mask.svg" color="#000000">
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
-    <link rel="stylesheet"       href="css/uhppoted.css"  type="text/css">
-    <link rel="stylesheet"       href="css/tabular.css"   type="text/css">
+    <link rel="stylesheet"       href="css/uhppoted.css" type="text/css">
+    <link rel="stylesheet"       href="css/tabular.css"  type="text/css">
+    <link rel="stylesheet"       href="css/system.css"   type="text/css">
   </head>
 
   <body> 
@@ -38,8 +39,11 @@
 
       <nav>
         <ul>
-          <li><img src="images/nav-system.svg" /></li>
-          <li class="selected"><img src="images/nav-cards.svg" /></li>
+          <li class="selected"><img src="images/nav-system-selected.svg" draggable="false" /></li>
+          <li><a href="cards.html" draggable="false"><img src="images/nav-cards.svg" draggable="false" /></a></li>
+          <li><img src="images/nav-doors.svg"  draggable="false" /></li>
+          <li><img src="images/nav-events.svg" draggable="false" /></li>
+          <li><img src="images/nav-logs.svg"  draggable="false" /></li>
         </ul>
       </nav>
 
@@ -47,7 +51,6 @@
       <main>
         <div style="width:100%;">
           <div id="controls">
-            <i class="fas fa-camera"></i>
             <img id="commitall"   class='button' src="images/check-solid.svg" onclick="onCommitAll()" />
             <img id="rollbackall" class='button' src="images/times-solid.svg" onclick="onRollbackAll()" />
             <div id="message" class="message">
@@ -60,92 +63,159 @@
             <img id="refresh" class='button' src="images/sync-alt-solid.svg" onclick="onRefresh()" />
           </div>
 
-          <div id="cardholders">
+          <div id="controllers">
             <table class="tabular">
               <thead>
                 <tr>
-                  <th class="name       topleft">Name</th>
-                  <th class="cardnumber colheader">Card Number</th>
-                  <th class="from       colheader">From</th>
-                  <th class="to         colheader">To</th>{{range .db.Groups}}
-                  <th class="grouph     colheader">{{.Name}}</th>{{else}}<th/>{{end}}
+                  <th class="name     topleft">Controller</th>
+                  <th class="ID       colheader">ID</th>
+                  <th class="IP       colheader">IPv4</th>
+                  <th class="datetime colheader">Date/Time</th>
+                  <th class="cards    colheader">Cards</th>
+                  <th class="events   colheader">Events</th>
+                  <th class="doors    colheader" colspan="4">Doors</th>
                 </tr>
               </thead>
-              <tbody>{{range $cardholder := .db.CardHolders}}
-                 {{$cid := $cardholder.ID}}
+              <tbody>{{range $controller := .system.Controllers}}
+                 {{$cid := $controller.ID}}
                  <tr id="{{$cid}}">
                   <td class="rowheader" style="display:flex; flex-direction:row;">
                     <img class="flag" src="images/corner.svg" />
                     <input id="{{$cid}}-name" 
                            class="field name"
                            type="text"                            
-                           value="{{$cardholder.Name}}"
+                           value="{{$controller.Name}}"
                            placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original="{{$cardholder.Name}}"
-                           data-value="{{$cardholder.Name}}" />
+                           data-original="{{$controller.Name}}"
+                           data-value="{{$controller.Name}}" />
                     <span class="control commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
                     <span class="control rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
                   </td>
 
                   <td>
                     <img class="flag" src="images/corner.svg" />
-                    <input id="{{$cid}}-card" 
-                           class="field cardnumber"
+                    <input id="{{$cid}}-ID" 
+                           class="field ID"
                            type="number" 
                            min="0"
-                           value="{{$cardholder.Card}}"
-                           placeholder="6152346"
+                           value="{{$controller.ID}}"
+                           placeholder="405419896"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original="{{$cardholder.Card}}"
-                           data-value="{{$cardholder.Card}}" />
+                           data-original="{{$controller.ID}}"
+                           data-value="{{$controller.ID}}" />
                   </td>
 
                   <td>
                     <img class="flag" src="images/corner.svg" />
-                    <input id="{{$cid}}-from" 
-                           class="field from"
-                           type="date" 
-                           value="{{$cardholder.From.Format "2006-01-02"}}"
+                    <input id="{{$cid}}-IP" 
+                           class="field IP"
+                           type="text" 
+                           value="{{$controller.IP}}"
+                           placeholder="192.168.1.100:60000"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original="{{$cardholder.From.Format "2006-01-02"}}"
-                           data-value="{{$cardholder.From.Format "2006-01-02"}}" 
+                           data-original="{{$controller.IP}}"
+                           data-value="{{$controller.IP}}" />
+                  </td>
+
+                  <td>
+                    <img class="flag" src="images/corner.svg" />
+                    <input id="{{$cid}}-datetime" 
+                           class="field datetime"
+                           type="date" 
+                           value="{{$controller.DateTime.Format "2006-01-02 15:04:05"}}"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{$controller.DateTime.Format "2006-01-02 15:04:05"}}"
+                           data-value="{{$controller.DateTime.Format "2006-01-02 15:04:05"}}" 
                            required />
                   </td>
 
                   <td>
                     <img class="flag" src="images/corner.svg" />
-                    <input id="{{$cid}}-to" 
-                           class="field to"
-                           type="date" 
-                           value="{{$cardholder.To.Format "2006-01-02"}}"
+                    <input id="{{$cid}}-cards" 
+                           class="field cards"
+                           type="number" 
+                           min="0"
+                           value="{{$controller.Cards}}"
+                           placeholder="3"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original="{{$cardholder.To.Format "2006-01-02"}}"
-                           data-value="{{$cardholder.To.Format "2006-01-02"}}" 
-                           required />
+                           data-original="{{$controller.Cards}}"
+                           data-value="{{$controller.Cards}}" />
                   </td>
 
-                  {{range $.db.Groups}}
                   <td>
                     <img class="flag" src="images/corner.svg" />
-                    <label class="group">
-                    <input id="{{$cid}}-{{.ID}}"
-                           class="field"
-                           type="checkbox" 
-                           onclick="onTick(event)"
-                           data-record="{{$cid}}" 
-                           data-original="{{index $cardholder.Groups .ID}}" 
-                           data-value="{{index $cardholder.Groups .ID}}"{{if index $cardholder.Groups .ID}}
-                           checked />{{else}}/>{{end}}
-                      <img class="no"  src="images/times-solid.svg" draggable="false" />
-                      <img class="yes" src="images/check-solid.svg" draggable="false" />
-                    </label>
-                  </td>{{end}}
-                </tr>{{else}}<tr class="empty"><td/><td/><td/><td/><td/><td/></tr>{{end}}
+                    <input id="{{$cid}}-events" 
+                           class="field events"
+                           type="number" 
+                           min="0"
+                           value="{{$controller.Events}}"
+                           placeholder="3"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{$controller.Cards}}"
+                           data-value="{{$controller.Cards}}" />
+                  </td>
+
+                  <td>
+                    <img class="flag" src="images/corner.svg" />
+                    <input id="{{$cid}}-door-1" 
+                           class="field door"
+                           type="text" 
+                           value="{{index $controller.Doors 1}}"
+                           placeholder="Door 1"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{index $controller.Doors 1}}"
+                           data-value="{{index $controller.Doors 1}}" />
+                  </td>
+
+                  <td>
+                    <img class="flag" src="images/corner.svg" />
+                    <input id="{{$cid}}-door-2" 
+                           class="field door"
+                           type="text" 
+                           value="{{index $controller.Doors 2}}"
+                           placeholder="Door 2"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{index $controller.Doors 2}}"
+                           data-value="{{index $controller.Doors 2}}" />
+                  </td>
+
+                  <td>
+                    <img class="flag" src="images/corner.svg" />
+                    <input id="{{$cid}}-door-3" 
+                           class="field door"
+                           type="text" 
+                           value="{{index $controller.Doors 3}}"
+                           placeholder="Door 3"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{index $controller.Doors 3}}"
+                           data-value="{{index $controller.Doors 3}}" />
+                  </td>
+
+                  <td>
+                    <img class="flag" src="images/corner.svg" />
+                    <input id="{{$cid}}-door-4" 
+                           class="field door"
+                           type="text" 
+                           value="{{index $controller.Doors 4}}"
+                           placeholder="Door 4"
+                           onchange="onEdited(event)" 
+                           data-record="{{$cid}}"
+                           data-original="{{index $controller.Doors 4}}"
+                           data-value="{{index $controller.Doors 4}}" />
+                  </td>
+                </tr>{{else}}<tr class="empty">
+                 <td/><td/><td/><td/><td/><td/><td/><td/><td/><td/>
+               </tr>{{end}}
               </tbody>
               <tfoot>
               </tfoot>

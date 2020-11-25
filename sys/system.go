@@ -7,20 +7,33 @@ import (
 	"log"
 	"net"
 	"strings"
+	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type System struct {
-	Doors map[string]types.Door `json:"doors"`
-	Local []Local               `json:"local"`
+type system struct {
+	Controllers []Controller          `json:"controllers"`
+	Doors       map[string]types.Door `json:"doors"`
+	Local       []Local               `json:"local"`
 }
 
-var sys = System{
-	Doors: map[string]types.Door{},
-	Local: []Local{},
+type Controller struct {
+	Name     string         `json:"name"`
+	ID       uint32         `json:"id"`
+	IP       string         `json:"ip"`
+	DateTime types.DateTime `json:"datetime"`
+	Cards    uint32         `json:"cards"`
+	Events   uint32         `json:"events"`
+	Doors    map[int]string `json:"doors"`
+}
+
+var sys = system{
+	Controllers: []Controller{},
+	Doors:       map[string]types.Door{},
+	Local:       []Local{},
 }
 
 func resolve(address string) *net.UDPAddr {
@@ -41,6 +54,29 @@ func Init(conf string) error {
 	}
 
 	return nil
+}
+
+func System() interface{} {
+	return struct {
+		Controllers []Controller
+	}{
+		Controllers: []Controller{
+			Controller{
+				Name:     "Top",
+				ID:       12345678,
+				IP:       "192.168.1.100:60000",
+				DateTime: types.DateTime(time.Now()),
+				Cards:    17,
+				Events:   29,
+				Doors: map[int]string{
+					1: "D1",
+					2: "D2",
+					3: "D3",
+					4: "D4",
+				},
+			},
+		},
+	}
 }
 
 func Update(permissions []types.Permissions) {

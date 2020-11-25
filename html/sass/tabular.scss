@@ -56,27 +56,6 @@
   z-index: 2;
 }
 
-.tabular th.name {
-  min-width: 144px;
-  border-bottom: 1px;
-}
-
-.tabular th.cardnumber {
-  min-width: 96px;
-}
-
-.tabular th.from {
-  min-width: 80px;
-}
-
-.tabular th.to {
-  min-width: 80px;
-}
-
-.tabular th.groups {
-  min-width: 160px;
-}
-
 .tabular tbody {
   z-index: 1;
 }
@@ -145,18 +124,6 @@
   background-color: theme.$content-table-item-conflict;
 }
 
-.tabular td input.name {
-  width: 120px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-}
-
-.tabular td input.name:focus {
-  border: 1px solid red;
-}
-
 .tabular td span.control {
   padding: 0px 0px 0px 0px;
   font-size: 1.5rem;  
@@ -184,82 +151,4 @@
 .tabular tbody tr.new td span.rollback {
   visibility: visible;
 }
-
-.tabular td input.cardnumber {
-  width: 80px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-}
-
-.tabular td.cardnumber input::-webkit-inner-spin-button, 
-.tabular td.cardnumber input::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
-}
-
-.tabular td.cardnumber input:focus {
-  border: 1px solid red;
-}
-
-.tabular input.from {
-  width: 124px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  font: 400 0.9em Arial;
-  outline: none;
-}
-
-.tabular td input.from:focus {
-  border: 1px solid red;
-}
-
-.tabular td input.to {
-  width: 124px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  font: 400 0.9em Arial;
-  outline: none;
-}
-
-.tabular td input.to:focus {
-  border: 1px solid red;
-}
-
-.tabular td label.group {
-  cursor: pointer;  
-}
-
-.tabular td label.group input[type="checkbox"] {
-  display: none;
-}
-
-.tabular td label.group img {
-  width: 14px;
-  height: 14px;
-  padding: 2px;
-  margin: auto;
-}
-
-.tabular td label.group img.yes {
-  display: none;
-  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%)
-}
-
-.tabular td label.group img.no {
-  display: block;
-  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
-}
-
-.tabular td label.group input[type="checkbox"]:checked ~ img.yes {
-  display: block;
-}
-
-.tabular td label.group input[type="checkbox"]:checked ~ img.no {
-  display: none;
-}
-
 
