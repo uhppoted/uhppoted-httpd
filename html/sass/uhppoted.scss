@@ -153,16 +153,27 @@ footer {
 
 nav ul {
   margin-top: 31px;
-  padding-left: 8px;
+  margin-left: 16px;
   list-style-type: none;
 }
 
 nav ul li {
-  width: 80px;
+  color: theme.$nav-text-colour;
+  font-family: Sans-Serif;
+  font-size: 0.7em;
+  font-weight: lighter;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+
+nav ul li a {
+  color: theme.$nav-text-colour;
+  text-decoration: none;
 }
 
 nav ul li.selected {
-  padding-left: 12px;
+  font-size: 0.74em;
+  font-weight: bold;
 }
 
 #controls {  

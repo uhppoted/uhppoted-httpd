@@ -4,6 +4,9 @@
 
 - [ ] navigation
 
+- [ ] tabular
+      -- empty list: make first row a 'new' row
+
 - [ ] ACL
       - wrap ACL update in goroutine
         -- error handling ??
