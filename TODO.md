@@ -2,10 +2,11 @@
 
 ### IN PROGRESS
 
-- [ ] navigation
+- [ ] Get controller info
 
 - [ ] tabular
       -- empty list: make first row a 'new' row
+      -- shrink table width to fit
 
 - [ ] ACL
       - wrap ACL update in goroutine
@@ -87,6 +88,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Navigation
 - [x] Not redirecting to login.html after restart
 - [x] Fix 'login unauthorized'
 - [x] Abstract authentication/authorization

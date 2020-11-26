@@ -14,26 +14,25 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type system struct {
-	Controllers []Controller          `json:"controllers"`
-	Doors       map[string]types.Door `json:"doors"`
-	Local       []Local               `json:"local"`
+type Controller struct {
+	created  time.Time
+	Name     string
+	ID       uint32
+	IP       string
+	DateTime types.DateTime
+	Cards    uint32
+	Events   uint32
+	Doors    map[int]string
 }
 
-type Controller struct {
-	Name     string         `json:"name"`
-	ID       uint32         `json:"id"`
-	IP       string         `json:"ip"`
-	DateTime types.DateTime `json:"datetime"`
-	Cards    uint32         `json:"cards"`
-	Events   uint32         `json:"events"`
-	Doors    map[int]string `json:"doors"`
+type system struct {
+	Doors map[string]types.Door `json:"doors"`
+	Local []Local               `json:"local"`
 }
 
 var sys = system{
-	Controllers: []Controller{},
-	Doors:       map[string]types.Door{},
-	Local:       []Local{},
+	Doors: map[string]types.Door{},
+	Local: []Local{},
 }
 
 func resolve(address string) *net.UDPAddr {
@@ -57,25 +56,34 @@ func Init(conf string) error {
 }
 
 func System() interface{} {
+	//			Controller{
+	//				Name: "Top",
+	//				ID:   12345678,
+	//				IP: address{
+	//					IP:   []byte{192, 168, 1, 100},
+	//					Port: 60000,
+	//				},
+	//				DateTime: types.DateTime(time.Now()),
+	//				Cards:    17,
+	//				Events:   29,
+	//				Doors: map[int]string{
+	//					1: "D1",
+	//					2: "D2",
+	//					3: "D3",
+	//					4: "D4",
+	//				},
+	//			},
+
+	controllers := []Controller{}
+
+	for _, l := range sys.Local {
+		controllers = append(controllers, l.Controllers()...)
+	}
+
 	return struct {
 		Controllers []Controller
 	}{
-		Controllers: []Controller{
-			Controller{
-				Name:     "Top",
-				ID:       12345678,
-				IP:       "192.168.1.100:60000",
-				DateTime: types.DateTime(time.Now()),
-				Cards:    17,
-				Events:   29,
-				Doors: map[int]string{
-					1: "D1",
-					2: "D2",
-					3: "D3",
-					4: "D4",
-				},
-			},
-		},
+		Controllers: controllers,
 	}
 }
 

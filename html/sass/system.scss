@@ -1,7 +1,7 @@
 @use 'solarize' as theme;
 
 th.name {
-  min-width: 128px;
+  min-width: 96px;
   border-bottom: 1px;
 }
 
@@ -10,11 +10,11 @@ th.ID {
 }
 
 th.IP {
-  min-width: 128px;
+  min-width: 120px;
 }
 
 th.datetime {
-  min-width: 144px;
+  min-width: 140px;
 }
 
 th.cards {
@@ -26,11 +26,11 @@ th.events {
 }
 
 th.doors {
-  min-width: 80px;
+  min-width: 72px;
 }
 
 td input.name {
-  width: 120px;
+  width: 108px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -56,7 +56,7 @@ td.ID input::-webkit-outer-spin-button {
 }
 
 td input.IP {
-  width: 128px;
+  min-width: 120px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;

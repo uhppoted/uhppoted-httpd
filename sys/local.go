@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"sort"
+	"time"
 
 	"github.com/uhppoted/uhppote-core/uhppote"
 	uhppoted "github.com/uhppoted/uhppoted-api/acl"
@@ -14,14 +15,24 @@ import (
 )
 
 type Local struct {
-	BindAddress      *address            `json:"bind-address"`
-	BroadcastAddress *address            `json:"broadcast-address"`
-	ListenAddress    *address            `json:"listen-address"`
-	Controllers      map[uint32]*address `json:"controllers"`
-	Debug            bool                `json:"debug"`
+	BindAddress      *address              `json:"bind-address"`
+	BroadcastAddress *address              `json:"broadcast-address"`
+	ListenAddress    *address              `json:"listen-address"`
+	Devices          map[uint32]controller `json:"controllers"`
+	Debug            bool                  `json:"debug"`
+}
+
+type controller struct {
+	Created time.Time `json:"created"`
+	Name    string    `json:"name"`
+	IP      address   `json:"IPv4"`
 }
 
 type address net.UDPAddr
+
+func (a *address) String() string {
+	return (*net.UDPAddr)(a).String()
+}
 
 func (a *address) UnmarshalJSON(bytes []byte) error {
 	var s string
@@ -38,6 +49,23 @@ func (a *address) UnmarshalJSON(bytes []byte) error {
 	*a = address(*addr)
 
 	return nil
+}
+
+func (l *Local) Controllers() []Controller {
+	list := []Controller{}
+
+	for k, v := range l.Devices {
+		list = append(list, Controller{
+			created: v.Created,
+			Name:    v.Name,
+			ID:      k,
+			IP:      v.IP.String(),
+		})
+	}
+
+	sort.SliceStable(list, func(i, j int) bool { return list[i].created.Before(list[j].created) })
+
+	return list
 }
 
 func (l *Local) Update(permissions []types.Permissions) {
@@ -63,10 +91,11 @@ func (l *Local) Update(permissions []types.Permissions) {
 		Debug:            l.Debug,
 	}
 
-	for k, v := range l.Controllers {
+	for k, v := range l.Devices {
+		addr := net.UDPAddr(v.IP)
 		u.Devices[k] = &uhppote.Device{
 			DeviceID: k,
-			Address:  (*net.UDPAddr)(v),
+			Address:  &addr,
 			Rollover: 100000,
 			Doors:    []string{},
 		}
