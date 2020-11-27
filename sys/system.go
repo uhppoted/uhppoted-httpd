@@ -19,7 +19,7 @@ type Controller struct {
 	Name     string
 	ID       uint32
 	IP       string
-	DateTime types.DateTime
+	DateTime *types.DateTime
 	Cards    uint32
 	Events   uint32
 	Doors    map[int]string
@@ -27,18 +27,33 @@ type Controller struct {
 
 type system struct {
 	Doors map[string]types.Door `json:"doors"`
-	Local []Local               `json:"local"`
-}
-
-var sys = system{
-	Doors: map[string]types.Door{},
-	Local: []Local{},
+	Local []*Local              `json:"local"`
 }
 
 func resolve(address string) *net.UDPAddr {
 	addr, _ := net.ResolveUDPAddr("udp", address)
 
 	return addr
+}
+
+var sys = system{
+	Doors: map[string]types.Door{},
+	Local: []*Local{},
+}
+
+func init() {
+	go func() {
+		c := time.Tick(15 * time.Second)
+		for _ = range c {
+			sys.refresh()
+		}
+	}()
+}
+
+func (s *system) refresh() {
+	for _, l := range sys.Local {
+		go l.refresh()
+	}
 }
 
 func Init(conf string) error {
@@ -56,24 +71,6 @@ func Init(conf string) error {
 }
 
 func System() interface{} {
-	//			Controller{
-	//				Name: "Top",
-	//				ID:   12345678,
-	//				IP: address{
-	//					IP:   []byte{192, 168, 1, 100},
-	//					Port: 60000,
-	//				},
-	//				DateTime: types.DateTime(time.Now()),
-	//				Cards:    17,
-	//				Events:   29,
-	//				Doors: map[int]string{
-	//					1: "D1",
-	//					2: "D2",
-	//					3: "D3",
-	//					4: "D4",
-	//				},
-	//			},
-
 	controllers := []Controller{}
 
 	for _, l := range sys.Local {
