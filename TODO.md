@@ -3,6 +3,9 @@
 ### IN PROGRESS
 
 - [ ] Get controller info
+      - doors
+      - 'not updated recently'
+      - datetime::timezone
 
 - [ ] tabular
       -- empty list: make first row a 'new' row
@@ -109,6 +112,7 @@
 
 ## TODO
 
+- [ ] 'Macro' keys
 - [ ] Zootier input fields (e.g. https://css-tricks.com/float-labels-css)
 - [ ] [Gradient borders](https://css-tricks.com/gradient-borders-in-css/)
 - [ ] [JWK](https://tools.ietf.org/html/rfc7517)

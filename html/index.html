@@ -89,7 +89,8 @@
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$controller.Name}}"
-                           data-value="{{$controller.Name}}" />
+                           data-value="{{$controller.Name}}" 
+                           readonly />
                     <span class="control commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
                     <span class="control rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
                   </td>
@@ -101,11 +102,12 @@
                            type="number" 
                            min="0"
                            value="{{$controller.ID}}"
-                           placeholder="405419896"
+                           placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$controller.ID}}"
-                           data-value="{{$controller.ID}}" />
+                           data-value="{{$controller.ID}}"  
+                           readonly />
                   </td>
 
                   <td>
@@ -114,11 +116,12 @@
                            class="field IP"
                            type="text" 
                            value="{{$controller.IP}}"
-                           placeholder="192.168.1.100:60000"
+                           placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$controller.IP}}"
-                           data-value="{{$controller.IP}}" />
+                           data-value="{{$controller.IP}}"  
+                           readonly />
                   </td>
 
                   <td>
@@ -127,11 +130,13 @@
                            class="field datetime"
                            type="text" 
                            value="{{$controller.DateTime.Format "2006-01-02 15:04:05"}}"
+                           placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$controller.DateTime.Format "2006-01-02 15:04:05"}}"
                            data-value="{{$controller.DateTime.Format "2006-01-02 15:04:05"}}" 
-                           required />
+                           required  
+                           readonly />
                   </td>
 
                   <td>
@@ -141,11 +146,12 @@
                            type="number" 
                            min="0"
                            value="{{$controller.Cards}}"
-                           placeholder="3"
+                           placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$controller.Cards}}"
-                           data-value="{{$controller.Cards}}" />
+                           data-value="{{$controller.Cards}}"  
+                           readonly />
                   </td>
 
                   <td>
@@ -155,11 +161,12 @@
                            type="number" 
                            min="0"
                            value="{{$controller.Events}}"
-                           placeholder="3"
+                           placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$controller.Cards}}"
-                           data-value="{{$controller.Cards}}" />
+                           data-value="{{$controller.Cards}}"  
+                           readonly />
                   </td>
 
                   <td>
@@ -168,11 +175,12 @@
                            class="field door"
                            type="text" 
                            value="{{index $controller.Doors 1}}"
-                           placeholder="Door 1"
+                           placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{index $controller.Doors 1}}"
-                           data-value="{{index $controller.Doors 1}}" />
+                           data-value="{{index $controller.Doors 1}}"  
+                           readonly />
                   </td>
 
                   <td>
@@ -181,11 +189,12 @@
                            class="field door"
                            type="text" 
                            value="{{index $controller.Doors 2}}"
-                           placeholder="Door 2"
+                           placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{index $controller.Doors 2}}"
-                           data-value="{{index $controller.Doors 2}}" />
+                           data-value="{{index $controller.Doors 2}}"  
+                           readonly />
                   </td>
 
                   <td>
@@ -194,11 +203,12 @@
                            class="field door"
                            type="text" 
                            value="{{index $controller.Doors 3}}"
-                           placeholder="Door 3"
+                           placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{index $controller.Doors 3}}"
-                           data-value="{{index $controller.Doors 3}}" />
+                           data-value="{{index $controller.Doors 3}}"  
+                           readonly />
                   </td>
 
                   <td>
@@ -207,11 +217,12 @@
                            class="field door"
                            type="text" 
                            value="{{index $controller.Doors 4}}"
-                           placeholder="Door 4"
+                           placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{index $controller.Doors 4}}"
-                           data-value="{{index $controller.Doors 4}}" />
+                           data-value="{{index $controller.Doors 4}}"  
+                           readonly />
                   </td>
                 </tr>{{else}}<tr class="empty">
                  <td/><td/><td/><td/><td/><td/><td/><td/><td/><td/>

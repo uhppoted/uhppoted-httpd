@@ -18,10 +18,10 @@ type Controller struct {
 	created  time.Time
 	Name     string
 	ID       uint32
-	IP       string
+	IP       *address
 	DateTime *types.DateTime
-	Cards    uint32
-	Events   uint32
+	Cards    *uint32
+	Events   *uint32
 	Doors    map[int]string
 }
 

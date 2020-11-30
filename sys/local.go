@@ -34,13 +34,21 @@ type controller struct {
 }
 
 type device struct {
+	touched  time.Time
+	address  *address
 	datetime *types.DateTime
+	cards    *uint32
+	events   *uint32
 }
 
 type address net.UDPAddr
 
 func (a *address) String() string {
-	return (*net.UDPAddr)(a).String()
+	if a != nil {
+		return (*net.UDPAddr)(a).String()
+	}
+
+	return ""
 }
 
 func (a *address) UnmarshalJSON(bytes []byte) error {
@@ -68,11 +76,14 @@ func (l *Local) Controllers() []Controller {
 			created: v.Created,
 			Name:    v.Name,
 			ID:      k,
-			IP:      v.IP.String(),
+			//	IP:      v.IP.String(),
 		}
 
-		if state, ok := l.cache[k]; ok {
-			controller.DateTime = state.datetime
+		if cached, ok := l.cache[k]; ok {
+			controller.IP = cached.address
+			controller.DateTime = cached.datetime
+			controller.Cards = cached.cards
+			controller.Events = cached.events
 		}
 
 		list = append(list, controller)
@@ -150,59 +161,77 @@ func (l *Local) Update(permissions []types.Permissions) {
 
 func (l *Local) refresh() {
 	for k, _ := range l.Devices {
-		l.update(k)
+		id := k
+		go func() {
+			l.update(id)
+		}()
 	}
 }
 
 func (l *Local) update(id uint32) {
-	go func() {
-		log.Printf("%v: refreshing 'local' controller status", id)
+	log.Printf("%v: refreshing 'local' controller status", id)
 
-		// TODO: move to local.Init()
-		u := uhppote.UHPPOTE{
-			BindAddress:      (*net.UDPAddr)(l.BindAddress),
-			BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),
-			ListenAddress:    (*net.UDPAddr)(l.ListenAddress),
-			Devices:          map[uint32]*uhppote.Device{},
-			Debug:            l.Debug,
+	// TODO: move to local.Init()
+	u := uhppote.UHPPOTE{
+		BindAddress:      (*net.UDPAddr)(l.BindAddress),
+		BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),
+		ListenAddress:    (*net.UDPAddr)(l.ListenAddress),
+		Devices:          map[uint32]*uhppote.Device{},
+		Debug:            l.Debug,
+	}
+
+	for k, v := range l.Devices {
+		addr := net.UDPAddr(v.IP)
+		u.Devices[k] = &uhppote.Device{
+			DeviceID: k,
+			Address:  &addr,
+			Rollover: 100000,
+			Doors:    []string{},
 		}
+	}
 
-		for k, v := range l.Devices {
-			addr := net.UDPAddr(v.IP)
-			u.Devices[k] = &uhppote.Device{
-				DeviceID: k,
-				Address:  &addr,
-				Rollover: 100000,
-				Doors:    []string{},
-			}
-		}
+	logger := log.New(os.Stdout, "local", log.LstdFlags|log.LUTC)
+	impl := uhppoted.UHPPOTED{
+		Uhppote: &u,
+		Log:     logger,
+	}
 
-		logger := log.New(os.Stdout, "local", log.LstdFlags|log.LUTC)
-		impl := uhppoted.UHPPOTED{
-			Uhppote: &u,
-			Log:     logger,
-		}
+	// TODO END
 
-		// TODO END
+	if info, err := impl.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
+		log.Printf("%v", err)
+	} else if info == nil {
+		log.Printf("Got %v response to get-device request for %v", info, id)
+	} else {
+		l.store(id, *info)
+	}
 
-		rq := uhppoted.GetStatusRequest{
-			DeviceID: uhppoted.DeviceID(id),
-		}
+	if status, err := impl.GetStatus(uhppoted.GetStatusRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
+		log.Printf("%v", err)
+	} else if status == nil {
+		log.Printf("Got %v response to get-status request for %v", status, id)
+	} else {
+		l.store(id, *status)
+	}
 
-		status, err := impl.GetStatus(rq)
-		if err != nil {
-			log.Printf("%v", err)
-		} else if status == nil {
-			log.Printf("Got %v response to get-status request for %v", status, id)
-		} else {
-			l.store(id, *status)
-		}
-	}()
+	if cards, err := impl.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
+		log.Printf("%v", err)
+	} else if cards == nil {
+		log.Printf("Got %v response to get-card-records request for %v", cards, id)
+	} else {
+		l.store(id, *cards)
+	}
+
+	if events, err := impl.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
+		log.Printf("%v", err)
+	} else if events == nil {
+		log.Printf("Got %v response to get-event-range request for %v", events, id)
+	} else {
+		l.store(id, *events)
+	}
 }
 
-func (l *Local) store(id uint32, status uhppoted.GetStatusResponse) {
-	datetime := types.DateTime(status.Status.SystemDateTime)
-
+func (l *Local) store(id uint32, info interface{}) {
 	l.guard.Lock()
 
 	defer l.guard.Unlock()
@@ -216,7 +245,33 @@ func (l *Local) store(id uint32, status uhppoted.GetStatusResponse) {
 		cached = device{}
 	}
 
-	cached.datetime = &datetime
+	cached.touched = time.Now()
+
+	switch v := info.(type) {
+	case uhppoted.GetDeviceResponse:
+		port := 60000
+		if d, ok := l.Devices[id]; ok {
+			port = d.IP.Port
+		}
+
+		addr := address(net.UDPAddr{
+			IP:   v.IpAddress,
+			Port: port,
+		})
+		cached.address = &addr
+
+	case uhppoted.GetStatusResponse:
+		datetime := types.DateTime(v.Status.SystemDateTime)
+		cached.datetime = &datetime
+
+	case uhppoted.GetCardRecordsResponse:
+		cards := v.Cards
+		cached.cards = &cards
+
+	case uhppoted.GetEventRangeResponse:
+		events := v.Events.Last
+		cached.events = events
+	}
 
 	l.cache[id] = cached
 }
