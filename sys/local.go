@@ -2,7 +2,6 @@ package system
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -41,32 +40,10 @@ type device struct {
 	events   *uint32
 }
 
-type address net.UDPAddr
-
-func (a *address) String() string {
-	if a != nil {
-		return (*net.UDPAddr)(a).String()
-	}
-
-	return ""
-}
-
-func (a *address) UnmarshalJSON(bytes []byte) error {
-	var s string
-
-	if err := json.Unmarshal(bytes, &s); err != nil {
-		return err
-	}
-
-	addr, err := net.ResolveUDPAddr("udp", s)
-	if err != nil {
-		return err
-	}
-
-	*a = address(*addr)
-
-	return nil
-}
+const (
+	DeviceOk        = 10 * time.Second
+	DeviceUncertain = 20 * time.Second
+)
 
 func (l *Local) Controllers() []Controller {
 	list := []Controller{}
@@ -77,6 +54,7 @@ func (l *Local) Controllers() []Controller {
 			Name:    v.Name,
 			ID:      k,
 			Doors:   map[uint8]string{},
+			Status:  StatusUnknown,
 		}
 
 		if cached, ok := l.cache[k]; ok {
@@ -84,6 +62,13 @@ func (l *Local) Controllers() []Controller {
 			controller.DateTime = cached.datetime
 			controller.Cards = cached.cards
 			controller.Events = cached.events
+
+			switch dt := time.Now().Sub(cached.touched); {
+			case dt < DeviceOk:
+				controller.Status = StatusOk
+			case dt < DeviceUncertain:
+				controller.Status = StatusUncertain
+			}
 		}
 
 		list = append(list, controller)

@@ -29,6 +29,21 @@ th.doors {
   min-width: 72px;
 }
 
+tr.controller {
+}
+
+tr.controller[data-status="unknown"] {
+}
+
+tr.controller[data-status="uncertain"] td input {
+  color: theme.$content-table-row-uncertain;
+}
+
+tr.controller[data-status="unknown"] td input {
+  color: theme.$content-table-row-unknown;
+  font-style: italic;
+}
+
 td input.name {
   width: 108px;
   padding: 2px 4px 2px 4px;

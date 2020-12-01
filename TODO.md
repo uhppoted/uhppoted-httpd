@@ -3,8 +3,17 @@
 ### IN PROGRESS
 
 - [ ] Get controller info
-      - 'not updated recently'
+      - datetime::error
       - datetime::timezone
+      - IP::error
+      - ACL::synchronized
+      - auto refresh
+      - configure update interval
+      - configure ok/uncertain intervals
+      - edit IP address
+      - edit datetime
+      - edit doors
+      - edit auth
 
 - [ ] tabular
       -- empty list: make first row a 'new' row

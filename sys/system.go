@@ -23,6 +23,7 @@ type Controller struct {
 	Cards    *uint32
 	Events   *uint32
 	Doors    map[uint8]string
+	Status   status
 }
 
 type system struct {
@@ -43,7 +44,7 @@ var sys = system{
 
 func init() {
 	go func() {
-		c := time.Tick(15 * time.Second)
+		c := time.Tick(30 * time.Second)
 		for _ = range c {
 			sys.refresh()
 		}
