@@ -3,7 +3,6 @@
 ### IN PROGRESS
 
 - [ ] Get controller info
-      - doors
       - 'not updated recently'
       - datetime::timezone
 

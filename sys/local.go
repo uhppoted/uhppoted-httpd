@@ -76,7 +76,7 @@ func (l *Local) Controllers() []Controller {
 			created: v.Created,
 			Name:    v.Name,
 			ID:      k,
-			//	IP:      v.IP.String(),
+			Doors:   map[uint8]string{},
 		}
 
 		if cached, ok := l.cache[k]; ok {

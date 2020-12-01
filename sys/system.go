@@ -22,7 +22,7 @@ type Controller struct {
 	DateTime *types.DateTime
 	Cards    *uint32
 	Events   *uint32
-	Doors    map[int]string
+	Doors    map[uint8]string
 }
 
 type system struct {
@@ -75,6 +75,14 @@ func System() interface{} {
 
 	for _, l := range sys.Local {
 		controllers = append(controllers, l.Controllers()...)
+	}
+
+	for _, c := range controllers {
+		for _, d := range sys.Doors {
+			if d.ControllerID == c.ID {
+				c.Doors[d.Door] = d.Name
+			}
+		}
 	}
 
 	return struct {
