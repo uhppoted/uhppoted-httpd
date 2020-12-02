@@ -3,8 +3,6 @@
 ### IN PROGRESS
 
 - [ ] Get controller info
-      - datetime::error
-      - datetime::timezone
       - IP::error
       - ACL::synchronized
       - auto refresh
@@ -12,10 +10,12 @@
       - configure ok/uncertain intervals
       - configure systime window
       - edit IP address
-      - edit datetime
+      - edit datetime + timezone
       - edit doors
       - edit auth
       - use uhppoted-api::healthcheck
+      - validate Local::Device timezone on initialization
+      - (maybe) move timezone down in uhppote-core
 
 - [ ] tabular
       -- empty list: make first row a 'new' row

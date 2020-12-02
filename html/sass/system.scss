@@ -1,12 +1,12 @@
 @use 'solarize' as theme;
 
 th.name {
-  min-width: 96px;
+  min-width: 100px;
   border-bottom: 1px;
 }
 
 th.ID {
-  min-width: 96px;
+  min-width: 92px;
 }
 
 th.IP {
@@ -14,7 +14,7 @@ th.IP {
 }
 
 th.datetime {
-  min-width: 140px;
+  min-width: 128px;
 }
 
 th.cards {
@@ -45,7 +45,7 @@ tr.controller[data-status="unknown"] td input {
 }
 
 td input.name {
-  width: 108px;
+  width: 100px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -57,7 +57,7 @@ td input.name:focus {
 }
 
 td input.ID {
-  width: 96px;
+  width: 92px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -83,7 +83,7 @@ td input.IP:focus {
 }
 
 td input.datetime {
-  width: 124px;
+  min-width: 120px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;

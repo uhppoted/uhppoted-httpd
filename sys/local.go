@@ -28,9 +28,10 @@ type Local struct {
 }
 
 type controller struct {
-	Created time.Time `json:"created"`
-	Name    string    `json:"name"`
-	IP      address   `json:"IPv4"`
+	Created  time.Time `json:"created"`
+	Name     string    `json:"name"`
+	IP       address   `json:"IPv4"`
+	TimeZone string    `json:"timezone"`
 }
 
 type device struct {
@@ -65,18 +66,29 @@ func (l *Local) Controllers() []Controller {
 			controller.Cards = cached.cards
 			controller.Events = cached.events
 
-			controller.SystemTime.DateTime = cached.datetime
 			if cached.datetime == nil {
+				controller.SystemTime.DateTime = nil
 				controller.SystemTime.Status = StatusUnknown
 			} else {
-				t := time.Time(*cached.datetime)
-				dt := math.Abs(time.Since(t).Round(time.Second).Seconds())
+				location := time.Local
+				if v.TimeZone != "" {
+					if l, err := time.LoadLocation(v.TimeZone); err == nil {
+						location = l
+					}
+				}
 
-				if dt > WINDOW {
+				t := time.Time(*cached.datetime)
+				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), location)
+				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+
+				if delta > WINDOW {
 					controller.SystemTime.Status = StatusError
 				} else {
 					controller.SystemTime.Status = StatusOk
 				}
+
+				dt := types.DateTime(T)
+				controller.SystemTime.DateTime = &dt
 			}
 
 			switch dt := time.Now().Sub(cached.touched); {
