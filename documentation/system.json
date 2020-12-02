@@ -1,0 +1,72 @@
+{
+    "doors": {
+        "D11": {
+            "id": "D11",
+            "device-id": 405419896,
+            "door": 1,
+            "name": "Great Hall"
+        },
+        "D12": {
+            "id": "D12",
+            "device-id": 405419896,
+            "door": 2,
+            "name": "Kitchen"
+        },
+        "D13": {
+            "id": "D13",
+            "device-id": 405419896,
+            "door": 3,
+            "name": "Dungeon"
+        },
+        "D14": {
+            "id": "D14",
+            "device-id": 405419896,
+            "door": 4,
+            "name": "Hogsmeade"
+        },
+        "D21": {
+            "id": "D21",
+            "device-id": 303986753,
+            "door": 1,
+            "name": "Gryffindor"
+        },
+        "D22": {
+            "id": "D22",
+            "device-id": 303986753,
+            "door": 2,
+            "name": "Hufflepuff"
+        },
+        "D23": {
+            "id": "D23",
+            "device-id": 303986753,
+            "door": 3,
+            "name": "Ravenclaw"
+        },
+        "D24": {
+            "id": "D24",
+            "device-id": 303986753,
+            "door": 4,
+            "name": "Slytherin"
+        }
+    },
+    "local": [
+        {
+            "bind-address": "192.168.1.100:0",
+            "broadcast-address": "192.168.1.255:60000",
+            "listen-address": "192.168.1.100:60001",
+            "controllers": {
+                "405419896": { 
+                    "created": "2020-01-01T00:00:00.00Z",
+                    "name": "Alpha",
+                    "IPv4": "192.168.1.100:60000"
+                },
+                "303986753": {
+                    "created": "2020-01-01T01:00:00.00Z",
+                    "name": "Beta",
+                    "IPv4": "192.168.1.100:60000"
+                }
+            },
+            "debug": false
+        }
+    ]
+}
