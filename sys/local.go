@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"math"
 	"net"
 	"os"
 	"sort"
@@ -45,6 +46,8 @@ const (
 	DeviceUncertain = 20 * time.Second
 )
 
+const WINDOW = 300 // 5 minutes
+
 func (l *Local) Controllers() []Controller {
 	list := []Controller{}
 
@@ -59,9 +62,22 @@ func (l *Local) Controllers() []Controller {
 
 		if cached, ok := l.cache[k]; ok {
 			controller.IP = cached.address
-			controller.DateTime = cached.datetime
 			controller.Cards = cached.cards
 			controller.Events = cached.events
+
+			controller.SystemTime.DateTime = cached.datetime
+			if cached.datetime == nil {
+				controller.SystemTime.Status = StatusUnknown
+			} else {
+				t := time.Time(*cached.datetime)
+				dt := math.Abs(time.Since(t).Round(time.Second).Seconds())
+
+				if dt > WINDOW {
+					controller.SystemTime.Status = StatusError
+				} else {
+					controller.SystemTime.Status = StatusOk
+				}
+			}
 
 			switch dt := time.Now().Sub(cached.touched); {
 			case dt < DeviceOk:

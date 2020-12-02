@@ -91,6 +91,16 @@ td input.datetime {
   outline: none;
 }
 
+td input.datetime[data-status="unknown"] {
+  color: theme.$content-table-item-unknown;
+  font-style: italic;
+}
+
+td input.datetime[data-status="error"] {
+  color: theme.$content-table-item-error;
+  font-weight: bold;
+}
+
 td input.datetime:focus {
   border: 1px solid red;
 }

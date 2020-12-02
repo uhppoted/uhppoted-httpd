@@ -10,10 +10,12 @@
       - auto refresh
       - configure update interval
       - configure ok/uncertain intervals
+      - configure systime window
       - edit IP address
       - edit datetime
       - edit doors
       - edit auth
+      - use uhppoted-api::healthcheck
 
 - [ ] tabular
       -- empty list: make first row a 'new' row

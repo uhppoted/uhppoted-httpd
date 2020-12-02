@@ -38,6 +38,9 @@ $content-table-no:                  $solarize-base0;
 $content-table-changed:             $solarize-red;
 $content-table-commit:              $solarize-green;
 $content-table-rollback:            $solarize-red;
+$content-table-item-unknown:        $solarize-base1;
+$content-table-item-uncertain:      $solarize-base0;
+$content-table-item-error:          $solarize-red;
 
 $content-svg-filter-commit:   invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
 $content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);

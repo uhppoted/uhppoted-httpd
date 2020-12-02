@@ -15,20 +15,26 @@ import (
 )
 
 type Controller struct {
-	created  time.Time
-	Name     string
-	ID       uint32
-	IP       *address
-	DateTime *types.DateTime
-	Cards    *uint32
-	Events   *uint32
-	Doors    map[uint8]string
-	Status   status
+	created    time.Time
+	Name       string
+	ID         uint32
+	IP         *address
+	SystemTime datetime
+	Cards      *uint32
+	Events     *uint32
+	Doors      map[uint8]string
+	Status     status
 }
 
 type system struct {
 	Doors map[string]types.Door `json:"doors"`
 	Local []*Local              `json:"local"`
+}
+
+type datetime struct {
+	DateTime *types.DateTime
+	TimeZone *time.Location
+	Status   status
 }
 
 func resolve(address string) *net.UDPAddr {
