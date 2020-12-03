@@ -18,13 +18,17 @@
 }
 
 .tabular td {
-  position:relative;
+  position: relative;
   padding: 0.3rem 0.5rem 0.3rem 0.5rem;
   text-align: left;
   font-size: 0.9em;
   font-weight: normal;
   font-style: normal;
 }
+
+.tabular td:nth-child(3) { 
+  width:100% 
+} 
 
 /* Ref. https://css-tricks.com/position-sticky-and-table-headers */
 .tabular th {
