@@ -3,7 +3,8 @@
 ### IN PROGRESS
 
 - [ ] Get controller info
-      - IP::error
+      - handle 'unconfigured' controllers
+      - limit number of pending 'update' requests (e.g. if device is not responding)
       - ACL::synchronized
       - auto refresh
       - configure update interval
@@ -16,11 +17,11 @@
       - use uhppoted-api::healthcheck
       - validate Local::Device timezone on initialization
       - (maybe) move timezone down in uhppote-core
+      - (maybe) include port in device info returned from GetDevice/GetDevices
 
 - [ ] tabular
       -- empty list: make first row a 'new' row
-      -- shrink table width to fit
-
+ 
 - [ ] ACL
       - wrap ACL update in goroutine
         -- error handling ??

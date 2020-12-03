@@ -115,12 +115,13 @@
                     <input id="{{$cid}}-IP" 
                            class="field IP"
                            type="text" 
-                           value="{{$controller.IP}}"
+                           value="{{$controller.IP.IP}}"
                            placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original="{{$controller.IP}}"
-                           data-value="{{$controller.IP}}"  
+                           data-original="{{$controller.IP.IP}}"
+                           data-value="{{$controller.IP.IP}}"  
+                           data-status="{{$controller.IP.Status}}"
                            readonly />
                   </td>
 

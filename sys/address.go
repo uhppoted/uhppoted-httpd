@@ -31,3 +31,11 @@ func (a *address) UnmarshalJSON(bytes []byte) error {
 
 	return nil
 }
+
+func (a *address) Equal(addr net.IP) bool {
+	if a != nil {
+		return a.IP.Equal(addr)
+	}
+
+	return false
+}

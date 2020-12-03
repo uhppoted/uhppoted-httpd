@@ -44,6 +44,20 @@ tr.controller[data-status="unknown"] td input {
   font-style: italic;
 }
 
+td input[data-status="unknown"] {
+  color: theme.$content-table-item-unknown;
+  font-style: italic;
+}
+
+td input[data-status="error"] {
+  color: theme.$content-table-item-error;
+  font-weight: bold;
+}
+
+td input:focus {
+  border: 1px solid red;
+}
+
 td input.name {
   width: 100px;
   padding: 2px 4px 2px 4px;
@@ -78,10 +92,6 @@ td input.IP {
   outline: none;
 }
 
-td input.IP:focus {
-  border: 1px solid red;
-}
-
 td input.datetime {
   min-width: 120px;
   padding: 2px 4px 2px 4px;
@@ -89,20 +99,6 @@ td input.datetime {
   border-radius: 3px;
   font: 400 0.9em Arial;
   outline: none;
-}
-
-td input.datetime[data-status="unknown"] {
-  color: theme.$content-table-item-unknown;
-  font-style: italic;
-}
-
-td input.datetime[data-status="error"] {
-  color: theme.$content-table-item-error;
-  font-weight: bold;
-}
-
-td input.datetime:focus {
-  border: 1px solid red;
 }
 
 td input.cards {
@@ -129,9 +125,5 @@ td input.door {
   border: 1px solid transparent;
   border-radius: 3px;
   outline: none;
-}
-
-td input.door:focus {
-  border: 1px solid red;
 }
 

@@ -18,7 +18,7 @@ type Controller struct {
 	created    time.Time
 	Name       string
 	ID         uint32
-	IP         *address
+	IP         ip
 	SystemTime datetime
 	Cards      *uint32
 	Events     *uint32
@@ -29,6 +29,11 @@ type Controller struct {
 type system struct {
 	Doors map[string]types.Door `json:"doors"`
 	Local []*Local              `json:"local"`
+}
+
+type ip struct {
+	IP     *address
+	Status status
 }
 
 type datetime struct {
@@ -72,6 +77,10 @@ func Init(conf string) error {
 	err = json.Unmarshal(bytes, &sys)
 	if err != nil {
 		return err
+	}
+
+	for _, l := range sys.Local {
+		l.Init()
 	}
 
 	return nil
