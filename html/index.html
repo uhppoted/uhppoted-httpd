@@ -8,9 +8,9 @@
     <link rel="mask-icon"        href="images/favicon-mask.svg" color="#000000">
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
-    <link rel="stylesheet"       href="css/uhppoted.css" type="text/css">
-    <link rel="stylesheet"       href="css/tabular.css"  type="text/css">
-    <link rel="stylesheet"       href="css/system.css"   type="text/css">
+    <link rel="stylesheet"       href="css/light/uhppoted.css" type="text/css" id="css_uhppoted">
+    <link rel="stylesheet"       href="css/light/tabular.css"  type="text/css" id="css_tabular">
+    <link rel="stylesheet"       href="css/light/system.css"   type="text/css" id="css_system">
   </head>
 
   <body> 
@@ -31,6 +31,8 @@
           </div>
           <div class="menu">
             <a href="#" onclick="onSignOut(event)">Sign out</a>
+            <a href="#" onclick="retheme('light')">light</a>
+            <a href="#" onclick="retheme('dark')">dark</a>
           </div>
         </div>
       </header>
@@ -265,6 +267,24 @@
     window.onRefresh = onRefresh
 
     resetIdle();
+  </script>
+
+  <script>
+  function retheme(theme) {
+    switch (theme) {
+      case 'light':
+            document.getElementById('css_uhppoted').href = 'css/light/uhppoted.css'
+            document.getElementById('css_tabular').href = 'css/light/tabular.css'
+            document.getElementById('css_system').href = 'css/light/system.css'
+            break
+
+      case 'dark':
+            document.getElementById('css_uhppoted').href = 'css/dark/uhppoted.css'
+            document.getElementById('css_tabular').href = 'css/dark/tabular.css'
+            document.getElementById('css_system').href = 'css/dark/system.css'
+            break
+    }
+  }
   </script>
 
   <!-- global information initialised by Go template -->

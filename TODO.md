@@ -2,7 +2,14 @@
 
 ### IN PROGRESS
 
+- [ ] Switchable themes
+      - replace switch with findBy... and regex
+      - dark theme
+      - login & cards pages too
+      - style <a> elements
+
 - [ ] Get controller info
+      - 127.0.0.1/:323 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range.
       - reduce initial delay
       - cache expiry
       - Use sync.Map for cache
