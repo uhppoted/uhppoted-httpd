@@ -40,7 +40,8 @@ nav {
   grid-area: left;
   background: theme.$nav-background;
   margin: 30px 8px 8px 8px;
-  border-radius: 4px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
 }
 
 nav ul {
