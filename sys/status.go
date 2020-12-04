@@ -7,8 +7,9 @@ const (
 	StatusOk
 	StatusUncertain
 	StatusError
+	StatusUnconfigured
 )
 
 func (s status) String() string {
-	return [...]string{"unknown", "ok", "uncertain", "error"}[s]
+	return [...]string{"unknown", "ok", "uncertain", "error", "unconfigured"}[s]
 }

@@ -3,7 +3,9 @@
 ### IN PROGRESS
 
 - [ ] Get controller info
-      - handle 'unconfigured' controllers
+      - reduce initial delay
+      - cache expiry
+      - Use sync.Map for cache
       - limit number of pending 'update' requests (e.g. if device is not responding)
       - ACL::synchronized
       - auto refresh
@@ -31,6 +33,7 @@
       - indefinite
 
 - [ ] MemDB
+      - Rather use sync.Map
       - JSON field names to lowercase
       - add created and modified timestamps to records
       - keep historical copies on save (for undo/revert)

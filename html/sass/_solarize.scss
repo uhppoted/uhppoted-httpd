@@ -30,6 +30,7 @@ $content-table-row-modified:        lighten($solarize-yellow, 50%);
 $content-table-row-new:             lighten($solarize-blue, 50%);
 $content-table-row-unknown:         $solarize-base1;
 $content-table-row-uncertain:       $solarize-base0;
+$content-table-row-unconfigured:    $solarize-yellow;
 $content-table-background-pending:  transparentize($solarize-violet, 0.5);
 $content-table-item-conflict:       transparentize($solarize-orange, 0.75);
 $content-table-border:              $solarize-blue;

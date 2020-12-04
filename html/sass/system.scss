@@ -6,7 +6,7 @@ th.name {
 }
 
 th.ID {
-  min-width: 92px;
+  min-width: 90px;
 }
 
 th.IP {
@@ -18,21 +18,32 @@ th.datetime {
 }
 
 th.cards {
-  min-width: 80px;
+  min-width: 72px;
+  text-align: center; 
 }
 
 th.events {
-  min-width: 80px;
+  min-width: 72px;
+  text-align: center; 
 }
 
 th.doors {
-  min-width: 72px;
+  min-width: 76px;
 }
 
 tr.controller {
 }
 
+tr.controller td:nth-child(n+7) { 
+  width:100% 
+} 
+
 tr.controller[data-status="unknown"] {
+}
+
+tr.controller[data-status="unconfigured"] td input {
+  color: theme.$content-table-row-unconfigured;
+  font-style: italic;
 }
 
 tr.controller[data-status="uncertain"] td input {
@@ -71,7 +82,7 @@ td input.name:focus {
 }
 
 td input.ID {
-  width: 92px;
+  width: 90px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -102,7 +113,7 @@ td input.datetime {
 }
 
 td input.cards {
-  width: 80px;
+  width: 72px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -111,7 +122,7 @@ td input.cards {
 }
 
 td input.events {
-  width: 80px;
+  width: 72px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;

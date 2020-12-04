@@ -26,10 +26,6 @@
   font-style: normal;
 }
 
-.tabular td:nth-child(3) { 
-  width:100% 
-} 
-
 /* Ref. https://css-tricks.com/position-sticky-and-table-headers */
 .tabular th {
   background: theme.$content-table-background-header;

@@ -21,6 +21,10 @@ th.groups {
   min-width: 160px;
 }
 
+tr td:nth-child(n+5) { 
+  width:100% 
+} 
+
 td input.name {
   width: 120px;
   padding: 2px 4px 2px 4px;

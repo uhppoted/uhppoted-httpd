@@ -78,46 +78,53 @@ func (l *Local) Init() {
 }
 
 func (l *Local) Controllers() []Controller {
-	list := []Controller{}
-
+	devices := map[uint32]Controller{}
 	for k, v := range l.Devices {
-		controller := Controller{
+		addr := v.IP // alias so that the loop below doesn't overwrite the configured value
+
+		tz := time.Local
+		if v.TimeZone != "" {
+			if l, err := time.LoadLocation(v.TimeZone); err == nil {
+				tz = l
+			}
+		}
+
+		devices[k] = Controller{
 			created: v.Created,
 			Name:    v.Name,
 			ID:      k,
-			Doors:   map[uint8]string{},
-			Status:  StatusUnknown,
+			IP: ip{
+				IP:     &addr,
+				Status: StatusUnknown,
+			},
+			SystemTime: datetime{
+				TimeZone: tz,
+			},
+			Doors:  map[uint8]string{},
+			Status: StatusUnknown,
 		}
+	}
 
+	list := []Controller{}
+	for k, controller := range devices {
 		if cached, ok := l.cache[k]; ok {
 			controller.Cards = cached.cards
 			controller.Events = cached.events
 
-			if cached.address == nil {
-				controller.IP.IP = &v.IP
-				controller.IP.Status = StatusUnknown
-			} else {
-				controller.IP.IP = cached.address
-				if cached.address.Equal(v.IP.IP) {
+			if cached.address != nil {
+				if cached.address.Equal(controller.IP.IP.IP) {
 					controller.IP.Status = StatusOk
 				} else {
 					controller.IP.Status = StatusError
 				}
+
+				controller.IP.IP = cached.address
 			}
 
-			if cached.datetime == nil {
-				controller.SystemTime.DateTime = nil
-				controller.SystemTime.Status = StatusUnknown
-			} else {
-				location := time.Local
-				if v.TimeZone != "" {
-					if l, err := time.LoadLocation(v.TimeZone); err == nil {
-						location = l
-					}
-				}
-
+			if cached.datetime != nil {
+				tz := controller.SystemTime.TimeZone
 				t := time.Time(*cached.datetime)
-				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), location)
+				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
 
 				if delta > WINDOW {
@@ -139,6 +146,53 @@ func (l *Local) Controllers() []Controller {
 		}
 
 		list = append(list, controller)
+	}
+
+	// ... append the 'found but not configurated' controllers
+	for k, cached := range l.cache {
+		if _, ok := devices[k]; !ok {
+			controller := Controller{
+				created: time.Now(),
+				Name:    "",
+				ID:      k,
+				IP: ip{
+					IP:     cached.address,
+					Status: StatusOk,
+				},
+				SystemTime: datetime{
+					DateTime: cached.datetime,
+					TimeZone: time.Local,
+				},
+				Cards:  cached.cards,
+				Events: cached.events,
+				Doors:  map[uint8]string{},
+				Status: StatusUnknown,
+			}
+
+			if cached.datetime != nil {
+				tz := controller.SystemTime.TimeZone
+				t := time.Time(*cached.datetime)
+				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+
+				if delta > WINDOW {
+					controller.SystemTime.Status = StatusError
+				} else {
+					controller.SystemTime.Status = StatusOk
+				}
+			}
+
+			switch dt := time.Now().Sub(cached.touched); {
+			case dt < DeviceOk:
+				controller.Status = StatusUnconfigured
+			case dt < DeviceUncertain:
+				controller.Status = StatusUncertain
+			default:
+				controller.Status = StatusUnknown
+			}
+
+			list = append(list, controller)
+		}
 	}
 
 	sort.SliceStable(list, func(i, j int) bool { return list[i].created.Before(list[j].created) })
@@ -192,6 +246,11 @@ func (l *Local) Update(permissions []types.Permissions) {
 }
 
 func (l *Local) refresh() {
+	list := map[uint32]struct{}{}
+	for k, _ := range l.Devices {
+		list[k] = struct{}{}
+	}
+
 	go func() {
 		if devices, err := l.api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
 			log.Printf("%v", err)
@@ -203,10 +262,12 @@ func (l *Local) refresh() {
 					d.Address.IP = v.Address
 					d.Address.Port = 60000
 				}
+
+				list[k] = struct{}{}
 			}
 		}
 
-		for k, _ := range l.Devices {
+		for k, _ := range list {
 			id := k
 			go func() {
 				l.update(id)
