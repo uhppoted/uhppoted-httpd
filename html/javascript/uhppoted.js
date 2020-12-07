@@ -1,4 +1,4 @@
-var idleTimer
+let idleTimer
 
 document.addEventListener('mousedown', event => {
   resetIdle(event)

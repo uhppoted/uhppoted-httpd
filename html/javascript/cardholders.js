@@ -220,7 +220,6 @@ export function onNew (event) {
   if (tbody) {
     const row = tbody.insertRow()
     const name = row.insertCell()
-    const controls = row.insertCell()
     const card = row.insertCell()
     const from = row.insertCell()
     const to = row.insertCell()
@@ -235,15 +234,13 @@ export function onNew (event) {
     row.id = uuid
     row.classList.add('new')
 
-    name.style = 'border-right:0;'
-    controls.style = 'border-left:0;'
-    controls.classList.add('controls')
+    name.style = 'display:flex; flex-direction:row;'
+    name.classList.add('rowheader')
 
     name.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-                     '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />'
-
-    controls.innerHTML = '<span id="' + uuid + '-commit"   class="control commit"   onclick="onCommit(event,\'add\')"   data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
-                         '<span id="' + uuid + '-rollback" class="control rollback" onclick="onRollback(event,\'delete\')" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
+                     '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />' +
+                     '<span class="control commit" id="' + uuid + '_commit" onclick="onCommit(event)" data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
+                     '<span class="control rollback" id="' + uuid + '_rollback" onclick="onRollback(event)" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
 
     card.innerHTML = '<img class="flag" src="images/corner.svg" />' +
                      '<input id="' + uuid + '-card" class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="6152346" />'
