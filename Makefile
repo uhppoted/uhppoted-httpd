@@ -68,7 +68,13 @@ bump:
 	go get -u golang.org/x/sys
 
 debug: build
-	go test -v ./... -run "TestCardAdd"
+#	go test -v ./... -run "TestCardAdd"
+#	sass debug/_scss/application.scss:debug/xxx/application.css
+#	sass debug/_scss/_themes/_light/light.scss:debug/xxx/light.css
+#	sass debug/_scss/_themes/_dark/dark.scss:debug/xxx/dark.css
+	sass html/_scss/login.scss:html/css/login.css
+	sass html/_scss/themes/light/login.scss:html/css/light/login.css
+	sass html/_scss/themes/dark/login.scss:html/css/dark/login.css
 
 sass:
 	sass --watch html/sass:html/css

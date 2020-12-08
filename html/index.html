@@ -18,7 +18,7 @@
 
       <!-- HEADER -->
       <header>
-        <img id="logo" src="images/logo.png"  />
+        <img id="logo" src="images/light/logo.png"  />
           
         <div id="dashboard">
           <span id="windmill"></span>
@@ -27,7 +27,7 @@
         <div id="user">
           <div id="avatar">
             <p>admin</p>
-            <img id="avatar" src="images/user-cog-solid.svg" />
+            <img src="images/light/user-cog-solid.svg" />
           </div>
           <div class="menu">
             <a href="#" onclick="onSignOut(event)">Sign out</a>
@@ -273,12 +273,16 @@
   function retheme(theme) {
     switch (theme) {
       case 'light':
+            document.getElementById('logo').src = 'images/light/logo.png'
+            document.getElementById('avatar').querySelector('img').src = 'images/light/user-cog-solid.svg'
             document.getElementById('css_uhppoted').href = 'css/light/uhppoted.css'
             document.getElementById('css_tabular').href = 'css/light/tabular.css'
             document.getElementById('css_system').href = 'css/light/system.css'
             break
 
       case 'dark':
+            document.getElementById('logo').src = 'images/dark/logo.png'
+            document.getElementById('avatar').querySelector('img').src = 'images/dark/user-cog-solid.svg'
             document.getElementById('css_uhppoted').href = 'css/dark/uhppoted.css'
             document.getElementById('css_tabular').href = 'css/dark/tabular.css'
             document.getElementById('css_system').href = 'css/dark/system.css'

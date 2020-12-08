@@ -136,7 +136,7 @@ footer {
 }
 
 #avatar {
-  background: theme.$controls-background;
+  background: theme.$avatar-background;
   display: flex;
   flex-direction: row;
   justify-content: center;    
@@ -147,12 +147,14 @@ footer {
 #avatar p {
   font-size: 0.9em;  
   padding: 0px 8px 0px 12px;
+  color: theme.$avatar-text;
 }
 
 #avatar img {
   width: 32px;
   height: 32px;
   padding: 1px 0px 1px 0px;
+  color: red;
 }
 
 #user .menu {

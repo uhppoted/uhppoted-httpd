@@ -1,29 +1,25 @@
-$solarize-base03:  #002b36;
-$solarize-base02:  #073642;
-$solarize-base01:  #586e75;
-$solarize-base00:  #657b83;
-$solarize-base0:   #839496;
-$solarize-base1:   #93a1a1;
-$solarize-base2:   #eee8d5;
-$solarize-base3:   #fdf6e3;
-$solarize-yellow:  #b58900;
-$solarize-orange:  #cb4b16;
-$solarize-red:     #dc322f;
-$solarize-magenta: #d33682;
-$solarize-violet:  #6c71c4;
-$solarize-blue:    #268bd2;
-$solarize-cyan:    #2aa198;
-$solarize-green:   #859900;
+@charset "UTF-8";
 
-$content-background: $solarize-base03;
+$content-background: $solarize-base3 !default;
 $content-message-background: $solarize-base2;
 $content-controls-border: $solarize-blue;
 
-$avatar-background: darken($solarize-base02, 5%);
-$avatar-text: $solarize-base1;
+$warning-colour: $solarize-red;
 
-$nav-background: darken($solarize-base02, 5%);
+$avatar-background: $solarize-base2;
+$avatar-text: $solarize-base01;
+
+$nav-background: darken($solarize-base2, 5%);
 $nav-text-colour: $solarize-blue;
+
+$footer-background: $solarize-base2 !default;
+$footer-text: $solarize-base03 !default;
+
+$fieldset-text: $solarize-base03 !default;
+$fieldset-border: 1px solid silver !default;
+$fieldset-button-border: 2px solid $solarize-red !default;
+$fieldset-message-background: $solarize-base2 !default;
+$fieldset-warning-text: $solarize-red !default;
 
 $content-table-background:          $solarize-base2;
 $content-table-background-header:   darken($solarize-base2, 5%);
@@ -65,8 +61,6 @@ $field-border: 1px solid $solarize-base00;
 $button-border: 2px solid $solarize-red;
 
 $eye-colour: $solarize-green;
-
-$warning-colour: $solarize-red;
 
 $link-colour: $solarize-blue;
 

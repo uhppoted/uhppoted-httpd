@@ -1,5 +1,3 @@
-@use 'solarize' as theme;
-
 * { 
   background: transparent;
   margin: 0; 
@@ -7,12 +5,12 @@
 }
 
 html { 
-  background: theme.$content-background;
+  background: $content-background;
   height: 100%;
 }
 
 body { 
-  background: theme.$content-background;
+  background: $content-background;
   height: 100vh;
   padding: 0px;
 }
@@ -38,7 +36,7 @@ header {
 
 nav {
   grid-area: left;
-  background: theme.$nav-background;
+  background: $nav-background;
   margin: 30px 8px 8px 8px;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
@@ -51,7 +49,7 @@ nav ul {
 }
 
 nav ul li {
-  color: theme.$nav-text-colour;
+  color: $nav-text-colour;
   font-family: Sans-Serif;
   font-size: 0.7em;
   font-weight: lighter;
@@ -60,7 +58,7 @@ nav ul li {
 }
 
 nav ul li a {
-  color: theme.$nav-text-colour;
+  color: $nav-text-colour;
   text-decoration: none;
 }
 
@@ -77,13 +75,14 @@ main {
 }
 
 footer {
-  background: theme.$content-message-background;
   grid-area: footer;
   height: auto;
   overflow: hidden;
   padding: 6px 0px 6px 0px;
   text-align: center;
   font-size: 0.8em;
+  background: $footer-background;
+  color: $footer-text;
 }
 
 #logo {
@@ -113,7 +112,7 @@ footer {
   height: 20px;
   margin-top: 12  px;
   border-radius: 50%;
-  border-top: 2px solid theme.$dashboard-windmill;
+  border-top: 2px solid $dashboard-windmill;
   border-right: 2px solid transparent;
   animation: windmill 0.6s linear infinite;
 }
@@ -135,7 +134,7 @@ footer {
 }
 
 #avatar {
-  background: theme.$avatar-background;
+  background: $avatar-background;
   display: flex;
   flex-direction: row;
   justify-content: center;    
@@ -146,7 +145,7 @@ footer {
 #avatar p {
   font-size: 0.9em;  
   padding: 0px 8px 0px 12px;
-  color: theme.$avatar-text;
+  color: $avatar-text;
 }
 
 #avatar img {
@@ -156,7 +155,7 @@ footer {
 }
 
 #user .menu {
-  background-color: theme.$controls-menu-background;
+  background-color: $controls-menu-background;
   display: none;
   z-index: 1;
   font-size: 1em;  
@@ -168,7 +167,7 @@ footer {
 }
 
 .menu a {
-  color: theme.$controls-menu-item;
+  color: $controls-menu-item;
   font-size: 0.9em;  
   text-decoration: none;
   display: block;
@@ -177,8 +176,8 @@ footer {
 }
 
 .menu a:hover {
-  color: theme.$controls-menu-item-highlight;
-  background: theme.$controls-menu-item-highlight-background;
+  color: $controls-menu-item-highlight;
+  background: $controls-menu-item-highlight-background;
 }
 
 #controls {  
@@ -198,7 +197,7 @@ footer {
   width: 16px;
   height: 16px;
   padding: 4px 4px 4px 4px;
-  border: solid 1px theme.$content-controls-border;
+  border: solid 1px $content-controls-border;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -206,12 +205,12 @@ footer {
 #controls #commitall {  
   display: none;
   margin-right: 6px;
-  filter: theme.$content-svg-filter-commit;
+  filter: $content-svg-filter-commit;
 }
 
 #controls #rollbackall {  
   display: none;
-  filter: theme.$content-svg-filter-rollback;
+  filter: $content-svg-filter-rollback;
 }
 
 #controls #refresh {  
@@ -224,7 +223,7 @@ footer {
 }
 
 .message {  
-  background-color: theme.$content-message-background;
+  background-color: $content-message-background;
   display: block;
   height: 23px;
   padding: 0px 4px 4px 0px;
@@ -247,7 +246,7 @@ footer {
 }
 
 .warning {
-  color: theme.$warning-colour;
+  color: $warning-colour;
 }
 
 .dismiss {  

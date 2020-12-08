@@ -3,13 +3,17 @@
 ### IN PROGRESS
 
 - [ ] Switchable themes
-      - replace switch with findBy... and regex
+      - restructure SASS to use modular CSS
       - dark theme
-      - login & cards pages too
-      - style <a> elements
+        -- user menu
+        -- table
+        -- cards page
+      - replace switch with findBy... and regex
+      - store/restore user preference
 
 - [ ] Get controller info
       - 127.0.0.1/:323 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range.
+      - edit controller
       - reduce initial delay
       - cache expiry
       - Use sync.Map for cache
