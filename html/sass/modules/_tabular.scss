@@ -1,15 +1,12 @@
-// Ref. https://stackoverflow.com/questions/22252472/how-to-change-the-color-of-an-svg-element/53336754#53336754
-
-@use 'solarize' as theme;
-
 .tabular {
-  background: theme.$content-table-background;
+  background: $content-table-background;
   border-collapse: collapse;
-  border: 1px solid theme.$content-table-border;
+  border: 1px solid $content-table-border;
   display: block; 
   height: 90%;
   margin-bottom: 32px;
   overflow: auto; 
+  color: $content-table-text;
 }
 
 .tabular thead {
@@ -28,12 +25,13 @@
 
 /* Ref. https://css-tricks.com/position-sticky-and-table-headers */
 .tabular th {
-  background: theme.$content-table-background-header;
+  background: $content-table-background-header;
   padding: 0.5rem;
   text-align: center;
   font-size: 0.9em;
   font-weight: 500;
   font-style: normal;
+  color: $content-table-text;
 }
 
 .tabular th.colheader {
@@ -43,7 +41,7 @@
 }
 
 .tabular th.topleft {
-  background: theme.$content-table-background-header;
+  background: $content-table-background-header;
   position: sticky;
   top: -1px;   
   left: -1px;
@@ -60,20 +58,24 @@
   z-index: 1;
 }
 
+.tabular tbody tr td input {
+  color: $content-table-text;
+}
+
 .tabular tbody tr:nth-child(odd) {
-  background: theme.$content-table-background-odd;
+  background: $content-table-background-odd;
 }
 
 .tabular tbody tr:nth-child(even) {
-  background: theme.$content-table-background-even;
+  background: $content-table-background-even;
 }
 
 .tabular tbody tr:nth-child(odd) td.rowheader {
-  background: darken(theme.$content-table-background-odd,5%);
+  background: darken($content-table-background-odd,5%);
 }
 
 .tabular tbody tr:nth-child(even) td.rowheader {
-  background: darken(theme.$content-table-background-even,5%);
+  background: darken($content-table-background-even,5%);
 }
 
 .tabular tbody tr.empty {
@@ -81,19 +83,19 @@
 }
 
 .tabular tbody tr.modified {
-  background: theme.$content-table-row-modified;
+  background: $content-table-row-modified;
 }
 
 .tabular tbody tr.modified td.rowheader {
-  background: theme.$content-table-row-modified;
+  background: $content-table-row-modified;
 }
 
 .tabular tbody tr.new {
-  background: theme.$content-table-row-new;
+  background: $content-table-row-new;
 }
 
 .tabular tbody tr.new td.rowheader {
-  background: theme.$content-table-row-new;
+  background: $content-table-row-new;
 }
 
 .tabular td img.flag {
@@ -121,7 +123,7 @@
 }
 
 .tabular td.conflict input {
-  background-color: theme.$content-table-item-conflict;
+  background-color: $content-table-item-conflict;
 }
 
 .tabular td span.control {
@@ -133,11 +135,11 @@
 }
 
 .tabular td span.commit {
-  color: theme.$content-table-commit;  
+  color: $content-table-commit;  
 }
 
 .tabular td span.rollback {
-  color: theme.$content-table-rollback;  
+  color: $content-table-rollback;  
 }
 
 .tabular tbody tr.modified td span.commit {

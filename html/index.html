@@ -8,9 +8,7 @@
     <link rel="mask-icon"        href="images/favicon-mask.svg" color="#000000">
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
-    <link rel="stylesheet"       href="css/light/uhppoted.css" type="text/css" id="css_uhppoted">
-    <link rel="stylesheet"       href="css/light/tabular.css"  type="text/css" id="css_tabular">
-    <link rel="stylesheet"       href="css/light/system.css"   type="text/css" id="css_system">
+    <link rel="stylesheet"       href="css/system.css" type="text/css" id="css_system">
   </head>
 
   <body> 
@@ -27,7 +25,7 @@
         <div id="user">
           <div id="avatar">
             <p>admin</p>
-            <img src="images/light/user-cog-solid.svg" />
+            <img src="images/user-cog-solid.svg" />
           </div>
           <div class="menu">
             <a href="#" onclick="onSignOut(event)">Sign out</a>
@@ -275,16 +273,12 @@
       case 'light':
             document.getElementById('logo').src = 'images/light/logo.png'
             document.getElementById('avatar').querySelector('img').src = 'images/light/user-cog-solid.svg'
-            document.getElementById('css_uhppoted').href = 'css/light/uhppoted.css'
-            document.getElementById('css_tabular').href = 'css/light/tabular.css'
             document.getElementById('css_system').href = 'css/light/system.css'
             break
 
       case 'dark':
             document.getElementById('logo').src = 'images/dark/logo.png'
             document.getElementById('avatar').querySelector('img').src = 'images/dark/user-cog-solid.svg'
-            document.getElementById('css_uhppoted').href = 'css/dark/uhppoted.css'
-            document.getElementById('css_tabular').href = 'css/dark/tabular.css'
             document.getElementById('css_system').href = 'css/dark/system.css'
             break
     }

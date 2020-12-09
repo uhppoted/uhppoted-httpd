@@ -1,5 +1,3 @@
-@use 'solarize' as theme;
-
 th.name {
   min-width: 144px;
   border-bottom: 1px;
@@ -45,14 +43,14 @@ td input.cardnumber {
   outline: none;
 }
 
+td input.cardnumber:focus {
+  border: 1px solid red;
+}
+
 td.cardnumber input::-webkit-inner-spin-button, 
 td.cardnumber input::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
-}
-
-td.cardnumber input:focus {
-  border: 1px solid red;
 }
 
 input.from {

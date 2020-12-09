@@ -2,12 +2,16 @@
 
 ### IN PROGRESS
 
+- [ ] New table row submitted with error cannot be discarded
+
 - [ ] Switchable themes
       - restructure SASS to use modular CSS
       - dark theme
-        -- user menu
-        -- table
         -- cards page
+        -- add/refresh controls
+        -- message text
+        -- icons
+        -- unexpected controller colour/font stylle is not overriding default
       - replace switch with findBy... and regex
       - store/restore user preference
 
@@ -34,7 +38,7 @@
 
 - [ ] tabular
       -- empty list: make first row a 'new' row
- 
+
 - [ ] ACL
       - wrap ACL update in goroutine
         -- error handling ??

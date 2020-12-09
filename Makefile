@@ -4,6 +4,7 @@ DIST   ?= development
 DEBUG  ?= --debug
 CMD     = ./bin/uhppoted-httpd
 
+.PHONY: debug
 .PHONY: reset
 .PHONY: bump
 .PHONY: build-all
@@ -22,7 +23,7 @@ format:
 build: format
 	mkdir -p bin
 	go build -o bin ./...
-	sass html/sass:html/css
+#	sass html/sass:html/css
 	npx eslint --fix html/javascript/*.js
 
 test: build
@@ -68,16 +69,11 @@ bump:
 	go get -u golang.org/x/sys
 
 debug: build
-#	go test -v ./... -run "TestCardAdd"
-#	sass debug/_scss/application.scss:debug/xxx/application.css
-#	sass debug/_scss/_themes/_light/light.scss:debug/xxx/light.css
-#	sass debug/_scss/_themes/_dark/dark.scss:debug/xxx/dark.css
-	sass html/_scss/login.scss:html/css/login.css
-	sass html/_scss/themes/light/login.scss:html/css/light/login.css
-	sass html/_scss/themes/dark/login.scss:html/css/dark/login.css
+	go test -v ./... -run "TestCardAdd"
 
+# sass --watch doesn't seem to consistently pick up changes in partials
 sass:
-	sass --watch html/sass:html/css
+	find html/sass -name "*.scss" | entr sass --no-source-map html/sass/stylesheets:html/css html/sass/themes/light:html/css/light html/sass/themes/dark:html/css/dark
 
 version: build
 	$(CMD) version

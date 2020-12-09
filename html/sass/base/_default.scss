@@ -6,10 +6,14 @@ $content-controls-border: $solarize-blue;
 
 $warning-colour: $solarize-red;
 
-$avatar-background: $solarize-base2;
-$avatar-text: $solarize-base01;
+$user-avatar-background: $solarize-base2              !default;
+$user-avatar-text: $solarize-base01                   !default;
+$user-menu-background: $solarize-base2                !default;
+$user-menu-item: $solarize-base01                     !default;
+$user-menu-item-highlight: $solarize-base2            !default;
+$user-menu-item-highlight-background: $solarize-base1 !default;
 
-$nav-background: darken($solarize-base2, 5%);
+$nav-background: darken($solarize-base2, 5%) !default;
 $nav-text-colour: $solarize-blue;
 
 $footer-background: $solarize-base2 !default;
@@ -21,35 +25,31 @@ $fieldset-button-border: 2px solid $solarize-red !default;
 $fieldset-message-background: $solarize-base2 !default;
 $fieldset-warning-text: $solarize-red !default;
 
-$content-table-background:          $solarize-base2;
-$content-table-background-header:   darken($solarize-base2, 5%);
-$content-table-background-odd:      $solarize-base3;
-$content-table-background-even:     $solarize-base2;
+$content-table-background:          $solarize-base2 !default;
+$content-table-background-header:   darken($solarize-base2, 5%) !default;
+$content-table-background-odd:      $solarize-base3 !default;
+$content-table-background-even:     $solarize-base2 !default;
 $content-table-row-modified:        lighten($solarize-yellow, 50%);
 $content-table-row-new:             lighten($solarize-orange, 45%);
-$content-table-row-unknown:         $solarize-base1;
-$content-table-row-uncertain:       $solarize-base0;
 $content-table-row-unconfigured:    $solarize-yellow;
 $content-table-background-pending:  transparentize($solarize-violet, 0.5);
 $content-table-item-conflict:       transparentize($solarize-orange, 0.75);
-$content-table-border:              $solarize-blue;
+$content-table-border:              $solarize-blue !default;
 $content-table-yes:                 $solarize-base02;
 $content-table-no:                  $solarize-base0;
 $content-table-changed:             $solarize-red;
 $content-table-commit:              $solarize-green;
 $content-table-rollback:            $solarize-red;
-$content-table-item-unknown:        $solarize-base1;
-$content-table-item-uncertain:      $solarize-base0;
-$content-table-item-error:          $solarize-red;
+$content-table-text:                $solarize-base03 !default;
+$content-table-item-normal:         $solarize-base03 !default;
+$content-table-item-unknown:        $solarize-base1  !default;
+$content-table-item-uncertain:      $solarize-base0  !default;
+$content-table-item-error:          $solarize-red    !default;
 
 $content-svg-filter-commit:   invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
 $content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
 
 $controls-background:          $solarize-base2;
-$controls-menu-background:     $solarize-base2;
-$controls-menu-item:           $solarize-base01;
-$controls-menu-item-highlight: $solarize-base2;
-$controls-menu-item-highlight-background: $solarize-base1;
 
 $dashboard-windmill: $solarize-blue;
 

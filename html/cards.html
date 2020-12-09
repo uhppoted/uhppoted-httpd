@@ -8,9 +8,7 @@
     <link rel="mask-icon"        href="images/favicon-mask.svg" color="#000000">
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
-    <link rel="stylesheet"       href="css/light/uhppoted.css" type="text/css">
-    <link rel="stylesheet"       href="css/light/tabular.css"  type="text/css">
-    <link rel="stylesheet"       href="css/light/cards.css"    type="text/css">
+    <link rel="stylesheet"       href="css/light/cards.css" type="text/css" id="css_cards">
   </head>
 
   <body> 
@@ -31,6 +29,8 @@
           </div>
           <div class="menu">
             <a href="#" onclick="onSignOut(event)">Sign out</a>
+            <a href="#" onclick="retheme('light')">light</a>
+            <a href="#" onclick="retheme('dark')">dark</a>
           </div>
         </div>
       </header>
@@ -185,6 +185,24 @@
     window.onRefresh = onRefresh
 
     resetIdle();
+  </script>
+
+  <script>
+  function retheme(theme) {
+    switch (theme) {
+      case 'light':
+            document.getElementById('logo').src = 'images/light/logo.png'
+            document.getElementById('avatar').querySelector('img').src = 'images/light/user-cog-solid.svg'
+            document.getElementById('css_cards').href = 'css/light/cards.css'
+            break
+
+      case 'dark':
+            document.getElementById('logo').src = 'images/dark/logo.png'
+            document.getElementById('avatar').querySelector('img').src = 'images/dark/user-cog-solid.svg'
+            document.getElementById('css_cards').href = 'css/dark/cards.css'
+            break
+    }
+  }
   </script>
 
   <!-- global information initialised by Go template -->
