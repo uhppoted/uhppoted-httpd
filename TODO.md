@@ -3,20 +3,15 @@
 ### IN PROGRESS
 
 - [ ] New table row submitted with error cannot be discarded
+- [ ] 127.0.0.1/:323 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range.
+- [ ] Warning message doesn't align left if commitall and/or rollbackall are not visible
 
 - [ ] Switchable themes
-      - restructure SASS to use modular CSS
-      - dark theme
-        -- cards page
-        -- add/refresh controls
-        -- message text
-        -- icons
-        -- unexpected controller colour/font stylle is not overriding default
       - replace switch with findBy... and regex
       - store/restore user preference
+      - use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 
 - [ ] Get controller info
-      - 127.0.0.1/:323 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range.
       - edit controller
       - reduce initial delay
       - cache expiry

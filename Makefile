@@ -69,9 +69,10 @@ bump:
 	go get -u golang.org/x/sys
 
 debug: build
-	go test -v ./... -run "TestCardAdd"
+#	go test -v ./... -run "TestCardAdd"
+	find html/sass -name "*.scss" | entr sass --no-source-map html/sass/themes/dark:html/css html/sass/themes/light:html/css/light
 
-# sass --watch doesn't seem to consistently pick up changes in partials
+# sass --watch doesn't seem to consistently pick up changes in themed partials
 sass:
 	find html/sass -name "*.scss" | entr sass --no-source-map html/sass/stylesheets:html/css html/sass/themes/light:html/css/light html/sass/themes/dark:html/css/dark
 

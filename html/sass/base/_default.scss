@@ -1,10 +1,11 @@
 @charset "UTF-8";
 
-$content-background: $solarize-base3 !default;
-$content-message-background: $solarize-base2;
-$content-controls-border: $solarize-blue;
+$content-background: $solarize-base3         !default;
+$content-message-background: $solarize-base2 !default;
+$content-controls-border: $solarize-blue     !default;
 
-$warning-colour: $solarize-red;
+$warning-colour: $solarize-red            !default;
+$warning-dismiss-colour: $solarize-base03 !default;
 
 $user-avatar-background: $solarize-base2              !default;
 $user-avatar-text: $solarize-base01                   !default;
@@ -25,29 +26,30 @@ $fieldset-button-border: 2px solid $solarize-red !default;
 $fieldset-message-background: $solarize-base2 !default;
 $fieldset-warning-text: $solarize-red !default;
 
-$content-table-background:          $solarize-base2 !default;
-$content-table-background-header:   darken($solarize-base2, 5%) !default;
-$content-table-background-odd:      $solarize-base3 !default;
-$content-table-background-even:     $solarize-base2 !default;
-$content-table-row-modified:        lighten($solarize-yellow, 50%);
-$content-table-row-new:             lighten($solarize-orange, 45%);
-$content-table-row-unconfigured:    $solarize-yellow;
+$content-table-background:          $solarize-base2                !default;
+$content-table-background-header:   darken($solarize-base2, 5%)    !default;
+$content-table-background-odd:      $solarize-base3                !default;
+$content-table-background-even:     $solarize-base2                !default;
+$content-table-row-modified:        lighten($solarize-yellow, 50%) !default;
+$content-table-row-new:             lighten($solarize-orange, 45%) !default;
+$content-table-row-unconfigured:    $solarize-yellow               !default;
 $content-table-background-pending:  transparentize($solarize-violet, 0.5);
 $content-table-item-conflict:       transparentize($solarize-orange, 0.75);
 $content-table-border:              $solarize-blue !default;
 $content-table-yes:                 $solarize-base02;
 $content-table-no:                  $solarize-base0;
 $content-table-changed:             $solarize-red;
-$content-table-commit:              $solarize-green;
-$content-table-rollback:            $solarize-red;
+$content-table-commit:              $solarize-green  !default;
+$content-table-rollback:            $solarize-red    !default;
 $content-table-text:                $solarize-base03 !default;
 $content-table-item-normal:         $solarize-base03 !default;
 $content-table-item-unknown:        $solarize-base1  !default;
 $content-table-item-uncertain:      $solarize-base0  !default;
 $content-table-item-error:          $solarize-red    !default;
+$content-table-scrollbar-color:     auto             !default;
 
-$content-svg-filter-commit:   invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
-$content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
+$content-svg-filter-commit:   invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%) !default;
+$content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%) !default;
 
 $controls-background:          $solarize-base2;
 

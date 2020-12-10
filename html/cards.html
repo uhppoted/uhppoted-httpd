@@ -8,7 +8,7 @@
     <link rel="mask-icon"        href="images/favicon-mask.svg" color="#000000">
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
-    <link rel="stylesheet"       href="css/light/cards.css" type="text/css" id="css_cards">
+    <link rel="stylesheet"       href="css/cards.css" type="text/css" id="css_cards">
   </head>
 
   <body> 
@@ -191,15 +191,23 @@
   function retheme(theme) {
     switch (theme) {
       case 'light':
+            document.getElementById('css_cards').href = 'css/light/cards.css'
             document.getElementById('logo').src = 'images/light/logo.png'
             document.getElementById('avatar').querySelector('img').src = 'images/light/user-cog-solid.svg'
-            document.getElementById('css_cards').href = 'css/light/cards.css'
+            document.getElementById('commitall').src = 'images/light/check-solid.svg'
+            document.getElementById('rollbackall').src = 'images/light/times-solid.svg'
+            document.getElementById('add').src = 'images/light/plus-solid.svg'
+            document.getElementById('refresh').src = 'images/light/sync-alt-solid.svg'
             break
 
       case 'dark':
+            document.getElementById('css_cards').href = 'css/dark/cards.css'
             document.getElementById('logo').src = 'images/dark/logo.png'
             document.getElementById('avatar').querySelector('img').src = 'images/dark/user-cog-solid.svg'
-            document.getElementById('css_cards').href = 'css/dark/cards.css'
+            document.getElementById('commitall').src = 'images/dark/check-solid.svg'
+            document.getElementById('rollbackall').src = 'images/dark/times-solid.svg'
+            document.getElementById('add').src = 'images/dark/plus-solid.svg'
+            document.getElementById('refresh').src = 'images/dark/sync-alt-solid.svg'
             break
     }
   }

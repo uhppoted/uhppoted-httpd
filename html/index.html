@@ -85,7 +85,7 @@
                            class="field name"
                            type="text"                            
                            value="{{$controller.Name}}"
-                           placeholder="-"
+                           placeholder="- {{$controller.Status}}"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$controller.Name}}"
@@ -271,15 +271,23 @@
   function retheme(theme) {
     switch (theme) {
       case 'light':
+            document.getElementById('css_system').href = 'css/light/system.css'
             document.getElementById('logo').src = 'images/light/logo.png'
             document.getElementById('avatar').querySelector('img').src = 'images/light/user-cog-solid.svg'
-            document.getElementById('css_system').href = 'css/light/system.css'
+            document.getElementById('commitall').src = 'images/light/check-solid.svg'
+            document.getElementById('rollbackall').src = 'images/light/times-solid.svg'
+            document.getElementById('add').src = 'images/light/plus-solid.svg'
+            document.getElementById('refresh').src = 'images/light/sync-alt-solid.svg'
             break
 
       case 'dark':
+            document.getElementById('css_system').href = 'css/dark/system.css'
             document.getElementById('logo').src = 'images/dark/logo.png'
             document.getElementById('avatar').querySelector('img').src = 'images/dark/user-cog-solid.svg'
-            document.getElementById('css_system').href = 'css/dark/system.css'
+            document.getElementById('commitall').src = 'images/dark/check-solid.svg'
+            document.getElementById('rollbackall').src = 'images/dark/times-solid.svg'
+            document.getElementById('add').src = 'images/dark/plus-solid.svg'
+            document.getElementById('refresh').src = 'images/dark/sync-alt-solid.svg'
             break
     }
   }
