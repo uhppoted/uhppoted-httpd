@@ -58,6 +58,10 @@ type dispatcher struct {
 	timeout time.Duration
 }
 
+const (
+	SettingsCookie = "uhppoted-settings"
+)
+
 func (h *HTTPD) Run() {
 	fs := httpdFileSystem{
 		FileSystem: http.Dir(h.Dir),

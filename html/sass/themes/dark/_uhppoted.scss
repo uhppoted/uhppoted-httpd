@@ -15,7 +15,7 @@ $footer-text: $solarize-base03;
 
 $user-avatar-background: darken($solarize-base02, 10%);
 $user-avatar-text: $solarize-base1;
-$user-menu-background: $solarize-base02;
+$user-menu-background: darken($solarize-base02, 10%);
 $user-menu-item: $solarize-base00;
 $user-menu-item-highlight: $solarize-base2;
 $user-menu-item-highlight-background: $solarize-base1;

@@ -23,7 +23,11 @@ format:
 build: format
 	mkdir -p bin
 	go build -o bin ./...
-#	sass html/sass:html/css
+	mkdir -p html/images/default
+	sass --no-source-map html/sass/themes/light:html/css/default
+	sass --no-source-map html/sass/themes/light:html/css/light
+	sass --no-source-map html/sass/themes/dark:html/css/dark
+	cp html/images/light/* html/images/default
 	npx eslint --fix html/javascript/*.js
 
 test: build
@@ -70,11 +74,12 @@ bump:
 
 debug: build
 #	go test -v ./... -run "TestCardAdd"
-	find html/sass -name "*.scss" | entr sass --no-source-map html/sass/themes/dark:html/css html/sass/themes/light:html/css/light
+	cp html/images/light/* html/images/default
+	find html/sass -name "*.scss" | entr sass --no-source-map html/sass/themes/light:html/css/default
 
 # sass --watch doesn't seem to consistently pick up changes in themed partials
 sass:
-	find html/sass -name "*.scss" | entr sass --no-source-map html/sass/stylesheets:html/css html/sass/themes/light:html/css/light html/sass/themes/dark:html/css/dark
+	find html/sass -name "*.scss" | entr sass --no-source-map html/sass/stylesheets:html/css/default html/sass/themes/light:html/css/light html/sass/themes/dark:html/css/dark
 
 version: build
 	$(CMD) version

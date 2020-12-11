@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
-	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/cardholders"
@@ -49,6 +49,20 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	theme := "default"
+	if cookie, err := r.Cookie(SettingsCookie); err == nil {
+		re := regexp.MustCompile("(.*?):(.+)")
+		tokens := strings.Split(cookie.Value, ",")
+		for _, token := range tokens {
+			match := re.FindStringSubmatch(token)
+			if len(match) > 2 {
+				if strings.TrimSpace(match[1]) == "theme" {
+					theme = strings.TrimSpace(match[2])
+				}
+			}
+		}
+	}
+
 	switch path {
 	case "/cardholders":
 		cardholders.Fetch(d.db, w, r, d.timeout)
@@ -56,11 +70,12 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if strings.HasSuffix(path, ".html") {
-		context := map[string]interface{}{}
-		context["User"] = d.user(r)
 		file := filepath.Clean(filepath.Join(d.root, path[1:]))
+		context := map[string]interface{}{
+			"User":  d.user(r),
+			"Theme": theme,
+		}
 
-		w.Header().Set("Content-Type", mime.TypeByExtension(filepath.Ext(path)))
 		d.translate(file, context, w, acceptsGzip)
 		return
 	}

@@ -8,7 +8,7 @@
     <link rel="mask-icon"        href="images/favicon-mask.svg" color="#000000">
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
-    <link rel="stylesheet"       href="css/login.css" type="text/css">
+    <link rel="stylesheet"       href="css/{{$.context.Theme}}/login.css" type="text/css">
   </head>
 
   <body> 
@@ -16,7 +16,7 @@
       
       <!-- HEADER -->
       <header>
-        <img id="logo" src="images/logo.png"  />
+        <img id="logo" src="images/{{$.context.Theme}}/logo.png"  />
       </header>
 
       <!-- NAV -->
@@ -34,7 +34,7 @@
                 </div>
                 <div class="field">
                   <input id="pwd" name="pwd" type="password" size="28" placeholder="{{.Login.Password.Hint}}" required value="uhppoted" />
-                  <img id="eye" src="images/eye-solid.svg" onclick="showHidePassword()"/>
+                  <img id="eye" src="images/{{$.context.Theme}}/eye-solid.svg" onclick="showHidePassword()"/>
                 </div>
                 <button action="submit">{{.Login.Ok.Label}}</button>
               </form>

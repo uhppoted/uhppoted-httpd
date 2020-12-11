@@ -8,7 +8,6 @@
 
 - [ ] Switchable themes
       - replace switch with findBy... and regex
-      - store/restore user preference
       - use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 
 - [ ] Get controller info

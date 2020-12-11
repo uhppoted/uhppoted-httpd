@@ -8,7 +8,7 @@
     <link rel="mask-icon"        href="images/favicon-mask.svg" color="#000000">
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
-    <link rel="stylesheet"       href="css/cards.css" type="text/css" id="css_cards">
+    <link rel="stylesheet"       href="css/{{$.context.Theme}}/cards.css" type="text/css" id="css_cards">
   </head>
 
   <body> 
@@ -16,7 +16,7 @@
 
       <!-- HEADER -->
       <header>
-        <img id="logo" src="images/logo.png"  />
+        <img id="logo" src="images/{{$.context.Theme}}/logo.png"  />
           
         <div id="dashboard">
           <span id="windmill"></span>
@@ -25,7 +25,7 @@
         <div id="user">
           <div id="avatar">
             <p>admin</p>
-            <img id="avatar" src="images/user-cog-solid.svg" />
+            <img id="avatar" src="images/{{$.context.Theme}}/user-cog-solid.svg" />
           </div>
           <div class="menu">
             <a href="#" onclick="onSignOut(event)">Sign out</a>
@@ -51,16 +51,16 @@
       <main>
         <div style="width:100%;">
           <div id="controls">
-            <img id="commitall"   class='button' src="images/check-solid.svg" onclick="onCommitAll()" />
-            <img id="rollbackall" class='button' src="images/times-solid.svg" onclick="onRollbackAll()" />
+            <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll()" />
+            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll()" />
             <div id="message" class="message">
               <div>
                 <span class="warning" id="warning"></span>
                 <button class="dismiss" onclick="dismiss()">&#9746;</button>
               </div>
             </div>
-            <img id="add"     class='button' src="images/plus-solid.svg" onclick="onNew()" />
-            <img id="refresh" class='button' src="images/sync-alt-solid.svg" onclick="onRefresh()" />
+            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew()" />
+            <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh()" />
           </div>
 
           <div id="cardholders">
@@ -78,7 +78,7 @@
                  {{$cid := $cardholder.ID}}
                  <tr id="{{$cid}}">
                   <td class="rowheader" style="display:flex; flex-direction:row;">
-                    <img class="flag" src="images/corner.svg" />
+                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
                     <input id="{{$cid}}-name" 
                            class="field name"
                            type="text"                            
@@ -93,7 +93,7 @@
                   </td>
 
                   <td>
-                    <img class="flag" src="images/corner.svg" />
+                    <img class="flag" src="images/{{$.context.Theme}}/orner.svg" />
                     <input id="{{$cid}}-card" 
                            class="field cardnumber"
                            type="number" 
@@ -107,7 +107,7 @@
                   </td>
 
                   <td>
-                    <img class="flag" src="images/corner.svg" />
+                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
                     <input id="{{$cid}}-from" 
                            class="field from"
                            type="date" 
@@ -120,7 +120,7 @@
                   </td>
 
                   <td>
-                    <img class="flag" src="images/corner.svg" />
+                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
                     <input id="{{$cid}}-to" 
                            class="field to"
                            type="date" 
@@ -134,7 +134,7 @@
 
                   {{range $.db.Groups}}
                   <td>
-                    <img class="flag" src="images/corner.svg" />
+                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
                     <label class="group">
                     <input id="{{$cid}}-{{.ID}}"
                            class="field"
@@ -144,8 +144,8 @@
                            data-original="{{index $cardholder.Groups .ID}}" 
                            data-value="{{index $cardholder.Groups .ID}}"{{if index $cardholder.Groups .ID}}
                            checked />{{else}}/>{{end}}
-                      <img class="no"  src="images/times-solid.svg" draggable="false" />
-                      <img class="yes" src="images/check-solid.svg" draggable="false" />
+                      <img class="no"  src="images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
+                      <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
                     </label>
                   </td>{{end}}
                 </tr>{{else}}<tr class="empty"><td/><td/><td/><td/><td/><td/></tr>{{end}}
@@ -189,6 +189,10 @@
 
   <script>
   function retheme(theme) {
+    let expires = new Date()
+
+    expires.setFullYear(expires.getFullYear() + 1)
+
     switch (theme) {
       case 'light':
             document.getElementById('css_cards').href = 'css/light/cards.css'
@@ -198,6 +202,7 @@
             document.getElementById('rollbackall').src = 'images/light/times-solid.svg'
             document.getElementById('add').src = 'images/light/plus-solid.svg'
             document.getElementById('refresh').src = 'images/light/sync-alt-solid.svg'
+            document.cookie = 'uhppoted-settings=theme:light; expires=' + expires.toUTCString()
             break
 
       case 'dark':
@@ -208,8 +213,11 @@
             document.getElementById('rollbackall').src = 'images/dark/times-solid.svg'
             document.getElementById('add').src = 'images/dark/plus-solid.svg'
             document.getElementById('refresh').src = 'images/dark/sync-alt-solid.svg'
+            document.cookie = 'uhppoted-settings=theme:dark; expires=' + expires.toUTCString()
             break
     }
+
+    console.log(document.cookie)
   }
   </script>
 
