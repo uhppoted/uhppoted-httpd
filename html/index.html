@@ -8,7 +8,7 @@
     <link rel="mask-icon"        href="images/favicon-mask.svg" color="#000000">
     <link rel="apple-touch-icon" href="images/favicon-180x180.png">
     <link rel="manifest"         href="manifest.json">
-    <link rel="stylesheet"       href="css/{{$.context.Theme}}/system.css" type="text/css" id="css_system">
+    <link rel="stylesheet"       href="css/{{$.context.Theme}}/system.css" type="text/css">
   </head>
 
   <body> 
@@ -51,8 +51,8 @@
       <main>
         <div style="width:100%;">
           <div id="controls">
-            <img id="commitall"   class='button' src="images/{{$.context.Theme}}/heck-solid.svg" onclick="onCommitAll()" />
-            <img id="rollbackall" class='button' src="images/t{{$.context.Theme}}/imes-solid.svg" onclick="onRollbackAll()" />
+            <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll()" />
+            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll()" />
             <div id="message" class="message">
               <div>
                 <span class="warning" id="warning"></span>
@@ -250,9 +250,10 @@
   <script type="module" src="./javascript/cardholders.js"></script>
 
   <script type="module">
-    import { dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
+    import { retheme, dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
     import { onEdited, onTick, onCommit, onCommitAll, onRollback, onRollbackAll, onNew, onRefresh } from "./javascript/cardholders.js"
 
+    window.retheme = retheme
     window.dismiss = dismiss
     window.onSignOut = onSignOut
     window.onEdited = onEdited
@@ -265,38 +266,6 @@
     window.onRefresh = onRefresh
 
     resetIdle();
-  </script>
-
-  <script>
-  function retheme(theme) {
-    let expires = new Date()
-
-    expires.setFullYear(expires.getFullYear() + 1)
-
-    switch (theme) {
-      case 'light':
-            document.getElementById('css_system').href = 'css/light/system.css'
-            document.getElementById('logo').src = 'images/light/logo.png'
-            document.getElementById('avatar').querySelector('img').src = 'images/light/user-cog-solid.svg'
-            document.getElementById('commitall').src = 'images/light/check-solid.svg'
-            document.getElementById('rollbackall').src = 'images/light/times-solid.svg'
-            document.getElementById('add').src = 'images/light/plus-solid.svg'
-            document.getElementById('refresh').src = 'images/light/sync-alt-solid.svg'
-            document.cookie = 'uhppoted-settings=theme:light; expires=' + expires.toUTCString()
-            break
-
-      case 'dark':
-            document.getElementById('css_system').href = 'css/dark/system.css'
-            document.getElementById('logo').src = 'images/dark/logo.png'
-            document.getElementById('avatar').querySelector('img').src = 'images/dark/user-cog-solid.svg'
-            document.getElementById('commitall').src = 'images/dark/check-solid.svg'
-            document.getElementById('rollbackall').src = 'images/dark/times-solid.svg'
-            document.getElementById('add').src = 'images/dark/plus-solid.svg'
-            document.getElementById('refresh').src = 'images/dark/sync-alt-solid.svg'
-            document.cookie = 'uhppoted-settings=theme:dark; expires=' + expires.toUTCString()
-            break
-    }
-  }
   </script>
 
   <!-- global information initialised by Go template -->

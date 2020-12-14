@@ -7,7 +7,6 @@
 - [ ] Warning message doesn't align left if commitall and/or rollbackall are not visible
 
 - [ ] Switchable themes
-      - replace switch with findBy... and regex
       - use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 
 - [ ] Get controller info

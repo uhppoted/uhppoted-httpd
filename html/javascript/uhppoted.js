@@ -16,6 +16,36 @@ document.addEventListener('keypress', event => {
   resetIdle(event)
 })
 
+export function retheme (theme) {
+  const expires = new Date()
+  const stylesheets = document.querySelectorAll("link[rel='stylesheet']")
+  const images = document.querySelectorAll('img')
+
+  expires.setFullYear(expires.getFullYear() + 1)
+
+  document.cookie = 'uhppoted-settings=theme:' + theme + '; expires=' + expires.toUTCString()
+
+  stylesheets.forEach(link => {
+    const re = new RegExp('(.+?/css)/(.+?)/(.+)', 'i') // eslint-disable-line prefer-regex-literals
+
+    if (re.test(link.href)) {
+      const match = link.href.match(re)
+
+      link.href = match[1] + '/' + theme + '/' + match[3]
+    }
+  })
+
+  images.forEach(img => {
+    const re = new RegExp('(.+?/images)/(.+?)/(.+)', 'i') // eslint-disable-line prefer-regex-literals
+
+    if (re.test(img.src)) {
+      const match = img.src.match(re)
+
+      img.src = match[1] + '/' + theme + '/' + match[3]
+    }
+  })
+}
+
 export function warning (msg) {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
