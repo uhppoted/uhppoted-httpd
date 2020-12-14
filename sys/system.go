@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net"
 	"strings"
 	"time"
 
@@ -20,15 +19,10 @@ type Controller struct {
 	ID         uint32
 	IP         ip
 	SystemTime datetime
-	Cards      *uint32
-	Events     *uint32
+	Cards      *records
+	Events     *records
 	Doors      map[uint8]string
 	Status     status
-}
-
-type system struct {
-	Doors map[string]types.Door `json:"doors"`
-	Local []*Local              `json:"local"`
 }
 
 type ip struct {
@@ -42,10 +36,25 @@ type datetime struct {
 	Status   status
 }
 
-func resolve(address string) *net.UDPAddr {
-	addr, _ := net.ResolveUDPAddr("udp", address)
+type records uint32
 
-	return addr
+func (r *records) String() string {
+	if r != nil {
+		return fmt.Sprintf("%v", uint32(*r))
+	}
+
+	return ""
+}
+
+type system struct {
+	Doors map[string]types.Door `json:"doors"`
+	Local []*Local              `json:"local"`
+}
+
+func (s *system) refresh() {
+	for _, l := range sys.Local {
+		go l.refresh()
+	}
 }
 
 var sys = system{
@@ -60,12 +69,6 @@ func init() {
 			sys.refresh()
 		}
 	}()
-}
-
-func (s *system) refresh() {
-	for _, l := range sys.Local {
-		go l.refresh()
-	}
 }
 
 func Init(conf string) error {

@@ -3,7 +3,6 @@
 ### IN PROGRESS
 
 - [ ] New table row submitted with error cannot be discarded
-- [ ] 127.0.0.1/:323 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range.
 - [ ] Warning message doesn't align left if commitall and/or rollbackall are not visible
 
 - [ ] Switchable themes
@@ -113,6 +112,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] 127.0.0.1/:323 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range.
 - [x] Navigation
 - [x] Not redirecting to login.html after restart
 - [x] Fix 'login unauthorized'

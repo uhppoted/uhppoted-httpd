@@ -108,8 +108,8 @@ func (l *Local) Controllers() []Controller {
 	list := []Controller{}
 	for k, controller := range devices {
 		if cached, ok := l.cache[k]; ok {
-			controller.Cards = cached.cards
-			controller.Events = cached.events
+			controller.Cards = (*records)(cached.cards)
+			controller.Events = (*records)(cached.events)
 
 			if cached.address != nil {
 				if cached.address.Equal(controller.IP.IP.IP) {
@@ -163,8 +163,8 @@ func (l *Local) Controllers() []Controller {
 					DateTime: cached.datetime,
 					TimeZone: time.Local,
 				},
-				Cards:  cached.cards,
-				Events: cached.events,
+				Cards:  (*records)(cached.cards),
+				Events: (*records)(cached.events),
 				Doors:  map[uint8]string{},
 				Status: StatusUnknown,
 			}

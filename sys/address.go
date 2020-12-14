@@ -39,3 +39,9 @@ func (a *address) Equal(addr net.IP) bool {
 
 	return false
 }
+
+func resolve(address string) *net.UDPAddr {
+	addr, _ := net.ResolveUDPAddr("udp", address)
+
+	return addr
+}
