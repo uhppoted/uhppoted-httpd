@@ -8,3 +8,12 @@ type Door struct {
 	Door         uint8  `json:"door"`
 	Name         string `json:"name"`
 }
+
+func (d *Door) Clone() Door {
+	return Door{
+		ID:           d.ID,
+		ControllerID: d.ControllerID,
+		Door:         d.Door,
+		Name:         d.Name,
+	}
+}

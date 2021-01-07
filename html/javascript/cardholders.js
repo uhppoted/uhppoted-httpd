@@ -92,8 +92,10 @@ export function onAdd (event) {
           switch (response.status) {
             case 200:
               response.json().then(object => {
-                updated(object.db.updated)
-                deleted(object.db.deleted)
+                if (object && object.db && object.db.updated) {
+                  updated(object.db.updated)
+                  deleted(object.db.deleted)
+                }
               })
               break
 
@@ -476,6 +478,7 @@ function apply (element, f) {
 
 function rowToRecord (id, row) {
   const name = row.querySelector('#' + id + '-name')
+  console.log('### ', id, row, name)
   const card = row.querySelector('#' + id + '-card')
   const from = row.querySelector('#' + id + '-from')
   const to = row.querySelector('#' + id + '-to')

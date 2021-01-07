@@ -28,7 +28,7 @@ build: format
 	sass --no-source-map html/sass/themes/light:html/css/light
 	sass --no-source-map html/sass/themes/dark:html/css/dark
 	cp html/images/light/* html/images/default
-	npx eslint --fix html/javascript/*.js
+#	npx eslint --fix html/javascript/*.js
 
 test: build
 	go test ./...

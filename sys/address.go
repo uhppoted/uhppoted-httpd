@@ -15,6 +15,10 @@ func (a *address) String() string {
 	return ""
 }
 
+func (a *address) MarshalJSON() ([]byte, error) {
+	return json.Marshal(a.String())
+}
+
 func (a *address) UnmarshalJSON(bytes []byte) error {
 	var s string
 

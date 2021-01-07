@@ -18,11 +18,11 @@ import (
 )
 
 type Local struct {
-	BindAddress      *address              `json:"bind-address"`
-	BroadcastAddress *address              `json:"broadcast-address"`
-	ListenAddress    *address              `json:"listen-address"`
-	Devices          map[uint32]controller `json:"controllers"`
-	Debug            bool                  `json:"debug"`
+	BindAddress      *address               `json:"bind-address"`
+	BroadcastAddress *address               `json:"broadcast-address"`
+	ListenAddress    *address               `json:"listen-address"`
+	Devices          map[uint32]*controller `json:"controllers"`
+	Debug            bool                   `json:"debug"`
 	api              uhppoted.UHPPOTED
 	cache            map[uint32]device
 	guard            sync.RWMutex
@@ -89,10 +89,13 @@ func (l *Local) Controllers() []Controller {
 			}
 		}
 
+		name := types.Name(v.Name)
+
 		devices[k] = Controller{
-			created: v.Created,
-			Name:    v.Name,
-			ID:      k,
+			ID:       ID(k),
+			created:  v.Created,
+			Name:     &name,
+			DeviceID: k,
 			IP: ip{
 				IP:     &addr,
 				Status: StatusUnknown,
@@ -148,13 +151,14 @@ func (l *Local) Controllers() []Controller {
 		list = append(list, controller)
 	}
 
-	// ... append the 'found but not configurated' controllers
+	// ... append the 'found but not configured' controllers
 	for k, cached := range l.cache {
 		if _, ok := devices[k]; !ok {
 			controller := Controller{
-				created: time.Now(),
-				Name:    "",
-				ID:      k,
+				ID:       ID(k),
+				created:  time.Now(),
+				Name:     nil,
+				DeviceID: k,
 				IP: ip{
 					IP:     cached.address,
 					Status: StatusOk,
@@ -198,6 +202,78 @@ func (l *Local) Controllers() []Controller {
 	sort.SliceStable(list, func(i, j int) bool { return list[i].created.Before(list[j].created) })
 
 	return list
+}
+
+func (l *Local) Controller(id uint32) *Controller {
+	if v, ok := l.Devices[id]; ok {
+		name := types.Name(v.Name)
+		addr := v.IP // alias to avoid overwriting the configured value
+
+		tz := time.Local
+		if v.TimeZone != "" {
+			if l, err := time.LoadLocation(v.TimeZone); err == nil {
+				tz = l
+			}
+		}
+
+		controller := Controller{
+			ID:       ID(id),
+			created:  v.Created,
+			Name:     &name,
+			DeviceID: id,
+			IP: ip{
+				IP:     &addr,
+				Status: StatusUnknown,
+			},
+			SystemTime: datetime{
+				TimeZone: tz,
+			},
+			Doors:  map[uint8]string{},
+			Status: StatusUnknown,
+		}
+
+		if cached, ok := l.cache[id]; ok {
+			controller.Cards = (*records)(cached.cards)
+			controller.Events = (*records)(cached.events)
+
+			if cached.address != nil {
+				if cached.address.Equal(controller.IP.IP.IP) {
+					controller.IP.Status = StatusOk
+				} else {
+					controller.IP.Status = StatusError
+				}
+
+				controller.IP.IP = cached.address
+			}
+
+			if cached.datetime != nil {
+				tz := controller.SystemTime.TimeZone
+				t := time.Time(*cached.datetime)
+				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+
+				if delta > WINDOW {
+					controller.SystemTime.Status = StatusError
+				} else {
+					controller.SystemTime.Status = StatusOk
+				}
+
+				dt := types.DateTime(T)
+				controller.SystemTime.DateTime = &dt
+			}
+
+			switch dt := time.Now().Sub(cached.touched); {
+			case dt < DeviceOk:
+				controller.Status = StatusOk
+			case dt < DeviceUncertain:
+				controller.Status = StatusUncertain
+			}
+		}
+
+		return &controller
+	}
+
+	return nil
 }
 
 func (l *Local) Update(permissions []types.Permissions) {
@@ -355,4 +431,8 @@ func (l *Local) store(id uint32, info interface{}) {
 	}
 
 	l.cache[id] = cached
+}
+
+func ID(id uint32) string {
+	return fmt.Sprintf("L%d", id)
 }

@@ -89,8 +89,7 @@
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$controller.Name}}"
-                           data-value="{{$controller.Name}}" 
-                           readonly />
+                           data-value="{{$controller.Name}}" />
                     <span class="control commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
                     <span class="control rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
                   </td>
@@ -101,12 +100,12 @@
                            class="field ID"
                            type="number" 
                            min="0"
-                           value="{{$controller.ID}}"
+                           value="{{$controller.DeviceID}}"
                            placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original="{{$controller.ID}}"
-                           data-value="{{$controller.ID}}"  
+                           data-original="{{$controller.DeviceID}}"
+                           data-value="{{$controller.DeviceID}}"  
                            readonly />
                   </td>
 
@@ -245,13 +244,12 @@
   </body>
 
   <!-- SCRIPTS -->
- 
-  <script type="module" src="./javascript/uhppoted.js"></script>
-  <script type="module" src="./javascript/cardholders.js"></script>
+
+  <script type="module" src="./javascript/system.js"></script>
 
   <script type="module">
     import { retheme, dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
-    import { onEdited, onTick, onCommit, onCommitAll, onRollback, onRollbackAll, onNew, onRefresh } from "./javascript/cardholders.js"
+    import { onEdited, onTick, onCommit, onCommitAll, onRollback, onRollbackAll, onNew, onRefresh } from "./javascript/system.js"
 
     window.retheme = retheme
     window.dismiss = dismiss

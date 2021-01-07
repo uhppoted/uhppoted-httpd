@@ -5,6 +5,7 @@ import (
 	"regexp"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/cardholders"
+	"github.com/uhppoted/uhppoted-httpd/httpd/system"
 )
 
 func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
@@ -28,6 +29,11 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	auth, err := NewAuthorizator(uid, role, d.grule.cards)
 	if err != nil {
 		http.Error(w, "Error executing request", http.StatusInternalServerError)
+	}
+
+	if match, err := regexp.MatchString(`/system`, path); err == nil && match {
+		system.Post(w, r, d.timeout, d.db, auth)
+		return
 	}
 
 	if match, err := regexp.MatchString(`/cardholders`, path); err == nil && match {

@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -14,9 +17,10 @@ import (
 )
 
 type Controller struct {
+	ID         string
 	created    time.Time
-	Name       string
-	ID         uint32
+	Name       *types.Name
+	DeviceID   uint32
 	IP         ip
 	SystemTime datetime
 	Cards      *records
@@ -47,13 +51,16 @@ func (r *records) String() string {
 }
 
 type system struct {
+	file  string
 	Doors map[string]types.Door `json:"doors"`
 	Local []*Local              `json:"local"`
 }
 
 func (s *system) refresh() {
-	for _, l := range sys.Local {
-		go l.refresh()
+	if s != nil {
+		for _, l := range s.Local {
+			go l.refresh()
+		}
 	}
 }
 
@@ -82,6 +89,8 @@ func Init(conf string) error {
 		return err
 	}
 
+	sys.file = conf
+
 	for _, l := range sys.Local {
 		l.Init()
 	}
@@ -98,7 +107,7 @@ func System() interface{} {
 
 	for _, c := range controllers {
 		for _, d := range sys.Doors {
-			if d.ControllerID == c.ID {
+			if d.ControllerID == c.DeviceID {
 				c.Doors[d.Door] = d.Name
 			}
 		}
@@ -115,6 +124,125 @@ func Update(permissions []types.Permissions) {
 	for _, l := range sys.Local {
 		l.Update(permissions)
 	}
+}
+
+//func Post(m map[string]interface{}, auth db.IAuth) (interface{}, error) {
+func Post(m map[string]interface{}) (interface{}, error) {
+	//	d.Lock()
+	//
+	//	defer d.Unlock()
+
+	// add/update ?
+
+	controllers, err := unpack(m)
+	if err != nil {
+		return nil, &types.HttpdError{
+			Status: http.StatusBadRequest,
+			Err:    fmt.Errorf("Invalid request"),
+			Detail: fmt.Errorf("Error unpacking 'post' request (%w)", err),
+		}
+	}
+
+	list := struct {
+		Updated []interface{} `json:"updated"`
+		Deleted []interface{} `json:"deleted"`
+	}{}
+
+loop:
+	for _, c := range controllers {
+		if c.ID == "" {
+			return nil, &types.HttpdError{
+				Status: http.StatusBadRequest,
+				Err:    fmt.Errorf("Invalid controller ID"),
+				Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid controller ID '%v'", c.ID)),
+			}
+		}
+
+		for _, l := range sys.Local {
+			for k, d := range l.Devices {
+				if ID(k) == c.ID {
+					//				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
+					//					if r, err := d.delete(shadow, c, auth); err != nil {
+					//						return nil, err
+					//					} else if r != nil {
+					//						list.Deleted = append(list.Deleted, r)
+					//						continue loop
+					//					}
+					//				}
+
+					//					if r, err := d.update(shadow, c, auth); err != nil {
+					//						return nil, err
+					//					} else if r != nil {
+					//						list.Updated = append(list.Updated, r)
+					//					}
+
+					if c.Name != nil {
+						d.Name = c.Name.String()
+					}
+
+					if cc := l.Controller(k); cc != nil {
+						list.Updated = append(list.Updated, cc)
+					}
+
+					continue loop
+				}
+			}
+		}
+
+		//		if r, err := d.add(shadow, c, auth); err != nil {
+		//			return nil, err
+		//		} else if r != nil {
+		//			list.Updated = append(list.Updated, r)
+		//		}
+	}
+
+	if err := save(&sys, sys.file); err != nil {
+		return nil, err
+	}
+
+	//	d.data = *shadow
+
+	return list, nil
+}
+
+func save(s *system, file string) error {
+	//	if err := validate(s); err != nil {
+	//		return err
+	//	}
+	//
+	//	if err := clean(s); err != nil {
+	//		return err
+	//	}
+
+	if file == "" {
+		return nil
+	}
+
+	b, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-system.json")
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(b); err != nil {
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
+		return err
+	}
+
+	return os.Rename(tmp.Name(), file)
 }
 
 func consolidate(list []types.Permissions) (*acl.ACL, error) {
@@ -160,6 +288,41 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	}
 
 	return &acl, nil
+}
+
+func unpack(m map[string]interface{}) ([]Controller, error) {
+	o := struct {
+		Controllers []struct {
+			ID   string
+			Name *string
+		}
+	}{}
+
+	blob, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := json.Unmarshal(blob, &o); err != nil {
+		return nil, err
+	}
+
+	controllers := []Controller{}
+
+	for _, r := range o.Controllers {
+		record := Controller{
+			ID: strings.TrimSpace(r.ID),
+		}
+
+		if r.Name != nil {
+			name := types.Name(*r.Name)
+			record.Name = &name
+		}
+
+		controllers = append(controllers, record)
+	}
+
+	return controllers, nil
 }
 
 func clean(s string) string {
