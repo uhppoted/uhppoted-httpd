@@ -18,21 +18,14 @@ import (
 )
 
 type Local struct {
-	BindAddress      *address               `json:"bind-address"`
-	BroadcastAddress *address               `json:"broadcast-address"`
-	ListenAddress    *address               `json:"listen-address"`
-	Devices          map[uint32]*controller `json:"controllers"`
-	Debug            bool                   `json:"debug"`
+	BindAddress      *address `json:"bind-address"`
+	BroadcastAddress *address `json:"broadcast-address"`
+	ListenAddress    *address `json:"listen-address"`
+	Debug            bool     `json:"debug"`
+	devices          map[uint32]address
 	api              uhppoted.UHPPOTED
 	cache            map[uint32]device
 	guard            sync.RWMutex
-}
-
-type controller struct {
-	Created  time.Time `json:"created"`
-	Name     string    `json:"name"`
-	IP       address   `json:"IPv4"`
-	TimeZone string    `json:"timezone"`
 }
 
 type device struct {
@@ -52,7 +45,7 @@ const WINDOW = 300 // 5 minutes
 
 // TODO (?) Move into custom JSON Unmarshal
 //          Ref. http://choly.ca/post/go-json-marshalling/
-func (l *Local) Init() {
+func (l *Local) Init(devices map[string]*Controller) {
 	u := uhppote.UHPPOTE{
 		BindAddress:      (*net.UDPAddr)(l.BindAddress),
 		BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),
@@ -61,10 +54,12 @@ func (l *Local) Init() {
 		Debug:            l.Debug,
 	}
 
-	for k, v := range l.Devices {
+	for _, v := range devices {
+		l.devices[v.DeviceID] = v.IP
+
 		addr := net.UDPAddr(v.IP)
-		u.Devices[k] = &uhppote.Device{
-			DeviceID: k,
+		u.Devices[v.DeviceID] = &uhppote.Device{
+			DeviceID: v.DeviceID,
 			Address:  &addr,
 			Rollover: 100000,
 			Doors:    []string{},
@@ -77,204 +72,297 @@ func (l *Local) Init() {
 	}
 }
 
-func (l *Local) Controllers() []Controller {
-	devices := map[uint32]Controller{}
-	for k, v := range l.Devices {
-		addr := v.IP // alias so that the loop below doesn't overwrite the configured value
+func (l *Local) Controllers(controllers map[string]*Controller) []interface{} {
+	type controller struct {
+		ID         string
+		created    time.Time
+		Name       *types.Name
+		DeviceID   uint32
+		IP         ip
+		SystemTime datetime
+		Cards      *records
+		Events     *records
+		Doors      map[uint8]string
+		Status     status
+	}
 
-		tz := time.Local
-		if v.TimeZone != "" {
-			if l, err := time.LoadLocation(v.TimeZone); err == nil {
-				tz = l
+	list := []controller{}
+
+	for _, v := range controllers {
+		c := controller{
+			ID:       v.ID,
+			created:  v.Created,
+			Name:     v.Name,
+			DeviceID: v.DeviceID,
+			IP: ip{
+				IP: &v.IP,
+			},
+			Doors: map[uint8]string{},
+		}
+
+		for _, d := range sys.Doors {
+			if d.DeviceID == c.DeviceID {
+				c.Doors[d.Door] = d.Name
 			}
 		}
 
-		name := types.Name(v.Name)
-
-		devices[k] = Controller{
-			ID:       ID(k),
-			created:  v.Created,
-			Name:     &name,
-			DeviceID: k,
-			IP: ip{
-				IP:     &addr,
-				Status: StatusUnknown,
-			},
-			SystemTime: datetime{
-				TimeZone: tz,
-			},
-			Doors:  map[uint8]string{},
-			Status: StatusUnknown,
-		}
-	}
-
-	list := []Controller{}
-	for k, controller := range devices {
-		if cached, ok := l.cache[k]; ok {
-			controller.Cards = (*records)(cached.cards)
-			controller.Events = (*records)(cached.events)
+		if cached, ok := l.cache[v.DeviceID]; ok {
+			c.Cards = (*records)(cached.cards)
+			c.Events = (*records)(cached.events)
 
 			if cached.address != nil {
-				if cached.address.Equal(controller.IP.IP.IP) {
-					controller.IP.Status = StatusOk
+				if cached.address.Equal(c.IP.IP.IP) {
+					c.IP.Status = StatusOk
 				} else {
-					controller.IP.Status = StatusError
+					c.IP.Status = StatusError
 				}
 
-				controller.IP.IP = cached.address
+				c.IP.IP = cached.address
 			}
 
 			if cached.datetime != nil {
-				tz := controller.SystemTime.TimeZone
+				tz := time.Local
+				if v.TimeZone != "" {
+					if l, err := time.LoadLocation(v.TimeZone); err == nil {
+						tz = l
+					}
+				}
+
 				t := time.Time(*cached.datetime)
 				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
 
 				if delta > WINDOW {
-					controller.SystemTime.Status = StatusError
+					c.SystemTime.Status = StatusError
 				} else {
-					controller.SystemTime.Status = StatusOk
+					c.SystemTime.Status = StatusOk
 				}
 
 				dt := types.DateTime(T)
-				controller.SystemTime.DateTime = &dt
+				c.SystemTime.DateTime = &dt
+				c.SystemTime.TimeZone = tz
 			}
 
 			switch dt := time.Now().Sub(cached.touched); {
 			case dt < DeviceOk:
-				controller.Status = StatusOk
+				c.Status = StatusOk
 			case dt < DeviceUncertain:
-				controller.Status = StatusUncertain
+				c.Status = StatusUncertain
 			}
 		}
 
-		list = append(list, controller)
-	}
-
-	// ... append the 'found but not configured' controllers
-	for k, cached := range l.cache {
-		if _, ok := devices[k]; !ok {
-			controller := Controller{
-				ID:       ID(k),
-				created:  time.Now(),
-				Name:     nil,
-				DeviceID: k,
-				IP: ip{
-					IP:     cached.address,
-					Status: StatusOk,
-				},
-				SystemTime: datetime{
-					DateTime: cached.datetime,
-					TimeZone: time.Local,
-				},
-				Cards:  (*records)(cached.cards),
-				Events: (*records)(cached.events),
-				Doors:  map[uint8]string{},
-				Status: StatusUnknown,
-			}
-
-			if cached.datetime != nil {
-				tz := controller.SystemTime.TimeZone
-				t := time.Time(*cached.datetime)
-				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-
-				if delta > WINDOW {
-					controller.SystemTime.Status = StatusError
-				} else {
-					controller.SystemTime.Status = StatusOk
-				}
-			}
-
-			switch dt := time.Now().Sub(cached.touched); {
-			case dt < DeviceOk:
-				controller.Status = StatusUnconfigured
-			case dt < DeviceUncertain:
-				controller.Status = StatusUncertain
-			default:
-				controller.Status = StatusUnknown
-			}
-
-			list = append(list, controller)
-		}
+		list = append(list, c)
 	}
 
 	sort.SliceStable(list, func(i, j int) bool { return list[i].created.Before(list[j].created) })
 
-	return list
-}
-
-func (l *Local) Controller(id uint32) *Controller {
-	if v, ok := l.Devices[id]; ok {
-		name := types.Name(v.Name)
-		addr := v.IP // alias to avoid overwriting the configured value
-
-		tz := time.Local
-		if v.TimeZone != "" {
-			if l, err := time.LoadLocation(v.TimeZone); err == nil {
-				tz = l
-			}
-		}
-
-		controller := Controller{
-			ID:       ID(id),
-			created:  v.Created,
-			Name:     &name,
-			DeviceID: id,
-			IP: ip{
-				IP:     &addr,
-				Status: StatusUnknown,
-			},
-			SystemTime: datetime{
-				TimeZone: tz,
-			},
-			Doors:  map[uint8]string{},
-			Status: StatusUnknown,
-		}
-
-		if cached, ok := l.cache[id]; ok {
-			controller.Cards = (*records)(cached.cards)
-			controller.Events = (*records)(cached.events)
-
-			if cached.address != nil {
-				if cached.address.Equal(controller.IP.IP.IP) {
-					controller.IP.Status = StatusOk
-				} else {
-					controller.IP.Status = StatusError
-				}
-
-				controller.IP.IP = cached.address
-			}
-
-			if cached.datetime != nil {
-				tz := controller.SystemTime.TimeZone
-				t := time.Time(*cached.datetime)
-				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-
-				if delta > WINDOW {
-					controller.SystemTime.Status = StatusError
-				} else {
-					controller.SystemTime.Status = StatusOk
-				}
-
-				dt := types.DateTime(T)
-				controller.SystemTime.DateTime = &dt
-			}
-
-			switch dt := time.Now().Sub(cached.touched); {
-			case dt < DeviceOk:
-				controller.Status = StatusOk
-			case dt < DeviceUncertain:
-				controller.Status = StatusUncertain
-			}
-		}
-
-		return &controller
+	// Ref. https://golang.org/doc/faq#convert_slice_of_interface
+	result := make([]interface{}, len(list))
+	for i, c := range list {
+		result[i] = c
 	}
 
-	return nil
+	return result
 }
+
+// func (l *Local) ControllersX() []ControllerX {
+// 	devices := map[uint32]ControllerX{}
+// 	for k, v := range l.Devices {
+// 		addr := v.IP // alias so that the loop below doesn't overwrite the configured value
+//
+// 		tz := time.Local
+// 		if v.TimeZone != "" {
+// 			if l, err := time.LoadLocation(v.TimeZone); err == nil {
+// 				tz = l
+// 			}
+// 		}
+//
+// 		name := types.Name(v.Name)
+//
+// 		devices[k] = ControllerX{
+// 			ID:       ID(k),
+// 			created:  v.Created,
+// 			Name:     &name,
+// 			DeviceID: k,
+// 			IP: ip{
+// 				IP:     &addr,
+// 				Status: StatusUnknown,
+// 			},
+// 			SystemTime: datetime{
+// 				TimeZone: tz,
+// 			},
+// 			Doors:  map[uint8]string{},
+// 			Status: StatusUnknown,
+// 		}
+// 	}
+//
+// 	list := []ControllerX{}
+// 	for k, controller := range devices {
+// 		if cached, ok := l.cache[k]; ok {
+// 			controller.Cards = (*records)(cached.cards)
+// 			controller.Events = (*records)(cached.events)
+//
+// 			if cached.address != nil {
+// 				if cached.address.Equal(controller.IP.IP.IP) {
+// 					controller.IP.Status = StatusOk
+// 				} else {
+// 					controller.IP.Status = StatusError
+// 				}
+//
+// 				controller.IP.IP = cached.address
+// 			}
+//
+// 			if cached.datetime != nil {
+// 				tz := controller.SystemTime.TimeZone
+// 				t := time.Time(*cached.datetime)
+// 				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+// 				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+//
+// 				if delta > WINDOW {
+// 					controller.SystemTime.Status = StatusError
+// 				} else {
+// 					controller.SystemTime.Status = StatusOk
+// 				}
+//
+// 				dt := types.DateTime(T)
+// 				controller.SystemTime.DateTime = &dt
+// 			}
+//
+// 			switch dt := time.Now().Sub(cached.touched); {
+// 			case dt < DeviceOk:
+// 				controller.Status = StatusOk
+// 			case dt < DeviceUncertain:
+// 				controller.Status = StatusUncertain
+// 			}
+// 		}
+//
+// 		list = append(list, controller)
+// 	}
+//
+// 	// ... append the 'found but not configured' controllers
+// 	for k, cached := range l.cache {
+// 		if _, ok := devices[k]; !ok {
+// 			controller := ControllerX{
+// 				ID:       ID(k),
+// 				created:  time.Now(),
+// 				Name:     nil,
+// 				DeviceID: k,
+// 				IP: ip{
+// 					IP:     cached.address,
+// 					Status: StatusOk,
+// 				},
+// 				SystemTime: datetime{
+// 					DateTime: cached.datetime,
+// 					TimeZone: time.Local,
+// 				},
+// 				Cards:  (*records)(cached.cards),
+// 				Events: (*records)(cached.events),
+// 				Doors:  map[uint8]string{},
+// 				Status: StatusUnknown,
+// 			}
+//
+// 			if cached.datetime != nil {
+// 				tz := controller.SystemTime.TimeZone
+// 				t := time.Time(*cached.datetime)
+// 				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+// 				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+//
+// 				if delta > WINDOW {
+// 					controller.SystemTime.Status = StatusError
+// 				} else {
+// 					controller.SystemTime.Status = StatusOk
+// 				}
+// 			}
+//
+// 			switch dt := time.Now().Sub(cached.touched); {
+// 			case dt < DeviceOk:
+// 				controller.Status = StatusUnconfigured
+// 			case dt < DeviceUncertain:
+// 				controller.Status = StatusUncertain
+// 			default:
+// 				controller.Status = StatusUnknown
+// 			}
+//
+// 			list = append(list, controller)
+// 		}
+// 	}
+//
+// 	sort.SliceStable(list, func(i, j int) bool { return list[i].created.Before(list[j].created) })
+//
+// 	return list
+// }
+
+// func (l *Local) Controller(id uint32) *ControllerX {
+// 	if v, ok := l.Devices[id]; ok {
+// 		name := types.Name(v.Name)
+// 		addr := v.IP // alias to avoid overwriting the configured value
+//
+// 		tz := time.Local
+// 		if v.TimeZone != "" {
+// 			if l, err := time.LoadLocation(v.TimeZone); err == nil {
+// 				tz = l
+// 			}
+// 		}
+//
+// 		controller := ControllerX{
+// 			ID:       ID(id),
+// 			created:  v.Created,
+// 			Name:     &name,
+// 			DeviceID: id,
+// 			IP: ip{
+// 				IP:     &addr,
+// 				Status: StatusUnknown,
+// 			},
+// 			SystemTime: datetime{
+// 				TimeZone: tz,
+// 			},
+// 			Doors:  map[uint8]string{},
+// 			Status: StatusUnknown,
+// 		}
+//
+// 		if cached, ok := l.cache[id]; ok {
+// 			controller.Cards = (*records)(cached.cards)
+// 			controller.Events = (*records)(cached.events)
+//
+// 			if cached.address != nil {
+// 				if cached.address.Equal(controller.IP.IP.IP) {
+// 					controller.IP.Status = StatusOk
+// 				} else {
+// 					controller.IP.Status = StatusError
+// 				}
+//
+// 				controller.IP.IP = cached.address
+// 			}
+//
+// 			if cached.datetime != nil {
+// 				tz := controller.SystemTime.TimeZone
+// 				t := time.Time(*cached.datetime)
+// 				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+// 				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+//
+// 				if delta > WINDOW {
+// 					controller.SystemTime.Status = StatusError
+// 				} else {
+// 					controller.SystemTime.Status = StatusOk
+// 				}
+//
+// 				dt := types.DateTime(T)
+// 				controller.SystemTime.DateTime = &dt
+// 			}
+//
+// 			switch dt := time.Now().Sub(cached.touched); {
+// 			case dt < DeviceOk:
+// 				controller.Status = StatusOk
+// 			case dt < DeviceUncertain:
+// 				controller.Status = StatusUncertain
+// 			}
+// 		}
+//
+// 		return &controller
+// 	}
+//
+// 	return nil
+// }
 
 func (l *Local) Update(permissions []types.Permissions) {
 	log.Printf("Updating ACL")
@@ -323,7 +411,7 @@ func (l *Local) Update(permissions []types.Permissions) {
 
 func (l *Local) refresh() {
 	list := map[uint32]struct{}{}
-	for k, _ := range l.Devices {
+	for k, _ := range l.devices {
 		list[k] = struct{}{}
 	}
 
@@ -407,8 +495,8 @@ func (l *Local) store(id uint32, info interface{}) {
 	switch v := info.(type) {
 	case uhppoted.GetDeviceResponse:
 		port := 60000
-		if d, ok := l.Devices[id]; ok {
-			port = d.IP.Port
+		if d, ok := l.devices[id]; ok {
+			port = d.Port
 		}
 
 		addr := address(net.UDPAddr{

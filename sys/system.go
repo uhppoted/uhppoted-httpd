@@ -16,7 +16,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type Controller struct {
+type ControllerX struct {
 	ID         string
 	created    time.Time
 	Name       *types.Name
@@ -29,15 +29,15 @@ type Controller struct {
 	Status     status
 }
 
-type ip struct {
-	IP     *address
-	Status status
-}
-
 type datetime struct {
 	DateTime *types.DateTime
 	TimeZone *time.Location
 	Status   status
+}
+
+type ip struct {
+	IP     *address
+	Status status
 }
 
 type records uint32
@@ -51,22 +51,23 @@ func (r *records) String() string {
 }
 
 type system struct {
-	file  string
-	Doors map[string]types.Door `json:"doors"`
-	Local []*Local              `json:"local"`
+	file        string
+	Doors       map[string]types.Door  `json:"doors"`
+	Controllers map[string]*Controller `json:"controllers"`
+	Local       Local                  `json:"local"`
 }
 
 func (s *system) refresh() {
 	if s != nil {
-		for _, l := range s.Local {
-			go l.refresh()
-		}
+		go s.Local.refresh()
 	}
 }
 
 var sys = system{
 	Doors: map[string]types.Door{},
-	Local: []*Local{},
+	Local: Local{
+		devices: map[uint32]address{},
+	},
 }
 
 func init() {
@@ -91,39 +92,29 @@ func Init(conf string) error {
 
 	sys.file = conf
 
-	for _, l := range sys.Local {
-		l.Init()
+	sys.Local.Init(sys.Controllers)
+
+	if b, err := json.MarshalIndent(sys, "", "  "); err == nil {
+		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
 	}
 
 	return nil
 }
 
 func System() interface{} {
-	controllers := []Controller{}
+	controllers := []interface{}{}
 
-	for _, l := range sys.Local {
-		controllers = append(controllers, l.Controllers()...)
-	}
-
-	for _, c := range controllers {
-		for _, d := range sys.Doors {
-			if d.ControllerID == c.DeviceID {
-				c.Doors[d.Door] = d.Name
-			}
-		}
-	}
+	controllers = append(controllers, sys.Local.Controllers(sys.Controllers)...)
 
 	return struct {
-		Controllers []Controller
+		Controllers []interface{}
 	}{
 		Controllers: controllers,
 	}
 }
 
 func Update(permissions []types.Permissions) {
-	for _, l := range sys.Local {
-		l.Update(permissions)
-	}
+	sys.Local.Update(permissions)
 }
 
 //func Post(m map[string]interface{}, auth db.IAuth) (interface{}, error) {
@@ -158,34 +149,32 @@ loop:
 			}
 		}
 
-		for _, l := range sys.Local {
-			for k, d := range l.Devices {
-				if ID(k) == c.ID {
-					//				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
-					//					if r, err := d.delete(shadow, c, auth); err != nil {
-					//						return nil, err
-					//					} else if r != nil {
-					//						list.Deleted = append(list.Deleted, r)
-					//						continue loop
-					//					}
-					//				}
+		for k, _ := range sys.Local.devices {
+			if ID(k) == c.ID {
+				//				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
+				//					if r, err := d.delete(shadow, c, auth); err != nil {
+				//						return nil, err
+				//					} else if r != nil {
+				//						list.Deleted = append(list.Deleted, r)
+				//						continue loop
+				//					}
+				//				}
 
-					//					if r, err := d.update(shadow, c, auth); err != nil {
-					//						return nil, err
-					//					} else if r != nil {
-					//						list.Updated = append(list.Updated, r)
-					//					}
+				//					if r, err := d.update(shadow, c, auth); err != nil {
+				//						return nil, err
+				//					} else if r != nil {
+				//						list.Updated = append(list.Updated, r)
+				//					}
 
-					if c.Name != nil {
-						d.Name = c.Name.String()
-					}
+				// if c.Name != nil {
+				// 	d.Name = c.Name.String()
+				// }
 
-					if cc := l.Controller(k); cc != nil {
-						list.Updated = append(list.Updated, cc)
-					}
+				// if cc := sys.Local.Controller(k); cc != nil {
+				// 	list.Updated = append(list.Updated, cc)
+				// }
 
-					continue loop
-				}
+				continue loop
 			}
 		}
 
@@ -250,8 +239,8 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	acl := make(acl.ACL)
 
 	for _, d := range sys.Doors {
-		if _, ok := acl[d.ControllerID]; !ok {
-			acl[d.ControllerID] = make(map[uint32]core.Card)
+		if _, ok := acl[d.DeviceID]; !ok {
+			acl[d.DeviceID] = make(map[uint32]core.Card)
 		}
 	}
 
@@ -277,10 +266,10 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 		for _, d := range p.Doors {
 			if door, ok := sys.Doors[d]; !ok {
 				log.Printf("WARN %v", fmt.Errorf("Invalid door %v for card %v", d, p.CardNumber))
-			} else if l, ok := acl[door.ControllerID]; !ok {
-				log.Printf("WARN %v", fmt.Errorf("Door %v - invalid configuration (no controller defined for  %v)", d, door.ControllerID))
+			} else if l, ok := acl[door.DeviceID]; !ok {
+				log.Printf("WARN %v", fmt.Errorf("Door %v - invalid configuration (no controller defined for  %v)", d, door.DeviceID))
 			} else if card, ok := l[p.CardNumber]; !ok {
-				log.Printf("WARN %v", fmt.Errorf("Card %v not initialised for controller %v", p.CardNumber, door.ControllerID))
+				log.Printf("WARN %v", fmt.Errorf("Card %v not initialised for controller %v", p.CardNumber, door.DeviceID))
 			} else {
 				card.Doors[door.Door] = true
 			}
@@ -290,7 +279,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	return &acl, nil
 }
 
-func unpack(m map[string]interface{}) ([]Controller, error) {
+func unpack(m map[string]interface{}) ([]ControllerX, error) {
 	o := struct {
 		Controllers []struct {
 			ID   string
@@ -307,10 +296,10 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 		return nil, err
 	}
 
-	controllers := []Controller{}
+	controllers := []ControllerX{}
 
 	for _, r := range o.Controllers {
-		record := Controller{
+		record := ControllerX{
 			ID: strings.TrimSpace(r.ID),
 		}
 
