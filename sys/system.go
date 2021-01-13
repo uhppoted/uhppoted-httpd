@@ -94,7 +94,7 @@ func Init(conf string) error {
 
 	sys.Local.Init(sys.Controllers)
 
-	if b, err := json.MarshalIndent(sys, "", "  "); err == nil {
+	if b, err := json.MarshalIndent(&sys, "", "  "); err == nil {
 		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
 	}
 

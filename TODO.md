@@ -81,6 +81,9 @@
         -- use hash of DB to identify changes
         -- CRDT ??
       
+- [ ] Events
+      - https://jvns.ca/blog/2021/01/12/day-36--server-sent-events-are-cool--and-a-fun-bug/
+      
 - [ ] Login
       - include login cookie when redirecting to login.html to avoid the initial double click
       - restyle avatar to have a border and be a bit floaty (i.e. not be glued to top-right)
