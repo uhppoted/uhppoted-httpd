@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -27,27 +28,6 @@ type ControllerX struct {
 	Events     *records
 	Doors      map[uint8]string
 	Status     status
-}
-
-type datetime struct {
-	DateTime *types.DateTime
-	TimeZone *time.Location
-	Status   status
-}
-
-type ip struct {
-	IP     *address
-	Status status
-}
-
-type records uint32
-
-func (r *records) String() string {
-	if r != nil {
-		return fmt.Sprintf("%v", uint32(*r))
-	}
-
-	return ""
 }
 
 type system struct {
@@ -102,12 +82,24 @@ func Init(conf string) error {
 }
 
 func System() interface{} {
-	controllers := []interface{}{}
+	devices := map[uint32]struct{}{}
+	for _, v := range sys.Controllers {
+		devices[v.DeviceID] = struct{}{}
+	}
 
-	controllers = append(controllers, sys.Local.Controllers(sys.Controllers)...)
+	for k, _ := range sys.Local.cache {
+		devices[k] = struct{}{}
+	}
+
+	controllers := []controller{}
+	for k, _ := range devices {
+		controllers = append(controllers, merge(k))
+	}
+
+	sort.SliceStable(controllers, func(i, j int) bool { return controllers[i].Created.Before(controllers[j].Created) })
 
 	return struct {
-		Controllers []interface{}
+		Controllers []controller
 	}{
 		Controllers: controllers,
 	}
