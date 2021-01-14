@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
@@ -17,36 +18,59 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type ControllerX struct {
-	ID         string
-	created    time.Time
-	Name       *types.Name
-	DeviceID   uint32
-	IP         ip
-	SystemTime datetime
-	Cards      *records
-	Events     *records
-	Doors      map[uint8]string
-	Status     status
+type system struct {
+	sync.RWMutex
+	file string
+	data data
 }
 
-type system struct {
-	file        string
+type data struct {
+	Tables tables `json:"tables"`
+}
+
+type tables struct {
 	Doors       map[string]types.Door  `json:"doors"`
 	Controllers map[string]*Controller `json:"controllers"`
-	Local       Local                  `json:"local"`
+	Local       *Local                 `json:"local"`
 }
 
 func (s *system) refresh() {
 	if s != nil {
-		go s.Local.refresh()
+		go s.data.Tables.Local.refresh()
 	}
 }
 
+func (d *data) clone() *data {
+	shadow := data{
+		Tables: tables{
+			Doors:       map[string]types.Door{},
+			Controllers: map[string]*Controller{},
+			Local:       &Local{},
+		},
+	}
+
+	for k, v := range d.Tables.Doors {
+		shadow.Tables.Doors[k] = v.Clone()
+	}
+
+	for k, v := range d.Tables.Controllers {
+		shadow.Tables.Controllers[k] = v.clone()
+	}
+
+	shadow.Tables.Local = d.Tables.Local.clone()
+
+	return &shadow
+}
+
 var sys = system{
-	Doors: map[string]types.Door{},
-	Local: Local{
-		devices: map[uint32]address{},
+	data: data{
+		Tables: tables{
+			Doors:       map[string]types.Door{},
+			Controllers: map[string]*Controller{},
+			Local: &Local{
+				devices: map[uint32]address{},
+			},
+		},
 	},
 }
 
@@ -65,29 +89,33 @@ func Init(conf string) error {
 		return err
 	}
 
-	err = json.Unmarshal(bytes, &sys)
+	err = json.Unmarshal(bytes, &sys.data)
 	if err != nil {
 		return err
 	}
 
 	sys.file = conf
 
-	sys.Local.Init(sys.Controllers)
+	sys.data.Tables.Local.Init(sys.data.Tables.Controllers)
 
-	if b, err := json.MarshalIndent(&sys, "", "  "); err == nil {
-		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
-	}
+	//	if b, err := json.MarshalIndent(sys.data, "", "  "); err == nil {
+	//		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
+	//	}
 
 	return nil
 }
 
 func System() interface{} {
+	sys.RLock()
+
+	defer sys.RUnlock()
+
 	devices := map[uint32]struct{}{}
-	for _, v := range sys.Controllers {
+	for _, v := range sys.data.Tables.Controllers {
 		devices[v.DeviceID] = struct{}{}
 	}
 
-	for k, _ := range sys.Local.cache {
+	for k, _ := range sys.data.Tables.Local.cache {
 		devices[k] = struct{}{}
 	}
 
@@ -106,14 +134,14 @@ func System() interface{} {
 }
 
 func Update(permissions []types.Permissions) {
-	sys.Local.Update(permissions)
+	sys.data.Tables.Local.Update(permissions)
 }
 
 //func Post(m map[string]interface{}, auth db.IAuth) (interface{}, error) {
 func Post(m map[string]interface{}) (interface{}, error) {
-	//	d.Lock()
-	//
-	//	defer d.Unlock()
+	sys.Lock()
+
+	defer sys.Unlock()
 
 	// add/update ?
 
@@ -131,6 +159,8 @@ func Post(m map[string]interface{}) (interface{}, error) {
 		Deleted []interface{} `json:"deleted"`
 	}{}
 
+	shadow := sys.data.clone()
+
 loop:
 	for _, c := range controllers {
 		if c.ID == "" {
@@ -141,8 +171,8 @@ loop:
 			}
 		}
 
-		for k, _ := range sys.Local.devices {
-			if ID(k) == c.ID {
+		for k, v := range shadow.Tables.Controllers {
+			if k == c.ID {
 				//				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
 				//					if r, err := d.delete(shadow, c, auth); err != nil {
 				//						return nil, err
@@ -158,35 +188,33 @@ loop:
 				//						list.Updated = append(list.Updated, r)
 				//					}
 
-				// if c.Name != nil {
-				// 	d.Name = c.Name.String()
-				// }
+				if c.Name != nil {
+					v.Name = c.Name
+				}
 
-				// if cc := sys.Local.Controller(k); cc != nil {
-				// 	list.Updated = append(list.Updated, cc)
-				// }
+				list.Updated = append(list.Updated, merge(c.DeviceID))
 
 				continue loop
 			}
 		}
 
-		//		if r, err := d.add(shadow, c, auth); err != nil {
-		//			return nil, err
-		//		} else if r != nil {
-		//			list.Updated = append(list.Updated, r)
-		//		}
+		//		//		if r, err := d.add(shadow, c, auth); err != nil {
+		//		//			return nil, err
+		//		//		} else if r != nil {
+		//		//			list.Updated = append(list.Updated, r)
+		//		//		}
 	}
 
-	if err := save(&sys, sys.file); err != nil {
+	if err := save(shadow, sys.file); err != nil {
 		return nil, err
 	}
 
-	//	d.data = *shadow
+	sys.data = *shadow
 
 	return list, nil
 }
 
-func save(s *system, file string) error {
+func save(s *data, file string) error {
 	//	if err := validate(s); err != nil {
 	//		return err
 	//	}
@@ -230,7 +258,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	// initialise empty ACL
 	acl := make(acl.ACL)
 
-	for _, d := range sys.Doors {
+	for _, d := range sys.data.Tables.Doors {
 		if _, ok := acl[d.DeviceID]; !ok {
 			acl[d.DeviceID] = make(map[uint32]core.Card)
 		}
@@ -256,7 +284,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	// update ACL cards from permissions
 	for _, p := range list {
 		for _, d := range p.Doors {
-			if door, ok := sys.Doors[d]; !ok {
+			if door, ok := sys.data.Tables.Doors[d]; !ok {
 				log.Printf("WARN %v", fmt.Errorf("Invalid door %v for card %v", d, p.CardNumber))
 			} else if l, ok := acl[door.DeviceID]; !ok {
 				log.Printf("WARN %v", fmt.Errorf("Door %v - invalid configuration (no controller defined for  %v)", d, door.DeviceID))
@@ -271,7 +299,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	return &acl, nil
 }
 
-func unpack(m map[string]interface{}) ([]ControllerX, error) {
+func unpack(m map[string]interface{}) ([]Controller, error) {
 	o := struct {
 		Controllers []struct {
 			ID   string
@@ -288,10 +316,10 @@ func unpack(m map[string]interface{}) ([]ControllerX, error) {
 		return nil, err
 	}
 
-	controllers := []ControllerX{}
+	controllers := []Controller{}
 
 	for _, r := range o.Controllers {
-		record := ControllerX{
+		record := Controller{
 			ID: strings.TrimSpace(r.ID),
 		}
 

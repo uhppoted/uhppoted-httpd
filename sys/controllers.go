@@ -10,29 +10,41 @@ import (
 
 // Container class for the static information pertaining to an access controller.
 type Controller struct {
-	ID       string           `json:"ID"`
-	Created  time.Time        `json:"created"`
-	Name     *types.Name      `json:"name"`
-	DeviceID uint32           `json:"device-id"`
-	IP       address          `json:"address"`
-	Doors    map[uint8]string `json:"-"`
-	TimeZone string           `json:"timezone"`
+	ID       string      `json:"ID"`
+	Created  time.Time   `json:"created"`
+	Name     *types.Name `json:"name"`
+	DeviceID uint32      `json:"device-id"`
+	IP       address     `json:"address"`
+	TimeZone string      `json:"timezone"`
 }
 
-// Internal container class for the instantaneous state of an access controller. Used
-// mostly for HTML templating.
+// Internal 'temporary' container class for the instantaneous state of an access controller.
+// Used mostly for HTML templating.
 type controller struct {
 	Controller
-	//	ID         string
-	//	created    time.Time
-	//	Name       *types.Name
-	//	DeviceID   uint32
 	IP         ip
 	SystemTime datetime
 	Cards      *records
 	Events     *records
-	//	Doors      map[uint8]string
-	Status status
+	Doors      map[uint8]string
+	Status     status
+}
+
+func (c *Controller) clone() *Controller {
+	if c != nil {
+		replicant := Controller{
+			ID:       c.ID,
+			Created:  c.Created,
+			Name:     c.Name.Copy(),
+			DeviceID: c.DeviceID,
+			IP:       c.IP,
+			TimeZone: c.TimeZone,
+		}
+
+		return &replicant
+	}
+
+	return nil
 }
 
 func merge(id uint32) controller {
@@ -42,12 +54,12 @@ func merge(id uint32) controller {
 		Controller: Controller{
 			ID:       ID(id),
 			DeviceID: id,
-			Doors:    map[uint8]string{},
 			Created:  time.Now(),
 		},
+		Doors: map[uint8]string{},
 	}
 
-	for _, v := range sys.Controllers {
+	for _, v := range sys.data.Tables.Controllers {
 		if v.DeviceID == id {
 			c.ID = v.ID
 			c.Created = v.Created
@@ -56,7 +68,7 @@ func merge(id uint32) controller {
 				IP: &v.IP,
 			}
 
-			for _, d := range sys.Doors {
+			for _, d := range sys.data.Tables.Doors {
 				if d.DeviceID == c.DeviceID {
 					c.Doors[d.Door] = d.Name
 				}
@@ -70,7 +82,7 @@ func merge(id uint32) controller {
 		}
 	}
 
-	if cached, ok := sys.Local.cache[id]; ok {
+	if cached, ok := sys.data.Tables.Local.cache[id]; ok {
 		c.Cards = (*records)(cached.cards)
 		c.Events = (*records)(cached.events)
 

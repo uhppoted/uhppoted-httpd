@@ -42,6 +42,11 @@ const (
 
 const WINDOW = 300 // 5 minutes
 
+// TODO interim implemenation (need to split static/dynamic data)
+func (l *Local) clone() *Local {
+	return l
+}
+
 // TODO (?) Move into custom JSON Unmarshal
 //          Ref. http://choly.ca/post/go-json-marshalling/
 func (l *Local) Init(devices map[string]*Controller) {

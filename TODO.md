@@ -12,8 +12,8 @@
 
 - [ ] sysinfo
       - commonalise controller and card handling into tabular.js
-      - edit controller
       - edit IP address
+      - edit deviceID (?)
       - edit datetime + timezone
       - edit doors
       - edit auth
