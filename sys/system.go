@@ -6,9 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -76,6 +75,9 @@ var sys = system{
 
 func init() {
 	go func() {
+		time.Sleep(2500 * time.Millisecond)
+		sys.refresh()
+
 		c := time.Tick(30 * time.Second)
 		for _ = range c {
 			sys.refresh()
@@ -145,6 +147,8 @@ func Post(m map[string]interface{}) (interface{}, error) {
 
 	// add/update ?
 
+	fmt.Printf(">>>>>>>>>> %+v\n", m)
+
 	controllers, err := unpack(m)
 	if err != nil {
 		return nil, &types.HttpdError{
@@ -198,11 +202,11 @@ loop:
 			}
 		}
 
-		//		//		if r, err := d.add(shadow, c, auth); err != nil {
-		//		//			return nil, err
-		//		//		} else if r != nil {
-		//		//			list.Updated = append(list.Updated, r)
-		//		//		}
+		if r, err := add(shadow, c); err != nil {
+			return nil, err
+		} else if r != nil {
+			list.Updated = append(list.Updated, merge(r.DeviceID))
+		}
 	}
 
 	if err := save(shadow, sys.file); err != nil {
@@ -214,11 +218,33 @@ loop:
 	return list, nil
 }
 
-func save(s *data, file string) error {
-	//	if err := validate(s); err != nil {
-	//		return err
+//func add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
+func add(shadow *data, c Controller) (*Controller, error) {
+	record := c.clone()
+
+	//	if auth != nil {
+	//		if err := auth.CanAddCardHolder(record); err != nil {
+	//			return nil, &types.HttpdError{
+	//				Status: http.StatusUnauthorized,
+	//				Err:    fmt.Errorf("Not authorized to add card holder"),
+	//				Detail: err,
+	//			}
+	//		}
 	//	}
-	//
+
+	record.Created = time.Now()
+
+	shadow.Tables.Controllers[record.ID] = record
+	//	d.log("add", record, auth)
+
+	return record, nil
+}
+
+func save(d *data, file string) error {
+	if err := validate(d); err != nil {
+		return err
+	}
+
 	//	if err := clean(s); err != nil {
 	//		return err
 	//	}
@@ -227,31 +253,60 @@ func save(s *data, file string) error {
 		return nil
 	}
 
-	b, err := json.MarshalIndent(s, "", "  ")
+	_, err := json.MarshalIndent(d, "", "  ")
 	if err != nil {
 		return err
 	}
 
-	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-system.json")
-	if err != nil {
-		return err
+	//	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-system.json")
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	defer os.Remove(tmp.Name())
+	//
+	//	if _, err := tmp.Write(b); err != nil {
+	//		return err
+	//	}
+	//
+	//	if err := tmp.Close(); err != nil {
+	//		return err
+	//	}
+	//
+	//	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
+	//		return err
+	//	}
+	//
+	//	return os.Rename(tmp.Name(), file)
+
+	return nil
+}
+
+func validate(d *data) error {
+	devices := map[uint32]string{}
+
+	for _, r := range d.Tables.Controllers {
+		id := r.DeviceID
+
+		if id == 0 {
+			return &types.HttpdError{
+				Status: http.StatusBadRequest,
+				Err:    fmt.Errorf("Invalid controller ID"),
+				Detail: fmt.Errorf("Invalid controller ID (%v)", id),
+			}
+		}
+		if rid, ok := devices[id]; ok {
+			return &types.HttpdError{
+				Status: http.StatusBadRequest,
+				Err:    fmt.Errorf("Duplicate controller ID (%v)", id),
+				Detail: fmt.Errorf("controller %v: duplicate device ID in records %v and %v", id, rid, r.ID),
+			}
+		}
+
+		devices[id] = r.ID
 	}
 
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), file)
+	return nil
 }
 
 func consolidate(list []types.Permissions) (*acl.ACL, error) {
@@ -302,8 +357,9 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 func unpack(m map[string]interface{}) ([]Controller, error) {
 	o := struct {
 		Controllers []struct {
-			ID   string
-			Name *string
+			ID       string
+			Name     *string
+			DeviceID *string
 		}
 	}{}
 
@@ -326,6 +382,14 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 		if r.Name != nil {
 			name := types.Name(*r.Name)
 			record.Name = &name
+		}
+
+		if r.DeviceID != nil {
+			if v, err := strconv.ParseUint(*r.DeviceID, 10, 32); err != nil {
+				return nil, err
+			} else {
+				record.DeviceID = uint32(v)
+			}
 		}
 
 		controllers = append(controllers, record)

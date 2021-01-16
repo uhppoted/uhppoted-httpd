@@ -8,16 +8,15 @@
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
 - [ ] Switchable themes
       - use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
-- [ ] POST to e.g. /system when not authorised logs out
+- [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 
 - [ ] sysinfo
+      - edit auth
       - commonalise controller and card handling into tabular.js
       - edit IP address
       - edit deviceID (?)
       - edit datetime + timezone
       - edit doors
-      - edit auth
-      - reduce initial delay
       - cache expiry
       - Use sync.Map for cache
       - limit number of pending 'update' requests (e.g. if device is not responding)
