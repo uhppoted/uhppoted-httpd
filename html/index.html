@@ -135,7 +135,6 @@
                            data-original='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04:05"}}'
                            data-value='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04:05"}}'
                            data-status="{{$controller.SystemTime.Status}}"
-                           required  
                            readonly />
                   </td>
 
@@ -268,6 +267,7 @@
   <!-- global information initialised by Go template -->
   <script>
     var constants = {
+      theme: {{$.context.Theme}},
       groups: [ {{range .db.Groups}}{{.ID}},{{end}} ]
     }
   </script>

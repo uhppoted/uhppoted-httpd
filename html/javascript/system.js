@@ -1,6 +1,7 @@
 /* global constants */
 
-import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
+// import { getAsJSON, warning, dismiss } from './uhppoted.js'
+import { postAsJSON, warning } from './uhppoted.js'
 
 export function onEdited (event) {
   set('controllers', event.target, event.target.value)
@@ -20,7 +21,7 @@ export function onCommit (event, op) {
 }
 
 export function onCommitAll (event) {
-  throw 'onCommitAll: NOT IMPLEMENTED'
+  throw Error('onCommitAll: NOT IMPLEMENTED')
   // const tbody = document.getElementById('cardholders').querySelector('table tbody')
 
   // if (tbody) {
@@ -49,7 +50,7 @@ export function onRollback (event, op) {
 }
 
 export function onRollbackAll (event) {
-  throw 'onRollbackAll: NOT IMPLEMENTED'
+  throw Error('onRollbackAll: NOT IMPLEMENTED')
   // const tbody = document.getElementById('cardholders').querySelector('table tbody')
 
   // if (tbody) {
@@ -68,7 +69,7 @@ export function onRollbackAll (event) {
 }
 
 export function onAdd (event) {
-  throw 'onAdd: NOT IMPLEMENTED'
+  throw Error('onAdd: NOT IMPLEMENTED')
   // const id = event.target.dataset.record
   // const row = document.getElementById(id)
 
@@ -179,20 +180,19 @@ export function onUpdate (...list) {
 }
 
 export function onDelete (id) {
-  throw 'onDelete: NOT IMPLEMENTED'
-  // const tbody = document.getElementById('cardholders').querySelector('table tbody')
-  // const row = document.getElementById(id)
+  const tbody = document.getElementById('controllers').querySelector('table tbody')
+  const row = document.getElementById(id)
 
-  // if (row) {
-  //   const rows = tbody.rows
+  if (tbody && row) {
+    const rows = tbody.rows
 
-  //   for (let ix = 0; ix < rows.length; ix++) {
-  //     if (rows[ix].id === id) {
-  //       tbody.deleteRow(ix)
-  //       break
-  //     }
-  //   }
-  // }
+    for (let ix = 0; ix < rows.length; ix++) {
+      if (rows[ix].id === id) {
+        tbody.deleteRow(ix)
+        break
+      }
+    }
+  }
 }
 
 export function onRevert (id) {
@@ -224,59 +224,63 @@ export function onRevert (id) {
 }
 
 export function onNew (event) {
-  throw 'onNew: NOT IMPLEMENTED'
-  // const tbody = document.getElementById('cardholders').querySelector('table tbody')
+  const tbody = document.getElementById('controllers').querySelector('table tbody')
 
-  // if (tbody) {
-  //   const row = tbody.insertRow()
-  //   const name = row.insertCell()
-  //   const card = row.insertCell()
-  //   const from = row.insertCell()
-  //   const to = row.insertCell()
-  //   const groups = []
-  //   const uuid = 'U' + uuidv4()
+  if (tbody) {
+    const uuid = 'U' + uuidv4()
+    const row = tbody.insertRow()
+    const name = row.insertCell()
+    const device = row.insertCell()
+    const ip = row.insertCell()
+    const datetime = row.insertCell()
+    const cards = row.insertCell()
+    const events = row.insertCell()
+    const doors = {
+      1: row.insertCell(),
+      2: row.insertCell(),
+      3: row.insertCell(),
+      4: row.insertCell()
+    }
 
-  //   // 'constants' is a global object initialised by the Go template
-  //   for (let i = 0; i < constants.groups.length; i++) {
-  //     groups.push(row.insertCell())
-  //   }
+    row.id = uuid
+    row.classList.add('new')
+    row.classList.add('controller')
+    row.dataset.status = 'unknown'
 
-  //   row.id = uuid
-  //   row.classList.add('new')
+    name.style = 'display:flex; flex-direction:row;'
+    name.classList.add('rowheader')
+    name.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                     '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />' +
+                     '<span class="control commit" id="' + uuid + '_commit" onclick="onCommit(event)" data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
+                     '<span class="control rollback" id="' + uuid + '_rollback" onclick="onRollback(event, \'delete\')" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
 
-  //   name.style = 'display:flex; flex-direction:row;'
-  //   name.classList.add('rowheader')
+    device.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                       '<input id="' + uuid + '-ID" class="field ID" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />'
 
-  //   name.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-  //                    '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />' +
-  //                    '<span class="control commit" id="' + uuid + '_commit" onclick="onCommit(event)" data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
-  //                    '<span class="control rollback" id="' + uuid + '_rollback" onclick="onRollback(event)" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
+    ip.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                   '<input id="' + uuid + '-IP" class="field IP" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
 
-  //   card.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-  //                    '<input id="' + uuid + '-card" class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="6152346" />'
+    datetime.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                         '<input id="' + uuid + '-datetime" class="field datetime" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
 
-  //   from.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-  //                    '<input id="' + uuid + '-from" class="field from" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
+    cards.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                      '<input id="' + uuid + '-cards" class="field cards" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
 
-  //   to.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-  //                  '<input id="' + uuid + '-to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
+    events.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                       '<input id="' + uuid + '-events" class="field events" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
 
-  //   for (let i = 0; i < groups.length; i++) {
-  //     const g = groups[i]
-  //     const id = uuid + '-' + constants.groups[i]
+    for (let i = 1; i <= 4; i++) {
+      const d = doors[i]
+      const id = uuid + '-' + i
 
-  //     g.innerHTML = '<img class="flag" src="images/corner.svg" />' +
-  //                   '<label class="group">' +
-  //                   '<input id="' + id + '" class="field" type="checkbox" onclick="onTick(event)" data-record="' + uuid + '" data-original="false" data-value="false" />' +
-  //                   '<img class="no"  src="images/times-solid.svg" />' +
-  //                   '<img class="yes" src="images/check-solid.svg" />' +
-  //                   '</label>'
-  //   }
-  // }
+      d.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                     '<input id="' + id + '" class="field door" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
+    }
+  }
 }
 
 export function onRefresh (event) {
-  throw 'onRefresh: NOT IMPLEMENTED'
+  throw Error('onRefresh: NOT IMPLEMENTED')
   // busy()
   // dismiss()
 
@@ -298,10 +302,10 @@ export function onRefresh (event) {
   //   })
 }
 
-function refresh (db) {
-  throw 'refresh: NOT IMPLEMENTED'
-  // updated(Object.values(db.cardholders))
-}
+// function refresh (db) {
+//  throw 'refresh: NOT IMPLEMENTED'
+//  // updated(Object.values(db.cardholders))
+// }
 
 function updated (list) {
   if (list) {
@@ -320,27 +324,27 @@ function updated (list) {
   }
 }
 
-function deleted (list) {
-  throw 'deleted: NOT IMPLEMENTED'
-  // const tbody = document.getElementById('cardholders').querySelector('table tbody')
-
-  // if (tbody && list) {
-  //   list.forEach((record) => {
-  //     const id = record.ID
-  //     const row = document.getElementById(id)
-
-  //     if (row) {
-  //       const rows = tbody.rows
-  //       for (let i = 0; i < rows.length; i++) {
-  //         if (rows[i].id === id) {
-  //           tbody.deleteRow(i)
-  //           break
-  //         }
-  //       }
-  //     }
-  //   })
-  // }
-}
+// function deleted (list) {
+//   throw 'deleted: NOT IMPLEMENTED'
+//   // const tbody = document.getElementById('cardholders').querySelector('table tbody')
+//
+//   // if (tbody && list) {
+//   //   list.forEach((record) => {
+//   //     const id = record.ID
+//   //     const row = document.getElementById(id)
+//
+//   //     if (row) {
+//   //       const rows = tbody.rows
+//   //       for (let i = 0; i < rows.length; i++) {
+//   //         if (rows[i].id === id) {
+//   //           tbody.deleteRow(i)
+//   //           break
+//   //         }
+//   //       }
+//   //     }
+//   //   })
+//   // }
+// }
 
 function set (div, element, value) {
   const tbody = document.getElementById(div).querySelector('table tbody')

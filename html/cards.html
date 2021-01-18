@@ -188,6 +188,7 @@
   <!-- global information initialised by Go template -->
   <script>
     var constants = {
+      theme: {{$.context.Theme}},
       groups: [ {{range .db.Groups}}{{.ID}},{{end}} ]
     }
   </script>
