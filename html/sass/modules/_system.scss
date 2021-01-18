@@ -95,8 +95,8 @@ tr.controller td input.ID {
   outline: none;
 }
 
-tr.controller td.ID input::-webkit-inner-spin-button, 
-tr.controller td.ID input::-webkit-outer-spin-button { 
+tr.controller td input.ID::-webkit-inner-spin-button, 
+tr.controller td input.ID::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
 }

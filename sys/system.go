@@ -112,18 +112,28 @@ func System() interface{} {
 
 	defer sys.RUnlock()
 
-	devices := map[uint32]struct{}{}
+	devices := map[uint32]*Controller{}
 	for _, v := range sys.data.Tables.Controllers {
-		devices[v.DeviceID] = struct{}{}
+		devices[v.DeviceID] = v
 	}
 
 	for k, _ := range sys.data.Tables.Local.cache {
-		devices[k] = struct{}{}
+		if _, ok := devices[k]; !ok {
+			devices[k] = nil
+		}
 	}
 
 	controllers := []controller{}
-	for k, _ := range devices {
-		controllers = append(controllers, merge(k))
+	for k, c := range devices {
+		if c != nil {
+			controllers = append(controllers, merge(*c))
+		} else {
+			controllers = append(controllers, merge(Controller{
+				ID:       ID(k),
+				DeviceID: k,
+				Created:  time.Now(),
+			}))
+		}
 	}
 
 	sort.SliceStable(controllers, func(i, j int) bool { return controllers[i].Created.Before(controllers[j].Created) })
@@ -146,8 +156,6 @@ func Post(m map[string]interface{}) (interface{}, error) {
 	defer sys.Unlock()
 
 	// add/update ?
-
-	fmt.Printf(">>>>>>>>>> %+v\n", m)
 
 	controllers, err := unpack(m)
 	if err != nil {
@@ -175,37 +183,33 @@ loop:
 			}
 		}
 
-		for k, v := range shadow.Tables.Controllers {
-			if k == c.ID {
-				//				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
-				//					if r, err := d.delete(shadow, c, auth); err != nil {
-				//						return nil, err
-				//					} else if r != nil {
-				//						list.Deleted = append(list.Deleted, r)
-				//						continue loop
-				//					}
-				//				}
+		if _, ok := shadow.Tables.Controllers[c.ID]; ok {
+			//				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
+			//					if r, err := d.delete(shadow, c, auth); err != nil {
+			//						return nil, err
+			//					} else if r != nil {
+			//						list.Deleted = append(list.Deleted, r)
+			//						continue loop
+			//					}
+			//				}
 
-				//					if r, err := d.update(shadow, c, auth); err != nil {
-				//						return nil, err
-				//					} else if r != nil {
-				//						list.Updated = append(list.Updated, r)
-				//					}
-
-				if c.Name != nil {
-					v.Name = c.Name
-				}
-
-				list.Updated = append(list.Updated, merge(c.DeviceID))
-
-				continue loop
+			if r, err := update(shadow, c); err != nil {
+				return nil, err
+			} else if r != nil {
+				list.Updated = append(list.Updated, merge(*r))
 			}
+
+			// if c.Name != nil {
+			// 	v.Name = c.Name
+			// }
+
+			continue loop
 		}
 
 		if r, err := add(shadow, c); err != nil {
 			return nil, err
 		} else if r != nil {
-			list.Updated = append(list.Updated, merge(r.DeviceID))
+			list.Updated = append(list.Updated, merge(*r))
 		}
 	}
 
@@ -240,14 +244,44 @@ func add(shadow *data, c Controller) (*Controller, error) {
 	return record, nil
 }
 
+// func update(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
+func update(shadow *data, c Controller) (*Controller, error) {
+	if record, ok := shadow.Tables.Controllers[c.ID]; ok {
+		if c.Name != nil {
+			record.Name = c.Name
+		}
+
+		if c.DeviceID != 0 {
+			record.DeviceID = c.DeviceID
+		}
+
+		//		current := d.data.Tables.CardHolders[ch.ID]
+		//		if auth != nil {
+		//			if err := auth.CanUpdateCardHolder(current, record); err != nil {
+		//				return nil, &types.HttpdError{
+		//					Status: http.StatusUnauthorized,
+		//					Err:    fmt.Errorf("Not authorized to update card holder"),
+		//					Detail: err,
+		//				}
+		//			}
+		//		}
+		//
+		//		d.log("update", map[string]interface{}{"original": current, "updated": record}, auth)
+
+		return record, nil
+	}
+
+	return nil, nil
+}
+
 func save(d *data, file string) error {
 	if err := validate(d); err != nil {
 		return err
 	}
 
-	//	if err := clean(s); err != nil {
-	//		return err
-	//	}
+	if err := scrub(d); err != nil {
+		return err
+	}
 
 	if file == "" {
 		return nil
@@ -295,6 +329,7 @@ func validate(d *data) error {
 				Detail: fmt.Errorf("Invalid controller ID (%v)", id),
 			}
 		}
+
 		if rid, ok := devices[id]; ok {
 			return &types.HttpdError{
 				Status: http.StatusBadRequest,
@@ -306,6 +341,10 @@ func validate(d *data) error {
 		devices[id] = r.ID
 	}
 
+	return nil
+}
+
+func scrub(d *data) error {
 	return nil
 }
 

@@ -47,8 +47,8 @@ td input.cardnumber:focus {
   border: 1px solid red;
 }
 
-td.cardnumber input::-webkit-inner-spin-button, 
-td.cardnumber input::-webkit-outer-spin-button { 
+td input.cardnumber::-webkit-inner-spin-button, 
+td input.cardnumber::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
 }

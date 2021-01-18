@@ -94,7 +94,7 @@
                     <span class="control rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
                   </td>
 
-                  <td>
+                  <td class="ID">
                     <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
                     <input id="{{$cid}}-ID" 
                            class="field ID"
@@ -105,8 +105,7 @@
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
                            data-original="{{$controller.DeviceID}}"
-                           data-value="{{$controller.DeviceID}}"  
-                           readonly />
+                           data-value="{{$controller.DeviceID}}" />
                   </td>
 
                   <td>

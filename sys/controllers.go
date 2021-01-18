@@ -47,58 +47,45 @@ func (c *Controller) clone() *Controller {
 	return nil
 }
 
-func merge(id uint32) controller {
-	tz := time.Local
-
-	c := controller{
-		Controller: Controller{
-			ID:       ID(id),
-			DeviceID: id,
-			Created:  time.Now(),
+func merge(c Controller) controller {
+	cc := controller{
+		Controller: c,
+		IP: ip{
+			IP: &c.IP,
 		},
 		Doors: map[uint8]string{},
 	}
 
-	for _, v := range sys.data.Tables.Controllers {
-		if v.DeviceID == id {
-			c.ID = v.ID
-			c.Created = v.Created
-			c.Name = v.Name
-			c.IP = ip{
-				IP: &v.IP,
-			}
-
-			for _, d := range sys.data.Tables.Doors {
-				if d.DeviceID == c.DeviceID {
-					c.Doors[d.Door] = d.Name
-				}
-			}
-
-			if v.TimeZone != "" {
-				if l, err := time.LoadLocation(v.TimeZone); err == nil {
-					tz = l
-				}
-			}
+	for _, d := range sys.data.Tables.Doors {
+		if d.DeviceID == cc.DeviceID {
+			cc.Doors[d.Door] = d.Name
 		}
 	}
 
-	if cached, ok := sys.data.Tables.Local.cache[id]; ok {
-		c.Cards = (*records)(cached.cards)
-		c.Events = (*records)(cached.events)
+	tz := time.Local
+	if c.TimeZone != "" {
+		if l, err := time.LoadLocation(c.TimeZone); err == nil {
+			tz = l
+		}
+	}
+
+	if cached, ok := sys.data.Tables.Local.cache[c.DeviceID]; ok {
+		cc.Cards = (*records)(cached.cards)
+		cc.Events = (*records)(cached.events)
 
 		if cached.address != nil {
 			switch {
-			case c.IP.IP == nil:
-				c.IP.Status = StatusUnknown
+			case cc.IP.IP == nil:
+				cc.IP.Status = StatusUnknown
 
-			case cached.address.Equal(c.IP.IP.IP):
-				c.IP.Status = StatusOk
+			case cached.address.Equal(cc.IP.IP.IP):
+				cc.IP.Status = StatusOk
 
 			default:
-				c.IP.Status = StatusError
+				cc.IP.Status = StatusError
 			}
 
-			c.IP.IP = cached.address
+			cc.IP.IP = cached.address
 		}
 
 		if cached.datetime != nil {
@@ -107,25 +94,25 @@ func merge(id uint32) controller {
 			delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
 
 			if delta > WINDOW {
-				c.SystemTime.Status = StatusError
+				cc.SystemTime.Status = StatusError
 			} else {
-				c.SystemTime.Status = StatusOk
+				cc.SystemTime.Status = StatusOk
 			}
 
 			dt := types.DateTime(T)
-			c.SystemTime.DateTime = &dt
-			c.SystemTime.TimeZone = tz
+			cc.SystemTime.DateTime = &dt
+			cc.SystemTime.TimeZone = tz
 		}
 
 		switch dt := time.Now().Sub(cached.touched); {
 		case dt < DeviceOk:
-			c.Status = StatusOk
+			cc.Status = StatusOk
 		case dt < DeviceUncertain:
-			c.Status = StatusUncertain
+			cc.Status = StatusUncertain
 		}
 	}
 
-	return c
+	return cc
 }
 
 func ID(id uint32) string {
