@@ -2,7 +2,9 @@ package system
 
 import (
 	"encoding/json"
+	"fmt"
 	"net"
+	"regexp"
 )
 
 type address net.UDPAddr
@@ -36,16 +38,44 @@ func (a *address) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
-func (a *address) Equal(addr net.IP) bool {
-	if a != nil {
-		return a.IP.Equal(addr)
-	}
+func (a *address) Equal(addr *address) bool {
+	switch {
+	case a == nil && addr == nil:
+		return true
 
-	return false
+	case a != nil && addr != nil:
+		return a.IP.Equal(addr.IP)
+
+	default:
+		return false
+	}
 }
 
-func resolve(address string) *net.UDPAddr {
-	addr, _ := net.ResolveUDPAddr("udp", address)
+func (a *address) clone() *address {
+	if a != nil {
+		addr := *a
+		return &addr
+	}
 
-	return addr
+	return nil
+}
+
+func resolve(s string) (*address, error) {
+	matched, err := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,5}`, s)
+	if err != nil {
+		return nil, err
+	}
+
+	if !matched {
+		return nil, fmt.Errorf("%s is not a valid UDP address:port", s)
+	}
+
+	addr, err := net.ResolveUDPAddr("udp", s)
+	if err != nil {
+		return nil, err
+	}
+
+	a := address(*addr)
+
+	return &a, nil
 }

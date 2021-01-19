@@ -18,14 +18,6 @@ type ip struct {
 	Status status
 }
 
-// func (a *ip) String() string{
-// 	if a != nil {
-// 		return a.IP.String()
-// 	}
-//
-// 	return ""
-// }
-
 type records uint32
 
 func (r *records) String() string {

@@ -88,7 +88,7 @@ func merge(c Controller) controller {
 			case c.IP == nil:
 				cc.IP.Status = StatusUnknown
 
-			case cached.address.Equal(cc.IP.IP.IP):
+			case cached.address.Equal(c.IP):
 				cc.IP.Status = StatusOk
 
 			default:

@@ -11,11 +11,14 @@
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 
 - [ ] sysinfo
-      - edit IP address
+      - editing deviceID of existing device:
+         (index):1 [DOM] Found 2 elements with non-unique id #L201020304-name: (More info: https://goo.gl/9p2vKq) <input id=​"L201020304-name" class=​"field name" type=​"text" value placeholder=​"-" onchange=​"onEdited(event)​" data-record=​"L201020304" data-original data-value>​ <input id=​"L201020304-name" class=​"field name" type=​"text" value placeholder=​"-" onchange=​"onEdited(event)​" data-record=​"L201020304" data-original data-value>​
       - edit auth
-      - commonalise controller and card handling into tabular.js
       - edit datetime + timezone
       - edit doors
+      - commit all
+      - rollback all
+      - commonalise controller and card handling into tabular.js
       - cache expiry
       - Use sync.Map for cache
       - limit number of pending 'update' requests (e.g. if device is not responding)

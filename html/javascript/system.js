@@ -1,6 +1,6 @@
 /* global constants */
 
-// import { getAsJSON, warning, dismiss } from './uhppoted.js'
+// import { getAsJSON, dismiss } from './uhppoted.js'
 import { postAsJSON, warning } from './uhppoted.js'
 
 export function onEdited (event) {
@@ -18,6 +18,15 @@ export function onCommit (event, op) {
   }
 
   onUpdate(event.target.dataset.record)
+}
+
+export function onRollback (event, op) {
+  if (op && op === 'delete') {
+    onDelete(event.target.dataset.record)
+    return
+  }
+
+  onRevert(event.target.dataset.record)
 }
 
 export function onCommitAll (event) {
@@ -38,15 +47,6 @@ export function onCommitAll (event) {
 
   //   onUpdate(...list)
   // }
-}
-
-export function onRollback (event, op) {
-  if (op && op === 'delete') {
-    onDelete(event.target.dataset.record)
-    return
-  }
-
-  onRevert(event.target.dataset.record)
 }
 
 export function onRollbackAll (event) {
@@ -258,7 +258,7 @@ export function onNew (event) {
                        '<input id="' + uuid + '-ID" class="field ID" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />'
 
     ip.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                   '<input id="' + uuid + '-IP" class="field IP" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
+                   '<input id="' + uuid + '-IP" class="field IP" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" />'
 
     datetime.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
                          '<input id="' + uuid + '-datetime" class="field datetime" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
@@ -479,6 +479,7 @@ function rowToRecord (id, row) {
   const oid = row.dataset.oid
   const name = row.querySelector('#' + id + '-name')
   const deviceID = row.querySelector('#' + id + '-ID')
+  const ip = row.querySelector('#' + id + '-IP')
   const fields = []
 
   const record = {
@@ -487,19 +488,22 @@ function rowToRecord (id, row) {
   }
 
   if (name && name.dataset.value !== name.dataset.original) {
-    const field = row.querySelector('#' + id + '-name')
-    record.name = field.value
-    fields.push(field)
+    record.name = name.value
+    fields.push(name)
   }
 
   if (deviceID) {
-    const field = row.querySelector('#' + id + '-ID')
-    const v = Number(field.value)
+    const v = Number(deviceID.value)
 
     if (v > 0) {
       record.deviceID = v
-      fields.push(field)
+      fields.push(deviceID)
     }
+  }
+
+  if (ip && ip.dataset.value !== ip.dataset.original) {
+    record.ip = ip.value
+    fields.push(ip)
   }
 
   return [record, fields]

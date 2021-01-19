@@ -162,7 +162,7 @@ func Post(m map[string]interface{}) (interface{}, error) {
 	if err != nil {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
-			Err:    fmt.Errorf("Invalid request"),
+			Err:    fmt.Errorf("Invalid request (%v)", err),
 			Detail: fmt.Errorf("Error unpacking 'post' request (%w)", err),
 		}
 	}
@@ -267,6 +267,10 @@ func update(shadow *data, c Controller) (*Controller, error) {
 			if c.DeviceID != nil && *c.DeviceID != 0 {
 				id := *c.DeviceID
 				record.DeviceID = &id
+			}
+
+			if c.IP != nil {
+				record.IP = c.IP.clone()
 			}
 
 			//		current := d.data.Tables.CardHolders[ch.ID]
@@ -422,6 +426,7 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 			OID      *string
 			Name     *string
 			DeviceID *uint32
+			IP       *string
 		}
 	}{}
 
@@ -454,6 +459,14 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 
 		if r.DeviceID != nil {
 			record.DeviceID = r.DeviceID
+		}
+
+		if r.IP != nil {
+			if addr, err := resolve(*r.IP); err != nil {
+				return nil, err
+			} else {
+				record.IP = addr
+			}
 		}
 
 		controllers = append(controllers, record)
