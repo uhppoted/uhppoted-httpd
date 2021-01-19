@@ -11,6 +11,7 @@ import (
 // Container class for the static information pertaining to an access controller.
 type Controller struct {
 	ID       string      `json:"ID"`
+	OID      string      `json:"OID"`
 	Created  time.Time   `json:"created"`
 	Name     *types.Name `json:"name"`
 	DeviceID uint32      `json:"device-id"`
@@ -34,6 +35,7 @@ func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
 			ID:       c.ID,
+			OID:      c.OID,
 			Created:  c.Created,
 			Name:     c.Name.Copy(),
 			DeviceID: c.DeviceID,

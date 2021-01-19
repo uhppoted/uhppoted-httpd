@@ -78,7 +78,7 @@
               </thead>
               <tbody>{{range $controller := .system.Controllers}}
                  {{$cid := $controller.ID}}
-                 <tr id="{{$cid}}" class="controller" data-status="{{$controller.Status}}">
+                 <tr id="{{$cid}}" class="controller" data-oid="{{$controller.OID}}" data-status="{{$controller.Status}}">
                   <td class="rowheader" style="display:flex; flex-direction:row;">
                     <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
                     <input id="{{$cid}}-name" 

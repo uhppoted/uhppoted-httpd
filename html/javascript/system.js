@@ -476,12 +476,14 @@ function apply (element, f) {
 }
 
 function rowToRecord (id, row) {
+  const oid = row.dataset.oid
   const name = row.querySelector('#' + id + '-name')
   const deviceID = row.querySelector('#' + id + '-ID')
   const fields = []
 
   const record = {
-    id: id
+    id: id,
+    oid: oid
   }
 
   if (name && name.dataset.value !== name.dataset.original) {
@@ -492,8 +494,12 @@ function rowToRecord (id, row) {
 
   if (deviceID) {
     const field = row.querySelector('#' + id + '-ID')
-    record.deviceID = field.value
-    fields.push(field)
+    const v = Number(field.value)
+
+    if (v > 0) {
+      record.deviceID = v
+      fields.push(field)
+    }
   }
 
   return [record, fields]

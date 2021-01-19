@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -175,6 +174,16 @@ func Post(m map[string]interface{}) (interface{}, error) {
 
 loop:
 	for _, c := range controllers {
+		if c.OID == "" {
+			if r, err := add(shadow, c); err != nil {
+				return nil, err
+			} else if r != nil {
+				list.Updated = append(list.Updated, merge(*r))
+			}
+
+			continue loop
+		}
+
 		if c.ID == "" {
 			return nil, &types.HttpdError{
 				Status: http.StatusBadRequest,
@@ -183,34 +192,22 @@ loop:
 			}
 		}
 
-		if _, ok := shadow.Tables.Controllers[c.ID]; ok {
-			//				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
-			//					if r, err := d.delete(shadow, c, auth); err != nil {
-			//						return nil, err
-			//					} else if r != nil {
-			//						list.Deleted = append(list.Deleted, r)
-			//						continue loop
-			//					}
-			//				}
+		// if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
+		// 	if r, err := d.delete(shadow, c, auth); err != nil {
+		// 		return nil, err
+		// 	} else if r != nil {
+		// 		list.Deleted = append(list.Deleted, r)
+		// 		continue loop
+		// 	}
+		// }
 
-			if r, err := update(shadow, c); err != nil {
-				return nil, err
-			} else if r != nil {
-				list.Updated = append(list.Updated, merge(*r))
-			}
-
-			// if c.Name != nil {
-			// 	v.Name = c.Name
-			// }
-
-			continue loop
-		}
-
-		if r, err := add(shadow, c); err != nil {
+		if r, err := update(shadow, c); err != nil {
 			return nil, err
 		} else if r != nil {
 			list.Updated = append(list.Updated, merge(*r))
 		}
+
+		continue loop
 	}
 
 	if err := save(shadow, sys.file); err != nil {
@@ -236,6 +233,19 @@ func add(shadow *data, c Controller) (*Controller, error) {
 	//		}
 	//	}
 
+loop:
+	for next := 1; ; next++ {
+		oid := fmt.Sprintf("0.1.1.%v", next)
+		for _, v := range shadow.Tables.Controllers {
+			if v.OID == oid {
+				continue loop
+			}
+		}
+
+		record.OID = oid
+		break
+	}
+
 	record.Created = time.Now()
 
 	shadow.Tables.Controllers[record.ID] = record
@@ -246,32 +256,38 @@ func add(shadow *data, c Controller) (*Controller, error) {
 
 // func update(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
 func update(shadow *data, c Controller) (*Controller, error) {
-	if record, ok := shadow.Tables.Controllers[c.ID]; ok {
-		if c.Name != nil {
-			record.Name = c.Name
+	for _, record := range shadow.Tables.Controllers {
+		if record.OID == c.OID {
+			if c.Name != nil {
+				record.Name = c.Name
+			}
+
+			if c.DeviceID != 0 {
+				record.DeviceID = c.DeviceID
+			}
+
+			//		current := d.data.Tables.CardHolders[ch.ID]
+			//		if auth != nil {
+			//			if err := auth.CanUpdateCardHolder(current, record); err != nil {
+			//				return nil, &types.HttpdError{
+			//					Status: http.StatusUnauthorized,
+			//					Err:    fmt.Errorf("Not authorized to update card holder"),
+			//					Detail: err,
+			//				}
+			//			}
+			//		}
+			//
+			//		d.log("update", map[string]interface{}{"original": current, "updated": record}, auth)
+
+			return record, nil
 		}
-
-		if c.DeviceID != 0 {
-			record.DeviceID = c.DeviceID
-		}
-
-		//		current := d.data.Tables.CardHolders[ch.ID]
-		//		if auth != nil {
-		//			if err := auth.CanUpdateCardHolder(current, record); err != nil {
-		//				return nil, &types.HttpdError{
-		//					Status: http.StatusUnauthorized,
-		//					Err:    fmt.Errorf("Not authorized to update card holder"),
-		//					Detail: err,
-		//				}
-		//			}
-		//		}
-		//
-		//		d.log("update", map[string]interface{}{"original": current, "updated": record}, auth)
-
-		return record, nil
 	}
 
-	return nil, nil
+	return nil, &types.HttpdError{
+		Status: http.StatusBadRequest,
+		Err:    fmt.Errorf("Invalid controller OID"),
+		Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid controller OID '%v'", c.OID)),
+	}
 }
 
 func save(d *data, file string) error {
@@ -322,13 +338,21 @@ func validate(d *data) error {
 	for _, r := range d.Tables.Controllers {
 		id := r.DeviceID
 
-		if id == 0 {
+		if r.OID == "" {
 			return &types.HttpdError{
 				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Invalid controller ID"),
-				Detail: fmt.Errorf("Invalid controller ID (%v)", id),
+				Err:    fmt.Errorf("Invalid controller OID"),
+				Detail: fmt.Errorf("Invalid controller OID (%v)", r.OID),
 			}
 		}
+
+		//		if id == 0 {
+		//			return &types.HttpdError{
+		//				Status: http.StatusBadRequest,
+		//				Err:    fmt.Errorf("Invalid controller ID"),
+		//				Detail: fmt.Errorf("Invalid controller ID (%v)", id),
+		//			}
+		//		}
 
 		if rid, ok := devices[id]; ok {
 			return &types.HttpdError{
@@ -338,7 +362,9 @@ func validate(d *data) error {
 			}
 		}
 
-		devices[id] = r.ID
+		if id != 0 {
+			devices[id] = r.ID
+		}
 	}
 
 	return nil
@@ -397,8 +423,9 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 	o := struct {
 		Controllers []struct {
 			ID       string
+			OID      *string
 			Name     *string
-			DeviceID *string
+			DeviceID *uint32
 		}
 	}{}
 
@@ -406,6 +433,8 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Printf(">> DEBUG: %s\n", string(blob))
 
 	if err := json.Unmarshal(blob, &o); err != nil {
 		return nil, err
@@ -418,17 +447,17 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 			ID: strings.TrimSpace(r.ID),
 		}
 
+		if r.OID != nil {
+			record.OID = *r.OID
+		}
+
 		if r.Name != nil {
 			name := types.Name(*r.Name)
 			record.Name = &name
 		}
 
 		if r.DeviceID != nil {
-			if v, err := strconv.ParseUint(*r.DeviceID, 10, 32); err != nil {
-				return nil, err
-			} else {
-				record.DeviceID = uint32(v)
-			}
+			record.DeviceID = *r.DeviceID
 		}
 
 		controllers = append(controllers, record)
