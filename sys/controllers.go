@@ -15,7 +15,7 @@ type Controller struct {
 	Created  time.Time   `json:"created"`
 	Name     *types.Name `json:"name"`
 	DeviceID *uint32     `json:"device-id"`
-	IP       address     `json:"address"`
+	IP       *address    `json:"address"`
 	TimeZone string      `json:"timezone"`
 }
 
@@ -52,10 +52,12 @@ func (c *Controller) clone() *Controller {
 func merge(c Controller) controller {
 	cc := controller{
 		Controller: c,
-		IP: ip{
-			IP: &c.IP,
-		},
-		Doors: map[uint8]string{},
+		IP:         ip{},
+		Doors:      map[uint8]string{},
+	}
+
+	if c.IP != nil {
+		cc.IP.IP = &(*c.IP)
 	}
 
 	for _, d := range sys.data.Tables.Doors {
@@ -80,8 +82,10 @@ func merge(c Controller) controller {
 		cc.Events = (*records)(cached.events)
 
 		if cached.address != nil {
+			cc.IP.IP = &(*cached.address)
+
 			switch {
-			case cc.IP.IP == nil:
+			case c.IP == nil:
 				cc.IP.Status = StatusUnknown
 
 			case cached.address.Equal(cc.IP.IP.IP):
@@ -90,8 +94,6 @@ func merge(c Controller) controller {
 			default:
 				cc.IP.Status = StatusError
 			}
-
-			cc.IP.IP = cached.address
 		}
 
 		if cached.datetime != nil {

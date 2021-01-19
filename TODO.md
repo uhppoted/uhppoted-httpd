@@ -11,10 +11,9 @@
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 
 - [ ] sysinfo
-      - edit deviceID
+      - edit IP address
       - edit auth
       - commonalise controller and card handling into tabular.js
-      - edit IP address
       - edit datetime + timezone
       - edit doors
       - cache expiry
