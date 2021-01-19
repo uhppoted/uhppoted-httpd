@@ -59,14 +59,18 @@ func (l *Local) Init(devices map[string]*Controller) {
 	}
 
 	for _, v := range devices {
-		l.devices[v.DeviceID] = v.IP
+		if v.DeviceID != nil && *v.DeviceID != 0 {
+			id := *v.DeviceID
 
-		addr := net.UDPAddr(v.IP)
-		u.Devices[v.DeviceID] = &uhppote.Device{
-			DeviceID: v.DeviceID,
-			Address:  &addr,
-			Rollover: 100000,
-			Doors:    []string{},
+			l.devices[id] = v.IP
+
+			addr := net.UDPAddr(v.IP)
+			u.Devices[id] = &uhppote.Device{
+				DeviceID: id,
+				Address:  &addr,
+				Rollover: 100000,
+				Doors:    []string{},
+			}
 		}
 	}
 

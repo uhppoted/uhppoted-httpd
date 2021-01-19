@@ -111,28 +111,30 @@ func System() interface{} {
 
 	defer sys.RUnlock()
 
-	devices := map[uint32]*Controller{}
+	devices := []Controller{}
 	for _, v := range sys.data.Tables.Controllers {
-		devices[v.DeviceID] = v
+		devices = append(devices, *v)
 	}
 
+loop:
 	for k, _ := range sys.data.Tables.Local.cache {
-		if _, ok := devices[k]; !ok {
-			devices[k] = nil
+		for _, c := range devices {
+			if c.DeviceID != nil && *c.DeviceID == k {
+				continue loop
+			}
 		}
+
+		id := k
+		devices = append(devices, Controller{
+			ID:       ID(k),
+			DeviceID: &id,
+			Created:  time.Now(),
+		})
 	}
 
 	controllers := []controller{}
-	for k, c := range devices {
-		if c != nil {
-			controllers = append(controllers, merge(*c))
-		} else {
-			controllers = append(controllers, merge(Controller{
-				ID:       ID(k),
-				DeviceID: k,
-				Created:  time.Now(),
-			}))
-		}
+	for _, c := range devices {
+		controllers = append(controllers, merge(c))
 	}
 
 	sort.SliceStable(controllers, func(i, j int) bool { return controllers[i].Created.Before(controllers[j].Created) })
@@ -262,8 +264,9 @@ func update(shadow *data, c Controller) (*Controller, error) {
 				record.Name = c.Name
 			}
 
-			if c.DeviceID != 0 {
-				record.DeviceID = c.DeviceID
+			if c.DeviceID != nil && *c.DeviceID != 0 {
+				id := *c.DeviceID
+				record.DeviceID = &id
 			}
 
 			//		current := d.data.Tables.CardHolders[ch.ID]
@@ -336,7 +339,6 @@ func validate(d *data) error {
 	devices := map[uint32]string{}
 
 	for _, r := range d.Tables.Controllers {
-		id := r.DeviceID
 
 		if r.OID == "" {
 			return &types.HttpdError{
@@ -346,23 +348,17 @@ func validate(d *data) error {
 			}
 		}
 
-		//		if id == 0 {
-		//			return &types.HttpdError{
-		//				Status: http.StatusBadRequest,
-		//				Err:    fmt.Errorf("Invalid controller ID"),
-		//				Detail: fmt.Errorf("Invalid controller ID (%v)", id),
-		//			}
-		//		}
+		if r.DeviceID != nil && *r.DeviceID != 0 {
+			id := *r.DeviceID
 
-		if rid, ok := devices[id]; ok {
-			return &types.HttpdError{
-				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Duplicate controller ID (%v)", id),
-				Detail: fmt.Errorf("controller %v: duplicate device ID in records %v and %v", id, rid, r.ID),
+			if rid, ok := devices[id]; ok {
+				return &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Duplicate controller ID (%v)", id),
+					Detail: fmt.Errorf("controller %v: duplicate device ID in records %v and %v", id, rid, r.ID),
+				}
 			}
-		}
 
-		if id != 0 {
 			devices[id] = r.ID
 		}
 	}
@@ -457,7 +453,7 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 		}
 
 		if r.DeviceID != nil {
-			record.DeviceID = *r.DeviceID
+			record.DeviceID = r.DeviceID
 		}
 
 		controllers = append(controllers, record)

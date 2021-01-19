@@ -14,7 +14,7 @@ type Controller struct {
 	OID      string      `json:"OID"`
 	Created  time.Time   `json:"created"`
 	Name     *types.Name `json:"name"`
-	DeviceID uint32      `json:"device-id"`
+	DeviceID *uint32     `json:"device-id"`
 	IP       address     `json:"address"`
 	TimeZone string      `json:"timezone"`
 }
@@ -59,7 +59,7 @@ func merge(c Controller) controller {
 	}
 
 	for _, d := range sys.data.Tables.Doors {
-		if d.DeviceID == cc.DeviceID {
+		if cc.DeviceID != nil && *cc.DeviceID != 0 && d.DeviceID == *cc.DeviceID {
 			cc.Doors[d.Door] = d.Name
 		}
 	}
@@ -71,7 +71,11 @@ func merge(c Controller) controller {
 		}
 	}
 
-	if cached, ok := sys.data.Tables.Local.cache[c.DeviceID]; ok {
+	if c.DeviceID == nil || *c.DeviceID == 0 {
+		return cc
+	}
+
+	if cached, ok := sys.data.Tables.Local.cache[*c.DeviceID]; ok {
 		cc.Cards = (*records)(cached.cards)
 		cc.Events = (*records)(cached.events)
 
