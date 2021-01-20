@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -127,7 +128,7 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 	return list, nil
 }
 
-func (d *fdb) Post(m map[string]interface{}, auth db.IAuth) (interface{}, error) {
+func (d *fdb) Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	d.Lock()
 
 	defer d.Unlock()
@@ -193,7 +194,7 @@ loop:
 	return list, nil
 }
 
-func (d *fdb) add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
+func (d *fdb) add(shadow *data, ch types.CardHolder, auth auth.OpAuth) (interface{}, error) {
 	record := ch.Clone()
 
 	if auth != nil {
@@ -214,7 +215,7 @@ func (d *fdb) add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}
 	return record, nil
 }
 
-func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
+func (d *fdb) update(shadow *data, ch types.CardHolder, auth auth.OpAuth) (interface{}, error) {
 	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
 		if ch.Name != nil {
 			record.Name = ch.Name
@@ -257,7 +258,7 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth db.IAuth) (interfac
 	return nil, nil
 }
 
-func (d *fdb) delete(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
+func (d *fdb) delete(shadow *data, ch types.CardHolder, auth auth.OpAuth) (interface{}, error) {
 	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
 		if auth != nil {
 			if err := auth.CanDeleteCardHolder(record); err != nil {
@@ -417,7 +418,7 @@ func unpack(m map[string]interface{}) ([]types.CardHolder, error) {
 	return cardholders, nil
 }
 
-func (d *fdb) log(op string, info interface{}, auth db.IAuth) {
+func (d *fdb) log(op string, info interface{}, auth auth.OpAuth) {
 	if d.audit != nil {
 		uid := ""
 		if auth != nil {

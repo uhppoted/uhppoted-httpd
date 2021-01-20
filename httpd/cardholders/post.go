@@ -10,12 +10,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/sys"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, db db.DB, auth db.IAuth) {
+func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, db db.DB, auth auth.OpAuth) {
 	ch := make(chan error)
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 

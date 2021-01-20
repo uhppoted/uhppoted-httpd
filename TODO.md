@@ -2,12 +2,10 @@
 
 ### IN PROGRESS
 
-- [ ] Replace fontawesome icons with https://thenounproject.com
 - [ ] New table row submitted with error cannot be discarded
 - [ ] Warning message doesn't align left if commitall and/or rollbackall are not visible
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
-- [ ] Switchable themes
-      - use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
+- [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 
 - [ ] sysinfo
@@ -98,6 +96,7 @@
       - https://blog.datawrapper.de/beautifulcolors/
       - http://csszengarden.com/219
       - Colorways (for themes)
+      - https://thenounproject.com
 
 - [ ] Fonts
 - [ ] favicon

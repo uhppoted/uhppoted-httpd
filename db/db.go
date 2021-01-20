@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -9,5 +10,5 @@ type DB interface {
 	CardHolders() (types.CardHolders, error)
 
 	ACL() ([]types.Permissions, error)
-	Post(map[string]interface{}, IAuth) (interface{}, error)
+	Post(map[string]interface{}, auth.OpAuth) (interface{}, error)
 }
