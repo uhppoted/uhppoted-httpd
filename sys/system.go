@@ -13,6 +13,7 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-api/acl"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -149,8 +150,7 @@ func Update(permissions []types.Permissions) {
 	sys.data.Tables.Local.Update(permissions)
 }
 
-//func Post(m map[string]interface{}, auth db.IAuth) (interface{}, error) {
-func Post(m map[string]interface{}) (interface{}, error) {
+func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()
 
 	defer sys.Unlock()
@@ -176,7 +176,7 @@ func Post(m map[string]interface{}) (interface{}, error) {
 loop:
 	for _, c := range controllers {
 		if c.OID == "" {
-			if r, err := add(shadow, c); err != nil {
+			if r, err := add(shadow, c, auth); err != nil {
 				return nil, err
 			} else if r != nil {
 				list.Updated = append(list.Updated, merge(*r))
@@ -184,14 +184,6 @@ loop:
 
 			continue loop
 		}
-
-		// if c.ID == "" {
-		// 	return nil, &types.HttpdError{
-		// 		Status: http.StatusBadRequest,
-		// 		Err:    fmt.Errorf("Invalid controller ID"),
-		// 		Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid controller ID '%v'", c.ID)),
-		// 	}
-		// }
 
 		// if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
 		// 	if r, err := d.delete(shadow, c, auth); err != nil {
@@ -202,7 +194,7 @@ loop:
 		// 	}
 		// }
 
-		if r, err := update(shadow, c); err != nil {
+		if r, err := update(shadow, c, auth); err != nil {
 			return nil, err
 		} else if r != nil {
 			list.Updated = append(list.Updated, merge(*r))
@@ -220,19 +212,18 @@ loop:
 	return list, nil
 }
 
-//func add(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
-func add(shadow *data, c Controller) (*Controller, error) {
+func add(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
 	record := c.clone()
 
-	//	if auth != nil {
-	//		if err := auth.CanAddCardHolder(record); err != nil {
-	//			return nil, &types.HttpdError{
-	//				Status: http.StatusUnauthorized,
-	//				Err:    fmt.Errorf("Not authorized to add card holder"),
-	//				Detail: err,
-	//			}
-	//		}
-	//	}
+	if auth != nil {
+		if err := auth.CanAddController(record); err != nil {
+			return nil, &types.HttpdError{
+				Status: http.StatusUnauthorized,
+				Err:    fmt.Errorf("Not authorized to add controller"),
+				Detail: err,
+			}
+		}
+	}
 
 loop:
 	for next := 1; ; next++ {
@@ -255,8 +246,16 @@ loop:
 	return record, nil
 }
 
-// func update(shadow *data, ch types.CardHolder, auth db.IAuth) (interface{}, error) {
-func update(shadow *data, c Controller) (*Controller, error) {
+func update(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
+	var current *Controller
+
+	for _, v := range sys.data.Tables.Controllers {
+		if v.OID == c.OID {
+			current = v
+			break
+		}
+	}
+
 	for _, record := range shadow.Tables.Controllers {
 		if record.OID == c.OID {
 			if c.Name != nil {
@@ -272,17 +271,16 @@ func update(shadow *data, c Controller) (*Controller, error) {
 				record.IP = c.IP.clone()
 			}
 
-			//		current := d.data.Tables.CardHolders[ch.ID]
-			//		if auth != nil {
-			//			if err := auth.CanUpdateCardHolder(current, record); err != nil {
-			//				return nil, &types.HttpdError{
-			//					Status: http.StatusUnauthorized,
-			//					Err:    fmt.Errorf("Not authorized to update card holder"),
-			//					Detail: err,
-			//				}
-			//			}
-			//		}
-			//
+			if auth != nil {
+				if err := auth.CanUpdateController(current, record); err != nil {
+					return nil, &types.HttpdError{
+						Status: http.StatusUnauthorized,
+						Err:    fmt.Errorf("Not authorized to update controller"),
+						Detail: err,
+					}
+				}
+			}
+
 			//		d.log("update", map[string]interface{}{"original": current, "updated": record}, auth)
 
 			return record, nil

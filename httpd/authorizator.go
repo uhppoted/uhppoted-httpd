@@ -1,13 +1,13 @@
 package httpd
 
 import (
+	"encoding/json"
 	"fmt"
-	"sort"
-	"strings"
 
 	"github.com/hyperjumptech/grule-rule-engine/ast"
 	"github.com/hyperjumptech/grule-rule-engine/engine"
 
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -52,6 +52,57 @@ func (a *authorizator) UID() string {
 	}
 
 	return "?"
+}
+
+func (a *authorizator) CanAddController(controller auth.Operant) error {
+	if a != nil && controller != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"CONTROLLER": controller.AsRuleEntity(),
+		}
+
+		if err := a.eval("add", &r, m); err != nil {
+			return err
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::controller %s", toString(controller)))
+	}
+
+	return fmt.Errorf("Not authorized for operation %s", "add::controller")
+}
+
+func (a *authorizator) CanUpdateController(original, updated auth.Operant) error {
+	if a != nil && original != nil && updated != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"ORIGINAL": original.AsRuleEntity(),
+			"UPDATED":  updated.AsRuleEntity(),
+		}
+
+		if err := a.eval("update", &r, m); err != nil {
+			return err
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::controller %s %s", toString(original), toString(updated)))
+	}
+
+	return fmt.Errorf("Not authorized for operation %s", "update::controller")
 }
 
 func (a *authorizator) CanAddCardHolder(ch *types.CardHolder) error {
@@ -176,32 +227,10 @@ func makeOP(ch types.CardHolder) *card {
 	}
 }
 
-func toString(ch *types.CardHolder) string {
-	if ch != nil {
-		name := strings.ReplaceAll(fmt.Sprintf("%v", ch.Name), ":", "")
-		card := strings.ReplaceAll(fmt.Sprintf("%v", ch.Card), ":", "")
-		from := strings.ReplaceAll(fmt.Sprintf("%v", ch.From), ":", "")
-		to := strings.ReplaceAll(fmt.Sprintf("%v", ch.To), ":", "")
-
-		s := fmt.Sprintf("%v:%v:%v:%v:", name, card, from, to)
-
-		groups := []string{}
-		for k, v := range ch.Groups {
-			if v {
-				groups = append(groups, k)
-			}
-		}
-
-		if len(groups) > 0 {
-			sort.Strings(groups)
-			s += strings.ReplaceAll(groups[0], ":", "")
-			for _, g := range groups[1:] {
-				s += "," + strings.ReplaceAll(g, ":", "")
-			}
-		}
-
-		return strings.ReplaceAll(s, " ", "")
+func toString(entity interface{}) string {
+	if b, err := json.Marshal(entity); err == nil {
+		return string(b)
 	}
 
-	return ""
+	return fmt.Sprintf("%+v", entity)
 }

@@ -34,6 +34,28 @@ type controller struct {
 	Status     status
 }
 
+func (c *Controller) AsRuleEntity() interface{} {
+	type entity struct {
+		Name     string
+		DeviceID uint32
+	}
+
+	if c != nil {
+		deviceID := uint32(0)
+
+		if c.DeviceID != nil {
+			deviceID = *c.DeviceID
+		}
+
+		return &entity{
+			Name:     fmt.Sprintf("%v", c.Name),
+			DeviceID: deviceID,
+		}
+	}
+
+	return &entity{}
+}
+
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{

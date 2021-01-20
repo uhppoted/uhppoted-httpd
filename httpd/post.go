@@ -26,17 +26,22 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth, err := NewAuthorizator(uid, role, d.grule.cards)
-	if err != nil {
-		http.Error(w, "Error executing request", http.StatusInternalServerError)
-	}
-
 	if match, err := regexp.MatchString(`/system`, path); err == nil && match {
+		auth, err := NewAuthorizator(uid, role, d.grule.system)
+		if err != nil {
+			http.Error(w, "Error executing request", http.StatusInternalServerError)
+		}
+
 		system.Post(w, r, d.timeout, d.db, auth)
 		return
 	}
 
 	if match, err := regexp.MatchString(`/cardholders`, path); err == nil && match {
+		auth, err := NewAuthorizator(uid, role, d.grule.cards)
+		if err != nil {
+			http.Error(w, "Error executing request", http.StatusInternalServerError)
+		}
+
 		cardholders.Post(w, r, d.timeout, d.db, auth)
 		return
 	}

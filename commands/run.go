@@ -70,17 +70,20 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		DB: struct {
 			File   string
 			GRules struct {
-				ACL   string
-				Cards string
+				ACL    string
+				System string
+				Cards  string
 			}
 		}{
 			File: conf.HTTPD.DB.File,
 			GRules: struct {
-				ACL   string
-				Cards string
+				ACL    string
+				System string
+				Cards  string
 			}{
-				ACL:   conf.HTTPD.DB.Rules.ACL,
-				Cards: conf.HTTPD.DB.Rules.Cards,
+				ACL:    conf.HTTPD.DB.Rules.ACL,
+				System: conf.HTTPD.DB.Rules.System,
+				Cards:  conf.HTTPD.DB.Rules.Cards,
 			},
 		},
 		Audit: struct {

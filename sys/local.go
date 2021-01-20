@@ -140,7 +140,7 @@ func (l *Local) refresh() {
 			log.Printf("Got %v response to get-devices request", devices)
 		} else {
 			for k, v := range devices.Devices {
-				if d, ok := l.api.Uhppote.Devices[k]; ok {
+				if d, ok := l.api.Uhppote.DeviceList()[k]; ok {
 					d.Address.IP = v.Address
 					d.Address.Port = 60000
 				}

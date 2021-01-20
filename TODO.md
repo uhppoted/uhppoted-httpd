@@ -9,7 +9,7 @@
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 
 - [ ] sysinfo
-      - edit auth
+      - log edit operations
       - edit datetime + timezone
       - edit doors
       - commit all

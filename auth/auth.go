@@ -24,9 +24,17 @@ type IAuth interface {
 
 type OpAuth interface {
 	UID() string
+
+	CanAddController(controller Operant) error
+	CanUpdateController(original Operant, updated Operant) error
+
 	CanAddCardHolder(cardHolder *types.CardHolder) error
 	CanUpdateCardHolder(original, updated *types.CardHolder) error
 	CanDeleteCardHolder(cardHolder *types.CardHolder) error
+}
+
+type Operant interface {
+	AsRuleEntity() interface{}
 }
 
 func NewAuthProvider(config string, loginExpiry, sessionExpiry string) (IAuth, error) {

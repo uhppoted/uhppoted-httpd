@@ -37,8 +37,9 @@ type HTTPD struct {
 	DB                       struct {
 		File   string
 		GRules struct {
-			ACL   string
-			Cards string
+			ACL    string
+			System string
+			Cards  string
 		}
 	}
 	Audit struct {
@@ -52,8 +53,9 @@ type dispatcher struct {
 	db    db.DB
 	auth  auth.IAuth
 	grule struct {
-		acl   *ast.KnowledgeLibrary
-		cards *ast.KnowledgeLibrary
+		acl    *ast.KnowledgeLibrary
+		system *ast.KnowledgeLibrary
+		cards  *ast.KnowledgeLibrary
 	}
 	timeout time.Duration
 }
@@ -68,15 +70,21 @@ func (h *HTTPD) Run() {
 	}
 
 	rules := struct {
-		acl   *ast.KnowledgeLibrary
-		cards *ast.KnowledgeLibrary
+		acl    *ast.KnowledgeLibrary
+		system *ast.KnowledgeLibrary
+		cards  *ast.KnowledgeLibrary
 	}{
-		acl:   ast.NewKnowledgeLibrary(),
-		cards: ast.NewKnowledgeLibrary(),
+		acl:    ast.NewKnowledgeLibrary(),
+		system: ast.NewKnowledgeLibrary(),
+		cards:  ast.NewKnowledgeLibrary(),
 	}
 
 	if err := builder.NewRuleBuilder(rules.acl).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(h.DB.GRules.ACL)); err != nil {
 		log.Fatal(fmt.Errorf("Error loading ACL ruleset (%v)", err))
+	}
+
+	if err := builder.NewRuleBuilder(rules.system).BuildRuleFromResource("cards", "0.0.0", pkg.NewFileResource(h.DB.GRules.System)); err != nil {
+		log.Fatal(fmt.Errorf("Error loading system auth ruleset (%v)", err))
 	}
 
 	if err := builder.NewRuleBuilder(rules.cards).BuildRuleFromResource("cards", "0.0.0", pkg.NewFileResource(h.DB.GRules.Cards)); err != nil {
