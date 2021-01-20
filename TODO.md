@@ -11,8 +11,6 @@
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 
 - [ ] sysinfo
-      - editing deviceID of existing device:
-         (index):1 [DOM] Found 2 elements with non-unique id #L201020304-name: (More info: https://goo.gl/9p2vKq) <input id=​"L201020304-name" class=​"field name" type=​"text" value placeholder=​"-" onchange=​"onEdited(event)​" data-record=​"L201020304" data-original data-value>​ <input id=​"L201020304-name" class=​"field name" type=​"text" value placeholder=​"-" onchange=​"onEdited(event)​" data-record=​"L201020304" data-original data-value>​
       - edit auth
       - edit datetime + timezone
       - edit doors

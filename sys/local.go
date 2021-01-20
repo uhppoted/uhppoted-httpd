@@ -49,7 +49,7 @@ func (l *Local) clone() *Local {
 
 // TODO (?) Move into custom JSON Unmarshal
 //          Ref. http://choly.ca/post/go-json-marshalling/
-func (l *Local) Init(devices map[string]*Controller) {
+func (l *Local) Init(devices []*Controller) {
 	u := uhppote.UHPPOTE{
 		BindAddress:      (*net.UDPAddr)(l.BindAddress),
 		BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),

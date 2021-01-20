@@ -3,14 +3,16 @@ package system
 import (
 	"fmt"
 	"math"
+	"strings"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 // Container class for the static information pertaining to an access controller.
 type Controller struct {
-	ID       string      `json:"ID"`
 	OID      string      `json:"OID"`
 	Created  time.Time   `json:"created"`
 	Name     *types.Name `json:"name"`
@@ -22,6 +24,7 @@ type Controller struct {
 // Internal 'temporary' container class for the instantaneous state of an access controller.
 // Used mostly for HTML templating.
 type controller struct {
+	ID string
 	Controller
 	IP         ip
 	SystemTime datetime
@@ -34,7 +37,6 @@ type controller struct {
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
-			ID:       c.ID,
 			OID:      c.OID,
 			Created:  c.Created,
 			Name:     c.Name.Copy(),
@@ -51,6 +53,7 @@ func (c *Controller) clone() *Controller {
 
 func merge(c Controller) controller {
 	cc := controller{
+		ID:         ID(c),
 		Controller: c,
 		IP:         ip{},
 		Doors:      map[uint8]string{},
@@ -123,6 +126,15 @@ func merge(c Controller) controller {
 	return cc
 }
 
-func ID(id uint32) string {
-	return fmt.Sprintf("L%d", id)
+func ID(c Controller) string {
+	if c.OID != "" {
+		return fmt.Sprintf("O%s", strings.ReplaceAll(c.OID, ".", ""))
+	}
+
+	uuid := strings.ReplaceAll(uuid.New().String(), "-", "")
+	if uuid == "" {
+		uuid = fmt.Sprintf("%d", time.Now().Unix())
+	}
+
+	return "U" + strings.ReplaceAll(uuid, "-", "")
 }

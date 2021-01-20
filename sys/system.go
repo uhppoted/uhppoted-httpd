@@ -27,9 +27,9 @@ type data struct {
 }
 
 type tables struct {
-	Doors       map[string]types.Door  `json:"doors"`
-	Controllers map[string]*Controller `json:"controllers"`
-	Local       *Local                 `json:"local"`
+	Doors       map[string]types.Door `json:"doors"`
+	Controllers []*Controller         `json:"controllers"`
+	Local       *Local                `json:"local"`
 }
 
 func (s *system) refresh() {
@@ -42,7 +42,7 @@ func (d *data) clone() *data {
 	shadow := data{
 		Tables: tables{
 			Doors:       map[string]types.Door{},
-			Controllers: map[string]*Controller{},
+			Controllers: make([]*Controller, len(d.Tables.Controllers)),
 			Local:       &Local{},
 		},
 	}
@@ -64,7 +64,7 @@ var sys = system{
 	data: data{
 		Tables: tables{
 			Doors:       map[string]types.Door{},
-			Controllers: map[string]*Controller{},
+			Controllers: []*Controller{},
 			Local: &Local{
 				devices: map[uint32]address{},
 			},
@@ -126,7 +126,6 @@ loop:
 
 		id := k
 		devices = append(devices, Controller{
-			ID:       ID(k),
 			DeviceID: &id,
 			Created:  time.Now(),
 		})
@@ -186,13 +185,13 @@ loop:
 			continue loop
 		}
 
-		if c.ID == "" {
-			return nil, &types.HttpdError{
-				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Invalid controller ID"),
-				Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid controller ID '%v'", c.ID)),
-			}
-		}
+		// if c.ID == "" {
+		// 	return nil, &types.HttpdError{
+		// 		Status: http.StatusBadRequest,
+		// 		Err:    fmt.Errorf("Invalid controller ID"),
+		// 		Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid controller ID '%v'", c.ID)),
+		// 	}
+		// }
 
 		// if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
 		// 	if r, err := d.delete(shadow, c, auth); err != nil {
@@ -250,7 +249,7 @@ loop:
 
 	record.Created = time.Now()
 
-	shadow.Tables.Controllers[record.ID] = record
+	shadow.Tables.Controllers = append(shadow.Tables.Controllers, record)
 	//	d.log("add", record, auth)
 
 	return record, nil
@@ -359,11 +358,11 @@ func validate(d *data) error {
 				return &types.HttpdError{
 					Status: http.StatusBadRequest,
 					Err:    fmt.Errorf("Duplicate controller ID (%v)", id),
-					Detail: fmt.Errorf("controller %v: duplicate device ID in records %v and %v", id, rid, r.ID),
+					Detail: fmt.Errorf("controller %v: duplicate device ID in records %v and %v", id, rid, r.OID),
 				}
 			}
 
-			devices[id] = r.ID
+			devices[id] = r.OID
 		}
 	}
 
@@ -444,9 +443,7 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 	controllers := []Controller{}
 
 	for _, r := range o.Controllers {
-		record := Controller{
-			ID: strings.TrimSpace(r.ID),
-		}
+		record := Controller{}
 
 		if r.OID != nil {
 			record.OID = *r.OID
