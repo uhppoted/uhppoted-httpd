@@ -2,8 +2,6 @@ package auth
 
 import (
 	"github.com/google/uuid"
-
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type TokenType int
@@ -28,9 +26,9 @@ type OpAuth interface {
 	CanAddController(controller Operant) error
 	CanUpdateController(original Operant, updated Operant) error
 
-	CanAddCardHolder(cardHolder *types.CardHolder) error
-	CanUpdateCardHolder(original, updated *types.CardHolder) error
-	CanDeleteCardHolder(cardHolder *types.CardHolder) error
+	CanAddCardHolder(cardHolder Operant) error
+	CanUpdateCardHolder(original, updated Operant) error
+	CanDeleteCardHolder(cardHolder Operant) error
 }
 
 type Operant interface {

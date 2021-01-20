@@ -1,0 +1,16 @@
+rule AddController "Controller number must be greater than 200000000" {
+     when
+	     OP == "add" && CONTROLLER.DeviceID > 300000000
+	 then
+	     RESULT.Allow = true;
+         Retract("AddController");
+}
+
+rule UpdateController "Not allowed to edit 405419896" {
+     when
+	     OP == "update" && ORIGINAL.DeviceID != 405419896
+	 then
+	     RESULT.Allow = true;
+         Retract("UpdateController");
+}
+

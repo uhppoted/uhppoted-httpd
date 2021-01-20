@@ -105,7 +105,7 @@ func (a *authorizator) CanUpdateController(original, updated auth.Operant) error
 	return fmt.Errorf("Not authorized for operation %s", "update::controller")
 }
 
-func (a *authorizator) CanAddCardHolder(ch *types.CardHolder) error {
+func (a *authorizator) CanAddCardHolder(ch auth.Operant) error {
 	if a != nil && ch != nil {
 		r := result{
 			Allow:  false,
@@ -113,7 +113,7 @@ func (a *authorizator) CanAddCardHolder(ch *types.CardHolder) error {
 		}
 
 		m := map[string]interface{}{
-			"CH": makeOP(*ch),
+			"CH": ch.AsRuleEntity(),
 		}
 
 		if err := a.eval("add", &r, m); err != nil {
@@ -130,7 +130,7 @@ func (a *authorizator) CanAddCardHolder(ch *types.CardHolder) error {
 	return fmt.Errorf("Not authorized for operation %s", "add::card")
 }
 
-func (a *authorizator) CanUpdateCardHolder(original, updated *types.CardHolder) error {
+func (a *authorizator) CanUpdateCardHolder(original, updated auth.Operant) error {
 	if a != nil && original != nil && updated != nil {
 		r := result{
 			Allow:  false,
@@ -138,8 +138,8 @@ func (a *authorizator) CanUpdateCardHolder(original, updated *types.CardHolder) 
 		}
 
 		m := map[string]interface{}{
-			"ORIGINAL": makeOP(*original),
-			"UPDATED":  makeOP(*updated),
+			"ORIGINAL": original.AsRuleEntity(),
+			"UPDATED":  updated.AsRuleEntity(),
 		}
 
 		if err := a.eval("update", &r, m); err != nil {
@@ -156,7 +156,7 @@ func (a *authorizator) CanUpdateCardHolder(original, updated *types.CardHolder) 
 	return fmt.Errorf("Not authorized for operation %s", "update::card")
 }
 
-func (a *authorizator) CanDeleteCardHolder(ch *types.CardHolder) error {
+func (a *authorizator) CanDeleteCardHolder(ch auth.Operant) error {
 	if a != nil && ch != nil {
 		r := result{
 			Allow:  false,
@@ -164,7 +164,7 @@ func (a *authorizator) CanDeleteCardHolder(ch *types.CardHolder) error {
 		}
 
 		m := map[string]interface{}{
-			"CH": makeOP(*ch),
+			"CH": ch.AsRuleEntity(),
 		}
 
 		if err := a.eval("delete", &r, m); err != nil {

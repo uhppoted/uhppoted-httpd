@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -21,15 +22,23 @@ func (x *stub) UID() string {
 	return "stub"
 }
 
-func (x *stub) CanAddCardHolder(cardHolder *types.CardHolder) error {
+func (x *stub) CanAddController(controller auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 
-func (x *stub) CanUpdateCardHolder(before, after *types.CardHolder) error {
+func (x *stub) CanUpdateController(before, after auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 
-func (x *stub) CanDeleteCardHolder(cardHolder *types.CardHolder) error {
+func (x *stub) CanAddCardHolder(cardHolder auth.Operant) error {
+	return fmt.Errorf("not authorised")
+}
+
+func (x *stub) CanUpdateCardHolder(before, after auth.Operant) error {
+	return fmt.Errorf("not authorised")
+}
+
+func (x *stub) CanDeleteCardHolder(cardHolder auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 
