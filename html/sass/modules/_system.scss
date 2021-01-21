@@ -143,3 +143,29 @@ tr.controller td input.door {
   outline: none;
 }
 
+tr.controller td select {
+  font: 400 0.9em Arial;
+  border: none;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+tr.controller[data-status="unconfigured"] td select {
+  color: $content-table-row-unconfigured;
+  font-style: italic;
+}
+
+tr.controller[data-status="unknown"] td select {
+  color: $content-table-item-unknown;
+  font-style: italic;
+}
+
+tr.controller[data-status="uncertain"] td select {
+  color: $content-table-item-uncertain;
+}
+
+tr.controller[data-status="error"] td select {
+  color: $content-table-item-error;
+}

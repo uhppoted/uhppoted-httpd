@@ -87,7 +87,7 @@ func merge(c Controller) controller {
 
 	for _, d := range sys.data.Tables.Doors {
 		if cc.DeviceID != nil && *cc.DeviceID != 0 && d.DeviceID == *cc.DeviceID {
-			cc.Doors[d.Door] = d.Name
+			cc.Doors[d.Door] = d.ID
 		}
 	}
 

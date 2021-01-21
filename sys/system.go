@@ -141,10 +141,19 @@ loop:
 
 	sort.SliceStable(controllers, func(i, j int) bool { return controllers[i].Created.Before(controllers[j].Created) })
 
+	doors := []types.Door{}
+	for _, v := range sys.data.Tables.Doors {
+		doors = append(doors, v)
+	}
+
+	sort.SliceStable(doors, func(i, j int) bool { return doors[i].Name < doors[j].Name })
+
 	return struct {
 		Controllers []controller
+		Doors       []types.Door
 	}{
 		Controllers: controllers,
+		Doors:       doors,
 	}
 }
 

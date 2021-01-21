@@ -169,58 +169,69 @@
 
                   <td>
                     <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-door-1" 
-                           class="field door"
-                           type="text" 
-                           value="{{index $controller.Doors 1}}"
-                           placeholder="-"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{index $controller.Doors 1}}"
-                           data-value="{{index $controller.Doors 1}}"  
-                           readonly />
+                    <select id="{{$cid}}-door-1" 
+                            class="field door"
+                            type="text" 
+                            value="{{index $controller.Doors 1}}"
+                            placeholder="-"
+                            onchange="onEdited(event)" 
+                            data-record="{{$cid}}"
+                            data-original="{{index $controller.Doors 1}}"
+                            data-value="{{index $controller.Doors 1}}">
+                      <option value="">-</option>{{range $.system.Doors}}
+                      <option value="{{.ID}}" {{if eq .ID (index $controller.Doors 1)}}selected{{end}}>{{.Name}}</option>{{end}}
+                    </select>
                   </td>
 
                   <td>
                     <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-door-2" 
-                           class="field door"
-                           type="text" 
-                           value="{{index $controller.Doors 2}}"
-                           placeholder="-"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{index $controller.Doors 2}}"
-                           data-value="{{index $controller.Doors 2}}"  
-                           readonly />
+                    <select id="{{$cid}}-door-2" 
+                            class="field door"
+                            type="text" 
+                            value="{{index $controller.Doors 2}}"
+                            placeholder="-"
+                            onchange="onEdited(event)" 
+                            data-record="{{$cid}}"
+                            data-original="{{index $controller.Doors 2}}"
+                            data-value="{{index $controller.Doors 2}}"  
+                            readonly>
+                      <option value="">-</option>{{range $.system.Doors}}
+                      <option value="{{.ID}}" {{if eq .ID (index $controller.Doors 2)}}selected{{end}}>{{.Name}}</option>{{end}}
+                    </select>
                   </td>
 
                   <td>
                     <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-door-3" 
-                           class="field door"
-                           type="text" 
-                           value="{{index $controller.Doors 3}}"
-                           placeholder="-"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{index $controller.Doors 3}}"
-                           data-value="{{index $controller.Doors 3}}"  
-                           readonly />
+                    <select id="{{$cid}}-door-3" 
+                            class="field door"
+                            type="text" 
+                            value="{{index $controller.Doors 3}}"
+                            placeholder="-"
+                            onchange="onEdited(event)" 
+                            data-record="{{$cid}}"
+                            data-original="{{index $controller.Doors 3}}"
+                            data-value="{{index $controller.Doors 3}}"  
+                            readonly>
+                      <option value="">-</option>{{range $.system.Doors}}
+                      <option value="{{.ID}}" {{if eq .ID (index $controller.Doors 3)}}selected{{end}}>{{.Name}}</option>{{end}}
+                    </select>
                   </td>
 
                   <td>
                     <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-door-4" 
-                           class="field door"
-                           type="text" 
-                           value="{{index $controller.Doors 4}}"
-                           placeholder="-"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{index $controller.Doors 4}}"
-                           data-value="{{index $controller.Doors 4}}"  
-                           readonly />
+                    <select id="{{$cid}}-door-4" 
+                            class="field door"
+                            type="text" 
+                            value="{{index $controller.Doors 4}}"
+                            placeholder="-"
+                            onchange="onEdited(event)" 
+                            data-record="{{$cid}}"
+                            data-original="{{index $controller.Doors 4}}"
+                            data-value="{{index $controller.Doors 4}}"  
+                            readonly>
+                      <option value="">-</option>{{range $.system.Doors}}
+                      <option value="{{.ID}}" {{if eq .ID (index $controller.Doors 4)}}selected{{end}}>{{.Name}}</option>{{end}}
+                    </select>
                   </td>
                 </tr>{{else}}<tr class="empty">
                  <td/><td/><td/><td/><td/><td/><td/><td/><td/><td/>
