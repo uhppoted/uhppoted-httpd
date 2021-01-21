@@ -9,7 +9,6 @@
 
 - [ ] sysinfo
       - edit doors
-        - rollback
         - commit
       - edit datetime + timezone
       - commit all

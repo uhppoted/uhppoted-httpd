@@ -480,12 +480,19 @@ function rowToRecord (id, row) {
   const name = row.querySelector('#' + id + '-name')
   const deviceID = row.querySelector('#' + id + '-ID')
   const ip = row.querySelector('#' + id + '-IP')
-  const fields = []
+  const doors = {
+    1: row.querySelector('#' + id + '-door-1'),
+    2: row.querySelector('#' + id + '-door-2'),
+    3: row.querySelector('#' + id + '-door-3'),
+    4: row.querySelector('#' + id + '-door-4')
+  }
 
   const record = {
     id: id,
     oid: oid
   }
+
+  const fields = []
 
   if (name && name.dataset.value !== name.dataset.original) {
     record.name = name.value
@@ -504,6 +511,16 @@ function rowToRecord (id, row) {
   if (ip && ip.dataset.value !== ip.dataset.original) {
     record.ip = ip.value
     fields.push(ip)
+  }
+
+  for (const [k, door] of Object.entries(doors)) {
+    if (door && door.dataset.value !== door.dataset.original) {
+      if (!record.doors) {
+        record.doors = {}
+      }
+      record.doors[k] = door.value
+      fields.push(door)
+    }
   }
 
   return [record, fields]
