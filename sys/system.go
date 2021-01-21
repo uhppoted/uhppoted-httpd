@@ -13,14 +13,16 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-api/acl"
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type system struct {
 	sync.RWMutex
-	file string
-	data data
+	file  string
+	data  data
+	audit audit.Trail
 }
 
 type data struct {
@@ -85,7 +87,7 @@ func init() {
 	}()
 }
 
-func Init(conf string) error {
+func Init(conf string, trail audit.Trail) error {
 	bytes, err := ioutil.ReadFile(conf)
 	if err != nil {
 		return err
@@ -96,8 +98,8 @@ func Init(conf string) error {
 		return err
 	}
 
+	sys.audit = trail
 	sys.file = conf
-
 	sys.data.Tables.Local.Init(sys.data.Tables.Controllers)
 
 	//	if b, err := json.MarshalIndent(sys.data, "", "  "); err == nil {
@@ -176,7 +178,7 @@ func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 loop:
 	for _, c := range controllers {
 		if c.OID == "" {
-			if r, err := add(shadow, c, auth); err != nil {
+			if r, err := sys.add(shadow, c, auth); err != nil {
 				return nil, err
 			} else if r != nil {
 				list.Updated = append(list.Updated, merge(*r))
@@ -194,7 +196,7 @@ loop:
 		// 	}
 		// }
 
-		if r, err := update(shadow, c, auth); err != nil {
+		if r, err := sys.update(shadow, c, auth); err != nil {
 			return nil, err
 		} else if r != nil {
 			list.Updated = append(list.Updated, merge(*r))
@@ -212,7 +214,7 @@ loop:
 	return list, nil
 }
 
-func add(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
+func (s *system) add(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
 	record := c.clone()
 
 	if auth != nil {
@@ -241,15 +243,15 @@ loop:
 	record.Created = time.Now()
 
 	shadow.Tables.Controllers = append(shadow.Tables.Controllers, record)
-	//	d.log("add", record, auth)
+	s.log("add", record, auth)
 
 	return record, nil
 }
 
-func update(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
+func (s *system) update(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
 	var current *Controller
 
-	for _, v := range sys.data.Tables.Controllers {
+	for _, v := range s.data.Tables.Controllers {
 		if v.OID == c.OID {
 			current = v
 			break
@@ -281,7 +283,7 @@ func update(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
 				}
 			}
 
-			//		d.log("update", map[string]interface{}{"original": current, "updated": record}, auth)
+			s.log("update", map[string]interface{}{"original": current, "updated": record}, auth)
 
 			return record, nil
 		}
@@ -468,6 +470,22 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 	}
 
 	return controllers, nil
+}
+
+func (s *system) log(op string, info interface{}, auth auth.OpAuth) {
+	if s.audit != nil {
+		uid := ""
+		if auth != nil {
+			uid = auth.UID()
+		}
+
+		s.audit.Write(audit.LogEntry{
+			UID:       uid,
+			Module:    "system",
+			Operation: op,
+			Info:      info,
+		})
+	}
 }
 
 func clean(s string) string {

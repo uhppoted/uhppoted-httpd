@@ -42,9 +42,7 @@ type HTTPD struct {
 			Cards  string
 		}
 	}
-	Audit struct {
-		File string
-	}
+	Audit audit.Trail
 }
 
 type dispatcher struct {
@@ -96,7 +94,7 @@ func (h *HTTPD) Run() {
 		log.Fatal(fmt.Errorf("Error initialising ACL ruleset (%v)", err))
 	}
 
-	db, err := memdb.NewDB(h.DB.File, ruleset, audit.NewAuditTrail(h.Audit.File))
+	db, err := memdb.NewDB(h.DB.File, ruleset, h.Audit)
 	if err != nil {
 		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
 	}

@@ -2,16 +2,14 @@
 
 ### IN PROGRESS
 
-- [ ] New table row submitted with error cannot be discarded
 - [ ] Warning message doesn't align left if commitall and/or rollbackall are not visible
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
 - [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 
 - [ ] sysinfo
-      - log edit operations
-      - edit datetime + timezone
       - edit doors
+      - edit datetime + timezone
       - commit all
       - rollback all
       - commonalise controller and card handling into tabular.js
@@ -29,7 +27,8 @@
       - (maybe) include port in device info returned from GetDevice/GetDevices
 
 - [ ] tabular
-      -- empty list: make first row a 'new' row
+      - [ ] New table row submitted with error cannot be discarded
+      - [ ] empty list: make first row a 'new' row
 
 - [ ] ACL
       - wrap ACL update in goroutine

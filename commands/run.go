@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/uhppoted/uhppoted-api/config"
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	provider "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 	auth "github.com/uhppoted/uhppoted-httpd/httpd/auth"
@@ -57,6 +58,8 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		authentication = auth.NewBasicAuthenticator(p, conf.HTTPD.Security.CookieMaxAge, conf.HTTPD.Security.StaleTime)
 	}
 
+	trail := audit.NewAuditTrail(conf.HTTPD.Audit.File)
+
 	h := httpd.HTTPD{
 		Dir:                      "html",
 		AuthProvider:             authentication,
@@ -86,14 +89,11 @@ func (cmd *Run) Execute(args ...interface{}) error {
 				Cards:  conf.HTTPD.DB.Rules.Cards,
 			},
 		},
-		Audit: struct {
-			File string
-		}{
-			File: conf.HTTPD.Audit.File,
-		},
+
+		Audit: trail,
 	}
 
-	if err := system.Init(conf.HTTPD.System.File); err != nil {
+	if err := system.Init(conf.HTTPD.System.File, trail); err != nil {
 		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 
