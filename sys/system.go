@@ -282,6 +282,12 @@ func (s *system) update(shadow *data, c Controller, auth auth.OpAuth) (*Controll
 				record.IP = c.IP.clone()
 			}
 
+			if c.Doors != nil {
+				for k, v := range c.Doors {
+					record.Doors[k] = v
+				}
+			}
+
 			if auth != nil {
 				if err := auth.CanUpdateController(current, record); err != nil {
 					return nil, &types.HttpdError{
@@ -349,9 +355,9 @@ func save(d *data, file string) error {
 
 func validate(d *data) error {
 	devices := map[uint32]string{}
+	doors := map[string]string{}
 
 	for _, r := range d.Tables.Controllers {
-
 		if r.OID == "" {
 			return &types.HttpdError{
 				Status: http.StatusBadRequest,
@@ -373,6 +379,29 @@ func validate(d *data) error {
 
 			devices[id] = r.OID
 		}
+
+		for _, v := range r.Doors {
+			if v != "" {
+				if _, ok := d.Tables.Doors[v]; !ok {
+					return &types.HttpdError{
+						Status: http.StatusBadRequest,
+						Err:    fmt.Errorf("Invalid door ID"),
+						Detail: fmt.Errorf("controller %v: invalid door ID (%v)", r.OID, v),
+					}
+				}
+			}
+
+			if rid, ok := doors[v]; ok {
+				return &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("%v door assigned to more than one controller", d.Tables.Doors[v].Name),
+					Detail: fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID),
+				}
+			}
+
+			doors[v] = r.OID
+		}
+
 	}
 
 	return nil
@@ -435,6 +464,7 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 			Name     *string
 			DeviceID *uint32
 			IP       *string
+			Doors    map[uint8]string
 		}
 	}{}
 
@@ -443,7 +473,7 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 		return nil, err
 	}
 
-	fmt.Printf(">> DEBUG: %s\n", string(blob))
+	fmt.Printf(">> DEBUG/X: %s\n", string(blob))
 
 	if err := json.Unmarshal(blob, &o); err != nil {
 		return nil, err
@@ -472,6 +502,13 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 				return nil, err
 			} else {
 				record.IP = addr
+			}
+		}
+
+		if r.Doors != nil && len(r.Doors) > 0 {
+			record.Doors = map[uint8]string{}
+			for k, v := range r.Doors {
+				record.Doors[k] = v
 			}
 		}
 

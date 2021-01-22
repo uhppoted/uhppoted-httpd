@@ -9,7 +9,7 @@
 
 - [ ] sysinfo
       - edit doors
-        - commit
+        - remove controller from Door 
       - edit datetime + timezone
       - commit all
       - rollback all

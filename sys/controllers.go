@@ -13,12 +13,13 @@ import (
 
 // Container class for the static information pertaining to an access controller.
 type Controller struct {
-	OID      string      `json:"OID"`
-	Created  time.Time   `json:"created"`
-	Name     *types.Name `json:"name"`
-	DeviceID *uint32     `json:"device-id"`
-	IP       *address    `json:"address"`
-	TimeZone string      `json:"timezone"`
+	OID      string           `json:"OID"`
+	Created  time.Time        `json:"created"`
+	Name     *types.Name      `json:"name"`
+	DeviceID *uint32          `json:"device-id"`
+	IP       *address         `json:"address"`
+	Doors    map[uint8]string `json:"doors"`
+	TimeZone string           `json:"timezone"`
 }
 
 // Internal 'temporary' container class for the instantaneous state of an access controller.
@@ -30,7 +31,6 @@ type controller struct {
 	SystemTime datetime
 	Cards      *records
 	Events     *records
-	Doors      map[uint8]string
 	Status     status
 }
 
@@ -65,6 +65,11 @@ func (c *Controller) clone() *Controller {
 			DeviceID: c.DeviceID,
 			IP:       c.IP,
 			TimeZone: c.TimeZone,
+			Doors:    map[uint8]string{},
+		}
+
+		for k, v := range c.Doors {
+			replicant.Doors[k] = v
 		}
 
 		return &replicant
@@ -78,18 +83,17 @@ func merge(c Controller) controller {
 		ID:         ID(c),
 		Controller: c,
 		IP:         ip{},
-		Doors:      map[uint8]string{},
 	}
 
 	if c.IP != nil {
 		cc.IP.IP = &(*c.IP)
 	}
 
-	for _, d := range sys.data.Tables.Doors {
-		if cc.DeviceID != nil && *cc.DeviceID != 0 && d.DeviceID == *cc.DeviceID {
-			cc.Doors[d.Door] = d.ID
-		}
-	}
+	//	for _, d := range sys.data.Tables.Doors {
+	//		if cc.DeviceID != nil && *cc.DeviceID != 0 && d.DeviceID == *cc.DeviceID {
+	//			cc.Doors[d.Door] = d.ID
+	//		}
+	//	}
 
 	tz := time.Local
 	if c.TimeZone != "" {
