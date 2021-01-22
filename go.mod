@@ -7,7 +7,7 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/hyperjumptech/grule-rule-engine v1.6.3
 	github.com/uhppoted/uhppote-core v0.6.9-0.20210120210234-345db80c65a5
-	github.com/uhppoted/uhppoted-api v0.6.9-0.20210120211305-ae61d8d9f959
+	github.com/uhppoted/uhppoted-api v0.6.9-0.20210122224750-3873196109b7
 	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f
 	gopkg.in/tomb.v2 v2.0.0-20161208151619-d5d1b5820637 // indirect
 )

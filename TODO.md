@@ -8,8 +8,6 @@
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 
 - [ ] sysinfo
-      - edit doors
-        - remove controller from Door 
       - edit datetime + timezone
       - commit all
       - rollback all

@@ -1,6 +1,7 @@
 package system
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -415,9 +416,9 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	// initialise empty ACL
 	acl := make(acl.ACL)
 
-	for _, d := range sys.data.Tables.Doors {
-		if _, ok := acl[d.DeviceID]; !ok {
-			acl[d.DeviceID] = make(map[uint32]core.Card)
+	for _, c := range sys.data.Tables.Controllers {
+		if c.DeviceID != nil && *c.DeviceID > 0 {
+			acl[*c.DeviceID] = map[uint32]core.Card{}
 		}
 	}
 
@@ -439,19 +440,42 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	}
 
 	// update ACL cards from permissions
+
 	for _, p := range list {
+	loop:
 		for _, d := range p.Doors {
-			if door, ok := sys.data.Tables.Doors[d]; !ok {
-				log.Printf("WARN %v", fmt.Errorf("Invalid door %v for card %v", d, p.CardNumber))
-			} else if l, ok := acl[door.DeviceID]; !ok {
-				log.Printf("WARN %v", fmt.Errorf("Door %v - invalid configuration (no controller defined for  %v)", d, door.DeviceID))
-			} else if card, ok := l[p.CardNumber]; !ok {
-				log.Printf("WARN %v", fmt.Errorf("Card %v not initialised for controller %v", p.CardNumber, door.DeviceID))
-			} else {
-				card.Doors[door.Door] = true
+			door, ok := sys.data.Tables.Doors[d]
+			if !ok {
+				log.Printf("WARN %v", fmt.Errorf("consolidate: invalid door %v for card %v", d, p.CardNumber))
+				continue
 			}
+
+			for _, c := range sys.data.Tables.Controllers {
+				for _, v := range c.Doors {
+					if v == door.ID {
+						if c.DeviceID != nil && *c.DeviceID > 0 {
+							if l, ok := acl[*c.DeviceID]; ok {
+								if card, ok := l[p.CardNumber]; !ok {
+									log.Printf("WARN %v", fmt.Errorf("consolidate: card %v not initialised for controller %v", p.CardNumber, *c.DeviceID))
+								} else {
+									card.Doors[door.Door] = true
+								}
+							}
+						}
+
+						continue loop
+					}
+				}
+			}
+
+			log.Printf("WARN %v", fmt.Errorf("consolidate: card %v, door %v - no controller assigned", p.CardNumber, door))
 		}
 	}
+
+	var b bytes.Buffer
+
+	acl.Print(&b)
+	log.Printf("INFO %v", fmt.Sprintf("ACL\n%s", string(b.Bytes())))
 
 	return &acl, nil
 }
@@ -472,8 +496,6 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Printf(">> DEBUG/X: %s\n", string(blob))
 
 	if err := json.Unmarshal(blob, &o); err != nil {
 		return nil, err

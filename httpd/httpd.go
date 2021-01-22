@@ -81,7 +81,7 @@ func (h *HTTPD) Run() {
 		log.Fatal(fmt.Errorf("Error loading ACL ruleset (%v)", err))
 	}
 
-	if err := builder.NewRuleBuilder(rules.system).BuildRuleFromResource("cards", "0.0.0", pkg.NewFileResource(h.DB.GRules.System)); err != nil {
+	if err := builder.NewRuleBuilder(rules.system).BuildRuleFromResource("system", "0.0.0", pkg.NewFileResource(h.DB.GRules.System)); err != nil {
 		log.Fatal(fmt.Errorf("Error loading system auth ruleset (%v)", err))
 	}
 

@@ -65,7 +65,7 @@ func (a *authorizator) CanAddController(controller auth.Operant) error {
 			"CONTROLLER": controller.AsRuleEntity(),
 		}
 
-		if err := a.eval("add", &r, m); err != nil {
+		if err := a.eval("system", "add", &r, m); err != nil {
 			return err
 		}
 
@@ -91,7 +91,7 @@ func (a *authorizator) CanUpdateController(original, updated auth.Operant) error
 			"UPDATED":  updated.AsRuleEntity(),
 		}
 
-		if err := a.eval("update", &r, m); err != nil {
+		if err := a.eval("system", "update", &r, m); err != nil {
 			return err
 		}
 
@@ -116,7 +116,7 @@ func (a *authorizator) CanAddCardHolder(ch auth.Operant) error {
 			"CH": ch.AsRuleEntity(),
 		}
 
-		if err := a.eval("add", &r, m); err != nil {
+		if err := a.eval("cards", "add", &r, m); err != nil {
 			return err
 		}
 
@@ -142,7 +142,7 @@ func (a *authorizator) CanUpdateCardHolder(original, updated auth.Operant) error
 			"UPDATED":  updated.AsRuleEntity(),
 		}
 
-		if err := a.eval("update", &r, m); err != nil {
+		if err := a.eval("cards", "update", &r, m); err != nil {
 			return err
 		}
 
@@ -167,7 +167,7 @@ func (a *authorizator) CanDeleteCardHolder(ch auth.Operant) error {
 			"CH": ch.AsRuleEntity(),
 		}
 
-		if err := a.eval("delete", &r, m); err != nil {
+		if err := a.eval("cards", "delete", &r, m); err != nil {
 			return err
 		}
 
@@ -181,7 +181,7 @@ func (a *authorizator) CanDeleteCardHolder(ch auth.Operant) error {
 	return fmt.Errorf("Not authorized for operation %s", "delete::card")
 }
 
-func (a *authorizator) eval(op string, r *result, m map[string]interface{}) error {
+func (a *authorizator) eval(ruleset string, op string, r *result, m map[string]interface{}) error {
 	context := ast.NewDataContext()
 
 	if err := context.Add("OP", op); err != nil {
@@ -198,7 +198,7 @@ func (a *authorizator) eval(op string, r *result, m map[string]interface{}) erro
 		}
 	}
 
-	kb := a.grule.NewKnowledgeBaseInstance("cards", "0.0.0")
+	kb := a.grule.NewKnowledgeBaseInstance(ruleset, "0.0.0")
 	enjin := engine.NewGruleEngine()
 	if err := enjin.Execute(context, kb); err != nil {
 		return err
