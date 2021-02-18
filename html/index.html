@@ -127,14 +127,13 @@
                     <input id="{{$cid}}-datetime" 
                            class="field datetime"
                            type="text" 
-                           value='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04:05"}}'
+                           value='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04:05 MST"}}'
                            placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04:05"}}'
-                           data-value='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04:05"}}'
-                           data-status="{{$controller.SystemTime.Status}}"
-                           readonly />
+                           data-original='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04:05 MST"}}'
+                           data-value='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04:05 MST"}}'
+                           data-status="{{$controller.SystemTime.Status}}" />
                   </td>
 
                   <td>

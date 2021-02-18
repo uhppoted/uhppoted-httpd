@@ -6,6 +6,7 @@
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
 - [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
+- [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
       - edit datetime + timezone

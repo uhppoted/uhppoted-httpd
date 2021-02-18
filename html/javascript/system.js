@@ -480,6 +480,7 @@ function rowToRecord (id, row) {
   const name = row.querySelector('#' + id + '-name')
   const deviceID = row.querySelector('#' + id + '-ID')
   const ip = row.querySelector('#' + id + '-IP')
+  const datetime = row.querySelector('#' + id + '-datetime')
   const doors = {
     1: row.querySelector('#' + id + '-door-1'),
     2: row.querySelector('#' + id + '-door-2'),
@@ -511,6 +512,11 @@ function rowToRecord (id, row) {
   if (ip && ip.dataset.value !== ip.dataset.original) {
     record.ip = ip.value
     fields.push(ip)
+  }
+
+  if (datetime && datetime.dataset.value !== datetime.dataset.original) {
+    record.datetime = datetime.value
+    fields.push(datetime)
   }
 
   for (const [k, door] of Object.entries(doors)) {

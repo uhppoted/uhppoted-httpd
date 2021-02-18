@@ -3,11 +3,11 @@ module github.com/uhppoted/uhppoted-httpd
 go 1.15
 
 require (
-	github.com/cristalhq/jwt/v3 v3.0.2
-	github.com/google/uuid v1.1.1
-	github.com/hyperjumptech/grule-rule-engine v1.6.3
-	github.com/uhppoted/uhppote-core v0.6.9-0.20210120210234-345db80c65a5
-	github.com/uhppoted/uhppoted-api v0.6.9-0.20210122224750-3873196109b7
-	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f
+	github.com/cristalhq/jwt/v3 v3.0.11
+	github.com/google/uuid v1.2.0
+	github.com/hyperjumptech/grule-rule-engine v1.8.2
+	github.com/uhppoted/uhppote-core v0.6.10
+	github.com/uhppoted/uhppoted-api v0.6.10
+	golang.org/x/sys v0.0.0-20210218155724-8ebf48af031b
 	gopkg.in/tomb.v2 v2.0.0-20161208151619-d5d1b5820637 // indirect
 )

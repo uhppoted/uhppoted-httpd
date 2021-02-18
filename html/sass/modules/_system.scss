@@ -1,18 +1,18 @@
 th.name {
-  min-width: 100px;
+  min-width: 96px;
   border-bottom: 1px;
 }
 
 th.ID {
-  min-width: 90px;
+  min-width: 88px;
 }
 
 th.IP {
-  min-width: 120px;
+  min-width: 112px;
 }
 
 th.datetime {
-  min-width: 128px;
+  min-width: 176px;
 }
 
 th.cards {
@@ -76,7 +76,7 @@ tr.controller td input:focus {
 }
 
 tr.controller td input.name {
-  width: 100px;
+  width: 96px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -88,7 +88,7 @@ tr.controller td input.name:focus {
 }
 
 tr.controller td input.ID {
-  width: 90px;
+  width: 88px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -102,7 +102,7 @@ tr.controller td input.ID::-webkit-outer-spin-button {
 }
 
 tr.controller td input.IP {
-  min-width: 120px;
+  min-width: 112px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -110,7 +110,7 @@ tr.controller td input.IP {
 }
 
 tr.controller td input.datetime {
-  min-width: 120px;
+  min-width: 176px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;

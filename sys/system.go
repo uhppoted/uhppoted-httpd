@@ -149,6 +149,10 @@ loop:
 
 	sort.SliceStable(doors, func(i, j int) bool { return doors[i].Name < doors[j].Name })
 
+	for _, c := range controllers {
+		fmt.Printf(">>>>>>>> %v  %v  %v\n", *c.DeviceID, c.SystemTime.DateTime, c.SystemTime.TimeZone)
+	}
+
 	return struct {
 		Controllers []controller
 		Doors       []types.Door
@@ -281,6 +285,11 @@ func (s *system) update(shadow *data, c Controller, auth auth.OpAuth) (*Controll
 
 			if c.IP != nil {
 				record.IP = c.IP.clone()
+			}
+
+			if c.TimeZone != nil {
+				tz := *c.TimeZone
+				record.TimeZone = &tz
 			}
 
 			if c.Doors != nil {
@@ -489,6 +498,7 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 			DeviceID *uint32
 			IP       *string
 			Doors    map[uint8]string
+			DateTime *string
 		}
 	}{}
 
@@ -524,6 +534,15 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 				return nil, err
 			} else {
 				record.IP = addr
+			}
+		}
+
+		if r.DateTime != nil {
+			if tz, err := timezone(strings.TrimSpace(*r.DateTime)); err != nil {
+				return nil, err
+			} else {
+				tzs := tz.String()
+				record.TimeZone = &tzs
 			}
 		}
 

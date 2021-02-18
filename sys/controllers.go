@@ -3,6 +3,8 @@ package system
 import (
 	"fmt"
 	"math"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,7 +21,7 @@ type Controller struct {
 	DeviceID *uint32          `json:"device-id"`
 	IP       *address         `json:"address"`
 	Doors    map[uint8]string `json:"doors"`
-	TimeZone string           `json:"timezone"`
+	TimeZone *string          `json:"timezone"`
 }
 
 // Internal 'temporary' container class for the instantaneous state of an access controller.
@@ -96,9 +98,18 @@ func merge(c Controller) controller {
 	//	}
 
 	tz := time.Local
-	if c.TimeZone != "" {
-		if l, err := time.LoadLocation(c.TimeZone); err == nil {
+	if c.TimeZone != nil && *c.TimeZone != "" {
+		re := regexp.MustCompile("UTC([+-][0-9]+)")
+		if l, err := time.LoadLocation(*c.TimeZone); err == nil {
 			tz = l
+		} else if match := re.FindStringSubmatch(*c.TimeZone); match != nil {
+			if offset, err := strconv.Atoi(match[1]); err == nil {
+				tz = time.FixedZone(fmt.Sprintf("UTC%+d", offset), offset*3600)
+			} else {
+				warn(fmt.Errorf("%v: invalid timezone (%v)", c.DeviceID, *c.TimeZone))
+			}
+		} else {
+			warn(fmt.Errorf("%v: invalid timezone (%v)", c.DeviceID, *c.TimeZone))
 		}
 	}
 
