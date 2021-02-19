@@ -30,42 +30,40 @@ export function onRollback (event, op) {
 }
 
 export function onCommitAll (event) {
-  throw Error('onCommitAll: NOT IMPLEMENTED')
-  // const tbody = document.getElementById('cardholders').querySelector('table tbody')
+  const tbody = document.getElementById('controllers').querySelector('table tbody')
 
-  // if (tbody) {
-  //   const rows = tbody.rows
-  //   const list = []
+  if (tbody) {
+    const rows = tbody.rows
+    const list = []
 
-  //   for (let i = 0; i < rows.length; i++) {
-  //     const row = rows[i]
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i]
 
-  //     if (row.classList.contains('modified') || row.classList.contains('new')) {
-  //       list.push(row.id)
-  //     }
-  //   }
+      if (row.classList.contains('modified') || row.classList.contains('new')) {
+        list.push(row.id)
+      }
+    }
 
-  //   onUpdate(...list)
-  // }
+    onUpdate(...list)
+  }
 }
 
 export function onRollbackAll (event) {
-  throw Error('onRollbackAll: NOT IMPLEMENTED')
-  // const tbody = document.getElementById('cardholders').querySelector('table tbody')
+  const tbody = document.getElementById('controllers').querySelector('table tbody')
 
-  // if (tbody) {
-  //   const rows = tbody.rows
+  if (tbody) {
+    const rows = tbody.rows
 
-  //   for (let i = 0; i < rows.length; i++) {
-  //     const row = rows[i]
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i]
 
-  //     if (row.classList.contains('new')) {
-  //       onDelete(row.id)
-  //     } else if (row.classList.contains('modified')) {
-  //       onRevert(row.id)
-  //     }
-  //   }
-  // }
+      if (row.classList.contains('new')) {
+        //       onDelete(row.id)
+      } else if (row.classList.contains('modified')) {
+        onRevert(row.id)
+      }
+    }
+  }
 }
 
 export function onAdd (event) {
@@ -310,6 +308,7 @@ export function onRefresh (event) {
 function updated (list) {
   if (list) {
     list.forEach((record) => {
+      console.log(record)
       const id = record.ID
       const row = document.getElementById(id)
 
@@ -319,6 +318,79 @@ function updated (list) {
 
       if (record.Name) {
         update(document.getElementById(id + '-name'), record.Name)
+      }
+
+      if (record['device-id']) {
+        update(document.getElementById(id + '-ID'), record['device-id'])
+      }
+
+      if (record.IP) {
+        let ip = ''
+        let status = 'unknown'
+
+        if (record.IP.IP !== null) {
+          ip = record.IP.IP
+        }
+
+        switch (record.IP.Status) {
+          case 1:
+            status = 'ok'
+            break
+
+          case 2:
+            status = 'uncertain'
+            break
+
+          case 3:
+            status = 'error'
+            break
+
+          case 4:
+            status = 'unconfigured'
+            break
+        }
+
+        update(document.getElementById(id + '-IP'), ip, status)
+      }
+
+      if (record.SystemTime) {
+        let datetime = ''
+        let status = 'unknown'
+
+        if (record.SystemTime.DateTime !== null) {
+          datetime = record.SystemTime.DateTime
+        }
+
+        if (record.timezone !== null && record.timezone !== '') {
+          datetime = datetime + ' ' + record.timezone
+        }
+
+        switch (record.SystemTime.Status) {
+          case 1:
+            status = 'ok'
+            break
+
+          case 2:
+            status = 'uncertain'
+            break
+
+          case 3:
+            status = 'error'
+            break
+
+          case 4:
+            status = 'unconfigured'
+            break
+        }
+
+        update(document.getElementById(id + '-datetime'), datetime, status)
+      }
+
+      if (record.doors) {
+        update(document.getElementById(id + '-door-1'), record.doors[1])
+        update(document.getElementById(id + '-door-2'), record.doors[2])
+        update(document.getElementById(id + '-door-3'), record.doors[3])
+        update(document.getElementById(id + '-door-4'), record.doors[4])
       }
     })
   }
@@ -346,7 +418,7 @@ function updated (list) {
 //   // }
 // }
 
-function set (div, element, value) {
+function set (div, element, value, status) {
   const tbody = document.getElementById(div).querySelector('table tbody')
   const rowid = element.dataset.record
   const row = document.getElementById(rowid)
@@ -354,6 +426,10 @@ function set (div, element, value) {
   const v = value.toString()
 
   element.dataset.value = v
+
+  if (status !== undefined && element.dataset.original !== undefined) {
+    element.dataset.status = status
+  }
 
   if (v !== original) {
     apply(element, (c) => { c.classList.add('modified') })
@@ -387,7 +463,7 @@ function set (div, element, value) {
   }
 }
 
-function update (element, value) {
+function update (element, value, status) {
   const v = value.toString()
 
   if (element) {
@@ -431,7 +507,7 @@ function update (element, value) {
         break
     }
 
-    set('controllers', element, value)
+    set('controllers', element, value, status)
   }
 }
 

@@ -31,6 +31,7 @@ func (r *records) String() string {
 	return ""
 }
 
+// Ref. https://github.com/golang/go/issues/12388
 func timezone(s string) (*time.Location, error) {
 	utc, _ := time.LoadLocation("UTC")
 

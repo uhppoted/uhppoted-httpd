@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Ref. https://github.com/golang/go/issues/12388
 func TestTimezone(t *testing.T) {
 	local := time.Local
 	pst := time.FixedZone("PST", +8*60*60) // NOTE: this is potentially problematic - there doesn't seem to be a way to reliably get a timezone by short code

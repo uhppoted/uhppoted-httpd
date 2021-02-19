@@ -9,10 +9,17 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
-      - timezone unit tests
+      - commit all::make update record match original system record
+      - what to do about IP address? Display configured ? Hint ?
+      - add controller
+      - delete controller
+      - refresh
+      
+      - move controller name to uhppote-core
+      - move timezone to uhppote-core
+      - validate Local::Device timezone on initialization
+      - update uhhpoted.conf
       - edit datetime (?)
-      - commit all
-      - rollback all
       - commonalise controller and card handling into tabular.js
       - cache expiry
       - Use sync.Map for cache
@@ -23,9 +30,6 @@
       - configure ok/uncertain intervals
       - configure systime window
       - use uhppoted-api::healthcheck
-      - validate Local::Device timezone on initialization
-      - move controller name to uhppote-core
-      - move timezone to uhppote-core
       - (maybe) include port in device info returned from GetDevice/GetDevices
 
 - [ ] tabular
