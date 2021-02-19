@@ -9,7 +9,6 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
-      - doors
       - timezone unit tests
       - edit datetime (?)
       - commit all

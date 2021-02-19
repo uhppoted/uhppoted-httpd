@@ -7,26 +7,32 @@ import (
 
 func TestTimezone(t *testing.T) {
 	local := time.Local
-	// pst, _ := time.LoadLocation("PST")
+	pst := time.FixedZone("PST", +8*60*60) // NOTE: this is potentially problematic - there doesn't seem to be a way to reliably get a timezone by short code
 	mst, _ := time.LoadLocation("MST")
 	utc, _ := time.LoadLocation("UTC")
-	utc7n := time.FixedZone("UTC-7", -7*60*60)
 	utc7p := time.FixedZone("UTC+7", +7*60*60)
+	utc7n := time.FixedZone("UTC-7", -7*60*60)
 
 	tests := []struct {
 		String   string
 		Expected *time.Location
 	}{
-		// {"2021-02-18 12:26:23 PST", pst},
+		{"", local},
+		{"2021-02-18 12:26:23 PST", pst},
 		{"2021-02-18 12:26:23 MST", mst},
 		{"2021-02-18 12:26:23 UTC", utc},
-		{"2021-02-18 12:26:23 UTC-7", utc7n},
-		{"2021-02-18 12:26:23 -0700", utc7n},
-		{"2021-02-18 12:26:23 -07:00", utc7n},
 		{"2021-02-18 12:26:23 UTC+7", utc7p},
 		{"2021-02-18 12:26:23 +0700", utc7p},
 		{"2021-02-18 12:26:23 +07:00", utc7p},
+		{"2021-02-18 12:26:23 UTC-7", utc7n},
+		{"2021-02-18 12:26:23 -0700", utc7n},
+		{"2021-02-18 12:26:23 -07:00", utc7n},
 		{"2021-02-18 12:26:23", local},
+		{"UTC", utc},
+		{"UTC+0", utc},
+		{"UTC-0", utc},
+		{"UTC+7", utc7p},
+		{"UTC-7", utc7n},
 	}
 
 	for _, v := range tests {

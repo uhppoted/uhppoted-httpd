@@ -32,11 +32,13 @@ func (r *records) String() string {
 }
 
 func timezone(s string) (*time.Location, error) {
+	utc, _ := time.LoadLocation("UTC")
+
 	if strings.TrimSpace(s) == "" {
 		return time.Local, nil
 	}
 
-	t, err := time.Parse("2006-01-02 15:04:05 MST", s)
+	t, err := time.ParseInLocation("2006-01-02 15:04:05 MST", s, utc)
 	if err == nil {
 		return t.Location(), nil
 	}
