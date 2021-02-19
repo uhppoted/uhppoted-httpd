@@ -149,10 +149,6 @@ loop:
 
 	sort.SliceStable(doors, func(i, j int) bool { return doors[i].Name < doors[j].Name })
 
-	for _, c := range controllers {
-		fmt.Printf(">>>>>>>> %v  %v  %v\n", *c.DeviceID, c.SystemTime.DateTime, c.SystemTime.TimeZone)
-	}
-
 	return struct {
 		Controllers []controller
 		Doors       []types.Door

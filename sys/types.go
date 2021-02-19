@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -31,6 +32,10 @@ func (r *records) String() string {
 }
 
 func timezone(s string) (*time.Location, error) {
+	if strings.TrimSpace(s) == "" {
+		return time.Local, nil
+	}
+
 	t, err := time.Parse("2006-01-02 15:04:05 MST", s)
 	if err == nil {
 		return t.Location(), nil
@@ -60,5 +65,22 @@ func timezone(s string) (*time.Location, error) {
 		return time.Local, nil
 	}
 
-	return nil, err
+	re = regexp.MustCompile("UTC([+-][0-9]{1,2})")
+	if tz, err := time.LoadLocation(s); err == nil {
+		return tz, nil
+	}
+
+	if match := re.FindStringSubmatch(s); match != nil {
+		if offset, err := strconv.Atoi(match[1]); err == nil {
+			if offset != 0 {
+				return time.FixedZone(fmt.Sprintf("UTC%+d", offset), offset*3600), nil
+			}
+
+			if tz, err := time.LoadLocation("UTC"); err == nil {
+				return tz, nil
+			}
+		}
+	}
+
+	return nil, fmt.Errorf("Invalid timezone (%v)", s)
 }

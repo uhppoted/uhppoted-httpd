@@ -1,6 +1,6 @@
 module github.com/uhppoted/uhppoted-httpd
 
-go 1.15
+go 1.16
 
 require (
 	github.com/cristalhq/jwt/v3 v3.0.11

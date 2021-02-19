@@ -3,8 +3,6 @@ package system
 import (
 	"fmt"
 	"math"
-	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
@@ -98,18 +96,11 @@ func merge(c Controller) controller {
 	//	}
 
 	tz := time.Local
-	if c.TimeZone != nil && *c.TimeZone != "" {
-		re := regexp.MustCompile("UTC([+-][0-9]+)")
-		if l, err := time.LoadLocation(*c.TimeZone); err == nil {
-			tz = l
-		} else if match := re.FindStringSubmatch(*c.TimeZone); match != nil {
-			if offset, err := strconv.Atoi(match[1]); err == nil {
-				tz = time.FixedZone(fmt.Sprintf("UTC%+d", offset), offset*3600)
-			} else {
-				warn(fmt.Errorf("%v: invalid timezone (%v)", c.DeviceID, *c.TimeZone))
-			}
+	if c.TimeZone != nil {
+		if l, err := timezone(*c.TimeZone); err != nil {
+			warn(err)
 		} else {
-			warn(fmt.Errorf("%v: invalid timezone (%v)", c.DeviceID, *c.TimeZone))
+			tz = l
 		}
 	}
 

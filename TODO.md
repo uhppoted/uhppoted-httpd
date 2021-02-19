@@ -9,7 +9,9 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
-      - edit datetime + timezone
+      - doors
+      - timezone unit tests
+      - edit datetime (?)
       - commit all
       - rollback all
       - commonalise controller and card handling into tabular.js
@@ -23,7 +25,8 @@
       - configure systime window
       - use uhppoted-api::healthcheck
       - validate Local::Device timezone on initialization
-      - (maybe) move timezone down in uhppote-core
+      - move controller name to uhppote-core
+      - move timezone to uhppote-core
       - (maybe) include port in device info returned from GetDevice/GetDevices
 
 - [ ] tabular
