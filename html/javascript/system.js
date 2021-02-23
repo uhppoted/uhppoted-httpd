@@ -1,7 +1,6 @@
 /* global constants */
 
-// import { getAsJSON, dismiss } from './uhppoted.js'
-import { postAsJSON, warning } from './uhppoted.js'
+import { getAsJSON, postAsJSON, dismiss, warning } from './uhppoted.js'
 
 export function onEdited (event) {
   set('controllers', event.target, event.target.value)
@@ -284,37 +283,34 @@ export function onNew (event) {
 }
 
 export function onRefresh (event) {
-  throw Error('onRefresh: NOT IMPLEMENTED')
-  // busy()
-  // dismiss()
+  busy()
+  dismiss()
 
-  // getAsJSON('/cardholders')
-  //   .then(response => {
-  //     unbusy()
+  getAsJSON('/system')
+    .then(response => {
+      unbusy()
 
-  //     switch (response.status) {
-  //       case 200:
-  //         response.json().then(object => { refresh(object.db) })
-  //         break
+      switch (response.status) {
+        case 200:
+          response.json().then(object => { refresh(object.system) })
+          break
 
-  //       default:
-  //         response.text().then(message => { warning(message) })
-  //     }
-  //   })
-  //   .catch(function (err) {
-  //     console.log(err)
-  //   })
+        default:
+          response.text().then(message => { warning(message) })
+      }
+    })
+    .catch(function (err) {
+      console.log(err)
+    })
 }
 
-// function refresh (db) {
-//  throw 'refresh: NOT IMPLEMENTED'
-//  // updated(Object.values(db.cardholders))
-// }
+function refresh (sys) {
+  updated(Object.values(sys.Controllers))
+}
 
-function updated (list) {
-  if (list) {
-    list.forEach((record) => {
-      console.log(record)
+function updated (controllers) {
+  if (controllers) {
+    controllers.forEach((record) => {
       const id = record.ID
       const row = document.getElementById(id)
 
@@ -338,6 +334,10 @@ function updated (list) {
         }
 
         update(document.getElementById(id + '-IP'), ip, statusToString(record.IP.Status))
+
+        if (document.getElementById(id + '-IP')) {
+          document.getElementById(id + '-IP').dataset.original = record.address          
+        }
       }
 
       if (record.SystemTime) {
@@ -436,7 +436,8 @@ function update (element, value, status) {
 
   if (element) {
     const td = cell(element)
-    element.dataset.original = v
+
+    element.dataset.original = v      
 
     // check for conflicts with concurrently modified fields
 

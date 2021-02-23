@@ -41,12 +41,6 @@ func Fetch(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durati
 		response = struct {
 			DB interface{} `json:"db"`
 		}{
-			DB: list,
-		}
-
-		response = struct {
-			DB interface{} `json:"db"`
-		}{
 			DB: struct {
 				CardHolders interface{} `json:"cardholders"`
 			}{

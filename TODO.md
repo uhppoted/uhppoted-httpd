@@ -11,7 +11,6 @@
 - [ ] sysinfo
       - add controller
       - delete controller
-      - refresh
       - move controller name to uhppote-core
       - move timezone to uhppote-core
       - update uhhpoted.conf
