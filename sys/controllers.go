@@ -89,12 +89,6 @@ func merge(c Controller) controller {
 		cc.IP.IP = &(*c.IP)
 	}
 
-	//	for _, d := range sys.data.Tables.Doors {
-	//		if cc.DeviceID != nil && *cc.DeviceID != 0 && d.DeviceID == *cc.DeviceID {
-	//			cc.Doors[d.Door] = d.ID
-	//		}
-	//	}
-
 	tz := time.Local
 	if c.TimeZone != nil {
 		if l, err := timezone(*c.TimeZone); err != nil {

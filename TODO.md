@@ -10,15 +10,14 @@
 
 - [ ] sysinfo
       - commit all::make update record match original system record
-      - what to do about IP address? Display configured ? Hint ?
       - add controller
       - delete controller
       - refresh
-      
       - move controller name to uhppote-core
       - move timezone to uhppote-core
-      - validate Local::Device timezone on initialization
       - update uhhpoted.conf
+
+      - validate Local::Device timezone on initialization
       - edit datetime (?)
       - commonalise controller and card handling into tabular.js
       - cache expiry
@@ -163,3 +162,4 @@
 - https://github.com/cristalhq/jwt
 - [CSS Tabs](https://codepen.io/axelaredz/pen/ipome)
 - [WenAuthN](https://trustfoundry.net/passwords-are-dead-long-live-webauthn)
+- [ZUI](https://zircleui.github.io/docs/examples/home.html)

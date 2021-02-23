@@ -7,6 +7,12 @@ export function onEdited (event) {
   set('controllers', event.target, event.target.value)
 }
 
+export function onEnter (event) {
+  if (event.key === 'Enter') {
+    set('controllers', event.target, event.target.value)
+  }
+}
+
 export function onTick (event) {
   set('controllers', event.target, event.target.checked)
 }
