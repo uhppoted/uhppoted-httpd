@@ -10,12 +10,7 @@ export function onTick (event) {
   set(event.target, event.target.checked)
 }
 
-export function onCommit (event, op) {
-  if (op && op === 'add') {
-    onAdd(event)
-    return
-  }
-
+export function onCommit (event) {
   onUpdate(event.target.dataset.record)
 }
 
@@ -62,57 +57,6 @@ export function onRollbackAll (event) {
         onRevert(row.id)
       }
     }
-  }
-}
-
-export function onAdd (event) {
-  const id = event.target.dataset.record
-  const row = document.getElementById(id)
-
-  if (row) {
-    const [record, fields] = rowToRecord(id, row)
-
-    const reset = function () {
-      row.classList.add('new')
-      row.classList.add('modified')
-      fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
-    }
-
-    busy()
-    row.classList.remove('new')
-    row.classList.remove('modified')
-    fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
-    fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
-
-    postAsJSON('/cardholders', { cardholders: [record] })
-      .then(response => {
-        if (response.redirected) {
-          window.location = response.url
-        } else {
-          switch (response.status) {
-            case 200:
-              response.json().then(object => {
-                if (object && object.db && object.db.updated) {
-                  updated(object.db.updated)
-                  deleted(object.db.deleted)
-                }
-              })
-              break
-
-            default:
-              reset()
-              response.text().then(message => { warning(message) })
-          }
-        }
-      })
-      .catch(function (err) {
-        reset()
-        warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-      })
-      .finally(() => {
-        unbusy()
-        fields.forEach(f => { apply(f, (c) => { c.classList.remove('pending') }) })
-      })
   }
 }
 

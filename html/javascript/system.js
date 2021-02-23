@@ -16,12 +16,7 @@ export function onTick (event) {
   set('controllers', event.target, event.target.checked)
 }
 
-export function onCommit (event, op) {
-  if (op && op === 'add') {
-    onAdd(event)
-    return
-  }
-
+export function onCommit (event) {
   onUpdate(event.target.dataset.record)
 }
 
@@ -69,56 +64,6 @@ export function onRollbackAll (event) {
       }
     }
   }
-}
-
-export function onAdd (event) {
-  throw Error('onAdd: NOT IMPLEMENTED')
-  // const id = event.target.dataset.record
-  // const row = document.getElementById(id)
-
-  // if (row) {
-  //   const [record, fields] = rowToRecord(id, row)
-
-  //   const reset = function () {
-  //     row.classList.add('new')
-  //     row.classList.add('modified')
-  //     fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
-  //   }
-
-  //   busy()
-  //   row.classList.remove('new')
-  //   row.classList.remove('modified')
-  //   fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
-  //   fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
-
-  //   postAsJSON('/cardholders', { cardholders: [record] })
-  //     .then(response => {
-  //       if (response.redirected) {
-  //         window.location = response.url
-  //       } else {
-  //         switch (response.status) {
-  //           case 200:
-  //             response.json().then(object => {
-  //               updated(object.db.updated)
-  //               deleted(object.db.deleted)
-  //             })
-  //             break
-
-  //           default:
-  //             reset()
-  //             response.text().then(message => { warning(message) })
-  //         }
-  //       }
-  //     })
-  //     .catch(function (err) {
-  //       reset()
-  //       warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-  //     })
-  //     .finally(() => {
-  //       unbusy()
-  //       fields.forEach(f => { apply(f, (c) => { c.classList.remove('pending') }) })
-  //     })
-  // }
 }
 
 export function onUpdate (...list) {
@@ -336,7 +281,7 @@ function updated (controllers) {
         update(document.getElementById(id + '-IP'), ip, statusToString(record.IP.Status))
 
         if (document.getElementById(id + '-IP')) {
-          document.getElementById(id + '-IP').dataset.original = record.address          
+          document.getElementById(id + '-IP').dataset.original = record.address
         }
       }
 
@@ -437,7 +382,7 @@ function update (element, value, status) {
   if (element) {
     const td = cell(element)
 
-    element.dataset.original = v      
+    element.dataset.original = v
 
     // check for conflicts with concurrently modified fields
 
