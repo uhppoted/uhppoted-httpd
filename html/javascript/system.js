@@ -332,36 +332,16 @@ function updated (list) {
 
       if (record.IP) {
         let ip = ''
-        let status = 'unknown'
 
         if (record.IP.IP !== null) {
           ip = record.IP.IP
         }
 
-        switch (record.IP.Status) {
-          case 1:
-            status = 'ok'
-            break
-
-          case 2:
-            status = 'uncertain'
-            break
-
-          case 3:
-            status = 'error'
-            break
-
-          case 4:
-            status = 'unconfigured'
-            break
-        }
-
-        update(document.getElementById(id + '-IP'), ip, status)
+        update(document.getElementById(id + '-IP'), ip, statusToString(record.IP.Status))
       }
 
       if (record.SystemTime) {
         let datetime = ''
-        let status = 'unknown'
 
         if (record.SystemTime.DateTime !== null) {
           datetime = record.SystemTime.DateTime
@@ -371,25 +351,7 @@ function updated (list) {
           datetime = datetime + ' ' + record.timezone
         }
 
-        switch (record.SystemTime.Status) {
-          case 1:
-            status = 'ok'
-            break
-
-          case 2:
-            status = 'uncertain'
-            break
-
-          case 3:
-            status = 'error'
-            break
-
-          case 4:
-            status = 'unconfigured'
-            break
-        }
-
-        update(document.getElementById(id + '-datetime'), datetime, status)
+        update(document.getElementById(id + '-datetime'), datetime, statusToString(record.SystemTime.Status))
       }
 
       if (record.doors) {
@@ -619,4 +581,22 @@ function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   )
+}
+
+function statusToString (status) {
+  switch (status) {
+    case 1:
+      return 'ok'
+
+    case 2:
+      return 'uncertain'
+
+    case 3:
+      return 'error'
+
+    case 4:
+      return 'unconfigured'
+  }
+
+  return 'unknown'
 }

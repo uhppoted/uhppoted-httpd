@@ -9,7 +9,6 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
-      - commit all::make update record match original system record
       - add controller
       - delete controller
       - refresh
