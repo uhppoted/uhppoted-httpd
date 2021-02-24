@@ -13,6 +13,7 @@ import (
 
 // Container class for the static information pertaining to an access controller.
 type Controller struct {
+	ID       string           `json:"-"`
 	OID      string           `json:"OID"`
 	Created  time.Time        `json:"created"`
 	Name     *types.Name      `json:"name"`
@@ -22,11 +23,12 @@ type Controller struct {
 	TimeZone *string          `json:"timezone"`
 }
 
-// Internal 'temporary' container class for the instantaneous state of an access controller.
-// Used mostly for HTML templating.
+// Merges Controller static configuration with current controller state information into a struct usable by
+// Javascript/HTML templating.
 type controller struct {
-	ID string
-	Controller
+	ID         string
+	Controller // TODO replace with inline fields
+	DeviceID   string
 	IP         ip
 	SystemTime datetime
 	Cards      *records
@@ -59,13 +61,14 @@ func (c *Controller) AsRuleEntity() interface{} {
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
+			ID:       c.ID,
 			OID:      c.OID,
 			Created:  c.Created,
 			Name:     c.Name.Copy(),
 			DeviceID: c.DeviceID,
 			IP:       c.IP,
 			TimeZone: c.TimeZone,
-			Doors:    map[uint8]string{},
+			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
 		}
 
 		for k, v := range c.Doors {
@@ -79,10 +82,16 @@ func (c *Controller) clone() *Controller {
 }
 
 func merge(c Controller) controller {
+
 	cc := controller{
 		ID:         ID(c),
 		Controller: c,
+		DeviceID:   "",
 		IP:         ip{},
+	}
+
+	if c.DeviceID != nil {
+		cc.DeviceID = fmt.Sprintf("%v", *c.DeviceID)
 	}
 
 	if c.IP != nil {
@@ -149,6 +158,10 @@ func merge(c Controller) controller {
 }
 
 func ID(c Controller) string {
+	if c.ID != "" {
+		return c.ID
+	}
+
 	if c.OID != "" {
 		return fmt.Sprintf("O%s", strings.ReplaceAll(c.OID, ".", ""))
 	}

@@ -267,8 +267,8 @@ function updated (controllers) {
         update(document.getElementById(id + '-name'), record.Name)
       }
 
-      if (record['device-id']) {
-        update(document.getElementById(id + '-ID'), record['device-id'])
+      if (record.DeviceID) {
+        update(document.getElementById(id + '-ID'), record.DeviceID)
       }
 
       if (record.IP) {

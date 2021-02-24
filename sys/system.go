@@ -187,14 +187,24 @@ func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 
 loop:
 	for _, c := range controllers {
-		if c.OID == "" {
-			if r, err := sys.add(shadow, c, auth); err != nil {
-				return nil, err
-			} else if r != nil {
-				list.Updated = append(list.Updated, merge(*r))
-			}
+		// ... existing controller?
+		for _, v := range shadow.Tables.Controllers {
+			if v.OID == c.OID {
+				if r, err := sys.update(shadow, c, auth); err != nil {
+					return nil, err
+				} else if r != nil {
+					list.Updated = append(list.Updated, merge(*r))
+				}
 
-			continue loop
+				continue loop
+			}
+		}
+
+		// ... new controller!
+		if r, err := sys.add(shadow, c, auth); err != nil {
+			return nil, err
+		} else if r != nil {
+			list.Updated = append(list.Updated, merge(*r))
 		}
 
 		// if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
@@ -206,13 +216,6 @@ loop:
 		// 	}
 		// }
 
-		if r, err := sys.update(shadow, c, auth); err != nil {
-			return nil, err
-		} else if r != nil {
-			list.Updated = append(list.Updated, merge(*r))
-		}
-
-		continue loop
 	}
 
 	if err := save(shadow, sys.file); err != nil {
@@ -397,7 +400,7 @@ func validate(d *data) error {
 				}
 			}
 
-			if rid, ok := doors[v]; ok {
+			if rid, ok := doors[v]; ok && v != "" {
 				return &types.HttpdError{
 					Status: http.StatusBadRequest,
 					Err:    fmt.Errorf("%v door assigned to more than one controller", d.Tables.Doors[v].Name),
@@ -511,6 +514,8 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 
 	for _, r := range o.Controllers {
 		record := Controller{}
+
+		record.ID = r.ID
 
 		if r.OID != nil {
 			record.OID = *r.OID
