@@ -7,13 +7,15 @@
 - [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
+- [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 
 - [ ] sysinfo
-      - add controller
-      - delete controller
+      - editing deleted controller is fairly catastrophic :-(
+      - rethink ID/OID and add/edit/update operations
       - move controller name to uhppote-core
       - move timezone to uhppote-core
       - update uhhpoted.conf
+      - update actual controllers
 
       - validate Local::Device timezone on initialization
       - edit datetime (?)

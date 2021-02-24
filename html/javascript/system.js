@@ -58,7 +58,7 @@ export function onRollbackAll (event) {
       const row = rows[i]
 
       if (row.classList.contains('new')) {
-        //       onDelete(row.id)
+        onDelete(row.id)
       } else if (row.classList.contains('modified')) {
         onRevert(row.id)
       }
@@ -106,7 +106,7 @@ export function onUpdate (...list) {
               }
 
               if (object && object.system && object.system.deleted) {
-              // deleted(object.system.deleted)
+                deleted(object.system.deleted)
               }
             })
             break
@@ -309,27 +309,27 @@ function updated (controllers) {
   }
 }
 
-// function deleted (list) {
-//   throw 'deleted: NOT IMPLEMENTED'
-//   // const tbody = document.getElementById('cardholders').querySelector('table tbody')
-//
-//   // if (tbody && list) {
-//   //   list.forEach((record) => {
-//   //     const id = record.ID
-//   //     const row = document.getElementById(id)
-//
-//   //     if (row) {
-//   //       const rows = tbody.rows
-//   //       for (let i = 0; i < rows.length; i++) {
-//   //         if (rows[i].id === id) {
-//   //           tbody.deleteRow(i)
-//   //           break
-//   //         }
-//   //       }
-//   //     }
-//   //   })
-//   // }
-// }
+function deleted (list) {
+  const tbody = document.getElementById('controllers').querySelector('table tbody')
+
+  if (tbody && list) {
+    list.forEach((record) => {
+      console.log(record)
+      const id = record.ID
+      const row = document.getElementById(id)
+
+      if (row) {
+        const rows = tbody.rows
+        for (let i = 0; i < rows.length; i++) {
+          if (rows[i].id === id) {
+            tbody.deleteRow(i)
+            break
+          }
+        }
+      }
+    })
+  }
+}
 
 function set (div, element, value, status) {
   const tbody = document.getElementById(div).querySelector('table tbody')

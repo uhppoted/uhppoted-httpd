@@ -190,6 +190,17 @@ loop:
 		// ... existing controller?
 		for _, v := range shadow.Tables.Controllers {
 			if v.OID == c.OID {
+
+				if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+					if r, err := sys.delete(shadow, c, auth); err != nil {
+						return nil, err
+					} else if r != nil {
+						list.Deleted = append(list.Deleted, merge(*r))
+					}
+
+					continue loop
+				}
+
 				if r, err := sys.update(shadow, c, auth); err != nil {
 					return nil, err
 				} else if r != nil {
@@ -206,16 +217,6 @@ loop:
 		} else if r != nil {
 			list.Updated = append(list.Updated, merge(*r))
 		}
-
-		// if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
-		// 	if r, err := d.delete(shadow, c, auth); err != nil {
-		// 		return nil, err
-		// 	} else if r != nil {
-		// 		list.Deleted = append(list.Deleted, r)
-		// 		continue loop
-		// 	}
-		// }
-
 	}
 
 	if err := save(shadow, sys.file); err != nil {
@@ -318,6 +319,30 @@ func (s *system) update(shadow *data, c Controller, auth auth.OpAuth) (*Controll
 		Err:    fmt.Errorf("Invalid controller OID"),
 		Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid controller OID '%v'", c.OID)),
 	}
+}
+
+func (s *system) delete(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
+	for i, record := range shadow.Tables.Controllers {
+		if record.OID == c.OID {
+			if auth != nil {
+				if err := auth.CanDeleteController(record); err != nil {
+					return nil, &types.HttpdError{
+						Status: http.StatusUnauthorized,
+						Err:    fmt.Errorf("Not authorized to delete controller"),
+						Detail: err,
+					}
+				}
+			}
+
+			shadow.Tables.Controllers = append(shadow.Tables.Controllers[:i], shadow.Tables.Controllers[i+1:]...)
+
+			s.log("delete", record, auth)
+
+			return &c, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func save(d *data, file string) error {

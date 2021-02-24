@@ -105,6 +105,31 @@ func (a *authorizator) CanUpdateController(original, updated auth.Operant) error
 	return fmt.Errorf("Not authorized for operation %s", "update::controller")
 }
 
+func (a *authorizator) CanDeleteController(controller auth.Operant) error {
+	if a != nil && controller != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"CONTROLLER": controller.AsRuleEntity(),
+		}
+
+		if err := a.eval("system", "delete", &r, m); err != nil {
+			return err
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("delete::controller %s", toString(controller)))
+	}
+
+	return fmt.Errorf("Not authorized for operation %s", "delete::controller")
+}
+
 func (a *authorizator) CanAddCardHolder(ch auth.Operant) error {
 	if a != nil && ch != nil {
 		r := result{
