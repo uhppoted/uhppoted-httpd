@@ -30,6 +30,10 @@ func (x *stub) CanUpdateController(before, after auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 
+func (x *stub) CanDeleteController(controller auth.Operant) error {
+	return fmt.Errorf("not authorised")
+}
+
 func (x *stub) CanAddCardHolder(cardHolder auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }

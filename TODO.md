@@ -13,7 +13,7 @@
       - rethink ID/OID and add/edit/update operations
       - move controller name to uhppote-core
       - move timezone to uhppote-core
-      - update uhhpoted.conf
+      - export to uhhpoted.conf
       - update actual controllers address/datetime
 
       - validate Local::Device timezone on initialization
