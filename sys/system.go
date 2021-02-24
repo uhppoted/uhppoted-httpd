@@ -187,20 +187,24 @@ func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 
 loop:
 	for _, c := range controllers {
-		// ... existing controller?
-		for _, v := range shadow.Tables.Controllers {
-			if v.OID == c.OID {
-
-				if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+		// ... delete?
+		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+			for _, v := range shadow.Tables.Controllers {
+				if v.OID == c.OID {
 					if r, err := sys.delete(shadow, c, auth); err != nil {
 						return nil, err
 					} else if r != nil {
 						list.Deleted = append(list.Deleted, merge(*r))
 					}
-
-					continue loop
 				}
+			}
 
+			continue loop
+		}
+
+		// ... update controller?
+		for _, v := range shadow.Tables.Controllers {
+			if v.OID == c.OID {
 				if r, err := sys.update(shadow, c, auth); err != nil {
 					return nil, err
 				} else if r != nil {
@@ -211,7 +215,7 @@ loop:
 			}
 		}
 
-		// ... new controller!
+		// ... add controller
 		if r, err := sys.add(shadow, c, auth); err != nil {
 			return nil, err
 		} else if r != nil {

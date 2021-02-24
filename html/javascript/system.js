@@ -314,7 +314,6 @@ function deleted (list) {
 
   if (tbody && list) {
     list.forEach((record) => {
-      console.log(record)
       const id = record.ID
       const row = document.getElementById(id)
 

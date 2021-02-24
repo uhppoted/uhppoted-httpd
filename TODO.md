@@ -10,12 +10,11 @@
 - [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 
 - [ ] sysinfo
-      - editing deleted controller is fairly catastrophic :-(
       - rethink ID/OID and add/edit/update operations
       - move controller name to uhppote-core
       - move timezone to uhppote-core
       - update uhhpoted.conf
-      - update actual controllers
+      - update actual controllers address/datetime
 
       - validate Local::Device timezone on initialization
       - edit datetime (?)
