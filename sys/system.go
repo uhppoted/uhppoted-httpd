@@ -128,6 +128,7 @@ loop:
 			}
 		}
 
+		// ... include 'unconfigured' controllers
 		id := k
 		devices = append(devices, Controller{
 			DeviceID: &id,
@@ -189,6 +190,12 @@ loop:
 	for _, c := range controllers {
 		// ... delete?
 		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+			// ... 'fake' delete unconfigured controller
+			if c.OID == "" {
+				list.Deleted = append(list.Deleted, merge(c))
+				continue loop
+			}
+
 			for _, v := range shadow.Tables.Controllers {
 				if v.OID == c.OID {
 					if r, err := sys.delete(shadow, c, auth); err != nil {

@@ -82,7 +82,6 @@ func (c *Controller) clone() *Controller {
 }
 
 func merge(c Controller) controller {
-
 	cc := controller{
 		ID:         ID(c),
 		Controller: c,

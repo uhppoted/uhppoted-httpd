@@ -324,6 +324,7 @@ function updated (controllers) {
 }
 
 function deleted (list) {
+  console.log('updated', list)
   const tbody = document.getElementById('controllers').querySelector('table tbody')
 
   if (tbody && list) {
