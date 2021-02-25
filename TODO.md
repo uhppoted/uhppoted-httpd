@@ -2,18 +2,17 @@
 
 ### IN PROGRESS
 
-- [ ] Warning message doesn't align left if commitall and/or rollbackall are not visible
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
 - [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
-- [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 - [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 - [ ] Menu pops up when just vaguely over area
+- [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
+      - delete 'unconfigured' controller properly
       - remove Controller from controller struct passed to HTML/JS
 
-      - delete 'unconfigured' controller properly
       - export to uhhpoted.conf
       - rethink ID/OID and add/edit/update operations
       - move controller name to uhppote-core
@@ -123,6 +122,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Warning message doesn't align left if commitall and/or rollbackall are not visible
 - [x] 127.0.0.1/:323 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range.
 - [x] Navigation
 - [x] Not redirecting to login.html after restart

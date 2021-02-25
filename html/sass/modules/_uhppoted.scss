@@ -193,7 +193,7 @@ footer {
 
 #controls #message {
   flex-grow: 1;
-  margin-left: 6px;
+  margin-left: 0px;
   margin-right: 6px;
 }
 
@@ -215,6 +215,7 @@ footer {
 #controls #rollbackall {  
   display: none;
   filter: $content-svg-filter-rollback;
+  margin-right: 6px;
 }
 
 #controls #refresh {  
