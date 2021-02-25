@@ -439,7 +439,6 @@ func validate(d *data) error {
 
 			doors[v] = r.OID
 		}
-
 	}
 
 	return nil
@@ -535,6 +534,8 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 		return nil, err
 	}
 
+	log.Printf("INFO %v", fmt.Sprintf("UNPACK %s\n", string(blob)))
+
 	if err := json.Unmarshal(blob, &o); err != nil {
 		return nil, err
 	}
@@ -559,7 +560,7 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 			record.DeviceID = r.DeviceID
 		}
 
-		if r.IP != nil {
+		if r.IP != nil && *r.IP != "" {
 			if addr, err := resolve(*r.IP); err != nil {
 				return nil, err
 			} else {

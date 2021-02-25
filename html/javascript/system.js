@@ -219,7 +219,7 @@ export function onNew (event) {
 
     for (let i = 1; i <= 4; i++) {
       const d = doors[i]
-      const id = uuid + '-' + i
+      const id = uuid + '-door-' + i
       let options = '<option value="" selected>-</option>'
 
       constants.doors.forEach(v => {

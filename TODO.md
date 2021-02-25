@@ -8,10 +8,11 @@
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 - [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
+- [ ] Menu pops up when just vaguely over area
 
 - [ ] sysinfo
-      - add with name + id + door => invalid address error but adds controller ???????????
-      
+      - remove Controller from controller struct passed to HTML/JS
+
       - delete 'unconfigured' controller properly
       - export to uhhpoted.conf
       - rethink ID/OID and add/edit/update operations
