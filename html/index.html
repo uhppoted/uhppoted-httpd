@@ -227,8 +227,7 @@
                             onchange="onEdited(event)" 
                             data-record="{{$cid}}"
                             data-original="{{index $controller.Doors 4}}"
-                            data-value="{{index $controller.Doors 4}}"  
-                            readonly>
+                            data-value="{{index $controller.Doors 4}}">
                       <option value="">-</option>{{range $.system.Doors}}
                       <option value="{{.ID}}" {{if eq .ID (index $controller.Doors 4)}}selected{{end}}>{{.Name}}</option>{{end}}
                     </select>
@@ -279,7 +278,9 @@
   <script>
     var constants = {
       theme: {{$.context.Theme}},
-      groups: [ {{range .db.Groups}}{{.ID}},{{end}} ]
+      doors: [ {{range .system.Doors}}
+         {id:{{.ID}}, door: {{.Name}}},{{end}} 
+      ]
     }
   </script>
 

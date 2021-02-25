@@ -220,9 +220,23 @@ export function onNew (event) {
     for (let i = 1; i <= 4; i++) {
       const d = doors[i]
       const id = uuid + '-' + i
+      let options = '<option value="" selected>-</option>'
+
+      constants.doors.forEach(v => {
+        options += '<option value="' + v.id + '">' + v.door + '</option>'
+      })
 
       d.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                     '<input id="' + id + '" class="field door" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
+                     '<select id="' + id + '"' +
+                            ' class="field door"' +
+                            ' type="text"' +
+                            ' value=""' +
+                            ' onchange="onEdited(event)"' +
+                            ' data-record="' + uuid + '"' +
+                            ' data-original=""' +
+                            ' data-value=""' +
+                            ' data-status=""' +
+                            ' placeholder="-">' + options + '</select>'
     }
   }
 }
