@@ -28,6 +28,7 @@ type Controller struct {
 type controller struct {
 	ID         string
 	Controller // TODO replace with inline fields
+	OID        string
 	DeviceID   string
 	IP         ip
 	SystemTime datetime
@@ -85,6 +86,7 @@ func merge(c Controller) controller {
 	cc := controller{
 		ID:         ID(c),
 		Controller: c,
+		OID:        c.OID,
 		DeviceID:   "",
 		IP:         ip{},
 	}
