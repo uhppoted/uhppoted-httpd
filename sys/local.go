@@ -63,16 +63,19 @@ func (l *Local) Init(devices []*Controller) {
 			continue
 		}
 
+		name := v.Name.String()
 		id := *v.DeviceID
 		addr := net.UDPAddr(*v.IP)
 
 		l.devices[id] = *v.IP
 
 		u.Devices[id] = &uhppote.Device{
+			Name:     name,
 			DeviceID: id,
 			Address:  &addr,
 			Rollover: 100000,
 			Doors:    []string{},
+			TimeZone: time.Local,
 		}
 	}
 

@@ -10,8 +10,8 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
-      - move controller name to uhppote-core
-      - move timezone to uhppote-core
+      - add controller name to uhppote-core
+      - add timezone to uhppote-core
 
       - export to uhhpoted.conf
       - update actual controllers address/datetime
