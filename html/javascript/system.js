@@ -289,13 +289,13 @@ function updated (controllers) {
         let ip = ''
 
         if (record.IP.IP !== null) {
-          ip = record.IP.IP
+          ip = record.IP.Address
         }
 
         update(document.getElementById(id + '-IP'), ip, statusToString(record.IP.Status))
 
         if (document.getElementById(id + '-IP')) {
-          document.getElementById(id + '-IP').dataset.original = record.address
+          document.getElementById(id + '-IP').dataset.original = record.IP.Configured
         }
       }
 

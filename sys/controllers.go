@@ -26,11 +26,17 @@ type Controller struct {
 // Merges Controller static configuration with current controller state information into a struct usable by
 // Javascript/HTML templating.
 type controller struct {
-	ID         string
-	Controller // TODO replace with inline fields
-	OID        string
-	DeviceID   string
-	IP         ip
+	//	Controller // TODO replace with inline fields
+
+	ID       string
+	OID      string
+	Name     string
+	DeviceID string
+	IP       ip
+	Doors    map[uint8]string
+
+	Created time.Time
+
 	SystemTime datetime
 	Cards      *records
 	Events     *records
@@ -84,11 +90,20 @@ func (c *Controller) clone() *Controller {
 
 func merge(c Controller) controller {
 	cc := controller{
-		ID:         ID(c),
-		Controller: c,
-		OID:        c.OID,
-		DeviceID:   "",
-		IP:         ip{},
+		ID:       ID(c),
+		Name:     "",
+		OID:      c.OID,
+		DeviceID: "",
+		IP: ip{
+			Configured: c.IP,
+		},
+		Doors: map[uint8]string{1: "", 2: "", 3: "", 4: ""},
+
+		Created: c.Created,
+	}
+
+	if c.Name != nil {
+		cc.Name = fmt.Sprintf("%v", *c.Name)
 	}
 
 	if c.DeviceID != nil {
@@ -96,7 +111,13 @@ func merge(c Controller) controller {
 	}
 
 	if c.IP != nil {
-		cc.IP.IP = &(*c.IP)
+		cc.IP.Address = &(*c.IP)
+	}
+
+	for _, i := range []uint8{1, 2, 3, 4} {
+		if d, ok := c.Doors[i]; ok {
+			cc.Doors[i] = d
+		}
 	}
 
 	tz := time.Local
@@ -117,7 +138,7 @@ func merge(c Controller) controller {
 		cc.Events = (*records)(cached.events)
 
 		if cached.address != nil {
-			cc.IP.IP = &(*cached.address)
+			cc.IP.Address = &(*cached.address)
 
 			switch {
 			case c.IP == nil:

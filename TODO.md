@@ -10,13 +10,12 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
-      - remove Controller from controller struct passed to HTML/JS
-
-      - export to uhhpoted.conf
       - move controller name to uhppote-core
       - move timezone to uhppote-core
+
+      - export to uhhpoted.conf
       - update actual controllers address/datetime
-      - rethink ID/OID and add/edit/update operations
+      - think through ID/OID and add/edit/update operations
 
       - validate Local::Device timezone on initialization
       - edit datetime (?)

@@ -113,13 +113,13 @@
                     <input id="{{$cid}}-IP" 
                            class="field IP"
                            type="text" 
-                           value="{{$controller.IP.IP}}"
+                           value="{{$controller.IP.Address}}"
                            placeholder="-"
                            onkeydown="onEnter(event)" 
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original="{{$controller.Controller.IP}}"
-                           data-value="{{$controller.IP.IP}}"  
+                           data-original="{{$controller.IP.Configured}}"
+                           data-value="{{$controller.IP.Address}}"  
                            data-status="{{$controller.IP.Status}}" />
                   </td>
 

@@ -17,8 +17,9 @@ type datetime struct {
 }
 
 type ip struct {
-	IP     *address
-	Status status
+	Configured *address
+	Address    *address
+	Status     status
 }
 
 type records uint32
