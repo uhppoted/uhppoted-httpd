@@ -10,20 +10,20 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
+      - move DB to system
+      - ACL::synchronized
+      - export to uhhpoted.conf
+
       - add controller name to uhppote-core
       - add timezone to uhppote-core
-
-      - export to uhhpoted.conf
       - update actual controllers address/datetime
       - think through ID/OID and add/edit/update operations
 
       - validate Local::Device timezone on initialization
       - edit datetime (?)
-      - commonalise controller and card handling into tabular.js
       - cache expiry
       - Use sync.Map for cache
       - limit number of pending 'update' requests (e.g. if device is not responding)
-      - ACL::synchronized
       - auto refresh
       - configure update interval
       - configure ok/uncertain intervals
@@ -34,6 +34,7 @@
 - [ ] tabular
       - [ ] New table row submitted with error cannot be discarded
       - [ ] empty list: make first row a 'new' row
+      - [ ] Commonalise controller and card handling into tabular.js
 
 - [ ] ACL
       - wrap ACL update in goroutine

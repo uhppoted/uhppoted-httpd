@@ -16,6 +16,7 @@ import (
 	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -23,6 +24,7 @@ type system struct {
 	sync.RWMutex
 	file  string
 	data  data
+	db    db.DB
 	audit audit.Trail
 }
 
@@ -88,7 +90,7 @@ func init() {
 	}()
 }
 
-func Init(conf string, trail audit.Trail) error {
+func Init(conf string, db db.DB, trail audit.Trail) error {
 	bytes, err := ioutil.ReadFile(conf)
 	if err != nil {
 		return err
@@ -99,6 +101,7 @@ func Init(conf string, trail audit.Trail) error {
 		return err
 	}
 
+	sys.db = db
 	sys.audit = trail
 	sys.file = conf
 	sys.data.Tables.Local.Init(sys.data.Tables.Controllers)

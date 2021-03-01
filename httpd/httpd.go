@@ -19,8 +19,6 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/db"
-	"github.com/uhppoted/uhppoted-httpd/db/grule"
-	"github.com/uhppoted/uhppoted-httpd/db/memdb"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
@@ -35,9 +33,7 @@ type HTTPD struct {
 	RequireClientCertificate bool
 	RequestTimeout           time.Duration
 	DB                       struct {
-		File   string
 		GRules struct {
-			ACL    string
 			System string
 			Cards  string
 		}
@@ -51,7 +47,7 @@ type dispatcher struct {
 	db    db.DB
 	auth  auth.IAuth
 	grule struct {
-		acl    *ast.KnowledgeLibrary
+		//	acl    *ast.KnowledgeLibrary
 		system *ast.KnowledgeLibrary
 		cards  *ast.KnowledgeLibrary
 	}
@@ -62,23 +58,17 @@ const (
 	SettingsCookie = "uhppoted-settings"
 )
 
-func (h *HTTPD) Run() {
+func (h *HTTPD) Run(db db.DB) {
 	fs := httpdFileSystem{
 		FileSystem: http.Dir(h.Dir),
 	}
 
 	rules := struct {
-		acl    *ast.KnowledgeLibrary
 		system *ast.KnowledgeLibrary
 		cards  *ast.KnowledgeLibrary
 	}{
-		acl:    ast.NewKnowledgeLibrary(),
 		system: ast.NewKnowledgeLibrary(),
 		cards:  ast.NewKnowledgeLibrary(),
-	}
-
-	if err := builder.NewRuleBuilder(rules.acl).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(h.DB.GRules.ACL)); err != nil {
-		log.Fatal(fmt.Errorf("Error loading ACL ruleset (%v)", err))
 	}
 
 	if err := builder.NewRuleBuilder(rules.system).BuildRuleFromResource("system", "0.0.0", pkg.NewFileResource(h.DB.GRules.System)); err != nil {
@@ -87,16 +77,6 @@ func (h *HTTPD) Run() {
 
 	if err := builder.NewRuleBuilder(rules.cards).BuildRuleFromResource("cards", "0.0.0", pkg.NewFileResource(h.DB.GRules.Cards)); err != nil {
 		log.Fatal(fmt.Errorf("Error loading card auth ruleset (%v)", err))
-	}
-
-	ruleset, err := grule.NewGrule(rules.acl)
-	if err != nil {
-		log.Fatal(fmt.Errorf("Error initialising ACL ruleset (%v)", err))
-	}
-
-	db, err := memdb.NewDB(h.DB.File, ruleset, h.Audit)
-	if err != nil {
-		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
 	}
 
 	d := dispatcher{
