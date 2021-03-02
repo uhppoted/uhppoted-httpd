@@ -130,6 +130,42 @@ func (l *Local) Update(permissions []types.Permissions) {
 	log.Printf("%v", string(msg.Bytes()))
 }
 
+func (l *Local) Compare(permissions []types.Permissions) (int, int, int, int, error) {
+	log.Printf("Comparing ACL")
+
+	devices := []*uhppote.Device{}
+	for _, v := range l.api.Uhppote.DeviceList() {
+		devices = append(devices, v)
+	}
+
+	current, err := acl.GetACL(l.api.Uhppote, devices)
+	if err != nil {
+		return 0, 0, 0, 0, err
+	}
+
+	access, err := consolidate(permissions)
+	if err != nil {
+		return 0, 0, 0, 0, err
+	} else if access == nil {
+		return 0, 0, 0, 0, fmt.Errorf("Invalid ACL from permissions: %v", access)
+	}
+
+	compare, err := acl.Compare(*access, current)
+	if err != nil {
+		return 0, 0, 0, 0, err
+	} else if compare == nil {
+		return 0, 0, 0, 0, fmt.Errorf("Invalid ACL compare report: %v", compare)
+	}
+
+	diff := acl.SystemDiff(compare)
+	report := diff.Consolidate()
+	if report == nil {
+		return 0, 0, 0, 0, fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
+	}
+
+	return len(report.Unchanged), len(report.Updated), len(report.Added), len(report.Deleted), nil
+}
+
 func (l *Local) refresh() {
 	list := map[uint32]struct{}{}
 	for k, _ := range l.devices {

@@ -41,6 +41,24 @@ type tables struct {
 func (s *system) refresh() {
 	if s != nil {
 		go s.data.Tables.Local.refresh()
+
+		go func() {
+			acl, err := s.db.ACL()
+			if err != nil {
+				warn(err)
+				return
+			}
+
+			unchanged, updated, added, deleted, err := s.data.Tables.Local.Compare(acl)
+			if err != nil {
+				warn(err)
+				return
+			}
+
+			if updated+added+deleted > 0 {
+				warn(fmt.Errorf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted))
+			}
+		}()
 	}
 }
 
