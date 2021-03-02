@@ -66,6 +66,10 @@ tr.controller td input[data-status="unknown"] {
   font-style: italic;
 }
 
+tr.controller td input[data-status="uncertain"] {
+  color: $content-table-item-uncertain;
+}
+
 tr.controller td input[data-status="error"] {
   color: $content-table-item-error;
   font-weight: bold; 

@@ -137,7 +137,11 @@ func merge(c Controller) controller {
 	if cached, ok := sys.data.Tables.Local.cache[*c.DeviceID]; ok {
 		if cached.cards != nil {
 			cc.Cards.Records = records(*cached.cards)
-			cc.Cards.Status = StatusOk
+			if cached.acl == StatusUnknown {
+				cc.Cards.Status = StatusUncertain
+			} else {
+				cc.Cards.Status = cached.acl
+			}
 		}
 
 		cc.Events = (*records)(cached.events)

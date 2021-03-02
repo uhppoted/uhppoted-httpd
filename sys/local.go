@@ -33,6 +33,7 @@ type device struct {
 	datetime *types.DateTime
 	cards    *uint32
 	events   *uint32
+	acl      status
 }
 
 const (
@@ -130,7 +131,7 @@ func (l *Local) Update(permissions []types.Permissions) {
 	log.Printf("%v", string(msg.Bytes()))
 }
 
-func (l *Local) Compare(permissions []types.Permissions) (int, int, int, int, error) {
+func (l *Local) Compare(permissions []types.Permissions) error {
 	log.Printf("Comparing ACL")
 
 	devices := []*uhppote.Device{}
@@ -140,30 +141,43 @@ func (l *Local) Compare(permissions []types.Permissions) (int, int, int, int, er
 
 	current, err := acl.GetACL(l.api.Uhppote, devices)
 	if err != nil {
-		return 0, 0, 0, 0, err
+		return err
 	}
 
 	access, err := consolidate(permissions)
 	if err != nil {
-		return 0, 0, 0, 0, err
+		return err
 	} else if access == nil {
-		return 0, 0, 0, 0, fmt.Errorf("Invalid ACL from permissions: %v", access)
+		return fmt.Errorf("Invalid ACL from permissions: %v", access)
 	}
 
 	compare, err := acl.Compare(*access, current)
 	if err != nil {
-		return 0, 0, 0, 0, err
+		return err
 	} else if compare == nil {
-		return 0, 0, 0, 0, fmt.Errorf("Invalid ACL compare report: %v", compare)
+		return fmt.Errorf("Invalid ACL compare report: %v", compare)
 	}
 
 	diff := acl.SystemDiff(compare)
 	report := diff.Consolidate()
 	if report == nil {
-		return 0, 0, 0, 0, fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
+		return fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
 	}
 
-	return len(report.Unchanged), len(report.Updated), len(report.Added), len(report.Deleted), nil
+	unchanged := len(report.Unchanged)
+	updated := len(report.Updated)
+	added := len(report.Added)
+	deleted := len(report.Deleted)
+
+	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
+
+	if updated+added+deleted > 0 {
+		for k, _ := range l.devices {
+			l.store(k, compare[k])
+		}
+	}
+
+	return nil
 }
 
 func (l *Local) refresh() {
@@ -273,6 +287,13 @@ func (l *Local) store(id uint32, info interface{}) {
 	case uhppoted.GetEventRangeResponse:
 		events := v.Events.Last
 		cached.events = events
+
+	case acl.Diff:
+		if len(v.Updated)+len(v.Added)+len(v.Deleted) > 0 {
+			cached.acl = StatusError
+		} else {
+			cached.acl = StatusOk
+		}
 	}
 
 	l.cache[id] = cached
