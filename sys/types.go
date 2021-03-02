@@ -22,6 +22,19 @@ type ip struct {
 	Status     status
 }
 
+type cards struct {
+	Records records
+	Status  status
+}
+
+func (c cards) String() string {
+	if c.Status == StatusUnknown {
+		return ""
+	}
+
+	return fmt.Sprintf("%v", c.Records)
+}
+
 type records uint32
 
 func (r *records) String() string {

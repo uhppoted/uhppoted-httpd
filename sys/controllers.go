@@ -23,11 +23,9 @@ type Controller struct {
 	TimeZone *string          `json:"timezone"`
 }
 
-// Merges Controller static configuration with current controller state information into a struct usable by
-// Javascript/HTML templating.
+// Merges Controller static configuration with current controller state information into a struct usable
+// by Javascript/HTML templating.
 type controller struct {
-	//	Controller // TODO replace with inline fields
-
 	ID       string
 	OID      string
 	Name     string
@@ -38,7 +36,7 @@ type controller struct {
 	Created time.Time
 
 	SystemTime datetime
-	Cards      *records
+	Cards      cards
 	Events     *records
 	Status     status
 }
@@ -97,6 +95,9 @@ func merge(c Controller) controller {
 		IP: ip{
 			Configured: c.IP,
 		},
+		Cards: cards{
+			Status: StatusUnknown,
+		},
 		Doors: map[uint8]string{1: "", 2: "", 3: "", 4: ""},
 
 		Created: c.Created,
@@ -134,7 +135,11 @@ func merge(c Controller) controller {
 	}
 
 	if cached, ok := sys.data.Tables.Local.cache[*c.DeviceID]; ok {
-		cc.Cards = (*records)(cached.cards)
+		if cached.cards != nil {
+			cc.Cards.Records = records(*cached.cards)
+			cc.Cards.Status = StatusOk
+		}
+
 		cc.Events = (*records)(cached.events)
 
 		if cached.address != nil {
