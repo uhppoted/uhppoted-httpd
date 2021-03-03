@@ -22,10 +22,10 @@ import (
 
 type system struct {
 	sync.RWMutex
-	file  string
-	data  data
-	db    db.DB
-	audit audit.Trail
+	file        string
+	controllers data
+	cards       db.DB
+	audit       audit.Trail
 }
 
 type data struct {
@@ -40,16 +40,16 @@ type tables struct {
 
 func (s *system) refresh() {
 	if s != nil {
-		go s.data.Tables.Local.refresh()
+		go s.controllers.Tables.Local.refresh()
 
 		go func() {
-			acl, err := s.db.ACL()
+			acl, err := s.cards.ACL()
 			if err != nil {
 				warn(err)
 				return
 			}
 
-			if err := s.data.Tables.Local.Compare(acl); err != nil {
+			if err := s.controllers.Tables.Local.Compare(acl); err != nil {
 				warn(err)
 				return
 			}
@@ -80,7 +80,7 @@ func (d *data) clone() *data {
 }
 
 var sys = system{
-	data: data{
+	controllers: data{
 		Tables: tables{
 			Doors:       map[string]types.Door{},
 			Controllers: []*Controller{},
@@ -103,21 +103,21 @@ func init() {
 	}()
 }
 
-func Init(conf string, db db.DB, trail audit.Trail) error {
+func Init(conf string, cards db.DB, trail audit.Trail) error {
 	bytes, err := ioutil.ReadFile(conf)
 	if err != nil {
 		return err
 	}
 
-	err = json.Unmarshal(bytes, &sys.data)
+	err = json.Unmarshal(bytes, &sys.controllers)
 	if err != nil {
 		return err
 	}
 
-	sys.db = db
+	sys.cards = cards
 	sys.audit = trail
 	sys.file = conf
-	sys.data.Tables.Local.Init(sys.data.Tables.Controllers)
+	sys.controllers.Tables.Local.Init(sys.controllers.Tables.Controllers)
 
 	//	if b, err := json.MarshalIndent(sys.data, "", "  "); err == nil {
 	//		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
@@ -132,12 +132,12 @@ func System() interface{} {
 	defer sys.RUnlock()
 
 	devices := []Controller{}
-	for _, v := range sys.data.Tables.Controllers {
+	for _, v := range sys.controllers.Tables.Controllers {
 		devices = append(devices, *v)
 	}
 
 loop:
-	for k, _ := range sys.data.Tables.Local.cache {
+	for k, _ := range sys.controllers.Tables.Local.cache {
 		for _, c := range devices {
 			if c.DeviceID != nil && *c.DeviceID == k {
 				continue loop
@@ -160,7 +160,7 @@ loop:
 	sort.SliceStable(controllers, func(i, j int) bool { return controllers[i].Created.Before(controllers[j].Created) })
 
 	doors := []types.Door{}
-	for _, v := range sys.data.Tables.Doors {
+	for _, v := range sys.controllers.Tables.Doors {
 		doors = append(doors, v)
 	}
 
@@ -176,7 +176,7 @@ loop:
 }
 
 func Update(permissions []types.Permissions) {
-	sys.data.Tables.Local.Update(permissions)
+	sys.controllers.Tables.Local.Update(permissions)
 }
 
 func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
@@ -200,7 +200,7 @@ func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 		Deleted []interface{} `json:"deleted"`
 	}{}
 
-	shadow := sys.data.clone()
+	shadow := sys.controllers.clone()
 
 loop:
 	for _, c := range controllers {
@@ -250,7 +250,7 @@ loop:
 		return nil, err
 	}
 
-	sys.data = *shadow
+	sys.controllers = *shadow
 
 	return list, nil
 }
@@ -292,7 +292,7 @@ loop:
 func (s *system) update(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
 	var current *Controller
 
-	for _, v := range s.data.Tables.Controllers {
+	for _, v := range s.controllers.Tables.Controllers {
 		if v.OID == c.OID {
 			current = v
 			break
@@ -475,7 +475,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	// initialise empty ACL
 	acl := make(acl.ACL)
 
-	for _, c := range sys.data.Tables.Controllers {
+	for _, c := range sys.controllers.Tables.Controllers {
 		if c.DeviceID != nil && *c.DeviceID > 0 {
 			acl[*c.DeviceID] = map[uint32]core.Card{}
 		}
@@ -503,13 +503,13 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	for _, p := range list {
 	loop:
 		for _, d := range p.Doors {
-			door, ok := sys.data.Tables.Doors[d]
+			door, ok := sys.controllers.Tables.Doors[d]
 			if !ok {
 				log.Printf("WARN %v", fmt.Errorf("consolidate: invalid door %v for card %v", d, p.CardNumber))
 				continue
 			}
 
-			for _, c := range sys.data.Tables.Controllers {
+			for _, c := range sys.controllers.Tables.Controllers {
 				for _, v := range c.Doors {
 					if v == door.ID {
 						if c.DeviceID != nil && *c.DeviceID > 0 {
