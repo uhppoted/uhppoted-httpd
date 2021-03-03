@@ -10,9 +10,6 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
-      - export to uhhpoted.conf
-        - update uhppoted.conf from command line
-        
       - 'undefined' on timezone after updating IP address
       - localYYYY-MM-DD etc in log
       - task queue

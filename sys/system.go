@@ -23,6 +23,7 @@ import (
 
 type system struct {
 	sync.RWMutex
+	conf        string
 	file        string
 	controllers data
 	cards       db.DB
@@ -104,8 +105,8 @@ func init() {
 	}()
 }
 
-func Init(conf string, cards db.DB, trail audit.Trail) error {
-	bytes, err := ioutil.ReadFile(conf)
+func Init(conf, system string, cards db.DB, trail audit.Trail) error {
+	bytes, err := ioutil.ReadFile(system)
 	if err != nil {
 		return err
 	}
@@ -115,9 +116,10 @@ func Init(conf string, cards db.DB, trail audit.Trail) error {
 		return err
 	}
 
+	sys.conf = conf
+	sys.file = system
 	sys.cards = cards
 	sys.audit = trail
-	sys.file = conf
 	sys.controllers.Tables.Local.Init(sys.controllers.Tables.Controllers)
 
 	//	if b, err := json.MarshalIndent(sys.data, "", "  "); err == nil {
@@ -252,7 +254,7 @@ loop:
 	}
 
 	go func() {
-		if err := controllers.Export("/usr/local/etc/com.github.uhppoted/uhppoted.debug", shadow.Tables.Controllers, shadow.Tables.Doors); err != nil {
+		if err := controllers.Export(sys.conf, shadow.Tables.Controllers, shadow.Tables.Doors); err != nil {
 			warn(err)
 		}
 	}()
