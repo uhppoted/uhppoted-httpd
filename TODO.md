@@ -10,11 +10,10 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
-      - move DB to system (or 'runtime context')
-      - ACL::synchronized
       - export to uhhpoted.conf
       - 'undefined' on timezone after updating IP address
       - localYYYY-MM-DD etc in log
+      - task queue
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core

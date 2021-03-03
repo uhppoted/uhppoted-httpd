@@ -17,8 +17,8 @@ type datetime struct {
 }
 
 type ip struct {
-	Configured *address
-	Address    *address
+	Configured *types.Address
+	Address    *types.Address
 	Status     status
 }
 

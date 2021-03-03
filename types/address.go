@@ -1,4 +1,4 @@
-package system
+package types
 
 import (
 	"encoding/json"
@@ -7,9 +7,9 @@ import (
 	"regexp"
 )
 
-type address net.UDPAddr
+type Address net.UDPAddr
 
-func (a *address) String() string {
+func (a *Address) String() string {
 	if a != nil {
 		return (*net.UDPAddr)(a).String()
 	}
@@ -17,11 +17,11 @@ func (a *address) String() string {
 	return ""
 }
 
-func (a *address) MarshalJSON() ([]byte, error) {
+func (a *Address) MarshalJSON() ([]byte, error) {
 	return json.Marshal(a.String())
 }
 
-func (a *address) UnmarshalJSON(bytes []byte) error {
+func (a *Address) UnmarshalJSON(bytes []byte) error {
 	var s string
 
 	if err := json.Unmarshal(bytes, &s); err != nil {
@@ -33,12 +33,12 @@ func (a *address) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	*a = address(*addr)
+	*a = Address(*addr)
 
 	return nil
 }
 
-func (a *address) Equal(addr *address) bool {
+func (a *Address) Equal(addr *Address) bool {
 	switch {
 	case a == nil && addr == nil:
 		return true
@@ -51,7 +51,7 @@ func (a *address) Equal(addr *address) bool {
 	}
 }
 
-func (a *address) clone() *address {
+func (a *Address) Clone() *Address {
 	if a != nil {
 		addr := *a
 		return &addr
@@ -60,7 +60,7 @@ func (a *address) clone() *address {
 	return nil
 }
 
-func resolve(s string) (*address, error) {
+func Resolve(s string) (*Address, error) {
 	matched, err := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,5}`, s)
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func resolve(s string) (*address, error) {
 		return nil, err
 	}
 
-	a := address(*addr)
+	a := Address(*addr)
 
 	return &a, nil
 }

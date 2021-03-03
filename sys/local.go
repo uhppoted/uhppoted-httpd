@@ -13,15 +13,16 @@ import (
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-api/uhppoted"
+	"github.com/uhppoted/uhppoted-httpd/sys/controllers"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Local struct {
-	BindAddress      *address `json:"bind-address"`
-	BroadcastAddress *address `json:"broadcast-address"`
-	ListenAddress    *address `json:"listen-address"`
-	Debug            bool     `json:"debug"`
-	devices          map[uint32]address
+	BindAddress      *types.Address `json:"bind-address"`
+	BroadcastAddress *types.Address `json:"broadcast-address"`
+	ListenAddress    *types.Address `json:"listen-address"`
+	Debug            bool           `json:"debug"`
+	devices          map[uint32]types.Address
 	api              uhppoted.UHPPOTED
 	cache            map[uint32]device
 	guard            sync.RWMutex
@@ -29,7 +30,7 @@ type Local struct {
 
 type device struct {
 	touched  time.Time
-	address  *address
+	address  *types.Address
 	datetime *types.DateTime
 	cards    *uint32
 	events   *uint32
@@ -50,7 +51,7 @@ func (l *Local) clone() *Local {
 
 // TODO (?) Move into custom JSON Unmarshal
 //          Ref. http://choly.ca/post/go-json-marshalling/
-func (l *Local) Init(devices []*Controller) {
+func (l *Local) Init(devices []*controllers.Controller) {
 	u := uhppote.UHPPOTE{
 		BindAddress:      (*net.UDPAddr)(l.BindAddress),
 		BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),
@@ -270,7 +271,7 @@ func (l *Local) store(id uint32, info interface{}) {
 			port = d.Port
 		}
 
-		addr := address(net.UDPAddr{
+		addr := types.Address(net.UDPAddr{
 			IP:   v.IpAddress,
 			Port: port,
 		})

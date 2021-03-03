@@ -17,6 +17,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/db"
+	"github.com/uhppoted/uhppoted-httpd/sys/controllers"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -33,9 +34,9 @@ type data struct {
 }
 
 type tables struct {
-	Doors       map[string]types.Door `json:"doors"`
-	Controllers []*Controller         `json:"controllers"`
-	Local       *Local                `json:"local"`
+	Doors       map[string]types.Door     `json:"doors"`
+	Controllers []*controllers.Controller `json:"controllers"`
+	Local       *Local                    `json:"local"`
 }
 
 func (s *system) refresh() {
@@ -61,7 +62,7 @@ func (d *data) clone() *data {
 	shadow := data{
 		Tables: tables{
 			Doors:       map[string]types.Door{},
-			Controllers: make([]*Controller, len(d.Tables.Controllers)),
+			Controllers: make([]*controllers.Controller, len(d.Tables.Controllers)),
 			Local:       &Local{},
 		},
 	}
@@ -71,7 +72,7 @@ func (d *data) clone() *data {
 	}
 
 	for k, v := range d.Tables.Controllers {
-		shadow.Tables.Controllers[k] = v.clone()
+		shadow.Tables.Controllers[k] = v.Clone()
 	}
 
 	shadow.Tables.Local = d.Tables.Local.clone()
@@ -83,9 +84,9 @@ var sys = system{
 	controllers: data{
 		Tables: tables{
 			Doors:       map[string]types.Door{},
-			Controllers: []*Controller{},
+			Controllers: []*controllers.Controller{},
 			Local: &Local{
-				devices: map[uint32]address{},
+				devices: map[uint32]types.Address{},
 			},
 		},
 	},
@@ -131,7 +132,7 @@ func System() interface{} {
 
 	defer sys.RUnlock()
 
-	devices := []Controller{}
+	devices := []controllers.Controller{}
 	for _, v := range sys.controllers.Tables.Controllers {
 		devices = append(devices, *v)
 	}
@@ -146,7 +147,7 @@ loop:
 
 		// ... include 'unconfigured' controllers
 		id := k
-		devices = append(devices, Controller{
+		devices = append(devices, controllers.Controller{
 			DeviceID: &id,
 			Created:  time.Now(),
 		})
@@ -175,7 +176,7 @@ loop:
 	}
 }
 
-func Update(permissions []types.Permissions) {
+func UpdateACL(permissions []types.Permissions) {
 	sys.controllers.Tables.Local.Update(permissions)
 }
 
@@ -252,11 +253,13 @@ loop:
 
 	sys.controllers = *shadow
 
+	// UpdateConf(*shadow)
+
 	return list, nil
 }
 
-func (s *system) add(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
-	record := c.clone()
+func (s *system) add(shadow *data, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+	record := c.Clone()
 
 	if auth != nil {
 		if err := auth.CanAddController(record); err != nil {
@@ -289,8 +292,8 @@ loop:
 	return record, nil
 }
 
-func (s *system) update(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
-	var current *Controller
+func (s *system) update(shadow *data, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+	var current *controllers.Controller
 
 	for _, v := range s.controllers.Tables.Controllers {
 		if v.OID == c.OID {
@@ -311,7 +314,7 @@ func (s *system) update(shadow *data, c Controller, auth auth.OpAuth) (*Controll
 			}
 
 			if c.IP != nil {
-				record.IP = c.IP.clone()
+				record.IP = c.IP.Clone()
 			}
 
 			if c.TimeZone != nil {
@@ -348,7 +351,7 @@ func (s *system) update(shadow *data, c Controller, auth auth.OpAuth) (*Controll
 	}
 }
 
-func (s *system) delete(shadow *data, c Controller, auth auth.OpAuth) (*Controller, error) {
+func (s *system) delete(shadow *data, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	for i, record := range shadow.Tables.Controllers {
 		if record.OID == c.OID {
 			if auth != nil {
@@ -539,7 +542,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	return &acl, nil
 }
 
-func unpack(m map[string]interface{}) ([]Controller, error) {
+func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 	o := struct {
 		Controllers []struct {
 			ID       string
@@ -563,10 +566,10 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 		return nil, err
 	}
 
-	controllers := []Controller{}
+	list := []controllers.Controller{}
 
 	for _, r := range o.Controllers {
-		record := Controller{}
+		record := controllers.Controller{}
 
 		record.ID = r.ID
 
@@ -584,7 +587,7 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 		}
 
 		if r.IP != nil && *r.IP != "" {
-			if addr, err := resolve(*r.IP); err != nil {
+			if addr, err := types.Resolve(*r.IP); err != nil {
 				return nil, err
 			} else {
 				record.IP = addr
@@ -607,10 +610,10 @@ func unpack(m map[string]interface{}) ([]Controller, error) {
 			}
 		}
 
-		controllers = append(controllers, record)
+		list = append(list, record)
 	}
 
-	return controllers, nil
+	return list, nil
 }
 
 func (s *system) log(op string, info interface{}, auth auth.OpAuth) {

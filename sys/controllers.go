@@ -8,20 +8,9 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/uhppoted/uhppoted-httpd/sys/controllers"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
-
-// Container class for the static information pertaining to an access controller.
-type Controller struct {
-	ID       string           `json:"-"`
-	OID      string           `json:"OID"`
-	Created  time.Time        `json:"created"`
-	Name     *types.Name      `json:"name"`
-	DeviceID *uint32          `json:"device-id"`
-	IP       *address         `json:"address"`
-	Doors    map[uint8]string `json:"doors"`
-	TimeZone *string          `json:"timezone"`
-}
 
 // Merges Controller static configuration with current controller state information into a struct usable
 // by Javascript/HTML templating.
@@ -41,52 +30,7 @@ type controller struct {
 	Status     status
 }
 
-func (c *Controller) AsRuleEntity() interface{} {
-	type entity struct {
-		Name     string
-		DeviceID uint32
-	}
-
-	if c != nil {
-		deviceID := uint32(0)
-
-		if c.DeviceID != nil {
-			deviceID = *c.DeviceID
-		}
-
-		return &entity{
-			Name:     fmt.Sprintf("%v", c.Name),
-			DeviceID: deviceID,
-		}
-	}
-
-	return &entity{}
-}
-
-func (c *Controller) clone() *Controller {
-	if c != nil {
-		replicant := Controller{
-			ID:       c.ID,
-			OID:      c.OID,
-			Created:  c.Created,
-			Name:     c.Name.Copy(),
-			DeviceID: c.DeviceID,
-			IP:       c.IP,
-			TimeZone: c.TimeZone,
-			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
-		}
-
-		for k, v := range c.Doors {
-			replicant.Doors[k] = v
-		}
-
-		return &replicant
-	}
-
-	return nil
-}
-
-func merge(c Controller) controller {
+func merge(c controllers.Controller) controller {
 	cc := controller{
 		ID:       ID(c),
 		Name:     "",
@@ -188,7 +132,7 @@ func merge(c Controller) controller {
 	return cc
 }
 
-func ID(c Controller) string {
+func ID(c controllers.Controller) string {
 	if c.ID != "" {
 		return c.ID
 	}

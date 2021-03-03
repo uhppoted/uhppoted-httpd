@@ -137,5 +137,5 @@ func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, db db.D
 		return
 	}
 
-	system.Update(acl)
+	system.UpdateACL(acl)
 }
