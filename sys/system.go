@@ -187,7 +187,7 @@ func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 
 	// add/update ?
 
-	controllers, err := unpack(m)
+	clist, err := unpack(m)
 	if err != nil {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
@@ -204,7 +204,7 @@ func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	shadow := sys.controllers.clone()
 
 loop:
-	for _, c := range controllers {
+	for _, c := range clist {
 		// ... delete?
 		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
 			// ... 'fake' delete unconfigured controller
@@ -251,9 +251,13 @@ loop:
 		return nil, err
 	}
 
-	sys.controllers = *shadow
+	go func() {
+		if err := controllers.Export("/usr/local/etc/com.github.uhppoted/uhppoted.debug", shadow.Tables.Controllers, shadow.Tables.Doors); err != nil {
+			warn(err)
+		}
+	}()
 
-	// UpdateConf(*shadow)
+	sys.controllers = *shadow
 
 	return list, nil
 }
