@@ -14,7 +14,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-// Container class for the static information pertaining to an access controller.
 type Controller struct {
 	ID       string           `json:"-"` // TODO REMOVE
 	OID      string           `json:"OID"`

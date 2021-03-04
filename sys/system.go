@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
@@ -23,8 +25,11 @@ import (
 
 type system struct {
 	sync.RWMutex
-	conf        string
-	file        string
+	conf  string
+	file  string
+	doors struct {
+		Doors map[string]types.Door `json:"doors"`
+	}
 	controllers data
 	cards       db.DB
 	audit       audit.Trail
@@ -35,7 +40,6 @@ type data struct {
 }
 
 type tables struct {
-	Doors       map[string]types.Door     `json:"doors"`
 	Controllers []*controllers.Controller `json:"controllers"`
 	Local       *Local                    `json:"local"`
 }
@@ -62,14 +66,9 @@ func (s *system) refresh() {
 func (d *data) clone() *data {
 	shadow := data{
 		Tables: tables{
-			Doors:       map[string]types.Door{},
 			Controllers: make([]*controllers.Controller, len(d.Tables.Controllers)),
 			Local:       &Local{},
 		},
-	}
-
-	for k, v := range d.Tables.Doors {
-		shadow.Tables.Doors[k] = v.Clone()
 	}
 
 	for k, v := range d.Tables.Controllers {
@@ -82,9 +81,14 @@ func (d *data) clone() *data {
 }
 
 var sys = system{
+	doors: struct {
+		Doors map[string]types.Door `json:"doors"`
+	}{
+		Doors: map[string]types.Door{},
+	},
+
 	controllers: data{
 		Tables: tables{
-			Doors:       map[string]types.Door{},
 			Controllers: []*controllers.Controller{},
 			Local: &Local{
 				devices: map[uint32]types.Address{},
@@ -105,8 +109,8 @@ func init() {
 	}()
 }
 
-func Init(conf, system string, cards db.DB, trail audit.Trail) error {
-	bytes, err := ioutil.ReadFile(system)
+func Init(conf, controllers, doors string, cards db.DB, trail audit.Trail) error {
+	bytes, err := ioutil.ReadFile(controllers)
 	if err != nil {
 		return err
 	}
@@ -116,13 +120,27 @@ func Init(conf, system string, cards db.DB, trail audit.Trail) error {
 		return err
 	}
 
+	bytes, err = ioutil.ReadFile(doors)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(bytes, &sys.doors)
+	if err != nil {
+		return err
+	}
+
 	sys.conf = conf
-	sys.file = system
+	sys.file = controllers
 	sys.cards = cards
 	sys.audit = trail
 	sys.controllers.Tables.Local.Init(sys.controllers.Tables.Controllers)
 
-	//	if b, err := json.MarshalIndent(sys.data, "", "  "); err == nil {
+	//	if b, err := json.MarshalIndent(sys.controllers, "", "  "); err == nil {
+	//		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
+	//	}
+	//
+	//	if b, err := json.MarshalIndent(sys.doors, "", "  "); err == nil {
 	//		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
 	//	}
 
@@ -163,7 +181,7 @@ loop:
 	sort.SliceStable(controllers, func(i, j int) bool { return controllers[i].Created.Before(controllers[j].Created) })
 
 	doors := []types.Door{}
-	for _, v := range sys.controllers.Tables.Doors {
+	for _, v := range sys.doors.Doors {
 		doors = append(doors, v)
 	}
 
@@ -254,7 +272,7 @@ loop:
 	}
 
 	go func() {
-		if err := controllers.Export(sys.conf, shadow.Tables.Controllers, shadow.Tables.Doors); err != nil {
+		if err := controllers.Export(sys.conf, shadow.Tables.Controllers, sys.doors.Doors); err != nil {
 			warn(err)
 		}
 	}()
@@ -394,33 +412,31 @@ func save(d *data, file string) error {
 		return nil
 	}
 
-	_, err := json.MarshalIndent(d, "", "  ")
+	b, err := json.MarshalIndent(d, "", "  ")
 	if err != nil {
 		return err
 	}
 
-	//	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-system.json")
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	defer os.Remove(tmp.Name())
-	//
-	//	if _, err := tmp.Write(b); err != nil {
-	//		return err
-	//	}
-	//
-	//	if err := tmp.Close(); err != nil {
-	//		return err
-	//	}
-	//
-	//	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
-	//		return err
-	//	}
-	//
-	//	return os.Rename(tmp.Name(), file)
+	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-system.json")
+	if err != nil {
+		return err
+	}
 
-	return nil
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(b); err != nil {
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
+		return err
+	}
+
+	return os.Rename(tmp.Name(), file)
 }
 
 func validate(d *data) error {
@@ -452,7 +468,7 @@ func validate(d *data) error {
 
 		for _, v := range r.Doors {
 			if v != "" {
-				if _, ok := d.Tables.Doors[v]; !ok {
+				if _, ok := sys.doors.Doors[v]; !ok {
 					return &types.HttpdError{
 						Status: http.StatusBadRequest,
 						Err:    fmt.Errorf("Invalid door ID"),
@@ -464,7 +480,7 @@ func validate(d *data) error {
 			if rid, ok := doors[v]; ok && v != "" {
 				return &types.HttpdError{
 					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("%v door assigned to more than one controller", d.Tables.Doors[v].Name),
+					Err:    fmt.Errorf("%v door assigned to more than one controller", sys.doors.Doors[v].Name),
 					Detail: fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID),
 				}
 			}
@@ -512,7 +528,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	for _, p := range list {
 	loop:
 		for _, d := range p.Doors {
-			door, ok := sys.controllers.Tables.Doors[d]
+			door, ok := sys.doors.Doors[d]
 			if !ok {
 				log.Printf("WARN %v", fmt.Errorf("consolidate: invalid door %v for card %v", d, p.CardNumber))
 				continue

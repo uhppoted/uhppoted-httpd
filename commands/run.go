@@ -109,7 +109,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
 	}
 
-	if err := system.Init(cmd.configuration, conf.HTTPD.System.File, db, trail); err != nil {
+	if err := system.Init(cmd.configuration, conf.HTTPD.System.Controllers, conf.HTTPD.System.Doors, db, trail); err != nil {
 		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 
