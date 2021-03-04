@@ -10,12 +10,11 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
-      - localYYYY-MM-DD etc in log
+      - update actual controllers address/datetime
       - task queue
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core
-      - update actual controllers address/datetime
       - think through ID/OID and add/edit/update operations
 
       - validate Local::Device timezone on initialization

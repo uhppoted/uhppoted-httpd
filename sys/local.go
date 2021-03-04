@@ -83,7 +83,7 @@ func (l *Local) Init(devices []*controllers.Controller) {
 
 	l.api = uhppoted.UHPPOTED{
 		Uhppote: &u,
-		Log:     log.New(os.Stdout, "local", log.LstdFlags|log.LUTC),
+		Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
 	}
 }
 

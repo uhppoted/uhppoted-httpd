@@ -12,7 +12,7 @@ import (
 
 type datetime struct {
 	DateTime *types.DateTime
-	Status status
+	Status   status
 }
 
 func (dt datetime) String() string {
