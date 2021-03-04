@@ -10,7 +10,6 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] sysinfo
-      - 'undefined' on timezone after updating IP address
       - localYYYY-MM-DD etc in log
       - task queue
 

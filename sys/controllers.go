@@ -118,7 +118,6 @@ func merge(c controllers.Controller) controller {
 
 			dt := types.DateTime(T)
 			cc.SystemTime.DateTime = &dt
-			cc.SystemTime.TimeZone = tz
 		}
 
 		switch dt := time.Now().Sub(cached.touched); {

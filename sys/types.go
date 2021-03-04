@@ -12,8 +12,15 @@ import (
 
 type datetime struct {
 	DateTime *types.DateTime
-	TimeZone *time.Location
-	Status   status
+	Status status
+}
+
+func (dt datetime) String() string {
+	if dt.DateTime == nil || dt.Status == StatusUnknown {
+		return ""
+	}
+
+	return dt.DateTime.Format("2006-01-02 15:04:05 MST")
 }
 
 type ip struct {

@@ -270,6 +270,7 @@ function refresh (sys) {
 function updated (controllers) {
   if (controllers) {
     controllers.forEach((record) => {
+      console.log('>>', record)
       const id = record.ID
       const row = document.getElementById(id)
 
@@ -302,12 +303,8 @@ function updated (controllers) {
       if (record.SystemTime) {
         let datetime = ''
 
-        if (record.SystemTime.DateTime !== null) {
+        if (record.SystemTime.DateTime) {
           datetime = record.SystemTime.DateTime
-        }
-
-        if (record.timezone !== null && record.timezone !== '') {
-          datetime = datetime + ' ' + record.timezone
         }
 
         update(document.getElementById(id + '-datetime'), datetime, statusToString(record.SystemTime.Status))
