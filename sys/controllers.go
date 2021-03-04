@@ -78,7 +78,7 @@ func merge(c controllers.Controller) controller {
 		return cc
 	}
 
-	if cached, ok := sys.controllers.Tables.Local.cache[*c.DeviceID]; ok {
+	if cached, ok := sys.controllers.Local.cache[*c.DeviceID]; ok {
 		if cached.cards != nil {
 			cc.Cards.Records = records(*cached.cards)
 			if cached.acl == StatusUnknown {

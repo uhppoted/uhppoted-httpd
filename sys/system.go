@@ -30,23 +30,19 @@ type system struct {
 	doors struct {
 		Doors map[string]types.Door `json:"doors"`
 	}
-	controllers data
+	controllers Controllers
 	cards       db.DB
 	audit       audit.Trail
 }
 
-type data struct {
-	Tables tables `json:"tables"`
-}
-
-type tables struct {
+type Controllers struct {
 	Controllers []*controllers.Controller `json:"controllers"`
 	Local       *Local                    `json:"local"`
 }
 
 func (s *system) refresh() {
 	if s != nil {
-		go s.controllers.Tables.Local.refresh()
+		go s.controllers.Local.refresh()
 
 		go func() {
 			acl, err := s.cards.ACL()
@@ -55,7 +51,7 @@ func (s *system) refresh() {
 				return
 			}
 
-			if err := s.controllers.Tables.Local.Compare(acl); err != nil {
+			if err := s.controllers.Local.Compare(acl); err != nil {
 				warn(err)
 				return
 			}
@@ -63,19 +59,17 @@ func (s *system) refresh() {
 	}
 }
 
-func (d *data) clone() *data {
-	shadow := data{
-		Tables: tables{
-			Controllers: make([]*controllers.Controller, len(d.Tables.Controllers)),
-			Local:       &Local{},
-		},
+func (d *Controllers) clone() *Controllers {
+	shadow := Controllers{
+		Controllers: make([]*controllers.Controller, len(d.Controllers)),
+		Local:       &Local{},
 	}
 
-	for k, v := range d.Tables.Controllers {
-		shadow.Tables.Controllers[k] = v.Clone()
+	for k, v := range d.Controllers {
+		shadow.Controllers[k] = v.Clone()
 	}
 
-	shadow.Tables.Local = d.Tables.Local.clone()
+	shadow.Local = d.Local.clone()
 
 	return &shadow
 }
@@ -87,12 +81,10 @@ var sys = system{
 		Doors: map[string]types.Door{},
 	},
 
-	controllers: data{
-		Tables: tables{
-			Controllers: []*controllers.Controller{},
-			Local: &Local{
-				devices: map[uint32]types.Address{},
-			},
+	controllers: Controllers{
+		Controllers: []*controllers.Controller{},
+		Local: &Local{
+			devices: map[uint32]types.Address{},
 		},
 	},
 }
@@ -134,7 +126,7 @@ func Init(conf, controllers, doors string, cards db.DB, trail audit.Trail) error
 	sys.file = controllers
 	sys.cards = cards
 	sys.audit = trail
-	sys.controllers.Tables.Local.Init(sys.controllers.Tables.Controllers)
+	sys.controllers.Local.Init(sys.controllers.Controllers)
 
 	//	if b, err := json.MarshalIndent(sys.controllers, "", "  "); err == nil {
 	//		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
@@ -153,12 +145,12 @@ func System() interface{} {
 	defer sys.RUnlock()
 
 	devices := []controllers.Controller{}
-	for _, v := range sys.controllers.Tables.Controllers {
+	for _, v := range sys.controllers.Controllers {
 		devices = append(devices, *v)
 	}
 
 loop:
-	for k, _ := range sys.controllers.Tables.Local.cache {
+	for k, _ := range sys.controllers.Local.cache {
 		for _, c := range devices {
 			if c.DeviceID != nil && *c.DeviceID == k {
 				continue loop
@@ -197,7 +189,7 @@ loop:
 }
 
 func UpdateACL(permissions []types.Permissions) {
-	sys.controllers.Tables.Local.Update(permissions)
+	sys.controllers.Local.Update(permissions)
 }
 
 func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
@@ -233,7 +225,7 @@ loop:
 				continue loop
 			}
 
-			for _, v := range shadow.Tables.Controllers {
+			for _, v := range shadow.Controllers {
 				if v.OID == c.OID {
 					if r, err := sys.delete(shadow, c, auth); err != nil {
 						return nil, err
@@ -247,7 +239,7 @@ loop:
 		}
 
 		// ... update controller?
-		for _, v := range shadow.Tables.Controllers {
+		for _, v := range shadow.Controllers {
 			if v.OID == c.OID {
 				if r, err := sys.update(shadow, c, auth); err != nil {
 					return nil, err
@@ -272,7 +264,7 @@ loop:
 	}
 
 	go func() {
-		if err := controllers.Export(sys.conf, shadow.Tables.Controllers, sys.doors.Doors); err != nil {
+		if err := controllers.Export(sys.conf, shadow.Controllers, sys.doors.Doors); err != nil {
 			warn(err)
 		}
 	}()
@@ -282,7 +274,7 @@ loop:
 	return list, nil
 }
 
-func (s *system) add(shadow *data, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) add(shadow *Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	record := c.Clone()
 
 	if auth != nil {
@@ -298,7 +290,7 @@ func (s *system) add(shadow *data, c controllers.Controller, auth auth.OpAuth) (
 loop:
 	for next := 1; ; next++ {
 		oid := fmt.Sprintf("0.1.1.%v", next)
-		for _, v := range shadow.Tables.Controllers {
+		for _, v := range shadow.Controllers {
 			if v.OID == oid {
 				continue loop
 			}
@@ -310,23 +302,23 @@ loop:
 
 	record.Created = time.Now()
 
-	shadow.Tables.Controllers = append(shadow.Tables.Controllers, record)
+	shadow.Controllers = append(shadow.Controllers, record)
 	s.log("add", record, auth)
 
 	return record, nil
 }
 
-func (s *system) update(shadow *data, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) update(shadow *Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	var current *controllers.Controller
 
-	for _, v := range s.controllers.Tables.Controllers {
+	for _, v := range s.controllers.Controllers {
 		if v.OID == c.OID {
 			current = v
 			break
 		}
 	}
 
-	for _, record := range shadow.Tables.Controllers {
+	for _, record := range shadow.Controllers {
 		if record.OID == c.OID {
 			if c.Name != nil {
 				record.Name = c.Name
@@ -375,8 +367,8 @@ func (s *system) update(shadow *data, c controllers.Controller, auth auth.OpAuth
 	}
 }
 
-func (s *system) delete(shadow *data, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
-	for i, record := range shadow.Tables.Controllers {
+func (s *system) delete(shadow *Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+	for i, record := range shadow.Controllers {
 		if record.OID == c.OID {
 			if auth != nil {
 				if err := auth.CanDeleteController(record); err != nil {
@@ -388,7 +380,7 @@ func (s *system) delete(shadow *data, c controllers.Controller, auth auth.OpAuth
 				}
 			}
 
-			shadow.Tables.Controllers = append(shadow.Tables.Controllers[:i], shadow.Tables.Controllers[i+1:]...)
+			shadow.Controllers = append(shadow.Controllers[:i], shadow.Controllers[i+1:]...)
 
 			s.log("delete", record, auth)
 
@@ -399,7 +391,7 @@ func (s *system) delete(shadow *data, c controllers.Controller, auth auth.OpAuth
 	return nil, nil
 }
 
-func save(d *data, file string) error {
+func save(d *Controllers, file string) error {
 	if err := validate(d); err != nil {
 		return err
 	}
@@ -439,11 +431,11 @@ func save(d *data, file string) error {
 	return os.Rename(tmp.Name(), file)
 }
 
-func validate(d *data) error {
+func validate(d *Controllers) error {
 	devices := map[uint32]string{}
 	doors := map[string]string{}
 
-	for _, r := range d.Tables.Controllers {
+	for _, r := range d.Controllers {
 		if r.OID == "" {
 			return &types.HttpdError{
 				Status: http.StatusBadRequest,
@@ -492,7 +484,7 @@ func validate(d *data) error {
 	return nil
 }
 
-func scrub(d *data) error {
+func scrub(d *Controllers) error {
 	return nil
 }
 
@@ -500,7 +492,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	// initialise empty ACL
 	acl := make(acl.ACL)
 
-	for _, c := range sys.controllers.Tables.Controllers {
+	for _, c := range sys.controllers.Controllers {
 		if c.DeviceID != nil && *c.DeviceID > 0 {
 			acl[*c.DeviceID] = map[uint32]core.Card{}
 		}
@@ -534,7 +526,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 				continue
 			}
 
-			for _, c := range sys.controllers.Tables.Controllers {
+			for _, c := range sys.controllers.Controllers {
 				for _, v := range c.Doors {
 					if v == door.ID {
 						if c.DeviceID != nil && *c.DeviceID > 0 {
