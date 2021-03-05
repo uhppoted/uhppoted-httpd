@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	//	"bytes"
-	//	"fmt"
+	"bytes"
+	"fmt"
 	"log"
 	"net"
 	"os"
-	//	"sort"
+	"sort"
 	"sync"
 	"time"
 
@@ -44,7 +44,7 @@ const (
 const WINDOW = 300 // 5 minutes
 
 // TODO interim implemenation (need to split static/dynamic data)
-func (l *Local) Clone() *Local {
+func (l *Local) clone() *Local {
 	return l
 }
 
@@ -86,101 +86,83 @@ func (l *Local) Init(devices []*Controller) {
 	}
 }
 
-func (l *Local) Update(permissions []types.Permissions) {
+func (l *Local) Update(permissions acl.ACL) {
 	log.Printf("Updating ACL")
 
-	//	access, err := consolidate(permissions)
-	//	if err != nil {
-	//		warn(err)
-	//		return
-	//	}
-	//
-	//	if access == nil {
-	//		warn(fmt.Errorf("Invalid ACL from permissions: %v", access))
-	//		return
-	//	}
-	//
-	//	rpt, err := acl.PutACL(l.api.Uhppote, *access, false)
-	//	if err != nil {
-	//		warn(err)
-	//		return
-	//	}
-	//
-	//	keys := []uint32{}
-	//	for k, _ := range rpt {
-	//		keys = append(keys, k)
-	//	}
-	//
-	//	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
-	//
-	//	var msg bytes.Buffer
-	//	fmt.Fprintf(&msg, "ACL updated\n")
-	//
-	//	for _, k := range keys {
-	//		v := rpt[k]
-	//		fmt.Fprintf(&msg, "                    %v", k)
-	//		fmt.Fprintf(&msg, " unchanged:%-3v", len(v.Unchanged))
-	//		fmt.Fprintf(&msg, " updated:%-3v", len(v.Updated))
-	//		fmt.Fprintf(&msg, " added:%-3v", len(v.Added))
-	//		fmt.Fprintf(&msg, " deleted:%-3v", len(v.Deleted))
-	//		fmt.Fprintf(&msg, " failed:%-3v", len(v.Failed))
-	//		fmt.Fprintf(&msg, " errored:%-3v", len(v.Errored))
-	//		fmt.Fprintln(&msg)
-	//	}
-	//
-	//	log.Printf("%v", string(msg.Bytes()))
+	rpt, err := acl.PutACL(l.api.Uhppote, permissions, false)
+	if err != nil {
+		warn(err)
+		return
+	}
+
+	keys := []uint32{}
+	for k, _ := range rpt {
+		keys = append(keys, k)
+	}
+
+	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+
+	var msg bytes.Buffer
+	fmt.Fprintf(&msg, "ACL updated\n")
+
+	for _, k := range keys {
+		v := rpt[k]
+		fmt.Fprintf(&msg, "                    %v", k)
+		fmt.Fprintf(&msg, " unchanged:%-3v", len(v.Unchanged))
+		fmt.Fprintf(&msg, " updated:%-3v", len(v.Updated))
+		fmt.Fprintf(&msg, " added:%-3v", len(v.Added))
+		fmt.Fprintf(&msg, " deleted:%-3v", len(v.Deleted))
+		fmt.Fprintf(&msg, " failed:%-3v", len(v.Failed))
+		fmt.Fprintf(&msg, " errored:%-3v", len(v.Errored))
+		fmt.Fprintln(&msg)
+	}
+
+	log.Printf("%v", string(msg.Bytes()))
 }
 
-func (l *Local) Compare(permissions []types.Permissions) error {
-	//	log.Printf("Comparing ACL")
-	//
-	//	devices := []*uhppote.Device{}
-	//	for _, v := range l.api.Uhppote.DeviceList() {
-	//		devices = append(devices, v)
-	//	}
-	//
-	//	current, err := acl.GetACL(l.api.Uhppote, devices)
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	access, err := consolidate(permissions)
-	//	if err != nil {
-	//		return err
-	//	} else if access == nil {
-	//		return fmt.Errorf("Invalid ACL from permissions: %v", access)
-	//	}
-	//
-	//	compare, err := acl.Compare(*access, current)
-	//	if err != nil {
-	//		return err
-	//	} else if compare == nil {
-	//		return fmt.Errorf("Invalid ACL compare report: %v", compare)
-	//	}
-	//
-	//	diff := acl.SystemDiff(compare)
-	//	report := diff.Consolidate()
-	//	if report == nil {
-	//		return fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
-	//	}
-	//
-	//	unchanged := len(report.Unchanged)
-	//	updated := len(report.Updated)
-	//	added := len(report.Added)
-	//	deleted := len(report.Deleted)
-	//
-	//	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
-	//
-	//	if updated+added+deleted > 0 {
-	//		for k, _ := range l.devices {
-	//			l.store(k, compare[k])
-	//		}
-	//	}
+func (l *Local) Compare(permissions acl.ACL) error {
+	log.Printf("Comparing ACL")
+
+	devices := []*uhppote.Device{}
+	for _, v := range l.api.Uhppote.DeviceList() {
+		devices = append(devices, v)
+	}
+
+	current, err := acl.GetACL(l.api.Uhppote, devices)
+	if err != nil {
+		return err
+	}
+
+	compare, err := acl.Compare(permissions, current)
+	if err != nil {
+		return err
+	} else if compare == nil {
+		return fmt.Errorf("Invalid ACL compare report: %v", compare)
+	}
+
+	diff := acl.SystemDiff(compare)
+	report := diff.Consolidate()
+	if report == nil {
+		return fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
+	}
+
+	unchanged := len(report.Unchanged)
+	updated := len(report.Updated)
+	added := len(report.Added)
+	deleted := len(report.Deleted)
+
+	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
+
+	if updated+added+deleted > 0 {
+		for k, _ := range l.Devices {
+			l.store(k, compare[k])
+		}
+	}
 
 	return nil
 }
 
-func (l *Local) Refresh() {
+func (l *Local) refresh() {
 	list := map[uint32]struct{}{}
 	for k, _ := range l.Devices {
 		list[k] = struct{}{}

@@ -30,48 +30,27 @@ type system struct {
 	doors struct {
 		Doors map[string]types.Door `json:"doors"`
 	}
-	controllers Controllers
+	controllers controllers.Controllers
 	cards       db.DB
 	audit       audit.Trail
 }
 
-type Controllers struct {
-	Controllers []*controllers.Controller `json:"controllers"`
-	Local       *controllers.Local        `json:"local"`
-}
-
 func (s *system) refresh() {
 	if s != nil {
-		go s.controllers.Local.Refresh()
+		go s.controllers.Refresh()
 
 		go func() {
-			acl, err := s.cards.ACL()
-			if err != nil {
+			if permissions, err := s.cards.ACL(); err != nil {
 				warn(err)
-				return
-			}
-
-			if err := s.controllers.Local.Compare(acl); err != nil {
+			} else if acl, err := consolidate(permissions); err != nil {
 				warn(err)
-				return
+			} else if acl == nil {
+				warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
+			} else if err := s.controllers.Local.Compare(*acl); err != nil {
+				warn(err)
 			}
 		}()
 	}
-}
-
-func (d *Controllers) clone() *Controllers {
-	shadow := Controllers{
-		Controllers: make([]*controllers.Controller, len(d.Controllers)),
-		Local:       &controllers.Local{},
-	}
-
-	for k, v := range d.Controllers {
-		shadow.Controllers[k] = v.Clone()
-	}
-
-	shadow.Local = d.Local.Clone()
-
-	return &shadow
 }
 
 var sys = system{
@@ -81,12 +60,7 @@ var sys = system{
 		Doors: map[string]types.Door{},
 	},
 
-	controllers: Controllers{
-		Controllers: []*controllers.Controller{},
-		Local: &controllers.Local{
-			Devices: map[uint32]types.Address{},
-		},
-	},
+	controllers: controllers.NewControllers(),
 }
 
 func init() {
@@ -191,7 +165,13 @@ func System() interface{} {
 }
 
 func UpdateACL(permissions []types.Permissions) {
-	sys.controllers.Local.Update(permissions)
+	if acl, err := consolidate(permissions); err != nil {
+		warn(err)
+	} else if acl == nil {
+		warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
+	} else {
+		sys.controllers.Local.Update(*acl)
+	}
 }
 
 func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
@@ -215,7 +195,7 @@ func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 		Deleted []interface{} `json:"deleted"`
 	}{}
 
-	shadow := sys.controllers.clone()
+	shadow := sys.controllers.Clone()
 
 loop:
 	for _, c := range clist {
@@ -276,7 +256,7 @@ loop:
 	return list, nil
 }
 
-func (s *system) add(shadow *Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) add(shadow *controllers.Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	record := c.Clone()
 
 	if auth != nil {
@@ -310,7 +290,7 @@ loop:
 	return record, nil
 }
 
-func (s *system) update(shadow *Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) update(shadow *controllers.Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	var current *controllers.Controller
 
 	for _, v := range s.controllers.Controllers {
@@ -369,7 +349,7 @@ func (s *system) update(shadow *Controllers, c controllers.Controller, auth auth
 	}
 }
 
-func (s *system) delete(shadow *Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) delete(shadow *controllers.Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	for i, record := range shadow.Controllers {
 		if record.OID == c.OID {
 			if auth != nil {
@@ -393,7 +373,7 @@ func (s *system) delete(shadow *Controllers, c controllers.Controller, auth auth
 	return nil, nil
 }
 
-func save(d *Controllers, file string) error {
+func save(d *controllers.Controllers, file string) error {
 	if err := validate(d); err != nil {
 		return err
 	}
@@ -433,7 +413,7 @@ func save(d *Controllers, file string) error {
 	return os.Rename(tmp.Name(), file)
 }
 
-func validate(d *Controllers) error {
+func validate(d *controllers.Controllers) error {
 	devices := map[uint32]string{}
 	doors := map[string]string{}
 
@@ -486,7 +466,7 @@ func validate(d *Controllers) error {
 	return nil
 }
 
-func scrub(d *Controllers) error {
+func scrub(d *controllers.Controllers) error {
 	return nil
 }
 
@@ -650,6 +630,10 @@ func (s *system) log(op string, info interface{}, auth auth.OpAuth) {
 
 func clean(s string) string {
 	return strings.ReplaceAll(strings.ToLower(s), " ", "")
+}
+
+func info(msg string) {
+	log.Printf("INFO  %v", msg)
 }
 
 func warn(err error) {

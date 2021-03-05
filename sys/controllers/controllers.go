@@ -8,24 +8,45 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
-	"time"
 
 	"github.com/uhppoted/uhppoted-api/config"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type Controller struct {
-	ID       string           `json:"-"` // TODO REMOVE
-	OID      string           `json:"OID"`
-	Created  time.Time        `json:"created"`
-	Name     *types.Name      `json:"name"`
-	DeviceID *uint32          `json:"device-id"`
-	IP       *types.Address   `json:"address"`
-	Doors    map[uint8]string `json:"doors"`
-	TimeZone *string          `json:"timezone"`
+type Controllers struct {
+	Controllers []*Controller `json:"controllers"`
+	Local       *Local        `json:"local"`
 }
 
 var guard sync.Mutex
+
+func NewControllers() Controllers {
+	return Controllers{
+		Controllers: []*Controller{},
+		Local: &Local{
+			Devices: map[uint32]types.Address{},
+		},
+	}
+}
+
+func (c *Controllers) Refresh() {
+	c.Local.refresh()
+}
+
+func (c *Controllers) Clone() *Controllers {
+	shadow := Controllers{
+		Controllers: make([]*Controller, len(c.Controllers)),
+		Local:       &Local{},
+	}
+
+	for k, v := range c.Controllers {
+		shadow.Controllers[k] = v.Clone()
+	}
+
+	shadow.Local = c.Local.clone()
+
+	return &shadow
+}
 
 func Export(file string, controllers []*Controller, doors map[string]types.Door) error {
 	guard.Lock()
@@ -101,49 +122,4 @@ func Export(file string, controllers []*Controller, doors map[string]types.Door)
 	}
 
 	return os.Rename(tmp.Name(), file)
-}
-
-func (c *Controller) AsRuleEntity() interface{} {
-	type entity struct {
-		Name     string
-		DeviceID uint32
-	}
-
-	if c != nil {
-		deviceID := uint32(0)
-
-		if c.DeviceID != nil {
-			deviceID = *c.DeviceID
-		}
-
-		return &entity{
-			Name:     fmt.Sprintf("%v", c.Name),
-			DeviceID: deviceID,
-		}
-	}
-
-	return &entity{}
-}
-
-func (c *Controller) Clone() *Controller {
-	if c != nil {
-		replicant := Controller{
-			ID:       c.ID,
-			OID:      c.OID,
-			Created:  c.Created,
-			Name:     c.Name.Copy(),
-			DeviceID: c.DeviceID,
-			IP:       c.IP,
-			TimeZone: c.TimeZone,
-			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
-		}
-
-		for k, v := range c.Doors {
-			replicant.Doors[k] = v
-		}
-
-		return &replicant
-	}
-
-	return nil
 }
