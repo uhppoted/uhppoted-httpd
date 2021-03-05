@@ -37,12 +37,12 @@ type system struct {
 
 type Controllers struct {
 	Controllers []*controllers.Controller `json:"controllers"`
-	Local       *Local                    `json:"local"`
+	Local       *controllers.Local        `json:"local"`
 }
 
 func (s *system) refresh() {
 	if s != nil {
-		go s.controllers.Local.refresh()
+		go s.controllers.Local.Refresh()
 
 		go func() {
 			acl, err := s.cards.ACL()
@@ -62,14 +62,14 @@ func (s *system) refresh() {
 func (d *Controllers) clone() *Controllers {
 	shadow := Controllers{
 		Controllers: make([]*controllers.Controller, len(d.Controllers)),
-		Local:       &Local{},
+		Local:       &controllers.Local{},
 	}
 
 	for k, v := range d.Controllers {
 		shadow.Controllers[k] = v.Clone()
 	}
 
-	shadow.Local = d.Local.clone()
+	shadow.Local = d.Local.Clone()
 
 	return &shadow
 }
@@ -83,8 +83,8 @@ var sys = system{
 
 	controllers: Controllers{
 		Controllers: []*controllers.Controller{},
-		Local: &Local{
-			devices: map[uint32]types.Address{},
+		Local: &controllers.Local{
+			Devices: map[uint32]types.Address{},
 		},
 	},
 }
@@ -144,33 +144,35 @@ func System() interface{} {
 
 	defer sys.RUnlock()
 
-	devices := []controllers.Controller{}
-	for _, v := range sys.controllers.Controllers {
-		devices = append(devices, *v)
-	}
+	//	devices := []controllers.Controller{}
+	//	for _, v := range sys.controllers.Controllers {
+	//		devices = append(devices, *v)
+	//	}
+	//
+	//loop:
+	//	for k, _ := range sys.controllers.Local.Cache {
+	//		for _, c := range devices {
+	//			if c.DeviceID != nil && *c.DeviceID == k {
+	//				continue loop
+	//			}
+	//		}
+	//
+	//		// ... include 'unconfigured' controllers
+	//		id := k
+	//		devices = append(devices, controllers.Controller{
+	//			DeviceID: &id,
+	//			Created:  time.Now(),
+	//		})
+	//	}
+	//
+	//	controllers := []controller{}
+	//	for _, c := range devices {
+	//		controllers = append(controllers, merge(c))
+	//	}
+	//
+	//	sort.SliceStable(controllers, func(i, j int) bool { return controllers[i].Created.Before(controllers[j].Created) })
 
-loop:
-	for k, _ := range sys.controllers.Local.cache {
-		for _, c := range devices {
-			if c.DeviceID != nil && *c.DeviceID == k {
-				continue loop
-			}
-		}
-
-		// ... include 'unconfigured' controllers
-		id := k
-		devices = append(devices, controllers.Controller{
-			DeviceID: &id,
-			Created:  time.Now(),
-		})
-	}
-
-	controllers := []controller{}
-	for _, c := range devices {
-		controllers = append(controllers, merge(c))
-	}
-
-	sort.SliceStable(controllers, func(i, j int) bool { return controllers[i].Created.Before(controllers[j].Created) })
+	controllers := controllers.Consolidate(sys.controllers.Local, sys.controllers.Controllers)
 
 	doors := []types.Door{}
 	for _, v := range sys.doors.Doors {
@@ -180,7 +182,7 @@ loop:
 	sort.SliceStable(doors, func(i, j int) bool { return doors[i].Name < doors[j].Name })
 
 	return struct {
-		Controllers []controller
+		Controllers interface{}
 		Doors       []types.Door
 	}{
 		Controllers: controllers,
@@ -221,7 +223,7 @@ loop:
 		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
 			// ... 'fake' delete unconfigured controller
 			if c.OID == "" {
-				list.Deleted = append(list.Deleted, merge(c))
+				list.Deleted = append(list.Deleted, controllers.Merge(sys.controllers.Local, c))
 				continue loop
 			}
 
@@ -230,7 +232,7 @@ loop:
 					if r, err := sys.delete(shadow, c, auth); err != nil {
 						return nil, err
 					} else if r != nil {
-						list.Deleted = append(list.Deleted, merge(*r))
+						list.Deleted = append(list.Deleted, controllers.Merge(sys.controllers.Local, *r))
 					}
 				}
 			}
@@ -244,7 +246,7 @@ loop:
 				if r, err := sys.update(shadow, c, auth); err != nil {
 					return nil, err
 				} else if r != nil {
-					list.Updated = append(list.Updated, merge(*r))
+					list.Updated = append(list.Updated, controllers.Merge(sys.controllers.Local, *r))
 				}
 
 				continue loop
@@ -255,7 +257,7 @@ loop:
 		if r, err := sys.add(shadow, c, auth); err != nil {
 			return nil, err
 		} else if r != nil {
-			list.Updated = append(list.Updated, merge(*r))
+			list.Updated = append(list.Updated, controllers.Merge(sys.controllers.Local, *r))
 		}
 	}
 

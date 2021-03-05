@@ -1,14 +1,15 @@
-package system
+package controllers
 
 import (
 	"fmt"
+	"log"
 	"math"
+	"sort"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
 
-	"github.com/uhppoted/uhppoted-httpd/sys/controllers"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -30,7 +31,39 @@ type controller struct {
 	Status     status
 }
 
-func merge(c controllers.Controller) controller {
+func Consolidate(local *Local, controllers []*Controller) interface{} {
+	devices := []Controller{}
+	for _, v := range controllers {
+		devices = append(devices, *v)
+	}
+
+loop:
+	for k, _ := range local.Cache {
+		for _, c := range devices {
+			if c.DeviceID != nil && *c.DeviceID == k {
+				continue loop
+			}
+		}
+
+		// ... include 'unconfigured' controllers
+		id := k
+		devices = append(devices, Controller{
+			DeviceID: &id,
+			Created:  time.Now(),
+		})
+	}
+
+	list := []controller{}
+	for _, c := range devices {
+		list = append(list, Merge(local, c))
+	}
+
+	sort.SliceStable(list, func(i, j int) bool { return list[i].Created.Before(list[j].Created) })
+
+	return list
+}
+
+func Merge(local *Local, c Controller) controller {
 	cc := controller{
 		ID:       ID(c),
 		Name:     "",
@@ -78,7 +111,7 @@ func merge(c controllers.Controller) controller {
 		return cc
 	}
 
-	if cached, ok := sys.controllers.Local.cache[*c.DeviceID]; ok {
+	if cached, ok := local.Cache[*c.DeviceID]; ok {
 		if cached.cards != nil {
 			cc.Cards.Records = records(*cached.cards)
 			if cached.acl == StatusUnknown {
@@ -131,7 +164,7 @@ func merge(c controllers.Controller) controller {
 	return cc
 }
 
-func ID(c controllers.Controller) string {
+func ID(c Controller) string {
 	if c.ID != "" {
 		return c.ID
 	}
@@ -146,4 +179,8 @@ func ID(c controllers.Controller) string {
 	}
 
 	return "U" + strings.ReplaceAll(uuid, "-", "")
+}
+
+func warn(err error) {
+	log.Printf("ERROR %v", err)
 }

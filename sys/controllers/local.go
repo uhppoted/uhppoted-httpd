@@ -1,30 +1,29 @@
-package system
+package controllers
 
 import (
-	"bytes"
-	"fmt"
+	//	"bytes"
+	//	"fmt"
 	"log"
 	"net"
 	"os"
-	"sort"
+	//	"sort"
 	"sync"
 	"time"
 
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-api/uhppoted"
-	"github.com/uhppoted/uhppoted-httpd/sys/controllers"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Local struct {
-	BindAddress      *types.Address `json:"bind-address"`
-	BroadcastAddress *types.Address `json:"broadcast-address"`
-	ListenAddress    *types.Address `json:"listen-address"`
-	Debug            bool           `json:"debug"`
-	devices          map[uint32]types.Address
+	BindAddress      *types.Address           `json:"bind-address"`
+	BroadcastAddress *types.Address           `json:"broadcast-address"`
+	ListenAddress    *types.Address           `json:"listen-address"`
+	Debug            bool                     `json:"debug"`
+	Devices          map[uint32]types.Address `json:"-"` // TODO make unexported again once the code shuffle is done
 	api              uhppoted.UHPPOTED
-	cache            map[uint32]device
+	Cache            map[uint32]device `json:"-"` // TODO make unexported again once the code shuffle is done
 	guard            sync.RWMutex
 }
 
@@ -45,13 +44,13 @@ const (
 const WINDOW = 300 // 5 minutes
 
 // TODO interim implemenation (need to split static/dynamic data)
-func (l *Local) clone() *Local {
+func (l *Local) Clone() *Local {
 	return l
 }
 
 // TODO (?) Move into custom JSON Unmarshal
 //          Ref. http://choly.ca/post/go-json-marshalling/
-func (l *Local) Init(devices []*controllers.Controller) {
+func (l *Local) Init(devices []*Controller) {
 	u := uhppote.UHPPOTE{
 		BindAddress:      (*net.UDPAddr)(l.BindAddress),
 		BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),
@@ -69,7 +68,7 @@ func (l *Local) Init(devices []*controllers.Controller) {
 		id := *v.DeviceID
 		addr := net.UDPAddr(*v.IP)
 
-		l.devices[id] = *v.IP
+		l.Devices[id] = *v.IP
 
 		u.Devices[id] = &uhppote.Device{
 			Name:     name,
@@ -90,100 +89,100 @@ func (l *Local) Init(devices []*controllers.Controller) {
 func (l *Local) Update(permissions []types.Permissions) {
 	log.Printf("Updating ACL")
 
-	access, err := consolidate(permissions)
-	if err != nil {
-		warn(err)
-		return
-	}
-
-	if access == nil {
-		warn(fmt.Errorf("Invalid ACL from permissions: %v", access))
-		return
-	}
-
-	rpt, err := acl.PutACL(l.api.Uhppote, *access, false)
-	if err != nil {
-		warn(err)
-		return
-	}
-
-	keys := []uint32{}
-	for k, _ := range rpt {
-		keys = append(keys, k)
-	}
-
-	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
-
-	var msg bytes.Buffer
-	fmt.Fprintf(&msg, "ACL updated\n")
-
-	for _, k := range keys {
-		v := rpt[k]
-		fmt.Fprintf(&msg, "                    %v", k)
-		fmt.Fprintf(&msg, " unchanged:%-3v", len(v.Unchanged))
-		fmt.Fprintf(&msg, " updated:%-3v", len(v.Updated))
-		fmt.Fprintf(&msg, " added:%-3v", len(v.Added))
-		fmt.Fprintf(&msg, " deleted:%-3v", len(v.Deleted))
-		fmt.Fprintf(&msg, " failed:%-3v", len(v.Failed))
-		fmt.Fprintf(&msg, " errored:%-3v", len(v.Errored))
-		fmt.Fprintln(&msg)
-	}
-
-	log.Printf("%v", string(msg.Bytes()))
+	//	access, err := consolidate(permissions)
+	//	if err != nil {
+	//		warn(err)
+	//		return
+	//	}
+	//
+	//	if access == nil {
+	//		warn(fmt.Errorf("Invalid ACL from permissions: %v", access))
+	//		return
+	//	}
+	//
+	//	rpt, err := acl.PutACL(l.api.Uhppote, *access, false)
+	//	if err != nil {
+	//		warn(err)
+	//		return
+	//	}
+	//
+	//	keys := []uint32{}
+	//	for k, _ := range rpt {
+	//		keys = append(keys, k)
+	//	}
+	//
+	//	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+	//
+	//	var msg bytes.Buffer
+	//	fmt.Fprintf(&msg, "ACL updated\n")
+	//
+	//	for _, k := range keys {
+	//		v := rpt[k]
+	//		fmt.Fprintf(&msg, "                    %v", k)
+	//		fmt.Fprintf(&msg, " unchanged:%-3v", len(v.Unchanged))
+	//		fmt.Fprintf(&msg, " updated:%-3v", len(v.Updated))
+	//		fmt.Fprintf(&msg, " added:%-3v", len(v.Added))
+	//		fmt.Fprintf(&msg, " deleted:%-3v", len(v.Deleted))
+	//		fmt.Fprintf(&msg, " failed:%-3v", len(v.Failed))
+	//		fmt.Fprintf(&msg, " errored:%-3v", len(v.Errored))
+	//		fmt.Fprintln(&msg)
+	//	}
+	//
+	//	log.Printf("%v", string(msg.Bytes()))
 }
 
 func (l *Local) Compare(permissions []types.Permissions) error {
-	log.Printf("Comparing ACL")
-
-	devices := []*uhppote.Device{}
-	for _, v := range l.api.Uhppote.DeviceList() {
-		devices = append(devices, v)
-	}
-
-	current, err := acl.GetACL(l.api.Uhppote, devices)
-	if err != nil {
-		return err
-	}
-
-	access, err := consolidate(permissions)
-	if err != nil {
-		return err
-	} else if access == nil {
-		return fmt.Errorf("Invalid ACL from permissions: %v", access)
-	}
-
-	compare, err := acl.Compare(*access, current)
-	if err != nil {
-		return err
-	} else if compare == nil {
-		return fmt.Errorf("Invalid ACL compare report: %v", compare)
-	}
-
-	diff := acl.SystemDiff(compare)
-	report := diff.Consolidate()
-	if report == nil {
-		return fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
-	}
-
-	unchanged := len(report.Unchanged)
-	updated := len(report.Updated)
-	added := len(report.Added)
-	deleted := len(report.Deleted)
-
-	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
-
-	if updated+added+deleted > 0 {
-		for k, _ := range l.devices {
-			l.store(k, compare[k])
-		}
-	}
+	//	log.Printf("Comparing ACL")
+	//
+	//	devices := []*uhppote.Device{}
+	//	for _, v := range l.api.Uhppote.DeviceList() {
+	//		devices = append(devices, v)
+	//	}
+	//
+	//	current, err := acl.GetACL(l.api.Uhppote, devices)
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	access, err := consolidate(permissions)
+	//	if err != nil {
+	//		return err
+	//	} else if access == nil {
+	//		return fmt.Errorf("Invalid ACL from permissions: %v", access)
+	//	}
+	//
+	//	compare, err := acl.Compare(*access, current)
+	//	if err != nil {
+	//		return err
+	//	} else if compare == nil {
+	//		return fmt.Errorf("Invalid ACL compare report: %v", compare)
+	//	}
+	//
+	//	diff := acl.SystemDiff(compare)
+	//	report := diff.Consolidate()
+	//	if report == nil {
+	//		return fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
+	//	}
+	//
+	//	unchanged := len(report.Unchanged)
+	//	updated := len(report.Updated)
+	//	added := len(report.Added)
+	//	deleted := len(report.Deleted)
+	//
+	//	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
+	//
+	//	if updated+added+deleted > 0 {
+	//		for k, _ := range l.devices {
+	//			l.store(k, compare[k])
+	//		}
+	//	}
 
 	return nil
 }
 
-func (l *Local) refresh() {
+func (l *Local) Refresh() {
 	list := map[uint32]struct{}{}
-	for k, _ := range l.devices {
+	for k, _ := range l.Devices {
 		list[k] = struct{}{}
 	}
 
@@ -253,11 +252,11 @@ func (l *Local) store(id uint32, info interface{}) {
 
 	defer l.guard.Unlock()
 
-	if l.cache == nil {
-		l.cache = map[uint32]device{}
+	if l.Cache == nil {
+		l.Cache = map[uint32]device{}
 	}
 
-	cached, ok := l.cache[id]
+	cached, ok := l.Cache[id]
 	if !ok {
 		cached = device{}
 	}
@@ -267,7 +266,7 @@ func (l *Local) store(id uint32, info interface{}) {
 	switch v := info.(type) {
 	case uhppoted.GetDeviceResponse:
 		port := 60000
-		if d, ok := l.devices[id]; ok {
+		if d, ok := l.Devices[id]; ok {
 			port = d.Port
 		}
 
@@ -297,5 +296,5 @@ func (l *Local) store(id uint32, info interface{}) {
 		}
 	}
 
-	l.cache[id] = cached
+	l.Cache[id] = cached
 }
