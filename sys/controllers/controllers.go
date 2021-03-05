@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
@@ -15,7 +16,7 @@ import (
 )
 
 type Controllers struct {
-	File        string        `json:"-"`
+	file        string        `json:"-"`
 	Controllers []*Controller `json:"controllers"`
 	Local       *Local        `json:"local"`
 }
@@ -31,7 +32,7 @@ func NewControllers() Controllers {
 	}
 }
 
-func (c *Controllers) Init(file string) error {
+func (c *Controllers) Load(file string) error {
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
@@ -42,10 +43,54 @@ func (c *Controllers) Init(file string) error {
 		return err
 	}
 
-	c.File = file
+	c.file = file
 	c.Local.Init(c.Controllers)
 
 	return nil
+}
+
+func (c *Controllers) Save() error {
+	if c == nil {
+		return nil
+	}
+
+	if err := validate(*c); err != nil {
+		return err
+	}
+
+	if err := scrub(c); err != nil {
+		return err
+	}
+
+	if c.file == "" {
+		return nil
+	}
+
+	b, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-controllers.json")
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(b); err != nil {
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(c.file), 0770); err != nil {
+		return err
+	}
+
+	return os.Rename(tmp.Name(), c.file)
 }
 
 func (c *Controllers) Print() {
@@ -60,6 +105,7 @@ func (c *Controllers) Refresh() {
 
 func (c *Controllers) Clone() *Controllers {
 	shadow := Controllers{
+		file:        c.file,
 		Controllers: make([]*Controller, len(c.Controllers)),
 		Local:       &Local{},
 	}
@@ -147,4 +193,46 @@ func Export(file string, controllers []*Controller, doors map[string]types.Door)
 	}
 
 	return os.Rename(tmp.Name(), file)
+}
+
+func (c *Controllers) Validate() error {
+	if c != nil {
+		return validate(*c)
+	}
+
+	return nil
+}
+
+func validate(c Controllers) error {
+	devices := map[uint32]string{}
+
+	for _, r := range c.Controllers {
+		if r.OID == "" {
+			return &types.HttpdError{
+				Status: http.StatusBadRequest,
+				Err:    fmt.Errorf("Invalid controller OID"),
+				Detail: fmt.Errorf("Invalid controller OID (%v)", r.OID),
+			}
+		}
+
+		if r.DeviceID != nil && *r.DeviceID != 0 {
+			id := *r.DeviceID
+
+			if rid, ok := devices[id]; ok {
+				return &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Duplicate controller ID (%v)", id),
+					Detail: fmt.Errorf("controller %v: duplicate device ID in records %v and %v", id, rid, r.OID),
+				}
+			}
+
+			devices[id] = r.OID
+		}
+	}
+
+	return nil
+}
+
+func scrub(c *Controllers) error {
+	return nil
 }

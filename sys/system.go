@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
@@ -75,7 +73,7 @@ func init() {
 }
 
 func Init(conf, controllers, doors string, cards db.DB, trail audit.Trail) error {
-	sys.controllers.Init(controllers)
+	sys.controllers.Load(controllers)
 
 	bytes, err := ioutil.ReadFile(doors)
 	if err != nil {
@@ -199,7 +197,7 @@ loop:
 		}
 	}
 
-	if err := save(shadow, sys.controllers.File); err != nil {
+	if err := save(shadow); err != nil {
 		return nil, err
 	}
 
@@ -331,73 +329,22 @@ func (s *system) delete(shadow *controllers.Controllers, c controllers.Controlle
 	return nil, nil
 }
 
-func save(d *controllers.Controllers, file string) error {
-	if err := validate(d); err != nil {
+func save(c *controllers.Controllers) error {
+	if err := validate(c); err != nil {
 		return err
 	}
 
-	if err := scrub(d); err != nil {
-		return err
-	}
-
-	if file == "" {
-		return nil
-	}
-
-	b, err := json.MarshalIndent(d, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-system.json")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), file)
+	return c.Save()
 }
 
 func validate(d *controllers.Controllers) error {
-	devices := map[uint32]string{}
+	if err := d.Validate(); err != nil {
+		return err
+	}
+
 	doors := map[string]string{}
 
 	for _, r := range d.Controllers {
-		if r.OID == "" {
-			return &types.HttpdError{
-				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Invalid controller OID"),
-				Detail: fmt.Errorf("Invalid controller OID (%v)", r.OID),
-			}
-		}
-
-		if r.DeviceID != nil && *r.DeviceID != 0 {
-			id := *r.DeviceID
-
-			if rid, ok := devices[id]; ok {
-				return &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Duplicate controller ID (%v)", id),
-					Detail: fmt.Errorf("controller %v: duplicate device ID in records %v and %v", id, rid, r.OID),
-				}
-			}
-
-			devices[id] = r.OID
-		}
-
 		for _, v := range r.Doors {
 			if v != "" {
 				if _, ok := sys.doors.Doors[v]; !ok {
@@ -421,10 +368,6 @@ func validate(d *controllers.Controllers) error {
 		}
 	}
 
-	return nil
-}
-
-func scrub(d *controllers.Controllers) error {
 	return nil
 }
 
