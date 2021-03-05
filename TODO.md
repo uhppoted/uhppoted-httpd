@@ -9,7 +9,12 @@
 - [ ] Menu pops up when just vaguely over area
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
-- [ ] sysinfo
+- [ ] system
+      - refactoring
+        -- segfault if sys.controllers.Init() is not invoked
+        -- move add/update/delete/save to controllers
+        -- move db under system as 'cards'
+
       - update actual controllers address/datetime
       - task queue
 

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -14,6 +15,7 @@ import (
 )
 
 type Controllers struct {
+	File        string        `json:"-"`
 	Controllers []*Controller `json:"controllers"`
 	Local       *Local        `json:"local"`
 }
@@ -26,6 +28,29 @@ func NewControllers() Controllers {
 		Local: &Local{
 			Devices: map[uint32]types.Address{},
 		},
+	}
+}
+
+func (c *Controllers) Init(file string) error {
+	bytes, err := ioutil.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(bytes, c)
+	if err != nil {
+		return err
+	}
+
+	c.File = file
+	c.Local.Init(c.Controllers)
+
+	return nil
+}
+
+func (c *Controllers) Print() {
+	if b, err := json.MarshalIndent(c, "", "  "); err == nil {
+		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
 	}
 }
 

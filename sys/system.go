@@ -26,7 +26,6 @@ import (
 type system struct {
 	sync.RWMutex
 	conf  string
-	file  string
 	doors struct {
 		Doors map[string]types.Door `json:"doors"`
 	}
@@ -76,17 +75,9 @@ func init() {
 }
 
 func Init(conf, controllers, doors string, cards db.DB, trail audit.Trail) error {
-	bytes, err := ioutil.ReadFile(controllers)
-	if err != nil {
-		return err
-	}
+	sys.controllers.Init(controllers)
 
-	err = json.Unmarshal(bytes, &sys.controllers)
-	if err != nil {
-		return err
-	}
-
-	bytes, err = ioutil.ReadFile(doors)
+	bytes, err := ioutil.ReadFile(doors)
 	if err != nil {
 		return err
 	}
@@ -97,15 +88,10 @@ func Init(conf, controllers, doors string, cards db.DB, trail audit.Trail) error
 	}
 
 	sys.conf = conf
-	sys.file = controllers
 	sys.cards = cards
 	sys.audit = trail
-	sys.controllers.Local.Init(sys.controllers.Controllers)
 
-	//	if b, err := json.MarshalIndent(sys.controllers, "", "  "); err == nil {
-	//		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
-	//	}
-	//
+	sys.controllers.Print()
 	//	if b, err := json.MarshalIndent(sys.doors, "", "  "); err == nil {
 	//		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
 	//	}
@@ -117,34 +103,6 @@ func System() interface{} {
 	sys.RLock()
 
 	defer sys.RUnlock()
-
-	//	devices := []controllers.Controller{}
-	//	for _, v := range sys.controllers.Controllers {
-	//		devices = append(devices, *v)
-	//	}
-	//
-	//loop:
-	//	for k, _ := range sys.controllers.Local.Cache {
-	//		for _, c := range devices {
-	//			if c.DeviceID != nil && *c.DeviceID == k {
-	//				continue loop
-	//			}
-	//		}
-	//
-	//		// ... include 'unconfigured' controllers
-	//		id := k
-	//		devices = append(devices, controllers.Controller{
-	//			DeviceID: &id,
-	//			Created:  time.Now(),
-	//		})
-	//	}
-	//
-	//	controllers := []controller{}
-	//	for _, c := range devices {
-	//		controllers = append(controllers, merge(c))
-	//	}
-	//
-	//	sort.SliceStable(controllers, func(i, j int) bool { return controllers[i].Created.Before(controllers[j].Created) })
 
 	controllers := controllers.Consolidate(sys.controllers.Local, sys.controllers.Controllers)
 
@@ -174,7 +132,7 @@ func UpdateACL(permissions []types.Permissions) {
 	}
 }
 
-func Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()
 
 	defer sys.Unlock()
@@ -241,7 +199,7 @@ loop:
 		}
 	}
 
-	if err := save(shadow, sys.file); err != nil {
+	if err := save(shadow, sys.controllers.File); err != nil {
 		return nil, err
 	}
 
