@@ -12,11 +12,11 @@ import (
 	"github.com/uhppoted/uhppoted-api/config"
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	provider "github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/db/grule"
-	"github.com/uhppoted/uhppoted-httpd/db/memdb"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 	auth "github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
+	"github.com/uhppoted/uhppoted-httpd/system/cards/grule"
+	"github.com/uhppoted/uhppoted-httpd/system/cards/memdb"
 )
 
 func (cmd *Run) Name() string {
