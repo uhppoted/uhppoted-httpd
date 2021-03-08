@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/uhppoted/uhppoted-api/config"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -95,6 +96,74 @@ func (c *Controllers) Print() {
 	if b, err := json.MarshalIndent(c, "", "  "); err == nil {
 		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
 	}
+}
+
+func (cc *Controllers) Add(c Controller) (*Controller, error) {
+	record := c.Clone()
+
+loop:
+	for next := 1; ; next++ {
+		oid := fmt.Sprintf("0.1.1.%v", next)
+		for _, v := range cc.Controllers {
+			if v.OID == oid {
+				continue loop
+			}
+		}
+
+		record.OID = oid
+		break
+	}
+
+	record.Created = time.Now()
+
+	cc.Controllers = append(cc.Controllers, record)
+
+	return record, nil
+}
+
+func (cc *Controllers) Update(c Controller) (*Controller, error) {
+	for _, record := range cc.Controllers {
+		if record.OID == c.OID {
+			if c.Name != nil {
+				record.Name = c.Name
+			}
+
+			if c.DeviceID != nil && *c.DeviceID != 0 {
+				id := *c.DeviceID
+				record.DeviceID = &id
+			}
+
+			if c.IP != nil {
+				record.IP = c.IP.Clone()
+			}
+
+			if c.TimeZone != nil {
+				tz := *c.TimeZone
+				record.TimeZone = &tz
+			}
+
+			if c.Doors != nil {
+				for k, v := range c.Doors {
+					record.Doors[k] = v
+				}
+			}
+
+			return record, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Invalid controller OID '%v'", c.OID)
+}
+
+func (cc *Controllers) Delete(c Controller) (*Controller, error) {
+	for i, record := range cc.Controllers {
+		if record.OID == c.OID {
+			cc.Controllers = append(cc.Controllers[:i], cc.Controllers[i+1:]...)
+			return &c, nil
+		}
+	}
+
+	return nil, nil
 }
 
 func (c *Controllers) Refresh() {

@@ -11,10 +11,10 @@
 
 - [ ] system
       - refactoring
-        -- move add/update/delete to controllers
         -- move db under system as 'cards'
 
       - page layout without sys.controllers.Init() is a mess
+      - deleting 201020304 makes it unfindable until restart
       - update actual controllers address/datetime
       - task queue
 

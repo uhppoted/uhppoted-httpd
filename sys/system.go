@@ -213,10 +213,8 @@ loop:
 }
 
 func (s *system) add(shadow *controllers.Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
-	record := c.Clone()
-
 	if auth != nil {
-		if err := auth.CanAddController(record); err != nil {
+		if err := auth.CanAddController(&c); err != nil {
 			return nil, &types.HttpdError{
 				Status: http.StatusUnauthorized,
 				Err:    fmt.Errorf("Not authorized to add controller"),
@@ -225,22 +223,11 @@ func (s *system) add(shadow *controllers.Controllers, c controllers.Controller, 
 		}
 	}
 
-loop:
-	for next := 1; ; next++ {
-		oid := fmt.Sprintf("0.1.1.%v", next)
-		for _, v := range shadow.Controllers {
-			if v.OID == oid {
-				continue loop
-			}
-		}
-
-		record.OID = oid
-		break
+	record, err := shadow.Add(c)
+	if err != nil {
+		return nil, err
 	}
 
-	record.Created = time.Now()
-
-	shadow.Controllers = append(shadow.Controllers, record)
 	s.log("add", record, auth)
 
 	return record, nil
@@ -256,77 +243,53 @@ func (s *system) update(shadow *controllers.Controllers, c controllers.Controlle
 		}
 	}
 
-	for _, record := range shadow.Controllers {
-		if record.OID == c.OID {
-			if c.Name != nil {
-				record.Name = c.Name
-			}
-
-			if c.DeviceID != nil && *c.DeviceID != 0 {
-				id := *c.DeviceID
-				record.DeviceID = &id
-			}
-
-			if c.IP != nil {
-				record.IP = c.IP.Clone()
-			}
-
-			if c.TimeZone != nil {
-				tz := *c.TimeZone
-				record.TimeZone = &tz
-			}
-
-			if c.Doors != nil {
-				for k, v := range c.Doors {
-					record.Doors[k] = v
-				}
-			}
-
-			if auth != nil {
-				if err := auth.CanUpdateController(current, record); err != nil {
-					return nil, &types.HttpdError{
-						Status: http.StatusUnauthorized,
-						Err:    fmt.Errorf("Not authorized to update controller"),
-						Detail: err,
-					}
-				}
-			}
-
-			s.log("update", map[string]interface{}{"original": current, "updated": record}, auth)
-
-			return record, nil
+	record, err := shadow.Update(c)
+	if err != nil {
+		return nil, &types.HttpdError{
+			Status: http.StatusBadRequest,
+			Err:    err,
+			Detail: fmt.Errorf("Invalid 'update' request (%w)", err),
 		}
 	}
 
-	return nil, &types.HttpdError{
-		Status: http.StatusBadRequest,
-		Err:    fmt.Errorf("Invalid controller OID"),
-		Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid controller OID '%v'", c.OID)),
+	if auth != nil {
+		if err := auth.CanUpdateController(current, record); err != nil {
+			return nil, &types.HttpdError{
+				Status: http.StatusUnauthorized,
+				Err:    fmt.Errorf("Not authorized to update controller"),
+				Detail: err,
+			}
+		}
 	}
+
+	s.log("update", map[string]interface{}{"original": current, "updated": record}, auth)
+
+	return record, nil
 }
 
 func (s *system) delete(shadow *controllers.Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
-	for i, record := range shadow.Controllers {
-		if record.OID == c.OID {
-			if auth != nil {
-				if err := auth.CanDeleteController(record); err != nil {
-					return nil, &types.HttpdError{
-						Status: http.StatusUnauthorized,
-						Err:    fmt.Errorf("Not authorized to delete controller"),
-						Detail: err,
-					}
-				}
-			}
-
-			shadow.Controllers = append(shadow.Controllers[:i], shadow.Controllers[i+1:]...)
-
-			s.log("delete", record, auth)
-
-			return &c, nil
+	record, err := shadow.Delete(c)
+	if err != nil {
+		return nil, &types.HttpdError{
+			Status: http.StatusUnauthorized,
+			Err:    err,
+			Detail: fmt.Errorf("Invalid 'update' request (%w)", err),
 		}
 	}
 
-	return nil, nil
+	if record != nil && auth != nil {
+		if err := auth.CanDeleteController(record); err != nil {
+			return nil, &types.HttpdError{
+				Status: http.StatusUnauthorized,
+				Err:    fmt.Errorf("Not authorized to delete controller"),
+				Detail: fmt.Errorf("Invalid 'update' request (%w)", fmt.Errorf("Not authorized to delete controller")),
+			}
+		}
+	}
+
+	s.log("delete", record, auth)
+
+	return record, nil
 }
 
 func save(c *controllers.Controllers) error {
