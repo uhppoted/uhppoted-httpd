@@ -28,7 +28,7 @@ type system struct {
 		Doors map[string]types.Door `json:"doors"`
 	}
 	controllers controllers.Controllers
-	cards       db.DB
+	cards       cards.Cards
 	audit       audit.Trail
 }
 
@@ -72,7 +72,7 @@ func init() {
 	}()
 }
 
-func Init(conf, controllers, doors string, cards db.DB, trail audit.Trail) error {
+func Init(conf, controllers, doors string, cards cards.Cards, trail audit.Trail) error {
 	sys.controllers.Load(controllers)
 
 	bytes, err := ioutil.ReadFile(doors)

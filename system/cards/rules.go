@@ -1,4 +1,4 @@
-package db
+package cards
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/types"

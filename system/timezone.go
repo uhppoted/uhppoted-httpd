@@ -6,51 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
-
-type datetime struct {
-	DateTime *types.DateTime
-	Status   status
-}
-
-func (dt datetime) String() string {
-	if dt.DateTime == nil || dt.Status == StatusUnknown {
-		return ""
-	}
-
-	return dt.DateTime.Format("2006-01-02 15:04:05 MST")
-}
-
-type ip struct {
-	Configured *types.Address
-	Address    *types.Address
-	Status     status
-}
-
-type cards struct {
-	Records records
-	Status  status
-}
-
-func (c cards) String() string {
-	if c.Status == StatusUnknown {
-		return ""
-	}
-
-	return fmt.Sprintf("%v", c.Records)
-}
-
-type records uint32
-
-func (r *records) String() string {
-	if r != nil {
-		return fmt.Sprintf("%v", uint32(*r))
-	}
-
-	return ""
-}
 
 // Ref. https://github.com/golang/go/issues/12388
 func timezone(s string) (*time.Location, error) {

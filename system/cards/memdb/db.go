@@ -21,7 +21,7 @@ type fdb struct {
 	file  string
 	data  data
 	audit audit.Trail
-	rules db.IRules
+	rules cards.IRules
 }
 
 type data struct {
@@ -53,7 +53,7 @@ func (d *data) copy() *data {
 	return &shadow
 }
 
-func NewDB(file string, rules db.IRules, trail audit.Trail) (*fdb, error) {
+func NewDB(file string, rules cards.IRules, trail audit.Trail) (*fdb, error) {
 	f := fdb{
 		file: file,
 		data: data{

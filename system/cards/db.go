@@ -1,11 +1,11 @@
-package db
+package cards
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type DB interface {
+type Cards interface {
 	Groups() types.Groups
 	CardHolders() types.CardHolders
 
