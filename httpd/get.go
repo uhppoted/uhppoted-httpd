@@ -13,9 +13,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/uhppoted/uhppoted-httpd/httpd/cardholders"
-	"github.com/uhppoted/uhppoted-httpd/httpd/system"
-	sys "github.com/uhppoted/uhppoted-httpd/sys"
+	"github.com/uhppoted/uhppoted-httpd/httpd/cards"
+	"github.com/uhppoted/uhppoted-httpd/httpd/controllers"
+	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
 const GZIP_MINIMUM = 16384
@@ -66,11 +66,11 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 
 	switch path {
 	case "/system":
-		system.Fetch(w, r, d.timeout)
+		controllers.Fetch(w, r, d.timeout)
 		return
 
 	case "/cardholders":
-		cardholders.Fetch(w, r, d.timeout)
+		cards.Fetch(w, r, d.timeout)
 		return
 	}
 
@@ -94,9 +94,9 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 	page := map[string]interface{}{}
 
 	page["context"] = context
-	page["system"] = sys.System()
-	page["cards"] = sys.Cards()
-	page["groups"] = sys.Groups()
+	page["system"] = system.System()
+	page["cards"] = system.Cards()
+	page["groups"] = system.Groups()
 
 	info, err := os.Stat(translation)
 	if err != nil && !os.IsNotExist(err) {

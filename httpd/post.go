@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/uhppoted/uhppoted-httpd/httpd/cardholders"
-	"github.com/uhppoted/uhppoted-httpd/httpd/system"
+	"github.com/uhppoted/uhppoted-httpd/httpd/cards"
+	"github.com/uhppoted/uhppoted-httpd/httpd/controllers"
 )
 
 func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +32,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error executing request", http.StatusInternalServerError)
 		}
 
-		system.Post(w, r, d.timeout, auth)
+		controllers.Post(w, r, d.timeout, auth)
 		return
 	}
 
@@ -42,7 +42,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error executing request", http.StatusInternalServerError)
 		}
 
-		cardholders.Post(w, r, d.timeout, auth)
+		cards.Post(w, r, d.timeout, auth)
 		return
 	}
 

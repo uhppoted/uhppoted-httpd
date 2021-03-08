@@ -16,7 +16,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/db/memdb"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 	auth "github.com/uhppoted/uhppoted-httpd/httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/sys"
+	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
 func (cmd *Run) Name() string {

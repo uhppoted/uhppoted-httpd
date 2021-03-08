@@ -11,7 +11,6 @@
 
 - [ ] system
       - refactoring
-        -- move db under system as 'cards'
         -- merge back into master
 
       - page layout without sys.controllers.Init() is a mess
