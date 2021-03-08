@@ -10,9 +10,6 @@
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 
 - [ ] system
-      - refactoring
-        -- merge back into master
-
       - page layout without sys.controllers.Init() is a mess
       - deleting 201020304 makes it unfindable until restart
       - update actual controllers address/datetime
