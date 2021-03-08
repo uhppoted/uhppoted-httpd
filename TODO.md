@@ -11,10 +11,10 @@
 
 - [ ] system
       - refactoring
-        -- segfault if sys.controllers.Init() is not invoked
         -- move add/update/delete to controllers
         -- move db under system as 'cards'
 
+      - page layout without sys.controllers.Init() is a mess
       - update actual controllers address/datetime
       - task queue
 

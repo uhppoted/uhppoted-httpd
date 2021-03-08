@@ -43,6 +43,19 @@ const (
 
 const WINDOW = 300 // 5 minutes
 
+func NewLocal() *Local {
+	u := uhppote.UHPPOTE{}
+	local := Local{
+		Devices: map[uint32]types.Address{},
+		api: uhppoted.UHPPOTED{
+			Uhppote: &u,
+			Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
+		},
+	}
+
+	return &local
+}
+
 // TODO interim implemenation (need to split static/dynamic data)
 func (l *Local) clone() *Local {
 	return l

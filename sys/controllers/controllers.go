@@ -26,9 +26,7 @@ var guard sync.Mutex
 func NewControllers() Controllers {
 	return Controllers{
 		Controllers: []*Controller{},
-		Local: &Local{
-			Devices: map[uint32]types.Address{},
-		},
+		Local:       NewLocal(),
 	}
 }
 
