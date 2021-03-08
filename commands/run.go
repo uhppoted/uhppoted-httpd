@@ -113,7 +113,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 
-	h.Run(db)
+	h.Run()
 
 	return nil
 }

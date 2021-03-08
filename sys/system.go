@@ -120,6 +120,14 @@ func System() interface{} {
 	}
 }
 
+func Cards() interface{} {
+	return sys.cards.CardHolders()
+}
+
+func Groups() interface{} {
+	return sys.cards.Groups()
+}
+
 func UpdateACL(permissions []types.Permissions) {
 	if acl, err := consolidate(permissions); err != nil {
 		warn(err)
@@ -210,6 +218,14 @@ loop:
 	sys.controllers = *shadow
 
 	return list, nil
+}
+
+func UpdateCardHolders(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+	return sys.cards.Post(m, auth)
+}
+
+func ACL() ([]types.Permissions, error) {
+	return sys.cards.ACL()
 }
 
 func (s *system) add(shadow *controllers.Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {

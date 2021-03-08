@@ -11,12 +11,11 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/sys"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, db db.DB, auth auth.OpAuth) {
+func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, auth auth.OpAuth) {
 	ch := make(chan error)
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 
@@ -72,7 +71,7 @@ func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, db db.D
 			return
 		}
 
-		updated, err := db.Post(body, auth)
+		updated, err := system.UpdateCardHolders(body, auth)
 		if err != nil {
 			ch <- err
 			return
@@ -131,7 +130,7 @@ func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, db db.D
 		}
 	}
 
-	acl, err := db.ACL()
+	acl, err := system.ACL()
 	if err != nil {
 		warn(err)
 		return

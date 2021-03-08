@@ -7,7 +7,7 @@ import (
 
 type DB interface {
 	Groups() types.Groups
-	CardHolders() (types.CardHolders, error)
+	CardHolders() types.CardHolders
 
 	ACL() ([]types.Permissions, error)
 	Post(map[string]interface{}, auth.OpAuth) (interface{}, error)

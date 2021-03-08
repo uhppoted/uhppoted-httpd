@@ -70,7 +70,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		return
 
 	case "/cardholders":
-		cardholders.Fetch(d.db, w, r, d.timeout)
+		cardholders.Fetch(w, r, d.timeout)
 		return
 	}
 
@@ -95,7 +95,8 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 
 	page["context"] = context
 	page["system"] = sys.System()
-	page["db"] = d.db
+	page["cards"] = sys.Cards()
+	page["groups"] = sys.Groups()
 
 	info, err := os.Stat(translation)
 	if err != nil && !os.IsNotExist(err) {

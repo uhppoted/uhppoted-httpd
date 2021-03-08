@@ -70,11 +70,11 @@
                   <th class="name       topleft">Name</th>
                   <th class="cardnumber colheader">Card Number</th>
                   <th class="from       colheader">From</th>
-                  <th class="to         colheader">To</th>{{range .db.Groups}}
+                  <th class="to         colheader">To</th>{{range .groups}}
                   <th class="grouph     colheader">{{.Name}}</th>{{else}}</th>{{end}}
                 </tr>
               </thead>
-              <tbody>{{range $cardholder := .db.CardHolders}}
+              <tbody>{{range $cardholder := .cards}}
                  {{$cid := $cardholder.ID}}
                  <tr id="{{$cid}}">
                   <td class="rowheader" style="display:flex; flex-direction:row;">
@@ -132,7 +132,7 @@
                            required />
                   </td>
 
-                  {{range $.db.Groups}}
+                  {{range $.groups}}
                   <td>
                     <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
                     <label class="group">
@@ -189,7 +189,7 @@
   <script>
     var constants = {
       theme: {{$.context.Theme}},
-      groups: [ {{range .db.Groups}}{{.ID}},{{end}} ]
+      groups: [ {{range .groups}}{{.ID}},{{end}} ]
     }
   </script>
 

@@ -81,7 +81,7 @@ func (d *fdb) Groups() types.Groups {
 	return d.data.Tables.Groups
 }
 
-func (d *fdb) CardHolders() (types.CardHolders, error) {
+func (d *fdb) CardHolders() types.CardHolders {
 	d.RLock()
 
 	defer d.RUnlock()
@@ -92,7 +92,7 @@ func (d *fdb) CardHolders() (types.CardHolders, error) {
 		list[cid] = record.Clone()
 	}
 
-	return list, nil
+	return list
 }
 
 func (d *fdb) ACL() ([]types.Permissions, error) {

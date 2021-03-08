@@ -18,7 +18,6 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/pkg"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
-	"github.com/uhppoted/uhppoted-httpd/db"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
@@ -44,7 +43,6 @@ type HTTPD struct {
 type dispatcher struct {
 	root  string
 	fs    http.Handler
-	db    db.DB
 	auth  auth.IAuth
 	grule struct {
 		//	acl    *ast.KnowledgeLibrary
@@ -58,7 +56,7 @@ const (
 	SettingsCookie = "uhppoted-settings"
 )
 
-func (h *HTTPD) Run(db db.DB) {
+func (h *HTTPD) Run() {
 	fs := httpdFileSystem{
 		FileSystem: http.Dir(h.Dir),
 	}
@@ -82,7 +80,6 @@ func (h *HTTPD) Run(db db.DB) {
 	d := dispatcher{
 		root:    h.Dir,
 		fs:      http.FileServer(fs),
-		db:      db,
 		auth:    h.AuthProvider,
 		grule:   rules,
 		timeout: h.RequestTimeout,

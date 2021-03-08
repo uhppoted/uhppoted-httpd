@@ -12,6 +12,7 @@
 - [ ] system
       - refactoring
         -- move db under system as 'cards'
+        -- merge back into master
 
       - page layout without sys.controllers.Init() is a mess
       - deleting 201020304 makes it unfindable until restart
@@ -147,6 +148,7 @@
 
 ## TODO
 
+- [ ] Redesign using RDF/OWL triples ? e.g. https://github.com/severin-lemaignan/minimalkb
 - [ ] 'Macro' keys
 - [ ] Zootier input fields (e.g. https://css-tricks.com/float-labels-css)
 - [ ] [Gradient borders](https://css-tricks.com/gradient-borders-in-css/)

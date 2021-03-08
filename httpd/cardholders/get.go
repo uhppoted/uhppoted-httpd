@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/db"
+	"github.com/uhppoted/uhppoted-httpd/sys"
 )
 
-func Fetch(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Duration) {
+func Fetch(w http.ResponseWriter, r *http.Request, timeout time.Duration) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 
 	defer cancel()
@@ -31,12 +31,7 @@ func Fetch(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durati
 	var response interface{}
 
 	go func() {
-		list, err := db.CardHolders()
-		if err != nil {
-			warn(err)
-			http.Error(w, "Error retrieving card holders", http.StatusInternalServerError)
-			return
-		}
+		cards := system.Cards()
 
 		response = struct {
 			DB interface{} `json:"db"`
@@ -44,7 +39,7 @@ func Fetch(db db.DB, w http.ResponseWriter, r *http.Request, timeout time.Durati
 			DB: struct {
 				CardHolders interface{} `json:"cardholders"`
 			}{
-				CardHolders: list,
+				CardHolders: cards,
 			},
 		}
 

@@ -32,7 +32,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error executing request", http.StatusInternalServerError)
 		}
 
-		system.Post(w, r, d.timeout, d.db, auth)
+		system.Post(w, r, d.timeout, auth)
 		return
 	}
 
@@ -42,7 +42,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error executing request", http.StatusInternalServerError)
 		}
 
-		cardholders.Post(w, r, d.timeout, d.db, auth)
+		cardholders.Post(w, r, d.timeout, auth)
 		return
 	}
 
