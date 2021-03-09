@@ -7,9 +7,9 @@
 - [ ] Menu pops up when just vaguely over area
 - [ ] system
       - synchronize ACL after controller edit
-      - page layout without sys.controllers.Init() is a mess
       - deleting 201020304 makes it unfindable until restart
       - task queue
+      - address.String() should not include port if it's 60000
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core
