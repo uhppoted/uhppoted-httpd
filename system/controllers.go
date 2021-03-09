@@ -91,6 +91,13 @@ loop:
 
 	sys.controllers = *shadow
 
+	go func() {
+		info("Updating controllers from configuration")
+		if err := sys.controllers.Sync(); err != nil {
+			warn(err)
+		}
+	}()
+
 	return list, nil
 }
 
