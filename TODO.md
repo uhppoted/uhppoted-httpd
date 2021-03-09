@@ -2,17 +2,13 @@
 
 ### IN PROGRESS
 
-- [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
-- [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 - [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 - [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 - [ ] Menu pops up when just vaguely over area
-- [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
-
 - [ ] system
+      - update actual controllers address/datetime
       - page layout without sys.controllers.Init() is a mess
       - deleting 201020304 makes it unfindable until restart
-      - update actual controllers address/datetime
       - task queue
 
       - add controller name to uhppote-core
@@ -103,6 +99,9 @@
       - Colorways (for themes)
       - https://thenounproject.com
 
+- [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
+- [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
+
 - [ ] Fonts
 - [ ] favicon
       - convert text to paths and cleanup SVG
@@ -144,7 +143,10 @@
 
 ## TODO
 
-- [ ] Redesign using RDF/OWL triples ? e.g. https://github.com/severin-lemaignan/minimalkb
+- [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
+- [ ] Redesign using RDF/OWL triples ? 
+      - https://github.com/severin-lemaignan/minimalkb
+      - https://www.w3.org/TR/rdf11-primer/#section-triple
 - [ ] 'Macro' keys
 - [ ] Zootier input fields (e.g. https://css-tricks.com/float-labels-css)
 - [ ] [Gradient borders](https://css-tricks.com/gradient-borders-in-css/)
