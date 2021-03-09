@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-api/uhppoted"
@@ -292,4 +293,32 @@ func (l *Local) store(id uint32, info interface{}) {
 	}
 
 	l.Cache[id] = cached
+}
+
+func (l *Local) synchTime(c Controller) {
+	if c.DeviceID != nil {
+		device := uhppoted.DeviceID(*c.DeviceID)
+		location := time.Local
+
+		if c.TimeZone != nil {
+			timezone := *c.TimeZone
+			if tz, err := types.Timezone(timezone); err == nil && tz != nil {
+				location = tz
+			}
+		}
+
+		now := time.Now().In(location)
+		datetime := core.DateTime(now)
+
+		request := uhppoted.SetTimeRequest{
+			DeviceID: device,
+			DateTime: datetime,
+		}
+
+		if response, err := l.api.SetTime(request); err != nil {
+			log.Printf("ERROR %v", err)
+		} else if response != nil {
+			log.Printf("INFO  sychronized device-time %v %v", response.DeviceID, response.DateTime)
+		}
+	}
 }

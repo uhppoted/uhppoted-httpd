@@ -40,8 +40,7 @@ func (c *Controller) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-// TODO make internale once code shuffle is done
-func (c *Controller) Clone() *Controller {
+func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
 			ID:       c.ID,

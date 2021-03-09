@@ -1,4 +1,4 @@
-package system
+package types
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 )
 
 // Ref. https://github.com/golang/go/issues/12388
-func timezone(s string) (*time.Location, error) {
+func Timezone(s string) (*time.Location, error) {
 	utc, _ := time.LoadLocation("UTC")
 
 	if strings.TrimSpace(s) == "" {

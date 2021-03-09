@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
@@ -99,7 +98,7 @@ func (cc *Controllers) Print() {
 }
 
 func (cc *Controllers) Add(c Controller) (*Controller, error) {
-	record := c.Clone()
+	record := c.clone()
 
 loop:
 	for next := 1; ; next++ {
@@ -178,7 +177,7 @@ func (cc *Controllers) Clone() *Controllers {
 	}
 
 	for k, v := range cc.Controllers {
-		shadow.Controllers[k] = v.Clone()
+		shadow.Controllers[k] = v.clone()
 	}
 
 	shadow.Local = cc.Local.clone()
@@ -262,8 +261,12 @@ func Export(file string, controllers []*Controller, doors map[string]types.Door)
 	return os.Rename(tmp.Name(), file)
 }
 
-func (cc *Controllers) Sync() error {
-	return nil
+func (cc *Controllers) Sync() {
+	for _, c := range cc.Controllers {
+		if c != nil {
+			cc.Local.synchTime(*c)
+		}
+	}
 }
 
 func (cc *Controllers) Validate() error {
@@ -279,22 +282,14 @@ func validate(cc Controllers) error {
 
 	for _, c := range cc.Controllers {
 		if c.OID == "" {
-			return &types.HttpdError{
-				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Invalid controller OID"),
-				Detail: fmt.Errorf("Invalid controller OID (%v)", c.OID),
-			}
+			return fmt.Errorf("Invalid controller OID (%v)", c.OID)
 		}
 
 		if c.DeviceID != nil && *c.DeviceID != 0 {
 			id := *c.DeviceID
 
-			if cid, ok := devices[id]; ok {
-				return &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Duplicate controller ID (%v)", id),
-					Detail: fmt.Errorf("controller %v: duplicate device ID in records %v and %v", id, cid, c.OID),
-				}
+			if _, ok := devices[id]; ok {
+				return fmt.Errorf("Duplicate controller ID (%v)", id)
 			}
 
 			devices[id] = c.OID

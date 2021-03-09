@@ -93,9 +93,7 @@ loop:
 
 	go func() {
 		info("Updating controllers from configuration")
-		if err := sys.controllers.Sync(); err != nil {
-			warn(err)
-		}
+		sys.controllers.Sync()
 	}()
 
 	return list, nil
@@ -276,7 +274,7 @@ func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 		}
 
 		if r.DateTime != nil {
-			if tz, err := timezone(strings.TrimSpace(*r.DateTime)); err != nil {
+			if tz, err := types.Timezone(strings.TrimSpace(*r.DateTime)); err != nil {
 				return nil, err
 			} else {
 				tzs := tz.String()
