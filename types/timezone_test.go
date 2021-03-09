@@ -37,7 +37,7 @@ func TestTimezone(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		tz, err := timezone(v.String)
+		tz, err := Timezone(v.String)
 		if err != nil {
 			t.Fatalf("Unexpected error: %v", err)
 		}
