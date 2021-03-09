@@ -6,7 +6,6 @@
 - [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 - [ ] Menu pops up when just vaguely over area
 - [ ] system
-      - make controller address non-editable (just too many edge cases)
       - synchronize ACL after controller edit
       - page layout without sys.controllers.Init() is a mess
       - deleting 201020304 makes it unfindable until restart
