@@ -93,7 +93,18 @@ loop:
 
 	go func() {
 		info("Updating controllers from configuration")
+
 		sys.controllers.Sync()
+
+		if permissions, err := ACL(); err != nil {
+			warn(err)
+		} else if acl, err := consolidate(permissions); err != nil {
+			warn(err)
+		} else if acl == nil {
+			warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
+		} else {
+			sys.controllers.Local.Update(*acl)
+		}
 	}()
 
 	return list, nil

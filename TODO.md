@@ -6,9 +6,9 @@
 - [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 - [ ] Menu pops up when just vaguely over area
 - [ ] system
-      - synchronize ACL after controller edit
-      - deleting 201020304 makes it unfindable until restart
       - task queue
+      - move invocation of UpdateACL out of httpd/cards to system/cards
+      - uhppote-cli get-acl: use default door name/number if blank! (because set to unused by httpd)
       - address.String() should not include port if it's 60000
 
       - add controller name to uhppote-core
@@ -16,7 +16,6 @@
       - think through ID/OID and add/edit/update operations
 
       - validate Local::Device timezone on initialization
-      - edit datetime (?)
       - cache expiry
       - Use sync.Map for cache
       - limit number of pending 'update' requests (e.g. if device is not responding)
