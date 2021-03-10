@@ -20,6 +20,17 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
+var sys = system{
+	doors: struct {
+		Doors map[string]types.Door `json:"doors"`
+	}{
+		Doors: map[string]types.Door{},
+	},
+
+	controllers: controllers.NewControllers(),
+	taskQ:       NewTaskQ(),
+}
+
 type system struct {
 	sync.RWMutex
 	conf  string
@@ -29,34 +40,21 @@ type system struct {
 	controllers controllers.Controllers
 	cards       cards.Cards
 	audit       audit.Trail
+	taskQ       TaskQ
 }
 
 func (s *system) refresh() {
-	if s != nil {
-		go s.controllers.Refresh()
-
-		go func() {
-			if permissions, err := s.cards.ACL(); err != nil {
-				warn(err)
-			} else if acl, err := consolidate(permissions); err != nil {
-				warn(err)
-			} else if acl == nil {
-				warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
-			} else if err := s.controllers.Local.Compare(*acl); err != nil {
-				warn(err)
-			}
-		}()
+	if s == nil {
+		return
 	}
-}
 
-var sys = system{
-	doors: struct {
-		Doors map[string]types.Door `json:"doors"`
-	}{
-		Doors: map[string]types.Door{},
-	},
+	sys.taskQ.Add(Task{
+		f: s.controllers.Refresh,
+	})
 
-	controllers: controllers.NewControllers(),
+	sys.taskQ.Add(Task{
+		f: CompareACL,
+	})
 }
 
 func init() {
@@ -139,15 +137,27 @@ func UpdateACL() {
 	}
 }
 
+func CompareACL() {
+	if permissions, err := sys.cards.ACL(); err != nil {
+		warn(err)
+	} else if acl, err := consolidate(permissions); err != nil {
+		warn(err)
+	} else if acl == nil {
+		warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
+	} else if err := sys.controllers.Local.Compare(*acl); err != nil {
+		warn(err)
+	}
+}
+
 func UpdateCardHolders(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	response, err := sys.cards.Post(m, auth)
 	if err != nil {
 		return nil, err
 	}
 
-	go func() {
-		UpdateACL()
-	}()
+	sys.taskQ.Add(Task{
+		f: UpdateACL,
+	})
 
 	return response, nil
 }

@@ -91,11 +91,13 @@ loop:
 
 	sys.controllers = *shadow
 
-	go func() {
-		info("Updating controllers from configuration")
-		sys.controllers.Sync()
-		UpdateACL()
-	}()
+	sys.taskQ.Add(Task{
+		f: func() {
+			info("Updating controllers from configuration")
+			sys.controllers.Sync()
+			UpdateACL()
+		},
+	})
 
 	return list, nil
 }
