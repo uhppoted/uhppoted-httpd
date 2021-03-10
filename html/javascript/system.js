@@ -270,7 +270,6 @@ function refresh (sys) {
 function updated (controllers) {
   if (controllers) {
     controllers.forEach((record) => {
-      console.log('>>', record)
       const id = record.ID
       const row = document.getElementById(id)
 
@@ -310,18 +309,17 @@ function updated (controllers) {
         update(document.getElementById(id + '-datetime'), datetime, statusToString(record.SystemTime.Status))
       }
 
-      if (record.doors) {
-        update(document.getElementById(id + '-door-1'), record.doors[1])
-        update(document.getElementById(id + '-door-2'), record.doors[2])
-        update(document.getElementById(id + '-door-3'), record.doors[3])
-        update(document.getElementById(id + '-door-4'), record.doors[4])
+      if (record.Doors) {
+        update(document.getElementById(id + '-door-1'), record.Doors[1])
+        update(document.getElementById(id + '-door-2'), record.Doors[2])
+        update(document.getElementById(id + '-door-3'), record.Doors[3])
+        update(document.getElementById(id + '-door-4'), record.Doors[4])
       }
     })
   }
 }
 
 function deleted (list) {
-  console.log('updated', list)
   const tbody = document.getElementById('controllers').querySelector('table tbody')
 
   if (tbody && list) {
