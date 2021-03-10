@@ -130,11 +130,11 @@ func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, auth au
 		}
 	}
 
-	acl, err := system.ACL()
-	if err != nil {
-		warn(err)
-		return
-	}
-
-	system.UpdateACL(acl)
+	//	acl, err := system.ACL()
+	//	if err != nil {
+	//		warn(err)
+	//		return
+	//	}
+	//
+	//	system.UpdateACL(acl)
 }

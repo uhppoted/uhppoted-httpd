@@ -7,8 +7,8 @@
 - [ ] Menu pops up when just vaguely over area
 - [ ] system
       - task queue
-      - move invocation of UpdateACL out of httpd/cards to system/cards
-      - uhppote-cli get-acl: use default door name/number if blank! (because set to unused by httpd)
+      - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
+      - set door to -,update, set back to Gryffindor => not marked as modified
       - address.String() should not include port if it's 60000
 
       - add controller name to uhppote-core

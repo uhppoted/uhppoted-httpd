@@ -127,8 +127,10 @@ func Groups() interface{} {
 	return sys.cards.Groups()
 }
 
-func UpdateACL(permissions []types.Permissions) {
-	if acl, err := consolidate(permissions); err != nil {
+func UpdateACL() {
+	if permissions, err := sys.cards.ACL(); err != nil {
+		warn(err)
+	} else if acl, err := consolidate(permissions); err != nil {
 		warn(err)
 	} else if acl == nil {
 		warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
@@ -138,11 +140,16 @@ func UpdateACL(permissions []types.Permissions) {
 }
 
 func UpdateCardHolders(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
-	return sys.cards.Post(m, auth)
-}
+	response, err := sys.cards.Post(m, auth)
+	if err != nil {
+		return nil, err
+	}
 
-func ACL() ([]types.Permissions, error) {
-	return sys.cards.ACL()
+	go func() {
+		UpdateACL()
+	}()
+
+	return response, nil
 }
 
 func consolidate(list []types.Permissions) (*acl.ACL, error) {
