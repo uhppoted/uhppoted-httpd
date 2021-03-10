@@ -6,9 +6,8 @@
 - [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 - [ ] Menu pops up when just vaguely over area
 - [ ] system
-      - ACL status not updating after simulator restart
-      - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
       - set door to -,update, set back to Gryffindor => not marked as modified
+      - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
       - address.String() should not include port if it's 60000
 
       - add controller name to uhppote-core

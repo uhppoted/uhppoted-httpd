@@ -167,10 +167,8 @@ func (l *Local) Compare(permissions acl.ACL) error {
 
 	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
 
-	if updated+added+deleted > 0 {
-		for k, _ := range l.Devices {
-			l.store(k, compare[k])
-		}
+	for k, _ := range l.Devices {
+		l.store(k, compare[k])
 	}
 
 	return nil
