@@ -6,7 +6,7 @@
 - [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 - [ ] Menu pops up when just vaguely over area
 - [ ] system
-      - ACL: parallelize updates and don't fail entire batch if one controller fails
+      - ACL: parallelize compares and don't fail entire batch if one controller fails
       - ACL: use actual controller address if known
       - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
       - address.String() should not include port if it's 60000

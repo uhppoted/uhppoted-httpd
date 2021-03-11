@@ -103,10 +103,9 @@ func (l *Local) Init(devices []*Controller) {
 func (l *Local) Update(permissions acl.ACL) {
 	log.Printf("Updating ACL")
 
-	rpt, err := acl.PutACL(l.api.Uhppote, permissions, false)
-	if err != nil {
+	rpt, errors := acl.PutACL(l.api.Uhppote, permissions, false)
+	for _, err := range errors {
 		warn(err)
-		return
 	}
 
 	keys := []uint32{}
