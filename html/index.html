@@ -69,7 +69,7 @@
                 <tr>
                   <th class="name     topleft">Controller</th>
                   <th class="ID       colheader">ID</th>
-                  <th class="IP       colheader">IPv4</th>
+                  <th class="IP       colheader">Address</th>
                   <th class="datetime colheader">Date/Time</th>
                   <th class="cards    colheader">Cards</th>
                   <th class="events   colheader">Events</th>
@@ -120,8 +120,7 @@
                            data-record="{{$cid}}"
                            data-original="{{$controller.IP.Configured}}"
                            data-value="{{$controller.IP.Address}}"  
-                           data-status="{{$controller.IP.Status}}" 
-                           readonly />
+                           data-status="{{$controller.IP.Status}}" />
                   </td>
 
                   <td>

@@ -6,8 +6,11 @@
 - [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 - [ ] Menu pops up when just vaguely over area
 - [ ] system
+      - ACL: parallelize updates and don't fail entire batch if one controller fails
+      - ACL: use actual controller address if known
       - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
       - address.String() should not include port if it's 60000
+      - auto refresh
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core
@@ -17,7 +20,6 @@
       - cache expiry
       - Use sync.Map for cache
       - limit number of pending 'update' requests (e.g. if device is not responding)
-      - auto refresh
       - configure update interval
       - configure ok/uncertain intervals
       - configure systime window
@@ -140,6 +142,7 @@
 
 ## TODO
 
+- [ ] [CRDT](https://concordant.io/software)
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 - [ ] Redesign using RDF/OWL triples ? 
       - https://github.com/severin-lemaignan/minimalkb
