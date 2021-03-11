@@ -2,7 +2,6 @@
 
 ### IN PROGRESS
 
-- [ ] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 - [ ] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 - [ ] Menu pops up when just vaguely over area
 - [ ] system
@@ -119,6 +118,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 - [x] Warning message doesn't align left if commitall and/or rollbackall are not visible
 - [x] 127.0.0.1/:323 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range.
 - [x] Navigation

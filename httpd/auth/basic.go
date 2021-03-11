@@ -172,7 +172,7 @@ func (b *Basic) authenticated(r *http.Request) bool {
 		return false
 	}
 
-	if err = b.auth.Verify(auth.Session, cookie.Value); err == nil {
+	if err = b.auth.Verify(auth.Session, cookie.Value); err != nil {
 		warn(err)
 		return false
 	}

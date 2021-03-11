@@ -45,7 +45,6 @@ type dispatcher struct {
 	fs    http.Handler
 	auth  auth.IAuth
 	grule struct {
-		//	acl    *ast.KnowledgeLibrary
 		system *ast.KnowledgeLibrary
 		cards  *ast.KnowledgeLibrary
 	}
