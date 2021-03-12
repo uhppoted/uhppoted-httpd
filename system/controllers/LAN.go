@@ -153,6 +153,10 @@ func (l *LAN) Compare(permissions acl.ACL) error {
 		return fmt.Errorf("Invalid ACL compare report: %v", compare)
 	}
 
+	for k, v := range compare {
+		log.Printf("ACL %v - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", k, len(v.Unchanged), len(v.Updated), len(v.Added), len(v.Deleted))
+	}
+
 	diff := acl.SystemDiff(compare)
 	report := diff.Consolidate()
 	if report == nil {
