@@ -139,7 +139,10 @@ export function onSignOut (event) {
     .then(msg => {
       warning(msg)
     })
-    .catch(function (err) { console.error(err) })
+    .catch(function (err) {
+      console.error(err)
+      window.location = '/index.html'
+    })
 }
 
 export function onIdle () {
