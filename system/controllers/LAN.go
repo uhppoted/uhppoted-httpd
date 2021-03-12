@@ -17,7 +17,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type Local struct {
+type LAN struct {
 	BindAddress      *types.Address           `json:"bind-address"`
 	BroadcastAddress *types.Address           `json:"broadcast-address"`
 	ListenAddress    *types.Address           `json:"listen-address"`
@@ -44,9 +44,9 @@ const (
 
 const WINDOW = 300 // 5 minutes
 
-func NewLocal() *Local {
+func NewLAN() *LAN {
 	u := uhppote.UHPPOTE{}
-	local := Local{
+	lan := LAN{
 		Devices: map[uint32]types.Address{},
 		api: uhppoted.UHPPOTED{
 			Uhppote: &u,
@@ -54,17 +54,17 @@ func NewLocal() *Local {
 		},
 	}
 
-	return &local
+	return &lan
 }
 
 // TODO interim implemenation (need to split static/dynamic data)
-func (l *Local) clone() *Local {
+func (l *LAN) clone() *LAN {
 	return l
 }
 
 // TODO (?) Move into custom JSON Unmarshal
 //          Ref. http://choly.ca/post/go-json-marshalling/
-func (l *Local) Init(devices []*Controller) {
+func (l *LAN) Init(devices []*Controller) {
 	u := uhppote.UHPPOTE{
 		BindAddress:      (*net.UDPAddr)(l.BindAddress),
 		BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),
@@ -100,7 +100,7 @@ func (l *Local) Init(devices []*Controller) {
 	}
 }
 
-func (l *Local) Update(permissions acl.ACL) {
+func (l *LAN) Update(permissions acl.ACL) {
 	log.Printf("Updating ACL")
 
 	rpt, errors := acl.PutACL(l.api.Uhppote, permissions, false)
@@ -133,7 +133,7 @@ func (l *Local) Update(permissions acl.ACL) {
 	log.Printf("%v", string(msg.Bytes()))
 }
 
-func (l *Local) Compare(permissions acl.ACL) error {
+func (l *LAN) Compare(permissions acl.ACL) error {
 	log.Printf("Comparing ACL")
 
 	devices := []*uhppote.Device{}
@@ -173,7 +173,7 @@ func (l *Local) Compare(permissions acl.ACL) error {
 	return nil
 }
 
-func (l *Local) refresh() {
+func (l *LAN) refresh() {
 	list := map[uint32]struct{}{}
 	for k, _ := range l.Devices {
 		list[k] = struct{}{}
@@ -204,8 +204,8 @@ func (l *Local) refresh() {
 	}()
 }
 
-func (l *Local) update(id uint32) {
-	log.Printf("%v: refreshing 'local' controller status", id)
+func (l *LAN) update(id uint32) {
+	log.Printf("%v: refreshing 'LAN' controller status", id)
 
 	if info, err := l.api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
@@ -240,7 +240,7 @@ func (l *Local) update(id uint32) {
 	}
 }
 
-func (l *Local) store(id uint32, info interface{}) {
+func (l *LAN) store(id uint32, info interface{}) {
 	l.guard.Lock()
 
 	defer l.guard.Unlock()
@@ -292,7 +292,7 @@ func (l *Local) store(id uint32, info interface{}) {
 	l.Cache[id] = cached
 }
 
-func (l *Local) synchTime(c Controller) {
+func (l *LAN) synchTime(c Controller) {
 	if c.DeviceID != nil {
 		device := uhppoted.DeviceID(*c.DeviceID)
 		location := time.Local

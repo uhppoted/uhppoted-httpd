@@ -99,7 +99,7 @@ func System() interface{} {
 
 	defer sys.RUnlock()
 
-	controllers := controllers.Consolidate(sys.controllers.Local, sys.controllers.Controllers)
+	controllers := controllers.Consolidate(sys.controllers.LAN, sys.controllers.Controllers)
 
 	doors := []types.Door{}
 	for _, v := range sys.doors.Doors {
@@ -133,7 +133,7 @@ func UpdateACL() {
 	} else if acl == nil {
 		warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
 	} else {
-		sys.controllers.Local.Update(*acl)
+		sys.controllers.LAN.Update(*acl)
 	}
 }
 
@@ -144,7 +144,7 @@ func CompareACL() {
 		warn(err)
 	} else if acl == nil {
 		warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
-	} else if err := sys.controllers.Local.Compare(*acl); err != nil {
+	} else if err := sys.controllers.LAN.Compare(*acl); err != nil {
 		warn(err)
 	}
 }

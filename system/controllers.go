@@ -41,7 +41,7 @@ loop:
 		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
 			// ... 'fake' delete unconfigured controller
 			if c.OID == "" {
-				list.Deleted = append(list.Deleted, controllers.Merge(sys.controllers.Local, c))
+				list.Deleted = append(list.Deleted, controllers.Merge(sys.controllers.LAN, c))
 				continue loop
 			}
 
@@ -50,7 +50,7 @@ loop:
 					if r, err := sys.delete(shadow, c, auth); err != nil {
 						return nil, err
 					} else if r != nil {
-						list.Deleted = append(list.Deleted, controllers.Merge(sys.controllers.Local, *r))
+						list.Deleted = append(list.Deleted, controllers.Merge(sys.controllers.LAN, *r))
 					}
 				}
 			}
@@ -64,7 +64,7 @@ loop:
 				if r, err := sys.update(shadow, c, auth); err != nil {
 					return nil, err
 				} else if r != nil {
-					list.Updated = append(list.Updated, controllers.Merge(sys.controllers.Local, *r))
+					list.Updated = append(list.Updated, controllers.Merge(sys.controllers.LAN, *r))
 				}
 
 				continue loop
@@ -75,7 +75,7 @@ loop:
 		if r, err := sys.add(shadow, c, auth); err != nil {
 			return nil, err
 		} else if r != nil {
-			list.Updated = append(list.Updated, controllers.Merge(sys.controllers.Local, *r))
+			list.Updated = append(list.Updated, controllers.Merge(sys.controllers.LAN, *r))
 		}
 	}
 

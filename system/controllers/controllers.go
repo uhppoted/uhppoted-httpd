@@ -18,7 +18,7 @@ import (
 type Controllers struct {
 	file        string        `json:"-"`
 	Controllers []*Controller `json:"controllers"`
-	Local       *Local        `json:"local"`
+	LAN         *LAN          `json:"LAN"`
 }
 
 var guard sync.Mutex
@@ -26,7 +26,7 @@ var guard sync.Mutex
 func NewControllers() Controllers {
 	return Controllers{
 		Controllers: []*Controller{},
-		Local:       NewLocal(),
+		LAN:         NewLAN(),
 	}
 }
 
@@ -42,7 +42,7 @@ func (cc *Controllers) Load(file string) error {
 	}
 
 	cc.file = file
-	cc.Local.Init(cc.Controllers)
+	cc.LAN.Init(cc.Controllers)
 
 	return nil
 }
@@ -166,21 +166,21 @@ func (cc *Controllers) Delete(c Controller) (*Controller, error) {
 }
 
 func (cc *Controllers) Refresh() {
-	cc.Local.refresh()
+	cc.LAN.refresh()
 }
 
 func (cc *Controllers) Clone() *Controllers {
 	shadow := Controllers{
 		file:        cc.file,
 		Controllers: make([]*Controller, len(cc.Controllers)),
-		Local:       &Local{},
+		LAN:         &LAN{},
 	}
 
 	for k, v := range cc.Controllers {
 		shadow.Controllers[k] = v.clone()
 	}
 
-	shadow.Local = cc.Local.clone()
+	shadow.LAN = cc.LAN.clone()
 
 	return &shadow
 }
@@ -264,7 +264,7 @@ func Export(file string, controllers []*Controller, doors map[string]types.Door)
 func (cc *Controllers) Sync() {
 	for _, c := range cc.Controllers {
 		if c != nil {
-			cc.Local.synchTime(*c)
+			cc.LAN.synchTime(*c)
 		}
 	}
 }

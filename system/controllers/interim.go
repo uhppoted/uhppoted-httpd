@@ -31,14 +31,14 @@ type controller struct {
 	Status     status
 }
 
-func Consolidate(local *Local, controllers []*Controller) interface{} {
+func Consolidate(lan *LAN, controllers []*Controller) interface{} {
 	devices := []Controller{}
 	for _, v := range controllers {
 		devices = append(devices, *v)
 	}
 
 loop:
-	for k, _ := range local.Cache {
+	for k, _ := range lan.Cache {
 		for _, c := range devices {
 			if c.DeviceID != nil && *c.DeviceID == k {
 				continue loop
@@ -55,7 +55,7 @@ loop:
 
 	list := []controller{}
 	for _, c := range devices {
-		list = append(list, Merge(local, c))
+		list = append(list, Merge(lan, c))
 	}
 
 	sort.SliceStable(list, func(i, j int) bool { return list[i].Created.Before(list[j].Created) })
@@ -63,7 +63,7 @@ loop:
 	return list
 }
 
-func Merge(local *Local, c Controller) controller {
+func Merge(lan *LAN, c Controller) controller {
 	cc := controller{
 		ID:       ID(c),
 		Name:     "",
@@ -111,7 +111,7 @@ func Merge(local *Local, c Controller) controller {
 		return cc
 	}
 
-	if cached, ok := local.Cache[*c.DeviceID]; ok {
+	if cached, ok := lan.Cache[*c.DeviceID]; ok {
 		if cached.cards != nil {
 			cc.Cards.Records = records(*cached.cards)
 			if cached.acl == StatusUnknown {
