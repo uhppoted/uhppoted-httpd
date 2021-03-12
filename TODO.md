@@ -2,8 +2,8 @@
 
 ### IN PROGRESS
 
-- [ ] Make a nice synthesized HTML page for logout when server is down
 - [ ] Menu pops up when just vaguely over area
+      
 - [ ] system
       - auto refresh
       - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
@@ -115,6 +115,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Make a nice synthesized HTML page for logout when server is down
 - [x] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 - [x] Logs out on POST to e.g. /system when not authorised. Should show error instead.
 - [x] Warning message doesn't align left if commitall and/or rollbackall are not visible

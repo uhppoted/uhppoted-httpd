@@ -227,6 +227,49 @@ footer {
   height: 100%;
 }
 
+#offline {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;  
+  padding-top: 96px;
+}
+
+#offline > div {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;  
+  padding: 16px 32px 16px 32px;
+  border-radius: 4px;
+  border: solid 1px $offline-border;
+}
+
+#offline p {
+  font-family: Sans-Serif;
+  font-size: 0.75em;
+  color: $offline-colour;
+  margin-bottom: 16px;
+}
+
+#offline a {
+  font-family: Sans-Serif;
+  font-size: 0.6em;
+  color: $link-colour;
+  text-decoration: none;
+}
+
+#offline a:hover,visited {
+  color: $link-colour;
+  text-decoration: none;
+}
+
+#offline div a {
+  font-family: Sans-Serif;
+  font-size: 0.7em;
+  color: $link-colour;
+}
+
 .message {  
   background-color: $content-message-background;
   display: block;

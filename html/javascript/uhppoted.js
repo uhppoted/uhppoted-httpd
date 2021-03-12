@@ -141,7 +141,7 @@ export function onSignOut (event) {
     })
     .catch(function (err) {
       console.error(err)
-      window.location = '/index.html'
+      offline()
     })
 }
 
@@ -155,4 +155,8 @@ export function resetIdle () {
   }
 
   idleTimer = setTimeout(onIdle, 15 * 60 * 1000)
+}
+
+function offline () {
+  document.body.innerHTML = '<div id="offline"><div><div><p>SYSTEM OFFLINE</p></div><div><a href="index.html">RELOAD</a><div></div></div>'
 }
