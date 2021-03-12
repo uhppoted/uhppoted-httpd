@@ -141,9 +141,9 @@ func (l *LAN) Compare(permissions acl.ACL) error {
 		devices = append(devices, v)
 	}
 
-	current, err := acl.GetACL(l.api.Uhppote, devices)
-	if err != nil {
-		return err
+	current, errors := acl.GetACL(l.api.Uhppote, devices)
+	for _, err := range errors {
+		warn(err)
 	}
 
 	compare, err := acl.Compare(permissions, current)
