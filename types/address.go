@@ -9,9 +9,15 @@ import (
 
 type Address net.UDPAddr
 
+const DEFAULT_PORT = 60000
+
 func (a *Address) String() string {
 	if a != nil {
-		return (*net.UDPAddr)(a).String()
+		if a.Port == DEFAULT_PORT {
+			return a.IP.String()
+		} else {
+			return (*net.UDPAddr)(a).String()
+		}
 	}
 
 	return ""
@@ -28,12 +34,12 @@ func (a *Address) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	addr, err := net.ResolveUDPAddr("udp", s)
+	addr, err := Resolve(s)
 	if err != nil {
 		return err
 	}
 
-	*a = Address(*addr)
+	*a = *addr
 
 	return nil
 }
@@ -61,21 +67,30 @@ func (a *Address) Clone() *Address {
 }
 
 func Resolve(s string) (*Address, error) {
-	matched, err := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,5}`, s)
-	if err != nil {
+	if matched, err := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,5}`, s); err != nil {
 		return nil, err
+	} else if matched {
+		if addr, err := net.ResolveUDPAddr("udp", s); err != nil {
+			return nil, err
+		} else {
+			a := Address(*addr)
+			return &a, nil
+		}
 	}
 
-	if !matched {
-		return nil, fmt.Errorf("%s is not a valid UDP address:port", s)
-	}
-
-	addr, err := net.ResolveUDPAddr("udp", s)
-	if err != nil {
+	if matched, err := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}`, s); err != nil {
 		return nil, err
+	} else if matched {
+		if ip := net.ParseIP(s); ip != nil {
+			addr := Address(net.UDPAddr{
+				IP:   ip,
+				Port: DEFAULT_PORT,
+				Zone: "",
+			})
+
+			return &addr, nil
+		}
 	}
 
-	a := Address(*addr)
-
-	return &a, nil
+	return nil, fmt.Errorf("%s is not a valid UDP address:port", s)
 }
