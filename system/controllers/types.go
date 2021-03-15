@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -20,7 +21,19 @@ func (dt datetime) String() string {
 		return ""
 	}
 
-	return dt.DateTime.Format("2006-01-02 15:04:05 MST")
+	return dt.DateTime.Format("2006-01-02 15:05 MST")
+}
+
+func (dt datetime) MarshalJSON() ([]byte, error) {
+	object := struct {
+		DateTime string `json:"DateTime"`
+		Status   string `json:"Status"`
+	}{
+		DateTime: dt.String(),
+		Status:   dt.Status.String(),
+	}
+
+	return json.Marshal(object)
 }
 
 type ip struct {

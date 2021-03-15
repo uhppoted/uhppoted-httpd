@@ -128,7 +128,7 @@
                     <input id="{{$cid}}-datetime" 
                            class="field datetime"
                            type="text" 
-                           value='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04:05 MST"}}'
+                           value='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04 MST"}}'
                            placeholder="-"
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
@@ -273,7 +273,7 @@
     window.onRefresh = onRefresh
 
     resetIdle();
-    setInterval(onRefresh,30000)
+    setInterval(onRefresh,10000)
   </script>
 
   <!-- global information initialised by Go template -->

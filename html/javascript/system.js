@@ -275,6 +275,7 @@ function updated (controllers) {
 
       if (row) {
         row.classList.remove('new')
+        row.dataset.status = statusToString(record.Status)
       }
 
       if (record.Name) {
@@ -300,13 +301,15 @@ function updated (controllers) {
       }
 
       if (record.SystemTime) {
-        let datetime = ''
+        update(document.getElementById(id + '-datetime'), record.SystemTime.DateTime, record.SystemTime.Status)
+      }
 
-        if (record.SystemTime.DateTime) {
-          datetime = record.SystemTime.DateTime
-        }
+      if (record.Cards) {
+        update(document.getElementById(id + '-cards'), record.Cards.Records, statusToString(record.Cards.Status))
+      }
 
-        update(document.getElementById(id + '-datetime'), datetime, statusToString(record.SystemTime.Status))
+      if (record.Events) {
+        update(document.getElementById(id + '-events'), record.Events)
       }
 
       if (record.Doors) {

@@ -6,8 +6,10 @@
       
 - [ ] system
       - mark invalid time as 'modified'
-      - time should be only HH:mm
       - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
+      - make object -> HTML JSON consistent
+        - status should be string
+        - move object -> JSON to presentation layer (?)
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core
