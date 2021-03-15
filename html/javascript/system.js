@@ -390,14 +390,17 @@ function update (element, value, status) {
 
   if (element) {
     const td = cell(element)
+    const original = element.dataset.original
 
     element.dataset.original = v
 
     // check for conflicts with concurrently modified fields
 
     if (td && td.classList.contains('modified')) {
-      if (element.dataset.value !== v.toString()) {
+      if (original !== v.toString() && element.dataset.value !== v.toString()) {
         td.classList.add('conflict')
+      } else if (element.dataset.value !== v.toString()) {
+        td.classList.add('modified')
       } else {
         td.classList.remove('modified')
         td.classList.remove('conflict')
@@ -405,6 +408,8 @@ function update (element, value, status) {
 
       return
     }
+
+    element.dataset.original = v
 
     // mark fields with unexpected values after submit
 

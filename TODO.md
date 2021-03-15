@@ -5,7 +5,8 @@
 - [ ] Menu pops up when just vaguely over area
       
 - [ ] system
-      - auto refresh
+      - mark invalid time as 'modified'
+      - time should be only HH:mm
       - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
 
       - add controller name to uhppote-core
