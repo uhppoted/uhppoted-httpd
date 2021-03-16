@@ -245,7 +245,7 @@ export function onRefresh (event) {
   if (event && event.target && event.target.id === 'refresh') {
     busy()
     dismiss()
-  } 
+  }
 
   getAsJSON('/system')
     .then(response => {

@@ -16,6 +16,14 @@ document.addEventListener('keypress', event => {
   resetIdle(event)
 })
 
+export function onMenu(event, show) {
+  if (show) {
+    document.querySelector('#user div.menu').style.display = 'block'    
+  } else {
+    document.querySelector('#user div.menu').style.display = 'none'    
+  }
+}
+
 export function retheme (theme) {
   const expires = new Date()
   const stylesheets = document.querySelectorAll("link[rel='stylesheet']")

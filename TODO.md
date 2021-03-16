@@ -2,11 +2,9 @@
 
 ### IN PROGRESS
 
-- [ ] Menu pops up when just vaguely over area
-      
 - [ ] system
       - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
-      - refresh should add 'found' controllers 
+      - refresh should add 'found' controllers
       - logic around correcting time is weird
         -- enter to update doesn't always work
         -- set() is updating dataset.original which seems wrong but ...
@@ -124,6 +122,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Menu pops up when just vaguely over area
 - [x] Make a nice synthesized HTML page for logout when server is down
 - [x] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
 - [x] Logs out on POST to e.g. /system when not authorised. Should show error instead.
