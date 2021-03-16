@@ -242,8 +242,10 @@ export function onNew (event) {
 }
 
 export function onRefresh (event) {
-  busy()
-  dismiss()
+  if (event && event.target && event.target.id === 'refresh') {
+    busy()
+    dismiss()
+  } 
 
   getAsJSON('/system')
     .then(response => {
@@ -304,7 +306,7 @@ function updated (controllers) {
         if (document.getElementById(id + '-datetime')) {
           document.getElementById(id + '-datetime').dataset.original = record.SystemTime.Expected
         }
-        
+
         update(document.getElementById(id + '-datetime'), record.SystemTime.DateTime, record.SystemTime.Status)
       }
 

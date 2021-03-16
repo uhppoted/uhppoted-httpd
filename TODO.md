@@ -5,12 +5,17 @@
 - [ ] Menu pops up when just vaguely over area
       
 - [ ] system
-      - refresh is not cancelling windmill
-      - fix logic around correcting time -> edit/updated > can't enter to change
       - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
+      - refresh should add 'found' controllers 
+      - logic around correcting time is weird
+        -- enter to update doesn't always work
+        -- set() is updating dataset.original which seems wrong but ...
       - make object -> HTML JSON consistent
         - status should be string
         - move object -> JSON to presentation layer (?)
+        - rethink this as a presentation layer interface or map or something (?)
+        - mapping Go structs to user interface objects is problematic. Maybe use GraphQL idea and fill in 
+          requested info?
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core

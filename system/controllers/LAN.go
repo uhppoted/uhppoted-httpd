@@ -209,7 +209,7 @@ func (l *LAN) refresh() {
 }
 
 func (l *LAN) update(id uint32) {
-	log.Printf("%v: refreshing 'LAN' controller status", id)
+	log.Printf("%v: refreshing LAN controller status", id)
 
 	if info, err := l.api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
