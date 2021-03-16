@@ -79,25 +79,25 @@ loop:
 		}
 	}
 
-	if err := save(shadow); err != nil {
-		return nil, err
-	}
-
-	go func() {
-		if err := controllers.Export(sys.conf, shadow.Controllers, sys.doors.Doors); err != nil {
-			warn(err)
-		}
-	}()
+	//	if err := save(shadow); err != nil {
+	//		return nil, err
+	//	}
+	//
+	//	go func() {
+	//		if err := controllers.Export(sys.conf, shadow.Controllers, sys.doors.Doors); err != nil {
+	//			warn(err)
+	//		}
+	//	}()
 
 	sys.controllers = *shadow
 
-	sys.taskQ.Add(Task{
-		f: func() {
-			info("Updating controllers from configuration")
-			sys.controllers.Sync()
-			UpdateACL()
-		},
-	})
+	//	sys.taskQ.Add(Task{
+	//		f: func() {
+	//			info("Updating controllers from configuration")
+	//			sys.controllers.Sync()
+	//			UpdateACL()
+	//		},
+	//	})
 
 	return list, nil
 }

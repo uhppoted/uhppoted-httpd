@@ -130,9 +130,10 @@
                            type="text" 
                            value='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04 MST"}}'
                            placeholder="-"
+                           onkeydown="onEnter(event)" 
                            onchange="onEdited(event)" 
                            data-record="{{$cid}}"
-                           data-original='{{$controller.SystemTime}}'
+                           data-original='{{$controller.SystemTime.Expected.Format "2006-01-02 15:04 MST"}}'
                            data-value='{{$controller.SystemTime}}'
                            data-status="{{$controller.SystemTime.Status}}" />
                   </td>
@@ -273,7 +274,7 @@
     window.onRefresh = onRefresh
 
     resetIdle();
-    setInterval(onRefresh,10000)
+    setInterval(onRefresh,15000)
   </script>
 
   <!-- global information initialised by Go template -->

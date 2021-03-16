@@ -12,6 +12,8 @@ import (
 )
 
 type datetime struct {
+	Qwerty   int
+	Expected *types.DateTime
 	DateTime *types.DateTime
 	Status   status
 }
@@ -21,16 +23,18 @@ func (dt datetime) String() string {
 		return ""
 	}
 
-	return dt.DateTime.Format("2006-01-02 15:05 MST")
+	return dt.DateTime.Format("2006-01-02 15:04 MST")
 }
 
 func (dt datetime) MarshalJSON() ([]byte, error) {
 	object := struct {
 		DateTime string `json:"DateTime"`
 		Status   string `json:"Status"`
+		Expected string `json:"Expected"`
 	}{
 		DateTime: dt.String(),
 		Status:   dt.Status.String(),
+		Expected: dt.Expected.Format("2006-01-02 15:04 MST"),
 	}
 
 	return json.Marshal(object)

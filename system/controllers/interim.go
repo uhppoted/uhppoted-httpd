@@ -139,6 +139,7 @@ func Merge(lan *LAN, c Controller) controller {
 		}
 
 		if cached.datetime != nil {
+			now := types.DateTime(time.Now().In(tz))
 			t := time.Time(*cached.datetime)
 			T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 			delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
@@ -151,6 +152,7 @@ func Merge(lan *LAN, c Controller) controller {
 
 			dt := types.DateTime(T)
 			cc.SystemTime.DateTime = &dt
+			cc.SystemTime.Expected = &now
 		}
 
 		switch dt := time.Now().Sub(cached.touched); {

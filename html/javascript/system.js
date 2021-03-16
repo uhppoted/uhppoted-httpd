@@ -301,6 +301,10 @@ function updated (controllers) {
       }
 
       if (record.SystemTime) {
+        if (document.getElementById(id + '-datetime')) {
+          document.getElementById(id + '-datetime').dataset.original = record.SystemTime.Expected
+        }
+        
         update(document.getElementById(id + '-datetime'), record.SystemTime.DateTime, record.SystemTime.Status)
       }
 

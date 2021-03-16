@@ -5,7 +5,8 @@
 - [ ] Menu pops up when just vaguely over area
       
 - [ ] system
-      - mark invalid time as 'modified'
+      - refresh is not cancelling windmill
+      - fix logic around correcting time -> edit/updated > can't enter to change
       - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
       - make object -> HTML JSON consistent
         - status should be string
