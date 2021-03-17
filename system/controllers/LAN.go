@@ -14,6 +14,7 @@ import (
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-api/uhppoted"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -65,6 +66,12 @@ func (l *LAN) clone() *LAN {
 // TODO (?) Move into custom JSON Unmarshal
 //          Ref. http://choly.ca/post/go-json-marshalling/
 func (l *LAN) Init(devices []*Controller) {
+	for _, v := range devices {
+		if v.DeviceID != nil && *v.DeviceID != 0 {
+			catalog.Put(*v.DeviceID, v.OID)
+		}
+	}
+
 	u := uhppote.UHPPOTE{
 		BindAddress:      (*net.UDPAddr)(l.BindAddress),
 		BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),

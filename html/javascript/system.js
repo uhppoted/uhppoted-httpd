@@ -172,10 +172,41 @@ export function onRevert (id) {
 }
 
 export function onNew (event) {
+  add('U' + uuidv4())
+}
+
+export function onRefresh (event) {
+  if (event && event.target && event.target.id === 'refresh') {
+    busy()
+    dismiss()
+  }
+
+  getAsJSON('/system')
+    .then(response => {
+      unbusy()
+
+      switch (response.status) {
+        case 200:
+          response.json().then(object => { refresh(object.system) })
+          break
+
+        default:
+          response.text().then(message => { warning(message) })
+      }
+    })
+    .catch(function (err) {
+      console.log(err)
+    })
+}
+
+function refresh (sys) {
+  updated(Object.values(sys.Controllers))
+}
+
+function add (uuid) {
   const tbody = document.getElementById('controllers').querySelector('table tbody')
 
   if (tbody) {
-    const uuid = 'U' + uuidv4()
     const row = tbody.insertRow()
     const name = row.insertCell()
     const device = row.insertCell()
@@ -238,42 +269,20 @@ export function onNew (event) {
                             ' data-status=""' +
                             ' placeholder="-">' + options + '</select>'
     }
+
+    return row
   }
-}
-
-export function onRefresh (event) {
-  if (event && event.target && event.target.id === 'refresh') {
-    busy()
-    dismiss()
-  }
-
-  getAsJSON('/system')
-    .then(response => {
-      unbusy()
-
-      switch (response.status) {
-        case 200:
-          response.json().then(object => { refresh(object.system) })
-          break
-
-        default:
-          response.text().then(message => { warning(message) })
-      }
-    })
-    .catch(function (err) {
-      console.log(err)
-    })
-}
-
-function refresh (sys) {
-  updated(Object.values(sys.Controllers))
 }
 
 function updated (controllers) {
   if (controllers) {
     controllers.forEach((record) => {
       const id = record.ID
-      const row = document.getElementById(id)
+      let row = document.getElementById(id)
+
+      if (!row) {
+        row = add(id)
+      }
 
       if (row) {
         row.classList.remove('new')

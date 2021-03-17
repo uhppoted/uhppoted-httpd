@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -47,7 +48,9 @@ loop:
 
 		// ... include 'unconfigured' controllers
 		id := k
+		oid := catalog.Get(k)
 		devices = append(devices, Controller{
+			OID:      oid,
 			DeviceID: &id,
 			Created:  time.Now(),
 		})

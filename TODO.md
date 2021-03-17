@@ -3,8 +3,6 @@
 ### IN PROGRESS
 
 - [ ] system
-      - uhppote-cli get-acl: use default door name/number if blank (because set to unused by httpd)
-      - refresh should add 'found' controllers
       - logic around correcting time is weird
         -- enter to update doesn't always work
         -- set() is updating dataset.original which seems wrong but ...
