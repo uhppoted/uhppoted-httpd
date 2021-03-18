@@ -3,6 +3,8 @@
 ### IN PROGRESS
 
 - [ ] system
+      - separate ID/OID
+      - handle 'deleted by other person'
       - logic around correcting time is weird
         -- enter to update doesn't always work
         -- set() is updating dataset.original which seems wrong but ...
