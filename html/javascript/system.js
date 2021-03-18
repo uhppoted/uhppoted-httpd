@@ -1,6 +1,7 @@
-/* global constants */
+/* global */
 
 import { getAsJSON, postAsJSON, dismiss, warning } from './uhppoted.js'
+import { UpdateDB } from './db.js'
 
 export function onEdited (event) {
   set('controllers', event.target, event.target.value)
@@ -21,12 +22,14 @@ export function onCommit (event) {
 }
 
 export function onRollback (event, op) {
-  if (op && op === 'delete') {
-    onDelete(event.target.dataset.record)
-    return
-  }
+  const id = event.target.dataset.record
+  const row = document.getElementById(id)
 
-  onRevert(event.target.dataset.record)
+  if (row && row.classList.contains('new')) {
+    onDelete(event.target.dataset.record)
+  } else {
+    onRevert(event.target.dataset.record)
+  }
 }
 
 export function onCommitAll (event) {
@@ -187,7 +190,10 @@ export function onRefresh (event) {
 
       switch (response.status) {
         case 200:
-          response.json().then(object => { refresh(object.system) })
+          response.json().then(object => {
+            UpdateDB(object.system.Controllers)
+            refresh(object.system)
+          })
           break
 
         default:
@@ -207,68 +213,66 @@ function add (uuid) {
   const tbody = document.getElementById('controllers').querySelector('table tbody')
 
   if (tbody) {
+    const template = document.querySelector('#controller')
     const row = tbody.insertRow()
-    const name = row.insertCell()
-    const device = row.insertCell()
-    const ip = row.insertCell()
-    const datetime = row.insertCell()
-    const cards = row.insertCell()
-    const events = row.insertCell()
-    const doors = {
-      1: row.insertCell(),
-      2: row.insertCell(),
-      3: row.insertCell(),
-      4: row.insertCell()
-    }
 
     row.id = uuid
     row.classList.add('new')
     row.classList.add('controller')
     row.dataset.status = 'unknown'
+    row.innerHTML = template.innerHTML
 
-    name.style = 'display:flex; flex-direction:row;'
-    name.classList.add('rowheader')
-    name.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                     '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />' +
-                     '<span class="control commit" id="' + uuid + '_commit" onclick="onCommit(event)" data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
-                     '<span class="control rollback" id="' + uuid + '_rollback" onclick="onRollback(event, \'delete\')" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
+    const name = row.querySelector('td input.name')
+    name.id = uuid + '-name'
+    name.value = ''
+    name.dataset.record = uuid
+    name.dataset.original = ''
+    name.dataset.value = ''
 
-    device.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                       '<input id="' + uuid + '-ID" class="field ID" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />'
+    const commit = row.querySelector('td span.commit')
+    commit.id = uuid + '_commit'
+    commit.dataset.record = uuid
+    commit.dataset.enabled = 'false'
 
-    ip.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                   '<input id="' + uuid + '-IP" class="field IP" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" />'
+    const rollback = row.querySelector('td span.rollback')
+    rollback.id = uuid + '_rollback'
+    rollback.dataset.record = uuid
+    rollback.dataset.enabled = 'false'
 
-    datetime.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                         '<input id="' + uuid + '-datetime" class="field datetime" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
+    const device = row.querySelector('td input.ID')
+    device.id = uuid + '-ID'
+    device.dataset.record = uuid
+    device.dataset.original = ''
+    device.dataset.value = ''
 
-    cards.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                      '<input id="' + uuid + '-cards" class="field cards" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
+    const address = row.querySelector('td input.IP')
+    address.id = uuid + '-IP'
+    address.dataset.record = uuid
+    address.dataset.original = ''
+    address.dataset.value = ''
+    address.dataset.status = ''
 
-    events.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                       '<input id="' + uuid + '-events" class="field events" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" data-status="" placeholder="-" readonly />'
+    const datetime = row.querySelector('td input.datetime')
+    datetime.id = uuid + '-datetime'
+    datetime.dataset.record = uuid
+    datetime.dataset.original = ''
+    datetime.dataset.value = ''
+    datetime.dataset.status = ''
 
-    for (let i = 1; i <= 4; i++) {
-      const d = doors[i]
-      const id = uuid + '-door-' + i
-      let options = '<option value="" selected>-</option>'
+    const cards = row.querySelector('td input.cards')
+    cards.id = uuid + '-cards'
+    cards.value = 5
+    cards.dataset.record = uuid
+    cards.dataset.original = ''
+    cards.dataset.value = ''
+    cards.dataset.status = ''
 
-      constants.doors.forEach(v => {
-        options += '<option value="' + v.id + '">' + v.door + '</option>'
-      })
-
-      d.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                     '<select id="' + id + '"' +
-                            ' class="field door"' +
-                            ' type="text"' +
-                            ' value=""' +
-                            ' onchange="onEdited(event)"' +
-                            ' data-record="' + uuid + '"' +
-                            ' data-original=""' +
-                            ' data-value=""' +
-                            ' data-status=""' +
-                            ' placeholder="-">' + options + '</select>'
-    }
+    const events = row.querySelector('td input.events')
+    events.id = uuid + '-events'
+    events.dataset.record = uuid
+    events.dataset.original = ''
+    events.dataset.value = ''
+    events.dataset.status = ''
 
     return row
   }

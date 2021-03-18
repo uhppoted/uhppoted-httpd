@@ -76,171 +76,158 @@
                   <th class="doors    colheader" colspan="4">Doors</th>
                 </tr>
               </thead>
-              <tbody>{{range $controller := .system.Controllers}}
-                 {{$cid := $controller.ID}}
-                 <tr id="{{$cid}}" class="controller" data-oid="{{$controller.OID}}" data-status="{{$controller.Status}}">
-                  <td class="rowheader" style="display:flex; flex-direction:row;">
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-name" 
-                           class="field name"
-                           type="text"                            
-                           value="{{$controller.Name}}"
-                           placeholder="-"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{$controller.Name}}"
-                           data-value="{{$controller.Name}}" />
-                    <span class="control commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
-                    <span class="control rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
-                  </td>
-
-                  <td class="ID">
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-ID" 
-                           class="field ID"
-                           type="number" 
-                           min="0"
-                           value="{{$controller.DeviceID}}"
-                           placeholder="-"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{$controller.DeviceID}}"
-                           data-value="{{$controller.DeviceID}}" />
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-IP" 
-                           class="field IP"
-                           type="text" 
-                           value="{{$controller.IP.Address}}"
-                           placeholder="-"
-                           onkeydown="onEnter(event)" 
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{$controller.IP.Configured}}"
-                           data-value="{{$controller.IP.Address}}"  
-                           data-status="{{$controller.IP.Status}}" />
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-datetime" 
-                           class="field datetime"
-                           type="text" 
-                           value='{{$controller.SystemTime.DateTime.Format "2006-01-02 15:04 MST"}}'
-                           placeholder="-"
-                           onkeydown="onEnter(event)" 
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original='{{$controller.SystemTime.Expected.Format "2006-01-02 15:04 MST"}}'
-                           data-value='{{$controller.SystemTime}}'
-                           data-status="{{$controller.SystemTime.Status}}" />
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-cards" 
-                           class="field cards"
-                           type="number" 
-                           min="0"
-                           value="{{$controller.Cards}}"
-                           placeholder="-"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{$controller.Cards}}"
-                           data-value="{{$controller.Cards}}"  
-                           data-status="{{$controller.Cards.Status}}" 
-                           readonly />
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-events" 
-                           class="field events"
-                           type="number" 
-                           min="0"
-                           value="{{$controller.Events}}"
-                           placeholder="-"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{$controller.Cards}}"
-                           data-value="{{$controller.Cards}}"  
-                           readonly />
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <select id="{{$cid}}-door-1" 
-                            class="field door"
-                            type="text" 
-                            value="{{index $controller.Doors 1}}"
-                            placeholder="-"
-                            onchange="onEdited(event)" 
-                            data-record="{{$cid}}"
-                            data-original="{{index $controller.Doors 1}}"
-                            data-value="{{index $controller.Doors 1}}">
-                      <option value="">-</option>{{range $.system.Doors}}
-                      <option value="{{.ID}}" {{if eq .ID (index $controller.Doors 1)}}selected{{end}}>{{.Name}}</option>{{end}}
-                    </select>
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <select id="{{$cid}}-door-2" 
-                            class="field door"
-                            type="text" 
-                            value="{{index $controller.Doors 2}}"
-                            placeholder="-"
-                            onchange="onEdited(event)" 
-                            data-record="{{$cid}}"
-                            data-original="{{index $controller.Doors 2}}"
-                            data-value="{{index $controller.Doors 2}}"  
-                            readonly>
-                      <option value="">-</option>{{range $.system.Doors}}
-                      <option value="{{.ID}}" {{if eq .ID (index $controller.Doors 2)}}selected{{end}}>{{.Name}}</option>{{end}}
-                    </select>
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <select id="{{$cid}}-door-3" 
-                            class="field door"
-                            type="text" 
-                            value="{{index $controller.Doors 3}}"
-                            placeholder="-"
-                            onchange="onEdited(event)" 
-                            data-record="{{$cid}}"
-                            data-original="{{index $controller.Doors 3}}"
-                            data-value="{{index $controller.Doors 3}}"  
-                            readonly>
-                      <option value="">-</option>{{range $.system.Doors}}
-                      <option value="{{.ID}}" {{if eq .ID (index $controller.Doors 3)}}selected{{end}}>{{.Name}}</option>{{end}}
-                    </select>
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <select id="{{$cid}}-door-4" 
-                            class="field door"
-                            type="text" 
-                            value="{{index $controller.Doors 4}}"
-                            placeholder="-"
-                            onchange="onEdited(event)" 
-                            data-record="{{$cid}}"
-                            data-original="{{index $controller.Doors 4}}"
-                            data-value="{{index $controller.Doors 4}}">
-                      <option value="">-</option>{{range $.system.Doors}}
-                      <option value="{{.ID}}" {{if eq .ID (index $controller.Doors 4)}}selected{{end}}>{{.Name}}</option>{{end}}
-                    </select>
-                  </td>
-                </tr>{{else}}<tr class="empty">
-                 <td/><td/><td/><td/><td/><td/><td/><td/><td/><td/>
-               </tr>{{end}}
-              </tbody>
-              <tfoot>
-              </tfoot>
+              <tbody></tbody>
+              <tfoot></tfoot>
             </table>
+
+            <template id="controller">
+                <td class="rowheader" style="display:flex; flex-direction:row;">
+                  <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field name" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         onchange="onEdited(event)" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" />
+                  <span class="control commit"   onclick="onCommit(event)"   data-record="" data-enabled="false">&#9745;</span>
+                  <span class="control rollback" onclick="onRollback(event)" data-record="" data-enabled="false">&#9746;</span>
+                </td>
+
+                <td class="ID">
+                  <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field ID"
+                         type="number" 
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited(event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" />
+                </td>
+
+                <td>
+                  <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field IP"
+                         type="text" 
+                         value=""
+                         placeholder="-"
+                         onkeydown="onEnter(event)" 
+                         onchange="onEdited(event)" 
+                         data-record=""
+                         data-original=""
+                         data-value=""  
+                         data-status="" />
+                </td>
+
+                <td>
+                  <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field datetime"
+                         type="text" 
+                         value=""
+                         placeholder="-"
+                         onkeydown="onEnter(event)" 
+                         onchange="onEdited(event)" 
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         data-status="" />
+                </td>
+
+                <td>
+                  <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field cards"
+                         type="number" 
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited(event)" 
+                         data-record=""
+                         data-original=""
+                         data-value=""  
+                         data-status="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field events"
+                         type="number" 
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited(event)" 
+                         data-record=""
+                         data-original=""
+                         data-value=""  
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                  <select class="field door"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited(event)" 
+                          data-record=""
+                          data-original=""
+                          data-value="">
+                    <option value="">-</option>{{range $.system.Doors}}
+                    <option value="{{.ID}}">{{.Name}}</option>{{end}}
+                  </select>
+                </td>
+
+                <td>
+                  <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                  <select class="field door"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited(event)" 
+                          data-record=""
+                          data-original=""
+                          data-value=""  
+                          readonly>
+                    <option value="">-</option>{{range $.system.Doors}}
+                    <option value="{{.ID}}">{{.Name}}</option>{{end}}
+                  </select>
+                </td>
+
+                <td>
+                  <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                  <select class="field door"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited(event)" 
+                          data-record=""
+                          data-original=""
+                          data-value=""  
+                          readonly>
+                    <option value="">-</option>{{range $.system.Doors}}
+                    <option value="{{.ID}}">{{.Name}}</option>{{end}}
+                  </select>
+                </td>
+
+                <td>
+                  <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                  <select class="field door"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited(event)" 
+                          data-record=""
+                          data-original=""
+                          data-value="">
+                    <option value="">-</option>{{range $.system.Doors}}
+                    <option value="{{.ID}}">{{.Name}}</option>{{end}}
+                  </select>
+                </td>
+            </template>
+
           </div>
         </div>
       </main>
@@ -274,8 +261,9 @@
     window.onNew = onNew
     window.onRefresh = onRefresh
 
-    resetIdle();
-    setInterval(onRefresh,15000)
+    resetIdle()
+    onRefresh()
+    setInterval(onRefresh, 15000)
   </script>
 
   <!-- global information initialised by Go template -->

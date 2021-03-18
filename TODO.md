@@ -2,7 +2,10 @@
 
 ### IN PROGRESS
 
+- [ ] JDB: rework UI to build from local DB
+
 - [ ] system
+      - timezone marshalling as 'null'
       - separate ID/OID
       - handle 'deleted by other person'
       - logic around correcting time is weird
