@@ -5,38 +5,41 @@ import (
 	"sync"
 )
 
-var catalog = map[uint32]string{}
-var guard sync.RWMutex
+var catalog = map[string]uint32{}
+var guard sync.Mutex
 
 func Put(deviceID uint32, oid string) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	catalog[deviceID] = oid
-
+	catalog[oid] = deviceID
 }
 
 func Get(deviceID uint32) string {
-	guard.RLock()
-	defer guard.RUnlock()
+	guard.Lock()
+	defer guard.Unlock()
 
-	oid, ok := catalog[deviceID]
-	if !ok {
-		item := 0
-	loop:
-		for {
-			item += 1
-			oid = fmt.Sprintf("0.1.1.%d", item)
-			for _, v := range catalog {
-				if v == oid {
-					continue loop
-				}
+	if deviceID != 0 {
+		for oid, id := range catalog {
+			if id == deviceID {
+				return oid
 			}
-
-			catalog[deviceID] = oid
-			break
 		}
 	}
 
-	return oid
+	item := 0
+loop:
+	for {
+		item += 1
+		oid := fmt.Sprintf("0.1.1.%d", item)
+		for v, _ := range catalog {
+			if v == oid {
+				continue loop
+			}
+		}
+
+		catalog[oid] = deviceID
+
+		return oid
+	}
 }

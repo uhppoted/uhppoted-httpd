@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-api/config"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -98,22 +99,14 @@ func (cc *Controllers) Print() {
 }
 
 func (cc *Controllers) Add(c Controller) (*Controller, error) {
-	record := c.clone()
-
-loop:
-	for next := 1; ; next++ {
-		oid := fmt.Sprintf("0.1.1.%v", next)
-		for _, v := range cc.Controllers {
-			if v.OID == oid {
-				continue loop
-			}
-		}
-
-		record.OID = oid
-		break
+	id := uint32(0)
+	if c.DeviceID != nil {
+		id = *c.DeviceID
 	}
 
+	record := c.clone()
 	record.Created = time.Now()
+	record.OID = catalog.Get(id)
 
 	cc.Controllers = append(cc.Controllers, record)
 

@@ -219,6 +219,7 @@ function add (uuid) {
     row.id = uuid
     row.classList.add('controller')
     row.classList.add('new')
+    row.dataset.oid = ''
     row.dataset.status = 'unknown'
     row.innerHTML = template.innerHTML
 
@@ -259,17 +260,22 @@ function add (uuid) {
 function updated (controllers) {
   if (controllers) {
     controllers.forEach((record) => {
-      const id = record.ID
-      let row = document.getElementById(id)
+      const oid = record.OID
+      let row = document.querySelector("[data-oid='" + oid + "']")
+
+      if (!row && record.ID && record.ID !== '') {
+        row = document.getElementById(record.ID)
+      }
 
       if (!row) {
-        row = add(id)
+        row = add(rowID(oid))
       }
 
-      if (row) {
-        row.classList.remove('new')
-        row.dataset.status = statusToString(record.Status)
-      }
+      const id = row.id
+
+      row.classList.remove('new')
+      row.dataset.oid = oid
+      row.dataset.status = statusToString(record.Status)
 
       if (record.Name) {
         update(document.getElementById(id + '-name'), record.Name)
@@ -282,7 +288,7 @@ function updated (controllers) {
       if (record.IP) {
         let ip = ''
 
-        if (record.IP.IP !== null) {
+        if (record.IP.Address) {
           ip = record.IP.Address
         }
 
@@ -541,6 +547,10 @@ function uuidv4 () {
   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
   )
+}
+
+function rowID (oid) {
+  return 'R' + oid.replaceAll(/[^0-9]/g, '')
 }
 
 function statusToString (status) {
