@@ -217,17 +217,10 @@ function add (uuid) {
     const row = tbody.insertRow()
 
     row.id = uuid
-    row.classList.add('new')
     row.classList.add('controller')
+    row.classList.add('new')
     row.dataset.status = 'unknown'
     row.innerHTML = template.innerHTML
-
-    const name = row.querySelector('td input.name')
-    name.id = uuid + '-name'
-    name.value = ''
-    name.dataset.record = uuid
-    name.dataset.original = ''
-    name.dataset.value = ''
 
     const commit = row.querySelector('td span.commit')
     commit.id = uuid + '_commit'
@@ -239,40 +232,25 @@ function add (uuid) {
     rollback.dataset.record = uuid
     rollback.dataset.enabled = 'false'
 
-    const device = row.querySelector('td input.ID')
-    device.id = uuid + '-ID'
-    device.dataset.record = uuid
-    device.dataset.original = ''
-    device.dataset.value = ''
+    const fields = [
+      { suffix: 'name', selector: 'td input.name' },
+      { suffix: 'ID', selector: 'td input.ID' },
+      { suffix: 'IP', selector: 'td input.IP' },
+      { suffix: 'datetime', selector: 'td input.datetime' },
+      { suffix: 'cards', selector: 'td input.cards' },
+      { suffix: 'events', selector: 'td input.events' }
+    ]
 
-    const address = row.querySelector('td input.IP')
-    address.id = uuid + '-IP'
-    address.dataset.record = uuid
-    address.dataset.original = ''
-    address.dataset.value = ''
-    address.dataset.status = ''
+    fields.forEach(f => {
+      const field = row.querySelector(f.selector)
 
-    const datetime = row.querySelector('td input.datetime')
-    datetime.id = uuid + '-datetime'
-    datetime.dataset.record = uuid
-    datetime.dataset.original = ''
-    datetime.dataset.value = ''
-    datetime.dataset.status = ''
-
-    const cards = row.querySelector('td input.cards')
-    cards.id = uuid + '-cards'
-    cards.value = 5
-    cards.dataset.record = uuid
-    cards.dataset.original = ''
-    cards.dataset.value = ''
-    cards.dataset.status = ''
-
-    const events = row.querySelector('td input.events')
-    events.id = uuid + '-events'
-    events.dataset.record = uuid
-    events.dataset.original = ''
-    events.dataset.value = ''
-    events.dataset.status = ''
+      field.id = uuid + '-' + f.suffix
+      field.value = ''
+      field.dataset.record = uuid
+      field.dataset.original = ''
+      field.dataset.value = ''
+      field.dataset.status = ''
+    })
 
     return row
   }
