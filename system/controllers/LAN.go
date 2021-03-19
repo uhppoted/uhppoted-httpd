@@ -24,7 +24,7 @@ type LAN struct {
 	ListenAddress    *types.Address           `json:"listen-address"`
 	Debug            bool                     `json:"debug"`
 	Devices          map[uint32]types.Address `json:"-"` // TODO make unexported again once the code shuffle is done
-	api              uhppoted.UHPPOTED
+	apix             uhppoted.UHPPOTED
 	Cache            map[uint32]device `json:"-"` // TODO make unexported again once the code shuffle is done
 	guard            sync.RWMutex
 }
@@ -49,7 +49,7 @@ func NewLAN() *LAN {
 	u := uhppote.UHPPOTE{}
 	lan := LAN{
 		Devices: map[uint32]types.Address{},
-		api: uhppoted.UHPPOTED{
+		apix: uhppoted.UHPPOTED{
 			Uhppote: &u,
 			Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
 		},
@@ -101,16 +101,20 @@ func (l *LAN) Init(devices []*Controller) {
 		}
 	}
 
-	l.api = uhppoted.UHPPOTED{
+	l.apix = uhppoted.UHPPOTED{
 		Uhppote: &u,
 		Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
 	}
 }
 
+func (l *LAN) api() *uhppoted.UHPPOTED {
+	return &l.apix
+}
 func (l *LAN) Update(permissions acl.ACL) {
 	log.Printf("Updating ACL")
 
-	rpt, errors := acl.PutACL(l.api.Uhppote, permissions, false)
+	api := l.api()
+	rpt, errors := acl.PutACL(api.Uhppote, permissions, false)
 	for _, err := range errors {
 		warn(err)
 	}
@@ -144,11 +148,12 @@ func (l *LAN) Compare(permissions acl.ACL) error {
 	log.Printf("Comparing ACL")
 
 	devices := []*uhppote.Device{}
-	for _, v := range l.api.Uhppote.DeviceList() {
+	api := l.api()
+	for _, v := range api.Uhppote.DeviceList() {
 		devices = append(devices, v)
 	}
 
-	current, errors := acl.GetACL(l.api.Uhppote, devices)
+	current, errors := acl.GetACL(api.Uhppote, devices)
 	for _, err := range errors {
 		warn(err)
 	}
@@ -191,20 +196,20 @@ func (l *LAN) refresh() {
 	}
 
 	go func() {
-		if devices, err := l.api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
-			log.Printf("%v", err)
-		} else if devices == nil {
-			log.Printf("Got %v response to get-devices request", devices)
-		} else {
-			for k, v := range devices.Devices {
-				if d, ok := l.api.Uhppote.DeviceList()[k]; ok {
-					d.Address.IP = v.Address
-					d.Address.Port = 60000
-				}
+		// if devices, err := l.api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
+		// 	log.Printf("%v", err)
+		// } else if devices == nil {
+		// 	log.Printf("Got %v response to get-devices request", devices)
+		// } else {
+		// 	for k, v := range devices.Devices {
+		// 		if d, ok := l.api.Uhppote.DeviceList()[k]; ok {
+		// 			d.Address.IP = v.Address
+		// 			d.Address.Port = 60000
+		// 		}
 
-				list[k] = struct{}{}
-			}
-		}
+		// 		list[k] = struct{}{}
+		// 	}
+		// }
 
 		for k, _ := range list {
 			id := k
@@ -215,10 +220,30 @@ func (l *LAN) refresh() {
 	}()
 }
 
+func (l *LAN) add(c Controller) {
+	if c.DeviceID != nil && *c.DeviceID != 0 {
+		// name := c.Name.String()
+		// id := *c.DeviceID
+		// // addr := net.UDPAddr(*v.IP)
+
+		// // l.Devices[id] = *v.IP
+
+		// l.Uhppote.Devices[id] = &uhppote.Device{
+		// 	Name:     name,
+		// 	DeviceID: id,
+		// 	// Address:  &addr,
+		// 	Rollover: 100000,
+		// 	Doors:    []string{},
+		// 	TimeZone: time.Local,
+		// }
+	}
+}
+
 func (l *LAN) update(id uint32) {
 	log.Printf("%v: refreshing LAN controller status", id)
 
-	if info, err := l.api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
+	api := l.api()
+	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if info == nil {
 		log.Printf("Got %v response to get-device request for %v", info, id)
@@ -226,7 +251,7 @@ func (l *LAN) update(id uint32) {
 		l.store(id, *info)
 	}
 
-	if status, err := l.api.GetStatus(uhppoted.GetStatusRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
+	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if status == nil {
 		log.Printf("Got %v response to get-status request for %v", status, id)
@@ -234,7 +259,7 @@ func (l *LAN) update(id uint32) {
 		l.store(id, *status)
 	}
 
-	if cards, err := l.api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
+	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if cards == nil {
 		log.Printf("Got %v response to get-card-records request for %v", cards, id)
@@ -242,7 +267,7 @@ func (l *LAN) update(id uint32) {
 		l.store(id, *cards)
 	}
 
-	if events, err := l.api.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
+	if events, err := api.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if events == nil {
 		log.Printf("Got %v response to get-event-range request for %v", events, id)
@@ -323,7 +348,8 @@ func (l *LAN) synchTime(c Controller) {
 			DateTime: datetime,
 		}
 
-		if response, err := l.api.SetTime(request); err != nil {
+		api := l.api()
+		if response, err := api.SetTime(request); err != nil {
 			log.Printf("ERROR %v", err)
 		} else if response != nil {
 			log.Printf("INFO  sychronized device-time %v %v", response.DeviceID, response.DateTime)

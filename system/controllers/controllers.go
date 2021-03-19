@@ -109,6 +109,7 @@ func (cc *Controllers) Add(c Controller) (*Controller, error) {
 	record.OID = catalog.Get(id)
 
 	cc.Controllers = append(cc.Controllers, record)
+	cc.LAN.add(*record)
 
 	return record, nil
 }

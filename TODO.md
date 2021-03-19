@@ -3,6 +3,8 @@
 ### IN PROGRESS
 
 - [ ] JDB: rework UI to build from local DB
+      - refresh added controllers
+      - use broadcast address if not set
 
 - [ ] system
       - timezone marshalling as 'null'
