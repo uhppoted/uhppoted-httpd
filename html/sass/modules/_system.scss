@@ -140,8 +140,8 @@ tr.controller td input.events {
   text-align: center; 
 }
 
-tr.controller td input.door {
-  width: 64px;
+tr.controller td select.door1,.door2,.door3,.door4 {
+  width: 72px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;

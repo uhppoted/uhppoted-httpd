@@ -254,7 +254,11 @@ function add (uuid) {
       { suffix: 'IP', selector: 'td input.IP' },
       { suffix: 'datetime', selector: 'td input.datetime' },
       { suffix: 'cards', selector: 'td input.cards' },
-      { suffix: 'events', selector: 'td input.events' }
+      { suffix: 'events', selector: 'td input.events' },
+      { suffix: 'door-1', selector: 'td select.door1' },
+      { suffix: 'door-2', selector: 'td select.door2' },
+      { suffix: 'door-3', selector: 'td select.door3' },
+      { suffix: 'door-4', selector: 'td select.door4' },
     ]
 
     fields.forEach(f => {
@@ -265,7 +269,6 @@ function add (uuid) {
       field.dataset.record = uuid
       field.dataset.original = ''
       field.dataset.value = ''
-      field.dataset.status = ''
     })
 
     return row
@@ -522,6 +525,9 @@ function update (element, value, status) {
       case 'checkbox':
         element.checked = (v === 'true')
         break
+
+      case 'select':
+        break;
     }
 
     set('controllers', element, value, status)
