@@ -108,14 +108,9 @@ func (cc *Controllers) Add(c Controller) (*Controller, error) {
 	record.Created = time.Now()
 	record.OID = catalog.Get(id)
 
-	//	// Don't add invalid records to the controllers list (probably new records created for the UI)
-	//	if (record.Name != nil && *record.Name != "") || (record.DeviceID != nil && *record.DeviceID != 0) {
-	//		cc.Controllers = append(cc.Controllers, record)
-	//		cc.LAN.add(*record)
-	//	}
-
 	cc.Controllers = append(cc.Controllers, record)
 	cc.LAN.add(*record)
+
 	return record, nil
 }
 
@@ -165,7 +160,14 @@ func (cc *Controllers) Delete(c Controller) (*Controller, error) {
 }
 
 func (cc *Controllers) Refresh() {
-	cc.LAN.refresh()
+	devices := []uint32{}
+	for _, record := range cc.Controllers {
+		if record.DeviceID != nil && *record.DeviceID != 0 {
+			devices = append(devices, *record.DeviceID)
+		}
+	}
+
+	cc.LAN.refresh(devices)
 }
 
 func (cc *Controllers) Clone() *Controllers {

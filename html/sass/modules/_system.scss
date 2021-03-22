@@ -98,6 +98,7 @@ tr.controller td input.ID {
   border: 1px solid transparent;
   border-radius: 3px;
   outline: none;
+  -moz-appearance:textfield;
 }
 
 tr.controller td input.ID::-webkit-inner-spin-button, 
@@ -129,6 +130,7 @@ tr.controller td input.cards {
   border-radius: 3px;
   outline: none;
   text-align: center; 
+  -moz-appearance:textfield;
 }
 
 tr.controller td input.events {
@@ -138,6 +140,7 @@ tr.controller td input.events {
   border-radius: 3px;
   outline: none;
   text-align: center; 
+  -moz-appearance:textfield;
 }
 
 tr.controller td select.door1,.door2,.door3,.door4 {

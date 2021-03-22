@@ -189,9 +189,9 @@ func (l *LAN) Compare(permissions acl.ACL) error {
 	return nil
 }
 
-func (l *LAN) refresh() {
+func (l *LAN) refresh(devices []uint32) {
 	list := map[uint32]struct{}{}
-	for k, _ := range l.Devices {
+	for _, k := range devices {
 		list[k] = struct{}{}
 	}
 

@@ -40,6 +40,14 @@ func (c *Controller) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
+func (c *Controller) IsValid() bool {
+	if c != nil && (c.Name != nil && *c.Name != "") || (c.DeviceID != nil && *c.DeviceID != 0) {
+		return true
+	}
+
+	return false
+}
+
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{

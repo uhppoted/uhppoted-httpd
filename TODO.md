@@ -2,10 +2,10 @@
 
 ### IN PROGRESS
 
-- [ ] JDB: rework UI to build from local DB
-      - refresh added controllers
-      - use broadcast address if not set
-      - don't return invalid controllers on a 'get' (they're probably interim new ones)
+- [ ] JDB
+      - delete
+      - build LAN UHPPOTED on the fly from the controllers list
+      - build from local DB
 
 - [ ] system
       - timezone marshalling as 'null'

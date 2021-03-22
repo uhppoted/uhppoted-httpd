@@ -35,7 +35,9 @@ type controller struct {
 func Consolidate(lan *LAN, controllers []*Controller) interface{} {
 	devices := []Controller{}
 	for _, v := range controllers {
-		devices = append(devices, *v)
+		if v.IsValid() {
+			devices = append(devices, *v)
+		}
 	}
 
 loop:
