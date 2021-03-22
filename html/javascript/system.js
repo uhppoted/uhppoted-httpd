@@ -258,7 +258,7 @@ function add (uuid) {
       { suffix: 'door-1', selector: 'td select.door1' },
       { suffix: 'door-2', selector: 'td select.door2' },
       { suffix: 'door-3', selector: 'td select.door3' },
-      { suffix: 'door-4', selector: 'td select.door4' },
+      { suffix: 'door-4', selector: 'td select.door4' }
     ]
 
     fields.forEach(f => {
@@ -278,66 +278,9 @@ function add (uuid) {
 function added (controllers) {
   if (controllers) {
     controllers.forEach((record) => {
-      const oid = record.OID
-      let row = document.querySelector("[data-oid='" + oid + "']")
-
-      if (!row && record.ID && record.ID !== '') {
-        row = document.getElementById(record.ID)
-      }
-
-      if (!row) {
-        row = add(rowID(oid))
-      }
-
-      const id = row.id
-
-      row.classList.add('new')
-      row.dataset.oid = oid
-      row.dataset.status = statusToString(record.Status)
-
-      if (record.Name) {
-        update(document.getElementById(id + '-name'), record.Name)
-      }
-
-      if (record.DeviceID) {
-        update(document.getElementById(id + '-ID'), record.DeviceID)
-      }
-
-      if (record.IP) {
-        let ip = ''
-
-        if (record.IP.Address) {
-          ip = record.IP.Address
-        }
-
-        update(document.getElementById(id + '-IP'), ip, statusToString(record.IP.Status))
-
-        if (document.getElementById(id + '-IP')) {
-          document.getElementById(id + '-IP').dataset.original = record.IP.Configured
-        }
-      }
-
-      if (record.SystemTime) {
-        if (document.getElementById(id + '-datetime')) {
-          document.getElementById(id + '-datetime').dataset.original = record.SystemTime.Expected
-        }
-
-        update(document.getElementById(id + '-datetime'), record.SystemTime.DateTime, record.SystemTime.Status)
-      }
-
-      if (record.Cards) {
-        update(document.getElementById(id + '-cards'), record.Cards.Records, statusToString(record.Cards.Status))
-      }
-
-      if (record.Events) {
-        update(document.getElementById(id + '-events'), record.Events)
-      }
-
-      if (record.Doors) {
-        update(document.getElementById(id + '-door-1'), record.Doors[1])
-        update(document.getElementById(id + '-door-2'), record.Doors[2])
-        update(document.getElementById(id + '-door-3'), record.Doors[3])
-        update(document.getElementById(id + '-door-4'), record.Doors[4])
+      const row = updateFromDB(record)
+      if (row) {
+        row.classList.add('new')
       }
     })
   }
@@ -346,69 +289,77 @@ function added (controllers) {
 function updated (controllers) {
   if (controllers) {
     controllers.forEach((record) => {
-      const oid = record.OID
-      let row = document.querySelector("[data-oid='" + oid + "']")
-
-      if (!row && record.ID && record.ID !== '') {
-        row = document.getElementById(record.ID)
-      }
-
-      if (!row) {
-        row = add(rowID(oid))
-      }
-
-      const id = row.id
-
-      row.classList.remove('new')
-      row.dataset.oid = oid
-      row.dataset.status = statusToString(record.Status)
-
-      if (record.Name) {
-        update(document.getElementById(id + '-name'), record.Name)
-      }
-
-      if (record.DeviceID) {
-        update(document.getElementById(id + '-ID'), record.DeviceID)
-      }
-
-      if (record.IP) {
-        let ip = ''
-
-        if (record.IP.Address) {
-          ip = record.IP.Address
-        }
-
-        update(document.getElementById(id + '-IP'), ip, statusToString(record.IP.Status))
-
-        if (document.getElementById(id + '-IP')) {
-          document.getElementById(id + '-IP').dataset.original = record.IP.Configured
-        }
-      }
-
-      if (record.SystemTime) {
-        if (document.getElementById(id + '-datetime')) {
-          document.getElementById(id + '-datetime').dataset.original = record.SystemTime.Expected
-        }
-
-        update(document.getElementById(id + '-datetime'), record.SystemTime.DateTime, record.SystemTime.Status)
-      }
-
-      if (record.Cards) {
-        update(document.getElementById(id + '-cards'), record.Cards.Records, statusToString(record.Cards.Status))
-      }
-
-      if (record.Events) {
-        update(document.getElementById(id + '-events'), record.Events)
-      }
-
-      if (record.Doors) {
-        update(document.getElementById(id + '-door-1'), record.Doors[1])
-        update(document.getElementById(id + '-door-2'), record.Doors[2])
-        update(document.getElementById(id + '-door-3'), record.Doors[3])
-        update(document.getElementById(id + '-door-4'), record.Doors[4])
+      const row = updateFromDB(record)
+      if (row) {
+        row.classList.remove('new')
       }
     })
   }
+}
+
+function updateFromDB (record) {
+  const oid = record.OID
+  let row = document.querySelector("[data-oid='" + oid + "']")
+
+  if (!row && record.ID && record.ID !== '') {
+    row = document.getElementById(record.ID)
+  }
+
+  if (!row) {
+    row = add(rowID(oid))
+  }
+
+  const id = row.id
+
+  row.dataset.oid = oid
+  row.dataset.status = statusToString(record.Status)
+
+  if (record.Name) {
+    update(document.getElementById(id + '-name'), record.Name)
+  }
+
+  if (record.DeviceID) {
+    update(document.getElementById(id + '-ID'), record.DeviceID)
+  }
+
+  if (record.IP) {
+    let ip = ''
+
+    if (record.IP.Address) {
+      ip = record.IP.Address
+    }
+
+    update(document.getElementById(id + '-IP'), ip, statusToString(record.IP.Status))
+
+    if (document.getElementById(id + '-IP')) {
+      document.getElementById(id + '-IP').dataset.original = record.IP.Configured
+    }
+  }
+
+  if (record.SystemTime) {
+    if (document.getElementById(id + '-datetime')) {
+      document.getElementById(id + '-datetime').dataset.original = record.SystemTime.Expected
+    }
+
+    update(document.getElementById(id + '-datetime'), record.SystemTime.DateTime, record.SystemTime.Status)
+  }
+
+  if (record.Cards) {
+    update(document.getElementById(id + '-cards'), record.Cards.Records, statusToString(record.Cards.Status))
+  }
+
+  if (record.Events) {
+    update(document.getElementById(id + '-events'), record.Events)
+  }
+
+  if (record.Doors) {
+    update(document.getElementById(id + '-door-1'), record.Doors[1])
+    update(document.getElementById(id + '-door-2'), record.Doors[2])
+    update(document.getElementById(id + '-door-3'), record.Doors[3])
+    update(document.getElementById(id + '-door-4'), record.Doors[4])
+  }
+
+  return row
 }
 
 function deleted (list) {
@@ -527,7 +478,7 @@ function update (element, value, status) {
         break
 
       case 'select':
-        break;
+        break
     }
 
     set('controllers', element, value, status)

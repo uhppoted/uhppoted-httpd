@@ -5,6 +5,7 @@
 - [ ] JDB: rework UI to build from local DB
       - refresh added controllers
       - use broadcast address if not set
+      - don't return invalid controllers on a 'get' (they're probably interim new ones)
 
 - [ ] system
       - timezone marshalling as 'null'
