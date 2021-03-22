@@ -29,6 +29,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}
 
 	list := struct {
+		Added   []interface{} `json:"added"`
 		Updated []interface{} `json:"updated"`
 		Deleted []interface{} `json:"deleted"`
 	}{}
@@ -38,13 +39,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 loop:
 	for _, c := range clist {
 		// ... delete?
-		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
-			// ... 'fake' delete unconfigured controller
-			if c.OID == "" {
-				list.Deleted = append(list.Deleted, controllers.Merge(sys.controllers.LAN, c))
-				continue loop
-			}
-
+		if c.OID != "" && (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
 			for _, v := range shadow.Controllers {
 				if v.OID == c.OID {
 					if r, err := sys.delete(shadow, c, auth); err != nil {
@@ -75,7 +70,7 @@ loop:
 		if r, err := sys.add(shadow, c, auth); err != nil {
 			return nil, err
 		} else if r != nil {
-			list.Updated = append(list.Updated, controllers.Merge(sys.controllers.LAN, *r))
+			list.Added = append(list.Added, controllers.Merge(sys.controllers.LAN, *r))
 		}
 	}
 
