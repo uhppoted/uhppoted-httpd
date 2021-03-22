@@ -110,6 +110,7 @@ func (l *LAN) Init(devices []*Controller) {
 func (l *LAN) api() *uhppoted.UHPPOTED {
 	return &l.apix
 }
+
 func (l *LAN) Update(permissions acl.ACL) {
 	log.Printf("Updating ACL")
 
@@ -273,6 +274,12 @@ func (l *LAN) update(id uint32) {
 		log.Printf("Got %v response to get-event-range request for %v", events, id)
 	} else {
 		l.store(id, *events)
+	}
+}
+
+func (l *LAN) delete(c Controller) {
+	if l != nil && c.DeviceID != nil && *c.DeviceID != 0 {
+		delete(l.Cache, *c.DeviceID)
 	}
 }
 

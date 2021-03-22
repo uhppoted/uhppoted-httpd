@@ -3,7 +3,6 @@
 ### IN PROGRESS
 
 - [ ] JDB
-      - delete
       - build LAN UHPPOTED on the fly from the controllers list
       - build from local DB
 

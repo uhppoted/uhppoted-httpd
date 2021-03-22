@@ -152,6 +152,7 @@ func (cc *Controllers) Delete(c Controller) (*Controller, error) {
 	for i, record := range cc.Controllers {
 		if record.OID == c.OID {
 			cc.Controllers = append(cc.Controllers[:i], cc.Controllers[i+1:]...)
+			cc.LAN.delete(*record)
 			return &c, nil
 		}
 	}
