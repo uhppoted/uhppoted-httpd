@@ -1,7 +1,7 @@
 /* global */
 
 import { getAsJSON, postAsJSON, dismiss, warning } from './uhppoted.js'
-import { UpdateDB } from './db.js'
+import { DB } from './db.js'
 
 export function onEdited (event) {
   set('controllers', event.target, event.target.value)
@@ -206,8 +206,11 @@ export function onRefresh (event) {
       switch (response.status) {
         case 200:
           response.json().then(object => {
-            UpdateDB(object.system.Controllers)
-            refresh(object.system)
+            if (object && object.system) {
+              DB.updated('controllers', Object.values(object.system.Controllers))
+            }
+
+            refreshed()
           })
           break
 
@@ -220,8 +223,15 @@ export function onRefresh (event) {
     })
 }
 
-function refresh (sys) {
-  updated(Object.values(sys.Controllers))
+function refreshed () {
+  const controllers = DB.controllers
+
+  controllers.forEach(c => {
+    const row = updateFromDBX(c.OID, c)
+    if (row) {
+      row.classList.remove('new')
+    }
+  })
 }
 
 function add (uuid) {
@@ -295,6 +305,49 @@ function updated (controllers) {
       }
     })
   }
+}
+
+function updateFromDBX (oid, record) {
+  let row = document.querySelector("[data-oid='" + oid + "']")
+
+  if (!row && record.ID && record.ID !== '') {
+    row = document.getElementById(record.ID)
+  }
+
+  if (!row) {
+    row = add(rowID(oid))
+  }
+
+  const id = row.id
+  const name = document.getElementById(id + '-name')
+  const deviceID = document.getElementById(id + '-ID')
+  const address = document.getElementById(id + '-IP')
+  const datetime = document.getElementById(id + '-datetime')
+  const cards = document.getElementById(id + '-cards')
+  const events = document.getElementById(id + '-events')
+  const door1 = document.getElementById(id + '-door-1')
+  const door2 = document.getElementById(id + '-door-2')
+  const door3 = document.getElementById(id + '-door-3')
+  const door4 = document.getElementById(id + '-door-4')
+
+  row.dataset.oid = oid
+  row.dataset.status = record.status
+
+  update(name, record.name)
+  update(deviceID, record.deviceID)
+  update(address, record.address.address, record.address.status)
+  update(datetime, record.datetime.datetime, record.datetime.status)
+  update(cards, record.cards.cards, record.cards.status)
+  update(events, record.events.events)
+  update(door1, record.doors[1])
+  update(door2, record.doors[2])
+  update(door3, record.doors[3])
+  update(door4, record.doors[4])
+
+  address.dataset.original = record.address.configured
+  datetime.dataset.original = record.datetime.expected
+
+  return row
 }
 
 function updateFromDB (record) {

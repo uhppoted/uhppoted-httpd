@@ -3,8 +3,10 @@
 ### IN PROGRESS
 
 - [ ] JDB
+      - build UI from local DB
       - build LAN UHPPOTED on the fly from the controllers list
-      - build from local DB
+      - reinstate 'found' controllers
+      - reinstate 'save'
 
 - [ ] system
       - timezone marshalling as 'null'
