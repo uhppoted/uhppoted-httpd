@@ -3,10 +3,11 @@
 ### IN PROGRESS
 
 - [ ] JDB
-      - build UI from local DB
+      - JDB/deleted
       - build LAN UHPPOTED on the fly from the controllers list
       - reinstate 'found' controllers
       - reinstate 'save'
+      - commitall/rollback all don't clear after individually rolling back multiple new controllers
 
 - [ ] system
       - timezone marshalling as 'null'

@@ -121,11 +121,13 @@ function post (records, reset) {
           case 200:
             response.json().then(object => {
               if (object && object.system && object.system.added) {
-                added(object.system.added)
+                DB.added('controllers', Object.values(object.system.added))
+                refreshed()
               }
 
               if (object && object.system && object.system.updated) {
-                updated(object.system.updated)
+                DB.updated('controllers', Object.values(object.system.updated))
+                refreshed()
               }
 
               if (object && object.system && object.system.deleted) {
@@ -162,6 +164,8 @@ export function onDelete (id) {
         break
       }
     }
+
+    DB.delete('controllers', row.dataset.oid)
   }
 }
 
@@ -223,17 +227,6 @@ export function onRefresh (event) {
     })
 }
 
-function refreshed () {
-  const controllers = DB.controllers
-
-  controllers.forEach(c => {
-    const row = updateFromDBX(c.OID, c)
-    if (row) {
-      row.classList.remove('new')
-    }
-  })
-}
-
 function add (uuid) {
   const tbody = document.getElementById('controllers').querySelector('table tbody')
 
@@ -285,29 +278,22 @@ function add (uuid) {
   }
 }
 
-function added (controllers) {
-  if (controllers) {
-    controllers.forEach((record) => {
-      const row = updateFromDB(record)
-      if (row) {
-        row.classList.add('new')
-      }
-    })
-  }
-}
+function refreshed () {
+  const controllers = DB.controllers
 
-function updated (controllers) {
-  if (controllers) {
-    controllers.forEach((record) => {
-      const row = updateFromDB(record)
-      if (row) {
+  controllers.forEach(c => {
+    const row = updateFromDB(c.OID, c)
+    if (row) {
+      if (c.status === 'new') {
+        row.classList.add('new')
+      } else {
         row.classList.remove('new')
       }
-    })
-  }
+    }
+  })
 }
 
-function updateFromDBX (oid, record) {
+function updateFromDB (oid, record) {
   let row = document.querySelector("[data-oid='" + oid + "']")
 
   if (!row && record.ID && record.ID !== '') {
@@ -346,71 +332,6 @@ function updateFromDBX (oid, record) {
 
   address.dataset.original = record.address.configured
   datetime.dataset.original = record.datetime.expected
-
-  return row
-}
-
-function updateFromDB (record) {
-  const oid = record.OID
-  let row = document.querySelector("[data-oid='" + oid + "']")
-
-  if (!row && record.ID && record.ID !== '') {
-    row = document.getElementById(record.ID)
-  }
-
-  if (!row) {
-    row = add(rowID(oid))
-  }
-
-  const id = row.id
-
-  row.dataset.oid = oid
-  row.dataset.status = statusToString(record.Status)
-
-  if (record.Name) {
-    update(document.getElementById(id + '-name'), record.Name)
-  }
-
-  if (record.DeviceID) {
-    update(document.getElementById(id + '-ID'), record.DeviceID)
-  }
-
-  if (record.IP) {
-    let ip = ''
-
-    if (record.IP.Address) {
-      ip = record.IP.Address
-    }
-
-    update(document.getElementById(id + '-IP'), ip, statusToString(record.IP.Status))
-
-    if (document.getElementById(id + '-IP')) {
-      document.getElementById(id + '-IP').dataset.original = record.IP.Configured
-    }
-  }
-
-  if (record.SystemTime) {
-    if (document.getElementById(id + '-datetime')) {
-      document.getElementById(id + '-datetime').dataset.original = record.SystemTime.Expected
-    }
-
-    update(document.getElementById(id + '-datetime'), record.SystemTime.DateTime, record.SystemTime.Status)
-  }
-
-  if (record.Cards) {
-    update(document.getElementById(id + '-cards'), record.Cards.Records, statusToString(record.Cards.Status))
-  }
-
-  if (record.Events) {
-    update(document.getElementById(id + '-events'), record.Events)
-  }
-
-  if (record.Doors) {
-    update(document.getElementById(id + '-door-1'), record.Doors[1])
-    update(document.getElementById(id + '-door-2'), record.Doors[2])
-    update(document.getElementById(id + '-door-3'), record.Doors[3])
-    update(document.getElementById(id + '-door-4'), record.Doors[4])
-  }
 
   return row
 }
@@ -644,22 +565,4 @@ function uuidv4 () {
 
 function rowID (oid) {
   return 'R' + oid.replaceAll(/[^0-9]/g, '')
-}
-
-function statusToString (status) {
-  switch (status) {
-    case 1:
-      return 'ok'
-
-    case 2:
-      return 'uncertain'
-
-    case 3:
-      return 'error'
-
-    case 4:
-      return 'unconfigured'
-  }
-
-  return 'unknown'
 }

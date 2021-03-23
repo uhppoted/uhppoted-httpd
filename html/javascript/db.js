@@ -1,9 +1,21 @@
 export const DB = {
   controllers: new Map(),
 
+  added: function (tag, recordset) {
+    if (recordset) {
+      recordset.forEach(r => update(r, statusToString(r.Status)))
+    }
+  },
+
   updated: function (tag, recordset) {
     if (recordset) {
-      recordset.forEach(r => update(r))
+      recordset.forEach(r => update(r, statusToString(r.Status)))
+    }
+  },
+
+  delete: function (tag, oid) {
+    if (oid) {
+      this.controllers.delete(oid)
     }
   }
 }
@@ -16,7 +28,7 @@ export function UpdateDB (controllers) {
   }
 }
 
-function update (c) {
+function update (c, status) {
   const oid = c.OID
 
   const record = {
@@ -53,10 +65,8 @@ function update (c) {
       4: ''
     },
 
-    status: 'unknown'
+    status: status
   }
-
-  record.status = statusToString(c.Status)
 
   if (c.Name) {
     record.name = c.Name
@@ -111,6 +121,9 @@ function statusToString (status) {
 
     case 4:
       return 'unconfigured'
+
+    case 5:
+      return 'new'
   }
 
   return 'unknown'

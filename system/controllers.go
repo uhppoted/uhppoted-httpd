@@ -70,7 +70,9 @@ loop:
 		if r, err := sys.add(shadow, c, auth); err != nil {
 			return nil, err
 		} else if r != nil {
-			list.Added = append(list.Added, controllers.Merge(sys.controllers.LAN, *r))
+			cc := controllers.Merge(sys.controllers.LAN, *r)
+			cc.Status = controllers.StatusNew
+			list.Added = append(list.Added, cc)
 		}
 	}
 

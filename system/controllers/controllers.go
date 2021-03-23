@@ -105,8 +105,8 @@ func (cc *Controllers) Add(c Controller) (*Controller, error) {
 	}
 
 	record := c.clone()
-	record.Created = time.Now()
 	record.OID = catalog.Get(id)
+	record.Created = time.Now()
 
 	cc.Controllers = append(cc.Controllers, record)
 	cc.LAN.add(*record)
