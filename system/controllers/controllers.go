@@ -149,9 +149,10 @@ func (cc *Controllers) Update(c Controller) (*Controller, error) {
 }
 
 func (cc *Controllers) Delete(c Controller) (*Controller, error) {
-	for i, record := range cc.Controllers {
+	for _, record := range cc.Controllers {
 		if record.OID == c.OID {
-			cc.Controllers = append(cc.Controllers[:i], cc.Controllers[i+1:]...)
+			c.deleted = true
+			record.deleted = true
 			cc.LAN.delete(*record)
 			return &c, nil
 		}

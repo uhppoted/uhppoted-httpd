@@ -16,6 +16,7 @@ type Controller struct {
 	IP       *types.Address   `json:"address"`
 	Doors    map[uint8]string `json:"doors"`
 	TimeZone *string          `json:"timezone"`
+	deleted  bool
 }
 
 func (c *Controller) AsRuleEntity() interface{} {

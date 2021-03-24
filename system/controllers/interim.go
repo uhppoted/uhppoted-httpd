@@ -30,6 +30,7 @@ type controller struct {
 	Cards      cards
 	Events     *records
 	Status     status
+	Deleted    bool
 }
 
 func Consolidate(lan *LAN, controllers []*Controller) interface{} {
@@ -83,6 +84,7 @@ func Merge(lan *LAN, c Controller) controller {
 		Doors: map[uint8]string{1: "", 2: "", 3: "", 4: ""},
 
 		Created: c.Created,
+		Deleted: c.deleted,
 	}
 
 	if c.Name != nil {

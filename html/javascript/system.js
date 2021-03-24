@@ -18,18 +18,7 @@ export function onTick (event) {
 }
 
 export function onCommit (event) {
-  onUpdate(event.target.dataset.record)
-}
-
-export function onRollback (event, op) {
-  const id = event.target.dataset.record
-  const row = document.getElementById(id)
-
-  if (row && row.classList.contains('new')) {
-    onDelete(event.target.dataset.record)
-  } else {
-    onRevert(event.target.dataset.record)
-  }
+  commit(event.target.dataset.record)
 }
 
 export function onCommitAll (event) {
@@ -47,8 +36,15 @@ export function onCommitAll (event) {
       }
     }
 
-    onUpdate(...list)
+    commit(...list)
   }
+}
+
+export function onRollback (event, op) {
+  const id = event.target.dataset.record
+  const row = document.getElementById(id)
+
+  rollback(row)
 }
 
 export function onRollbackAll (event) {
@@ -58,13 +54,7 @@ export function onRollbackAll (event) {
     const rows = tbody.rows
 
     for (let i = 0; i < rows.length; i++) {
-      const row = rows[i]
-
-      if (row.classList.contains('new')) {
-        onDelete(row.id)
-      } else if (row.classList.contains('modified')) {
-        onRevert(row.id)
-      }
+      rollback(rows[i])
     }
   }
 }
@@ -77,7 +67,37 @@ export function onNew (event) {
   post(records, reset)
 }
 
-export function onUpdate (...list) {
+export function onRefresh (event) {
+  if (event && event.target && event.target.id === 'refresh') {
+    busy()
+    dismiss()
+  }
+
+  getAsJSON('/system')
+    .then(response => {
+      unbusy()
+
+      switch (response.status) {
+        case 200:
+          response.json().then(object => {
+            if (object && object.system) {
+              DB.updated('controllers', Object.values(object.system.Controllers))
+            }
+
+            refreshed()
+          })
+          break
+
+        default:
+          response.text().then(message => { warning(message) })
+      }
+    })
+    .catch(function (err) {
+      console.log(err)
+    })
+}
+
+function commit (...list) {
   const rows = []
   const records = []
   const fields = []
@@ -109,6 +129,15 @@ export function onUpdate (...list) {
   })
 }
 
+function rollback (row) {
+  if (row && row.classList.contains('new')) {
+    DB.delete('controllers', row.dataset.oid)
+    refreshed()
+  } else {
+    revert(row)
+  }
+}
+
 function post (records, reset) {
   busy()
 
@@ -122,17 +151,17 @@ function post (records, reset) {
             response.json().then(object => {
               if (object && object.system && object.system.added) {
                 DB.added('controllers', Object.values(object.system.added))
-                refreshed()
               }
 
               if (object && object.system && object.system.updated) {
                 DB.updated('controllers', Object.values(object.system.updated))
-                refreshed()
               }
 
               if (object && object.system && object.system.deleted) {
-                deleted(object.system.deleted)
+                DB.deleted('controllers', Object.values(object.system.deleted))
               }
+
+              refreshed()
             })
             break
 
@@ -151,80 +180,70 @@ function post (records, reset) {
     })
 }
 
-export function onDelete (id) {
-  const tbody = document.getElementById('controllers').querySelector('table tbody')
-  const row = document.getElementById(id)
+function refreshed () {
+  const controllers = DB.controllers
 
-  if (tbody && row) {
-    const rows = tbody.rows
-
-    for (let ix = 0; ix < rows.length; ix++) {
-      if (rows[ix].id === id) {
-        tbody.deleteRow(ix)
-        break
-      }
-    }
-
-    DB.delete('controllers', row.dataset.oid)
-  }
-}
-
-export function onRevert (id) {
-  const row = document.getElementById(id)
-
-  if (row) {
-    const fields = row.querySelectorAll('.field')
-
-    fields.forEach((item) => {
-      if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
-        switch (item.getAttribute('type').toLowerCase()) {
-          case 'text':
-          case 'number':
-          case 'date':
-            item.value = item.dataset.original
-            break
-
-          case 'checkbox':
-            item.checked = item.dataset.original === 'true'
-            break
-        }
-      }
-
-      set('controllers', item, item.dataset.original)
-    })
-
-    row.classList.remove('modified')
-  }
-}
-
-export function onRefresh (event) {
-  if (event && event.target && event.target.id === 'refresh') {
-    busy()
-    dismiss()
-  }
-
-  getAsJSON('/system')
-    .then(response => {
-      unbusy()
-
-      switch (response.status) {
-        case 200:
-          response.json().then(object => {
-            if (object && object.system) {
-              DB.updated('controllers', Object.values(object.system.Controllers))
-            }
-
-            refreshed()
-          })
+  controllers.forEach(c => {
+    const row = updateFromDB(c.OID, c)
+    if (row) {
+      switch (c.status) {
+        case 'new':
+          row.classList.add('new')
           break
 
         default:
-          response.text().then(message => { warning(message) })
+          row.classList.remove('new')
       }
-    })
-    .catch(function (err) {
-      console.log(err)
-    })
+    }
+  })
+}
+
+function updateFromDB (oid, record) {
+  let row = document.querySelector("[data-oid='" + oid + "']")
+
+  if (!row && record.ID && record.ID !== '') {
+    row = document.getElementById(record.ID)
+  }
+
+  if (record.status === 'deleted') {
+    deleted(row)
+    return
+  }
+
+  if (!row) {
+    row = add(rowID(oid))
+  }
+
+  const id = row.id
+  const name = document.getElementById(id + '-name')
+  const deviceID = document.getElementById(id + '-ID')
+  const address = document.getElementById(id + '-IP')
+  const datetime = document.getElementById(id + '-datetime')
+  const cards = document.getElementById(id + '-cards')
+  const events = document.getElementById(id + '-events')
+  const door1 = document.getElementById(id + '-door-1')
+  const door2 = document.getElementById(id + '-door-2')
+  const door3 = document.getElementById(id + '-door-3')
+  const door4 = document.getElementById(id + '-door-4')
+
+  row.dataset.oid = oid
+  row.dataset.status = record.status
+
+  update(name, record.name)
+  update(deviceID, record.deviceID)
+  update(address, record.address.address, record.address.status)
+  update(datetime, record.datetime.datetime, record.datetime.status)
+  update(cards, record.cards.cards, record.cards.status)
+  update(events, record.events.events)
+  update(door1, record.doors[1])
+  update(door2, record.doors[2])
+  update(door3, record.doors[3])
+  update(door4, record.doors[4])
+
+  address.dataset.original = record.address.configured
+  datetime.dataset.original = record.datetime.expected
+
+  return row
 }
 
 function add (uuid) {
@@ -278,82 +297,45 @@ function add (uuid) {
   }
 }
 
-function refreshed () {
-  const controllers = DB.controllers
+function revert (row) {
+  if (row) {
+    const id = row.id
+    const fields = row.querySelectorAll('.field')
 
-  controllers.forEach(c => {
-    const row = updateFromDB(c.OID, c)
-    if (row) {
-      if (c.status === 'new') {
-        row.classList.add('new')
-      } else {
-        row.classList.remove('new')
-      }
-    }
-  })
-}
-
-function updateFromDB (oid, record) {
-  let row = document.querySelector("[data-oid='" + oid + "']")
-
-  if (!row && record.ID && record.ID !== '') {
-    row = document.getElementById(record.ID)
-  }
-
-  if (!row) {
-    row = add(rowID(oid))
-  }
-
-  const id = row.id
-  const name = document.getElementById(id + '-name')
-  const deviceID = document.getElementById(id + '-ID')
-  const address = document.getElementById(id + '-IP')
-  const datetime = document.getElementById(id + '-datetime')
-  const cards = document.getElementById(id + '-cards')
-  const events = document.getElementById(id + '-events')
-  const door1 = document.getElementById(id + '-door-1')
-  const door2 = document.getElementById(id + '-door-2')
-  const door3 = document.getElementById(id + '-door-3')
-  const door4 = document.getElementById(id + '-door-4')
-
-  row.dataset.oid = oid
-  row.dataset.status = record.status
-
-  update(name, record.name)
-  update(deviceID, record.deviceID)
-  update(address, record.address.address, record.address.status)
-  update(datetime, record.datetime.datetime, record.datetime.status)
-  update(cards, record.cards.cards, record.cards.status)
-  update(events, record.events.events)
-  update(door1, record.doors[1])
-  update(door2, record.doors[2])
-  update(door3, record.doors[3])
-  update(door4, record.doors[4])
-
-  address.dataset.original = record.address.configured
-  datetime.dataset.original = record.datetime.expected
-
-  return row
-}
-
-function deleted (list) {
-  const tbody = document.getElementById('controllers').querySelector('table tbody')
-
-  if (tbody && list) {
-    list.forEach((record) => {
-      const id = record.ID
-      const row = document.getElementById(id)
-
-      if (row) {
-        const rows = tbody.rows
-        for (let i = 0; i < rows.length; i++) {
-          if (rows[i].id === id) {
-            tbody.deleteRow(i)
+    fields.forEach((item) => {
+      if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
+        switch (item.getAttribute('type').toLowerCase()) {
+          case 'text':
+          case 'number':
+          case 'date':
+            item.value = item.dataset.original
             break
-          }
+
+          case 'checkbox':
+            item.checked = item.dataset.original === 'true'
+            break
         }
       }
+
+      set('controllers', item, item.dataset.original)
     })
+
+    row.classList.remove('modified')
+  }
+}
+
+function deleted (row) {
+  const tbody = document.getElementById('controllers').querySelector('table tbody')
+
+  if (tbody && row) {
+    const rows = tbody.rows
+
+    for (let ix = 0; ix < rows.length; ix++) {
+      if (rows[ix].id === row.id) {
+        tbody.deleteRow(ix)
+        break
+      }
+    }
   }
 }
 

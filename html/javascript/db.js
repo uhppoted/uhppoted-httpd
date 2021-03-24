@@ -13,9 +13,19 @@ export const DB = {
     }
   },
 
+  deleted: function (tag, recordset) {
+    if (recordset) {
+      recordset.forEach(r => update(r, 'deleted'))
+    }
+  },
+
   delete: function (tag, oid) {
-    if (oid) {
-      this.controllers.delete(oid)
+    if (oid && this.controllers.has(oid)) {
+      let record = this.controllers.get(oid)
+
+      record.status = 'deleted'
+
+      this.controllers.set(oid, record)
     }
   }
 }
@@ -103,6 +113,10 @@ function update (c, status) {
     record.doors[2] = c.Doors[2]
     record.doors[3] = c.Doors[3]
     record.doors[4] = c.Doors[4]
+  }
+
+  if (c.Deleted) {
+    record.status = 'deleted'
   }
 
   DB.controllers.set(oid, record)

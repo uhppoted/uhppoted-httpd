@@ -4,10 +4,15 @@
 
 - [ ] JDB
       - JDB/deleted
+        -- don't save deleted controllers
+        -- allow add/update controller with same device ID as deleted controller
+        -- what about edit when deleted (i.e. before refresh)
+        -- garbage collect deleted records
+      - remove ID from system.controllers.Controller
       - build LAN UHPPOTED on the fly from the controllers list
       - reinstate 'found' controllers
       - reinstate 'save'
-      - commitall/rollback all don't clear after individually rolling back multiple new controllers
+      - commitall/rollback all don't hide after individually rolling back multiple new controllers
 
 - [ ] system
       - timezone marshalling as 'null'
