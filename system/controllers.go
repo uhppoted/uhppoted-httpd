@@ -76,9 +76,9 @@ loop:
 		}
 	}
 
-	//	if err := save(shadow); err != nil {
-	//		return nil, err
-	//	}
+	if err := save(shadow); err != nil {
+		return nil, err
+	}
 
 	sys.controllers = *shadow
 
@@ -186,17 +186,18 @@ func save(c *controllers.Controllers) error {
 		return err
 	}
 
-	return c.Save()
+	// return c.Save()
+	return nil
 }
 
-func validate(d *controllers.Controllers) error {
-	if err := d.Validate(); err != nil {
+func validate(c *controllers.Controllers) error {
+	if err := c.Validate(); err != nil {
 		return err
 	}
 
 	doors := map[string]string{}
 
-	for _, r := range d.Controllers {
+	for _, r := range c.Controllers {
 		for _, v := range r.Doors {
 			if v != "" {
 				if _, ok := sys.doors.Doors[v]; !ok {

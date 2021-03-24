@@ -4,8 +4,7 @@
 
 - [ ] JDB
       - JDB/deleted
-        -- don't save deleted controllers
-        -- allow add/update controller with same device ID as deleted controller
+        -- don't save tombstoned controllers
         -- what about edit when deleted (i.e. before refresh)
         -- garbage collect deleted records
       - remove ID from system.controllers.Controller

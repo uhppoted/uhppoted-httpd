@@ -288,6 +288,10 @@ func validate(cc Controllers) error {
 			return fmt.Errorf("Invalid controller OID (%v)", c.OID)
 		}
 
+		if c.deleted {
+			continue
+		}
+
 		if c.DeviceID != nil && *c.DeviceID != 0 {
 			id := *c.DeviceID
 

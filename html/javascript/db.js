@@ -21,7 +21,7 @@ export const DB = {
 
   delete: function (tag, oid) {
     if (oid && this.controllers.has(oid)) {
-      let record = this.controllers.get(oid)
+      const record = this.controllers.get(oid)
 
       record.status = 'deleted'
 

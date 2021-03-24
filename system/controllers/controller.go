@@ -60,6 +60,7 @@ func (c *Controller) clone() *Controller {
 			IP:       c.IP,
 			TimeZone: c.TimeZone,
 			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
+			deleted:  c.deleted,
 		}
 
 		for k, v := range c.Doors {
