@@ -65,7 +65,19 @@ func (cc *Controllers) Save() error {
 		return nil
 	}
 
-	b, err := json.MarshalIndent(cc, "", "  ")
+	cleaned := Controllers{
+		file:        cc.file,
+		Controllers: []*Controller{},
+		LAN:         cc.LAN.clone(),
+	}
+
+	for _, v := range cc.Controllers {
+		if !v.deleted {
+			cleaned.Controllers = append(cleaned.Controllers, v.clone())
+		}
+	}
+
+	b, err := json.MarshalIndent(cleaned, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -200,7 +212,7 @@ func Export(file string, controllers []*Controller, doors map[string]types.Door)
 
 	devices := config.DeviceMap{}
 	for _, c := range controllers {
-		if c.DeviceID != nil {
+		if c.DeviceID != nil && *c.DeviceID != 0 && !c.deleted {
 			device := config.Device{
 				Name:     "",
 				Address:  (*net.UDPAddr)(c.IP),

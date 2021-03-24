@@ -4,17 +4,16 @@
 
 - [ ] JDB
       - JDB/deleted
-        -- don't save tombstoned controllers
         -- what about edit when deleted (i.e. before refresh)
         -- garbage collect deleted records
+      - reinstate 'found' controllers
       - remove ID from system.controllers.Controller
       - build LAN UHPPOTED on the fly from the controllers list
-      - reinstate 'found' controllers
-      - reinstate 'save'
       - commitall/rollback all don't hide after individually rolling back multiple new controllers
 
 - [ ] system
-      - timezone marshalling as 'null'
+      - initialise LAN/all from uhppoted.conf (?)
+      - make DeviceID a type that handles nil on String()
       - separate ID/OID
       - handle 'deleted by other person'
       - logic around correcting time is weird

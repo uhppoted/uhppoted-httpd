@@ -186,8 +186,7 @@ func save(c *controllers.Controllers) error {
 		return err
 	}
 
-	// return c.Save()
-	return nil
+	return c.Save()
 }
 
 func validate(c *controllers.Controllers) error {

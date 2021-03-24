@@ -11,11 +11,11 @@ type Controller struct {
 	ID       string           `json:"-"` // TODO REMOVE
 	OID      string           `json:"OID"`
 	Created  time.Time        `json:"created"`
-	Name     *types.Name      `json:"name"`
-	DeviceID *uint32          `json:"device-id"`
-	IP       *types.Address   `json:"address"`
+	Name     *types.Name      `json:"name,omitempty"`
+	DeviceID *uint32          `json:"device-id,omitempty"`
+	IP       *types.Address   `json:"address,omitempty"`
 	Doors    map[uint8]string `json:"doors"`
-	TimeZone *string          `json:"timezone"`
+	TimeZone *string          `json:"timezone,omitempty"`
 	deleted  bool
 }
 
