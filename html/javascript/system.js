@@ -49,12 +49,11 @@ export function onRollback (event, op) {
 
 export function onRollbackAll (event) {
   const tbody = document.getElementById('controllers').querySelector('table tbody')
-
   if (tbody) {
     const rows = tbody.rows
 
-    for (let i = 0; i < rows.length; i++) {
-      rollback(rows[i])
+    for (let i=rows.length; i > 0; i--) {
+      rollback(rows[i-1])
     }
   }
 }

@@ -9,7 +9,6 @@
       - reinstate 'found' controllers
       - remove ID from system.controllers.Controller
       - build LAN UHPPOTED on the fly from the controllers list
-      - commitall/rollback all don't hide after individually rolling back multiple new controllers
 
 - [ ] system
       - initialise LAN/all from uhppoted.conf (?)
