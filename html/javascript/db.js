@@ -23,18 +23,14 @@ export const DB = {
     if (oid && this.controllers.has(oid)) {
       const record = this.controllers.get(oid)
 
+      record.mark = 0
       record.status = 'deleted'
-
-      this.controllers.set(oid, record)
     }
-  }
-}
+  },
 
-export function UpdateDB (controllers) {
-  if (controllers) {
-    controllers.forEach(c => {
-      update(c)
-    })
+  refreshed: function(tag) {
+    mark()
+    sweep()
   }
 }
 
@@ -75,7 +71,8 @@ function update (c, status) {
       4: ''
     },
 
-    status: status
+    status: status,
+    mark: 0,
   }
 
   if (c.Name) {
@@ -120,6 +117,20 @@ function update (c, status) {
   }
 
   DB.controllers.set(oid, record)
+}
+
+function mark() {  
+  DB.controllers.forEach(v => {
+    v.mark += 1
+  })
+}
+
+function sweep() {
+  DB.controllers.forEach((v,k) => {
+    if (v.mark >= 25 && v.status === 'deleted') {
+      DB.controllers.delete(k)      
+    }
+  })
 }
 
 function statusToString (status) {

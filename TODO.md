@@ -4,7 +4,7 @@
 
 - [ ] JDB
       - JDB/deleted
-        -- garbage collect deleted records
+        -- garbage collect deleted server-side records
       - remove ID from system.controllers.Controller
       - reinstate 'found' controllers
       - build LAN UHPPOTED on the fly from the controllers list
