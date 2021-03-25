@@ -28,7 +28,7 @@ export const DB = {
     }
   },
 
-  refreshed: function(tag) {
+  refreshed: function (tag) {
     mark()
     sweep()
   }
@@ -72,7 +72,7 @@ function update (c, status) {
     },
 
     status: status,
-    mark: 0,
+    mark: 0
   }
 
   if (c.Name) {
@@ -119,16 +119,16 @@ function update (c, status) {
   DB.controllers.set(oid, record)
 }
 
-function mark() {  
+function mark () {
   DB.controllers.forEach(v => {
     v.mark += 1
   })
 }
 
-function sweep() {
-  DB.controllers.forEach((v,k) => {
+function sweep () {
+  DB.controllers.forEach((v, k) => {
     if (v.mark >= 25 && v.status === 'deleted') {
-      DB.controllers.delete(k)      
+      DB.controllers.delete(k)
     }
   })
 }

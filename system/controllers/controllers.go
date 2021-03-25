@@ -18,6 +18,7 @@ import (
 
 type Controllers struct {
 	file        string        `json:"-"`
+	retention   time.Duration `json:"-"`
 	Controllers []*Controller `json:"controllers"`
 	LAN         *LAN          `json:"LAN"`
 }
@@ -28,10 +29,11 @@ func NewControllers() Controllers {
 	return Controllers{
 		Controllers: []*Controller{},
 		LAN:         NewLAN(),
+		retention:   6 * time.Hour,
 	}
 }
 
-func (cc *Controllers) Load(file string) error {
+func (cc *Controllers) Load(file string, retention time.Duration) error {
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
@@ -43,6 +45,7 @@ func (cc *Controllers) Load(file string) error {
 	}
 
 	cc.file = file
+	cc.retention = retention
 	cc.LAN.Init(cc.Controllers)
 
 	return nil
@@ -67,12 +70,13 @@ func (cc *Controllers) Save() error {
 
 	cleaned := Controllers{
 		file:        cc.file,
+		retention:   cc.retention,
 		Controllers: []*Controller{},
 		LAN:         cc.LAN.clone(),
 	}
 
 	for _, v := range cc.Controllers {
-		if !v.deleted {
+		if v.deleted == nil {
 			cleaned.Controllers = append(cleaned.Controllers, v.clone())
 		}
 	}
@@ -102,6 +106,19 @@ func (cc *Controllers) Save() error {
 	}
 
 	return os.Rename(tmp.Name(), cc.file)
+}
+
+func (cc *Controllers) Sweep() {
+	if cc == nil {
+		return
+	}
+
+	cutoff := time.Now().Add(-cc.retention)
+	for i, v := range cc.Controllers {
+		if v.deleted != nil && v.deleted.Before(cutoff) {
+			cc.Controllers = append(cc.Controllers[:i], cc.Controllers[i+1:]...)
+		}
+	}
 }
 
 func (cc *Controllers) Print() {
@@ -163,8 +180,9 @@ func (cc *Controllers) Update(c Controller) (*Controller, error) {
 func (cc *Controllers) Delete(c Controller) (*Controller, error) {
 	for _, record := range cc.Controllers {
 		if record.OID == c.OID {
-			c.deleted = true
-			record.deleted = true
+			now := time.Now()
+			c.deleted = &now
+			record.deleted = &now
 			cc.LAN.delete(*record)
 			return &c, nil
 		}
@@ -176,7 +194,7 @@ func (cc *Controllers) Delete(c Controller) (*Controller, error) {
 func (cc *Controllers) Refresh() {
 	devices := []uint32{}
 	for _, record := range cc.Controllers {
-		if record.DeviceID != nil && *record.DeviceID != 0 {
+		if record.DeviceID != nil && *record.DeviceID != 0 && record.deleted == nil {
 			devices = append(devices, *record.DeviceID)
 		}
 	}
@@ -187,6 +205,7 @@ func (cc *Controllers) Refresh() {
 func (cc *Controllers) Clone() *Controllers {
 	shadow := Controllers{
 		file:        cc.file,
+		retention:   cc.retention,
 		Controllers: make([]*Controller, len(cc.Controllers)),
 		LAN:         &LAN{},
 	}
@@ -212,7 +231,7 @@ func Export(file string, controllers []*Controller, doors map[string]types.Door)
 
 	devices := config.DeviceMap{}
 	for _, c := range controllers {
-		if c.DeviceID != nil && *c.DeviceID != 0 && !c.deleted {
+		if c.DeviceID != nil && *c.DeviceID != 0 && c.deleted == nil {
 			device := config.Device{
 				Name:     "",
 				Address:  (*net.UDPAddr)(c.IP),
@@ -300,7 +319,7 @@ func validate(cc Controllers) error {
 			return fmt.Errorf("Invalid controller OID (%v)", c.OID)
 		}
 
-		if c.deleted {
+		if c.deleted != nil {
 			continue
 		}
 

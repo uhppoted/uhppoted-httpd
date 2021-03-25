@@ -84,7 +84,7 @@ func Merge(lan *LAN, c Controller) controller {
 		Doors: map[uint8]string{1: "", 2: "", 3: "", 4: ""},
 
 		Created: c.Created,
-		Deleted: c.deleted,
+		Deleted: c.deleted != nil,
 	}
 
 	if c.Name != nil {

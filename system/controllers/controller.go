@@ -16,7 +16,7 @@ type Controller struct {
 	IP       *types.Address   `json:"address,omitempty"`
 	Doors    map[uint8]string `json:"doors"`
 	TimeZone *string          `json:"timezone,omitempty"`
-	deleted  bool
+	deleted  *time.Time
 }
 
 func (c *Controller) AsRuleEntity() interface{} {
@@ -39,6 +39,24 @@ func (c *Controller) AsRuleEntity() interface{} {
 	}
 
 	return &entity{}
+}
+
+func (c *Controller) String() string {
+	if c != nil {
+		s := fmt.Sprintf("%v", c.OID)
+
+		if c.Name != nil {
+			s += fmt.Sprintf(" %v", *c.Name)
+		}
+
+		if c.DeviceID != nil {
+			s += fmt.Sprintf(" %v", *c.DeviceID)
+		}
+
+		return s
+	}
+
+	return ""
 }
 
 func (c *Controller) IsValid() bool {

@@ -53,6 +53,10 @@ func (s *system) refresh() {
 	})
 
 	sys.taskQ.Add(Task{
+		f: s.controllers.Sweep,
+	})
+
+	sys.taskQ.Add(Task{
 		f: CompareACL,
 	})
 }
@@ -70,7 +74,7 @@ func init() {
 }
 
 func Init(conf, controllers, doors string, cards cards.Cards, trail audit.Trail) error {
-	sys.controllers.Load(controllers)
+	sys.controllers.Load(controllers, 6*time.Hour)
 
 	bytes, err := ioutil.ReadFile(doors)
 	if err != nil {
