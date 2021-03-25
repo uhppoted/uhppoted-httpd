@@ -1,18 +1,17 @@
-  ## v0.7.x
+## v0.7.x
 
 ### IN PROGRESS
 
 - [ ] JDB
       - JDB/deleted
-        -- what about edit when deleted (i.e. before refresh)
         -- garbage collect deleted records
-      - reinstate 'found' controllers
       - remove ID from system.controllers.Controller
+      - reinstate 'found' controllers
       - build LAN UHPPOTED on the fly from the controllers list
 
 - [ ] system
       - initialise LAN/all from uhppoted.conf (?)
-      - make DeviceID a type that handles nil on String()
+      - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
       - separate ID/OID
       - handle 'deleted by other person'
       - logic around correcting time is weird
@@ -27,7 +26,6 @@
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core
-      - think through ID/OID and add/edit/update operations
 
       - validate Local::Device timezone on initialization
       - cache expiry

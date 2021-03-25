@@ -52,8 +52,8 @@ export function onRollbackAll (event) {
   if (tbody) {
     const rows = tbody.rows
 
-    for (let i=rows.length; i > 0; i--) {
-      rollback(rows[i-1])
+    for (let i = rows.length; i > 0; i--) {
+      rollback(rows[i - 1])
     }
   }
 }
