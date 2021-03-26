@@ -122,6 +122,8 @@ github.com/uhppoted/uhppoted-api v0.6.11-0.20210311200429-1ddc79cba451 h1:EfBxFE
 github.com/uhppoted/uhppoted-api v0.6.11-0.20210311200429-1ddc79cba451/go.mod h1:hNvH9mCPPvi5JgMMskKCP/PmQuWagXNrOeONJAu88WY=
 github.com/uhppoted/uhppoted-api v0.6.11-0.20210312191042-8305a8678d26 h1:idwfGImKsbwsFpwBX9SlsYLc8adhaWvocWTZtXjf2Sg=
 github.com/uhppoted/uhppoted-api v0.6.11-0.20210312191042-8305a8678d26/go.mod h1:hNvH9mCPPvi5JgMMskKCP/PmQuWagXNrOeONJAu88WY=
+github.com/uhppoted/uhppoted-api v0.6.11-0.20210326182031-d4e84f8275be h1:bc0SDB4szv3a6kbZCLvYOBh+pmvGFD1ccDR6RxENQHo=
+github.com/uhppoted/uhppoted-api v0.6.11-0.20210326182031-d4e84f8275be/go.mod h1:hNvH9mCPPvi5JgMMskKCP/PmQuWagXNrOeONJAu88WY=
 github.com/uhppoted/uhppoted-api v0.6.11 h1:kkc3y5xKQhTdonb9DmBquOQ4wHauOx1qpyHiHksNCzQ=
 github.com/uhppoted/uhppoted-api v0.6.11/go.mod h1:Gbo5J8AozBrB3tr5p476LmlukQ1dPHeDJLJTFoIyDe4=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=

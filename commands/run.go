@@ -65,6 +65,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 	}
 
 	trail := audit.NewAuditTrail(conf.HTTPD.Audit.File)
+	retention := conf.HTTPD.Retention
 
 	h := httpd.HTTPD{
 		Dir:                      "html",
@@ -109,7 +110,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
 	}
 
-	if err := system.Init(cmd.configuration, conf.HTTPD.System.Controllers, conf.HTTPD.System.Doors, db, trail); err != nil {
+	if err := system.Init(cmd.configuration, conf.HTTPD.System.Controllers, conf.HTTPD.System.Doors, db, trail, retention); err != nil {
 		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 

@@ -73,8 +73,9 @@ func init() {
 	}()
 }
 
-func Init(conf, controllers, doors string, cards cards.Cards, trail audit.Trail) error {
-	sys.controllers.Load(controllers, 6*time.Hour)
+func Init(conf, controllers, doors string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
+	fmt.Printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> RETENTION: %v\n", retention)
+	sys.controllers.Load(controllers, retention)
 
 	bytes, err := ioutil.ReadFile(doors)
 	if err != nil {
