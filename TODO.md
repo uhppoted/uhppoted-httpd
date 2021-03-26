@@ -8,7 +8,7 @@
 
 - [ ] system
       - 'refresh' can invoke system GET without logging in???
-      - try fix Firefox layout
+      - fix Firefox layout
       - initialise LAN/all from uhppoted.conf (?)
       - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
       - separate ID/OID
