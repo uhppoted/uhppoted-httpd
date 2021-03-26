@@ -10,6 +10,7 @@
       - build LAN UHPPOTED on the fly from the controllers list
 
 - [ ] system
+      - try fix Firefox layout
       - initialise LAN/all from uhppoted.conf (?)
       - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
       - separate ID/OID
