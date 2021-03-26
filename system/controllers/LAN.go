@@ -23,9 +23,9 @@ type LAN struct {
 	BroadcastAddress *types.Address           `json:"broadcast-address"`
 	ListenAddress    *types.Address           `json:"listen-address"`
 	Debug            bool                     `json:"debug"`
-	Devices          map[uint32]types.Address `json:"-"` // TODO make unexported again once the code shuffle is done
+	devices          map[uint32]types.Address `json:"-"`
 	apix             uhppoted.UHPPOTED
-	cache            map[uint32]device `json:"-"` // TODO make unexported again once the code shuffle is done
+	cache            map[uint32]device `json:"-"`
 	guard            sync.RWMutex
 }
 
@@ -48,7 +48,7 @@ const WINDOW = 300 // 5 minutes
 func NewLAN() *LAN {
 	u := uhppote.UHPPOTE{}
 	lan := LAN{
-		Devices: map[uint32]types.Address{},
+		devices: map[uint32]types.Address{},
 		apix: uhppoted.UHPPOTED{
 			Uhppote: &u,
 			Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
@@ -89,7 +89,7 @@ func (l *LAN) Init(devices []*Controller) {
 		id := *v.DeviceID
 		addr := net.UDPAddr(*v.IP)
 
-		l.Devices[id] = *v.IP
+		l.devices[id] = *v.IP
 
 		u.Devices[id] = &uhppote.Device{
 			Name:     name,
@@ -183,7 +183,7 @@ func (l *LAN) Compare(permissions acl.ACL) error {
 
 	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
 
-	for k, _ := range l.Devices {
+	for k, _ := range l.devices {
 		l.store(k, compare[k])
 	}
 
@@ -303,7 +303,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 	switch v := info.(type) {
 	case uhppoted.GetDeviceResponse:
 		port := 60000
-		if d, ok := l.Devices[id]; ok {
+		if d, ok := l.devices[id]; ok {
 			port = d.Port
 		}
 

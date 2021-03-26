@@ -3,7 +3,6 @@
 ### IN PROGRESS
 
 - [ ] JDB
-      - make LAN.Devices unexported again
       - remove ID from system.controllers.Controller
       - build LAN UHPPOTED on the fly from the controllers list
 
