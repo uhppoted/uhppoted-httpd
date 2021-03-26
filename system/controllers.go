@@ -71,7 +71,7 @@ loop:
 			return nil, err
 		} else if r != nil {
 			cc := controllers.Merge(sys.controllers.LAN, *r)
-			cc.Status = controllers.StatusNew
+
 			list.Added = append(list.Added, cc)
 		}
 	}

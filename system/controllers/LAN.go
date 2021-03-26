@@ -196,21 +196,22 @@ func (l *LAN) refresh(devices []uint32) {
 		list[k] = struct{}{}
 	}
 
+	api := l.api()
 	go func() {
-		// if devices, err := l.api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
-		// 	log.Printf("%v", err)
-		// } else if devices == nil {
-		// 	log.Printf("Got %v response to get-devices request", devices)
-		// } else {
-		// 	for k, v := range devices.Devices {
-		// 		if d, ok := l.api.Uhppote.DeviceList()[k]; ok {
-		// 			d.Address.IP = v.Address
-		// 			d.Address.Port = 60000
-		// 		}
+		if devices, err := api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
+			log.Printf("%v", err)
+		} else if devices == nil {
+			log.Printf("Got %v response to get-devices request", devices)
+		} else {
+			for k, v := range devices.Devices {
+				if d, ok := api.Uhppote.DeviceList()[k]; ok {
+					d.Address.IP = v.Address
+					d.Address.Port = 60000
+				}
 
-		// 		list[k] = struct{}{}
-		// 	}
-		// }
+				list[k] = struct{}{}
+			}
+		}
 
 		for k, _ := range list {
 			id := k

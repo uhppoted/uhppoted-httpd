@@ -43,3 +43,18 @@ loop:
 		return oid
 	}
 }
+
+func Find(deviceID uint32) string {
+	guard.Lock()
+	defer guard.Unlock()
+
+	if deviceID != 0 {
+		for oid, id := range catalog {
+			if id == deviceID {
+				return oid
+			}
+		}
+	}
+
+	return ""
+}

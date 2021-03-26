@@ -3,11 +3,10 @@
 ### IN PROGRESS
 
 - [ ] JDB
-      - JDB/deleted
-        -- make systen garbage collection retention configurable
-      - remove ID from system.controllers.Controller
       - reinstate 'found' controllers
+      - remove ID from system.controllers.Controller
       - build LAN UHPPOTED on the fly from the controllers list
+      - make LAN.Cache and LAN.Devices unexported again
 
 - [ ] system
       - try fix Firefox layout

@@ -85,6 +85,7 @@ func Merge(lan *LAN, c Controller) controller {
 
 		Created: c.Created,
 		Deleted: c.deleted != nil,
+		Status:  StatusUnknown,
 	}
 
 	if c.Name != nil {
@@ -93,6 +94,10 @@ func Merge(lan *LAN, c Controller) controller {
 
 	if c.DeviceID != nil {
 		cc.DeviceID = fmt.Sprintf("%v", *c.DeviceID)
+	}
+
+	if cc.Name == "" && cc.DeviceID == "" {
+		cc.Status = StatusNew
 	}
 
 	if c.IP != nil {
