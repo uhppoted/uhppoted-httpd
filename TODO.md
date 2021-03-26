@@ -3,12 +3,12 @@
 ### IN PROGRESS
 
 - [ ] JDB
-      - reinstate 'found' controllers
       - remove ID from system.controllers.Controller
       - build LAN UHPPOTED on the fly from the controllers list
       - make LAN.Cache and LAN.Devices unexported again
 
 - [ ] system
+      - can invoke system GET without logging in???
       - try fix Firefox layout
       - initialise LAN/all from uhppoted.conf (?)
       - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)

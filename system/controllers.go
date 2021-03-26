@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -175,6 +176,8 @@ func (s *system) delete(shadow *controllers.Controllers, c controllers.Controlle
 			}
 		}
 	}
+
+	catalog.Delete(record.OID)
 
 	s.log("delete", record, auth)
 

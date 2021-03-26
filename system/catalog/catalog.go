@@ -5,14 +5,22 @@ import (
 	"sync"
 )
 
-var catalog = map[string]uint32{}
+var catalog = map[string]record{}
 var guard sync.Mutex
+
+type record struct {
+	ID      uint32
+	deleted bool
+}
 
 func Put(deviceID uint32, oid string) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	catalog[oid] = deviceID
+	catalog[oid] = record{
+		ID:      deviceID,
+		deleted: false,
+	}
 }
 
 func Get(deviceID uint32) string {
@@ -20,8 +28,8 @@ func Get(deviceID uint32) string {
 	defer guard.Unlock()
 
 	if deviceID != 0 {
-		for oid, id := range catalog {
-			if id == deviceID {
+		for oid, v := range catalog {
+			if !v.deleted && v.ID == deviceID {
 				return oid
 			}
 		}
@@ -38,9 +46,24 @@ loop:
 			}
 		}
 
-		catalog[oid] = deviceID
+		catalog[oid] = record{
+			ID:      deviceID,
+			deleted: false,
+		}
 
 		return oid
+	}
+}
+
+func Delete(oid string) {
+	guard.Lock()
+	defer guard.Unlock()
+
+	if v, ok := catalog[oid]; ok {
+		catalog[oid] = record{
+			ID:      v.ID,
+			deleted: true,
+		}
 	}
 }
 
@@ -49,8 +72,8 @@ func Find(deviceID uint32) string {
 	defer guard.Unlock()
 
 	if deviceID != 0 {
-		for oid, id := range catalog {
-			if id == deviceID {
+		for oid, v := range catalog {
+			if !v.deleted && v.ID == deviceID {
 				return oid
 			}
 		}

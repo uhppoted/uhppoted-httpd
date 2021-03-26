@@ -81,31 +81,31 @@ func (cc *Controllers) Save() error {
 		}
 	}
 
-	//	b, err := json.MarshalIndent(cleaned, "", "  ")
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-controllers.json")
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	defer os.Remove(tmp.Name())
-	//
-	//	if _, err := tmp.Write(b); err != nil {
-	//		return err
-	//	}
-	//
-	//	if err := tmp.Close(); err != nil {
-	//		return err
-	//	}
-	//
-	//	if err := os.MkdirAll(filepath.Dir(cc.file), 0770); err != nil {
-	//		return err
-	//	}
-	//
-	//	return os.Rename(tmp.Name(), cc.file)
+	b, err := json.MarshalIndent(cleaned, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-controllers.json")
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(b); err != nil {
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(cc.file), 0770); err != nil {
+		return err
+	}
+
+	return os.Rename(tmp.Name(), cc.file)
 
 	return nil
 }

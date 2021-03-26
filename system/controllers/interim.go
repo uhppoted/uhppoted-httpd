@@ -44,7 +44,7 @@ func Consolidate(lan *LAN, controllers []*Controller) interface{} {
 loop:
 	for k, _ := range lan.Cache {
 		for _, c := range devices {
-			if c.DeviceID != nil && *c.DeviceID == k {
+			if c.DeviceID != nil && *c.DeviceID == k && c.deleted == nil {
 				continue loop
 			}
 		}
