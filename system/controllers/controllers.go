@@ -336,7 +336,7 @@ func validate(cc Controllers) error {
 		}
 	}
 
-	for k, _ := range cc.LAN.Cache {
+	for k, _ := range cc.LAN.cache {
 		if oid, ok := devices[k]; ok {
 			if oid != catalog.Find(k) {
 				return fmt.Errorf("Duplicate controller ID (%v)", k)

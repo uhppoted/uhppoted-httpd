@@ -25,7 +25,7 @@ type LAN struct {
 	Debug            bool                     `json:"debug"`
 	Devices          map[uint32]types.Address `json:"-"` // TODO make unexported again once the code shuffle is done
 	apix             uhppoted.UHPPOTED
-	Cache            map[uint32]device `json:"-"` // TODO make unexported again once the code shuffle is done
+	cache            map[uint32]device `json:"-"` // TODO make unexported again once the code shuffle is done
 	guard            sync.RWMutex
 }
 
@@ -280,7 +280,7 @@ func (l *LAN) update(id uint32) {
 
 func (l *LAN) delete(c Controller) {
 	if l != nil && c.DeviceID != nil && *c.DeviceID != 0 {
-		delete(l.Cache, *c.DeviceID)
+		delete(l.cache, *c.DeviceID)
 	}
 }
 
@@ -289,11 +289,11 @@ func (l *LAN) store(id uint32, info interface{}) {
 
 	defer l.guard.Unlock()
 
-	if l.Cache == nil {
-		l.Cache = map[uint32]device{}
+	if l.cache == nil {
+		l.cache = map[uint32]device{}
 	}
 
-	cached, ok := l.Cache[id]
+	cached, ok := l.cache[id]
 	if !ok {
 		cached = device{}
 	}
@@ -333,7 +333,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 		}
 	}
 
-	l.Cache[id] = cached
+	l.cache[id] = cached
 }
 
 func (l *LAN) synchTime(c Controller) {

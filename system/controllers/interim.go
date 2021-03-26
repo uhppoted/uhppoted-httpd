@@ -42,7 +42,7 @@ func Consolidate(lan *LAN, controllers []*Controller) interface{} {
 	}
 
 loop:
-	for k, _ := range lan.Cache {
+	for k, _ := range lan.cache {
 		for _, c := range devices {
 			if c.DeviceID != nil && *c.DeviceID == k && c.deleted == nil {
 				continue loop
@@ -123,7 +123,7 @@ func Merge(lan *LAN, c Controller) controller {
 		return cc
 	}
 
-	if cached, ok := lan.Cache[*c.DeviceID]; ok {
+	if cached, ok := lan.cache[*c.DeviceID]; ok {
 		if cached.cards != nil {
 			cc.Cards.Records = records(*cached.cards)
 			if cached.acl == StatusUnknown {
