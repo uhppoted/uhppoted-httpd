@@ -23,9 +23,9 @@ type LAN struct {
 	BroadcastAddress *types.Address           `json:"broadcast-address"`
 	ListenAddress    *types.Address           `json:"listen-address"`
 	Debug            bool                     `json:"debug"`
-	devices          map[uint32]types.Address `json:"-"`
-	apix             uhppoted.UHPPOTED
-	cache            map[uint32]device `json:"-"`
+	devices          map[uint32]types.Address `json:"-"` // TODO remove
+	apix             uhppoted.UHPPOTED        // TODO remove
+	cache            map[uint32]device        `json:"-"`
 	guard            sync.RWMutex
 }
 
@@ -183,8 +183,9 @@ func (l *LAN) Compare(permissions acl.ACL) error {
 
 	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
 
-	for k, _ := range l.devices {
-		l.store(k, compare[k])
+	for _, v := range devices {
+		id := v.DeviceID
+		l.store(id, compare[id])
 	}
 
 	return nil
@@ -311,6 +312,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 			IP:   v.IpAddress,
 			Port: port,
 		})
+
 		cached.address = &addr
 
 	case uhppoted.GetStatusResponse:
