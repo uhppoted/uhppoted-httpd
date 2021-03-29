@@ -50,6 +50,24 @@
       <!-- MAIN -->
       <main>
         <div style="width:100%;">
+          <section class="interface">
+            <div>
+              <div style="display: table-cell;"><b>LAN</b></div>
+            </div>
+            <div>
+              <div style="display: table-cell;">bind:</div>
+              <div style="display: table-cell;"><input type="text" value="192.168.1.100" readonly /></div>
+            </div>
+            <div>
+              <div style="display: table-cell;">broadcast:</div>
+              <div style="display: table-cell;"><input type="text" value="192.168.1.255" readonly /></div>
+            </div>
+            <div>
+              <div style="display: table-cell;">listen:</div>
+              <div style="display: table-cell;"><input type="text" value="192.168.1.100:60001" readonly /></div>
+            </div>
+          </section>
+
           <div id="controls">
             <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll()" />
             <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll()" />

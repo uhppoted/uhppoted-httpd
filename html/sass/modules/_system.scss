@@ -1,3 +1,38 @@
+section.interface {
+  background: $content-table-background-header;
+  display: table; 
+  margin-top: 30px; 
+  margin-bottom: 4px;
+  padding: 8px;
+  font: 400 0.9em Arial;
+  color: $solarize-base01;
+  border-radius: 3px;
+}
+
+section.interface div {
+  display: table-row;
+  padding-top: 1px;
+  padding-bottom: 1px;
+} 
+
+section.interface div div {
+  display: table-cell;
+  font-variant: small-caps;
+}
+
+section.interface div div input {
+  padding: 2px 4px 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  outline: none;
+  color: $solarize-base01;
+  font: 400 0.9em Arial;
+}
+
+#controls {
+    background: $content-table-background-header;
+}
+
 th.name {
   min-width: 90px;
   border-bottom: 1px;
