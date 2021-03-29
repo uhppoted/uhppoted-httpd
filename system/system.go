@@ -27,7 +27,7 @@ var sys = system{
 		Doors: map[string]types.Door{},
 	},
 
-	controllers: controllers.NewControllers(),
+	controllers: controllers.NewInterface(),
 	taskQ:       NewTaskQ(),
 }
 
@@ -37,7 +37,7 @@ type system struct {
 	doors struct {
 		Doors map[string]types.Door `json:"doors"`
 	}
-	controllers controllers.Controllers
+	controllers controllers.Interface
 	cards       cards.Cards
 	audit       audit.Trail
 	taskQ       TaskQ
@@ -103,7 +103,7 @@ func System() interface{} {
 
 	defer sys.RUnlock()
 
-	controllers := controllers.Consolidate(sys.controllers.LAN, sys.controllers.Controllers)
+	controllers := controllers.Consolidate(sys.controllers.LAN, sys.controllers.Interface)
 
 	doors := []types.Door{}
 	for _, v := range sys.doors.Doors {
@@ -170,7 +170,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	// initialise empty ACL
 	acl := make(acl.ACL)
 
-	for _, c := range sys.controllers.Controllers {
+	for _, c := range sys.controllers.Interface {
 		if c.DeviceID != nil && *c.DeviceID > 0 {
 			acl[*c.DeviceID] = map[uint32]core.Card{}
 		}
@@ -204,7 +204,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 				continue
 			}
 
-			for _, c := range sys.controllers.Controllers {
+			for _, c := range sys.controllers.Interface {
 				for _, v := range c.Doors {
 					if v == door.ID {
 						if c.DeviceID != nil && *c.DeviceID > 0 {

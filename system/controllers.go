@@ -13,7 +13,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+func UpdateInterface(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()
 
 	defer sys.Unlock()
@@ -41,7 +41,7 @@ loop:
 	for _, c := range clist {
 		// ... delete?
 		if c.OID != "" && (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
-			for _, v := range shadow.Controllers {
+			for _, v := range shadow.Interface {
 				if v.OID == c.OID {
 					if r, err := sys.delete(shadow, c, auth); err != nil {
 						return nil, err
@@ -55,7 +55,7 @@ loop:
 		}
 
 		// ... update controller?
-		for _, v := range shadow.Controllers {
+		for _, v := range shadow.Interface {
 			if v.OID == c.OID {
 				if r, err := sys.update(shadow, c, auth); err != nil {
 					return nil, err
@@ -85,7 +85,7 @@ loop:
 
 	//	sys.taskQ.Add(Task{
 	//		f: func() {
-	//			if err := controllers.Export(sys.conf, shadow.Controllers, sys.doors.Doors); err != nil {
+	//			if err := controllers.Export(sys.conf, shadow.Interface, sys.doors.Doors); err != nil {
 	//				warn(err)
 	//			}
 	//		},
@@ -102,7 +102,7 @@ loop:
 	return list, nil
 }
 
-func (s *system) add(shadow *controllers.Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) add(shadow *controllers.Interface, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	if auth != nil {
 		if err := auth.CanAddController(&c); err != nil {
 			return nil, &types.HttpdError{
@@ -123,10 +123,10 @@ func (s *system) add(shadow *controllers.Controllers, c controllers.Controller, 
 	return record, nil
 }
 
-func (s *system) update(shadow *controllers.Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) update(shadow *controllers.Interface, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	var current *controllers.Controller
 
-	for _, v := range s.controllers.Controllers {
+	for _, v := range s.controllers.Interface {
 		if v.OID == c.OID {
 			current = v
 			break
@@ -157,7 +157,7 @@ func (s *system) update(shadow *controllers.Controllers, c controllers.Controlle
 	return record, nil
 }
 
-func (s *system) delete(shadow *controllers.Controllers, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) delete(shadow *controllers.Interface, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	record, err := shadow.Delete(c)
 	if err != nil {
 		return nil, &types.HttpdError{
@@ -184,7 +184,7 @@ func (s *system) delete(shadow *controllers.Controllers, c controllers.Controlle
 	return record, nil
 }
 
-func save(c *controllers.Controllers) error {
+func save(c *controllers.Interface) error {
 	if err := validate(c); err != nil {
 		return err
 	}
@@ -192,14 +192,14 @@ func save(c *controllers.Controllers) error {
 	return c.Save()
 }
 
-func validate(c *controllers.Controllers) error {
+func validate(c *controllers.Interface) error {
 	if err := c.Validate(); err != nil {
 		return err
 	}
 
 	doors := map[string]string{}
 
-	for _, r := range c.Controllers {
+	for _, r := range c.Interface {
 		for _, v := range r.Doors {
 			if v != "" {
 				if _, ok := sys.doors.Doors[v]; !ok {
@@ -228,7 +228,7 @@ func validate(c *controllers.Controllers) error {
 
 func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 	o := struct {
-		Controllers []struct {
+		Interface []struct {
 			ID       string
 			OID      *string
 			Name     *string
@@ -236,7 +236,7 @@ func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 			IP       *string
 			Doors    map[uint8]string
 			DateTime *string
-		}
+		} `json:"controllers"`
 	}{}
 
 	blob, err := json.Marshal(m)
@@ -252,7 +252,7 @@ func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 
 	list := []controllers.Controller{}
 
-	for _, r := range o.Controllers {
+	for _, r := range o.Interface {
 		record := controllers.Controller{}
 
 		if r.OID != nil {
