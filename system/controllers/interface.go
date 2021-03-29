@@ -106,8 +106,6 @@ func (cc *Interface) Save() error {
 	}
 
 	return os.Rename(tmp.Name(), cc.file)
-
-	return nil
 }
 
 func (cc *Interface) Sweep() {
@@ -236,7 +234,7 @@ func Export(file string, controllers []*Controller, doors map[string]types.Door)
 		if c.DeviceID != nil && *c.DeviceID != 0 && c.deleted == nil {
 			device := config.Device{
 				Name:     "",
-				Address:  (*net.UDPAddr)(c.IP),
+				Address:  nil,
 				Doors:    []string{"", "", "", ""},
 				TimeZone: "",
 				Rollover: 100000,
@@ -244,6 +242,10 @@ func Export(file string, controllers []*Controller, doors map[string]types.Door)
 
 			if c.Name != nil {
 				device.Name = fmt.Sprintf("%v", c.Name)
+			}
+
+			if c.IP != nil {
+				device.Address = (*net.UDPAddr)(c.IP)
 			}
 
 			if c.TimeZone != nil {

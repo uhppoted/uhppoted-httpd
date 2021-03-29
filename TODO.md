@@ -6,13 +6,15 @@
       - build LAN UHPPOTED on the fly from the controllers list
       - put 'found' devices into controllers list but don't save them
         -- will probably fix delete 'found' devices not allowed
-        -- deleteing 'found' controllers displays 'null' in the address field
+        -- deleting 'found' controllers displays 'null' in the address field
 
 - [ ] system
       - 'refresh' can invoke system GET without logging in???
-      - initialise LAN/all from uhppoted.conf (?)
       - make LAN parameters editable
+      - initialise LAN/all from uhppoted.conf (?)
       - fix Firefox layout
+        -- internal table layout seems to include padding where Chrome doesn't
+        -- explicitly remove border from table rows/cells maybe (?)
       - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
       - logic around correcting time is weird
         -- enter to update doesn't always work
@@ -26,6 +28,7 @@
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core
+      - config.Device.Address should be a typed value with String() to "" for nil
       - validate Local::Device timezone on initialization
       - cache expiry
       - Use sync.Map for cache
