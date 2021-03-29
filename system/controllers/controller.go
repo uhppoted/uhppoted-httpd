@@ -8,7 +8,6 @@ import (
 )
 
 type Controller struct {
-	ID       string           `json:"-"` // TODO REMOVE
 	OID      string           `json:"OID"`
 	Created  time.Time        `json:"created"`
 	Name     *types.Name      `json:"name,omitempty"`
@@ -70,7 +69,6 @@ func (c *Controller) IsValid() bool {
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
-			ID:       c.ID,
 			OID:      c.OID,
 			Created:  c.Created,
 			Name:     c.Name.Copy(),

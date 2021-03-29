@@ -3,16 +3,17 @@
 ### IN PROGRESS
 
 - [ ] JDB
-      - remove ID from system.controllers.Controller
       - build LAN UHPPOTED on the fly from the controllers list
+      - rename Controllers to Interface
+      - put 'found' devices into controllers list but don't save them
+        -- will probably fix delete 'found' devices not allowed
 
 - [ ] system
       - 'refresh' can invoke system GET without logging in???
-      - fix Firefox layout
       - initialise LAN/all from uhppoted.conf (?)
+      - make LAN parameters editable
+      - fix Firefox layout
       - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
-      - separate ID/OID
-      - handle 'deleted by other person'
       - logic around correcting time is weird
         -- enter to update doesn't always work
         -- set() is updating dataset.original which seems wrong but ...
@@ -25,7 +26,6 @@
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core
-
       - validate Local::Device timezone on initialization
       - cache expiry
       - Use sync.Map for cache

@@ -202,10 +202,6 @@ function refreshed () {
 function updateFromDB (oid, record) {
   let row = document.querySelector("[data-oid='" + oid + "']")
 
-  if (!row && record.ID && record.ID !== '') {
-    row = document.getElementById(record.ID)
-  }
-
   if (record.status === 'deleted') {
     deleted(row)
     return

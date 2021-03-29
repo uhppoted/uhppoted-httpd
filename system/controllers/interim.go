@@ -179,10 +179,6 @@ func Merge(lan *LAN, c Controller) controller {
 }
 
 func ID(c Controller) string {
-	if c.ID != "" {
-		return c.ID
-	}
-
 	if c.OID != "" {
 		return fmt.Sprintf("O%s", strings.ReplaceAll(c.OID, ".", ""))
 	}

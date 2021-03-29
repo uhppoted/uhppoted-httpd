@@ -255,8 +255,6 @@ func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 	for _, r := range o.Controllers {
 		record := controllers.Controller{}
 
-		record.ID = r.ID
-
 		if r.OID != nil {
 			record.OID = *r.OID
 		}
