@@ -19,13 +19,12 @@ import (
 )
 
 type LAN struct {
-	BindAddress      *types.Address           `json:"bind-address"`
-	BroadcastAddress *types.Address           `json:"broadcast-address"`
-	ListenAddress    *types.Address           `json:"listen-address"`
-	Debug            bool                     `json:"debug"`
-	devices          map[uint32]types.Address `json:"-"` // TODO remove
-	apix             uhppoted.UHPPOTED        // TODO remove
-	cache            map[uint32]device        `json:"-"`
+	BindAddress      *types.Address    `json:"bind-address"`
+	BroadcastAddress *types.Address    `json:"broadcast-address"`
+	ListenAddress    *types.Address    `json:"listen-address"`
+	Debug            bool              `json:"debug"`
+	apix             uhppoted.UHPPOTED // TODO remove
+	cache            map[uint32]device `json:"-"`
 	guard            sync.RWMutex
 }
 
@@ -48,7 +47,6 @@ const WINDOW = 300 // 5 minutes
 func NewLAN() *LAN {
 	u := uhppote.UHPPOTE{}
 	lan := LAN{
-		devices: map[uint32]types.Address{},
 		apix: uhppoted.UHPPOTED{
 			Uhppote: &u,
 			Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
@@ -88,8 +86,6 @@ func (l *LAN) Init(devices []*Controller) {
 		name := v.Name.String()
 		id := *v.DeviceID
 		addr := net.UDPAddr(*v.IP)
-
-		l.devices[id] = *v.IP
 
 		u.Devices[id] = &uhppote.Device{
 			Name:     name,
@@ -303,16 +299,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 
 	switch v := info.(type) {
 	case uhppoted.GetDeviceResponse:
-		port := 60000
-		if d, ok := l.devices[id]; ok {
-			port = d.Port
-		}
-
-		addr := types.Address(net.UDPAddr{
-			IP:   v.IpAddress,
-			Port: port,
-		})
-
+		addr := types.Address(v.Address)
 		cached.address = &addr
 
 	case uhppoted.GetStatusResponse:
