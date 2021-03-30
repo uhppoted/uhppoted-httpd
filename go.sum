@@ -95,6 +95,8 @@ github.com/uhppoted/uhppote-core v0.6.11-0.20210226202454-71c739c5db56 h1:ZjX3JK
 github.com/uhppoted/uhppote-core v0.6.11-0.20210226202454-71c739c5db56/go.mod h1:JOh6BcCGKf2/0c9rzauiia18ErO8mrtY9l0gdt0DxtU=
 github.com/uhppoted/uhppote-core v0.6.11-0.20210301194000-dfcb3c9df000 h1:KNXnQzja4JQ8vE7Y/K7TzOPl+DIZ95QlKpjOf0mYsoo=
 github.com/uhppoted/uhppote-core v0.6.11-0.20210301194000-dfcb3c9df000/go.mod h1:JOh6BcCGKf2/0c9rzauiia18ErO8mrtY9l0gdt0DxtU=
+github.com/uhppoted/uhppote-core v0.6.11-0.20210330192842-7d2e13a5c0fd h1:4OhusgRlvTpKgaV8onVNDneHqIAcMFgjY0XgRoQRK6U=
+github.com/uhppoted/uhppote-core v0.6.11-0.20210330192842-7d2e13a5c0fd/go.mod h1:JOh6BcCGKf2/0c9rzauiia18ErO8mrtY9l0gdt0DxtU=
 github.com/uhppoted/uhppote-core v0.6.11/go.mod h1:CDoDTRrLF5pPI2G6PxpJ+AXDg/yvMDE+XGsYA0WUY1g=
 github.com/uhppoted/uhppoted-api v0.6.5-0.20201029213232-87650c74e57c h1:gP2tWLofnMIVxIi+AQQboabi9g46jPATp19nu55D7qE=
 github.com/uhppoted/uhppoted-api v0.6.5-0.20201029213232-87650c74e57c/go.mod h1:9V1ERrKRtBD6q6gwP+J/zNKSRNrsES+SAXJk6HQ+Qzo=
@@ -128,6 +130,8 @@ github.com/uhppoted/uhppoted-api v0.6.11-0.20210329184715-5ba4e6b96c93 h1:2F/6zS
 github.com/uhppoted/uhppoted-api v0.6.11-0.20210329184715-5ba4e6b96c93/go.mod h1:hNvH9mCPPvi5JgMMskKCP/PmQuWagXNrOeONJAu88WY=
 github.com/uhppoted/uhppoted-api v0.6.11-0.20210329191554-1ff4c82f57a4 h1:f86KNCaPQ7rMkOsyOVmEtNzoyCuosMD8+jyye5hPlts=
 github.com/uhppoted/uhppoted-api v0.6.11-0.20210329191554-1ff4c82f57a4/go.mod h1:hNvH9mCPPvi5JgMMskKCP/PmQuWagXNrOeONJAu88WY=
+github.com/uhppoted/uhppoted-api v0.6.11-0.20210330204110-47e1a2e48fcd h1:3cd1AvYQhJFLIwhFbJPWgImyNNTcR3Y5UWjQXu2S7Ck=
+github.com/uhppoted/uhppoted-api v0.6.11-0.20210330204110-47e1a2e48fcd/go.mod h1:4X2U4JumFHqEmRqw2o6tspaxLgn/ly7a61CJl8KGC/A=
 github.com/uhppoted/uhppoted-api v0.6.11 h1:kkc3y5xKQhTdonb9DmBquOQ4wHauOx1qpyHiHksNCzQ=
 github.com/uhppoted/uhppoted-api v0.6.11/go.mod h1:Gbo5J8AozBrB3tr5p476LmlukQ1dPHeDJLJTFoIyDe4=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=

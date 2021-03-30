@@ -207,7 +207,7 @@ func (l *LAN) refresh(devices []uint32) {
 			for k, v := range devices.Devices {
 				if d, ok := api.Uhppote.DeviceList()[k]; ok {
 					d.Address.IP = v.Address
-					d.Address.Port = 60000
+					d.Address.Port = v.Port
 				}
 
 				list[k] = struct{}{}

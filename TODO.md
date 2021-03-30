@@ -4,7 +4,6 @@
 
 - [ ] JDB
       - build LAN UHPPOTED on the fly from the controllers list
-        -- include port in device info returned from GetDevice/GetDevices
       - put 'found' devices into controllers list but don't save them
         -- will probably fix delete 'found' devices not allowed
         -- deleting 'found' controllers displays 'null' in the address field
