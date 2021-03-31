@@ -100,8 +100,6 @@ export async function postAsForm (url = '', data = {}) {
 }
 
 export async function getAsJSON (url = '') {
-  dismiss()
-
   const response = await fetch(url, {
     method: 'GET',
     mode: 'cors',

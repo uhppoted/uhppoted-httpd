@@ -6,7 +6,7 @@
       - put 'found' devices into controllers list but don't save them
         -- will probably fix delete 'found' devices not allowed
         -- deleting 'found' controllers displays 'null' in the address field
-      - don't hide warning on automatic refresh
+      - merge branch back into main
 
 - [ ] system
       - 'refresh' can invoke system GET without logging in???
