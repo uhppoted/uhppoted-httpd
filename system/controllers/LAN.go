@@ -14,7 +14,6 @@ import (
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-api/uhppoted"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -23,7 +22,6 @@ type LAN struct {
 	BroadcastAddress *types.Address    `json:"broadcast-address"`
 	ListenAddress    *types.Address    `json:"listen-address"`
 	Debug            bool              `json:"debug"`
-	apix             uhppoted.UHPPOTED // TODO remove
 	cache            map[uint32]device `json:"-"`
 	guard            sync.RWMutex
 }
@@ -44,32 +42,23 @@ const (
 
 const WINDOW = 300 // 5 minutes
 
-func NewLAN() *LAN {
-	u := uhppote.UHPPOTE{}
-	lan := LAN{
-		apix: uhppoted.UHPPOTED{
-			Uhppote: &u,
-			Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
-		},
-	}
-
-	return &lan
-}
-
-// TODO interim implemenation (need to split static/dynamic data)
 func (l *LAN) clone() *LAN {
-	return l
-}
-
-// TODO (?) Move into custom JSON Unmarshal
-//          Ref. http://choly.ca/post/go-json-marshalling/
-func (l *LAN) Init(devices []*Controller) {
-	for _, v := range devices {
-		if v.DeviceID != nil && *v.DeviceID != 0 {
-			catalog.Put(*v.DeviceID, v.OID)
+	if l != nil {
+		lan := LAN{
+			BindAddress:      l.BindAddress,
+			BroadcastAddress: l.BroadcastAddress,
+			ListenAddress:    l.ListenAddress,
+			Debug:            l.Debug,
+			cache:            map[uint32]device{},
 		}
+
+		return &lan
 	}
 
+	return nil
+}
+
+func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {
 	u := uhppote.UHPPOTE{
 		BindAddress:      (*net.UDPAddr)(l.BindAddress),
 		BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),
@@ -78,7 +67,7 @@ func (l *LAN) Init(devices []*Controller) {
 		Debug:            l.Debug,
 	}
 
-	for _, v := range devices {
+	for _, v := range controllers {
 		if v.DeviceID == nil || *v.DeviceID == 0 || v.IP == nil {
 			continue
 		}
@@ -97,20 +86,18 @@ func (l *LAN) Init(devices []*Controller) {
 		}
 	}
 
-	l.apix = uhppoted.UHPPOTED{
+	api := uhppoted.UHPPOTED{
 		Uhppote: &u,
 		Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
 	}
+
+	return &api
 }
 
-func (l *LAN) api() *uhppoted.UHPPOTED {
-	return &l.apix
-}
-
-func (l *LAN) Update(permissions acl.ACL) {
+func (l *LAN) updateACL(controllers []*Controller, permissions acl.ACL) {
 	log.Printf("Updating ACL")
 
-	api := l.api()
+	api := l.api(controllers)
 	rpt, errors := acl.PutACL(api.Uhppote, permissions, false)
 	for _, err := range errors {
 		warn(err)
@@ -141,11 +128,11 @@ func (l *LAN) Update(permissions acl.ACL) {
 	log.Printf("%v", string(msg.Bytes()))
 }
 
-func (l *LAN) Compare(permissions acl.ACL) error {
+func (l *LAN) compareACL(controllers []*Controller, permissions acl.ACL) error {
 	log.Printf("Comparing ACL")
 
 	devices := []*uhppote.Device{}
-	api := l.api()
+	api := l.api(controllers)
 	for _, v := range api.Uhppote.DeviceList() {
 		devices = append(devices, v)
 	}
@@ -187,13 +174,15 @@ func (l *LAN) Compare(permissions acl.ACL) error {
 	return nil
 }
 
-func (l *LAN) refresh(devices []uint32) {
+func (l *LAN) refresh(controllers []*Controller) {
 	list := map[uint32]struct{}{}
-	for _, k := range devices {
-		list[k] = struct{}{}
+	for _, c := range controllers {
+		if c.DeviceID != nil && *c.DeviceID != 0 {
+			list[*c.DeviceID] = struct{}{}
+		}
 	}
 
-	api := l.api()
+	api := l.api(controllers)
 	go func() {
 		if devices, err := api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
 			log.Printf("%v", err)
@@ -213,35 +202,15 @@ func (l *LAN) refresh(devices []uint32) {
 		for k, _ := range list {
 			id := k
 			go func() {
-				l.update(id)
+				l.update(api, id)
 			}()
 		}
 	}()
 }
 
-func (l *LAN) add(c Controller) {
-	if c.DeviceID != nil && *c.DeviceID != 0 {
-		// name := c.Name.String()
-		// id := *c.DeviceID
-		// // addr := net.UDPAddr(*v.IP)
-
-		// // l.Devices[id] = *v.IP
-
-		// l.Uhppote.Devices[id] = &uhppote.Device{
-		// 	Name:     name,
-		// 	DeviceID: id,
-		// 	// Address:  &addr,
-		// 	Rollover: 100000,
-		// 	Doors:    []string{},
-		// 	TimeZone: time.Local,
-		// }
-	}
-}
-
-func (l *LAN) update(id uint32) {
+func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
 	log.Printf("%v: refreshing LAN controller status", id)
 
-	api := l.api()
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if info == nil {
@@ -325,31 +294,33 @@ func (l *LAN) store(id uint32, info interface{}) {
 	l.cache[id] = cached
 }
 
-func (l *LAN) synchTime(c Controller) {
-	if c.DeviceID != nil {
-		device := uhppoted.DeviceID(*c.DeviceID)
-		location := time.Local
+func (l *LAN) synchTime(controllers []*Controller) {
+	api := l.api(controllers)
+	for _, c := range controllers {
+		if c.DeviceID != nil {
+			device := uhppoted.DeviceID(*c.DeviceID)
+			location := time.Local
 
-		if c.TimeZone != nil {
-			timezone := *c.TimeZone
-			if tz, err := types.Timezone(timezone); err == nil && tz != nil {
-				location = tz
+			if c.TimeZone != nil {
+				timezone := *c.TimeZone
+				if tz, err := types.Timezone(timezone); err == nil && tz != nil {
+					location = tz
+				}
 			}
-		}
 
-		now := time.Now().In(location)
-		datetime := core.DateTime(now)
+			now := time.Now().In(location)
+			datetime := core.DateTime(now)
 
-		request := uhppoted.SetTimeRequest{
-			DeviceID: device,
-			DateTime: datetime,
-		}
+			request := uhppoted.SetTimeRequest{
+				DeviceID: device,
+				DateTime: datetime,
+			}
 
-		api := l.api()
-		if response, err := api.SetTime(request); err != nil {
-			log.Printf("ERROR %v", err)
-		} else if response != nil {
-			log.Printf("INFO  sychronized device-time %v %v", response.DeviceID, response.DateTime)
+			if response, err := api.SetTime(request); err != nil {
+				log.Printf("ERROR %v", err)
+			} else if response != nil {
+				log.Printf("INFO  sychronized device-time %v %v", response.DeviceID, response.DateTime)
+			}
 		}
 	}
 }

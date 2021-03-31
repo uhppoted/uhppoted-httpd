@@ -71,7 +71,7 @@ func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, auth au
 			return
 		}
 
-		updated, err := system.UpdateInterface(body, auth)
+		updated, err := system.UpdateControllers(body, auth)
 		if err != nil {
 			ch <- err
 			return

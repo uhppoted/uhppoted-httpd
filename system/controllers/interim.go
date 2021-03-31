@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"log"
 	"math"
-	"sort"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
 
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -33,43 +31,7 @@ type controller struct {
 	Deleted    bool
 }
 
-func Consolidate(lan *LAN, controllers []*Controller) interface{} {
-	devices := []Controller{}
-	for _, v := range controllers {
-		if v.IsValid() {
-			devices = append(devices, *v)
-		}
-	}
-
-loop:
-	for k, _ := range lan.cache {
-		for _, c := range devices {
-			if c.DeviceID != nil && *c.DeviceID == k && c.deleted == nil {
-				continue loop
-			}
-		}
-
-		// ... include 'unconfigured' controllers
-		id := k
-		oid := catalog.Get(k)
-		devices = append(devices, Controller{
-			OID:      oid,
-			DeviceID: &id,
-			Created:  time.Now(),
-		})
-	}
-
-	list := []controller{}
-	for _, c := range devices {
-		list = append(list, Merge(lan, c))
-	}
-
-	sort.SliceStable(list, func(i, j int) bool { return list[i].Created.Before(list[j].Created) })
-
-	return list
-}
-
-func Merge(lan *LAN, c Controller) controller {
+func merge(lan *LAN, c Controller) controller {
 	cc := controller{
 		ID:       ID(c),
 		Name:     "",

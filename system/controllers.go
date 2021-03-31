@@ -13,7 +13,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func UpdateInterface(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()
 
 	defer sys.Unlock()
@@ -41,12 +41,12 @@ loop:
 	for _, c := range clist {
 		// ... delete?
 		if c.OID != "" && (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
-			for _, v := range shadow.Interface {
+			for _, v := range shadow.Controllers {
 				if v.OID == c.OID {
 					if r, err := sys.delete(shadow, c, auth); err != nil {
 						return nil, err
 					} else if r != nil {
-						list.Deleted = append(list.Deleted, controllers.Merge(sys.controllers.LAN, *r))
+						list.Deleted = append(list.Deleted, sys.controllers.Merge(*r))
 					}
 				}
 			}
@@ -55,12 +55,12 @@ loop:
 		}
 
 		// ... update controller?
-		for _, v := range shadow.Interface {
+		for _, v := range shadow.Controllers {
 			if v.OID == c.OID {
 				if r, err := sys.update(shadow, c, auth); err != nil {
 					return nil, err
 				} else if r != nil {
-					list.Updated = append(list.Updated, controllers.Merge(sys.controllers.LAN, *r))
+					list.Updated = append(list.Updated, sys.controllers.Merge(*r))
 				}
 
 				continue loop
@@ -71,7 +71,7 @@ loop:
 		if r, err := sys.add(shadow, c, auth); err != nil {
 			return nil, err
 		} else if r != nil {
-			cc := controllers.Merge(sys.controllers.LAN, *r)
+			cc := sys.controllers.Merge(*r)
 
 			list.Added = append(list.Added, cc)
 		}
@@ -85,7 +85,7 @@ loop:
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			if err := controllers.Export(sys.conf, shadow.Interface, sys.doors.Doors); err != nil {
+			if err := controllers.Export(sys.conf, shadow.Controllers, sys.doors.Doors); err != nil {
 				warn(err)
 			}
 		},
@@ -102,7 +102,7 @@ loop:
 	return list, nil
 }
 
-func (s *system) add(shadow *controllers.Interface, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) add(shadow *controllers.ControllerSet, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	if auth != nil {
 		if err := auth.CanAddController(&c); err != nil {
 			return nil, &types.HttpdError{
@@ -123,10 +123,10 @@ func (s *system) add(shadow *controllers.Interface, c controllers.Controller, au
 	return record, nil
 }
 
-func (s *system) update(shadow *controllers.Interface, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) update(shadow *controllers.ControllerSet, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	var current *controllers.Controller
 
-	for _, v := range s.controllers.Interface {
+	for _, v := range s.controllers.Controllers {
 		if v.OID == c.OID {
 			current = v
 			break
@@ -157,7 +157,7 @@ func (s *system) update(shadow *controllers.Interface, c controllers.Controller,
 	return record, nil
 }
 
-func (s *system) delete(shadow *controllers.Interface, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
+func (s *system) delete(shadow *controllers.ControllerSet, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
 	record, err := shadow.Delete(c)
 	if err != nil {
 		return nil, &types.HttpdError{
@@ -184,7 +184,7 @@ func (s *system) delete(shadow *controllers.Interface, c controllers.Controller,
 	return record, nil
 }
 
-func save(c *controllers.Interface) error {
+func save(c *controllers.ControllerSet) error {
 	if err := validate(c); err != nil {
 		return err
 	}
@@ -192,14 +192,14 @@ func save(c *controllers.Interface) error {
 	return c.Save()
 }
 
-func validate(c *controllers.Interface) error {
+func validate(c *controllers.ControllerSet) error {
 	if err := c.Validate(); err != nil {
 		return err
 	}
 
 	doors := map[string]string{}
 
-	for _, r := range c.Interface {
+	for _, r := range c.Controllers {
 		for _, v := range r.Doors {
 			if v != "" {
 				if _, ok := sys.doors.Doors[v]; !ok {
@@ -228,7 +228,7 @@ func validate(c *controllers.Interface) error {
 
 func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 	o := struct {
-		Interface []struct {
+		ControllerSet []struct {
 			ID       string
 			OID      *string
 			Name     *string
@@ -252,7 +252,7 @@ func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 
 	list := []controllers.Controller{}
 
-	for _, r := range o.Interface {
+	for _, r := range o.ControllerSet {
 		record := controllers.Controller{}
 
 		if r.OID != nil {

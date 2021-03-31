@@ -27,7 +27,7 @@ var sys = system{
 		Doors: map[string]types.Door{},
 	},
 
-	controllers: controllers.NewInterface(),
+	controllers: controllers.NewControllerSet(),
 	taskQ:       NewTaskQ(),
 }
 
@@ -37,7 +37,7 @@ type system struct {
 	doors struct {
 		Doors map[string]types.Door `json:"doors"`
 	}
-	controllers controllers.Interface
+	controllers controllers.ControllerSet
 	cards       cards.Cards
 	audit       audit.Trail
 	taskQ       TaskQ
@@ -103,7 +103,7 @@ func System() interface{} {
 
 	defer sys.RUnlock()
 
-	controllers := controllers.Consolidate(sys.controllers.LAN, sys.controllers.Interface)
+	controllers := sys.controllers.Consolidate()
 
 	doors := []types.Door{}
 	for _, v := range sys.doors.Doors {
@@ -137,7 +137,7 @@ func UpdateACL() {
 	} else if acl == nil {
 		warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
 	} else {
-		sys.controllers.LAN.Update(*acl)
+		sys.controllers.UpdateACL(*acl)
 	}
 }
 
@@ -148,7 +148,7 @@ func CompareACL() {
 		warn(err)
 	} else if acl == nil {
 		warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
-	} else if err := sys.controllers.LAN.Compare(*acl); err != nil {
+	} else if err := sys.controllers.Compare(*acl); err != nil {
 		warn(err)
 	}
 }
@@ -170,7 +170,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	// initialise empty ACL
 	acl := make(acl.ACL)
 
-	for _, c := range sys.controllers.Interface {
+	for _, c := range sys.controllers.Controllers {
 		if c.DeviceID != nil && *c.DeviceID > 0 {
 			acl[*c.DeviceID] = map[uint32]core.Card{}
 		}
@@ -204,7 +204,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 				continue
 			}
 
-			for _, c := range sys.controllers.Interface {
+			for _, c := range sys.controllers.Controllers {
 				for _, v := range c.Doors {
 					if v == door.ID {
 						if c.DeviceID != nil && *c.DeviceID > 0 {

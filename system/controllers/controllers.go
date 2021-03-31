@@ -8,32 +8,34 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"sort"
 	"sync"
 	"time"
 
+	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-api/config"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type Interface struct {
-	file      string        `json:"-"`
-	retention time.Duration `json:"-"`
-	Interface []*Controller `json:"controllers"`
-	LAN       *LAN          `json:"LAN"`
+type ControllerSet struct {
+	file        string        `json:"-"`
+	retention   time.Duration `json:"-"`
+	Controllers []*Controller `json:"controllers"`
+	LAN         *LAN          `json:"LAN"`
 }
 
 var guard sync.Mutex
 
-func NewInterface() Interface {
-	return Interface{
-		Interface: []*Controller{},
-		LAN:       NewLAN(),
-		retention: 6 * time.Hour,
+func NewControllerSet() ControllerSet {
+	return ControllerSet{
+		Controllers: []*Controller{},
+		LAN:         &LAN{},
+		retention:   6 * time.Hour,
 	}
 }
 
-func (cc *Interface) Load(file string, retention time.Duration) error {
+func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
@@ -46,12 +48,17 @@ func (cc *Interface) Load(file string, retention time.Duration) error {
 
 	cc.file = file
 	cc.retention = retention
-	cc.LAN.Init(cc.Interface)
+
+	for _, v := range cc.Controllers {
+		if v.DeviceID != nil && *v.DeviceID != 0 {
+			catalog.Put(*v.DeviceID, v.OID)
+		}
+	}
 
 	return nil
 }
 
-func (cc *Interface) Save() error {
+func (cc *ControllerSet) Save() error {
 	if cc == nil {
 		return nil
 	}
@@ -68,16 +75,16 @@ func (cc *Interface) Save() error {
 		return nil
 	}
 
-	cleaned := Interface{
-		file:      cc.file,
-		retention: cc.retention,
-		Interface: []*Controller{},
-		LAN:       cc.LAN.clone(),
+	cleaned := ControllerSet{
+		file:        cc.file,
+		retention:   cc.retention,
+		Controllers: []*Controller{},
+		LAN:         cc.LAN.clone(),
 	}
 
-	for _, v := range cc.Interface {
+	for _, v := range cc.Controllers {
 		if v.deleted == nil {
-			cleaned.Interface = append(cleaned.Interface, v.clone())
+			cleaned.Controllers = append(cleaned.Controllers, v.clone())
 		}
 	}
 
@@ -108,26 +115,26 @@ func (cc *Interface) Save() error {
 	return os.Rename(tmp.Name(), cc.file)
 }
 
-func (cc *Interface) Sweep() {
+func (cc *ControllerSet) Sweep() {
 	if cc == nil {
 		return
 	}
 
 	cutoff := time.Now().Add(-cc.retention)
-	for i, v := range cc.Interface {
+	for i, v := range cc.Controllers {
 		if v.deleted != nil && v.deleted.Before(cutoff) {
-			cc.Interface = append(cc.Interface[:i], cc.Interface[i+1:]...)
+			cc.Controllers = append(cc.Controllers[:i], cc.Controllers[i+1:]...)
 		}
 	}
 }
 
-func (cc *Interface) Print() {
+func (cc *ControllerSet) Print() {
 	if b, err := json.MarshalIndent(cc, "", "  "); err == nil {
 		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
 	}
 }
 
-func (cc *Interface) Add(c Controller) (*Controller, error) {
+func (cc *ControllerSet) Add(c Controller) (*Controller, error) {
 	id := uint32(0)
 	if c.DeviceID != nil {
 		id = *c.DeviceID
@@ -137,14 +144,13 @@ func (cc *Interface) Add(c Controller) (*Controller, error) {
 	record.OID = catalog.Get(id)
 	record.Created = time.Now()
 
-	cc.Interface = append(cc.Interface, record)
-	cc.LAN.add(*record)
+	cc.Controllers = append(cc.Controllers, record)
 
 	return record, nil
 }
 
-func (cc *Interface) Update(c Controller) (*Controller, error) {
-	for _, record := range cc.Interface {
+func (cc *ControllerSet) Update(c Controller) (*Controller, error) {
+	for _, record := range cc.Controllers {
 		if record.OID == c.OID {
 			if c.Name != nil {
 				record.Name = c.Name
@@ -177,8 +183,8 @@ func (cc *Interface) Update(c Controller) (*Controller, error) {
 	return nil, fmt.Errorf("Invalid controller OID '%v'", c.OID)
 }
 
-func (cc *Interface) Delete(c Controller) (*Controller, error) {
-	for _, record := range cc.Interface {
+func (cc *ControllerSet) Delete(c Controller) (*Controller, error) {
+	for _, record := range cc.Controllers {
 		if record.OID == c.OID {
 			now := time.Now()
 			c.deleted = &now
@@ -191,27 +197,60 @@ func (cc *Interface) Delete(c Controller) (*Controller, error) {
 	return nil, nil
 }
 
-func (cc *Interface) Refresh() {
-	devices := []uint32{}
-	for _, record := range cc.Interface {
-		if record.DeviceID != nil && *record.DeviceID != 0 && record.deleted == nil {
-			devices = append(devices, *record.DeviceID)
+func (cc *ControllerSet) Consolidate() interface{} {
+	devices := []Controller{}
+	for _, v := range cc.Controllers {
+		if v.IsValid() {
+			devices = append(devices, *v)
 		}
 	}
 
-	cc.LAN.refresh(devices)
-}
+loop:
+	for k, _ := range cc.LAN.cache {
+		for _, c := range devices {
+			if c.DeviceID != nil && *c.DeviceID == k && c.deleted == nil {
+				continue loop
+			}
+		}
 
-func (cc *Interface) Clone() *Interface {
-	shadow := Interface{
-		file:      cc.file,
-		retention: cc.retention,
-		Interface: make([]*Controller, len(cc.Interface)),
-		LAN:       &LAN{},
+		// ... include 'unconfigured' controllers
+		id := k
+		oid := catalog.Get(k)
+		devices = append(devices, Controller{
+			OID:      oid,
+			DeviceID: &id,
+			Created:  time.Now(),
+		})
 	}
 
-	for k, v := range cc.Interface {
-		shadow.Interface[k] = v.clone()
+	list := []controller{}
+	for _, c := range devices {
+		list = append(list, merge(cc.LAN, c))
+	}
+
+	sort.SliceStable(list, func(i, j int) bool { return list[i].Created.Before(list[j].Created) })
+
+	return list
+}
+
+func (cc *ControllerSet) Merge(c Controller) controller {
+	return merge(cc.LAN, c)
+}
+
+func (cc *ControllerSet) Refresh() {
+	cc.LAN.refresh(cc.Controllers)
+}
+
+func (cc *ControllerSet) Clone() *ControllerSet {
+	shadow := ControllerSet{
+		file:        cc.file,
+		retention:   cc.retention,
+		Controllers: make([]*Controller, len(cc.Controllers)),
+		LAN:         &LAN{},
+	}
+
+	for k, v := range cc.Controllers {
+		shadow.Controllers[k] = v.clone()
 	}
 
 	shadow.LAN = cc.LAN.clone()
@@ -299,15 +338,19 @@ func Export(file string, controllers []*Controller, doors map[string]types.Door)
 	return os.Rename(tmp.Name(), file)
 }
 
-func (cc *Interface) Sync() {
-	for _, c := range cc.Interface {
-		if c != nil {
-			cc.LAN.synchTime(*c)
-		}
-	}
+func (cc *ControllerSet) Sync() {
+	cc.LAN.synchTime(cc.Controllers)
 }
 
-func (cc *Interface) Validate() error {
+func (cc *ControllerSet) Compare(permissions acl.ACL) error {
+	return cc.LAN.compareACL(cc.Controllers, permissions)
+}
+
+func (cc *ControllerSet) UpdateACL(acl acl.ACL) {
+	cc.LAN.updateACL(cc.Controllers, acl)
+}
+
+func (cc *ControllerSet) Validate() error {
 	if cc != nil {
 		return validate(*cc)
 	}
@@ -315,10 +358,10 @@ func (cc *Interface) Validate() error {
 	return nil
 }
 
-func validate(cc Interface) error {
+func validate(cc ControllerSet) error {
 	devices := map[uint32]string{}
 
-	for _, c := range cc.Interface {
+	for _, c := range cc.Controllers {
 		if c.OID == "" {
 			return fmt.Errorf("Invalid controller OID (%v)", c.OID)
 		}
@@ -349,6 +392,6 @@ func validate(cc Interface) error {
 	return nil
 }
 
-func scrub(cc *Interface) error {
+func scrub(cc *ControllerSet) error {
 	return nil
 }
