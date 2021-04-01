@@ -8,14 +8,15 @@ import (
 )
 
 type Controller struct {
-	OID      string           `json:"OID"`
-	Created  time.Time        `json:"created"`
-	Name     *types.Name      `json:"name,omitempty"`
-	DeviceID *uint32          `json:"device-id,omitempty"`
-	IP       *types.Address   `json:"address,omitempty"`
-	Doors    map[uint8]string `json:"doors"`
-	TimeZone *string          `json:"timezone,omitempty"`
-	deleted  *time.Time
+	OID          string           `json:"OID"`
+	Created      time.Time        `json:"created"`
+	Name         *types.Name      `json:"name,omitempty"`
+	DeviceID     *uint32          `json:"device-id,omitempty"`
+	IP           *types.Address   `json:"address,omitempty"`
+	Doors        map[uint8]string `json:"doors"`
+	TimeZone     *string          `json:"timezone,omitempty"`
+	deleted      *time.Time
+	unconfigured bool
 }
 
 func (c *Controller) AsRuleEntity() interface{} {
@@ -66,17 +67,30 @@ func (c *Controller) IsValid() bool {
 	return false
 }
 
+func (c *Controller) IsSaveable() bool {
+	if c == nil || c.deleted != nil || c.unconfigured {
+		return false
+	}
+
+	if (c.Name == nil || *c.Name != "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+		return false
+	}
+
+	return true
+}
+
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
-			OID:      c.OID,
-			Created:  c.Created,
-			Name:     c.Name.Copy(),
-			DeviceID: c.DeviceID,
-			IP:       c.IP,
-			TimeZone: c.TimeZone,
-			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
-			deleted:  c.deleted,
+			OID:          c.OID,
+			Created:      c.Created,
+			Name:         c.Name.Copy(),
+			DeviceID:     c.DeviceID,
+			IP:           c.IP,
+			TimeZone:     c.TimeZone,
+			Doors:        map[uint8]string{1: "", 2: "", 3: "", 4: ""},
+			deleted:      c.deleted,
+			unconfigured: c.unconfigured,
 		}
 
 		for k, v := range c.Doors {

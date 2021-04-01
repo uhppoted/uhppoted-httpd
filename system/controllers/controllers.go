@@ -83,7 +83,7 @@ func (cc *ControllerSet) Save() error {
 	}
 
 	for _, v := range cc.Controllers {
-		if v.deleted == nil {
+		if v.IsSaveable() {
 			cleaned.Controllers = append(cleaned.Controllers, v.clone())
 		}
 	}
@@ -176,6 +176,8 @@ func (cc *ControllerSet) Update(c Controller) (*Controller, error) {
 				}
 			}
 
+			record.unconfigured = false
+
 			return record, nil
 		}
 	}
@@ -198,34 +200,11 @@ func (cc *ControllerSet) Delete(c Controller) (*Controller, error) {
 }
 
 func (cc *ControllerSet) Consolidate() interface{} {
-	devices := []Controller{}
-	for _, v := range cc.Controllers {
-		if v.IsValid() {
-			devices = append(devices, *v)
-		}
-	}
-
-loop:
-	for k, _ := range cc.LAN.cache {
-		for _, c := range devices {
-			if c.DeviceID != nil && *c.DeviceID == k && c.deleted == nil {
-				continue loop
-			}
-		}
-
-		// ... include 'unconfigured' controllers
-		id := k
-		oid := catalog.Get(k)
-		devices = append(devices, Controller{
-			OID:      oid,
-			DeviceID: &id,
-			Created:  time.Now(),
-		})
-	}
-
 	list := []controller{}
-	for _, c := range devices {
-		list = append(list, merge(cc.LAN, c))
+	for _, c := range cc.Controllers {
+		if c.IsValid() {
+			list = append(list, merge(cc.LAN, *c))
+		}
 	}
 
 	sort.SliceStable(list, func(i, j int) bool { return list[i].Created.Before(list[j].Created) })
@@ -239,6 +218,26 @@ func (cc *ControllerSet) Merge(c Controller) controller {
 
 func (cc *ControllerSet) Refresh() {
 	cc.LAN.refresh(cc.Controllers)
+
+	// ... add 'found' controllers to list
+loop:
+	for k, _ := range cc.LAN.cache {
+		for _, c := range cc.Controllers {
+			if c.DeviceID != nil && *c.DeviceID == k && c.deleted == nil {
+				continue loop
+			}
+		}
+
+		id := k
+		oid := catalog.Get(k)
+
+		cc.Controllers = append(cc.Controllers, &Controller{
+			OID:          oid,
+			DeviceID:     &id,
+			Created:      time.Now(),
+			unconfigured: true,
+		})
+	}
 }
 
 func (cc *ControllerSet) Clone() *ControllerSet {
@@ -378,14 +377,6 @@ func validate(cc ControllerSet) error {
 			}
 
 			devices[id] = c.OID
-		}
-	}
-
-	for k, _ := range cc.LAN.cache {
-		if oid, ok := devices[k]; ok {
-			if oid != catalog.Find(k) {
-				return fmt.Errorf("Duplicate controller ID (%v)", k)
-			}
 		}
 	}
 

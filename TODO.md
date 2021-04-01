@@ -3,9 +3,6 @@
 ### IN PROGRESS
 
 - [ ] JDB
-      - put 'found' devices into controllers list but don't save them
-        -- will probably fix delete 'found' devices not allowed
-        -- deleting 'found' controllers displays 'null' in the address field
       - merge branch back into main
 
 - [ ] system
