@@ -76,19 +76,23 @@ export function onRefresh (event) {
     .then(response => {
       unbusy()
 
-      switch (response.status) {
-        case 200:
-          response.json().then(object => {
-            if (object && object.system) {
-              DB.updated('controllers', Object.values(object.system.Controllers))
-            }
+      if (response.redirected) {
+        window.location = response.url
+      } else {
+        switch (response.status) {
+          case 200:
+            response.json().then(object => {
+              if (object && object.system) {
+                DB.updated('controllers', Object.values(object.system.Controllers))
+              }
 
-            refreshed()
-          })
-          break
+              refreshed()
+            })
+            break
 
-        default:
-          response.text().then(message => { warning(message) })
+          default:
+            response.text().then(message => { warning(message) })
+        }
       }
     })
     .catch(function (err) {

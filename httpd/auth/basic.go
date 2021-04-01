@@ -119,7 +119,6 @@ func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
 
 func (b *Basic) Authorized(w http.ResponseWriter, r *http.Request, path string) (string, string, bool) {
 	uid, role, ok := b.authorized(r, path)
-
 	if !ok {
 		if !b.authenticated(r) {
 			b.unauthenticated(w, r)

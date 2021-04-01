@@ -2,13 +2,10 @@
 
 ### IN PROGRESS
 
-- [ ] JDB
-      - merge branch back into main
-
 - [ ] system
-      - 'refresh' can invoke system GET without logging in???
       - make LAN parameters editable
       - initialise LAN/all from uhppoted.conf (?)
+      - nicer auth handling for e.g. /images
       - fix Firefox layout
         -- internal table layout seems to include padding where Chrome doesn't
         -- explicitly remove border from table rows/cells maybe (?)
