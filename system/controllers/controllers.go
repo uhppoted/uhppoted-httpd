@@ -36,18 +36,62 @@ func NewControllerSet() ControllerSet {
 }
 
 func (cc *ControllerSet) Load(file string, retention time.Duration) error {
+	type controller struct {
+		OID      string           `json:"OID"`
+		Created  time.Time        `json:"created"`
+		Name     *types.Name      `json:"name,omitempty"`
+		DeviceID *uint32          `json:"device-id,omitempty"`
+		Address  *types.Address   `json:"address,omitempty"`
+		Doors    map[uint8]string `json:"doors"`
+		TimeZone *string          `json:"timezone,omitempty"`
+	}
+
+	blob := struct {
+		Controllers []controller `json:"controllers"`
+		LAN         *LAN         `json:"LAN"`
+	}{
+		Controllers: []controller{},
+		LAN:         &LAN{},
+	}
+
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
 	}
 
-	err = json.Unmarshal(bytes, cc)
+	err = json.Unmarshal(bytes, &blob)
 	if err != nil {
 		return err
 	}
 
 	cc.file = file
 	cc.retention = retention
+	cc.Controllers = []*Controller{}
+	cc.LAN = &LAN{
+		BindAddress:      blob.LAN.BindAddress,
+		BroadcastAddress: blob.LAN.BroadcastAddress,
+		ListenAddress:    blob.LAN.ListenAddress,
+		Debug:            blob.LAN.Debug,
+		cache:            map[uint32]device{},
+	}
+
+	for _, c := range blob.Controllers {
+		replicant := Controller{
+			OID:      c.OID,
+			Created:  c.Created,
+			Name:     c.Name,
+			DeviceID: c.DeviceID,
+			IP:       c.Address,
+			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
+			TimeZone: c.TimeZone,
+		}
+
+		for k, v := range c.Doors {
+			replicant.Doors[k] = v
+		}
+
+		cc.Controllers = append(cc.Controllers, &replicant)
+	}
 
 	for _, v := range cc.Controllers {
 		if v.DeviceID != nil && *v.DeviceID != 0 {
@@ -59,6 +103,16 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 }
 
 func (cc *ControllerSet) Save() error {
+	type controller struct {
+		OID      string           `json:"OID"`
+		Created  time.Time        `json:"created"`
+		Name     *types.Name      `json:"name,omitempty"`
+		DeviceID *uint32          `json:"device-id,omitempty"`
+		Address  *types.Address   `json:"address,omitempty"`
+		Doors    map[uint8]string `json:"doors"`
+		TimeZone *string          `json:"timezone,omitempty"`
+	}
+
 	if cc == nil {
 		return nil
 	}
@@ -75,16 +129,31 @@ func (cc *ControllerSet) Save() error {
 		return nil
 	}
 
-	cleaned := ControllerSet{
-		file:        cc.file,
-		retention:   cc.retention,
-		Controllers: []*Controller{},
+	cleaned := struct {
+		Controllers []controller `json:"controllers"`
+		LAN         *LAN         `json:"LAN"`
+	}{
+		Controllers: []controller{},
 		LAN:         cc.LAN.clone(),
 	}
 
-	for _, v := range cc.Controllers {
-		if v.IsSaveable() {
-			cleaned.Controllers = append(cleaned.Controllers, v.clone())
+	for _, c := range cc.Controllers {
+		if c.IsSaveable() {
+			replicant := controller{
+				OID:      c.OID,
+				Created:  c.Created,
+				Name:     c.Name,
+				DeviceID: c.DeviceID,
+				Address:  c.IP,
+				Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
+				TimeZone: c.TimeZone,
+			}
+
+			for k, v := range c.Doors {
+				replicant.Doors[k] = v
+			}
+
+			cleaned.Controllers = append(cleaned.Controllers, replicant)
 		}
 	}
 

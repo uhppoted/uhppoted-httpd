@@ -17,7 +17,7 @@ export function login (event) {
           if (response.redirected) {
             return response.url
           } else {
-            return '/'
+            return '/index.html'
           }
 
         case 401:

@@ -4,8 +4,12 @@
 
 - [ ] system
       - make LAN parameters editable
-      - initialise LAN/all from uhppoted.conf (?)
+      - switch controller/Controller structs 
+        -- eliminate cache
+
       - nicer auth handling for e.g. /images
+        -- auth.Local should return err only if not .*
+      - initialise LAN/all from uhppoted.conf (?)
       - fix Firefox layout
         -- internal table layout seems to include padding where Chrome doesn't
         -- explicitly remove border from table rows/cells maybe (?)
