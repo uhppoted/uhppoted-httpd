@@ -8,13 +8,18 @@ import (
 )
 
 type Controller struct {
-	OID          string           `json:"OID"`
-	Created      time.Time        `json:"created"`
-	Name         *types.Name      `json:"name,omitempty"`
-	DeviceID     *uint32          `json:"device-id,omitempty"`
-	IP           *types.Address   `json:"address,omitempty"`
-	Doors        map[uint8]string `json:"doors"`
-	TimeZone     *string          `json:"timezone,omitempty"`
+	OID      string           `json:"OID"`
+	Name     *types.Name      `json:"name,omitempty"`
+	DeviceID *uint32          `json:"device-id,omitempty"`
+	IP       *types.Address   `json:"address,omitempty"`
+	Doors    map[uint8]string `json:"doors"`
+	TimeZone *string          `json:"timezone,omitempty"`
+
+	SystemTime datetime `json:"systime"`
+	Cards      cards    `json:"cards,omitempty"`
+	Events     *records `json:"events,omitempty"`
+
+	created      time.Time
 	deleted      *time.Time
 	unconfigured bool
 }
@@ -82,13 +87,21 @@ func (c *Controller) IsSaveable() bool {
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
-			OID:          c.OID,
-			Created:      c.Created,
-			Name:         c.Name.Copy(),
-			DeviceID:     c.DeviceID,
-			IP:           c.IP,
-			TimeZone:     c.TimeZone,
-			Doors:        map[uint8]string{1: "", 2: "", 3: "", 4: ""},
+			OID:      c.OID,
+			Name:     c.Name.Copy(),
+			DeviceID: c.DeviceID,
+			IP:       c.IP,
+			TimeZone: c.TimeZone,
+			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
+
+			SystemTime: c.SystemTime,
+			Cards: cards{
+				Records: c.Cards.Records,
+				Status:  c.Cards.Status,
+			},
+			Events: c.Events,
+
+			created:      c.created,
 			deleted:      c.deleted,
 			unconfigured: c.unconfigured,
 		}

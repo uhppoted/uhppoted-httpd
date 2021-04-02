@@ -12,7 +12,6 @@ import (
 )
 
 type datetime struct {
-	Qwerty   int
 	Expected *types.DateTime
 	DateTime *types.DateTime
 	Status   status

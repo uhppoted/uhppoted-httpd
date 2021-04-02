@@ -3,10 +3,7 @@ package controllers
 import (
 	"fmt"
 	"log"
-	"math"
 	"time"
-
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 // Merges Controller static configuration with current controller state information into a struct usable
@@ -18,31 +15,35 @@ type controller struct {
 	IP       ip
 	Doors    map[uint8]string
 
-	Created time.Time
-
+	Status     status
 	SystemTime datetime
 	Cards      cards
 	Events     *records
-	Status     status
 	Deleted    bool
+
+	created time.Time
 }
 
 func merge(lan *LAN, c Controller) controller {
 	cc := controller{
-		Name:     "",
 		OID:      c.OID,
+		Name:     "",
 		DeviceID: "",
 		IP: ip{
 			Configured: c.IP,
 		},
-		Cards: cards{
-			Status: StatusUnknown,
-		},
 		Doors: map[uint8]string{1: "", 2: "", 3: "", 4: ""},
 
-		Created: c.Created,
+		Status:     StatusUnknown,
+		SystemTime: c.SystemTime,
+		Cards: cards{
+			Records: c.Cards.Records,
+			Status:  c.Cards.Status,
+		},
+		Events:  c.Events,
 		Deleted: c.deleted != nil,
-		Status:  StatusUnknown,
+
+		created: c.created,
 	}
 
 	if c.Name != nil {
@@ -67,31 +68,11 @@ func merge(lan *LAN, c Controller) controller {
 		}
 	}
 
-	tz := time.Local
-	if c.TimeZone != nil {
-		if l, err := timezone(*c.TimeZone); err != nil {
-			warn(err)
-		} else {
-			tz = l
-		}
-	}
-
 	if c.DeviceID == nil || *c.DeviceID == 0 {
 		return cc
 	}
 
 	if cached, ok := lan.cache[*c.DeviceID]; ok {
-		if cached.cards != nil {
-			cc.Cards.Records = records(*cached.cards)
-			if cached.acl == StatusUnknown {
-				cc.Cards.Status = StatusUncertain
-			} else {
-				cc.Cards.Status = cached.acl
-			}
-		}
-
-		cc.Events = (*records)(cached.events)
-
 		if cached.address != nil {
 			cc.IP.Address = &(*cached.address)
 
@@ -105,23 +86,6 @@ func merge(lan *LAN, c Controller) controller {
 			default:
 				cc.IP.Status = StatusError
 			}
-		}
-
-		if cached.datetime != nil {
-			now := types.DateTime(time.Now().In(tz))
-			t := time.Time(*cached.datetime)
-			T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-			delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-
-			if delta > WINDOW {
-				cc.SystemTime.Status = StatusError
-			} else {
-				cc.SystemTime.Status = StatusOk
-			}
-
-			dt := types.DateTime(T)
-			cc.SystemTime.DateTime = &dt
-			cc.SystemTime.Expected = &now
 		}
 
 		switch dt := time.Now().Sub(cached.touched); {

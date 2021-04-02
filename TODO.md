@@ -6,6 +6,7 @@
       - make LAN parameters editable
       - switch controller/Controller structs 
         -- eliminate cache
+        -- marshal cards.Records as "" if StatusUnknown
 
       - nicer auth handling for e.g. /images
         -- auth.Local should return err only if not .*

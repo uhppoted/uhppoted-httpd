@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net"
 	"os"
 	"path/filepath"
@@ -38,12 +39,12 @@ func NewControllerSet() ControllerSet {
 func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 	type controller struct {
 		OID      string           `json:"OID"`
-		Created  time.Time        `json:"created"`
 		Name     *types.Name      `json:"name,omitempty"`
 		DeviceID *uint32          `json:"device-id,omitempty"`
 		Address  *types.Address   `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
 		TimeZone *string          `json:"timezone,omitempty"`
+		Created  time.Time        `json:"created"`
 	}
 
 	blob := struct {
@@ -78,12 +79,20 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 	for _, c := range blob.Controllers {
 		replicant := Controller{
 			OID:      c.OID,
-			Created:  c.Created,
 			Name:     c.Name,
 			DeviceID: c.DeviceID,
 			IP:       c.Address,
 			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
 			TimeZone: c.TimeZone,
+
+			SystemTime: datetime{
+				Status: StatusUnknown,
+			},
+			Cards: cards{
+				Status: StatusUnknown,
+			},
+
+			created: c.Created,
 		}
 
 		for k, v := range c.Doors {
@@ -105,12 +114,12 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 func (cc *ControllerSet) Save() error {
 	type controller struct {
 		OID      string           `json:"OID"`
-		Created  time.Time        `json:"created"`
 		Name     *types.Name      `json:"name,omitempty"`
 		DeviceID *uint32          `json:"device-id,omitempty"`
 		Address  *types.Address   `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
 		TimeZone *string          `json:"timezone,omitempty"`
+		Created  time.Time        `json:"created"`
 	}
 
 	if cc == nil {
@@ -141,12 +150,12 @@ func (cc *ControllerSet) Save() error {
 		if c.IsSaveable() {
 			replicant := controller{
 				OID:      c.OID,
-				Created:  c.Created,
 				Name:     c.Name,
 				DeviceID: c.DeviceID,
 				Address:  c.IP,
 				Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
 				TimeZone: c.TimeZone,
+				Created:  c.created,
 			}
 
 			for k, v := range c.Doors {
@@ -211,7 +220,7 @@ func (cc *ControllerSet) Add(c Controller) (*Controller, error) {
 
 	record := c.clone()
 	record.OID = catalog.Get(id)
-	record.Created = time.Now()
+	record.created = time.Now()
 
 	cc.Controllers = append(cc.Controllers, record)
 
@@ -276,7 +285,7 @@ func (cc *ControllerSet) Consolidate() interface{} {
 		}
 	}
 
-	sort.SliceStable(list, func(i, j int) bool { return list[i].Created.Before(list[j].Created) })
+	sort.SliceStable(list, func(i, j int) bool { return list[i].created.Before(list[j].created) })
 
 	return list
 }
@@ -303,9 +312,54 @@ loop:
 		cc.Controllers = append(cc.Controllers, &Controller{
 			OID:          oid,
 			DeviceID:     &id,
-			Created:      time.Now(),
+			created:      time.Now(),
 			unconfigured: true,
 		})
+	}
+
+	// ... update from cache
+
+	for _, c := range cc.Controllers {
+		if c.DeviceID != nil && *c.DeviceID != 0 {
+			if cached, ok := cc.LAN.cache[*c.DeviceID]; ok {
+				if cached.datetime != nil {
+					tz := time.Local
+					if c.TimeZone != nil {
+						if l, err := timezone(*c.TimeZone); err != nil {
+							warn(err)
+						} else {
+							tz = l
+						}
+					}
+
+					now := types.DateTime(time.Now().In(tz))
+					t := time.Time(*cached.datetime)
+					T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+					delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+
+					if delta > WINDOW {
+						c.SystemTime.Status = StatusError
+					} else {
+						c.SystemTime.Status = StatusOk
+					}
+
+					dt := types.DateTime(T)
+					c.SystemTime.DateTime = &dt
+					c.SystemTime.Expected = &now
+				}
+
+				if cached.cards != nil {
+					c.Cards.Records = records(*cached.cards)
+					if cached.acl == StatusUnknown {
+						c.Cards.Status = StatusUncertain
+					} else {
+						c.Cards.Status = cached.acl
+					}
+				}
+
+				c.Events = (*records)(cached.events)
+			}
+		}
 	}
 }
 
