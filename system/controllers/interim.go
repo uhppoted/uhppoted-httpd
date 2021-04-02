@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math"
-	"strings"
 	"time"
-
-	"github.com/google/uuid"
 
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -15,7 +12,6 @@ import (
 // Merges Controller static configuration with current controller state information into a struct usable
 // by Javascript/HTML templating.
 type controller struct {
-	ID       string
 	OID      string
 	Name     string
 	DeviceID string
@@ -33,7 +29,6 @@ type controller struct {
 
 func merge(lan *LAN, c Controller) controller {
 	cc := controller{
-		ID:       ID(c),
 		Name:     "",
 		OID:      c.OID,
 		DeviceID: "",
@@ -138,19 +133,6 @@ func merge(lan *LAN, c Controller) controller {
 	}
 
 	return cc
-}
-
-func ID(c Controller) string {
-	if c.OID != "" {
-		return fmt.Sprintf("O%s", strings.ReplaceAll(c.OID, ".", ""))
-	}
-
-	uuid := strings.ReplaceAll(uuid.New().String(), "-", "")
-	if uuid == "" {
-		uuid = fmt.Sprintf("%d", time.Now().Unix())
-	}
-
-	return "U" + strings.ReplaceAll(uuid, "-", "")
 }
 
 func warn(err error) {
