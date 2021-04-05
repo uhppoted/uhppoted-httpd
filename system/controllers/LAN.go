@@ -18,12 +18,15 @@ import (
 )
 
 type LAN struct {
-	BindAddress      *types.Address    `json:"bind-address"`
-	BroadcastAddress *types.Address    `json:"broadcast-address"`
-	ListenAddress    *types.Address    `json:"listen-address"`
-	Debug            bool              `json:"debug"`
-	cache            map[uint32]device `json:"-"`
-	guard            sync.RWMutex
+	BindAddress      *types.Address `json:"bind-address"`
+	BroadcastAddress *types.Address `json:"broadcast-address"`
+	ListenAddress    *types.Address `json:"listen-address"`
+	Debug            bool           `json:"debug"`
+}
+
+type Cache struct {
+	cache map[uint32]device
+	guard sync.RWMutex
 }
 
 type device struct {
@@ -42,6 +45,10 @@ const (
 
 const WINDOW = 300 // 5 minutes
 
+var cache = Cache{
+	cache: map[uint32]device{},
+}
+
 func (l *LAN) clone() *LAN {
 	if l != nil {
 		lan := LAN{
@@ -49,7 +56,7 @@ func (l *LAN) clone() *LAN {
 			BroadcastAddress: l.BroadcastAddress,
 			ListenAddress:    l.ListenAddress,
 			Debug:            l.Debug,
-			cache:            map[uint32]device{},
+			//cache:            map[uint32]device{},
 		}
 
 		return &lan
@@ -245,21 +252,19 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
 }
 
 func (l *LAN) delete(c Controller) {
+	cache.guard.Lock()
+	defer cache.guard.Unlock()
+
 	if l != nil && c.DeviceID != nil && *c.DeviceID != 0 {
-		delete(l.cache, *c.DeviceID)
+		delete(cache.cache, *c.DeviceID)
 	}
 }
 
 func (l *LAN) store(id uint32, info interface{}) {
-	l.guard.Lock()
+	cache.guard.Lock()
+	defer cache.guard.Unlock()
 
-	defer l.guard.Unlock()
-
-	if l.cache == nil {
-		l.cache = map[uint32]device{}
-	}
-
-	cached, ok := l.cache[id]
+	cached, ok := cache.cache[id]
 	if !ok {
 		cached = device{}
 	}
@@ -291,7 +296,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 		}
 	}
 
-	l.cache[id] = cached
+	cache.cache[id] = cached
 }
 
 func (l *LAN) synchTime(controllers []*Controller) {

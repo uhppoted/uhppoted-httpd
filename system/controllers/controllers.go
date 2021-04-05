@@ -77,7 +77,6 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 		BroadcastAddress: blob.LAN.BroadcastAddress,
 		ListenAddress:    blob.LAN.ListenAddress,
 		Debug:            blob.LAN.Debug,
-		cache:            map[uint32]device{},
 	}
 
 	for _, v := range blob.Controllers {
@@ -242,7 +241,7 @@ func (cc *ControllerSet) Consolidate() interface{} {
 	list := []interface{}{}
 	for _, c := range cc.Controllers {
 		if c.IsValid() {
-			if record := c.AsView(cc.LAN); record != nil {
+			if record := c.AsView(); record != nil {
 				list = append(list, record)
 			}
 		}
@@ -255,16 +254,12 @@ func (cc *ControllerSet) Consolidate() interface{} {
 	return list
 }
 
-func (cc *ControllerSet) Merge(c *Controller) interface{} {
-	return c.AsView(cc.LAN)
-}
-
 func (cc *ControllerSet) Refresh() {
 	cc.LAN.refresh(cc.Controllers)
 
 	// ... add 'found' controllers to list
 loop:
-	for k, _ := range cc.LAN.cache {
+	for k, _ := range cache.cache {
 		for _, c := range cc.Controllers {
 			if c.DeviceID != nil && *c.DeviceID == k && c.deleted == nil {
 				continue loop

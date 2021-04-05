@@ -46,8 +46,8 @@ loop:
 					if r, err := sys.delete(shadow, c, auth); err != nil {
 						return nil, err
 					} else if r != nil {
-						if record := sys.controllers.Merge(r); record != nil {
-							list.Deleted = append(list.Deleted, record)
+						if view := r.AsView(); view != nil {
+							list.Deleted = append(list.Deleted, view)
 						}
 					}
 				}
@@ -62,8 +62,8 @@ loop:
 				if r, err := sys.update(shadow, c, auth); err != nil {
 					return nil, err
 				} else if r != nil {
-					if record := sys.controllers.Merge(r); record != nil {
-						list.Updated = append(list.Updated, record)
+					if view := r.AsView(); view != nil {
+						list.Updated = append(list.Updated, view)
 					}
 				}
 
@@ -75,8 +75,8 @@ loop:
 		if r, err := sys.add(shadow, c, auth); err != nil {
 			return nil, err
 		} else if r != nil {
-			if record := sys.controllers.Merge(r); record != nil {
-				list.Added = append(list.Added, record)
+			if view := r.AsView(); view != nil {
+				list.Added = append(list.Added, view)
 			}
 		}
 	}

@@ -110,7 +110,7 @@ func (c *Controller) serialize() ([]byte, error) {
 	return json.MarshalIndent(record, "", "  ")
 }
 
-func (c *Controller) AsView(lan *LAN) interface{} {
+func (c *Controller) AsView() interface{} {
 	if c == nil {
 		return nil
 	}
@@ -162,7 +162,7 @@ func (c *Controller) AsView(lan *LAN) interface{} {
 		return &v
 	}
 
-	if cached, ok := lan.cache[*c.DeviceID]; ok {
+	if cached, ok := cache.cache[*c.DeviceID]; ok {
 		// ... set statuss field from cached value
 		dt := time.Now().Sub(cached.touched)
 		switch {

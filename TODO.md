@@ -4,10 +4,8 @@
 
 - [ ] system
       - make LAN parameters editable
-      - switch controller/Controller structs 
-        -- make cache a package variable
-        -- marshal cards.Records as "" if StatusUnknown
-
+      
+      - marshal cards.Records as "" if StatusUnknown
       - "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'
       - nicer auth handling for e.g. /images
         -- auth.Local should return err only if not .*
