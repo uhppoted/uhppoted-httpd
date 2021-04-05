@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -16,15 +17,33 @@ type Controller struct {
 	Doors    map[uint8]string `json:"doors"`
 	TimeZone *string          `json:"timezone,omitempty"`
 
-	Status     status   `json:"status"`
-	SystemTime datetime `json:"systime"`
-	Cards      cards    `json:"cards,omitempty"`
-	Events     *records `json:"events,omitempty"`
-
 	created      time.Time
 	deleted      *time.Time
-	touched      time.Time
 	unconfigured bool
+}
+
+type controller struct {
+	OID      string
+	Name     string
+	DeviceID string
+	IP       ip
+	Doors    map[uint8]string
+
+	Status     status
+	SystemTime datetime
+	Cards      cards
+	Events     *records
+	Deleted    bool
+
+	created time.Time
+}
+
+func (c *controller) Created() time.Time {
+	if c != nil {
+		return c.created
+	}
+
+	return time.Now()
 }
 
 func (c *Controller) deserialize(bytes []byte) error {
@@ -48,14 +67,6 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.IP = record.Address
 	c.Doors = map[uint8]string{1: "", 2: "", 3: "", 4: ""}
 	c.TimeZone = record.TimeZone
-	c.Status = StatusUnknown
-	c.SystemTime = datetime{
-		Status: StatusUnknown,
-	}
-	c.Cards = cards{
-		Status: StatusUnknown,
-	}
-
 	c.created = record.Created
 
 	for k, v := range record.Doors {
@@ -113,13 +124,13 @@ func (c *Controller) AsView(lan *LAN) interface{} {
 		},
 		Doors: map[uint8]string{1: "", 2: "", 3: "", 4: ""},
 
-		Status:     StatusUnknown,
-		SystemTime: c.SystemTime,
-		Cards: cards{
-			Records: c.Cards.Records,
-			Status:  c.Cards.Status,
+		Status: StatusUnknown,
+		SystemTime: datetime{
+			Status: StatusUnknown,
 		},
-		Events:  c.Events,
+		Cards: cards{
+			Status: StatusUnknown,
+		},
 		Deleted: c.deleted != nil,
 
 		created: c.created,
@@ -152,6 +163,17 @@ func (c *Controller) AsView(lan *LAN) interface{} {
 	}
 
 	if cached, ok := lan.cache[*c.DeviceID]; ok {
+		// ... set statuss field from cached value
+		dt := time.Now().Sub(cached.touched)
+		switch {
+		case dt < DeviceOk:
+			v.Status = StatusOk
+
+		case dt < DeviceUncertain:
+			v.Status = StatusUncertain
+		}
+
+		// ... set IP address field from cached value
 		if cached.address != nil {
 			v.IP.Address = &(*cached.address)
 
@@ -167,14 +189,45 @@ func (c *Controller) AsView(lan *LAN) interface{} {
 			}
 		}
 
-		dt := time.Now().Sub(cached.touched)
-		switch {
-		case dt < DeviceOk:
-			v.Status = StatusOk
+		// ... set system date/time field from cached value
+		if cached.datetime != nil {
+			tz := time.Local
+			if c.TimeZone != nil {
+				if l, err := timezone(*c.TimeZone); err != nil {
+					warn(err)
+				} else {
+					tz = l
+				}
+			}
 
-		case dt < DeviceUncertain:
-			v.Status = StatusUncertain
+			now := types.DateTime(time.Now().In(tz))
+			t := time.Time(*cached.datetime)
+			T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+			delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+
+			if delta > WINDOW {
+				v.SystemTime.Status = StatusError
+			} else {
+				v.SystemTime.Status = StatusOk
+			}
+
+			dt := types.DateTime(T)
+			v.SystemTime.DateTime = &dt
+			v.SystemTime.Expected = &now
 		}
+
+		// ... set ACL field from cached value
+		if cached.cards != nil {
+			v.Cards.Records = records(*cached.cards)
+			if cached.acl == StatusUnknown {
+				v.Cards.Status = StatusUncertain
+			} else {
+				v.Cards.Status = cached.acl
+			}
+		}
+
+		// ... set events field from cached value
+		v.Events = (*records)(cached.events)
 	}
 
 	return &v
@@ -250,17 +303,8 @@ func (c *Controller) clone() *Controller {
 			TimeZone: c.TimeZone,
 			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
 
-			Status:     c.Status,
-			SystemTime: c.SystemTime,
-			Cards: cards{
-				Records: c.Cards.Records,
-				Status:  c.Cards.Status,
-			},
-			Events: c.Events,
-
 			created:      c.created,
 			deleted:      c.deleted,
-			touched:      c.touched,
 			unconfigured: c.unconfigured,
 		}
 

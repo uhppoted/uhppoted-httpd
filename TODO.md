@@ -5,8 +5,7 @@
 - [ ] system
       - make LAN parameters editable
       - switch controller/Controller structs 
-        -- merge after updating cache
-        -- Controller.AsView
+        -- make cache a package variable
         -- marshal cards.Records as "" if StatusUnknown
 
       - "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'

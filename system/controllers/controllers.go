@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math"
+	"log"
 	"net"
 	"os"
 	"path/filepath"
@@ -281,54 +281,6 @@ loop:
 			unconfigured: true,
 		})
 	}
-
-	// ... update from cache
-	// TODO: move to LAN.refresh because otherwise this is out of date because LAN.refresh uses goroutines
-
-	for _, c := range cc.Controllers {
-		if c.DeviceID != nil && *c.DeviceID != 0 {
-			if cached, ok := cc.LAN.cache[*c.DeviceID]; ok {
-				c.touched = cached.touched
-
-				if cached.datetime != nil {
-					tz := time.Local
-					if c.TimeZone != nil {
-						if l, err := timezone(*c.TimeZone); err != nil {
-							warn(err)
-						} else {
-							tz = l
-						}
-					}
-
-					now := types.DateTime(time.Now().In(tz))
-					t := time.Time(*cached.datetime)
-					T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-					delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-
-					if delta > WINDOW {
-						c.SystemTime.Status = StatusError
-					} else {
-						c.SystemTime.Status = StatusOk
-					}
-
-					dt := types.DateTime(T)
-					c.SystemTime.DateTime = &dt
-					c.SystemTime.Expected = &now
-				}
-
-				if cached.cards != nil {
-					c.Cards.Records = records(*cached.cards)
-					if cached.acl == StatusUnknown {
-						c.Cards.Status = StatusUncertain
-					} else {
-						c.Cards.Status = cached.acl
-					}
-				}
-
-				c.Events = (*records)(cached.events)
-			}
-		}
-	}
 }
 
 func (cc *ControllerSet) Clone() *ControllerSet {
@@ -476,4 +428,8 @@ func validate(cc ControllerSet) error {
 
 func scrub(cc *ControllerSet) error {
 	return nil
+}
+
+func warn(err error) {
+	log.Printf("ERROR %v", err)
 }
