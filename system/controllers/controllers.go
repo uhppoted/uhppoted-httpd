@@ -26,6 +26,10 @@ type ControllerSet struct {
 	LAN         *LAN          `json:"LAN"`
 }
 
+type sortable interface {
+	Created() time.Time
+}
+
 var guard sync.Mutex
 
 func NewControllerSet() ControllerSet {
@@ -48,10 +52,10 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 	}
 
 	blob := struct {
-		Controllers []controller `json:"controllers"`
-		LAN         *LAN         `json:"LAN"`
+		Controllers []json.RawMessage `json:"controllers"`
+		LAN         *LAN              `json:"LAN"`
 	}{
-		Controllers: []controller{},
+		Controllers: []json.RawMessage{},
 		LAN:         &LAN{},
 	}
 
@@ -76,30 +80,11 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 		cache:            map[uint32]device{},
 	}
 
-	for _, c := range blob.Controllers {
-		replicant := Controller{
-			OID:      c.OID,
-			Name:     c.Name,
-			DeviceID: c.DeviceID,
-			IP:       c.Address,
-			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
-			TimeZone: c.TimeZone,
-
-			SystemTime: datetime{
-				Status: StatusUnknown,
-			},
-			Cards: cards{
-				Status: StatusUnknown,
-			},
-
-			created: c.Created,
+	for _, v := range blob.Controllers {
+		var c Controller
+		if err := c.deserialize(v); err == nil {
+			cc.Controllers = append(cc.Controllers, &c)
 		}
-
-		for k, v := range c.Doors {
-			replicant.Doors[k] = v
-		}
-
-		cc.Controllers = append(cc.Controllers, &replicant)
 	}
 
 	for _, v := range cc.Controllers {
@@ -112,16 +97,6 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 }
 
 func (cc *ControllerSet) Save() error {
-	type controller struct {
-		OID      string           `json:"OID"`
-		Name     *types.Name      `json:"name,omitempty"`
-		DeviceID *uint32          `json:"device-id,omitempty"`
-		Address  *types.Address   `json:"address,omitempty"`
-		Doors    map[uint8]string `json:"doors"`
-		TimeZone *string          `json:"timezone,omitempty"`
-		Created  time.Time        `json:"created"`
-	}
-
 	if cc == nil {
 		return nil
 	}
@@ -138,35 +113,21 @@ func (cc *ControllerSet) Save() error {
 		return nil
 	}
 
-	cleaned := struct {
-		Controllers []controller `json:"controllers"`
-		LAN         *LAN         `json:"LAN"`
+	serializable := struct {
+		Controllers []json.RawMessage `json:"controllers"`
+		LAN         *LAN              `json:"LAN"`
 	}{
-		Controllers: []controller{},
+		Controllers: []json.RawMessage{},
 		LAN:         cc.LAN.clone(),
 	}
 
 	for _, c := range cc.Controllers {
-		if c.IsSaveable() {
-			replicant := controller{
-				OID:      c.OID,
-				Name:     c.Name,
-				DeviceID: c.DeviceID,
-				Address:  c.IP,
-				Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
-				TimeZone: c.TimeZone,
-				Created:  c.created,
-			}
-
-			for k, v := range c.Doors {
-				replicant.Doors[k] = v
-			}
-
-			cleaned.Controllers = append(cleaned.Controllers, replicant)
+		if record, err := c.serialize(); err == nil && record != nil {
+			serializable.Controllers = append(serializable.Controllers, record)
 		}
 	}
 
-	b, err := json.MarshalIndent(cleaned, "", "  ")
+	b, err := json.MarshalIndent(serializable, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -278,20 +239,24 @@ func (cc *ControllerSet) Delete(c Controller) (*Controller, error) {
 }
 
 func (cc *ControllerSet) Consolidate() interface{} {
-	list := []controller{}
+	list := []interface{}{}
 	for _, c := range cc.Controllers {
 		if c.IsValid() {
-			list = append(list, merge(cc.LAN, *c))
+			if record := c.AsView(cc.LAN); record != nil {
+				list = append(list, record)
+			}
 		}
 	}
 
-	sort.SliceStable(list, func(i, j int) bool { return list[i].created.Before(list[j].created) })
+	sort.SliceStable(list, func(i, j int) bool {
+		return list[i].(sortable).Created().Before(list[j].(sortable).Created())
+	})
 
 	return list
 }
 
-func (cc *ControllerSet) Merge(c Controller) controller {
-	return merge(cc.LAN, c)
+func (cc *ControllerSet) Merge(c *Controller) interface{} {
+	return c.AsView(cc.LAN)
 }
 
 func (cc *ControllerSet) Refresh() {
@@ -318,10 +283,13 @@ loop:
 	}
 
 	// ... update from cache
+	// TODO: move to LAN.refresh because otherwise this is out of date because LAN.refresh uses goroutines
 
 	for _, c := range cc.Controllers {
 		if c.DeviceID != nil && *c.DeviceID != 0 {
 			if cached, ok := cc.LAN.cache[*c.DeviceID]; ok {
+				c.touched = cached.touched
+
 				if cached.datetime != nil {
 					tz := time.Local
 					if c.TimeZone != nil {

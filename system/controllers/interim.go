@@ -24,7 +24,39 @@ type controller struct {
 	created time.Time
 }
 
-func merge(lan *LAN, c Controller) controller {
+func (c *controller) Created() time.Time {
+	if c != nil {
+		return c.created
+	}
+
+	return time.Now()
+}
+
+func merge(lan *LAN, c *Controller) controller {
+	touched := c.touched
+
+	if c.DeviceID != nil && *c.DeviceID != 0 {
+		if cached, ok := lan.cache[*c.DeviceID]; ok {
+			touched = cached.touched
+		}
+	}
+
+	dt := time.Now().Sub(touched)
+	switch {
+	case (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0):
+		c.Status = StatusNew
+
+	case dt < DeviceOk:
+		c.Status = StatusOk
+
+	case dt < DeviceUncertain:
+		c.Status = StatusUncertain
+
+	default:
+		c.Status = StatusUnknown
+
+	}
+
 	cc := controller{
 		OID:      c.OID,
 		Name:     "",
@@ -34,7 +66,7 @@ func merge(lan *LAN, c Controller) controller {
 		},
 		Doors: map[uint8]string{1: "", 2: "", 3: "", 4: ""},
 
-		Status:     StatusUnknown,
+		Status:     c.Status,
 		SystemTime: c.SystemTime,
 		Cards: cards{
 			Records: c.Cards.Records,
@@ -52,10 +84,6 @@ func merge(lan *LAN, c Controller) controller {
 
 	if c.DeviceID != nil {
 		cc.DeviceID = fmt.Sprintf("%v", *c.DeviceID)
-	}
-
-	if cc.Name == "" && cc.DeviceID == "" {
-		cc.Status = StatusNew
 	}
 
 	if c.IP != nil {
@@ -86,13 +114,6 @@ func merge(lan *LAN, c Controller) controller {
 			default:
 				cc.IP.Status = StatusError
 			}
-		}
-
-		switch dt := time.Now().Sub(cached.touched); {
-		case dt < DeviceOk:
-			cc.Status = StatusOk
-		case dt < DeviceUncertain:
-			cc.Status = StatusUncertain
 		}
 	}
 

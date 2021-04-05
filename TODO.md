@@ -5,9 +5,11 @@
 - [ ] system
       - make LAN parameters editable
       - switch controller/Controller structs 
-        -- eliminate cache
+        -- merge after updating cache
+        -- Controller.AsView
         -- marshal cards.Records as "" if StatusUnknown
 
+      - "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'
       - nicer auth handling for e.g. /images
         -- auth.Local should return err only if not .*
       - initialise LAN/all from uhppoted.conf (?)
