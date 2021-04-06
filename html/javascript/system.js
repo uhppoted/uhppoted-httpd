@@ -82,8 +82,11 @@ export function onRefresh (event) {
         switch (response.status) {
           case 200:
             response.json().then(object => {
-              if (object && object.system) {
-                DB.updated('controllers', Object.values(object.system.Controllers))
+              if (object && object.system && object.system.controllers) {
+                object.system.controllers.forEach(l => {
+                  DB.updated('interface', l.interface)
+                  DB.updated('controllers', Object.values(l.controllers))
+                })
               }
 
               refreshed()
@@ -184,10 +187,15 @@ function post (records, reset) {
 }
 
 function refreshed () {
+  const interfaces = DB.interfaces
   const controllers = DB.controllers
 
+  interfaces.forEach(c => {
+    updateInterfaceFromDB(c.OID, c)
+  })
+
   controllers.forEach(c => {
-    const row = updateFromDB(c.OID, c)
+    const row = updateControllerFromDB(c.OID, c)
     if (row) {
       switch (c.status) {
         case 'new':
@@ -203,8 +211,24 @@ function refreshed () {
   DB.refreshed('controllers')
 }
 
-function updateFromDB (oid, record) {
-  let row = document.querySelector("[data-oid='" + oid + "']")
+function updateInterfaceFromDB (oid, record) {
+  const section = document.querySelector("section[data-oid='" + oid + "']")
+
+  if (section) {
+    const name = section.querySelector('div.name')
+    const bind = section.querySelector('input.bind')
+    const broadcast = section.querySelector('input.broadcast')
+    const listen = section.querySelector('input.listen')
+
+    name.innerHTML = record.name
+    bind.value = record.bind
+    broadcast.value = record.broadcast
+    listen.value = record.listen
+  }
+}
+
+function updateControllerFromDB (oid, record) {
+  let row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
 
   if (record.status === 'deleted') {
     deleted(row)

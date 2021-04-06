@@ -5,7 +5,14 @@ import (
 	"sync"
 )
 
-var catalog = map[string]record{}
+var catalog = struct {
+	interfaces  map[string]struct{}
+	controllers map[string]record
+}{
+	interfaces:  map[string]struct{}{},
+	controllers: map[string]record{},
+}
+
 var guard sync.Mutex
 
 type record struct {
@@ -13,11 +20,18 @@ type record struct {
 	deleted bool
 }
 
-func Put(deviceID uint32, oid string) {
+func PutInterface(oid string) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	catalog[oid] = record{
+	catalog.interfaces[oid] = struct{}{}
+}
+
+func PutController(deviceID uint32, oid string) {
+	guard.Lock()
+	defer guard.Unlock()
+
+	catalog.controllers[oid] = record{
 		ID:      deviceID,
 		deleted: false,
 	}
@@ -28,7 +42,7 @@ func Get(deviceID uint32) string {
 	defer guard.Unlock()
 
 	if deviceID != 0 {
-		for oid, v := range catalog {
+		for oid, v := range catalog.controllers {
 			if !v.deleted && v.ID == deviceID {
 				return oid
 			}
@@ -40,13 +54,13 @@ loop:
 	for {
 		item += 1
 		oid := fmt.Sprintf("0.1.1.%d", item)
-		for v, _ := range catalog {
+		for v, _ := range catalog.controllers {
 			if v == oid {
 				continue loop
 			}
 		}
 
-		catalog[oid] = record{
+		catalog.controllers[oid] = record{
 			ID:      deviceID,
 			deleted: false,
 		}
@@ -59,8 +73,8 @@ func Delete(oid string) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	if v, ok := catalog[oid]; ok {
-		catalog[oid] = record{
+	if v, ok := catalog.controllers[oid]; ok {
+		catalog.controllers[oid] = record{
 			ID:      v.ID,
 			deleted: true,
 		}
@@ -72,7 +86,7 @@ func Find(deviceID uint32) string {
 	defer guard.Unlock()
 
 	if deviceID != 0 {
-		for oid, v := range catalog {
+		for oid, v := range catalog.controllers {
 			if !v.deleted && v.ID == deviceID {
 				return oid
 			}

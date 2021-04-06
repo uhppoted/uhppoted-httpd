@@ -73,6 +73,8 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 	cc.retention = retention
 	cc.Controllers = []*Controller{}
 	cc.LAN = &LAN{
+		OID:              blob.LAN.OID,
+		Name:             blob.LAN.Name,
 		BindAddress:      blob.LAN.BindAddress,
 		BroadcastAddress: blob.LAN.BroadcastAddress,
 		ListenAddress:    blob.LAN.ListenAddress,
@@ -86,9 +88,10 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 		}
 	}
 
+	catalog.PutInterface(cc.LAN.OID)
 	for _, v := range cc.Controllers {
 		if v.DeviceID != nil && *v.DeviceID != 0 {
-			catalog.Put(*v.DeviceID, v.OID)
+			catalog.PutController(*v.DeviceID, v.OID)
 		}
 	}
 
@@ -237,7 +240,23 @@ func (cc *ControllerSet) Delete(c Controller) (*Controller, error) {
 	return nil, nil
 }
 
-func (cc *ControllerSet) Consolidate() interface{} {
+func (cc *ControllerSet) AsView() interface{} {
+	lan := struct {
+		OID              string `json:"OID"`
+		Type             string `json:"type"`
+		Name             string `json:"name"`
+		BindAddress      string `json:"bind-address"`
+		BroadcastAddress string `json:"broadcast-address"`
+		ListenAddress    string `json:"listen-address"`
+	}{
+		OID:              cc.LAN.OID,
+		Type:             "LAN",
+		Name:             cc.LAN.Name,
+		BindAddress:      fmt.Sprintf("%v", cc.LAN.BindAddress),
+		BroadcastAddress: fmt.Sprintf("%v", cc.LAN.BroadcastAddress),
+		ListenAddress:    fmt.Sprintf("%v", cc.LAN.ListenAddress),
+	}
+
 	list := []interface{}{}
 	for _, c := range cc.Controllers {
 		if c.IsValid() {
@@ -251,7 +270,13 @@ func (cc *ControllerSet) Consolidate() interface{} {
 		return list[i].(sortable).Created().Before(list[j].(sortable).Created())
 	})
 
-	return list
+	return struct {
+		Interface   interface{} `json:"interface"`
+		Controllers interface{} `json:"controllers"`
+	}{
+		Interface:   lan,
+		Controllers: list,
+	}
 }
 
 func (cc *ControllerSet) Refresh() {

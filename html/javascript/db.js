@@ -1,30 +1,51 @@
 export const DB = {
+  interfaces: new Map(),
   controllers: new Map(),
 
   added: function (tag, recordset) {
     if (recordset) {
-      recordset.forEach(r => update(r, statusToString(r.Status)))
+      switch (tag) {
+        case 'controllers':
+          recordset.forEach(r => controller(r, statusToString(r.Status)))
+          break
+      }
     }
   },
 
   updated: function (tag, recordset) {
     if (recordset) {
-      recordset.forEach(r => update(r, statusToString(r.Status)))
+      switch (tag) {
+        case 'interface':
+          iface(recordset)
+          break
+
+        case 'controllers':
+          recordset.forEach(r => controller(r, statusToString(r.Status)))
+          break
+      }
     }
   },
 
   deleted: function (tag, recordset) {
     if (recordset) {
-      recordset.forEach(r => update(r, 'deleted'))
+      switch (tag) {
+        case 'controllers':
+          recordset.forEach(r => controller(r, 'deleted'))
+          break
+      }
     }
   },
 
   delete: function (tag, oid) {
-    if (oid && this.controllers.has(oid)) {
-      const record = this.controllers.get(oid)
+    switch (tag) {
+      case 'controllers':
+        if (oid && this.controllers.has(oid)) {
+          const record = this.controllers.get(oid)
 
-      record.mark = 0
-      record.status = 'deleted'
+          record.mark = 0
+          record.status = 'deleted'
+          break
+        }
     }
   },
 
@@ -34,7 +55,49 @@ export const DB = {
   }
 }
 
-function update (c, status) {
+function iface (c) {
+  const oid = c.OID
+
+  const record = {
+    OID: oid,
+    type: 'LAN',
+    name: 'LAN',
+    bind: '',
+    broadcast: '',
+    listen: '',
+
+    status: 'ok',
+    mark: 0
+  }
+
+  if (c.type) {
+    record.type = c.type
+  }
+
+  if (c.name && c.name !== '') {
+    record.name = c.name
+  }
+
+  if (c['bind-address']) {
+    record.bind = c['bind-address']
+  }
+
+  if (c['broadcast-address']) {
+    record.broadcast = c['broadcast-address']
+  }
+
+  if (c['listen-address']) {
+    record.listen = c['listen-address']
+  }
+
+  if (c.deleted) {
+    record.status = 'deleted'
+  }
+
+  DB.interfaces.set(oid, record)
+}
+
+function controller (c, status) {
   const oid = c.OID
 
   const record = {

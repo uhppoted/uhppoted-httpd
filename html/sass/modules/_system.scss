@@ -20,6 +20,10 @@ section.interface div div {
   font-variant: small-caps;
 }
 
+section.interface div.name {
+  font-weight: bold;
+} 
+
 section.interface div div input {
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;

@@ -18,13 +18,15 @@ import (
 )
 
 type LAN struct {
+	OID              string         `json:"OID"`
+	Name             string         `json:"name"`
 	BindAddress      *types.Address `json:"bind-address"`
 	BroadcastAddress *types.Address `json:"broadcast-address"`
 	ListenAddress    *types.Address `json:"listen-address"`
 	Debug            bool           `json:"debug"`
 }
 
-type Cache struct {
+type deviceCache struct {
 	cache map[uint32]device
 	guard sync.RWMutex
 }
@@ -45,18 +47,19 @@ const (
 
 const WINDOW = 300 // 5 minutes
 
-var cache = Cache{
+var cache = deviceCache{
 	cache: map[uint32]device{},
 }
 
 func (l *LAN) clone() *LAN {
 	if l != nil {
 		lan := LAN{
+			OID:              l.OID,
+			Name:             l.Name,
 			BindAddress:      l.BindAddress,
 			BroadcastAddress: l.BroadcastAddress,
 			ListenAddress:    l.ListenAddress,
 			Debug:            l.Debug,
-			//cache:            map[uint32]device{},
 		}
 
 		return &lan
