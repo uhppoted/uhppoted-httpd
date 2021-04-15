@@ -69,10 +69,14 @@ github.com/uhppoted/uhppote-core v0.6.11-0.20210330192842-7d2e13a5c0fd h1:4Ohusg
 github.com/uhppoted/uhppote-core v0.6.11-0.20210330192842-7d2e13a5c0fd/go.mod h1:JOh6BcCGKf2/0c9rzauiia18ErO8mrtY9l0gdt0DxtU=
 github.com/uhppoted/uhppote-core v0.6.11-0.20210406214223-dfa6e21e6b7b h1:fERoJrN/LuZidUC8NI0TwH8vihHeHONDVeOW1xYYzv0=
 github.com/uhppoted/uhppote-core v0.6.11-0.20210406214223-dfa6e21e6b7b/go.mod h1:JOh6BcCGKf2/0c9rzauiia18ErO8mrtY9l0gdt0DxtU=
+github.com/uhppoted/uhppote-core v0.6.11-0.20210415175657-979d155e011f h1:cbBtJKwsZ0Mnkb9HfOKpDVwZ/UBTsGdQDKPuRvxlfb0=
+github.com/uhppoted/uhppote-core v0.6.11-0.20210415175657-979d155e011f/go.mod h1:JotMSKgzWKGxdI1tWWGeajdCmWHJGsw5jSGmLCJ/xuU=
 github.com/uhppoted/uhppoted-api v0.6.11-0.20210330204110-47e1a2e48fcd h1:3cd1AvYQhJFLIwhFbJPWgImyNNTcR3Y5UWjQXu2S7Ck=
 github.com/uhppoted/uhppoted-api v0.6.11-0.20210330204110-47e1a2e48fcd/go.mod h1:4X2U4JumFHqEmRqw2o6tspaxLgn/ly7a61CJl8KGC/A=
 github.com/uhppoted/uhppoted-api v0.6.11-0.20210407185739-ba938734fe7d h1:a/uHvJjsydSx8UmrOM8PzXvGw/v8/mkC3xDs62isNSA=
 github.com/uhppoted/uhppoted-api v0.6.11-0.20210407185739-ba938734fe7d/go.mod h1:4X2U4JumFHqEmRqw2o6tspaxLgn/ly7a61CJl8KGC/A=
+github.com/uhppoted/uhppoted-api v0.6.11-0.20210415181619-6a38d135c11f h1:usBoPYZsmrFaFrbAvXoKAcP7b9mVO2JpL1Q3W32ueso=
+github.com/uhppoted/uhppoted-api v0.6.11-0.20210415181619-6a38d135c11f/go.mod h1:PUiz7HHTbbcmr0Nb8dHOoMe4JrwkC7pQVuOZ8AgjCSw=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=
 github.com/xanzy/ssh-agent v0.2.1/go.mod h1:mLlQY/MoOhWBj+gOGMQkOeiEvkx+8pJSI+0Bx9h2kr4=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
