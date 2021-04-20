@@ -4,7 +4,6 @@
 
 - [ ] system
       - make LAN parameters editable
-        - rollback
         - commit
         - bind address:port should not include port in returned value from String() if port is 0
 

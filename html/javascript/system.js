@@ -59,8 +59,12 @@ export function onCommitAll (tag, event) {
   }
 }
 
-export function onRollback (tag, event, op) {
+export function onRollback (tag, event) {
   switch (tag) {
+    case 'interface':
+      rollbackx('interface', event.target)
+      break
+
     case 'controller':
       const id = event.target.dataset.record
       const row = document.getElementById(id)
@@ -423,6 +427,25 @@ function setx (tag, element, value, status) {
       modified(xoid)
     }
   }
+}
+
+function rollbackx (tag, element) {
+  const section = document.getElementById(tag)
+  const oid = section.dataset.oid
+
+  for (let id=0;; id++) {
+    const element = section.querySelector(`[data-oid="${oid}.${id}"]`)
+    if (element) {
+        element.dataset.value = element.dataset.original
+        element.value = element.dataset.original
+        element.classList.remove('modified')
+        continue
+      }
+
+    break
+  }
+
+  section.classList.remove('modified')
 }
 
 function modified(oid) {document.querySelector(`[data-oid="${oid}"]`)
