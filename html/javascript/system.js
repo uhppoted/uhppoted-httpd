@@ -3,8 +3,16 @@
 import { getAsJSON, postAsJSON, dismiss, warning } from './uhppoted.js'
 import { DB } from './db.js'
 
-export function onEdited (event) {
-  set('controllers', event.target, event.target.value)
+export function onEdited (tag, event) {
+  switch (tag) {
+    case 'interface':
+      setx('interface', event.target, event.target.value)
+      break
+
+    case 'controllers':
+      set('controllers', event.target, event.target.value)
+      break
+  }
 }
 
 export function onEnter (event) {
@@ -17,44 +25,67 @@ export function onTick (event) {
   set('controllers', event.target, event.target.checked)
 }
 
-export function onCommit (event) {
-  commit(event.target.dataset.record)
-}
+export function onCommit (tag, event) {
+  switch (tag) {
+    case 'controller':
+      commit(event.target.dataset.record)
+      break;
 
-export function onCommitAll (event) {
-  const tbody = document.getElementById('controllers').querySelector('table tbody')
-
-  if (tbody) {
-    const rows = tbody.rows
-    const list = []
-
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i]
-
-      if (row.classList.contains('modified') || row.classList.contains('new')) {
-        list.push(row.id)
-      }
-    }
-
-    commit(...list)
+    default:
+      console.log(`onCommit('${tag}', ...)::NOT IMPLEMENTED`)
   }
 }
 
-export function onRollback (event, op) {
-  const id = event.target.dataset.record
-  const row = document.getElementById(id)
+export function onCommitAll (tag, event) {
+  switch (tag) {
+    case 'controller':
+      const tbody = document.getElementById('controllers').querySelector('table tbody')
+      if (tbody) {
+        const rows = tbody.rows
+        const list = []
 
-  rollback(row)
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i]
+          if (row.classList.contains('modified') || row.classList.contains('new')) {
+            list.push(row.id)
+          }
+        }
+        commit(...list)        
+      }
+      break
+
+    default:
+      console.log(`onCommitAll('${tag}', ...)::NOT IMPLEMENTED`)
+  }
 }
 
-export function onRollbackAll (event) {
-  const tbody = document.getElementById('controllers').querySelector('table tbody')
-  if (tbody) {
-    const rows = tbody.rows
+export function onRollback (tag, event, op) {
+  switch (tag) {
+    case 'controller':
+      const id = event.target.dataset.record
+      const row = document.getElementById(id)
+      rollback(row)
+      break;
 
-    for (let i = rows.length; i > 0; i--) {
-      rollback(rows[i - 1])
-    }
+    default:
+      console.log(`onRollback('${tag}', ...)::NOT IMPLEMENTED`)
+  }
+}
+
+export function onRollbackAll (tag, event) {
+  switch (tag) {
+    case 'controller':
+      const tbody = document.getElementById('controllers').querySelector('table tbody')
+      if (tbody) {
+        const rows = tbody.rows
+        for (let i = rows.length; i > 0; i--) {
+          rollback(rows[i - 1])
+        }
+      }    
+      break
+
+    default:
+      console.log(`onRollbackAll('${tag}', ...)::NOT IMPLEMENTED`)
   }
 }
 
@@ -212,18 +243,25 @@ function refreshed () {
 }
 
 function updateInterfaceFromDB (oid, record) {
-  const section = document.querySelector("section[data-oid='" + oid + "']")
+  const section = document.querySelector(`section[data-oid="${oid}"]`)
 
   if (section) {
-    const name = section.querySelector('div.name')
-    const bind = section.querySelector('input.bind')
-    const broadcast = section.querySelector('input.broadcast')
-    const listen = section.querySelector('input.listen')
+    const name = section.querySelector(`[data-oid="${oid}.0"]`)
+    const bind = section.querySelector(`[data-oid="${oid}.1"]`)
+    const broadcast = section.querySelector(`[data-oid="${oid}.2"]`)
+    const listen = section.querySelector(`[data-oid="${oid}.3"]`)
 
     name.innerHTML = record.name
+    name.dataset.original = record.bind
+
     bind.value = record.bind
+    bind.dataset.original = record.bind
+    
     broadcast.value = record.broadcast
+    broadcast.dataset.original = record.broadcast
+
     listen.value = record.listen
+    listen.dataset.original = record.listen
   }
 }
 
@@ -360,6 +398,52 @@ function deleted (row) {
         tbody.deleteRow(ix)
         break
       }
+    }
+  }
+}
+
+function setx (tag, element, value, status) {
+  const section = document.getElementById(tag)
+  const oid = element.dataset.oid
+  const original = element.dataset.original
+  const v = value.toString()
+
+  element.dataset.value = v
+  if (v !== original) {
+    element.classList.add('modified')
+  } else {
+    element.classList.remove('modified')
+  }
+
+  let xoid = oid
+  while (xoid) {
+    const match = /(.*?)(?:[.][0-9]+)$/.exec(xoid)
+    xoid = match ? match[1] : null
+    if (xoid) {
+      modified(xoid)
+    }
+  }
+}
+
+function modified(oid) {document.querySelector(`[data-oid="${oid}"]`)
+  const container = document.querySelector(`[data-oid="${oid}"]`)
+  let changed = false
+
+  if (container) {
+    for (let id=0;; id++) {
+      const element = document.querySelector(`[data-oid="${oid}.${id}"]`)
+      if (element) {
+        changed = changed || element.classList.contains('modified')
+        continue
+      }
+
+      break
+    }
+
+    if (changed) {
+      container.classList.add('modified')
+    } else {
+      container.classList.remove('modified')
     }
   }
 }

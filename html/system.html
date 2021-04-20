@@ -50,27 +50,43 @@
       <!-- MAIN -->
       <main>
         <div style="width:100%;">
-          <section class="interface" data-oid="0.1.1.0">
+          <section id="interface" class="interface" data-oid="0.1.1.0">
             <div>
-              <div class="name"></div>
+              <div class="name" data-oid="0.1.1.0.0"></div>
+              <div style="display:flex; justify-content:flex-end;">
+                <span class="control commit"   onclick="onCommit('interface', event)"   data-record="" data-enabled="false">&#9745;</span>
+                <span class="control rollback" onclick="onRollback('interface', event)" data-record="" data-enabled="false">&#9746;</span>
+              </div>
             </div>
             <div>
               <div>bind:</div>
-              <div><input type="text" class="bind" placeholder="-" readonly /></div>
+              <div><input type="text" class="bind" placeholder="-" 
+                          onchange="onEdited('interface', event)" 
+                          data-oid="0.1.1.0.1"
+                          data-original=""
+                          data-value="" /></div>
             </div>
             <div>
               <div>broadcast:</div>
-              <div><input type="text" class="broadcast" placeholder="-" readonly /></div>
+              <div><input type="text" class="broadcast" placeholder="-" 
+                          onchange="onEdited('interface', event)" 
+                          data-oid="0.1.1.0.2"
+                          data-original=""
+                          data-value="" /></div>
             </div>
             <div>
               <div>listen:</div>
-              <div><input type="text" class="listen" value="" placeholder="-" readonly /></div>
+              <div><input type="text" class="listen" value="" placeholder="-"
+                          onchange="onEdited('interface', event)" 
+                          data-oid="0.1.1.0.3"
+                          data-original=""
+                          data-value="" /></div>
             </div>
           </section>
 
           <div id="controls">
-            <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll()" />
-            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll()" />
+            <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controller', event)" />
+            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('controller', event)" />
             <div id="message" class="message">
               <div>
                 <span class="warning" id="warning"></span>
@@ -105,12 +121,12 @@
                          type="text" 
                          value="" 
                          placeholder="-" 
-                         onchange="onEdited(event)" 
+                         onchange="onEdited('controllers', event)" 
                          data-record="" 
                          data-original="" 
                          data-value="" />
-                  <span class="control commit"   onclick="onCommit(event)"   data-record="" data-enabled="false">&#9745;</span>
-                  <span class="control rollback" onclick="onRollback(event)" data-record="" data-enabled="false">&#9746;</span>
+                  <span class="control commit"   onclick="onCommit('controller', event)"   data-record="" data-enabled="false">&#9745;</span>
+                  <span class="control rollback" onclick="onRollback('controller', event)" data-record="" data-enabled="false">&#9746;</span>
                 </td>
 
                 <td class="ID">
@@ -120,7 +136,7 @@
                          min="0"
                          value=""
                          placeholder="-"
-                         onchange="onEdited(event)" 
+                         onchange="onEdited('controllers', event)" 
                          data-record=""
                          data-original=""
                          data-value="" />
@@ -133,7 +149,7 @@
                          value=""
                          placeholder="-"
                          onkeydown="onEnter(event)" 
-                         onchange="onEdited(event)" 
+                         onchange="onEdited('controllers', event)" 
                          data-record=""
                          data-original=""
                          data-value=""  
@@ -147,7 +163,7 @@
                          value=""
                          placeholder="-"
                          onkeydown="onEnter(event)" 
-                         onchange="onEdited(event)" 
+                         onchange="onEdited('controllers', event)" 
                          data-record=""
                          data-original=""
                          data-value=""
@@ -161,7 +177,7 @@
                          min="0"
                          value=""
                          placeholder="-"
-                         onchange="onEdited(event)" 
+                         onchange="onEdited('controllers', event)" 
                          data-record=""
                          data-original=""
                          data-value=""  
@@ -176,7 +192,7 @@
                          min="0"
                          value=""
                          placeholder="-"
-                         onchange="onEdited(event)" 
+                         onchange="onEdited('controllers', event)" 
                          data-record=""
                          data-original=""
                          data-value=""  
@@ -189,7 +205,7 @@
                           type="text" 
                           value=""
                           placeholder="-"
-                          onchange="onEdited(event)" 
+                          onchange="onEdited('controllers', event)" 
                           data-record=""
                           data-original=""
                           data-value="">
@@ -204,7 +220,7 @@
                           type="text" 
                           value=""
                           placeholder="-"
-                          onchange="onEdited(event)" 
+                          onchange="onEdited('controllers', event)" 
                           data-record=""
                           data-original=""
                           data-value=""  
@@ -220,7 +236,7 @@
                           type="text" 
                           value=""
                           placeholder="-"
-                          onchange="onEdited(event)" 
+                          onchange="onEdited('controllers', event)" 
                           data-record=""
                           data-original=""
                           data-value=""  
@@ -236,7 +252,7 @@
                           type="text" 
                           value=""
                           placeholder="-"
-                          onchange="onEdited(event)" 
+                          onchange="onEdited('controllers', event)" 
                           data-record=""
                           data-original=""
                           data-value="">

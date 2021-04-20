@@ -33,6 +33,35 @@ section.interface div div input {
   font: 400 0.9em Arial;
 }
 
+section.interface div div input:focus {
+  border: 1px solid red;
+}
+
+section.interface div div span.control {
+  padding: 0px 0px 0px 0px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 0em;
+  visibility: hidden;
+}
+
+section.interface div div span.commit {
+  color: $content-table-commit;  
+}
+
+section.interface div div span.rollback {
+  color: $content-table-rollback;  
+}
+
+section.modified div div span.commit {
+  visibility: visible;
+}
+
+section.modified div div span.rollback {
+  visibility: visible;
+}
+
 #controls {
     background: $content-table-background-header;
     padding: 4px 4px 4px 4px;

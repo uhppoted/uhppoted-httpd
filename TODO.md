@@ -4,8 +4,11 @@
 
 - [ ] system
       - make LAN parameters editable
-      
-      - bind address:port should not include port in returned value from String() if port is 0
+        - rollback
+        - commit
+        - bind address:port should not include port in returned value from String() if port is 0
+
+      - [ ] [TOML](https://toml.io) files  
       - marshal cards.Records as "" if StatusUnknown
       - "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'
       - nicer auth handling for e.g. /images
