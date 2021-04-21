@@ -13,6 +13,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
+type object struct {
+	OID   string `json:"oid"`
+	Value string `json:"value"`
+}
+
 func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()
 
@@ -20,7 +25,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 	// add/update ?
 
-	clist, err := unpack(m)
+	objects, clist, err := unpack(m)
 	if err != nil {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
@@ -30,13 +35,24 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}
 
 	list := struct {
-		Added   []interface{} `json:"added"`
-		Updated []interface{} `json:"updated"`
-		Deleted []interface{} `json:"deleted"`
+		Objects []interface{} `json:"objects,omitempty"`
+		Added   []interface{} `json:"added,omitempty"`
+		Updated []interface{} `json:"updated,omitempty"`
+		Deleted []interface{} `json:"deleted,omitempty"`
 	}{}
 
 	shadow := sys.controllers.Clone()
 
+	// Update objects
+	for _, object := range objects {
+		if view, err := shadow.UpdateByOID(object.OID, object.Value); err != nil {
+			return nil, err
+		} else if view != nil {
+			list.Objects = append(list.Objects, view)
+		}
+	}
+
+	// Add/update/delete controllers
 loop:
 	for _, c := range clist {
 		// ... delete?
@@ -230,8 +246,10 @@ func validate(c *controllers.ControllerSet) error {
 	return nil
 }
 
-func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
+func unpack(m map[string]interface{}) ([]object, []controllers.Controller, error) {
 	o := struct {
+		Objects []object `json:"objects"`
+
 		ControllerSet []struct {
 			ID       string
 			OID      *string
@@ -245,13 +263,13 @@ func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 
 	blob, err := json.Marshal(m)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	log.Printf("INFO %v", fmt.Sprintf("UNPACK %s\n", string(blob)))
 
 	if err := json.Unmarshal(blob, &o); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	list := []controllers.Controller{}
@@ -274,7 +292,7 @@ func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 
 		if r.IP != nil && *r.IP != "" {
 			if addr, err := types.Resolve(*r.IP); err != nil {
-				return nil, err
+				return nil, nil, err
 			} else {
 				record.IP = addr
 			}
@@ -282,7 +300,7 @@ func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 
 		if r.DateTime != nil {
 			if tz, err := types.Timezone(strings.TrimSpace(*r.DateTime)); err != nil {
-				return nil, err
+				return nil, nil, err
 			} else {
 				tzs := tz.String()
 				record.TimeZone = &tzs
@@ -299,5 +317,5 @@ func unpack(m map[string]interface{}) ([]controllers.Controller, error) {
 		list = append(list, record)
 	}
 
-	return list, nil
+	return o.Objects, list, nil
 }

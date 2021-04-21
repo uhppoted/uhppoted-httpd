@@ -27,9 +27,13 @@ export function onTick (event) {
 
 export function onCommit (tag, event) {
   switch (tag) {
+    case 'interface':
+      commitx('interface', event.target)
+      break
+
     case 'controller':
       commit(event.target.dataset.record)
-      break;
+      break
 
     default:
       console.log(`onCommit('${tag}', ...)::NOT IMPLEMENTED`)
@@ -37,25 +41,21 @@ export function onCommit (tag, event) {
 }
 
 export function onCommitAll (tag, event) {
-  switch (tag) {
-    case 'controller':
-      const tbody = document.getElementById('controllers').querySelector('table tbody')
-      if (tbody) {
-        const rows = tbody.rows
-        const list = []
+  if (tag === 'controller') {
+    const tbody = document.getElementById('controllers').querySelector('table tbody')
+    if (tbody) {
+      const rows = tbody.rows
+      const list = []
 
-        for (let i = 0; i < rows.length; i++) {
-          const row = rows[i]
-          if (row.classList.contains('modified') || row.classList.contains('new')) {
-            list.push(row.id)
-          }
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        if (row.classList.contains('modified') || row.classList.contains('new')) {
+          list.push(row.id)
         }
-        commit(...list)        
       }
-      break
 
-    default:
-      console.log(`onCommitAll('${tag}', ...)::NOT IMPLEMENTED`)
+      commit(...list)
+    }
   }
 }
 
@@ -65,11 +65,12 @@ export function onRollback (tag, event) {
       rollbackx('interface', event.target)
       break
 
-    case 'controller':
+    case 'controller': {
       const id = event.target.dataset.record
       const row = document.getElementById(id)
       rollback(row)
-      break;
+      break
+    }
 
     default:
       console.log(`onRollback('${tag}', ...)::NOT IMPLEMENTED`)
@@ -77,19 +78,14 @@ export function onRollback (tag, event) {
 }
 
 export function onRollbackAll (tag, event) {
-  switch (tag) {
-    case 'controller':
-      const tbody = document.getElementById('controllers').querySelector('table tbody')
-      if (tbody) {
-        const rows = tbody.rows
-        for (let i = rows.length; i > 0; i--) {
-          rollback(rows[i - 1])
-        }
-      }    
-      break
-
-    default:
-      console.log(`onRollbackAll('${tag}', ...)::NOT IMPLEMENTED`)
+  if (tag === 'controller') {
+    const tbody = document.getElementById('controllers').querySelector('table tbody')
+    if (tbody) {
+      const rows = tbody.rows
+      for (let i = rows.length; i > 0; i--) {
+        rollback(rows[i - 1])
+      }
+    }
   }
 }
 
@@ -257,15 +253,19 @@ function updateInterfaceFromDB (oid, record) {
 
     name.innerHTML = record.name
     name.dataset.original = record.bind
+    name.dataset.value = record.bind
 
     bind.value = record.bind
     bind.dataset.original = record.bind
-    
+    bind.dataset.value = record.bind
+
     broadcast.value = record.broadcast
     broadcast.dataset.original = record.broadcast
+    broadcast.dataset.value = record.broadcast
 
     listen.value = record.listen
     listen.dataset.original = record.listen
+    listen.dataset.value = record.listen
   }
 }
 
@@ -407,24 +407,26 @@ function deleted (row) {
 }
 
 function setx (tag, element, value, status) {
-  const section = document.getElementById(tag)
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
+  const flag = document.getElementById(`F${oid}`)
 
   element.dataset.value = v
   if (v !== original) {
     element.classList.add('modified')
+    flag.classList.add('modified')
   } else {
     element.classList.remove('modified')
+    flag.classList.remove('modified')
   }
 
-  let xoid = oid
-  while (xoid) {
-    const match = /(.*?)(?:[.][0-9]+)$/.exec(xoid)
-    xoid = match ? match[1] : null
-    if (xoid) {
-      modified(xoid)
+  let oidx = oid
+  while (oidx) {
+    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
+    oidx = match ? match[1] : null
+    if (oidx) {
+      modifiedx(oidx)
     }
   }
 }
@@ -433,14 +435,22 @@ function rollbackx (tag, element) {
   const section = document.getElementById(tag)
   const oid = section.dataset.oid
 
-  for (let id=0;; id++) {
+  for (let id = 0; ; id++) {
     const element = section.querySelector(`[data-oid="${oid}.${id}"]`)
     if (element) {
-        element.dataset.value = element.dataset.original
-        element.value = element.dataset.original
-        element.classList.remove('modified')
-        continue
+      const flag = document.getElementById(`F${element.dataset.oid}`)
+
+      element.dataset.value = element.dataset.original
+      element.value = element.dataset.original
+      element.classList.remove('modified')
+
+      if (flag) {
+        flag.classList.remove('modified')
+        flag.classList.remove('pending')
       }
+
+      continue
+    }
 
     break
   }
@@ -448,12 +458,66 @@ function rollbackx (tag, element) {
   section.classList.remove('modified')
 }
 
-function modified(oid) {document.querySelector(`[data-oid="${oid}"]`)
+function commitx (tag, element) {
+  const section = document.getElementById(tag)
+  const oid = section.dataset.oid
+  const list = []
+
+  for (let id = 0; ; id++) {
+    const element = section.querySelector(`[data-oid="${oid}.${id}"]`)
+    if (element) {
+      if (element.dataset.value !== element.dataset.original) {
+        list.push(element)
+      }
+
+      continue
+    }
+
+    break
+  }
+
+  list.forEach(e => {
+    const flag = document.getElementById(`F${e.dataset.oid}`)
+    if (flag) {
+      flag.classList.remove('modified')
+      flag.classList.add('pending')
+    }
+  })
+
+  const records = []
+  list.forEach(e => {
+    const oid = e.dataset.oid
+    const value = e.dataset.value
+    records.push({ oid: oid, value: value })
+  })
+
+  const reset = function () {
+    list.forEach(e => {
+      const flag = document.getElementById(`F${e.dataset.oid}`)
+      if (flag) {
+        flag.classList.remove('pending')
+        flag.classList.add('modified')
+      }
+    })
+  }
+
+  postx('objects', records, reset)
+
+  list.forEach(e => {
+    const flag = document.getElementById(`F${e.dataset.oid}`)
+    if (flag) {
+      flag.classList.remove('pending')
+    }
+  })
+}
+
+function modifiedx (oid) {
+  document.querySelector(`[data-oid="${oid}"]`)
   const container = document.querySelector(`[data-oid="${oid}"]`)
   let changed = false
 
   if (container) {
-    for (let id=0;; id++) {
+    for (let id = 0; ; id++) {
       const element = document.querySelector(`[data-oid="${oid}.${id}"]`)
       if (element) {
         changed = changed || element.classList.contains('modified')
@@ -469,6 +533,40 @@ function modified(oid) {document.querySelector(`[data-oid="${oid}"]`)
       container.classList.remove('modified')
     }
   }
+}
+
+function postx (tag, records, reset) {
+  busy()
+
+  postAsJSON('/system', { [tag]: records })
+    .then(response => {
+      if (response.redirected) {
+        window.location = response.url
+      } else {
+        switch (response.status) {
+          case 200:
+            response.json().then(object => {
+              if (object && object.system && object.system.objects) {
+                  DB.updated('objects', object.system.objects)
+              }
+
+              refreshed()
+            })
+            break
+
+          default:
+            reset()
+            response.text().then(message => { warning(message) })
+        }
+      }
+    })
+    .catch(function (err) {
+      reset()
+      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+    })
+    .finally(() => {
+      unbusy()
+    })
 }
 
 function set (div, element, value, status) {

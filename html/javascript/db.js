@@ -15,6 +15,12 @@ export const DB = {
   updated: function (tag, recordset) {
     if (recordset) {
       switch (tag) {
+        case 'objects':
+          recordset.forEach(o => {
+            console.log('>>> updated', o)
+          })
+          break
+
         case 'interface':
           iface(recordset)
           break
