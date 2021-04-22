@@ -16,9 +16,7 @@ export const DB = {
     if (recordset) {
       switch (tag) {
         case 'objects':
-          recordset.forEach(o => {
-            console.log('>>> updated', o)
-          })
+          recordset.forEach(o => object(o))
           break
 
         case 'interface':
@@ -59,6 +57,30 @@ export const DB = {
     mark()
     sweep()
   }
+}
+
+function object (o) {
+  DB.interfaces.forEach((v, k) => {
+    if (o.OID.startsWith(k)) {
+      switch (o.OID) {
+        case k + '.0':
+          v.name = o.value
+          break
+
+        case k + '.1':
+          v.bind = o.value
+          break
+
+        case k + '.2':
+          v.broadcast = o.value
+          break
+
+        case k + '.3':
+          v.listen = o.value
+          break
+      }
+    }
+  })
 }
 
 function iface (c) {

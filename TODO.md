@@ -5,7 +5,7 @@
 - [ ] system
       - make LAN parameters editable
         - commit
-          -- update shadow
+          -- update JS DB from object list
           -- rebind listener after edit
         - bind address:port should not include port in returned value from String() if port is 0
         - broadcast address:port should include port in returned value from String() if port is not 60000

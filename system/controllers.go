@@ -14,7 +14,7 @@ import (
 )
 
 type object struct {
-	OID   string `json:"oid"`
+	OID   string `json:"OID"`
 	Value string `json:"value"`
 }
 

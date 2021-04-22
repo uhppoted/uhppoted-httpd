@@ -70,7 +70,7 @@ func (l *LAN) clone() *LAN {
 
 func (l *LAN) set(oid string, value string) (interface{}, error) {
 	type object struct {
-		OID   string `json:"oid"`
+		OID   string `json:"OID"`
 		Value string `json:"value"`
 	}
 
