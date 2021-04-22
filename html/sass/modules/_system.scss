@@ -43,10 +43,6 @@ section.interface div div img.flag.conflict {
    visibility: visible;
 }
 
-section.interface div.name {
-  font-weight: bold;
-} 
-
 section.interface div div input {
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
@@ -56,16 +52,25 @@ section.interface div div input {
   font: 400 0.9em Arial;
 }
 
+section.interface div input.name {
+  padding: 0px 0px 0px 0px;
+  margin-top: -4px;
+  margin-bottom: -4px;
+  border: none;
+  font-weight: bold;
+}
+
 section.interface div div input:focus {
   border: 1px solid red;
 }
 
 section.interface div div span.control {
   padding: 0px 0px 0px 0px;
+  margin-top: -4px;
+  margin-bottom: -4px;
   font-size: 1.4rem;
   font-weight: bold;
   cursor: pointer;
-  line-height: 0em;
   visibility: hidden;
 }
 

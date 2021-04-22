@@ -5,7 +5,8 @@
 - [ ] system
       - make LAN parameters editable
         - commit
-          -- update JS DB from object list
+          -- detect/handle conflicts
+          -- use JS namespacing for interface & controller functions
           -- rebind listener after edit
         - bind address:port should not include port in returned value from String() if port is 0
         - broadcast address:port should include port in returned value from String() if port is not 60000

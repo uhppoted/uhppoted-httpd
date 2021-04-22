@@ -13,46 +13,10 @@ export function updateInterfaceFromDB (oid, record) {
     const broadcast = section.querySelector(`[data-oid="${oid}.2"]`)
     const listen = section.querySelector(`[data-oid="${oid}.3"]`)
 
-    name.innerHTML = record.name
-    name.dataset.original = record.bind
-    name.dataset.value = record.bind
-
-    bind.value = record.bind
-    bind.dataset.original = record.bind
-    bind.dataset.value = record.bind
-
-    broadcast.value = record.broadcast
-    broadcast.dataset.original = record.broadcast
-    broadcast.dataset.value = record.broadcast
-
-    listen.value = record.listen
-    listen.dataset.original = record.listen
-    listen.dataset.value = record.listen
-  }
-}
-
-export function setx (tag, element, value, status) {
-  const oid = element.dataset.oid
-  const original = element.dataset.original
-  const v = value.toString()
-  const flag = document.getElementById(`F${oid}`)
-
-  element.dataset.value = v
-  if (v !== original) {
-    element.classList.add('modified')
-    flag.classList.add('modified')
-  } else {
-    element.classList.remove('modified')
-    flag.classList.remove('modified')
-  }
-
-  let oidx = oid
-  while (oidx) {
-    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
-    oidx = match ? match[1] : null
-    if (oidx) {
-      modifiedx(oidx)
-    }
+    update(name, record.name)
+    update(bind, record.bind)
+    update(broadcast, record.broadcast)
+    update(listen, record.listen)
   }
 }
 
@@ -190,4 +154,78 @@ function postx (tag, records, reset) {
     .finally(() => {
       unbusy()
     })
+}
+
+function update (element, value, status) {
+  const v = value.toString()
+
+  if (element) {
+    const original = element.dataset.original
+
+    element.dataset.original = v
+
+    // check for conflicts with concurrently modified fields
+
+  //   if (td && td.classList.contains('modified')) {
+  //     if (original !== v.toString() && element.dataset.value !== v.toString()) {
+  //       td.classList.add('conflict')
+  //     } else if (element.dataset.value !== v.toString()) {
+  //       td.classList.add('modified')
+  //     } else {
+  //       td.classList.remove('modified')
+  //       td.classList.remove('conflict')
+  //     }
+
+  //     return
+  //   }
+
+    element.dataset.original = v
+
+  //   // mark fields with unexpected values after submit
+
+  //   if (td && td.classList.contains('pending')) {
+  //     if (element.dataset.value !== v.toString()) {
+  //       td.classList.add('conflict')
+  //     } else {
+  //       td.classList.remove('conflict')
+  //     }
+  //   }
+
+    // update unmodified fields
+
+    element.value = v
+
+    setx('interface', element, value)
+  }
+}
+
+export function setx (tag, element, value, status) {
+  const oid = element.dataset.oid
+  const original = element.dataset.original
+  const v = value.toString()
+  const flag = document.getElementById(`F${oid}`)
+
+  element.dataset.value = v
+  if (v !== original) {
+    element.classList.add('modified')
+  } else {
+    element.classList.remove('modified')
+  }
+
+  if (flag) {
+    if (v !== original) {
+      flag.classList.add('modified')
+    } else {
+      flag.classList.remove('modified')
+    }
+  }
+
+  let oidx = oid
+  while (oidx) {
+    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
+    oidx = match ? match[1] : null
+    if (oidx) {
+      modifiedx(oidx)
+    }
+  }
 }

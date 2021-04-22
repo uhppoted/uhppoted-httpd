@@ -51,15 +51,20 @@
       <main>
         <div style="width:100%;">
           <section id="interface" class="interface" data-oid="0.1.1.0">
-            <div>
-              <div></div>
-              <div class="name" data-oid="0.1.1.0.0"></div>
-              <div style="display:flex; justify-content:flex-end;">
+            <div style="display:table-caption;">
+              <div style="display:flex; width:100%;">
+                <input type="text" class="name" placeholder="-" style="flex-grow:1;"
+                          onchange="onEdited('interface', event)" 
+                          data-oid="0.1.1.0.0"
+                          data-original=""
+                          data-value="" 
+                          readonly />
                 <span class="control commit"   onclick="onCommit('interface', event)">&#9745;</span>
                 <span class="control rollback" onclick="onRollback('interface', event)">&#9746;</span>
               </div>
             </div>
-            <div>
+
+            <div style="display:table-row;">
               <div><img id="F0.1.1.0.1" class="flag" src="images/{{$.context.Theme}}/block.svg" /></div>
               <div>bind:</div>
               <div><input type="text" class="bind" placeholder="-" 
@@ -68,7 +73,7 @@
                           data-original=""
                           data-value="" /></div>
             </div>
-            <div>
+            <div style="display:table-row;">
               <div><img id="F0.1.1.0.2" class="flag" src="images/{{$.context.Theme}}/block.svg" /></div>
               <div>broadcast:</div>
               <div><input type="text" class="broadcast" placeholder="-" 
@@ -77,7 +82,7 @@
                           data-original=""
                           data-value="" /></div>
             </div>
-            <div>
+            <div style="display:table-row;">
               <div><img id="F0.1.1.0.3" class="flag" src="images/{{$.context.Theme}}/block.svg" /></div>
               <div>listen:</div>
               <div><input type="text" class="listen" value="" placeholder="-"

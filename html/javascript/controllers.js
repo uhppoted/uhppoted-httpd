@@ -4,6 +4,50 @@ import { postAsJSON, warning } from './uhppoted.js'
 import { refreshed, busy, unbusy } from './system.js'
 import { DB } from './db.js'
 
+export function updateControllerFromDB (oid, record) {
+  let row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
+
+  if (record.status === 'deleted') {
+    deleted(row)
+    return
+  }
+
+  if (!row) {
+    row = add(rowID(oid))
+  }
+
+  const id = row.id
+  const name = document.getElementById(id + '-name')
+  const deviceID = document.getElementById(id + '-ID')
+  const address = document.getElementById(id + '-IP')
+  const datetime = document.getElementById(id + '-datetime')
+  const cards = document.getElementById(id + '-cards')
+  const events = document.getElementById(id + '-events')
+  const door1 = document.getElementById(id + '-door-1')
+  const door2 = document.getElementById(id + '-door-2')
+  const door3 = document.getElementById(id + '-door-3')
+  const door4 = document.getElementById(id + '-door-4')
+
+  row.dataset.oid = oid
+  row.dataset.status = record.status
+
+  update(name, record.name)
+  update(deviceID, record.deviceID)
+  update(address, record.address.address, record.address.status)
+  update(datetime, record.datetime.datetime, record.datetime.status)
+  update(cards, record.cards.cards, record.cards.status)
+  update(events, record.events.events)
+  update(door1, record.doors[1])
+  update(door2, record.doors[2])
+  update(door3, record.doors[3])
+  update(door4, record.doors[4])
+
+  address.dataset.original = record.address.configured
+  datetime.dataset.original = record.datetime.expected
+
+  return row
+}
+
 export function commit (...list) {
   const rows = []
   const records = []
@@ -85,50 +129,6 @@ function post (records, reset) {
     .finally(() => {
       unbusy()
     })
-}
-
-export function updateControllerFromDB (oid, record) {
-  let row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
-
-  if (record.status === 'deleted') {
-    deleted(row)
-    return
-  }
-
-  if (!row) {
-    row = add(rowID(oid))
-  }
-
-  const id = row.id
-  const name = document.getElementById(id + '-name')
-  const deviceID = document.getElementById(id + '-ID')
-  const address = document.getElementById(id + '-IP')
-  const datetime = document.getElementById(id + '-datetime')
-  const cards = document.getElementById(id + '-cards')
-  const events = document.getElementById(id + '-events')
-  const door1 = document.getElementById(id + '-door-1')
-  const door2 = document.getElementById(id + '-door-2')
-  const door3 = document.getElementById(id + '-door-3')
-  const door4 = document.getElementById(id + '-door-4')
-
-  row.dataset.oid = oid
-  row.dataset.status = record.status
-
-  update(name, record.name)
-  update(deviceID, record.deviceID)
-  update(address, record.address.address, record.address.status)
-  update(datetime, record.datetime.datetime, record.datetime.status)
-  update(cards, record.cards.cards, record.cards.status)
-  update(events, record.events.events)
-  update(door1, record.doors[1])
-  update(door2, record.doors[2])
-  update(door3, record.doors[3])
-  update(door4, record.doors[4])
-
-  address.dataset.original = record.address.configured
-  datetime.dataset.original = record.datetime.expected
-
-  return row
 }
 
 export function add (uuid) {
