@@ -50,48 +50,50 @@
       <!-- MAIN -->
       <main>
         <div style="width:100%;">
-          <section id="interface" class="interface" data-oid="0.1.1.0">
-            <div style="display:table-caption;">
-              <div style="display:flex; width:100%;">
-                <input type="text" class="name" placeholder="-" style="flex-grow:1;"
+          <table id="interface" class="interface" data-oid="0.1.1.0">
+            <tr>
+              <td colspan="3">
+                <div style="display:flex;">
+                  <input type="text" class="name" placeholder="-" style="flex-grow:1;"
                           onchange="onEdited('interface', event)" 
                           data-oid="0.1.1.0.0"
                           data-original=""
                           data-value="" 
                           readonly />
-                <span class="control commit"   onclick="onCommit('interface', event)">&#9745;</span>
-                <span class="control rollback" onclick="onRollback('interface', event)">&#9746;</span>
-              </div>
-            </div>
+                  <span class="control commit"   onclick="onCommit('interface', event)">&#9745;</span>
+                  <span class="control rollback" onclick="onRollback('interface', event)">&#9746;</span>
+                </div>
+              </td>
+            </tr>
 
-            <div style="display:table-row;">
-              <div><img id="F0.1.1.0.1" class="flag" src="images/{{$.context.Theme}}/block.svg" /></div>
-              <div>bind:</div>
-              <div><input type="text" class="bind" placeholder="-" 
+            <tr>
+              <td><img id="F0.1.1.0.1" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
+              <td>bind:</td>
+              <td><input type="text" class="bind" placeholder="-" 
                           onchange="onEdited('interface', event)" 
                           data-oid="0.1.1.0.1"
                           data-original=""
-                          data-value="" /></div>
-            </div>
-            <div style="display:table-row;">
-              <div><img id="F0.1.1.0.2" class="flag" src="images/{{$.context.Theme}}/block.svg" /></div>
-              <div>broadcast:</div>
-              <div><input type="text" class="broadcast" placeholder="-" 
+                          data-value="" /></td>
+            </tr>
+            <tr>
+              <td><img id="F0.1.1.0.2" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
+              <td>broadcast:</td>
+              <td><input type="text" class="broadcast" placeholder="-" 
                           onchange="onEdited('interface', event)" 
                           data-oid="0.1.1.0.2"
                           data-original=""
-                          data-value="" /></div>
-            </div>
-            <div style="display:table-row;">
-              <div><img id="F0.1.1.0.3" class="flag" src="images/{{$.context.Theme}}/block.svg" /></div>
-              <div>listen:</div>
-              <div><input type="text" class="listen" value="" placeholder="-"
+                          data-value="" /></td>
+            </tr>
+            <tr>
+              <td><img id="F0.1.1.0.3" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
+              <td>listen:</td>
+              <td><input type="text" class="listen" value="" placeholder="-"
                           onchange="onEdited('interface', event)" 
                           data-oid="0.1.1.0.3"
                           data-original=""
-                          data-value="" /></div>
-            </div>
-          </section>
+                          data-value="" /></td>
+            </tr>
+          </table>
 
           <div id="controls">
             <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controller', event)" />

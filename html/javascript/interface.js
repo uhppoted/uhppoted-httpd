@@ -5,7 +5,7 @@ import { refreshed, busy, unbusy } from './system.js'
 import { DB } from './db.js'
 
 export function updateInterfaceFromDB (oid, record) {
-  const section = document.querySelector(`section[data-oid="${oid}"]`)
+  const section = document.querySelector(`[data-oid="${oid}"]`)
 
   if (section) {
     const name = section.querySelector(`[data-oid="${oid}.0"]`)

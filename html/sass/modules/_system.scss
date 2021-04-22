@@ -1,26 +1,26 @@
-section.interface {
+table.interface {
   background: $content-table-background-header;
-  display: table; 
   margin-top: 30px; 
   margin-bottom: 4px;
-  padding: 8px;
+  padding-top: 0px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
   font: 400 0.9em Arial;
   color: $solarize-base01;
   border-radius: 3px;
 }
 
-section.interface div {
-  display: table-row;
-  padding-top: 1px;
-  padding-bottom: 1px;
+table.interface tr {
+  padding-top: 0px;
+  padding-bottom: 0px;
 } 
 
-section.interface div div {
-  display: table-cell;
+table.interface td {
   font-variant: small-caps;
 }
 
-section.interface div div img.flag {
+table.interface td img.flag {
   width: 6px;
   height: 6px;
   margin-left: 0px;
@@ -28,22 +28,22 @@ section.interface div div img.flag {
   visibility: hidden;
  }
 
-section.interface div div img.flag.modified {
+table.interface td img.flag.modified {
    filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
    visibility: visible;
 }
 
-section.interface div div img.flag.pending {
+table.interface td img.flag.pending {
    filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
    visibility: visible;
 }
 
-section.interface div div img.flag.conflict {
+table.interface td img.flag.conflict {
    filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
    visibility: visible;
 }
 
-section.interface div div input {
+table.interface td input {
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -52,41 +52,37 @@ section.interface div div input {
   font: 400 0.9em Arial;
 }
 
-section.interface div input.name {
+table.interface td input:focus {
+  border: 1px solid red;
+}
+
+table.interface td input.name {
   padding: 0px 0px 0px 0px;
-  margin-top: -4px;
-  margin-bottom: -4px;
   border: none;
   font-weight: bold;
 }
 
-section.interface div div input:focus {
-  border: 1px solid red;
-}
-
-section.interface div div span.control {
+table.interface td span.control {
   padding: 0px 0px 0px 0px;
-  margin-top: -4px;
-  margin-bottom: -4px;
   font-size: 1.4rem;
   font-weight: bold;
   cursor: pointer;
   visibility: hidden;
 }
 
-section.interface div div span.commit {
+table.interface td span.commit {
   color: $content-table-commit;  
 }
 
-section.interface div div span.rollback {
+table.interface td span.rollback {
   color: $content-table-rollback;  
 }
 
-section.modified div div span.commit {
+table.modified td span.commit {
   visibility: visible;
 }
 
-section.modified div div span.rollback {
+table.modified td span.rollback {
   visibility: visible;
 }
 
