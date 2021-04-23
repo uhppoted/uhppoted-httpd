@@ -158,38 +158,38 @@ function postx (tag, records, reset) {
 
 function update (element, value, status) {
   const v = value.toString()
+  const oid = element.dataset.oid
+  const flag = document.getElementById(`F${oid}`)
 
   if (element) {
-    const original = element.dataset.original
+    const previous = element.dataset.original
 
     element.dataset.original = v
 
     // check for conflicts with concurrently modified fields
+    if (element.classList.contains('modified')) {
+      if (previous !== v && element.dataset.value !== v) {
+        mark('conflict', element, flag)
+      } else if (element.dataset.value !== v) {
+        mark('modified', element, flag)
+      } else {
+        unmark('modified', element, flag)
+        unmark('conflict', element, flag)
+      }
 
-  //   if (td && td.classList.contains('modified')) {
-  //     if (original !== v.toString() && element.dataset.value !== v.toString()) {
-  //       td.classList.add('conflict')
-  //     } else if (element.dataset.value !== v.toString()) {
-  //       td.classList.add('modified')
-  //     } else {
-  //       td.classList.remove('modified')
-  //       td.classList.remove('conflict')
-  //     }
+      percolate(oid)
+      return
+    }
 
-  //     return
-  //   }
+    //   // mark fields with unexpected values after submit
 
-    element.dataset.original = v
-
-  //   // mark fields with unexpected values after submit
-
-  //   if (td && td.classList.contains('pending')) {
-  //     if (element.dataset.value !== v.toString()) {
-  //       td.classList.add('conflict')
-  //     } else {
-  //       td.classList.remove('conflict')
-  //     }
-  //   }
+    //   if (td && td.classList.contains('pending')) {
+    //     if (element.dataset.value !== v.toString()) {
+    //       td.classList.add('conflict')
+    //     } else {
+    //       td.classList.remove('conflict')
+    //     }
+    //   }
 
     // update unmodified fields
 
@@ -206,20 +206,33 @@ export function setx (tag, element, value, status) {
   const flag = document.getElementById(`F${oid}`)
 
   element.dataset.value = v
+
   if (v !== original) {
-    element.classList.add('modified')
+    mark('modified', element, flag)
   } else {
-    element.classList.remove('modified')
+    unmark('modified', element, flag)
   }
 
-  if (flag) {
-    if (v !== original) {
-      flag.classList.add('modified')
-    } else {
-      flag.classList.remove('modified')
+  percolate(oid)
+}
+
+function mark (clazz, ...elements) {
+  elements.forEach(e => {
+    if (e) {
+      e.classList.add(clazz)
     }
-  }
+  })
+}
 
+function unmark (clazz, ...elements) {
+  elements.forEach(e => {
+    if (e) {
+      e.classList.remove(clazz)
+    }
+  })
+}
+
+function percolate (oid) {
   let oidx = oid
   while (oidx) {
     const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
