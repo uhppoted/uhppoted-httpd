@@ -4,7 +4,7 @@ import { postAsJSON, warning } from './uhppoted.js'
 import { refreshed, busy, unbusy } from './system.js'
 import { DB } from './db.js'
 
-export function updateInterfaceFromDB (oid, record) {
+export function updateFromDB (oid, record) {
   const section = document.querySelector(`[data-oid="${oid}"]`)
 
   if (section) {
@@ -20,7 +20,24 @@ export function updateInterfaceFromDB (oid, record) {
   }
 }
 
-export function rollbackx (tag, element) {
+export function set (element, value, status) {
+  const oid = element.dataset.oid
+  const original = element.dataset.original
+  const v = value.toString()
+  const flag = document.getElementById(`F${oid}`)
+
+  element.dataset.value = v
+
+  if (v !== original) {
+    mark('modified', element, flag)
+  } else {
+    unmark('modified', element, flag)
+  }
+
+  percolate(oid)
+}
+
+export function rollback (tag, element) {
   const section = document.getElementById(tag)
   const oid = section.dataset.oid
 
@@ -47,7 +64,7 @@ export function rollbackx (tag, element) {
   section.classList.remove('modified')
 }
 
-export function commitx (tag, element) {
+export function commit (tag, element) {
   const section = document.getElementById(tag)
   const oid = section.dataset.oid
   const list = []
@@ -88,7 +105,7 @@ export function commitx (tag, element) {
     })
   }
 
-  postx('objects', records, reset)
+  post('objects', records, reset)
 
   list.forEach(e => {
     const flag = document.getElementById(`F${e.dataset.oid}`)
@@ -98,7 +115,7 @@ export function commitx (tag, element) {
   })
 }
 
-export function modifiedx (oid) {
+function modified (oid) {
   document.querySelector(`[data-oid="${oid}"]`)
   const container = document.querySelector(`[data-oid="${oid}"]`)
   let changed = false
@@ -122,7 +139,7 @@ export function modifiedx (oid) {
   }
 }
 
-function postx (tag, records, reset) {
+function post (tag, records, reset) {
   busy()
 
   postAsJSON('/system', { [tag]: records })
@@ -195,25 +212,8 @@ function update (element, value, status) {
 
     element.value = v
 
-    setx('interface', element, value)
+    set(element, value)
   }
-}
-
-export function setx (tag, element, value, status) {
-  const oid = element.dataset.oid
-  const original = element.dataset.original
-  const v = value.toString()
-  const flag = document.getElementById(`F${oid}`)
-
-  element.dataset.value = v
-
-  if (v !== original) {
-    mark('modified', element, flag)
-  } else {
-    unmark('modified', element, flag)
-  }
-
-  percolate(oid)
 }
 
 function mark (clazz, ...elements) {
@@ -238,7 +238,7 @@ function percolate (oid) {
     const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
     oidx = match ? match[1] : null
     if (oidx) {
-      modifiedx(oidx)
+      modified(oidx)
     }
   }
 }

@@ -1,40 +1,40 @@
 /* global */
 
 import { getAsJSON, postAsJSON, dismiss, warning } from './uhppoted.js'
-import { updateControllerFromDB, set, commit, rollback } from './controllers.js'
-import { updateInterfaceFromDB, setx, commitx, rollbackx } from './interface.js'
+import * as controllers from './controllers.js'
+import * as LAN from './interface.js'
 import { DB } from './db.js'
 
 export function onEdited (tag, event) {
   switch (tag) {
     case 'interface':
-      setx('interface', event.target, event.target.value)
+      LAN.set(event.target, event.target.value)
       break
 
     case 'controllers':
-      set('controllers', event.target, event.target.value)
+      controllers.set(event.target, event.target.value)
       break
   }
 }
 
 export function onEnter (event) {
   if (event.key === 'Enter') {
-    set('controllers', event.target, event.target.value)
+    controllers.set(event.target, event.target.value)
   }
 }
 
 export function onTick (event) {
-  set('controllers', event.target, event.target.checked)
+  controllers.set(event.target, event.target.checked)
 }
 
 export function onCommit (tag, event) {
   switch (tag) {
     case 'interface':
-      commitx('interface', event.target)
+      LAN.commit('interface', event.target)
       break
 
     case 'controller':
-      commit(event.target.dataset.record)
+      controllers.commit(event.target.dataset.record)
       break
 
     default:
@@ -56,7 +56,7 @@ export function onCommitAll (tag, event) {
         }
       }
 
-      commit(...list)
+      controllers.commit(...list)
     }
   }
 }
@@ -64,13 +64,13 @@ export function onCommitAll (tag, event) {
 export function onRollback (tag, event) {
   switch (tag) {
     case 'interface':
-      rollbackx('interface', event.target)
+      LAN.rollback('interface', event.target)
       break
 
     case 'controller': {
       const id = event.target.dataset.record
       const row = document.getElementById(id)
-      rollback(row)
+      controllers.rollback(row)
       break
     }
 
@@ -85,7 +85,7 @@ export function onRollbackAll (tag, event) {
     if (tbody) {
       const rows = tbody.rows
       for (let i = rows.length; i > 0; i--) {
-        rollback(rows[i - 1])
+        controllers.rollback(rows[i - 1])
       }
     }
   }
@@ -180,14 +180,14 @@ function post (records, reset) {
 
 export function refreshed () {
   const interfaces = DB.interfaces
-  const controllers = DB.controllers
+  const boards = DB.controllers
 
   interfaces.forEach(c => {
-    updateInterfaceFromDB(c.OID, c)
+    LAN.updateFromDB(c.OID, c)
   })
 
-  controllers.forEach(c => {
-    const row = updateControllerFromDB(c.OID, c)
+  boards.forEach(c => {
+    const row = controllers.updateFromDB(c.OID, c)
     if (row) {
       switch (c.status) {
         case 'new':

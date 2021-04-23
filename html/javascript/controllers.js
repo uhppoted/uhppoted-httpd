@@ -4,7 +4,7 @@ import { postAsJSON, warning } from './uhppoted.js'
 import { refreshed, busy, unbusy } from './system.js'
 import { DB } from './db.js'
 
-export function updateControllerFromDB (oid, record) {
+export function updateFromDB (oid, record) {
   let row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
 
   if (record.status === 'deleted') {
@@ -46,6 +46,52 @@ export function updateControllerFromDB (oid, record) {
   datetime.dataset.original = record.datetime.expected
 
   return row
+}
+
+export function set (element, value, status) {
+  const div = 'controllers'
+  const tbody = document.getElementById(div).querySelector('table tbody')
+  const rowid = element.dataset.record
+  const row = document.getElementById(rowid)
+  const original = element.dataset.original
+  const v = value.toString()
+
+  element.dataset.value = v
+
+  if (status !== undefined && element.dataset.original !== undefined) {
+    element.dataset.status = status
+  }
+
+  if (v !== original) {
+    apply(element, (c) => { c.classList.add('modified') })
+  } else {
+    apply(element, (c) => { c.classList.remove('modified') })
+  }
+
+  if (row) {
+    const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
+    if (unmodified) {
+      row.classList.remove('modified')
+    } else {
+      row.classList.add('modified')
+    }
+  }
+
+  if (tbody) {
+    const rows = tbody.rows
+    const commitall = document.getElementById('commitall')
+    const rollbackall = document.getElementById('rollbackall')
+    let count = 0
+
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i].classList.contains('modified') || rows[i].classList.contains('new')) {
+        count++
+      }
+    }
+
+    commitall.style.display = count > 1 ? 'block' : 'none'
+    rollbackall.style.display = count > 1 ? 'block' : 'none'
+  }
 }
 
 export function commit (...list) {
@@ -202,7 +248,7 @@ function revert (row) {
         }
       }
 
-      set('controllers', item, item.dataset.original)
+      set(item, item.dataset.original)
     })
 
     row.classList.remove('modified')
@@ -221,51 +267,6 @@ function deleted (row) {
         break
       }
     }
-  }
-}
-
-export function set (div, element, value, status) {
-  const tbody = document.getElementById(div).querySelector('table tbody')
-  const rowid = element.dataset.record
-  const row = document.getElementById(rowid)
-  const original = element.dataset.original
-  const v = value.toString()
-
-  element.dataset.value = v
-
-  if (status !== undefined && element.dataset.original !== undefined) {
-    element.dataset.status = status
-  }
-
-  if (v !== original) {
-    apply(element, (c) => { c.classList.add('modified') })
-  } else {
-    apply(element, (c) => { c.classList.remove('modified') })
-  }
-
-  if (row) {
-    const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
-    if (unmodified) {
-      row.classList.remove('modified')
-    } else {
-      row.classList.add('modified')
-    }
-  }
-
-  if (tbody) {
-    const rows = tbody.rows
-    const commitall = document.getElementById('commitall')
-    const rollbackall = document.getElementById('rollbackall')
-    let count = 0
-
-    for (let i = 0; i < rows.length; i++) {
-      if (rows[i].classList.contains('modified') || rows[i].classList.contains('new')) {
-        count++
-      }
-    }
-
-    commitall.style.display = count > 1 ? 'block' : 'none'
-    rollbackall.style.display = count > 1 ? 'block' : 'none'
   }
 }
 
@@ -322,7 +323,7 @@ function update (element, value, status) {
         break
     }
 
-    set('controllers', element, value, status)
+    set(element, value, status)
   }
 }
 
