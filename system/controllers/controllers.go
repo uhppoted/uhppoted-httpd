@@ -197,34 +197,11 @@ func (cc *ControllerSet) UpdateByOID(oid string, value string) (interface{}, err
 	}
 
 	// ... interface
-
 	if cc.LAN != nil && strings.HasPrefix(oid, cc.LAN.OID) {
 		return cc.LAN.set(oid, value)
 	}
 
 	return nil, nil
-
-	//	lan := struct {
-	//		OID              string `json:"OID"`
-	//		Type             string `json:"type"`
-	//		Name             string `json:"name"`
-	//		BindAddress      string `json:"bind-address"`
-	//		BroadcastAddress string `json:"broadcast-address"`
-	//		ListenAddress    string `json:"listen-address"`
-	//	}{
-	//		OID:              cc.LAN.OID,
-	//		Type:             "LAN",
-	//		Name:             cc.LAN.Name,
-	//		BindAddress:      fmt.Sprintf("%v", cc.LAN.BindAddress),
-	//		BroadcastAddress: fmt.Sprintf("%v", cc.LAN.BroadcastAddress),
-	//		ListenAddress:    fmt.Sprintf("%v", cc.LAN.ListenAddress),
-	//	}
-	//
-	//	return struct {
-	//		Interface interface{} `json:"interface"`
-	//	}{
-	//		Interface: lan,
-	//	}, nil
 }
 
 func (cc *ControllerSet) Update(c Controller) (*Controller, error) {

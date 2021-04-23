@@ -71,6 +71,7 @@ export function commit (tag, element) {
 
   for (let id = 0; ; id++) {
     const element = section.querySelector(`[data-oid="${oid}.${id}"]`)
+
     if (element) {
       if (element.dataset.value !== element.dataset.original) {
         list.push(element)
@@ -79,14 +80,6 @@ export function commit (tag, element) {
     }
     break
   }
-
-  list.forEach(e => {
-    const flag = document.getElementById(`F${e.dataset.oid}`)
-    if (flag) {
-      flag.classList.remove('modified')
-      flag.classList.add('pending')
-    }
-  })
 
   const records = []
   list.forEach(e => {
@@ -98,21 +91,25 @@ export function commit (tag, element) {
   const reset = function () {
     list.forEach(e => {
       const flag = document.getElementById(`F${e.dataset.oid}`)
-      if (flag) {
-        flag.classList.remove('pending')
-        flag.classList.add('modified')
-      }
+      unmark('pending', e, flag)
+      mark('modified', e, flag)
     })
   }
 
-  post('objects', records, reset)
+  const cleanup = function () {
+    list.forEach(e => {
+      const flag = document.getElementById(`F${e.dataset.oid}`)
+      unmark('pending', e, flag)
+    })
+  }
 
   list.forEach(e => {
     const flag = document.getElementById(`F${e.dataset.oid}`)
-    if (flag) {
-      flag.classList.remove('pending')
-    }
+    mark('pending', e, flag)
+    unmark('modified', e, flag)
   })
+
+  post('objects', records, reset, cleanup)
 }
 
 function modified (oid) {
@@ -139,7 +136,7 @@ function modified (oid) {
   }
 }
 
-function post (tag, records, reset) {
+function post (tag, records, reset, cleanup) {
   busy()
 
   postAsJSON('/system', { [tag]: records })
@@ -169,49 +166,48 @@ function post (tag, records, reset) {
       warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
     })
     .finally(() => {
+      cleanup()
       unbusy()
     })
 }
 
 function update (element, value, status) {
-  const v = value.toString()
-  const oid = element.dataset.oid
-  const flag = document.getElementById(`F${oid}`)
-
   if (element) {
+    const v = value.toString()
+    const oid = element.dataset.oid
+    const flag = document.getElementById(`F${oid}`)
     const previous = element.dataset.original
 
     element.dataset.original = v
 
-    // check for conflicts with concurrently modified fields
+    // check for conflicts with concurrently edited fields
     if (element.classList.contains('modified')) {
       if (previous !== v && element.dataset.value !== v) {
         mark('conflict', element, flag)
       } else if (element.dataset.value !== v) {
-        mark('modified', element, flag)
-      } else {
-        unmark('modified', element, flag)
         unmark('conflict', element, flag)
+      } else {
+        unmark('conflict', element, flag)
+        unmark('modified', element, flag)
       }
 
       percolate(oid)
       return
     }
 
-    //   // mark fields with unexpected values after submit
+    // check for conflicts with concurrently submitted fields
+    if (element.classList.contains('pending')) {
+      if (previous !== v && element.dataset.value !== v) {
+        mark('conflict', element, flag)
+      } else {
+        unmark('conflict', element, flag)
+      }
 
-    //   if (td && td.classList.contains('pending')) {
-    //     if (element.dataset.value !== v.toString()) {
-    //       td.classList.add('conflict')
-    //     } else {
-    //       td.classList.remove('conflict')
-    //     }
-    //   }
+      return
+    }
 
-    // update unmodified fields
-
+    // update fields not pending or modified
     element.value = v
-
     set(element, value)
   }
 }
