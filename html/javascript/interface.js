@@ -8,10 +8,10 @@ export function updateFromDB (oid, record) {
   const section = document.querySelector(`[data-oid="${oid}"]`)
 
   if (section) {
-    const name = section.querySelector(`[data-oid="${oid}.0"]`)
-    const bind = section.querySelector(`[data-oid="${oid}.1"]`)
-    const broadcast = section.querySelector(`[data-oid="${oid}.2"]`)
-    const listen = section.querySelector(`[data-oid="${oid}.3"]`)
+    const name = section.querySelector(`[data-oid="${oid}.1"]`)
+    const bind = section.querySelector(`[data-oid="${oid}.2"]`)
+    const broadcast = section.querySelector(`[data-oid="${oid}.3"]`)
+    const listen = section.querySelector(`[data-oid="${oid}.4"]`)
 
     update(name, record.name)
     update(bind, record.bind)
@@ -41,25 +41,19 @@ export function rollback (tag, element) {
   const section = document.getElementById(tag)
   const oid = section.dataset.oid
 
-  for (let id = 0; ; id++) {
-    const element = section.querySelector(`[data-oid="${oid}.${id}"]`)
-    if (element) {
-      const flag = document.getElementById(`F${element.dataset.oid}`)
+  const children = section.querySelectorAll(`[data-oid^="${oid}."]`)
+  children.forEach(e => {
+    const flag = document.getElementById(`F${e.dataset.oid}`)
 
-      element.dataset.value = element.dataset.original
-      element.value = element.dataset.original
-      element.classList.remove('modified')
+    e.dataset.value = e.dataset.original
+    e.value = e.dataset.original
+    e.classList.remove('modified')
 
-      if (flag) {
-        flag.classList.remove('modified')
-        flag.classList.remove('pending')
-      }
-
-      continue
+    if (flag) {
+      flag.classList.remove('modified')
+      flag.classList.remove('pending')
     }
-
-    break
-  }
+  })
 
   section.classList.remove('modified')
 }
@@ -69,17 +63,12 @@ export function commit (tag, element) {
   const oid = section.dataset.oid
   const list = []
 
-  for (let id = 0; ; id++) {
-    const element = section.querySelector(`[data-oid="${oid}.${id}"]`)
-
-    if (element) {
-      if (element.dataset.value !== element.dataset.original) {
-        list.push(element)
-      }
-      continue
+  const children = section.querySelectorAll(`[data-oid^="${oid}."]`)
+  children.forEach(e => {
+    if (e.dataset.value !== e.dataset.original) {
+      list.push(e)
     }
-    break
-  }
+  })
 
   const records = []
   list.forEach(e => {
@@ -113,20 +102,14 @@ export function commit (tag, element) {
 }
 
 function modified (oid) {
-  document.querySelector(`[data-oid="${oid}"]`)
   const container = document.querySelector(`[data-oid="${oid}"]`)
   let changed = false
 
   if (container) {
-    for (let id = 0; ; id++) {
-      const element = document.querySelector(`[data-oid="${oid}.${id}"]`)
-      if (element) {
-        changed = changed || element.classList.contains('modified')
-        continue
-      }
-
-      break
-    }
+    const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
+    list.forEach(e => {
+      changed = changed || e.classList.contains('modified')
+    })
 
     if (changed) {
       container.classList.add('modified')

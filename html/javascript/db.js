@@ -63,19 +63,19 @@ function object (o) {
   DB.interfaces.forEach((v, k) => {
     if (o.OID.startsWith(k)) {
       switch (o.OID) {
-        case k + '.0':
+        case k + '.1':
           v.name = o.value
           break
 
-        case k + '.1':
+        case k + '.2':
           v.bind = o.value
           break
 
-        case k + '.2':
+        case k + '.3':
           v.broadcast = o.value
           break
 
-        case k + '.3':
+        case k + '.4':
           v.listen = o.value
           break
       }

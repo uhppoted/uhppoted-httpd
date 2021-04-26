@@ -76,32 +76,21 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 
 	if l != nil {
 		switch oid {
-		case l.OID + ".0":
+		case l.OID + ".1":
 			l.Name = value
 			return object{
-				OID:   l.OID + ".0",
+				OID:   l.OID + ".1",
 				Value: l.Name,
 			}, nil
-
-		case l.OID + ".1":
-			if addr, err := types.Resolve(value); err != nil {
-				return nil, err
-			} else {
-				l.BindAddress = addr
-				return object{
-					OID:   l.OID + ".1",
-					Value: fmt.Sprintf("%v", l.BindAddress),
-				}, nil
-			}
 
 		case l.OID + ".2":
 			if addr, err := types.Resolve(value); err != nil {
 				return nil, err
 			} else {
-				l.BroadcastAddress = addr
+				l.BindAddress = addr
 				return object{
 					OID:   l.OID + ".2",
-					Value: fmt.Sprintf("%v", l.BroadcastAddress),
+					Value: fmt.Sprintf("%v", l.BindAddress),
 				}, nil
 			}
 
@@ -109,9 +98,20 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 			if addr, err := types.Resolve(value); err != nil {
 				return nil, err
 			} else {
-				l.ListenAddress = addr
+				l.BroadcastAddress = addr
 				return object{
 					OID:   l.OID + ".3",
+					Value: fmt.Sprintf("%v", l.BroadcastAddress),
+				}, nil
+			}
+
+		case l.OID + ".4":
+			if addr, err := types.Resolve(value); err != nil {
+				return nil, err
+			} else {
+				l.ListenAddress = addr
+				return object{
+					OID:   l.OID + ".4",
 					Value: fmt.Sprintf("%v", l.ListenAddress),
 				}, nil
 			}

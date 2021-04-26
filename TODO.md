@@ -4,7 +4,6 @@
 
 - [ ] system
       - make LAN parameters editable
-        - change name OID to .1
         - bind address:port should not include port in returned value from String() if port is 0
         - broadcast address:port should include port in returned value from String() if port is not 60000
         - listen address:port should however always include port in returned value from String()
