@@ -4,11 +4,8 @@
 
 - [ ] system
       - make LAN parameters editable
-        - broadcast address:port should include port in returned value from String() if port is not 60000
-        - listen address:port should however always include port in returned value from String()
 
       - rework controllers to use OID's
-
       - [ ] [TOML](https://toml.io) files  
       - marshal cards.Records as "" if StatusUnknown
       - "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'

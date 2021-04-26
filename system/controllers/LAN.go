@@ -22,7 +22,7 @@ type LAN struct {
 	Name             string                  `json:"name"`
 	BindAddress      *types.BindAddress      `json:"bind-address"`
 	BroadcastAddress *types.BroadcastAddress `json:"broadcast-address"`
-	ListenAddress    *types.Address          `json:"listen-address"`
+	ListenAddress    *types.ListenAddress    `json:"listen-address"`
 	Debug            bool                    `json:"debug"`
 }
 
@@ -106,7 +106,7 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 			}
 
 		case l.OID + ".4":
-			if addr, err := types.Resolve(value); err != nil {
+			if addr, err := types.ResolveListenAddress(value); err != nil {
 				return nil, err
 			} else {
 				l.ListenAddress = addr
