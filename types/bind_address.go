@@ -7,11 +7,11 @@ import (
 	"regexp"
 )
 
-type BindAddress net.UDPAddr
+type BindAddr net.UDPAddr
 
 const BIND_PORT = 0
 
-func (a *BindAddress) String() string {
+func (a *BindAddr) String() string {
 	if a != nil {
 		if a.Port == BIND_PORT {
 			return a.IP.String()
@@ -23,18 +23,18 @@ func (a *BindAddress) String() string {
 	return ""
 }
 
-func (a *BindAddress) MarshalJSON() ([]byte, error) {
+func (a *BindAddr) MarshalJSON() ([]byte, error) {
 	return json.Marshal(a.String())
 }
 
-func (a *BindAddress) UnmarshalJSON(bytes []byte) error {
+func (a *BindAddr) UnmarshalJSON(bytes []byte) error {
 	var s string
 
 	if err := json.Unmarshal(bytes, &s); err != nil {
 		return err
 	}
 
-	addr, err := ResolveBindAddress(s)
+	addr, err := ResolveBindAddr(s)
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func (a *BindAddress) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
-func (a *BindAddress) Equal(addr *Address) bool {
+func (a *BindAddr) Equal(addr *Address) bool {
 	switch {
 	case a == nil && addr == nil:
 		return true
@@ -57,7 +57,7 @@ func (a *BindAddress) Equal(addr *Address) bool {
 	}
 }
 
-func (a *BindAddress) Clone() *BindAddress {
+func (a *BindAddr) Clone() *BindAddr {
 	if a != nil {
 		addr := *a
 		return &addr
@@ -66,15 +66,19 @@ func (a *BindAddress) Clone() *BindAddress {
 	return nil
 }
 
-func ResolveBindAddress(s string) (*BindAddress, error) {
+func ResolveBindAddr(s string) (*BindAddr, error) {
 	if matched, err := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,5}`, s); err != nil {
 		return nil, err
 	} else if matched {
 		if addr, err := net.ResolveUDPAddr("udp", s); err != nil {
 			return nil, err
+		} else if addr.Port == DEFAULT_PORT {
+			return nil, fmt.Errorf("%v: invalid 'bind' port (%v)", addr, addr.Port)
 		} else {
-			a := BindAddress(*addr)
-			return &a, nil
+			return &BindAddr{
+				IP:   addr.IP.To4(),
+				Port: addr.Port,
+			}, nil
 		}
 	}
 
@@ -82,13 +86,10 @@ func ResolveBindAddress(s string) (*BindAddress, error) {
 		return nil, err
 	} else if matched {
 		if ip := net.ParseIP(s); ip != nil {
-			addr := BindAddress(net.UDPAddr{
-				IP:   ip,
+			return &BindAddr{
+				IP:   ip.To4(),
 				Port: BIND_PORT,
-				Zone: "",
-			})
-
-			return &addr, nil
+			}, nil
 		}
 	}
 

@@ -7,9 +7,9 @@ import (
 	"regexp"
 )
 
-type ListenAddress net.UDPAddr
+type ListenAddr net.UDPAddr
 
-func (a *ListenAddress) String() string {
+func (a *ListenAddr) String() string {
 	if a != nil {
 		return (*net.UDPAddr)(a).String()
 	}
@@ -17,18 +17,18 @@ func (a *ListenAddress) String() string {
 	return ""
 }
 
-func (a *ListenAddress) MarshalJSON() ([]byte, error) {
+func (a *ListenAddr) MarshalJSON() ([]byte, error) {
 	return json.Marshal(a.String())
 }
 
-func (a *ListenAddress) UnmarshalJSON(bytes []byte) error {
+func (a *ListenAddr) UnmarshalJSON(bytes []byte) error {
 	var s string
 
 	if err := json.Unmarshal(bytes, &s); err != nil {
 		return err
 	}
 
-	addr, err := ResolveListenAddress(s)
+	addr, err := ResolveListenAddr(s)
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func (a *ListenAddress) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
-func (a *ListenAddress) Equal(addr *ListenAddress) bool {
+func (a *ListenAddr) Equal(addr *ListenAddr) bool {
 	switch {
 	case a == nil && addr == nil:
 		return true
@@ -51,7 +51,7 @@ func (a *ListenAddress) Equal(addr *ListenAddress) bool {
 	}
 }
 
-func (a *ListenAddress) Clone() *ListenAddress {
+func (a *ListenAddr) Clone() *ListenAddr {
 	if a != nil {
 		addr := *a
 		return &addr
@@ -60,17 +60,19 @@ func (a *ListenAddress) Clone() *ListenAddress {
 	return nil
 }
 
-func ResolveListenAddress(s string) (*ListenAddress, error) {
+func ResolveListenAddr(s string) (*ListenAddr, error) {
 	if matched, err := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,5}`, s); err != nil {
 		return nil, err
 	} else if matched {
 		if addr, err := net.ResolveUDPAddr("udp", s); err != nil {
 			return nil, err
 		} else if addr.Port == 0 || addr.Port == 60000 {
-			return nil, fmt.Errorf("%v: invalid 'listen' port (%v)", addr,addr.Port)
+			return nil, fmt.Errorf("%v: invalid 'listen' port (%v)", addr, addr.Port)
 		} else {
-			a := ListenAddress(*addr)
-			return &a, nil
+			return &ListenAddr{
+				IP:   addr.IP.To4(),
+				Port: addr.Port,
+			}, nil
 		}
 	}
 

@@ -291,7 +291,7 @@ func unpack(m map[string]interface{}) ([]object, []controllers.Controller, error
 		}
 
 		if r.IP != nil && *r.IP != "" {
-			if addr, err := types.Resolve(*r.IP); err != nil {
+			if addr, err := types.ResolveAddr(*r.IP); err != nil {
 				return nil, nil, err
 			} else {
 				record.IP = addr

@@ -18,12 +18,12 @@ import (
 )
 
 type LAN struct {
-	OID              string                  `json:"OID"`
-	Name             string                  `json:"name"`
-	BindAddress      *types.BindAddress      `json:"bind-address"`
-	BroadcastAddress *types.BroadcastAddress `json:"broadcast-address"`
-	ListenAddress    *types.ListenAddress    `json:"listen-address"`
-	Debug            bool                    `json:"debug"`
+	OID              string               `json:"OID"`
+	Name             string               `json:"name"`
+	BindAddress      *types.BindAddr      `json:"bind-address"`
+	BroadcastAddress *types.BroadcastAddr `json:"broadcast-address"`
+	ListenAddress    *types.ListenAddr    `json:"listen-address"`
+	Debug            bool                 `json:"debug"`
 }
 
 type deviceCache struct {
@@ -84,10 +84,10 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 			}, nil
 
 		case l.OID + ".2":
-			if addr, err := types.Resolve(value); err != nil {
+			if addr, err := types.ResolveBindAddr(value); err != nil {
 				return nil, err
 			} else {
-				l.BindAddress = (*types.BindAddress)(addr)
+				l.BindAddress = addr
 				return object{
 					OID:   l.OID + ".2",
 					Value: fmt.Sprintf("%v", l.BindAddress),
@@ -95,7 +95,7 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 			}
 
 		case l.OID + ".3":
-			if addr, err := types.ResolveBroadcastAddress(value); err != nil {
+			if addr, err := types.ResolveBroadcastAddr(value); err != nil {
 				return nil, err
 			} else {
 				l.BroadcastAddress = addr
@@ -106,7 +106,7 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 			}
 
 		case l.OID + ".4":
-			if addr, err := types.ResolveListenAddress(value); err != nil {
+			if addr, err := types.ResolveListenAddr(value); err != nil {
 				return nil, err
 			} else {
 				l.ListenAddress = addr

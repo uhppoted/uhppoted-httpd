@@ -34,7 +34,7 @@ func (a *Address) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	addr, err := Resolve(s)
+	addr, err := ResolveAddr(s)
 	if err != nil {
 		return err
 	}
@@ -66,15 +66,19 @@ func (a *Address) Clone() *Address {
 	return nil
 }
 
-func Resolve(s string) (*Address, error) {
+func ResolveAddr(s string) (*Address, error) {
 	if matched, err := regexp.MatchString(`[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,5}`, s); err != nil {
 		return nil, err
 	} else if matched {
 		if addr, err := net.ResolveUDPAddr("udp", s); err != nil {
 			return nil, err
+		} else if addr.Port == 0 {
+			return nil, fmt.Errorf("%v: invalid device address port (%v)", addr, addr.Port)
 		} else {
-			a := Address(*addr)
-			return &a, nil
+			return &Address{
+				IP:   addr.IP.To4(),
+				Port: addr.Port,
+			}, nil
 		}
 	}
 
@@ -82,15 +86,12 @@ func Resolve(s string) (*Address, error) {
 		return nil, err
 	} else if matched {
 		if ip := net.ParseIP(s); ip != nil {
-			addr := Address(net.UDPAddr{
-				IP:   ip,
+			return &Address{
+				IP:   ip.To4(),
 				Port: DEFAULT_PORT,
-				Zone: "",
-			})
-
-			return &addr, nil
+			}, nil
 		}
 	}
 
-	return nil, fmt.Errorf("%s is not a valid UDP address:port", s)
+	return nil, fmt.Errorf("%s is not a valid device address:port", s)
 }

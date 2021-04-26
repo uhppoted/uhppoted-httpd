@@ -3,8 +3,6 @@
 ### IN PROGRESS
 
 - [ ] system
-      - make LAN parameters editable
-
       - rework controllers to use OID's
       - [ ] [TOML](https://toml.io) files  
       - marshal cards.Records as "" if StatusUnknown
