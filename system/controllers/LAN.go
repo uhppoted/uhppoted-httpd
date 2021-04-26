@@ -18,12 +18,12 @@ import (
 )
 
 type LAN struct {
-	OID              string         `json:"OID"`
-	Name             string         `json:"name"`
-	BindAddress      *types.Address `json:"bind-address"`
-	BroadcastAddress *types.Address `json:"broadcast-address"`
-	ListenAddress    *types.Address `json:"listen-address"`
-	Debug            bool           `json:"debug"`
+	OID              string             `json:"OID"`
+	Name             string             `json:"name"`
+	BindAddress      *types.BindAddress `json:"bind-address"`
+	BroadcastAddress *types.Address     `json:"broadcast-address"`
+	ListenAddress    *types.Address     `json:"listen-address"`
+	Debug            bool               `json:"debug"`
 }
 
 type deviceCache struct {
@@ -87,7 +87,7 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 			if addr, err := types.Resolve(value); err != nil {
 				return nil, err
 			} else {
-				l.BindAddress = addr
+				l.BindAddress = (*types.BindAddress)(addr)
 				return object{
 					OID:   l.OID + ".2",
 					Value: fmt.Sprintf("%v", l.BindAddress),
