@@ -11,9 +11,15 @@ export function onEdited (tag, event) {
       LAN.set(event.target, event.target.value)
       break
 
-    case 'controllers':
-      controllers.set(event.target, event.target.value)
+    case 'controllers': {
+      const oid = event.target.dataset.oid
+      if (oid && oid.endsWith('.1')) {
+        controllers.setX(event.target, event.target.value)
+      } else {
+        controllers.set(event.target, event.target.value)
+      }
       break
+    }
   }
 }
 

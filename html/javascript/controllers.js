@@ -13,7 +13,7 @@ export function updateFromDB (oid, record) {
   }
 
   if (!row) {
-    row = add(rowID(oid))
+    row = add(oid)
   }
 
   const id = row.id
@@ -28,10 +28,9 @@ export function updateFromDB (oid, record) {
   const door3 = document.getElementById(id + '-door-3')
   const door4 = document.getElementById(id + '-door-4')
 
-  row.dataset.oid = oid
   row.dataset.status = record.status
 
-  update(name, record.name)
+  updateX(name, record.name)
   update(deviceID, record.deviceID)
   update(address, record.address.address, record.address.status)
   update(datetime, record.datetime.datetime, record.datetime.status)
@@ -47,6 +46,111 @@ export function updateFromDB (oid, record) {
 
   return row
 }
+
+// ---- OID REWORK (EXPERIMENTAL)
+export function setX (element, value, status) {
+  const oid = element.dataset.oid
+  const original = element.dataset.original
+  const v = value.toString()
+  const flag = document.getElementById(`F${oid}`)
+
+  element.dataset.value = v
+
+  if (v !== original) {
+    markX('modified', element, flag)
+  } else {
+    unmarkX('modified', element, flag)
+  }
+
+  percolateX(oid)
+}
+
+function updateX (element, value, status) {
+  if (element) {
+    const v = value.toString()
+    const oid = element.dataset.oid
+    const flag = document.getElementById(`F${oid}`)
+    const previous = element.dataset.original
+
+    element.dataset.original = v
+
+    // check for conflicts with concurrently edited fields
+    if (element.classList.contains('modified')) {
+      if (previous !== v && element.dataset.value !== v) {
+        markX('conflict', element, flag)
+      } else if (element.dataset.value !== v) {
+        unmarkX('conflict', element, flag)
+      } else {
+        unmarkX('conflict', element, flag)
+        unmarkX('modified', element, flag)
+      }
+
+      percolateX(oid)
+      return
+    }
+
+    // check for conflicts with concurrently submitted fields
+    if (element.classList.contains('pending')) {
+      if (previous !== v && element.dataset.value !== v) {
+        markX('conflict', element, flag)
+      } else {
+        unmarkX('conflict', element, flag)
+      }
+
+      return
+    }
+
+    // update fields not pending or modified
+    element.value = v
+    setX(element, value)
+  }
+}
+
+function markX (clazz, ...elements) {
+  elements.forEach(e => {
+    if (e) {
+      e.classList.add(clazz)
+    }
+  })
+}
+
+function unmarkX (clazz, ...elements) {
+  elements.forEach(e => {
+    if (e) {
+      e.classList.remove(clazz)
+    }
+  })
+}
+
+function percolateX (oid) {
+  let oidx = oid
+  while (oidx) {
+    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
+    oidx = match ? match[1] : null
+    if (oidx) {
+      modifiedX(oidx)
+    }
+  }
+}
+
+function modifiedX (oid) {
+  const container = document.querySelector(`[data-oid="${oid}"]`)
+  let changed = false
+
+  if (container) {
+    const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
+    list.forEach(e => {
+      changed = changed || e.classList.contains('modified')
+    })
+
+    if (changed) {
+      container.classList.add('modified')
+    } else {
+      container.classList.remove('modified')
+    }
+  }
+}
+// ---- END OID REWORK (EXPERIMENTAL)
 
 export function set (element, value, status) {
   const div = 'controllers'
@@ -177,7 +281,8 @@ function post (records, reset) {
     })
 }
 
-export function add (uuid) {
+export function add (oid) {
+  const uuid = rowID(oid)
   const tbody = document.getElementById('controllers').querySelector('table tbody')
 
   if (tbody) {
@@ -187,7 +292,7 @@ export function add (uuid) {
     row.id = uuid
     row.classList.add('controller')
     row.classList.add('new')
-    row.dataset.oid = ''
+    row.dataset.oid = oid
     row.dataset.status = 'unknown'
     row.innerHTML = template.innerHTML
 
@@ -202,26 +307,30 @@ export function add (uuid) {
     rollback.dataset.enabled = 'false'
 
     const fields = [
-      { suffix: 'name', selector: 'td input.name' },
-      { suffix: 'ID', selector: 'td input.ID' },
-      { suffix: 'IP', selector: 'td input.IP' },
-      { suffix: 'datetime', selector: 'td input.datetime' },
-      { suffix: 'cards', selector: 'td input.cards' },
-      { suffix: 'events', selector: 'td input.events' },
-      { suffix: 'door-1', selector: 'td select.door1' },
-      { suffix: 'door-2', selector: 'td select.door2' },
-      { suffix: 'door-3', selector: 'td select.door3' },
-      { suffix: 'door-4', selector: 'td select.door4' }
+      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' },
+      { suffix: 'ID', oid: `${oid}.2`, selector: 'td input.ID', flag: 'td img.ID' },
+      { suffix: 'IP', oid: `${oid}.3`, selector: 'td input.IP', flag: 'td img.IP' },
+      { suffix: 'datetime', oid: `${oid}.4`, selector: 'td input.datetime', flag: 'td img.datetime' },
+      { suffix: 'cards', oid: `${oid}.5`, selector: 'td input.cards', flag: 'td img.cards' },
+      { suffix: 'events', oid: `${oid}.6`, selector: 'td input.events', flag: 'td img.events' },
+      { suffix: 'door-1', oid: `${oid}.7`, selector: 'td select.door1', flag: 'td img.door1' },
+      { suffix: 'door-2', oid: `${oid}.8`, selector: 'td select.door2', flag: 'td img.door2' },
+      { suffix: 'door-3', oid: `${oid}.9`, selector: 'td select.door3', flag: 'td img.door3' },
+      { suffix: 'door-4', oid: `${oid}.10`, selector: 'td select.door4', flag: 'td img.door4' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
+      const flag = row.querySelector(f.flag)
 
       field.id = uuid + '-' + f.suffix
       field.value = ''
+      field.dataset.oid = f.oid
       field.dataset.record = uuid
       field.dataset.original = ''
       field.dataset.value = ''
+
+      flag.id = 'F' + f.oid
     })
 
     return row
@@ -248,7 +357,12 @@ function revert (row) {
         }
       }
 
-      set(item, item.dataset.original)
+      const oid = item.dataset.oid
+      if (oid && oid.endsWith('.1')) {
+        setX(item, item.dataset.original)
+      } else {
+        set(item, item.dataset.original)
+      }
     })
 
     row.classList.remove('modified')

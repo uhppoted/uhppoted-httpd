@@ -4,9 +4,8 @@
 
 - [ ] system
       - rework controllers to use OID's
-      - [ ] [TOML](https://toml.io) files  
+
       - marshal cards.Records as "" if StatusUnknown
-      - "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'
       - nicer auth handling for e.g. /images
         -- auth.Local should return err only if not .*
       - initialise LAN/all from uhppoted.conf (?)
@@ -17,12 +16,6 @@
       - logic around correcting time is weird
         -- enter to update doesn't always work
         -- set() is updating dataset.original which seems wrong but ...
-      - make object -> HTML JSON consistent
-        - status should be string
-        - move object -> JSON to presentation layer (?)
-        - rethink this as a presentation layer interface or map or something (?)
-        - mapping Go structs to user interface objects is problematic. Maybe use GraphQL idea and fill in 
-          requested info?
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core
@@ -35,6 +28,9 @@
       - configure ok/uncertain intervals
       - configure systime window
       - use uhppoted-api::healthcheck
+
+- [ ] "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'
+- [ ] [TOML](https://toml.io) files  
 
 - [ ] tabular
       - [ ] New table row submitted with error cannot be discarded
