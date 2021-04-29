@@ -31,7 +31,7 @@ export function updateFromDB (oid, record) {
   row.dataset.status = record.status
 
   updateX(name, record.name)
-  update(deviceID, record.deviceID)
+  updateX(deviceID, record.deviceID)
   update(address, record.address.address, record.address.status)
   update(datetime, record.datetime.datetime, record.datetime.status)
   update(cards, record.cards.cards, record.cards.status)
@@ -358,7 +358,7 @@ function revert (row) {
       }
 
       const oid = item.dataset.oid
-      if (oid && oid.endsWith('.1')) {
+      if (oid && (oid.endsWith('.1') || oid.endsWith('.2'))) {
         setX(item, item.dataset.original)
       } else {
         set(item, item.dataset.original)
