@@ -3,6 +3,10 @@
 ### IN PROGRESS
 
 - [ ] system
+      - invalid bind address get serialized incorrectly, breaks everything
+        ```
+        2021/07/07 17:44:16 WARN  find         get-devices: Failed to write to UDP socket [write udp [::]:59442->:0: sendto: can't assign requested address]
+        ```
       - rework controllers to use OID's
 
       - marshal cards.Records as "" if StatusUnknown

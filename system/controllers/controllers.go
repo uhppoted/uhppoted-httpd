@@ -267,9 +267,9 @@ func (cc *ControllerSet) AsView() interface{} {
 		OID:              cc.LAN.OID,
 		Type:             "LAN",
 		Name:             cc.LAN.Name,
-		BindAddress:      fmt.Sprintf("%v", &cc.LAN.BindAddress),
-		BroadcastAddress: fmt.Sprintf("%v", &cc.LAN.BroadcastAddress),
-		ListenAddress:    fmt.Sprintf("%v", &cc.LAN.ListenAddress),
+		BindAddress:      fmt.Sprintf("%v", cc.LAN.BindAddress),
+		BroadcastAddress: fmt.Sprintf("%v", cc.LAN.BroadcastAddress),
+		ListenAddress:    fmt.Sprintf("%v", cc.LAN.ListenAddress),
 	}
 
 	list := []interface{}{}
