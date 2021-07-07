@@ -12,18 +12,18 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppote-core/uhppote"
-	"github.com/uhppoted/uhppoted-api/acl"
-	"github.com/uhppoted/uhppoted-api/uhppoted"
 	"github.com/uhppoted/uhppoted-httpd/types"
+	"github.com/uhppoted/uhppoted-lib/acl"
+	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type LAN struct {
-	OID              string               `json:"OID"`
-	Name             string               `json:"name"`
-	BindAddress      *types.BindAddr      `json:"bind-address"`
-	BroadcastAddress *types.BroadcastAddr `json:"broadcast-address"`
-	ListenAddress    *types.ListenAddr    `json:"listen-address"`
-	Debug            bool                 `json:"debug"`
+	OID              string             `json:"OID"`
+	Name             string             `json:"name"`
+	BindAddress      core.BindAddr      `json:"bind-address"`
+	BroadcastAddress core.BroadcastAddr `json:"broadcast-address"`
+	ListenAddress    core.ListenAddr    `json:"listen-address"`
+	Debug            bool               `json:"debug"`
 }
 
 type deviceCache struct {
@@ -33,7 +33,7 @@ type deviceCache struct {
 
 type device struct {
 	touched  time.Time
-	address  *types.Address
+	address  *core.Address
 	datetime *types.DateTime
 	cards    *uint32
 	events   *uint32
@@ -84,10 +84,10 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 			}, nil
 
 		case l.OID + ".2":
-			if addr, err := types.ResolveBindAddr(value); err != nil {
+			if addr, err := core.ResolveBindAddr(value); err != nil {
 				return nil, err
 			} else {
-				l.BindAddress = addr
+				l.BindAddress = *addr
 				return object{
 					OID:   l.OID + ".2",
 					Value: fmt.Sprintf("%v", l.BindAddress),
@@ -95,10 +95,10 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 			}
 
 		case l.OID + ".3":
-			if addr, err := types.ResolveBroadcastAddr(value); err != nil {
+			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
 				return nil, err
 			} else {
-				l.BroadcastAddress = addr
+				l.BroadcastAddress = *addr
 				return object{
 					OID:   l.OID + ".3",
 					Value: fmt.Sprintf("%v", l.BroadcastAddress),
@@ -106,10 +106,10 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 			}
 
 		case l.OID + ".4":
-			if addr, err := types.ResolveListenAddr(value); err != nil {
+			if addr, err := core.ResolveListenAddr(value); err != nil {
 				return nil, err
 			} else {
-				l.ListenAddress = addr
+				l.ListenAddress = *addr
 				return object{
 					OID:   l.OID + ".4",
 					Value: fmt.Sprintf("%v", l.ListenAddress),
@@ -122,13 +122,7 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 }
 
 func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {
-	u := uhppote.UHPPOTE{
-		BindAddress:      (*net.UDPAddr)(l.BindAddress),
-		BroadcastAddress: (*net.UDPAddr)(l.BroadcastAddress),
-		ListenAddress:    (*net.UDPAddr)(l.ListenAddress),
-		Devices:          map[uint32]*uhppote.Device{},
-		Debug:            l.Debug,
-	}
+	devices := []uhppote.Device{}
 
 	for _, v := range controllers {
 		if v.DeviceID == nil || *v.DeviceID == 0 || v.IP == nil {
@@ -139,18 +133,19 @@ func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {
 		id := *v.DeviceID
 		addr := net.UDPAddr(*v.IP)
 
-		u.Devices[id] = &uhppote.Device{
+		devices = append(devices, uhppote.Device{
 			Name:     name,
 			DeviceID: id,
 			Address:  &addr,
 			Rollover: 100000,
 			Doors:    []string{},
 			TimeZone: time.Local,
-		}
+		})
 	}
 
+	u := uhppote.NewUHPPOTE(l.BindAddress, l.BroadcastAddress, l.ListenAddress, 1*time.Second, devices, l.Debug)
 	api := uhppoted.UHPPOTED{
-		Uhppote: &u,
+		UHPPOTE: u,
 		Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
 	}
 
@@ -161,7 +156,7 @@ func (l *LAN) updateACL(controllers []*Controller, permissions acl.ACL) {
 	log.Printf("Updating ACL")
 
 	api := l.api(controllers)
-	rpt, errors := acl.PutACL(api.Uhppote, permissions, false)
+	rpt, errors := acl.PutACL(api.UHPPOTE, permissions, false)
 	for _, err := range errors {
 		warn(err)
 	}
@@ -194,13 +189,14 @@ func (l *LAN) updateACL(controllers []*Controller, permissions acl.ACL) {
 func (l *LAN) compareACL(controllers []*Controller, permissions acl.ACL) error {
 	log.Printf("Comparing ACL")
 
-	devices := []*uhppote.Device{}
+	devices := []uhppote.Device{}
 	api := l.api(controllers)
-	for _, v := range api.Uhppote.DeviceList() {
-		devices = append(devices, v)
+	for _, v := range api.UHPPOTE.DeviceList() {
+		device := v
+		devices = append(devices, device)
 	}
 
-	current, errors := acl.GetACL(api.Uhppote, devices)
+	current, errors := acl.GetACL(api.UHPPOTE, devices)
 	for _, err := range errors {
 		warn(err)
 	}
@@ -253,7 +249,7 @@ func (l *LAN) refresh(controllers []*Controller) {
 			log.Printf("Got %v response to get-devices request", devices)
 		} else {
 			for k, v := range devices.Devices {
-				if d, ok := api.Uhppote.DeviceList()[k]; ok {
+				if d, ok := api.UHPPOTE.DeviceList()[k]; ok {
 					d.Address.IP = v.Address
 					d.Address.Port = v.Port
 				}
@@ -329,7 +325,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 
 	switch v := info.(type) {
 	case uhppoted.GetDeviceResponse:
-		addr := types.Address(v.Address)
+		addr := core.Address(v.Address)
 		cached.address = &addr
 
 	case uhppoted.GetStatusResponse:

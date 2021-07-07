@@ -14,10 +14,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/uhppoted/uhppoted-api/acl"
-	"github.com/uhppoted/uhppoted-api/config"
+	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
+	"github.com/uhppoted/uhppoted-lib/acl"
+	"github.com/uhppoted/uhppoted-lib/config"
 )
 
 type ControllerSet struct {
@@ -46,7 +47,7 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 		OID      string           `json:"OID"`
 		Name     *types.Name      `json:"name,omitempty"`
 		DeviceID *uint32          `json:"device-id,omitempty"`
-		Address  *types.Address   `json:"address,omitempty"`
+		Address  *core.Address    `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
 		TimeZone *string          `json:"timezone,omitempty"`
 		Created  time.Time        `json:"created"`
@@ -266,9 +267,9 @@ func (cc *ControllerSet) AsView() interface{} {
 		OID:              cc.LAN.OID,
 		Type:             "LAN",
 		Name:             cc.LAN.Name,
-		BindAddress:      fmt.Sprintf("%v", cc.LAN.BindAddress),
-		BroadcastAddress: fmt.Sprintf("%v", cc.LAN.BroadcastAddress),
-		ListenAddress:    fmt.Sprintf("%v", cc.LAN.ListenAddress),
+		BindAddress:      fmt.Sprintf("%v", &cc.LAN.BindAddress),
+		BroadcastAddress: fmt.Sprintf("%v", &cc.LAN.BroadcastAddress),
+		ListenAddress:    fmt.Sprintf("%v", &cc.LAN.ListenAddress),
 	}
 
 	list := []interface{}{}

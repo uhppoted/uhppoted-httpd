@@ -9,7 +9,6 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/builder"
 	"github.com/hyperjumptech/grule-rule-engine/pkg"
 
-	"github.com/uhppoted/uhppoted-api/config"
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	provider "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
@@ -17,6 +16,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/system/cards/grule"
 	"github.com/uhppoted/uhppoted-httpd/system/cards/memdb"
+	"github.com/uhppoted/uhppoted-lib/config"
 )
 
 func (cmd *Run) Name() string {

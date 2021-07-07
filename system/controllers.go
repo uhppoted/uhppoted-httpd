@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
@@ -291,7 +292,7 @@ func unpack(m map[string]interface{}) ([]object, []controllers.Controller, error
 		}
 
 		if r.IP != nil && *r.IP != "" {
-			if addr, err := types.ResolveAddr(*r.IP); err != nil {
+			if addr, err := core.ResolveAddr(*r.IP); err != nil {
 				return nil, nil, err
 			} else {
 				record.IP = addr

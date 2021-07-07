@@ -27,7 +27,7 @@
       - configure update interval
       - configure ok/uncertain intervals
       - configure systime window
-      - use uhppoted-api::healthcheck
+      - use uhppoted-lib::healthcheck
 
 - [ ] "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'
 - [ ] [TOML](https://toml.io) files  
@@ -104,6 +104,7 @@
       - Colorways (for themes)
       - https://thenounproject.com
       - [retool](https://retool.com)
+      - [plurid](https://github.com/plurid/plurid)
 
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
 - [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
@@ -179,3 +180,4 @@
 - [CSS Tabs](https://codepen.io/axelaredz/pen/ipome)
 - [WenAuthN](https://trustfoundry.net/passwords-are-dead-long-live-webauthn)
 - [ZUI](https://zircleui.github.io/docs/examples/home.html)
+- [plurid](https://github.com/plurid/plurid)

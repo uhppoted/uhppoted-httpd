@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/uhppoted/uhppote-core/uhppote"
-	"github.com/uhppoted/uhppoted-api/command"
 	"github.com/uhppoted/uhppoted-httpd/commands"
+	"github.com/uhppoted/uhppoted-lib/command"
 	"os"
 )
 

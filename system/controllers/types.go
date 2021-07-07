@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -40,8 +41,8 @@ func (dt datetime) MarshalJSON() ([]byte, error) {
 }
 
 type ip struct {
-	Configured *types.Address
-	Address    *types.Address
+	Configured *core.Address
+	Address    *core.Address
 	Status     status
 }
 

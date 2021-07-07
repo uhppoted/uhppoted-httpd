@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/uhppoted/uhppoted-api/eventlog"
+	"github.com/uhppoted/uhppoted-lib/eventlog"
 )
 
 type Trail interface {

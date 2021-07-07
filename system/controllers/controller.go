@@ -6,6 +6,7 @@ import (
 	"math"
 	"time"
 
+	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -13,7 +14,7 @@ type Controller struct {
 	OID      string           `json:"OID"`
 	Name     *types.Name      `json:"name,omitempty"`
 	DeviceID *uint32          `json:"device-id,omitempty"`
-	IP       *types.Address   `json:"address,omitempty"`
+	IP       *core.Address    `json:"address,omitempty"`
 	Doors    map[uint8]string `json:"doors"`
 	TimeZone *string          `json:"timezone,omitempty"`
 
@@ -51,7 +52,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 		OID      string           `json:"OID"`
 		Name     *types.Name      `json:"name,omitempty"`
 		DeviceID *uint32          `json:"device-id,omitempty"`
-		Address  *types.Address   `json:"address,omitempty"`
+		Address  *core.Address    `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
 		TimeZone *string          `json:"timezone,omitempty"`
 		Created  time.Time        `json:"created"`
@@ -89,7 +90,7 @@ func (c *Controller) serialize() ([]byte, error) {
 		OID      string           `json:"OID"`
 		Name     *types.Name      `json:"name,omitempty"`
 		DeviceID *uint32          `json:"device-id,omitempty"`
-		Address  *types.Address   `json:"address,omitempty"`
+		Address  *core.Address    `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
 		TimeZone *string          `json:"timezone,omitempty"`
 		Created  time.Time        `json:"created"`

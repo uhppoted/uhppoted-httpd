@@ -12,12 +12,12 @@ import (
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
-	"github.com/uhppoted/uhppoted-api/acl"
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/types"
+	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
 var sys = system{
@@ -187,7 +187,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 					CardNumber: p.CardNumber,
 					From:       &from,
 					To:         &to,
-					Doors:      map[uint8]bool{1: false, 2: false, 3: false, 4: false},
+					Doors:      map[uint8]int{1: 0, 2: 0, 3: 0, 4: 0},
 				}
 			}
 		}
@@ -212,7 +212,7 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 								if card, ok := l[p.CardNumber]; !ok {
 									log.Printf("WARN %v", fmt.Errorf("consolidate: card %v not initialised for controller %v", p.CardNumber, *c.DeviceID))
 								} else {
-									card.Doors[door.Door] = true
+									card.Doors[door.Door] = 1
 								}
 							}
 						}
