@@ -32,14 +32,14 @@ export function updateFromDB (oid, record) {
 
   updateX(name, record.name)
   updateX(deviceID, record.deviceID)
-  update(address, record.address.address, record.address.status)
-  update(datetime, record.datetime.datetime, record.datetime.status)
-  update(cards, record.cards.cards, record.cards.status)
-  update(events, record.events.events)
-  update(door1, record.doors[1])
-  update(door2, record.doors[2])
-  update(door3, record.doors[3])
-  update(door4, record.doors[4])
+  updateX(address, record.address.address, record.address.status)
+  updateX(datetime, record.datetime.datetime, record.datetime.status)
+  updateX(cards, record.cards.cards, record.cards.status)
+  updateX(events, record.events.events)
+  updateX(door1, record.doors[1])
+  updateX(door2, record.doors[2])
+  updateX(door3, record.doors[3])
+  updateX(door4, record.doors[4])
 
   address.dataset.original = record.address.configured
   datetime.dataset.original = record.datetime.expected
@@ -384,62 +384,62 @@ function deleted (row) {
   }
 }
 
-function update (element, value, status) {
-  const v = value.toString()
-
-  if (element) {
-    const td = cell(element)
-    const original = element.dataset.original
-
-    element.dataset.original = v
-
-    // check for conflicts with concurrently modified fields
-
-    if (td && td.classList.contains('modified')) {
-      if (original !== v.toString() && element.dataset.value !== v.toString()) {
-        td.classList.add('conflict')
-      } else if (element.dataset.value !== v.toString()) {
-        td.classList.add('modified')
-      } else {
-        td.classList.remove('modified')
-        td.classList.remove('conflict')
-      }
-
-      return
-    }
-
-    element.dataset.original = v
-
-    // mark fields with unexpected values after submit
-
-    if (td && td.classList.contains('pending')) {
-      if (element.dataset.value !== v.toString()) {
-        td.classList.add('conflict')
-      } else {
-        td.classList.remove('conflict')
-      }
-    }
-
-    // update unmodified fields
-
-    switch (element.getAttribute('type').toLowerCase()) {
-      case 'text':
-      case 'number':
-      case 'date':
-        element.value = v
-        break
-
-      case 'checkbox':
-        element.checked = (v === 'true')
-        break
-
-      case 'select':
-        break
-    }
-
-    set(element, value, status)
-  }
-}
+// function update (element, value, status) {
+//   const v = value.toString()
+// 
+//   if (element) {
+//     const td = cell(element)
+//     const original = element.dataset.original
+// 
+//     element.dataset.original = v
+// 
+//     // check for conflicts with concurrently modified fields
+// 
+//     if (td && td.classList.contains('modified')) {
+//       if (original !== v.toString() && element.dataset.value !== v.toString()) {
+//         td.classList.add('conflict')
+//       } else if (element.dataset.value !== v.toString()) {
+//         td.classList.add('modified')
+//       } else {
+//         td.classList.remove('modified')
+//         td.classList.remove('conflict')
+//       }
+// 
+//       return
+//     }
+// 
+//     element.dataset.original = v
+// 
+//     // mark fields with unexpected values after submit
+// 
+//     if (td && td.classList.contains('pending')) {
+//       if (element.dataset.value !== v.toString()) {
+//         td.classList.add('conflict')
+//       } else {
+//         td.classList.remove('conflict')
+//       }
+//     }
+// 
+//     // update unmodified fields
+// 
+//     switch (element.getAttribute('type').toLowerCase()) {
+//       case 'text':
+//       case 'number':
+//       case 'date':
+//         element.value = v
+//         break
+// 
+//       case 'checkbox':
+//         element.checked = (v === 'true')
+//         break
+// 
+//       case 'select':
+//         break
+//     }
+// 
+//     set(element, value, status)
+//   }
+// }
 
 function cell (element) {
   let td = element

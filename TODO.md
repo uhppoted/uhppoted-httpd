@@ -3,11 +3,28 @@
 ### IN PROGRESS
 
 - [ ] system
-      - invalid bind address get serialized incorrectly, breaks everything
-        ```
-        2021/07/07 17:44:16 WARN  find         get-devices: Failed to write to UDP socket [write udp [::]:59442->:0: sendto: can't assign requested address]
-        ```
       - rework controllers to use OID's
+        -- updateFromDB
+           -- address
+           -- datetime
+           -- cards
+           -- events
+           -- doors
+           
+        -- onEdit::setX for all the fields
+           -- address
+           -- datetime
+           -- cards
+           -- events
+           -- doors
+        -- onEnter::setX 
+        -- onTick::setX
+        -- onCommit
+        -- onRollback
+        -- onCommitAll
+        -- onRollbackAll
+        -- onNew
+        -- send _object_ in response/refresh
 
       - marshal cards.Records as "" if StatusUnknown
       - nicer auth handling for e.g. /images
