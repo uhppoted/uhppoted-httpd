@@ -20,12 +20,12 @@ export function onEdited (tag, event) {
 
 export function onEnter (event) {
   if (event.key === 'Enter') {
-    controllers.set(event.target, event.target.value)
+    controllers.setX(event.target, event.target.value)
   }
 }
 
 export function onTick (event) {
-  controllers.set(event.target, event.target.checked)
+  controllers.setX(event.target, event.target.checked)
 }
 
 export function onCommit (tag, event) {

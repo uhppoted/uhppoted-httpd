@@ -78,13 +78,13 @@ table.interface td span.rollback {
   color: $content-table-rollback;  
 }
 
-table.modified td span.commit {
-  visibility: visible;
-}
+// table.modified td span.commit {
+//   visibility: visible;
+// }
 
-table.modified td span.rollback {
-  visibility: visible;
-}
+// table.modified td span.rollback {
+//   visibility: visible;
+// }
 
 #controls {
     background: $content-table-background-header;

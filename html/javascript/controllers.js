@@ -124,13 +124,20 @@ function unmarkX (clazz, ...elements) {
 
 function percolateX (oid) {
   let oidx = oid
-  while (oidx) {
-    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
-    oidx = match ? match[1] : null
-    if (oidx) {
-      modifiedX(oidx)
-    }
+
+  const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
+  oidx = match ? match[1] : null
+  if (oidx) {
+    modifiedX(oidx)
   }
+
+  // while (oidx) {
+  //   const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
+  //   oidx = match ? match[1] : null
+  //   if (oidx) {
+  //     modifiedX(oidx)
+  //   }
+  // }
 }
 
 function modifiedX (oid) {
@@ -338,30 +345,14 @@ export function add (oid) {
 }
 
 function revert (row) {
-  if (row) {
-    const id = row.id
-    const fields = row.querySelectorAll('.field')
+  const fields = row.querySelectorAll('.field')
 
-    fields.forEach((item) => {
-      if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
-        switch (item.getAttribute('type').toLowerCase()) {
-          case 'text':
-          case 'number':
-          case 'date':
-            item.value = item.dataset.original
-            break
+  fields.forEach((item) => {
+    item.value = item.dataset.original
+    setX(item, item.dataset.original)
+  })
 
-          case 'checkbox':
-            item.checked = item.dataset.original === 'true'
-            break
-        }
-      }
-
-      setX(item, item.dataset.original)
-    })
-
-    row.classList.remove('modified')
-  }
+  row.classList.remove('modified')
 }
 
 function deleted (row) {

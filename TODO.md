@@ -4,14 +4,13 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- onEnter::setX 
-        -- onTick::setX
-        -- onCommit
-        -- onRollback
-        -- onCommitAll
         -- onRollbackAll
+           - not showing rollback-all button
+        -- onCommit
+        -- onCommitAll
         -- onNew
         -- send _object_ in response/refresh
+        -- cleanup interim stuff e.g. rename setX et al
 
       - marshal cards.Records as "" if StatusUnknown
       - nicer auth handling for e.g. /images
@@ -38,7 +37,7 @@
       - use uhppoted-lib::healthcheck
 
 - [ ] "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'
-- [ ] [TOML](https://toml.io) files  
+- [ ] [TOML](https://toml.io) files
 
 - [ ] tabular
       - [ ] New table row submitted with error cannot be discarded
