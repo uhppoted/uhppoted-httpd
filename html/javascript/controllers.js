@@ -357,12 +357,14 @@ function revert (row) {
         }
       }
 
-      const oid = item.dataset.oid
-      if (oid && (oid.endsWith('.1') || oid.endsWith('.2'))) {
-        setX(item, item.dataset.original)
-      } else {
-        set(item, item.dataset.original)
-      }
+      setX(item, item.dataset.original)
+
+      // const oid = item.dataset.oid
+      // if (oid && (oid.endsWith('.1') || oid.endsWith('.2') || oid.endsWith('.3') || oid.endsWith('.4') || oid.endsWith('.5') || oid.endsWith('.6'))) {
+      //   setX(item, item.dataset.original)
+      // } else {
+      //   set(item, item.dataset.original)
+      // }
     })
 
     row.classList.remove('modified')
