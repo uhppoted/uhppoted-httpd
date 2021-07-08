@@ -125,7 +125,13 @@ function unmarkX (clazz, ...elements) {
 function percolateX (oid) {
   let oidx = oid
 
-  const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
+  let match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
+  oidx = match ? match[1] : null
+  if (oidx) {
+    modifiedX(oidx)
+  }
+
+  match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
   oidx = match ? match[1] : null
   if (oidx) {
     modifiedX(oidx)
@@ -141,19 +147,28 @@ function percolateX (oid) {
 }
 
 function modifiedX (oid) {
-  const container = document.querySelector(`[data-oid="${oid}"]`)
-  let changed = false
+  const element = document.querySelector(`[data-oid="${oid}"]`)
+  let count = 0
 
-  if (container) {
+  if (element) {
     const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
+    const re = /^\.[0-9]+$/
+
     list.forEach(e => {
-      changed = changed || e.classList.contains('modified')
+      if (e.classList.contains('modified')) {
+        const oidx = e.dataset.oid
+        if (oidx.startsWith(oid) && re.test(oidx.substring(oid.length))) {
+          count = count + 1
+        }
+      }
     })
 
-    if (changed) {
-      container.classList.add('modified')
+    if (count > 0) {
+      element.dataset.modified = count > 1 ? 'multiple' : 'single'
+      element.classList.add('modified')
     } else {
-      container.classList.remove('modified')
+      element.dataset.modified = null
+      element.classList.remove('modified')
     }
   }
 }

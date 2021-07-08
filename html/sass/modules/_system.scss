@@ -78,19 +78,19 @@ table.interface td span.rollback {
   color: $content-table-rollback;  
 }
 
-// table.modified td span.commit {
-//   visibility: visible;
-// }
-
-// table.modified td span.rollback {
-//   visibility: visible;
-// }
-
 #controls {
     background: $content-table-background-header;
     padding: 4px 4px 4px 4px;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
+}
+
+#controls.modified[data-modified^="multiple"] #commitall {
+   display: block;
+}
+
+#controls.modified[data-modified^="multiple"] #rollbackall {
+   display: block;
 }
 
 th.name {

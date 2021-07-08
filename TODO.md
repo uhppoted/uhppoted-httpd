@@ -4,8 +4,6 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- onRollbackAll
-           - not showing rollback-all button
         -- onCommit
         -- onCommitAll
         -- onNew
