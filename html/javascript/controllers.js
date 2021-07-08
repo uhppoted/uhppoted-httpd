@@ -358,13 +358,6 @@ function revert (row) {
       }
 
       setX(item, item.dataset.original)
-
-      // const oid = item.dataset.oid
-      // if (oid && (oid.endsWith('.1') || oid.endsWith('.2') || oid.endsWith('.3') || oid.endsWith('.4') || oid.endsWith('.5') || oid.endsWith('.6'))) {
-      //   setX(item, item.dataset.original)
-      // } else {
-      //   set(item, item.dataset.original)
-      // }
     })
 
     row.classList.remove('modified')
@@ -388,15 +381,15 @@ function deleted (row) {
 
 // function update (element, value, status) {
 //   const v = value.toString()
-// 
+//
 //   if (element) {
 //     const td = cell(element)
 //     const original = element.dataset.original
-// 
+//
 //     element.dataset.original = v
-// 
+//
 //     // check for conflicts with concurrently modified fields
-// 
+//
 //     if (td && td.classList.contains('modified')) {
 //       if (original !== v.toString() && element.dataset.value !== v.toString()) {
 //         td.classList.add('conflict')
@@ -406,14 +399,14 @@ function deleted (row) {
 //         td.classList.remove('modified')
 //         td.classList.remove('conflict')
 //       }
-// 
+//
 //       return
 //     }
-// 
+//
 //     element.dataset.original = v
-// 
+//
 //     // mark fields with unexpected values after submit
-// 
+//
 //     if (td && td.classList.contains('pending')) {
 //       if (element.dataset.value !== v.toString()) {
 //         td.classList.add('conflict')
@@ -421,24 +414,24 @@ function deleted (row) {
 //         td.classList.remove('conflict')
 //       }
 //     }
-// 
+//
 //     // update unmodified fields
-// 
+//
 //     switch (element.getAttribute('type').toLowerCase()) {
 //       case 'text':
 //       case 'number':
 //       case 'date':
 //         element.value = v
 //         break
-// 
+//
 //       case 'checkbox':
 //         element.checked = (v === 'true')
 //         break
-// 
+//
 //       case 'select':
 //         break
 //     }
-// 
+//
 //     set(element, value, status)
 //   }
 // }

@@ -12,12 +12,7 @@ export function onEdited (tag, event) {
       break
 
     case 'controllers': {
-      const oid = event.target.dataset.oid
-      if (oid && (oid.endsWith('.1') || oid.endsWith('.2'))) {
-        controllers.setX(event.target, event.target.value)
-      } else {
-        controllers.set(event.target, event.target.value)
-      }
+      controllers.setX(event.target, event.target.value)
       break
     }
   }

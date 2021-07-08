@@ -4,13 +4,6 @@
 
 - [ ] system
       - rework controllers to use OID's
-        - flags not reset correctly after _revert_
-        -- onEdit::setX for all the fields
-           -- address
-           -- datetime
-           -- cards
-           -- events
-           -- doors
         -- onEnter::setX 
         -- onTick::setX
         -- onCommit
