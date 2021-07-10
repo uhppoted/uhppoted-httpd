@@ -370,7 +370,6 @@ func (c *Controller) set(oid string, value string) (interface{}, error) {
 				OID:   c.OID + ".7",
 				Value: fmt.Sprintf("%v", c.Doors[1]),
 			}, nil
-			break
 
 		case c.OID + ".8":
 			c.Doors[2] = value
@@ -378,7 +377,6 @@ func (c *Controller) set(oid string, value string) (interface{}, error) {
 				OID:   c.OID + ".8",
 				Value: fmt.Sprintf("%v", c.Doors[2]),
 			}, nil
-			break
 
 		case c.OID + ".9":
 			c.Doors[3] = value
@@ -386,7 +384,6 @@ func (c *Controller) set(oid string, value string) (interface{}, error) {
 				OID:   c.OID + ".9",
 				Value: fmt.Sprintf("%v", c.Doors[3]),
 			}, nil
-			break
 
 		case c.OID + ".10":
 			c.Doors[4] = value
@@ -394,8 +391,9 @@ func (c *Controller) set(oid string, value string) (interface{}, error) {
 				OID:   c.OID + ".10",
 				Value: fmt.Sprintf("%v", c.Doors[4]),
 			}, nil
-			break
 		}
+
+	return nil, nil
 	}
 
 	return nil, nil
