@@ -35,7 +35,8 @@ export function onCommit (tag, event) {
       break
 
     case 'controller':
-      controllers.commit(event.target.dataset.record)
+      // controllers.commit(event.target.dataset.record)
+      controllers.commitX('controller', event.target)
       break
 
     default:
@@ -57,7 +58,7 @@ export function onCommitAll (tag, event) {
         }
       }
 
-      controllers.commit(...list)
+      // controllers.commit(...list)
     }
   }
 }

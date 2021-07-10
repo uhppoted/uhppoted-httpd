@@ -60,6 +60,7 @@ export const DB = {
 }
 
 function object (o) {
+  // ... interface property?
   DB.interfaces.forEach((v, k) => {
     if (o.OID.startsWith(k)) {
       switch (o.OID) {
@@ -77,6 +78,61 @@ function object (o) {
 
         case k + '.4':
           v.listen = o.value
+          break
+      }
+    }
+  })
+
+  // ... controller property?
+  DB.controllers.forEach((v, k) => {
+    if (o.OID.startsWith(k)) {
+      switch (o.OID) {
+        case k + '.1':
+          v.name = o.value
+          break
+
+        case k + '.2':
+          v.deviceID = o.value
+          break
+
+        case k + '.3':
+          v.address = {
+            address: o.value,
+            configured: o.value,
+            status: 'unknown'
+          }
+          break
+
+        case k + '.4':
+          v.datetime = {
+            datetime: o.value,
+            expected: o.value,
+            status: 'unknown'
+          }
+          break
+
+        case k + '.5':
+          v.cards = o.value
+          break
+
+        case k + '.6':
+          v.events = o.value
+          break
+
+        case k + '.7':
+          v.doors[1] = o.value
+          break
+
+        case k + '.8':
+          v.doors[2] = o.value
+          break
+
+        case k + '.9':
+          v.doors[3] = o.value
+          break
+
+        case k + '.10':
+          v.doors[4] = o.value
           break
       }
     }

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"regexp"
+	"strconv"
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
@@ -164,7 +166,7 @@ func (c *Controller) AsView() interface{} {
 	}
 
 	if cached, ok := cache.cache[*c.DeviceID]; ok {
-		// ... set statuss field from cached value
+		// ... set status field from cached value
 		dt := time.Now().Sub(cached.touched)
 		switch {
 		case dt < DeviceOk:
@@ -292,6 +294,111 @@ func (c *Controller) IsSaveable() bool {
 	}
 
 	return true
+}
+
+func (c *Controller) set(oid string, value string) (interface{}, error) {
+	type object struct {
+		OID   string `json:"OID"`
+		Value string `json:"value"`
+	}
+
+	if c != nil {
+		switch oid {
+		case c.OID + ".1":
+			name := types.Name(value)
+			c.Name = &name
+			return object{
+				OID:   c.OID + ".1",
+				Value: fmt.Sprintf("%v", c.Name),
+			}, nil
+
+		case c.OID + ".2":
+			if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
+				if id, err := strconv.ParseUint(value, 10, 32); err == nil {
+					uid := uint32(id)
+					c.DeviceID = &uid
+					return object{
+						OID:   c.OID + ".2",
+						Value: fmt.Sprintf("%v", uid),
+					}, nil
+				}
+			}
+
+		case c.OID + ".3":
+			if addr, err := core.ResolveAddr(value); err != nil {
+				return nil, err
+			} else {
+				c.IP = addr
+				return object{
+					OID:   c.OID + ".3",
+					Value: fmt.Sprintf("%v", c.IP),
+				}, nil
+			}
+
+		case c.OID + ".4":
+			if tz, err := types.Timezone(value); err != nil {
+				return nil, err
+			} else {
+				tzs := tz.String()
+				c.TimeZone = &tzs
+
+				if cached, ok := cache.cache[*c.DeviceID]; ok {
+					if cached.datetime != nil {
+						tz := time.Local
+						if c.TimeZone != nil {
+							if l, err := timezone(*c.TimeZone); err != nil {
+								warn(err)
+							} else {
+								tz = l
+							}
+						}
+
+						t := time.Time(*cached.datetime)
+						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+
+						return object{
+							OID:   c.OID + ".4",
+							Value: dt.Format("2006-01-02 15:04 MST"),
+						}, nil
+					}
+				}
+			}
+
+		case c.OID + ".7":
+			c.Doors[1] = value
+			return object{
+				OID:   c.OID + ".7",
+				Value: fmt.Sprintf("%v", c.Doors[1]),
+			}, nil
+			break
+
+		case c.OID + ".8":
+			c.Doors[2] = value
+			return object{
+				OID:   c.OID + ".8",
+				Value: fmt.Sprintf("%v", c.Doors[2]),
+			}, nil
+			break
+
+		case c.OID + ".9":
+			c.Doors[3] = value
+			return object{
+				OID:   c.OID + ".9",
+				Value: fmt.Sprintf("%v", c.Doors[3]),
+			}, nil
+			break
+
+		case c.OID + ".10":
+			c.Doors[4] = value
+			return object{
+				OID:   c.OID + ".10",
+				Value: fmt.Sprintf("%v", c.Doors[4]),
+			}, nil
+			break
+		}
+	}
+
+	return nil, nil
 }
 
 func (c *Controller) clone() *Controller {

@@ -4,11 +4,19 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- onCommit
         -- onCommitAll
         -- onNew
-        -- send _object_ in response/refresh
+        -- send _object_ in refresh
+           -- address
+              -- address.address (assign OID maybe ?)
+              -- address.configured
+              -- address.status
+           -- datetime
+              -- datetime.datetime
+              -- datetime.expected
+              -- datetime.status 
         -- cleanup interim stuff e.g. rename setX et al
+        -- cleanup no longer used stuff
 
       - marshal cards.Records as "" if StatusUnknown
       - nicer auth handling for e.g. /images

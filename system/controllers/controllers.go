@@ -202,6 +202,13 @@ func (cc *ControllerSet) UpdateByOID(oid string, value string) (interface{}, err
 		return cc.LAN.set(oid, value)
 	}
 
+	// ... controllers
+	for _, c := range cc.Controllers {
+		if c != nil && strings.HasPrefix(oid, c.OID) {
+			return c.set(oid, value)
+		}
+	}
+
 	return nil, nil
 }
 

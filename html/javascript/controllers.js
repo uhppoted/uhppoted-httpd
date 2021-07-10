@@ -16,17 +16,16 @@ export function updateFromDB (oid, record) {
     row = add(oid)
   }
 
-  const id = row.id
-  const name = document.getElementById(id + '-name')
-  const deviceID = document.getElementById(id + '-ID')
-  const address = document.getElementById(id + '-IP')
-  const datetime = document.getElementById(id + '-datetime')
-  const cards = document.getElementById(id + '-cards')
-  const events = document.getElementById(id + '-events')
-  const door1 = document.getElementById(id + '-door-1')
-  const door2 = document.getElementById(id + '-door-2')
-  const door3 = document.getElementById(id + '-door-3')
-  const door4 = document.getElementById(id + '-door-4')
+  const name = row.querySelector(`[data-oid="${oid}.1"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}.2"]`)
+  const address = row.querySelector(`[data-oid="${oid}.3"]`)
+  const datetime = row.querySelector(`[data-oid="${oid}.4"]`)
+  const cards = row.querySelector(`[data-oid="${oid}.5"]`)
+  const events = row.querySelector(`[data-oid="${oid}.6"]`)
+  const door1 = row.querySelector(`[data-oid="${oid}.7"]`)
+  const door2 = row.querySelector(`[data-oid="${oid}.8"]`)
+  const door3 = row.querySelector(`[data-oid="${oid}.9"]`)
+  const door4 = row.querySelector(`[data-oid="${oid}.10"]`)
 
   row.dataset.status = record.status
 
@@ -125,25 +124,13 @@ function unmarkX (clazz, ...elements) {
 function percolateX (oid) {
   let oidx = oid
 
-  let match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
-  oidx = match ? match[1] : null
-  if (oidx) {
-    modifiedX(oidx)
+  while (oidx) {
+    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
+    oidx = match ? match[1] : null
+    if (oidx) {
+      modifiedX(oidx)
+    }
   }
-
-  match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
-  oidx = match ? match[1] : null
-  if (oidx) {
-    modifiedX(oidx)
-  }
-
-  // while (oidx) {
-  //   const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
-  //   oidx = match ? match[1] : null
-  //   if (oidx) {
-  //     modifiedX(oidx)
-  //   }
-  // }
 }
 
 function modifiedX (oid) {
@@ -172,6 +159,86 @@ function modifiedX (oid) {
     }
   }
 }
+
+export function commitX (tag, element) {
+  const id = event.target.dataset.record
+  const row = document.getElementById(id)
+  const oid = row.dataset.oid
+  const list = []
+
+  const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
+  children.forEach(e => {
+    if (e.dataset.value !== e.dataset.original) {
+      list.push(e)
+    }
+  })
+
+  const records = []
+  list.forEach(e => {
+    const oid = e.dataset.oid
+    const value = e.dataset.value
+    records.push({ oid: oid, value: value })
+  })
+
+  const reset = function () {
+    list.forEach(e => {
+      const flag = document.getElementById(`F${e.dataset.oid}`)
+      unmarkX('pending', e, flag)
+      markX('modified', e, flag)
+    })
+  }
+
+  const cleanup = function () {
+    list.forEach(e => {
+      const flag = document.getElementById(`F${e.dataset.oid}`)
+      unmarkX('pending', e, flag)
+    })
+  }
+
+  list.forEach(e => {
+    const flag = document.getElementById(`F${e.dataset.oid}`)
+    markX('pending', e, flag)
+    unmarkX('modified', e, flag)
+  })
+
+  postX('objects', records, reset, cleanup)
+}
+
+function postX (tag, records, reset, cleanup) {
+  busy()
+
+  postAsJSON('/system', { [tag]: records })
+    .then(response => {
+      if (response.redirected) {
+        window.location = response.url
+      } else {
+        switch (response.status) {
+          case 200:
+            response.json().then(object => {
+              if (object && object.system && object.system.objects) {
+                DB.updated('objects', object.system.objects)
+              }
+
+              refreshed()
+            })
+            break
+
+          default:
+            reset()
+            response.text().then(message => { warning(message) })
+        }
+      }
+    })
+    .catch(function (err) {
+      reset()
+      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+    })
+    .finally(() => {
+      cleanup()
+      unbusy()
+    })
+}
+
 // ---- END OID REWORK (EXPERIMENTAL)
 
 export function set (element, value, status) {
