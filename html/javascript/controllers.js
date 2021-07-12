@@ -291,29 +291,29 @@ function postX (tag, records, reset, cleanup) {
 //   const rows = []
 //   const records = []
 //   const fields = []
-// 
+//
 //   list.forEach(id => {
 //     const row = document.getElementById(id)
 //     if (row) {
 //       const [record, f] = rowToRecord(id, row)
-// 
+//
 //       rows.push(row)
 //       records.push(record)
 //       fields.push(...f)
 //     }
 //   })
-// 
+//
 //   const reset = function () {
 //     rows.forEach(r => r.classList.add('modified'))
 //     fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
 //   }
-// 
+//
 //   rows.forEach(r => r.classList.remove('modified'))
 //   fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
 //   fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
-// 
+//
 //   post(records, reset)
-// 
+//
 //   fields.forEach(f => {
 //     apply(f, (c) => { c.classList.remove('pending') })
 //   })
@@ -328,47 +328,47 @@ export function rollback (row) {
   }
 }
 
-function post (records, reset) {
-  busy()
-
-  postAsJSON('/system', { controllers: records })
-    .then(response => {
-      if (response.redirected) {
-        window.location = response.url
-      } else {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              if (object && object.system && object.system.added) {
-                DB.added('controllers', Object.values(object.system.added))
-              }
-
-              if (object && object.system && object.system.updated) {
-                DB.updated('controllers', Object.values(object.system.updated))
-              }
-
-              if (object && object.system && object.system.deleted) {
-                DB.deleted('controllers', Object.values(object.system.deleted))
-              }
-
-              refreshed()
-            })
-            break
-
-          default:
-            reset()
-            response.text().then(message => { warning(message) })
-        }
-      }
-    })
-    .catch(function (err) {
-      reset()
-      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-    })
-    .finally(() => {
-      unbusy()
-    })
-}
+// function post (records, reset) {
+//   busy()
+//
+//   postAsJSON('/system', { controllers: records })
+//     .then(response => {
+//       if (response.redirected) {
+//         window.location = response.url
+//       } else {
+//         switch (response.status) {
+//           case 200:
+//             response.json().then(object => {
+//               if (object && object.system && object.system.added) {
+//                 DB.added('controllers', Object.values(object.system.added))
+//               }
+//
+//               if (object && object.system && object.system.updated) {
+//                 DB.updated('controllers', Object.values(object.system.updated))
+//               }
+//
+//               if (object && object.system && object.system.deleted) {
+//                 DB.deleted('controllers', Object.values(object.system.deleted))
+//               }
+//
+//               refreshed()
+//             })
+//             break
+//
+//           default:
+//             reset()
+//             response.text().then(message => { warning(message) })
+//         }
+//       }
+//     })
+//     .catch(function (err) {
+//       reset()
+//       warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+//     })
+//     .finally(() => {
+//       unbusy()
+//     })
+// }
 
 export function add (oid) {
   const uuid = rowID(oid)
@@ -509,84 +509,84 @@ function deleted (row) {
 //   }
 // }
 
-function cell (element) {
-  let td = element
+// function cell (element) {
+//   let td = element
+//
+//   for (let i = 0; i < 10; i++) {
+//     if (td.tagName.toLowerCase() === 'td') {
+//       return td
+//     }
+//
+//     td = td.parentElement
+//   }
+//
+//   return null
+// }
 
-  for (let i = 0; i < 10; i++) {
-    if (td.tagName.toLowerCase() === 'td') {
-      return td
-    }
+// function apply (element, f) {
+//   const td = cell(element)
+//
+//   if (td) {
+//     f(td)
+//   }
+// }
 
-    td = td.parentElement
-  }
-
-  return null
-}
-
-function apply (element, f) {
-  const td = cell(element)
-
-  if (td) {
-    f(td)
-  }
-}
-
-function rowToRecord (id, row) {
-  const oid = row.dataset.oid
-  const name = row.querySelector('#' + id + '-name')
-  const deviceID = row.querySelector('#' + id + '-ID')
-  const ip = row.querySelector('#' + id + '-IP')
-  const datetime = row.querySelector('#' + id + '-datetime')
-  const doors = {
-    1: row.querySelector('#' + id + '-door-1'),
-    2: row.querySelector('#' + id + '-door-2'),
-    3: row.querySelector('#' + id + '-door-3'),
-    4: row.querySelector('#' + id + '-door-4')
-  }
-
-  const record = {
-    id: id,
-    oid: oid
-  }
-
-  const fields = []
-
-  if (name && name.dataset.value !== name.dataset.original) {
-    record.name = name.value
-    fields.push(name)
-  }
-
-  if (deviceID) {
-    const v = Number(deviceID.value)
-
-    if (v > 0) {
-      record.deviceID = v
-      fields.push(deviceID)
-    }
-  }
-
-  if (ip && ip.dataset.value !== ip.dataset.original) {
-    record.ip = ip.value
-    fields.push(ip)
-  }
-
-  if (datetime && datetime.dataset.value !== datetime.dataset.original) {
-    record.datetime = datetime.value
-    fields.push(datetime)
-  }
-
-  for (const [k, door] of Object.entries(doors)) {
-    if (door && door.dataset.value !== door.dataset.original) {
-      if (!record.doors) {
-        record.doors = {}
-      }
-      record.doors[k] = door.value
-      fields.push(door)
-    }
-  }
-
-  return [record, fields]
-}
+// function rowToRecord (id, row) {
+//   const oid = row.dataset.oid
+//   const name = row.querySelector('#' + id + '-name')
+//   const deviceID = row.querySelector('#' + id + '-ID')
+//   const ip = row.querySelector('#' + id + '-IP')
+//   const datetime = row.querySelector('#' + id + '-datetime')
+//   const doors = {
+//     1: row.querySelector('#' + id + '-door-1'),
+//     2: row.querySelector('#' + id + '-door-2'),
+//     3: row.querySelector('#' + id + '-door-3'),
+//     4: row.querySelector('#' + id + '-door-4')
+//   }
+//
+//   const record = {
+//     id: id,
+//     oid: oid
+//   }
+//
+//   const fields = []
+//
+//   if (name && name.dataset.value !== name.dataset.original) {
+//     record.name = name.value
+//     fields.push(name)
+//   }
+//
+//   if (deviceID) {
+//     const v = Number(deviceID.value)
+//
+//     if (v > 0) {
+//       record.deviceID = v
+//       fields.push(deviceID)
+//     }
+//   }
+//
+//   if (ip && ip.dataset.value !== ip.dataset.original) {
+//     record.ip = ip.value
+//     fields.push(ip)
+//   }
+//
+//   if (datetime && datetime.dataset.value !== datetime.dataset.original) {
+//     record.datetime = datetime.value
+//     fields.push(datetime)
+//   }
+//
+//   for (const [k, door] of Object.entries(doors)) {
+//     if (door && door.dataset.value !== door.dataset.original) {
+//       if (!record.doors) {
+//         record.doors = {}
+//       }
+//       record.doors[k] = door.value
+//       fields.push(door)
+//     }
+//   }
+//
+//   return [record, fields]
+// }
 
 function rowID (oid) {
   return 'R' + oid.replaceAll(/[^0-9]/g, '')
