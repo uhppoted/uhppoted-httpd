@@ -58,8 +58,8 @@ export function rollback (tag, element) {
   section.classList.remove('modified')
 }
 
-export function commit (tag, element) {
-  const section = document.getElementById(tag)
+export function commit (element) {
+  const section = document.getElementById('interface')
   const oid = section.dataset.oid
   const list = []
 

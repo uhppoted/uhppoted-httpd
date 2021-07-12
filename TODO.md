@@ -4,7 +4,6 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- onCommitAll
         -- onNew
         -- send _object_ in refresh
            -- address

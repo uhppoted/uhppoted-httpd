@@ -160,17 +160,17 @@ function modifiedX (oid) {
   }
 }
 
-export function commitX (tag, element) {
-  const id = event.target.dataset.record
-  const row = document.getElementById(id)
-  const oid = row.dataset.oid
+export function commitX (...rows) {
   const list = []
 
-  const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
-  children.forEach(e => {
-    if (e.dataset.value !== e.dataset.original) {
-      list.push(e)
-    }
+  rows.forEach(row => {
+    const oid = row.dataset.oid
+    const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
+    children.forEach(e => {
+      if (e.dataset.value !== e.dataset.original) {
+        list.push(e)
+      }
+    })
   })
 
   const records = []
@@ -241,83 +241,83 @@ function postX (tag, records, reset, cleanup) {
 
 // ---- END OID REWORK (EXPERIMENTAL)
 
-export function set (element, value, status) {
-  const div = 'controllers'
-  const tbody = document.getElementById(div).querySelector('table tbody')
-  const rowid = element.dataset.record
-  const row = document.getElementById(rowid)
-  const original = element.dataset.original
-  const v = value.toString()
+// export function set (element, value, status) {
+//   const div = 'controllers'
+//   const tbody = document.getElementById(div).querySelector('table tbody')
+//   const rowid = element.dataset.record
+//   const row = document.getElementById(rowid)
+//   const original = element.dataset.original
+//   const v = value.toString()
+//
+//   element.dataset.value = v
+//
+//   if (status !== undefined && element.dataset.original !== undefined) {
+//     element.dataset.status = status
+//   }
+//
+//   if (v !== original) {
+//     apply(element, (c) => { c.classList.add('modified') })
+//   } else {
+//     apply(element, (c) => { c.classList.remove('modified') })
+//   }
+//
+//   if (row) {
+//     const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
+//     if (unmodified) {
+//       row.classList.remove('modified')
+//     } else {
+//       row.classList.add('modified')
+//     }
+//   }
+//
+//   if (tbody) {
+//     const rows = tbody.rows
+//     const commitall = document.getElementById('commitall')
+//     const rollbackall = document.getElementById('rollbackall')
+//     let count = 0
+//
+//     for (let i = 0; i < rows.length; i++) {
+//       if (rows[i].classList.contains('modified') || rows[i].classList.contains('new')) {
+//         count++
+//       }
+//     }
+//
+//     commitall.style.display = count > 1 ? 'block' : 'none'
+//     rollbackall.style.display = count > 1 ? 'block' : 'none'
+//   }
+// }
 
-  element.dataset.value = v
-
-  if (status !== undefined && element.dataset.original !== undefined) {
-    element.dataset.status = status
-  }
-
-  if (v !== original) {
-    apply(element, (c) => { c.classList.add('modified') })
-  } else {
-    apply(element, (c) => { c.classList.remove('modified') })
-  }
-
-  if (row) {
-    const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
-    if (unmodified) {
-      row.classList.remove('modified')
-    } else {
-      row.classList.add('modified')
-    }
-  }
-
-  if (tbody) {
-    const rows = tbody.rows
-    const commitall = document.getElementById('commitall')
-    const rollbackall = document.getElementById('rollbackall')
-    let count = 0
-
-    for (let i = 0; i < rows.length; i++) {
-      if (rows[i].classList.contains('modified') || rows[i].classList.contains('new')) {
-        count++
-      }
-    }
-
-    commitall.style.display = count > 1 ? 'block' : 'none'
-    rollbackall.style.display = count > 1 ? 'block' : 'none'
-  }
-}
-
-export function commit (...list) {
-  const rows = []
-  const records = []
-  const fields = []
-
-  list.forEach(id => {
-    const row = document.getElementById(id)
-    if (row) {
-      const [record, f] = rowToRecord(id, row)
-
-      rows.push(row)
-      records.push(record)
-      fields.push(...f)
-    }
-  })
-
-  const reset = function () {
-    rows.forEach(r => r.classList.add('modified'))
-    fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
-  }
-
-  rows.forEach(r => r.classList.remove('modified'))
-  fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
-  fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
-
-  post(records, reset)
-
-  fields.forEach(f => {
-    apply(f, (c) => { c.classList.remove('pending') })
-  })
-}
+// export function commit (...list) {
+//   const rows = []
+//   const records = []
+//   const fields = []
+// 
+//   list.forEach(id => {
+//     const row = document.getElementById(id)
+//     if (row) {
+//       const [record, f] = rowToRecord(id, row)
+// 
+//       rows.push(row)
+//       records.push(record)
+//       fields.push(...f)
+//     }
+//   })
+// 
+//   const reset = function () {
+//     rows.forEach(r => r.classList.add('modified'))
+//     fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
+//   }
+// 
+//   rows.forEach(r => r.classList.remove('modified'))
+//   fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
+//   fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
+// 
+//   post(records, reset)
+// 
+//   fields.forEach(f => {
+//     apply(f, (c) => { c.classList.remove('pending') })
+//   })
+// }
 
 export function rollback (row) {
   if (row && row.classList.contains('new')) {

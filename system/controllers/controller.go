@@ -393,7 +393,7 @@ func (c *Controller) set(oid string, value string) (interface{}, error) {
 			}, nil
 		}
 
-	return nil, nil
+		return nil, nil
 	}
 
 	return nil, nil

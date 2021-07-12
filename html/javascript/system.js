@@ -31,12 +31,15 @@ export function onTick (event) {
 export function onCommit (tag, event) {
   switch (tag) {
     case 'interface':
-      LAN.commit('interface', event.target)
+      LAN.commit(event.target)
       break
 
-    case 'controller':
-      // controllers.commit(event.target.dataset.record)
-      controllers.commitX('controller', event.target)
+    case 'controller': {
+      const id = event.target.dataset.record
+      const row = document.getElementById(id)
+
+      controllers.commitX(row)
+    }
       break
 
     default:
@@ -54,11 +57,11 @@ export function onCommitAll (tag, event) {
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i]
         if (row.classList.contains('modified') || row.classList.contains('new')) {
-          list.push(row.id)
+          list.push(row)
         }
       }
 
-      // controllers.commit(...list)
+      controllers.commitX(...list)
     }
   }
 }
