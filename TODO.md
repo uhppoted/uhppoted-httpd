@@ -5,6 +5,9 @@
 - [ ] system
       - rework controllers to use OID's
         -- onNew
+           - CSS for 'new'
+        -- onDelete
+        -- operation authorisation
         -- send _object_ in refresh
            -- address
               -- address.address (assign OID maybe ?)

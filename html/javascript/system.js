@@ -1,6 +1,6 @@
 /* global */
 
-import { getAsJSON, postAsJSON, dismiss, warning } from './uhppoted.js'
+import { getAsJSON, dismiss, warning } from './uhppoted.js'
 import * as controllers from './controllers.js'
 import * as LAN from './interface.js'
 import { DB } from './db.js'
@@ -97,11 +97,12 @@ export function onRollbackAll (tag, event) {
 }
 
 export function onNew (event) {
-  const record = { id: 'U' + uuidv4() }
-  const records = [record]
-  const reset = function () {}
-
-  post(records, reset)
+  controllers.onNew()
+  // const record = { id: 'U' + uuidv4() }
+  // const records = [record]
+  // const reset = function () {}
+//
+  // post(records, reset)
 }
 
 export function onRefresh (event) {
@@ -141,47 +142,47 @@ export function onRefresh (event) {
     })
 }
 
-function post (records, reset) {
-  busy()
-
-  postAsJSON('/system', { controllers: records })
-    .then(response => {
-      if (response.redirected) {
-        window.location = response.url
-      } else {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              if (object && object.system && object.system.added) {
-                DB.added('controllers', Object.values(object.system.added))
-              }
-
-              if (object && object.system && object.system.updated) {
-                DB.updated('controllers', Object.values(object.system.updated))
-              }
-
-              if (object && object.system && object.system.deleted) {
-                DB.deleted('controllers', Object.values(object.system.deleted))
-              }
-
-              refreshed()
-            })
-            break
-
-          default:
-            reset()
-            response.text().then(message => { warning(message) })
-        }
-      }
-    })
-    .catch(function (err) {
-      reset()
-      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-    })
-    .finally(() => {
-      unbusy()
-    })
-}
+// function post (records, reset) {
+//   busy()
+//
+//   postAsJSON('/system', { controllers: records })
+//     .then(response => {
+//       if (response.redirected) {
+//         window.location = response.url
+//       } else {
+//         switch (response.status) {
+//           case 200:
+//             response.json().then(object => {
+//               if (object && object.system && object.system.added) {
+//                 DB.added('controllers', Object.values(object.system.added))
+//               }
+//
+//               if (object && object.system && object.system.updated) {
+//                 DB.updated('controllers', Object.values(object.system.updated))
+//               }
+//
+//               if (object && object.system && object.system.deleted) {
+//                 DB.deleted('controllers', Object.values(object.system.deleted))
+//               }
+//
+//               refreshed()
+//             })
+//             break
+//
+//           default:
+//             reset()
+//             response.text().then(message => { warning(message) })
+//         }
+//       }
+//     })
+//     .catch(function (err) {
+//       reset()
+//       warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+//     })
+//     .finally(() => {
+//       unbusy()
+//     })
+// }
 
 export function refreshed () {
   const interfaces = DB.interfaces
@@ -226,9 +227,9 @@ export function unbusy () {
   }
 }
 
-// Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
-function uuidv4 () {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  )
-}
+// // Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
+// function uuidv4 () {
+//   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+//     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+//   )
+// }

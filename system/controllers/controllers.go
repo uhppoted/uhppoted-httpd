@@ -209,6 +209,24 @@ func (cc *ControllerSet) UpdateByOID(oid string, value string) (interface{}, err
 		}
 	}
 
+	if oid == "<new>" {
+		if c, err := cc.Add(Controller{}); err != nil {
+			return nil, err
+		} else if c == nil {
+			return nil, fmt.Errorf("Failed to add 'new' controller")
+		} else {
+			type object struct {
+				OID   string `json:"OID"`
+				Value string `json:"value"`
+			}
+
+			return object{
+				OID:   c.OID,
+				Value: "{}",
+			}, nil
+		}
+	}
+
 	return nil, nil
 }
 

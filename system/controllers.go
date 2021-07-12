@@ -73,20 +73,20 @@ loop:
 			continue loop
 		}
 
-		// ... update controller?
-		for _, v := range shadow.Controllers {
-			if v.OID == c.OID {
-				if r, err := sys.update(shadow, c, auth); err != nil {
-					return nil, err
-				} else if r != nil {
-					if view := r.AsView(); view != nil {
-						list.Updated = append(list.Updated, view)
-					}
-				}
-
-				continue loop
-			}
-		}
+		// // ... update controller?
+		// for _, v := range shadow.Controllers {
+		// 	if v.OID == c.OID {
+		// 		if r, err := sys.update(shadow, c, auth); err != nil {
+		// 			return nil, err
+		// 		} else if r != nil {
+		// 			if view := r.AsView(); view != nil {
+		// 				list.Updated = append(list.Updated, view)
+		// 			}
+		// 		}
+		//
+		// 		continue loop
+		// 	}
+		// }
 
 		// ... add controller
 		if r, err := sys.add(shadow, c, auth); err != nil {

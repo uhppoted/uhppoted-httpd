@@ -46,6 +46,22 @@ export function updateFromDB (oid, record) {
   return row
 }
 
+export function onNew () {
+  // const record = { id: 'U' + uuidv4() }
+  // const records = [record]
+  // const reset = function () {}
+  //
+  // post(records, reset)
+
+  const records = [{ oid: '<new>', value: '' }]
+  const reset = function () {}
+  const cleanup = function () {}
+
+  postX('objects', records, reset, cleanup)
+
+  // DB.added('controllers', Object.values(object.system.added))
+}
+
 // ---- OID REWORK (EXPERIMENTAL)
 export function setX (element, value, status) {
   const oid = element.dataset.oid
@@ -215,6 +231,7 @@ function postX (tag, records, reset, cleanup) {
         switch (response.status) {
           case 200:
             response.json().then(object => {
+              console.log('postX', object)
               if (object && object.system && object.system.objects) {
                 DB.updated('objects', object.system.objects)
               }
@@ -339,6 +356,7 @@ export function rollback (row) {
 //         switch (response.status) {
 //           case 200:
 //             response.json().then(object => {
+//               console.log('post', object)
 //               if (object && object.system && object.system.added) {
 //                 DB.added('controllers', Object.values(object.system.added))
 //               }
@@ -591,3 +609,10 @@ function deleted (row) {
 function rowID (oid) {
   return 'R' + oid.replaceAll(/[^0-9]/g, '')
 }
+
+// // Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
+// function uuidv4 () {
+//   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+//     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+//   )
+// }

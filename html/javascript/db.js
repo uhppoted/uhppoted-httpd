@@ -60,7 +60,9 @@ export const DB = {
 }
 
 function object (o) {
-  // ... interface property?
+  console.log('DB.object', o)
+
+  // ... update interface property?
   DB.interfaces.forEach((v, k) => {
     if (o.OID.startsWith(k)) {
       switch (o.OID) {
@@ -83,7 +85,7 @@ function object (o) {
     }
   })
 
-  // ... controller property?
+  // ... update controller property?
   DB.controllers.forEach((v, k) => {
     if (o.OID.startsWith(k)) {
       switch (o.OID) {
@@ -135,6 +137,18 @@ function object (o) {
           v.doors[4] = o.value
           break
       }
+    }
+  })
+
+  // ... add controller ?
+  DB.controllers.forEach((v, k) => {
+    if (o.OID.startsWith(k)) {
+      return
+    }
+
+    if (/^0\.1\.1\.[0-9]+$/.test(o.OID)) {
+      console.log('>>>> new controller', o.OID)
+      controller({ OID: o.OID }, 'unknown')
     }
   })
 }
@@ -230,7 +244,7 @@ function controller (c, status) {
     record.deviceID = c.DeviceID
   }
 
-  if (c.IP.Address) {
+  if (c.IP && c.IP.Address) {
     record.address.address = c.IP.Address
     record.address.configured = c.IP.Configured
     record.address.status = statusToString(c.IP.Status)
