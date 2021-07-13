@@ -31,7 +31,7 @@ $content-table-background-header:   darken($solarize-base2, 5%)    !default;
 $content-table-background-odd:      $solarize-base3                !default;
 $content-table-background-even:     $solarize-base2                !default;
 $content-table-row-modified:        lighten($solarize-yellow, 50%) !default;
-$content-table-row-new:             lighten($solarize-orange, 45%) !default;
+$content-table-row-new:             lighten($solarize-blue, 30%)   !default;
 $content-table-row-unconfigured:    $solarize-yellow               !default;
 $content-table-background-pending:  transparentize($solarize-violet, 0.5);
 $content-table-item-conflict:       transparentize($solarize-orange, 0.75);

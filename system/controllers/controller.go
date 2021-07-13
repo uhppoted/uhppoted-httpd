@@ -296,7 +296,7 @@ func (c *Controller) IsSaveable() bool {
 	return true
 }
 
-func (c *Controller) set(oid string, value string) (interface{}, error) {
+func (c *Controller) set(oid string, value string) ([]interface{}, error) {
 	type object struct {
 		OID   string `json:"OID"`
 		Value string `json:"value"`
@@ -307,20 +307,20 @@ func (c *Controller) set(oid string, value string) (interface{}, error) {
 		case c.OID + ".1":
 			name := types.Name(value)
 			c.Name = &name
-			return object{
+			return []interface{}{object{
 				OID:   c.OID + ".1",
 				Value: fmt.Sprintf("%v", c.Name),
-			}, nil
+			}}, nil
 
 		case c.OID + ".2":
 			if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 				if id, err := strconv.ParseUint(value, 10, 32); err == nil {
 					uid := uint32(id)
 					c.DeviceID = &uid
-					return object{
+					return []interface{}{object{
 						OID:   c.OID + ".2",
 						Value: fmt.Sprintf("%v", uid),
-					}, nil
+					}}, nil
 				}
 			}
 
@@ -329,10 +329,10 @@ func (c *Controller) set(oid string, value string) (interface{}, error) {
 				return nil, err
 			} else {
 				c.IP = addr
-				return object{
+				return []interface{}{object{
 					OID:   c.OID + ".3",
 					Value: fmt.Sprintf("%v", c.IP),
-				}, nil
+				}}, nil
 			}
 
 		case c.OID + ".4":
@@ -356,41 +356,41 @@ func (c *Controller) set(oid string, value string) (interface{}, error) {
 						t := time.Time(*cached.datetime)
 						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 
-						return object{
+						return []interface{}{object{
 							OID:   c.OID + ".4",
 							Value: dt.Format("2006-01-02 15:04 MST"),
-						}, nil
+						}}, nil
 					}
 				}
 			}
 
 		case c.OID + ".7":
 			c.Doors[1] = value
-			return object{
+			return []interface{}{object{
 				OID:   c.OID + ".7",
 				Value: fmt.Sprintf("%v", c.Doors[1]),
-			}, nil
+			}}, nil
 
 		case c.OID + ".8":
 			c.Doors[2] = value
-			return object{
+			return []interface{}{object{
 				OID:   c.OID + ".8",
 				Value: fmt.Sprintf("%v", c.Doors[2]),
-			}, nil
+			}}, nil
 
 		case c.OID + ".9":
 			c.Doors[3] = value
-			return object{
+			return []interface{}{object{
 				OID:   c.OID + ".9",
 				Value: fmt.Sprintf("%v", c.Doors[3]),
-			}, nil
+			}}, nil
 
 		case c.OID + ".10":
 			c.Doors[4] = value
-			return object{
+			return []interface{}{object{
 				OID:   c.OID + ".10",
 				Value: fmt.Sprintf("%v", c.Doors[4]),
-			}, nil
+			}}, nil
 		}
 
 		return nil, nil

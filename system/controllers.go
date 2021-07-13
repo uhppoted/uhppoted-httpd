@@ -46,10 +46,10 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 	// Update objects
 	for _, object := range objects {
-		if view, err := shadow.UpdateByOID(object.OID, object.Value); err != nil {
+		if views, err := shadow.UpdateByOID(object.OID, object.Value); err != nil {
 			return nil, err
-		} else if view != nil {
-			list.Objects = append(list.Objects, view)
+		} else if views != nil {
+			list.Objects = append(list.Objects, views...)
 		}
 	}
 

@@ -192,7 +192,7 @@ func (cc *ControllerSet) Add(c Controller) (*Controller, error) {
 	return record, nil
 }
 
-func (cc *ControllerSet) UpdateByOID(oid string, value string) (interface{}, error) {
+func (cc *ControllerSet) UpdateByOID(oid string, value string) ([]interface{}, error) {
 	if cc == nil {
 		return nil, nil
 	}
@@ -220,10 +220,10 @@ func (cc *ControllerSet) UpdateByOID(oid string, value string) (interface{}, err
 				Value string `json:"value"`
 			}
 
-			return object{
+			return []interface{}{object{
 				OID:   c.OID,
 				Value: "{}",
-			}, nil
+			}}, nil
 		}
 	}
 

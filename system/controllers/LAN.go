@@ -68,7 +68,7 @@ func (l *LAN) clone() *LAN {
 	return nil
 }
 
-func (l *LAN) set(oid string, value string) (interface{}, error) {
+func (l *LAN) set(oid string, value string) ([]interface{}, error) {
 	type object struct {
 		OID   string `json:"OID"`
 		Value string `json:"value"`
@@ -78,20 +78,20 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 		switch oid {
 		case l.OID + ".1":
 			l.Name = value
-			return object{
+			return []interface{}{object{
 				OID:   l.OID + ".1",
 				Value: l.Name,
-			}, nil
+			}}, nil
 
 		case l.OID + ".2":
 			if addr, err := core.ResolveBindAddr(value); err != nil {
 				return nil, err
 			} else {
 				l.BindAddress = *addr
-				return object{
+				return []interface{}{object{
 					OID:   l.OID + ".2",
 					Value: fmt.Sprintf("%v", l.BindAddress),
-				}, nil
+				}}, nil
 			}
 
 		case l.OID + ".3":
@@ -99,10 +99,10 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 				return nil, err
 			} else {
 				l.BroadcastAddress = *addr
-				return object{
+				return []interface{}{object{
 					OID:   l.OID + ".3",
 					Value: fmt.Sprintf("%v", l.BroadcastAddress),
-				}, nil
+				}}, nil
 			}
 
 		case l.OID + ".4":
@@ -110,10 +110,10 @@ func (l *LAN) set(oid string, value string) (interface{}, error) {
 				return nil, err
 			} else {
 				l.ListenAddress = *addr
-				return object{
+				return []interface{}{object{
 					OID:   l.OID + ".4",
 					Value: fmt.Sprintf("%v", l.ListenAddress),
-				}, nil
+				}}, nil
 			}
 		}
 	}

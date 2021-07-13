@@ -4,13 +4,14 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- onNew
-           - CSS for 'new'
         -- onDelete
         -- operation authorisation
         -- send _object_ in refresh
+           -- assign sub OID to e.g. status, expected, etc ?
+           -- controller
+              -- status
            -- address
-              -- address.address (assign OID maybe ?)
+              -- address.address
               -- address.configured
               -- address.status
            -- datetime

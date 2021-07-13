@@ -60,8 +60,6 @@ export const DB = {
 }
 
 function object (o) {
-  console.log('DB.object', o)
-
   // ... update interface property?
   DB.interfaces.forEach((v, k) => {
     if (o.OID.startsWith(k)) {
@@ -88,6 +86,11 @@ function object (o) {
   // ... update controller property?
   DB.controllers.forEach((v, k) => {
     if (o.OID.startsWith(k)) {
+      // INTERIM HACK
+      if (v.status === 'new') {
+        v.status = 'unknown'
+      }
+
       switch (o.OID) {
         case k + '.1':
           v.name = o.value
@@ -147,8 +150,8 @@ function object (o) {
     }
 
     if (/^0\.1\.1\.[0-9]+$/.test(o.OID)) {
-      console.log('>>>> new controller', o.OID)
-      controller({ OID: o.OID }, 'unknown')
+      console.log('DB/NEW')
+      controller({ OID: o.OID }, 'new')
     }
   })
 }

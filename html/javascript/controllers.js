@@ -47,19 +47,11 @@ export function updateFromDB (oid, record) {
 }
 
 export function onNew () {
-  // const record = { id: 'U' + uuidv4() }
-  // const records = [record]
-  // const reset = function () {}
-  //
-  // post(records, reset)
-
   const records = [{ oid: '<new>', value: '' }]
   const reset = function () {}
   const cleanup = function () {}
 
   postX('objects', records, reset, cleanup)
-
-  // DB.added('controllers', Object.values(object.system.added))
 }
 
 // ---- OID REWORK (EXPERIMENTAL)
@@ -77,7 +69,7 @@ export function setX (element, value, status) {
     unmarkX('modified', element, flag)
   }
 
-  percolateX(oid)
+  percolateX(oid, modifiedX)
 }
 
 function updateX (element, value, status) {
@@ -100,7 +92,7 @@ function updateX (element, value, status) {
         unmarkX('modified', element, flag)
       }
 
-      percolateX(oid)
+      percolateX(oid, modifiedX)
       return
     }
 
@@ -137,14 +129,14 @@ function unmarkX (clazz, ...elements) {
   })
 }
 
-function percolateX (oid) {
+function percolateX (oid, f) {
   let oidx = oid
 
   while (oidx) {
     const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
     oidx = match ? match[1] : null
     if (oidx) {
-      modifiedX(oidx)
+      f(oidx)
     }
   }
 }
@@ -231,7 +223,6 @@ function postX (tag, records, reset, cleanup) {
         switch (response.status) {
           case 200:
             response.json().then(object => {
-              console.log('postX', object)
               if (object && object.system && object.system.objects) {
                 DB.updated('objects', object.system.objects)
               }
@@ -609,10 +600,3 @@ function deleted (row) {
 function rowID (oid) {
   return 'R' + oid.replaceAll(/[^0-9]/g, '')
 }
-
-// // Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
-// function uuidv4 () {
-//   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-//     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-//   )
-// }
