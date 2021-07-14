@@ -197,7 +197,6 @@ export function refreshed () {
     if (row) {
       switch (c.status) {
         case 'new':
-          console.log('>>>>>>>>>>>>>>>>>>> refreshed/NEW')
           row.classList.add('new')
           break
 

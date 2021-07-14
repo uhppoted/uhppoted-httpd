@@ -2,14 +2,15 @@ export const DB = {
   interfaces: new Map(),
   controllers: new Map(),
 
-  added: function (tag, recordset) {
-    if (recordset) {
-      switch (tag) {
-        case 'controllers':
-          recordset.forEach(r => controller(r, statusToString(r.Status)))
-          break
-      }
-    }
+  added: function (objects) {
+    objects.forEach(o => add(o))
+    // if (recordset) {
+    //   switch (tag) {
+    //     case 'controllers':
+    //       recordset.forEach(r => controller(r, statusToString(r.Status)))
+    //       break
+    //   }
+    // }
   },
 
   updated: function (tag, recordset) {
@@ -143,17 +144,60 @@ function object (o) {
     }
   })
 
-  // ... add controller ?
-  DB.controllers.forEach((v, k) => {
-    if (o.OID.startsWith(k)) {
-      return
-    }
+  // // ... add controller ?
+  // DB.controllers.forEach((v, k) => {
+  //   if (o.OID.startsWith(k)) {
+  //     return
+  //   }
 
-    if (/^0\.1\.1\.[0-9]+$/.test(o.OID)) {
-      console.log('DB/NEW')
-      controller({ OID: o.OID }, 'new')
-    }
-  })
+  //   if (/^0\.1\.1\.[0-9]+$/.test(o.OID)) {
+  //     controller({ OID: o.OID }, 'new')
+  //   }
+  // })
+}
+
+function add (object) {
+  const oid = object.OID
+
+  const controller = {
+    OID: oid,
+    name: '',
+    deviceID: '',
+
+    address: {
+      address: '',
+      configured: '',
+      status: 'unknown'
+    },
+
+    datetime: {
+      datetime: '',
+      expected: '',
+      status: 'unknown'
+    },
+
+    cards: {
+      cards: '',
+      status: 'unknown'
+    },
+
+    events: {
+      events: '',
+      status: 'unknown'
+    },
+
+    doors: {
+      1: '',
+      2: '',
+      3: '',
+      4: ''
+    },
+
+    status: 'new',
+    mark: 0
+  }
+
+  DB.controllers.set(oid, controller)
 }
 
 function iface (c) {

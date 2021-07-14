@@ -46,10 +46,16 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 	// Update objects
 	for _, object := range objects {
-		if views, err := shadow.UpdateByOID(object.OID, object.Value); err != nil {
+		if updated, added, err := shadow.UpdateByOID(object.OID, object.Value); err != nil {
 			return nil, err
-		} else if views != nil {
-			list.Objects = append(list.Objects, views...)
+		} else {
+			if updated != nil {
+				list.Objects = append(list.Objects, updated...)
+			}
+
+			if added != nil {
+				list.Added = append(list.Added, added...)
+			}
 		}
 	}
 
@@ -88,14 +94,14 @@ loop:
 		// 	}
 		// }
 
-		// ... add controller
-		if r, err := sys.add(shadow, c, auth); err != nil {
-			return nil, err
-		} else if r != nil {
-			if view := r.AsView(); view != nil {
-				list.Added = append(list.Added, view)
-			}
-		}
+		//		// ... add controller
+		//		if r, err := sys.add(shadow, c, auth); err != nil {
+		//			return nil, err
+		//		} else if r != nil {
+		//			if view := r.AsView(); view != nil {
+		//				list.Added = append(list.Added, view)
+		//			}
+		//		}
 	}
 
 	if err := save(shadow); err != nil {

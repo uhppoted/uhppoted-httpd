@@ -192,9 +192,9 @@ func (cc *ControllerSet) Add(c Controller) (*Controller, error) {
 	return record, nil
 }
 
-func (cc *ControllerSet) UpdateByOID(oid string, value string) ([]interface{}, error) {
+func (cc *ControllerSet) UpdateByOID(oid string, value string) ([]interface{}, []interface{}, error) {
 	if cc == nil {
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	// ... interface
@@ -209,25 +209,28 @@ func (cc *ControllerSet) UpdateByOID(oid string, value string) ([]interface{}, e
 		}
 	}
 
+	updated := []interface{}{}
+	added := []interface{}{}
+
 	if oid == "<new>" {
 		if c, err := cc.Add(Controller{}); err != nil {
-			return nil, err
+			return nil, nil, err
 		} else if c == nil {
-			return nil, fmt.Errorf("Failed to add 'new' controller")
+			return nil, nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
 			type object struct {
 				OID   string `json:"OID"`
 				Value string `json:"value"`
 			}
 
-			return []interface{}{object{
+			added = append(added, object{
 				OID:   c.OID,
 				Value: "{}",
-			}}, nil
+			})
 		}
 	}
 
-	return nil, nil
+	return updated, added, nil
 }
 
 func (cc *ControllerSet) Update(c Controller) (*Controller, error) {
