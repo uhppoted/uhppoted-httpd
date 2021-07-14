@@ -4,9 +4,10 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- onDelete
         -- new controller not being persisted
         -- operation authorisation
+        -- update catalog on controller added/deleted
+        -- update LAN on controller added/deleted
         -- send _object_ in refresh
            -- assign sub OID to e.g. status, expected, etc ?
            -- controller

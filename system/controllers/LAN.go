@@ -68,7 +68,7 @@ func (l *LAN) clone() *LAN {
 	return nil
 }
 
-func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, error) {
+func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, []interface{}, error) {
 	type object struct {
 		OID   string `json:"OID"`
 		Value string `json:"value"`
@@ -76,6 +76,7 @@ func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, error
 
 	updated := []interface{}{}
 	added := []interface{}{}
+	deleted := []interface{}{}
 
 	if l != nil {
 		switch oid {
@@ -88,7 +89,7 @@ func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, error
 
 		case l.OID + ".2":
 			if addr, err := core.ResolveBindAddr(value); err != nil {
-				return nil, nil, err
+				return nil, nil, nil, err
 			} else {
 				l.BindAddress = *addr
 				updated = append(updated, object{
@@ -99,7 +100,7 @@ func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, error
 
 		case l.OID + ".3":
 			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
-				return nil, nil, err
+				return nil, nil, nil, err
 			} else {
 				l.BroadcastAddress = *addr
 				updated = append(updated, object{
@@ -110,7 +111,7 @@ func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, error
 
 		case l.OID + ".4":
 			if addr, err := core.ResolveListenAddr(value); err != nil {
-				return nil, nil, err
+				return nil, nil, nil, err
 			} else {
 				l.ListenAddress = *addr
 				updated = append(updated, object{
@@ -121,7 +122,7 @@ func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, error
 		}
 	}
 
-	return updated, added, nil
+	return updated, added, deleted, nil
 }
 
 func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {

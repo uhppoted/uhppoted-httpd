@@ -26,7 +26,8 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 	// add/update ?
 
-	objects, clist, err := unpack(m)
+	//objects, clist, err := unpack(m)
+	objects, _, err := unpack(m)
 	if err != nil {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
@@ -46,9 +47,13 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 	// Update objects
 	for _, object := range objects {
-		if updated, added, err := shadow.UpdateByOID(object.OID, object.Value); err != nil {
+		if updated, added, deleted, err := shadow.UpdateByOID(object.OID, object.Value); err != nil {
 			return nil, err
 		} else {
+			fmt.Printf("  >> UPDATED: %v\n", updated)
+			fmt.Printf("  >> ADDED:   %v\n", added)
+			fmt.Printf("  >> DELETED: %v\n", deleted)
+
 			if updated != nil {
 				list.Objects = append(list.Objects, updated...)
 			}
@@ -56,53 +61,57 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 			if added != nil {
 				list.Added = append(list.Added, added...)
 			}
+
+			if deleted != nil {
+				list.Deleted = append(list.Deleted, deleted...)
+			}
 		}
 	}
 
 	// Add/update/delete controllers
-loop:
-	for _, c := range clist {
-		// ... delete?
-		if c.OID != "" && (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
-			for _, v := range shadow.Controllers {
-				if v.OID == c.OID {
-					if r, err := sys.delete(shadow, c, auth); err != nil {
-						return nil, err
-					} else if r != nil {
-						if view := r.AsView(); view != nil {
-							list.Deleted = append(list.Deleted, view)
-						}
-					}
-				}
-			}
+	//loop:
+	//for _, c := range clist {
+	//		// ... delete?
+	//		if c.OID != "" && (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+	//			for _, v := range shadow.Controllers {
+	//				if v.OID == c.OID {
+	//					if r, err := sys.delete(shadow, c, auth); err != nil {
+	//						return nil, err
+	//					} else if r != nil {
+	//						if view := r.AsView(); view != nil {
+	//							list.Deleted = append(list.Deleted, view)
+	//						}
+	//					}
+	//				}
+	//			}
+	//
+	//			continue loop
+	//		}
 
-			continue loop
-		}
+	// // ... update controller?
+	// for _, v := range shadow.Controllers {
+	// 	if v.OID == c.OID {
+	// 		if r, err := sys.update(shadow, c, auth); err != nil {
+	// 			return nil, err
+	// 		} else if r != nil {
+	// 			if view := r.AsView(); view != nil {
+	// 				list.Updated = append(list.Updated, view)
+	// 			}
+	// 		}
+	//
+	// 		continue loop
+	// 	}
+	// }
 
-		// // ... update controller?
-		// for _, v := range shadow.Controllers {
-		// 	if v.OID == c.OID {
-		// 		if r, err := sys.update(shadow, c, auth); err != nil {
-		// 			return nil, err
-		// 		} else if r != nil {
-		// 			if view := r.AsView(); view != nil {
-		// 				list.Updated = append(list.Updated, view)
-		// 			}
-		// 		}
-		//
-		// 		continue loop
-		// 	}
-		// }
-
-		//		// ... add controller
-		//		if r, err := sys.add(shadow, c, auth); err != nil {
-		//			return nil, err
-		//		} else if r != nil {
-		//			if view := r.AsView(); view != nil {
-		//				list.Added = append(list.Added, view)
-		//			}
-		//		}
-	}
+	//		// ... add controller
+	//		if r, err := sys.add(shadow, c, auth); err != nil {
+	//			return nil, err
+	//		} else if r != nil {
+	//			if view := r.AsView(); view != nil {
+	//				list.Added = append(list.Added, view)
+	//			}
+	//		}
+	//}
 
 	if err := save(shadow); err != nil {
 		return nil, err

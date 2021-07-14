@@ -296,7 +296,7 @@ func (c *Controller) IsSaveable() bool {
 	return true
 }
 
-func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}, error) {
+func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}, []interface{}, error) {
 	type object struct {
 		OID   string `json:"OID"`
 		Value string `json:"value"`
@@ -304,6 +304,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 
 	updated := []interface{}{}
 	added := []interface{}{}
+	deleted := []interface{}{}
 
 	if c != nil {
 		switch oid {
@@ -325,11 +326,17 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 						Value: fmt.Sprintf("%v", uid),
 					})
 				}
+			} else if value == "" {
+				c.DeviceID = nil
+				updated = append(updated, object{
+					OID:   c.OID + ".2",
+					Value: "",
+				})
 			}
 
 		case c.OID + ".3":
 			if addr, err := core.ResolveAddr(value); err != nil {
-				return nil, nil, err
+				return nil, nil, nil, err
 			} else {
 				c.IP = addr
 				updated = append(updated, object{
@@ -340,7 +347,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 
 		case c.OID + ".4":
 			if tz, err := types.Timezone(value); err != nil {
-				return nil, nil, err
+				return nil, nil, nil, err
 			} else {
 				tzs := tz.String()
 				c.TimeZone = &tzs
@@ -395,9 +402,19 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 				Value: fmt.Sprintf("%v", c.Doors[4]),
 			})
 		}
+
+		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+			now := time.Now()
+			c.deleted = &now
+
+			deleted = append(deleted, object{
+				OID:   c.OID,
+				Value: "",
+			})
+		}
 	}
 
-	return updated, added, nil
+	return updated, added, deleted, nil
 }
 
 func (c *Controller) clone() *Controller {

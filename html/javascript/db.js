@@ -31,14 +31,15 @@ export const DB = {
     }
   },
 
-  deleted: function (tag, recordset) {
-    if (recordset) {
-      switch (tag) {
-        case 'controllers':
-          recordset.forEach(r => controller(r, 'deleted'))
-          break
-      }
-    }
+  deleted: function (objects) {
+    objects.forEach(o => remove(o))
+    // if (recordset) {
+    //   switch (tag) {
+    //     case 'controllers':
+    //       recordset.forEach(r => controller(r, 'deleted'))
+    //       break
+    //   }
+    // }
   },
 
   delete: function (tag, oid) {
@@ -198,6 +199,16 @@ function add (object) {
   }
 
   DB.controllers.set(oid, controller)
+}
+
+function remove (object) {
+  const oid = object.OID
+
+  DB.controllers.forEach((v, k) => {
+    if (oid === k) {
+      v.status = 'deleted'
+    }
+  })
 }
 
 function iface (c) {
