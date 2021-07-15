@@ -323,6 +323,27 @@ func (cc *ControllerSet) AsView() interface{} {
 	}
 }
 
+func (cc *ControllerSet) AsObjects() []interface{} {
+	objects := []interface{}{}
+	lan := cc.LAN.AsObjects()
+
+	objects = append(objects, lan...)
+
+	for _, c := range cc.Controllers {
+		if c.IsValid() {
+			if record := c.AsObjects(); record != nil {
+				objects = append(objects, record...)
+			}
+		}
+	}
+
+	//	sort.SliceStable(list, func(i, j int) bool {
+	//		return list[i].(sortable).Created().Before(list[j].(sortable).Created())
+	//	})
+
+	return objects
+}
+
 func (cc *ControllerSet) Refresh() {
 	cc.LAN.refresh(cc.Controllers)
 

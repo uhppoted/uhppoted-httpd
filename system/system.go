@@ -103,7 +103,8 @@ func System() interface{} {
 
 	defer sys.RUnlock()
 
-	controllers := sys.controllers.AsView()
+	objects := sys.controllers.AsObjects()
+	//	controllers := sys.controllers.AsView()
 
 	doors := []types.Door{}
 	for _, v := range sys.doors.Doors {
@@ -113,11 +114,13 @@ func System() interface{} {
 	sort.SliceStable(doors, func(i, j int) bool { return doors[i].Name < doors[j].Name })
 
 	return struct {
-		Controllers []interface{} `json:"controllers"`
-		Doors       []types.Door  `json:"doors"`
+		Objects []interface{} `json:"objects"`
+		//		Controllers []interface{} `json:"controllers"`
+		Doors []types.Door `json:"doors"`
 	}{
-		Controllers: []interface{}{controllers},
-		Doors:       doors,
+		Objects: objects,
+		//		Controllers: []interface{}{controllers},
+		Doors: doors,
 	}
 }
 

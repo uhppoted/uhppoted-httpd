@@ -62,10 +62,30 @@ export const DB = {
 }
 
 function object (o) {
-  // ... update interface property?
+  const oid = o.OID
+
+  // ... interfaces
+  if (oid === '0.1.1.0') {
+    if (!DB.interfaces.has(oid)) {
+      DB.interfaces.set(oid, {
+        OID: oid,
+        type: o.value,
+        name: 'LAN',
+        bind: '',
+        broadcast: '',
+        listen: '',
+
+        status: 'ok',
+        mark: 0
+      })
+
+      return
+    }
+  }
+
   DB.interfaces.forEach((v, k) => {
-    if (o.OID.startsWith(k)) {
-      switch (o.OID) {
+    if (oid.startsWith(k)) {
+      switch (oid) {
         case k + '.1':
           v.name = o.value
           break
@@ -86,14 +106,34 @@ function object (o) {
   })
 
   // ... update controller property?
+
+  if (/^0\.1\.1\.[1-9][0-9]*$/.test(oid)) {
+    if (!DB.controllers.has(oid)) {
+      DB.controllers.set(oid, {
+        OID: oid,
+        name: '',
+        deviceID: '',
+        address: { address: '', configured: '', status: 'unknown' },
+        datetime: { datetime: '', expected: '', status: 'unknown' },
+        cards: { cards: '', status: 'unknown' },
+        events: { events: '', status: 'unknown' },
+        doors: { 1: '', 2: '', 3: '', 4: '' },
+        status: status,
+        mark: 0
+      })
+
+      return
+    }
+  }
+
   DB.controllers.forEach((v, k) => {
-    if (o.OID.startsWith(k)) {
+    if (oid.startsWith(k)) {
       // INTERIM HACK
       if (v.status === 'new') {
         v.status = 'unknown'
       }
 
-      switch (o.OID) {
+      switch (oid) {
         case k + '.1':
           v.name = o.value
           break
@@ -119,11 +159,11 @@ function object (o) {
           break
 
         case k + '.5':
-          v.cards = o.value
+          v.cards.cards = o.value
           break
 
         case k + '.6':
-          v.events = o.value
+          v.events.events = o.value
           break
 
         case k + '.7':
@@ -144,17 +184,6 @@ function object (o) {
       }
     }
   })
-
-  // // ... add controller ?
-  // DB.controllers.forEach((v, k) => {
-  //   if (o.OID.startsWith(k)) {
-  //     return
-  //   }
-
-  //   if (/^0\.1\.1\.[0-9]+$/.test(o.OID)) {
-  //     controller({ OID: o.OID }, 'new')
-  //   }
-  // })
 }
 
 function add (object) {

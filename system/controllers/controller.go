@@ -236,6 +236,113 @@ func (c *Controller) AsView() interface{} {
 	return &v
 }
 
+func (c *Controller) AsObjects() []interface{} {
+	type object struct {
+		OID   string `json:"OID"`
+		Value string `json:"value"`
+	}
+
+	name := ""
+	deviceID := ""
+	address := ""
+	datetime := ""
+	cards := ""
+	events := ""
+	doors := map[uint8]string{1: "", 2: "", 3: "", 4: ""}
+
+	if c.Name != nil {
+		name = fmt.Sprintf("%v", *c.Name)
+	}
+
+	if c.DeviceID != nil && *c.DeviceID != 0 {
+		deviceID = fmt.Sprintf("%v", *c.DeviceID)
+	}
+
+	for _, i := range []uint8{1, 2, 3, 4} {
+		if d, ok := c.Doors[i]; ok {
+			doors[i] = d
+		}
+	}
+
+	if cached, ok := cache.cache[*c.DeviceID]; ok {
+		// ... set IP address field from cached value
+		if cached.address != nil {
+			address = fmt.Sprintf("%v", cached.address)
+			//	v.IP.Address = &(*cached.address)
+			//
+			//	switch {
+			//	case c.IP == nil:
+			//	    v.IP.Status = StatusUnknown
+			//
+			//	case cached.address.Equal(c.IP):
+			//		v.IP.Status = StatusOk
+			//
+			//	default:
+			//		v.IP.Status = StatusError
+			//	}
+		}
+
+		// ... set system date/time field from cached value
+		if cached.datetime != nil {
+			tz := time.Local
+			if c.TimeZone != nil {
+				if l, err := timezone(*c.TimeZone); err != nil {
+					warn(err)
+				} else {
+					tz = l
+				}
+			}
+
+			//			now := types.DateTime(time.Now().In(tz))
+			t := time.Time(*cached.datetime)
+			T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+			//			delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+			//
+			//			if delta > WINDOW {
+			//				v.SystemTime.Status = StatusError
+			//			} else {
+			//				v.SystemTime.Status = StatusOk
+			//			}
+			//
+
+			dt := types.DateTime(T)
+			datetime = fmt.Sprintf("%v", &dt)
+			//			v.SystemTime.DateTime = &dt
+			//			v.SystemTime.Expected = &now
+		}
+
+		// ... set ACL field from cached value
+		if cached.cards != nil {
+			cards = fmt.Sprintf("%d", *cached.cards)
+			//			v.Cards.Records = records(*cached.cards)
+			//			if cached.acl == StatusUnknown {
+			//				v.Cards.Status = StatusUncertain
+			//			} else {
+			//				v.Cards.Status = cached.acl
+			//			}
+		}
+
+		// ... set events field from cached value
+		events = fmt.Sprintf("%v", (*records)(cached.events))
+	}
+
+	objects := []interface{}{
+		object{OID: c.OID, Value: "controller"},
+		object{OID: c.OID + ".1", Value: name},
+		object{OID: c.OID + ".2", Value: deviceID},
+		object{OID: c.OID + ".3", Value: address},
+		object{OID: c.OID + ".4", Value: datetime},
+		object{OID: c.OID + ".5", Value: cards},
+		object{OID: c.OID + ".6", Value: events},
+		object{OID: c.OID + ".7", Value: doors[1]},
+		object{OID: c.OID + ".8", Value: doors[2]},
+		object{OID: c.OID + ".9", Value: doors[3]},
+		object{OID: c.OID + ".10", Value: doors[4]},
+	}
+
+	return objects
+}
+
 func (c *Controller) AsRuleEntity() interface{} {
 	type entity struct {
 		Name     string

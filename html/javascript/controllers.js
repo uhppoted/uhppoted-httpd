@@ -73,7 +73,7 @@ export function setX (element, value, status) {
 }
 
 function updateX (element, value, status) {
-  if (element) {
+  if (element && value) {
     const v = value.toString()
     const oid = element.dataset.oid
     const flag = document.getElementById(`F${oid}`)

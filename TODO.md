@@ -4,11 +4,10 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- new controller not being persisted
-        -- operation authorisation
-        -- update catalog on controller added/deleted
-        -- update LAN on controller added/deleted
+        -- make `object` a common type
         -- send _object_ in refresh
+           -- sort controllers by `created`
+           -- move _add_ and _delete_ back into update('objects',...)
            -- assign sub OID to e.g. status, expected, etc ?
            -- controller
               -- status
@@ -17,12 +16,21 @@
               -- address.configured
               -- address.status
            -- datetime
+              -- PDT invalid timezone ???
+              -- timezone
               -- datetime.datetime
               -- datetime.expected
               -- datetime.status 
+
+        -- new controller not being persisted
+        -- add/update/delete operation authorisation
+        -- add/update/delete operation logging
+        -- update catalog on controller added/deleted
+        -- update LAN on controller added/deleted
         -- cleanup interim stuff e.g. rename setX et al
         -- cleanup no longer used stuff
 
+      - signout page "doesn't have permission" ????
       - marshal cards.Records as "" if StatusUnknown
       - nicer auth handling for e.g. /images
         -- auth.Local should return err only if not .*

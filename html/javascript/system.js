@@ -96,13 +96,10 @@ export function onRollbackAll (tag, event) {
   }
 }
 
-export function onNew (event) {
-  controllers.onNew()
-  // const record = { id: 'U' + uuidv4() }
-  // const records = [record]
-  // const reset = function () {}
-//
-  // post(records, reset)
+export function onNew (tag, event) {
+  if (tag === 'controller') {
+    controllers.onNew()
+  }
 }
 
 export function onRefresh (event) {
@@ -121,12 +118,16 @@ export function onRefresh (event) {
         switch (response.status) {
           case 200:
             response.json().then(object => {
-              if (object && object.system && object.system.controllers) {
-                object.system.controllers.forEach(l => {
-                  DB.updated('interface', l.interface)
-                  DB.updated('controllers', Object.values(l.controllers))
-                })
+              if (object && object.system && object.system.objects) {
+                DB.updated('objects', object.system.objects)
               }
+
+              // if (object && object.system && object.system.controllers) {
+              //   object.system.controllers.forEach(l => {
+              //     DB.updated('interface', l.interface)
+              //     DB.updated('controllers', Object.values(l.controllers))
+              //   })
+              // }
 
               refreshed()
             })

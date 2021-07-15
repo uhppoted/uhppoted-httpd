@@ -104,7 +104,7 @@
                 <button class="dismiss" onclick="dismiss()">&#9746;</button>
               </div>
             </div>
-            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew()" />
+            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('controller')" />
             <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh(event)" />
           </div>
 
@@ -308,7 +308,7 @@
 
     resetIdle()
     onRefresh()
-    // setInterval(onRefresh, 15000)
+    setInterval(onRefresh, 15000)
   </script>
 
   <!-- global information initialised by Go template -->

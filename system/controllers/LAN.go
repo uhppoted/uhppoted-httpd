@@ -51,6 +51,23 @@ var cache = deviceCache{
 	cache: map[uint32]device{},
 }
 
+func (l *LAN) AsObjects() []interface{} {
+	type object struct {
+		OID   string `json:"OID"`
+		Value string `json:"value"`
+	}
+
+	objects := []interface{}{
+		object{OID: l.OID, Value: "LAN"},
+		object{OID: l.OID + ".1", Value: l.Name},
+		object{OID: l.OID + ".2", Value: fmt.Sprintf("%v", l.BindAddress)},
+		object{OID: l.OID + ".3", Value: fmt.Sprintf("%v", l.BroadcastAddress)},
+		object{OID: l.OID + ".4", Value: fmt.Sprintf("%v", l.ListenAddress)},
+	}
+
+	return objects
+}
+
 func (l *LAN) clone() *LAN {
 	if l != nil {
 		lan := LAN{
