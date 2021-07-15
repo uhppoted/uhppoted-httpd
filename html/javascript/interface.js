@@ -1,8 +1,6 @@
 /* global */
 
-import { postAsJSON, warning } from './uhppoted.js'
-import { refreshed, busy, unbusy } from './system.js'
-import { DB } from './db.js'
+import * as system from './system.js'
 
 export function updateFromDB (oid, record) {
   const section = document.querySelector(`[data-oid="${oid}"]`)
@@ -98,7 +96,7 @@ export function commit (element) {
     unmark('modified', e, flag)
   })
 
-  post('objects', records, reset, cleanup)
+  system.post('objects', records, reset, cleanup)
 }
 
 function modified (oid) {
@@ -117,41 +115,6 @@ function modified (oid) {
       container.classList.remove('modified')
     }
   }
-}
-
-function post (tag, records, reset, cleanup) {
-  busy()
-
-  postAsJSON('/system', { [tag]: records })
-    .then(response => {
-      if (response.redirected) {
-        window.location = response.url
-      } else {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              if (object && object.system && object.system.objects) {
-                DB.updated('objects', object.system.objects)
-              }
-
-              refreshed()
-            })
-            break
-
-          default:
-            reset()
-            response.text().then(message => { warning(message) })
-        }
-      }
-    })
-    .catch(function (err) {
-      reset()
-      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-    })
-    .finally(() => {
-      cleanup()
-      unbusy()
-    })
 }
 
 function update (element, value, status) {

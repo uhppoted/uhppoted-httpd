@@ -78,6 +78,10 @@ table.interface td span.rollback {
   color: $content-table-rollback;  
 }
 
+table.interface.modified td span.control {
+  visibility: visible;
+}
+
 #controls {
     background: $content-table-background-header;
     padding: 4px 4px 4px 4px;

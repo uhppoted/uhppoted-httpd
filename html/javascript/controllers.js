@@ -1,7 +1,6 @@
 // /* global */
 
-import { postAsJSON, warning } from './uhppoted.js'
-import { refreshed, busy, unbusy } from './system.js'
+import * as system from './system.js'
 import { DB } from './db.js'
 
 export function updateFromDB (oid, record) {
@@ -29,16 +28,16 @@ export function updateFromDB (oid, record) {
 
   row.dataset.status = record.status
 
-  updateX(name, record.name)
-  updateX(deviceID, record.deviceID)
-  updateX(address, record.address.address, record.address.status)
-  updateX(datetime, record.datetime.datetime, record.datetime.status)
-  updateX(cards, record.cards.cards, record.cards.status)
-  updateX(events, record.events.events)
-  updateX(door1, record.doors[1])
-  updateX(door2, record.doors[2])
-  updateX(door3, record.doors[3])
-  updateX(door4, record.doors[4])
+  update(name, record.name)
+  update(deviceID, record.deviceID)
+  update(address, record.address.address, record.address.status)
+  update(datetime, record.datetime.datetime, record.datetime.status)
+  update(cards, record.cards.cards, record.cards.status)
+  update(events, record.events.events)
+  update(door1, record.doors[1])
+  update(door2, record.doors[2])
+  update(door3, record.doors[3])
+  update(door4, record.doors[4])
 
   address.dataset.original = record.address.configured
   datetime.dataset.original = record.datetime.expected
@@ -51,11 +50,10 @@ export function onNew () {
   const reset = function () {}
   const cleanup = function () {}
 
-  postX('objects', records, reset, cleanup)
+  system.post('objects', records, reset, cleanup)
 }
 
-// ---- OID REWORK (EXPERIMENTAL)
-export function setX (element, value, status) {
+export function set (element, value, status) {
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
@@ -64,15 +62,15 @@ export function setX (element, value, status) {
   element.dataset.value = v
 
   if (v !== original) {
-    markX('modified', element, flag)
+    mark('modified', element, flag)
   } else {
-    unmarkX('modified', element, flag)
+    unmark('modified', element, flag)
   }
 
-  percolateX(oid, modifiedX)
+  percolate(oid, modifiedX)
 }
 
-function updateX (element, value, status) {
+function update (element, value, status) {
   if (element && value) {
     const v = value.toString()
     const oid = element.dataset.oid
@@ -84,24 +82,24 @@ function updateX (element, value, status) {
     // check for conflicts with concurrently edited fields
     if (element.classList.contains('modified')) {
       if (previous !== v && element.dataset.value !== v) {
-        markX('conflict', element, flag)
+        mark('conflict', element, flag)
       } else if (element.dataset.value !== v) {
-        unmarkX('conflict', element, flag)
+        unmark('conflict', element, flag)
       } else {
-        unmarkX('conflict', element, flag)
-        unmarkX('modified', element, flag)
+        unmark('conflict', element, flag)
+        unmark('modified', element, flag)
       }
 
-      percolateX(oid, modifiedX)
+      percolate(oid, modifiedX)
       return
     }
 
     // check for conflicts with concurrently submitted fields
     if (element.classList.contains('pending')) {
       if (previous !== v && element.dataset.value !== v) {
-        markX('conflict', element, flag)
+        mark('conflict', element, flag)
       } else {
-        unmarkX('conflict', element, flag)
+        unmark('conflict', element, flag)
       }
 
       return
@@ -109,35 +107,7 @@ function updateX (element, value, status) {
 
     // update fields not pending or modified
     element.value = v
-    setX(element, value)
-  }
-}
-
-function markX (clazz, ...elements) {
-  elements.forEach(e => {
-    if (e) {
-      e.classList.add(clazz)
-    }
-  })
-}
-
-function unmarkX (clazz, ...elements) {
-  elements.forEach(e => {
-    if (e) {
-      e.classList.remove(clazz)
-    }
-  })
-}
-
-function percolateX (oid, f) {
-  let oidx = oid
-
-  while (oidx) {
-    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
-    oidx = match ? match[1] : null
-    if (oidx) {
-      f(oidx)
-    }
+    set(element, value)
   }
 }
 
@@ -168,7 +138,16 @@ function modifiedX (oid) {
   }
 }
 
-export function commitX (...rows) {
+export function rollback (row) {
+  if (row && row.classList.contains('new')) {
+    DB.delete('controllers', row.dataset.oid)
+    system.refreshed()
+  } else {
+    revert(row)
+  }
+}
+
+export function commit (...rows) {
   const list = []
 
   rows.forEach(row => {
@@ -191,201 +170,26 @@ export function commitX (...rows) {
   const reset = function () {
     list.forEach(e => {
       const flag = document.getElementById(`F${e.dataset.oid}`)
-      unmarkX('pending', e, flag)
-      markX('modified', e, flag)
+      unmark('pending', e, flag)
+      mark('modified', e, flag)
     })
   }
 
   const cleanup = function () {
     list.forEach(e => {
       const flag = document.getElementById(`F${e.dataset.oid}`)
-      unmarkX('pending', e, flag)
+      unmark('pending', e, flag)
     })
   }
 
   list.forEach(e => {
     const flag = document.getElementById(`F${e.dataset.oid}`)
-    markX('pending', e, flag)
-    unmarkX('modified', e, flag)
+    mark('pending', e, flag)
+    unmark('modified', e, flag)
   })
 
-  postX('objects', records, reset, cleanup)
+  system.post('objects', records, reset, cleanup)
 }
-
-function postX (tag, records, reset, cleanup) {
-  busy()
-
-  postAsJSON('/system', { [tag]: records })
-    .then(response => {
-      if (response.redirected) {
-        window.location = response.url
-      } else {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              if (object && object.system && object.system.objects) {
-                DB.updated('objects', object.system.objects)
-              }
-
-              if (object && object.system && object.system.added) {
-                DB.added(object.system.added)
-              }
-
-              if (object && object.system && object.system.deleted) {
-                DB.deleted(object.system.deleted)
-              }
-
-              refreshed()
-            })
-            break
-
-          default:
-            reset()
-            response.text().then(message => { warning(message) })
-        }
-      }
-    })
-    .catch(function (err) {
-      reset()
-      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-    })
-    .finally(() => {
-      cleanup()
-      unbusy()
-    })
-}
-
-// ---- END OID REWORK (EXPERIMENTAL)
-
-// export function set (element, value, status) {
-//   const div = 'controllers'
-//   const tbody = document.getElementById(div).querySelector('table tbody')
-//   const rowid = element.dataset.record
-//   const row = document.getElementById(rowid)
-//   const original = element.dataset.original
-//   const v = value.toString()
-//
-//   element.dataset.value = v
-//
-//   if (status !== undefined && element.dataset.original !== undefined) {
-//     element.dataset.status = status
-//   }
-//
-//   if (v !== original) {
-//     apply(element, (c) => { c.classList.add('modified') })
-//   } else {
-//     apply(element, (c) => { c.classList.remove('modified') })
-//   }
-//
-//   if (row) {
-//     const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
-//     if (unmodified) {
-//       row.classList.remove('modified')
-//     } else {
-//       row.classList.add('modified')
-//     }
-//   }
-//
-//   if (tbody) {
-//     const rows = tbody.rows
-//     const commitall = document.getElementById('commitall')
-//     const rollbackall = document.getElementById('rollbackall')
-//     let count = 0
-//
-//     for (let i = 0; i < rows.length; i++) {
-//       if (rows[i].classList.contains('modified') || rows[i].classList.contains('new')) {
-//         count++
-//       }
-//     }
-//
-//     commitall.style.display = count > 1 ? 'block' : 'none'
-//     rollbackall.style.display = count > 1 ? 'block' : 'none'
-//   }
-// }
-
-// export function commit (...list) {
-//   const rows = []
-//   const records = []
-//   const fields = []
-//
-//   list.forEach(id => {
-//     const row = document.getElementById(id)
-//     if (row) {
-//       const [record, f] = rowToRecord(id, row)
-//
-//       rows.push(row)
-//       records.push(record)
-//       fields.push(...f)
-//     }
-//   })
-//
-//   const reset = function () {
-//     rows.forEach(r => r.classList.add('modified'))
-//     fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
-//   }
-//
-//   rows.forEach(r => r.classList.remove('modified'))
-//   fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
-//   fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
-//
-//   post(records, reset)
-//
-//   fields.forEach(f => {
-//     apply(f, (c) => { c.classList.remove('pending') })
-//   })
-// }
-
-export function rollback (row) {
-  if (row && row.classList.contains('new')) {
-    DB.delete('controllers', row.dataset.oid)
-    refreshed()
-  } else {
-    revert(row)
-  }
-}
-
-// function post (records, reset) {
-//   busy()
-//
-//   postAsJSON('/system', { controllers: records })
-//     .then(response => {
-//       if (response.redirected) {
-//         window.location = response.url
-//       } else {
-//         switch (response.status) {
-//           case 200:
-//             response.json().then(object => {
-//               console.log('post', object)
-//               if (object && object.system && object.system.added) {
-//                 DB.added('controllers', Object.values(object.system.added))
-//               }
-//
-//               if (object && object.system && object.system.updated) {
-//                 DB.updated('controllers', Object.values(object.system.updated))
-//               }
-//
-//               if (object && object.system && object.system.deleted) {
-//                 DB.deleted('controllers', Object.values(object.system.deleted))
-//               }
-//
-//               refreshed()
-//             })
-//             break
-//
-//           default:
-//             reset()
-//             response.text().then(message => { warning(message) })
-//         }
-//       }
-//     })
-//     .catch(function (err) {
-//       reset()
-//       warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-//     })
-//     .finally(() => {
-//       unbusy()
-//     })
-// }
 
 export function add (oid) {
   const uuid = rowID(oid)
@@ -448,7 +252,7 @@ function revert (row) {
 
   fields.forEach((item) => {
     item.value = item.dataset.original
-    setX(item, item.dataset.original)
+    set(item, item.dataset.original)
   })
 
   row.classList.remove('modified')
@@ -469,141 +273,33 @@ function deleted (row) {
   }
 }
 
-// function update (element, value, status) {
-//   const v = value.toString()
-//
-//   if (element) {
-//     const td = cell(element)
-//     const original = element.dataset.original
-//
-//     element.dataset.original = v
-//
-//     // check for conflicts with concurrently modified fields
-//
-//     if (td && td.classList.contains('modified')) {
-//       if (original !== v.toString() && element.dataset.value !== v.toString()) {
-//         td.classList.add('conflict')
-//       } else if (element.dataset.value !== v.toString()) {
-//         td.classList.add('modified')
-//       } else {
-//         td.classList.remove('modified')
-//         td.classList.remove('conflict')
-//       }
-//
-//       return
-//     }
-//
-//     element.dataset.original = v
-//
-//     // mark fields with unexpected values after submit
-//
-//     if (td && td.classList.contains('pending')) {
-//       if (element.dataset.value !== v.toString()) {
-//         td.classList.add('conflict')
-//       } else {
-//         td.classList.remove('conflict')
-//       }
-//     }
-//
-//     // update unmodified fields
-//
-//     switch (element.getAttribute('type').toLowerCase()) {
-//       case 'text':
-//       case 'number':
-//       case 'date':
-//         element.value = v
-//         break
-//
-//       case 'checkbox':
-//         element.checked = (v === 'true')
-//         break
-//
-//       case 'select':
-//         break
-//     }
-//
-//     set(element, value, status)
-//   }
-// }
+function mark (clazz, ...elements) {
+  elements.forEach(e => {
+    if (e) {
+      e.classList.add(clazz)
+    }
+  })
+}
 
-// function cell (element) {
-//   let td = element
-//
-//   for (let i = 0; i < 10; i++) {
-//     if (td.tagName.toLowerCase() === 'td') {
-//       return td
-//     }
-//
-//     td = td.parentElement
-//   }
-//
-//   return null
-// }
+function unmark (clazz, ...elements) {
+  elements.forEach(e => {
+    if (e) {
+      e.classList.remove(clazz)
+    }
+  })
+}
 
-// function apply (element, f) {
-//   const td = cell(element)
-//
-//   if (td) {
-//     f(td)
-//   }
-// }
+function percolate (oid, f) {
+  let oidx = oid
 
-// function rowToRecord (id, row) {
-//   const oid = row.dataset.oid
-//   const name = row.querySelector('#' + id + '-name')
-//   const deviceID = row.querySelector('#' + id + '-ID')
-//   const ip = row.querySelector('#' + id + '-IP')
-//   const datetime = row.querySelector('#' + id + '-datetime')
-//   const doors = {
-//     1: row.querySelector('#' + id + '-door-1'),
-//     2: row.querySelector('#' + id + '-door-2'),
-//     3: row.querySelector('#' + id + '-door-3'),
-//     4: row.querySelector('#' + id + '-door-4')
-//   }
-//
-//   const record = {
-//     id: id,
-//     oid: oid
-//   }
-//
-//   const fields = []
-//
-//   if (name && name.dataset.value !== name.dataset.original) {
-//     record.name = name.value
-//     fields.push(name)
-//   }
-//
-//   if (deviceID) {
-//     const v = Number(deviceID.value)
-//
-//     if (v > 0) {
-//       record.deviceID = v
-//       fields.push(deviceID)
-//     }
-//   }
-//
-//   if (ip && ip.dataset.value !== ip.dataset.original) {
-//     record.ip = ip.value
-//     fields.push(ip)
-//   }
-//
-//   if (datetime && datetime.dataset.value !== datetime.dataset.original) {
-//     record.datetime = datetime.value
-//     fields.push(datetime)
-//   }
-//
-//   for (const [k, door] of Object.entries(doors)) {
-//     if (door && door.dataset.value !== door.dataset.original) {
-//       if (!record.doors) {
-//         record.doors = {}
-//       }
-//       record.doors[k] = door.value
-//       fields.push(door)
-//     }
-//   }
-//
-//   return [record, fields]
-// }
+  while (oidx) {
+    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
+    oidx = match ? match[1] : null
+    if (oidx) {
+      f(oidx)
+    }
+  }
+}
 
 function rowID (oid) {
   return 'R' + oid.replaceAll(/[^0-9]/g, '')
