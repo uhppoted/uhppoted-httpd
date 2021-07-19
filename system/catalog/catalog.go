@@ -5,6 +5,11 @@ import (
 	"sync"
 )
 
+type Object struct {
+	OID   string `json:"OID"`
+	Value string `json:"value"`
+}
+
 var catalog = struct {
 	interfaces  map[string]struct{}
 	controllers map[string]record

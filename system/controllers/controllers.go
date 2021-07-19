@@ -32,6 +32,8 @@ type sortable interface {
 	Created() time.Time
 }
 
+type object catalog.Object
+
 var guard sync.Mutex
 
 func NewControllerSet() ControllerSet {
@@ -219,11 +221,6 @@ func (cc *ControllerSet) UpdateByOID(oid string, value string) ([]interface{}, [
 		} else if c == nil {
 			return nil, nil, nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
-			type object struct {
-				OID   string `json:"OID"`
-				Value string `json:"value"`
-			}
-
 			added = append(added, object{
 				OID:   c.OID,
 				Value: "{}",

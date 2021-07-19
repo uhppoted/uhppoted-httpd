@@ -52,11 +52,6 @@ var cache = deviceCache{
 }
 
 func (l *LAN) AsObjects() []interface{} {
-	type object struct {
-		OID   string `json:"OID"`
-		Value string `json:"value"`
-	}
-
 	objects := []interface{}{
 		object{OID: l.OID, Value: "LAN"},
 		object{OID: l.OID + ".1", Value: l.Name},
@@ -86,11 +81,6 @@ func (l *LAN) clone() *LAN {
 }
 
 func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, []interface{}, error) {
-	type object struct {
-		OID   string `json:"OID"`
-		Value string `json:"value"`
-	}
-
 	updated := []interface{}{}
 	added := []interface{}{}
 	deleted := []interface{}{}

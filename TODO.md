@@ -4,7 +4,6 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- make `object` a common type
         -- send _object_ in refresh
            -- sort controllers by `created`
            -- move _add_ and _delete_ back into update('objects',...)
@@ -22,7 +21,7 @@
               -- datetime.expected
               -- datetime.status 
 
-        -- new controller not being persisted
+        -- (?) new controller not being persisted
         -- add/update/delete operation authorisation
         -- add/update/delete operation logging
         -- update catalog on controller added/deleted

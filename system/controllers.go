@@ -14,10 +14,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type object struct {
-	OID   string `json:"OID"`
-	Value string `json:"value"`
-}
+type object catalog.Object
 
 func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()

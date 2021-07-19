@@ -237,11 +237,6 @@ func (c *Controller) AsView() interface{} {
 }
 
 func (c *Controller) AsObjects() []interface{} {
-	type object struct {
-		OID   string `json:"OID"`
-		Value string `json:"value"`
-	}
-
 	name := ""
 	deviceID := ""
 	address := ""
@@ -404,11 +399,6 @@ func (c *Controller) IsSaveable() bool {
 }
 
 func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}, []interface{}, error) {
-	type object struct {
-		OID   string `json:"OID"`
-		Value string `json:"value"`
-	}
-
 	updated := []interface{}{}
 	added := []interface{}{}
 	deleted := []interface{}{}
