@@ -205,14 +205,29 @@ export function post (tag, records, reset, cleanup) {
 }
 
 export function refreshed () {
-  const interfaces = DB.interfaces
-  const boards = DB.controllers
+  const list = []
 
-  interfaces.forEach(c => {
+  DB.controllers.forEach(c => {
+    list.push(c)
+  })
+
+  list.sort((p, q) => {
+    if (p.created < q.created) {
+      return -1
+    }
+
+    if (p.created < q.created) {
+      return +1
+    }
+
+    return 0
+  })
+
+  DB.interfaces.forEach(c => {
     LAN.updateFromDB(c.OID, c)
   })
 
-  boards.forEach(c => {
+  list.forEach(c => {
     const row = controllers.updateFromDB(c.OID, c)
     if (row) {
       switch (c.status) {

@@ -237,6 +237,7 @@ func (c *Controller) AsView() interface{} {
 }
 
 func (c *Controller) AsObjects() []interface{} {
+	created := c.created.Format("2006-01-02 15:04:05")
 	name := ""
 	deviceID := ""
 	address := ""
@@ -259,70 +260,73 @@ func (c *Controller) AsObjects() []interface{} {
 		}
 	}
 
-	if cached, ok := cache.cache[*c.DeviceID]; ok {
-		// ... set IP address field from cached value
-		if cached.address != nil {
-			address = fmt.Sprintf("%v", cached.address)
-			//	v.IP.Address = &(*cached.address)
-			//
-			//	switch {
-			//	case c.IP == nil:
-			//	    v.IP.Status = StatusUnknown
-			//
-			//	case cached.address.Equal(c.IP):
-			//		v.IP.Status = StatusOk
-			//
-			//	default:
-			//		v.IP.Status = StatusError
-			//	}
-		}
-
-		// ... set system date/time field from cached value
-		if cached.datetime != nil {
-			tz := time.Local
-			if c.TimeZone != nil {
-				if l, err := timezone(*c.TimeZone); err != nil {
-					warn(err)
-				} else {
-					tz = l
-				}
+	if c.DeviceID != nil && *c.DeviceID != 0 {
+		if cached, ok := cache.cache[*c.DeviceID]; ok {
+			// ... set IP address field from cached value
+			if cached.address != nil {
+				address = fmt.Sprintf("%v", cached.address)
+				//	v.IP.Address = &(*cached.address)
+				//
+				//	switch {
+				//	case c.IP == nil:
+				//	    v.IP.Status = StatusUnknown
+				//
+				//	case cached.address.Equal(c.IP):
+				//		v.IP.Status = StatusOk
+				//
+				//	default:
+				//		v.IP.Status = StatusError
+				//	}
 			}
 
-			//			now := types.DateTime(time.Now().In(tz))
-			t := time.Time(*cached.datetime)
-			T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-			//			delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-			//
-			//			if delta > WINDOW {
-			//				v.SystemTime.Status = StatusError
-			//			} else {
-			//				v.SystemTime.Status = StatusOk
-			//			}
-			//
+			// ... set system date/time field from cached value
+			if cached.datetime != nil {
+				tz := time.Local
+				if c.TimeZone != nil {
+					if l, err := timezone(*c.TimeZone); err != nil {
+						warn(err)
+					} else {
+						tz = l
+					}
+				}
 
-			dt := types.DateTime(T)
-			datetime = fmt.Sprintf("%v", &dt)
-			//			v.SystemTime.DateTime = &dt
-			//			v.SystemTime.Expected = &now
+				//			now := types.DateTime(time.Now().In(tz))
+				t := time.Time(*cached.datetime)
+				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+				//			delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+				//
+				//			if delta > WINDOW {
+				//				v.SystemTime.Status = StatusError
+				//			} else {
+				//				v.SystemTime.Status = StatusOk
+				//			}
+				//
+
+				dt := types.DateTime(T)
+				datetime = fmt.Sprintf("%v", &dt)
+				//			v.SystemTime.DateTime = &dt
+				//			v.SystemTime.Expected = &now
+			}
+
+			// ... set ACL field from cached value
+			if cached.cards != nil {
+				cards = fmt.Sprintf("%d", *cached.cards)
+				//			v.Cards.Records = records(*cached.cards)
+				//			if cached.acl == StatusUnknown {
+				//				v.Cards.Status = StatusUncertain
+				//			} else {
+				//				v.Cards.Status = cached.acl
+				//			}
+			}
+
+			// ... set events field from cached value
+			events = fmt.Sprintf("%v", (*records)(cached.events))
 		}
-
-		// ... set ACL field from cached value
-		if cached.cards != nil {
-			cards = fmt.Sprintf("%d", *cached.cards)
-			//			v.Cards.Records = records(*cached.cards)
-			//			if cached.acl == StatusUnknown {
-			//				v.Cards.Status = StatusUncertain
-			//			} else {
-			//				v.Cards.Status = cached.acl
-			//			}
-		}
-
-		// ... set events field from cached value
-		events = fmt.Sprintf("%v", (*records)(cached.events))
 	}
 
 	objects := []interface{}{
 		object{OID: c.OID, Value: "controller"},
+		object{OID: c.OID + ".0.1", Value: created},
 		object{OID: c.OID + ".1", Value: name},
 		object{OID: c.OID + ".2", Value: deviceID},
 		object{OID: c.OID + ".3", Value: address},

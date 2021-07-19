@@ -5,7 +5,6 @@
 - [ ] system
       - rework controllers to use OID's
         -- send _object_ in refresh
-           -- sort controllers by `created`
            -- move _add_ and _delete_ back into update('objects',...)
            -- assign sub OID to e.g. status, expected, etc ?
            -- controller

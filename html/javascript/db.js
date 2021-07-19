@@ -4,13 +4,6 @@ export const DB = {
 
   added: function (objects) {
     objects.forEach(o => add(o))
-    // if (recordset) {
-    //   switch (tag) {
-    //     case 'controllers':
-    //       recordset.forEach(r => controller(r, statusToString(r.Status)))
-    //       break
-    //   }
-    // }
   },
 
   updated: function (tag, recordset) {
@@ -33,13 +26,6 @@ export const DB = {
 
   deleted: function (objects) {
     objects.forEach(o => remove(o))
-    // if (recordset) {
-    //   switch (tag) {
-    //     case 'controllers':
-    //       recordset.forEach(r => controller(r, 'deleted'))
-    //       break
-    //   }
-    // }
   },
 
   delete: function (tag, oid) {
@@ -134,6 +120,10 @@ function object (o) {
       }
 
       switch (oid) {
+        case k + '.0.1':
+          v.created = o.value
+          break
+
         case k + '.1':
           v.name = o.value
           break
@@ -191,6 +181,7 @@ function add (object) {
 
   const controller = {
     OID: oid,
+    created: '',
     name: '',
     deviceID: '',
 
@@ -287,6 +278,7 @@ function controller (c, status) {
 
   const record = {
     OID: oid,
+    created: '',
     name: '',
     deviceID: '',
 
@@ -321,6 +313,10 @@ function controller (c, status) {
 
     status: status,
     mark: 0
+  }
+
+  if (c.Created) {
+    record.created = c.Created
   }
 
   if (c.Name) {
