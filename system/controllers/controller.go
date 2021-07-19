@@ -238,6 +238,7 @@ func (c *Controller) AsView() interface{} {
 
 func (c *Controller) AsObjects() []interface{} {
 	created := c.created.Format("2006-01-02 15:04:05")
+	status := StatusUnknown
 	name := ""
 	deviceID := ""
 	address := ""
@@ -262,6 +263,16 @@ func (c *Controller) AsObjects() []interface{} {
 
 	if c.DeviceID != nil && *c.DeviceID != 0 {
 		if cached, ok := cache.cache[*c.DeviceID]; ok {
+			// ... set status field from cached value
+			dt := time.Now().Sub(cached.touched)
+			switch {
+			case dt < DeviceOk:
+				status = StatusOk
+
+			case dt < DeviceUncertain:
+				status = StatusUncertain
+			}
+
 			// ... set IP address field from cached value
 			if cached.address != nil {
 				address = fmt.Sprintf("%v", cached.address)
@@ -324,8 +335,12 @@ func (c *Controller) AsObjects() []interface{} {
 		}
 	}
 
+	if c.deleted != nil {
+		status = StatusDeleted
+	}
+
 	objects := []interface{}{
-		object{OID: c.OID, Value: "controller"},
+		object{OID: c.OID, Value: fmt.Sprintf("%v", status)},
 		object{OID: c.OID + ".0.1", Value: created},
 		object{OID: c.OID + ".1", Value: name},
 		object{OID: c.OID + ".2", Value: deviceID},
@@ -508,9 +523,14 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 			now := time.Now()
 			c.deleted = &now
 
+			updated = append(updated, object{
+				OID:   c.OID,
+				Value: "deleted",
+			})
+
 			deleted = append(deleted, object{
 				OID:   c.OID,
-				Value: "",
+				Value: "deleted",
 			})
 		}
 	}

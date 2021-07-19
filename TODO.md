@@ -5,10 +5,7 @@
 - [ ] system
       - rework controllers to use OID's
         -- send _object_ in refresh
-           -- move _add_ and _delete_ back into update('objects',...)
-           -- assign sub OID to e.g. status, expected, etc ?
-           -- controller
-              -- status
+           -- move _add_ back into update('objects',...)
            -- address
               -- address.address
               -- address.configured
