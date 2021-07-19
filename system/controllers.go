@@ -37,19 +37,17 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 		Objects []interface{} `json:"objects,omitempty"`
 		Added   []interface{} `json:"added,omitempty"`
 		Updated []interface{} `json:"updated,omitempty"`
-		Deleted []interface{} `json:"deleted,omitempty"`
 	}{}
 
 	shadow := sys.controllers.Clone()
 
 	// Update objects
 	for _, object := range objects {
-		if updated, added, deleted, err := shadow.UpdateByOID(object.OID, object.Value); err != nil {
+		if updated, added, err := shadow.UpdateByOID(object.OID, object.Value); err != nil {
 			return nil, err
 		} else {
 			fmt.Printf("  >> UPDATED: %v\n", updated)
 			fmt.Printf("  >> ADDED:   %v\n", added)
-			fmt.Printf("  >> DELETED: %v\n", deleted)
 
 			if updated != nil {
 				list.Objects = append(list.Objects, updated...)
@@ -57,10 +55,6 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 			if added != nil {
 				list.Added = append(list.Added, added...)
-			}
-
-			if deleted != nil {
-				list.Deleted = append(list.Deleted, deleted...)
 			}
 		}
 	}

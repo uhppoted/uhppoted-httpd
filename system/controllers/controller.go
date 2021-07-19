@@ -417,10 +417,9 @@ func (c *Controller) IsSaveable() bool {
 	return true
 }
 
-func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}, []interface{}, error) {
+func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}, error) {
 	updated := []interface{}{}
 	added := []interface{}{}
-	deleted := []interface{}{}
 
 	if c != nil {
 		switch oid {
@@ -452,7 +451,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 
 		case c.OID + ".3":
 			if addr, err := core.ResolveAddr(value); err != nil {
-				return nil, nil, nil, err
+				return nil, nil, err
 			} else {
 				c.IP = addr
 				updated = append(updated, object{
@@ -463,7 +462,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 
 		case c.OID + ".4":
 			if tz, err := types.Timezone(value); err != nil {
-				return nil, nil, nil, err
+				return nil, nil, err
 			} else {
 				tzs := tz.String()
 				c.TimeZone = &tzs
@@ -527,15 +526,10 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 				OID:   c.OID,
 				Value: "deleted",
 			})
-
-			deleted = append(deleted, object{
-				OID:   c.OID,
-				Value: "deleted",
-			})
 		}
 	}
 
-	return updated, added, deleted, nil
+	return updated, added, nil
 }
 
 func (c *Controller) clone() *Controller {

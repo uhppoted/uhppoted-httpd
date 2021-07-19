@@ -25,9 +25,9 @@ export const DB = {
     }
   },
 
-  deleted: function (objects) {
-    objects.forEach(o => remove(o))
-  },
+  // deleted: function (objects) {
+  //   objects.forEach(o => remove(o))
+  // },
 
   delete: function (tag, oid) {
     switch (tag) {
@@ -96,7 +96,9 @@ function object (o) {
 
   if (/^0\.1\.1\.[1-9][0-9]*$/.test(oid)) {
     if (DB.controllers.has(oid)) {
-      DB.controllers.get(oid).status = o.value
+      const record = DB.controllers.get(oid)
+      record.status = o.value
+      record.mark = 0
       return
     }
 
@@ -231,15 +233,15 @@ function add (object) {
   DB.controllers.set(oid, controller)
 }
 
-function remove (object) {
-  const oid = object.OID
-
-  DB.controllers.forEach((v, k) => {
-    if (oid === k) {
-      v.status = 'deleted'
-    }
-  })
-}
+// function remove (object) {
+//   const oid = object.OID
+//
+//   DB.controllers.forEach((v, k) => {
+//     if (oid === k) {
+//       v.status = 'deleted'
+//     }
+//   })
+// }
 
 function iface (c) {
   const oid = c.OID
@@ -285,87 +287,87 @@ function iface (c) {
 
 // function controller (c, status) {
 //   const oid = c.OID
-
+//
 //   const record = {
 //     OID: oid,
 //     created: '',
 //     name: '',
 //     deviceID: '',
-
+//
 //     address: {
 //       address: '',
 //       configured: '',
 //       status: 'unknown'
 //     },
-
+//
 //     datetime: {
 //       datetime: '',
 //       expected: '',
 //       status: 'unknown'
 //     },
-
+//
 //     cards: {
 //       cards: '',
 //       status: 'unknown'
 //     },
-
+//
 //     events: {
 //       events: '',
 //       status: 'unknown'
 //     },
-
+//
 //     doors: {
 //       1: '',
 //       2: '',
 //       3: '',
 //       4: ''
 //     },
-
+//
 //     status: status,
 //     mark: 0
 //   }
-
+//
 //   if (c.Created) {
 //     record.created = c.Created
 //   }
-
+//
 //   if (c.Name) {
 //     record.name = c.Name
 //   }
-
+//
 //   if (c.DeviceID) {
 //     record.deviceID = c.DeviceID
 //   }
-
+//
 //   if (c.IP && c.IP.Address) {
 //     record.address.address = c.IP.Address
 //     record.address.configured = c.IP.Configured
 //     record.address.status = statusToString(c.IP.Status)
 //   }
-
+//
 //   if (c.SystemTime) {
 //     record.datetime.datetime = c.SystemTime.DateTime
 //     record.datetime.expected = c.SystemTime.Expected
 //     record.datetime.status = c.SystemTime.Status
 //   }
-
+//
 //   if (c.Cards) {
 //     record.cards.cards = c.Cards.Records
 //     record.cards.status = statusToString(c.Cards.Status)
 //   }
-
+//
 //   if (c.Events) {
 //     record.events.events = c.Events
 //     record.events.status = 'ok'
 //   }
-
+//
 //   if (c.Doors) {
 //     record.doors[1] = c.Doors[1]
 //     record.doors[2] = c.Doors[2]
 //     record.doors[3] = c.Doors[3]
 //     record.doors[4] = c.Doors[4]
 //   }
-
+//
 //   DB.controllers.set(oid, record)
 // }
 
@@ -387,19 +389,19 @@ function sweep () {
 //   switch (status) {
 //     case 1:
 //       return 'ok'
-
+//
 //     case 2:
 //       return 'uncertain'
-
+//
 //     case 3:
 //       return 'error'
-
+//
 //     case 4:
 //       return 'unconfigured'
-
+//
 //     case 5:
 //       return 'new'
 //   }
-
+//
 //   return 'unknown'
 // }

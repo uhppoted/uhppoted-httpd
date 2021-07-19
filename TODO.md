@@ -6,6 +6,7 @@
       - rework controllers to use OID's
         -- send _object_ in refresh
            -- move _add_ back into update('objects',...)
+           -- don't overwrite 'modified' fields on update
            -- address
               -- address.address
               -- address.configured

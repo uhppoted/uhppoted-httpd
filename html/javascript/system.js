@@ -180,10 +180,6 @@ export function post (tag, records, reset, cleanup) {
                 DB.added(object.system.added)
               }
 
-              // if (object && object.system && object.system.deleted) {
-              //   DB.deleted(object.system.deleted)
-              // }
-
               refreshed()
             })
             break
