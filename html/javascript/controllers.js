@@ -61,13 +61,19 @@ export function set (element, value, status) {
 
   element.dataset.value = v
 
+  if (status) {
+    element.dataset.status = status
+  } else {
+    element.dataset.status = ''
+  }
+
   if (v !== original) {
     mark('modified', element, flag)
   } else {
     unmark('modified', element, flag)
   }
 
-  percolate(oid, modifiedX)
+  percolate(oid, modified)
 }
 
 function update (element, value, status) {
@@ -90,7 +96,7 @@ function update (element, value, status) {
         unmark('modified', element, flag)
       }
 
-      percolate(oid, modifiedX)
+      percolate(oid, modified)
       return
     }
 
@@ -107,17 +113,17 @@ function update (element, value, status) {
 
     // update fields not pending or modified
     element.value = v
-    set(element, value)
+    set(element, value, status)
   }
 }
 
-function modifiedX (oid) {
+function modified (oid) {
   const element = document.querySelector(`[data-oid="${oid}"]`)
-  let count = 0
 
   if (element) {
     const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
     const re = /^\.[0-9]+$/
+    let count = 0
 
     list.forEach(e => {
       if (e.classList.contains('modified')) {

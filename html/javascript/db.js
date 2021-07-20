@@ -146,11 +146,15 @@ function object (o) {
           break
 
         case k + '.3':
-          v.address = {
-            address: o.value,
-            configured: o.value,
-            status: 'unknown'
-          }
+          v.address.address = o.value
+          break
+
+        case k + '.3.1':
+          v.address.configured = o.value
+          break
+
+        case k + '.3.2':
+          v.address.status = o.value
           break
 
         case k + '.4':
@@ -385,24 +389,3 @@ function sweep () {
     }
   })
 }
-
-// function statusToString (status) {
-//   switch (status) {
-//     case 1:
-//       return 'ok'
-//
-//     case 2:
-//       return 'uncertain'
-//
-//     case 3:
-//       return 'error'
-//
-//     case 4:
-//       return 'unconfigured'
-//
-//     case 5:
-//       return 'new'
-//   }
-//
-//   return 'unknown'
-// }

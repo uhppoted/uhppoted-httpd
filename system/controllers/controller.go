@@ -237,11 +237,17 @@ func (c *Controller) AsView() interface{} {
 }
 
 func (c *Controller) AsObjects() []interface{} {
+	type addr struct {
+		address    string
+		configured string
+		status     status
+	}
+
 	created := c.created.Format("2006-01-02 15:04:05")
 	status := StatusUnknown
 	name := ""
 	deviceID := ""
-	address := ""
+	address := addr{}
 	datetime := ""
 	cards := ""
 	events := ""
@@ -253,6 +259,11 @@ func (c *Controller) AsObjects() []interface{} {
 
 	if c.DeviceID != nil && *c.DeviceID != 0 {
 		deviceID = fmt.Sprintf("%v", *c.DeviceID)
+	}
+
+	if c.IP != nil {
+		address.address = fmt.Sprintf("%v", c.IP)
+		address.configured = fmt.Sprintf("%v", c.IP)
 	}
 
 	for _, i := range []uint8{1, 2, 3, 4} {
@@ -275,19 +286,17 @@ func (c *Controller) AsObjects() []interface{} {
 
 			// ... set IP address field from cached value
 			if cached.address != nil {
-				address = fmt.Sprintf("%v", cached.address)
-				//	v.IP.Address = &(*cached.address)
-				//
-				//	switch {
-				//	case c.IP == nil:
-				//	    v.IP.Status = StatusUnknown
-				//
-				//	case cached.address.Equal(c.IP):
-				//		v.IP.Status = StatusOk
-				//
-				//	default:
-				//		v.IP.Status = StatusError
-				//	}
+				address.address = fmt.Sprintf("%v", cached.address)
+				switch {
+				case c.IP == nil || (c.IP != nil && cached.address.Equal(c.IP)):
+					address.status = StatusOk
+
+				case c.IP != nil && !cached.address.Equal(c.IP):
+					address.status = StatusError
+
+				default:
+					address.status = StatusUnknown
+				}
 			}
 
 			// ... set system date/time field from cached value
@@ -344,7 +353,9 @@ func (c *Controller) AsObjects() []interface{} {
 		object{OID: c.OID + ".0.1", Value: created},
 		object{OID: c.OID + ".1", Value: name},
 		object{OID: c.OID + ".2", Value: deviceID},
-		object{OID: c.OID + ".3", Value: address},
+		object{OID: c.OID + ".3", Value: address.address},
+		object{OID: c.OID + ".3.1", Value: address.configured},
+		object{OID: c.OID + ".3.2", Value: fmt.Sprintf("%v", address.status)},
 		object{OID: c.OID + ".4", Value: datetime},
 		object{OID: c.OID + ".5", Value: cards},
 		object{OID: c.OID + ".6", Value: events},
