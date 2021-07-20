@@ -176,10 +176,6 @@ export function post (tag, records, reset, cleanup) {
                 DB.updated('objects', object.system.objects)
               }
 
-              if (object && object.system && object.system.added) {
-                DB.added(object.system.added)
-              }
-
               refreshed()
             })
             break

@@ -80,25 +80,24 @@ func (l *LAN) clone() *LAN {
 	return nil
 }
 
-func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, error) {
-	updated := []interface{}{}
-	added := []interface{}{}
+func (l *LAN) set(oid string, value string) ([]interface{}, error) {
+	objects := []interface{}{}
 
 	if l != nil {
 		switch oid {
 		case l.OID + ".1":
 			l.Name = value
-			updated = append(updated, object{
+			objects = append(objects, object{
 				OID:   l.OID + ".1",
 				Value: l.Name,
 			})
 
 		case l.OID + ".2":
 			if addr, err := core.ResolveBindAddr(value); err != nil {
-				return nil, nil, err
+				return nil, err
 			} else {
 				l.BindAddress = *addr
-				updated = append(updated, object{
+				objects = append(objects, object{
 					OID:   l.OID + ".2",
 					Value: fmt.Sprintf("%v", l.BindAddress),
 				})
@@ -106,10 +105,10 @@ func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, error
 
 		case l.OID + ".3":
 			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
-				return nil, nil, err
+				return nil, err
 			} else {
 				l.BroadcastAddress = *addr
-				updated = append(updated, object{
+				objects = append(objects, object{
 					OID:   l.OID + ".3",
 					Value: fmt.Sprintf("%v", l.BroadcastAddress),
 				})
@@ -117,10 +116,10 @@ func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, error
 
 		case l.OID + ".4":
 			if addr, err := core.ResolveListenAddr(value); err != nil {
-				return nil, nil, err
+				return nil, err
 			} else {
 				l.ListenAddress = *addr
-				updated = append(updated, object{
+				objects = append(objects, object{
 					OID:   l.OID + ".4",
 					Value: fmt.Sprintf("%v", l.ListenAddress),
 				})
@@ -128,7 +127,7 @@ func (l *LAN) set(oid string, value string) ([]interface{}, []interface{}, error
 		}
 	}
 
-	return updated, added, nil
+	return objects, nil
 }
 
 func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {

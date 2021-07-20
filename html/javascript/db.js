@@ -3,7 +3,8 @@ export const DB = {
   controllers: new Map(),
 
   added: function (objects) {
-    objects.forEach(o => add(o))
+    throw new Error('OOOPS!! DB.added is no longer implemented')
+    // objects.forEach(o => add(o))
   },
 
   updated: function (tag, recordset) {
@@ -188,50 +189,50 @@ function object (o) {
   })
 }
 
-function add (object) {
-  const oid = object.OID
+// function add (object) {
+//   const oid = object.OID
+//
+//   const controller = {
+//     OID: oid,
+//     created: '',
+//     name: '',
+//     deviceID: '',
+//
+//     address: {
+//       address: '',
+//       configured: '',
+//       status: 'unknown'
+//     },
+//
+//     datetime: {
+//       datetime: '',
+//       expected: '',
+//       status: 'unknown'
+//     },
+//
+//     cards: {
+//       cards: '',
+//       status: 'unknown'
+//     },
+//
+//     events: {
+//       events: '',
+//       status: 'unknown'
+//     },
+//
+//     doors: {
+//       1: '',
+//       2: '',
+//       3: '',
+//       4: ''
+//     },
+//
+//     status: 'new',
+//     mark: 0
+//   }
 
-  const controller = {
-    OID: oid,
-    created: '',
-    name: '',
-    deviceID: '',
-
-    address: {
-      address: '',
-      configured: '',
-      status: 'unknown'
-    },
-
-    datetime: {
-      datetime: '',
-      expected: '',
-      status: 'unknown'
-    },
-
-    cards: {
-      cards: '',
-      status: 'unknown'
-    },
-
-    events: {
-      events: '',
-      status: 'unknown'
-    },
-
-    doors: {
-      1: '',
-      2: '',
-      3: '',
-      4: ''
-    },
-
-    status: 'new',
-    mark: 0
-  }
-
-  DB.controllers.set(oid, controller)
-}
+//   DB.controllers.set(oid, controller)
+// }
 
 // function remove (object) {
 //   const oid = object.OID

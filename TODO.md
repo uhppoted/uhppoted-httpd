@@ -4,23 +4,21 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- send _object_ in refresh
-           -- move _add_ back into update('objects',...)
-           -- don't overwrite 'modified' fields on update
-           -- address
-              -- address.address
-              -- address.configured
-              -- address.status
-           -- datetime
-              -- PDT invalid timezone ???
-              -- timezone
-              -- datetime.datetime
-              -- datetime.expected
-              -- datetime.status 
+        -- add/update/delete operation logging
+        -- address
+           -- address.address
+           -- address.configured
+           -- address.status
+        -- datetime
+           -- PDT invalid timezone ???
+           -- timezone
+           -- datetime.datetime
+           -- datetime.expected
+           -- datetime.status 
 
+        -- don't overwrite 'modified' fields on update
         -- (?) new controller not being persisted
         -- add/update/delete operation authorisation
-        -- add/update/delete operation logging
         -- update catalog on controller added/deleted
         -- update LAN on controller added/deleted
         -- cleanup interim stuff e.g. rename setX et al

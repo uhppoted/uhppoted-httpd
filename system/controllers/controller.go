@@ -417,16 +417,15 @@ func (c *Controller) IsSaveable() bool {
 	return true
 }
 
-func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}, error) {
-	updated := []interface{}{}
-	added := []interface{}{}
+func (c *Controller) set(oid string, value string) ([]interface{}, error) {
+	objects := []interface{}{}
 
 	if c != nil {
 		switch oid {
 		case c.OID + ".1":
 			name := types.Name(value)
 			c.Name = &name
-			updated = append(updated, object{
+			objects = append(objects, object{
 				OID:   c.OID + ".1",
 				Value: fmt.Sprintf("%v", c.Name),
 			})
@@ -436,14 +435,14 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 				if id, err := strconv.ParseUint(value, 10, 32); err == nil {
 					uid := uint32(id)
 					c.DeviceID = &uid
-					updated = append(updated, object{
+					objects = append(objects, object{
 						OID:   c.OID + ".2",
 						Value: fmt.Sprintf("%v", uid),
 					})
 				}
 			} else if value == "" {
 				c.DeviceID = nil
-				updated = append(updated, object{
+				objects = append(objects, object{
 					OID:   c.OID + ".2",
 					Value: "",
 				})
@@ -451,10 +450,10 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 
 		case c.OID + ".3":
 			if addr, err := core.ResolveAddr(value); err != nil {
-				return nil, nil, err
+				return nil, err
 			} else {
 				c.IP = addr
-				updated = append(updated, object{
+				objects = append(objects, object{
 					OID:   c.OID + ".3",
 					Value: fmt.Sprintf("%v", c.IP),
 				})
@@ -462,7 +461,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 
 		case c.OID + ".4":
 			if tz, err := types.Timezone(value); err != nil {
-				return nil, nil, err
+				return nil, err
 			} else {
 				tzs := tz.String()
 				c.TimeZone = &tzs
@@ -481,7 +480,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 						t := time.Time(*cached.datetime)
 						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 
-						updated = append(updated, object{
+						objects = append(objects, object{
 							OID:   c.OID + ".4",
 							Value: dt.Format("2006-01-02 15:04 MST"),
 						})
@@ -491,28 +490,28 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 
 		case c.OID + ".7":
 			c.Doors[1] = value
-			updated = append(updated, object{
+			objects = append(objects, object{
 				OID:   c.OID + ".7",
 				Value: fmt.Sprintf("%v", c.Doors[1]),
 			})
 
 		case c.OID + ".8":
 			c.Doors[2] = value
-			updated = append(updated, object{
+			objects = append(objects, object{
 				OID:   c.OID + ".8",
 				Value: fmt.Sprintf("%v", c.Doors[2]),
 			})
 
 		case c.OID + ".9":
 			c.Doors[3] = value
-			updated = append(updated, object{
+			objects = append(objects, object{
 				OID:   c.OID + ".9",
 				Value: fmt.Sprintf("%v", c.Doors[3]),
 			})
 
 		case c.OID + ".10":
 			c.Doors[4] = value
-			updated = append(updated, object{
+			objects = append(objects, object{
 				OID:   c.OID + ".10",
 				Value: fmt.Sprintf("%v", c.Doors[4]),
 			})
@@ -522,14 +521,14 @@ func (c *Controller) set(oid string, value string) ([]interface{}, []interface{}
 			now := time.Now()
 			c.deleted = &now
 
-			updated = append(updated, object{
+			objects = append(objects, object{
 				OID:   c.OID,
 				Value: "deleted",
 			})
 		}
 	}
 
-	return updated, added, nil
+	return objects, nil
 }
 
 func (c *Controller) clone() *Controller {
