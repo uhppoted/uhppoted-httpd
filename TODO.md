@@ -4,9 +4,10 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- make interface .0 the LAN type and the actual value the status
         -- add/update/delete operation logging
-        -- don't overwrite 'modified' fields on update
+        -- make interface .0 the LAN type and the actual value the status
+        -- make property status suffix consistently .1 (?)
+        -- don't overwrite 'modified' fields on update (e.g. create => delete+background refresh)
         -- (?) new controller not being persisted
         -- add/update/delete operation authorisation
         -- update catalog on controller added/deleted

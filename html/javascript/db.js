@@ -2,33 +2,15 @@ export const DB = {
   interfaces: new Map(),
   controllers: new Map(),
 
-  added: function (objects) {
-    throw new Error('OOOPS!! DB.added is no longer implemented')
-    // objects.forEach(o => add(o))
-  },
-
   updated: function (tag, recordset) {
     if (recordset) {
       switch (tag) {
         case 'objects':
           recordset.forEach(o => object(o))
           break
-
-        case 'interface':
-          iface(recordset)
-          break
-
-        case 'controllers':
-          throw new Error('OOOPS!! DB.controllers is no longer implemented')
-          // recordset.forEach(r => controller(r, statusToString(r.Status)))
-          // break
       }
     }
   },
-
-  // deleted: function (objects) {
-  //   objects.forEach(o => remove(o))
-  // },
 
   delete: function (tag, oid) {
     switch (tag) {
@@ -204,179 +186,6 @@ function object (o) {
     }
   })
 }
-
-// function add (object) {
-//   const oid = object.OID
-//
-//   const controller = {
-//     OID: oid,
-//     created: '',
-//     name: '',
-//     deviceID: '',
-//
-//     address: {
-//       address: '',
-//       configured: '',
-//       status: 'unknown'
-//     },
-//
-//     datetime: {
-//       datetime: '',
-//       expected: '',
-//       status: 'unknown'
-//     },
-//
-//     cards: {
-//       cards: '',
-//       status: 'unknown'
-//     },
-//
-//     events: {
-//       events: '',
-//       status: 'unknown'
-//     },
-//
-//     doors: {
-//       1: '',
-//       2: '',
-//       3: '',
-//       4: ''
-//     },
-//
-//     status: 'new',
-//     mark: 0
-//   }
-
-//   DB.controllers.set(oid, controller)
-// }
-
-function iface (c) {
-  const oid = c.OID
-
-  const record = {
-    OID: oid,
-    type: 'LAN',
-    name: 'LAN',
-    bind: '',
-    broadcast: '',
-    listen: '',
-
-    status: 'ok',
-    mark: 0
-  }
-
-  if (c.type) {
-    record.type = c.type
-  }
-
-  if (c.name && c.name !== '') {
-    record.name = c.name
-  }
-
-  if (c['bind-address']) {
-    record.bind = c['bind-address']
-  }
-
-  if (c['broadcast-address']) {
-    record.broadcast = c['broadcast-address']
-  }
-
-  if (c['listen-address']) {
-    record.listen = c['listen-address']
-  }
-
-  if (c.deleted) {
-    record.status = 'deleted'
-  }
-
-  DB.interfaces.set(oid, record)
-}
-
-// function controller (c, status) {
-//   const oid = c.OID
-//
-//   const record = {
-//     OID: oid,
-//     created: '',
-//     name: '',
-//     deviceID: '',
-//
-//     address: {
-//       address: '',
-//       configured: '',
-//       status: 'unknown'
-//     },
-//
-//     datetime: {
-//       datetime: '',
-//       expected: '',
-//       status: 'unknown'
-//     },
-//
-//     cards: {
-//       cards: '',
-//       status: 'unknown'
-//     },
-//
-//     events: {
-//       events: '',
-//       status: 'unknown'
-//     },
-//
-//     doors: {
-//       1: '',
-//       2: '',
-//       3: '',
-//       4: ''
-//     },
-//
-//     status: status,
-//     mark: 0
-//   }
-//
-//   if (c.Created) {
-//     record.created = c.Created
-//   }
-//
-//   if (c.Name) {
-//     record.name = c.Name
-//   }
-//
-//   if (c.DeviceID) {
-//     record.deviceID = c.DeviceID
-//   }
-//
-//   if (c.IP && c.IP.Address) {
-//     record.address.address = c.IP.Address
-//     record.address.configured = c.IP.Configured
-//     record.address.status = statusToString(c.IP.Status)
-//   }
-//
-//   if (c.SystemTime) {
-//     record.datetime.datetime = c.SystemTime.DateTime
-//     record.datetime.expected = c.SystemTime.Expected
-//     record.datetime.status = c.SystemTime.Status
-//   }
-//
-//   if (c.Cards) {
-//     record.cards.cards = c.Cards.Records
-//     record.cards.status = statusToString(c.Cards.Status)
-//   }
-//
-//   if (c.Events) {
-//     record.events.events = c.Events
-//     record.events.status = 'ok'
-//   }
-//
-//   if (c.Doors) {
-//     record.doors[1] = c.Doors[1]
-//     record.doors[2] = c.Doors[2]
-//     record.doors[3] = c.Doors[3]
-//     record.doors[4] = c.Doors[4]
-//   }
-//
-//   DB.controllers.set(oid, record)
-// }
 
 function mark () {
   DB.controllers.forEach(v => {
