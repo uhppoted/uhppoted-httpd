@@ -249,14 +249,25 @@ func (c *Controller) AsObjects() []interface{} {
 		status   status
 	}
 
+	type cinfo struct {
+		cards  string
+		status status
+	}
+
+	type einfo struct {
+		events string
+		status status
+	}
+
 	created := c.created.Format("2006-01-02 15:04:05")
 	status := StatusUnknown
 	name := ""
 	deviceID := ""
 	address := addr{}
 	datetime := tinfo{}
-	cards := ""
-	events := ""
+	cards := cinfo{}
+	events := einfo{}
+
 	doors := map[uint8]string{1: "", 2: "", 3: "", 4: ""}
 
 	if c.Name != nil {
@@ -333,17 +344,17 @@ func (c *Controller) AsObjects() []interface{} {
 
 			// ... set ACL field from cached value
 			if cached.cards != nil {
-				cards = fmt.Sprintf("%d", *cached.cards)
-				//			v.Cards.Records = records(*cached.cards)
-				//			if cached.acl == StatusUnknown {
-				//				v.Cards.Status = StatusUncertain
-				//			} else {
-				//				v.Cards.Status = cached.acl
-				//			}
+				cards.cards = fmt.Sprintf("%d", *cached.cards)
+				if cached.acl == StatusUnknown {
+					cards.status = StatusUncertain
+				} else {
+					cards.status = cached.acl
+				}
 			}
 
 			// ... set events field from cached value
-			events = fmt.Sprintf("%v", (*records)(cached.events))
+			events.events = fmt.Sprintf("%v", (*records)(cached.events))
+			events.status = StatusOk
 		}
 	}
 
@@ -362,8 +373,10 @@ func (c *Controller) AsObjects() []interface{} {
 		object{OID: c.OID + ".4", Value: datetime.datetime},
 		object{OID: c.OID + ".4.1", Value: datetime.system},
 		object{OID: c.OID + ".4.2", Value: fmt.Sprintf("%v", datetime.status)},
-		object{OID: c.OID + ".5", Value: cards},
-		object{OID: c.OID + ".6", Value: events},
+		object{OID: c.OID + ".5", Value: cards.cards},
+		object{OID: c.OID + ".5.1", Value: fmt.Sprintf("%v", cards.status)},
+		object{OID: c.OID + ".6", Value: events.events},
+		object{OID: c.OID + ".6.1", Value: fmt.Sprintf("%v", events.status)},
 		object{OID: c.OID + ".7", Value: doors[1]},
 		object{OID: c.OID + ".8", Value: doors[2]},
 		object{OID: c.OID + ".9", Value: doors[3]},

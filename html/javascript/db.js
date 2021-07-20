@@ -173,8 +173,16 @@ function object (o) {
           v.cards.cards = o.value
           break
 
+        case k + '.5.1':
+          v.cards.status = o.value
+          break
+
         case k + '.6':
           v.events.events = o.value
+          break
+
+        case k + '.6.1':
+          v.events.status = o.value
           break
 
         case k + '.7':

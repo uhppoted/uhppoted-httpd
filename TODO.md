@@ -6,18 +6,14 @@
       - rework controllers to use OID's
         -- make interface .0 the LAN type and the actual value the status
         -- add/update/delete operation logging
-        -- datetime
-           -- PDT invalid timezone ???
-           -- timezone
-
         -- don't overwrite 'modified' fields on update
         -- (?) new controller not being persisted
         -- add/update/delete operation authorisation
         -- update catalog on controller added/deleted
         -- update LAN on controller added/deleted
-        -- cleanup interim stuff e.g. rename setX et al
         -- cleanup no longer used stuff
 
+      - PDT invalid timezone ???
       - signout page "doesn't have permission" ????
       - marshal cards.Records as "" if StatusUnknown
       - nicer auth handling for e.g. /images

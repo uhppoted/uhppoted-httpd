@@ -65,7 +65,9 @@ Logs namespace
      |      |                   |- 0.1.1.1.4.1: <now>          # system date/time
      |      |                   |- 0.1.1.1.4.2: <status>       # controller date/time status
      |      |        |- 0.1.1.1.5:  <cards>                    # number of card records
+     |      |                   |- 0.1.1.1.5.1: <status>       # cards status
      |      |        |- 0.1.1.1.6:  <events>                   # number of event records
+     |      |                   |- 0.1.1.1.6.1: <status>       # events status
      |      |        |- 0.1.1.1.7:  <door1>                    # door 1 name
      |      |        |- 0.1.1.1.8:  <door2>                    # door 2 name
      |      |        |- 0.1.1.1.9:  <door3>                    # door 3 name
@@ -84,7 +86,9 @@ Logs namespace
      |      |                   |- 0.1.1.2.4.1: <now>          # system date/time
      |      |                   |- 0.1.1.2.4.2: <status>       # controller date/time status
      |      |        |- 0.1.1.2.5:  <cards>                    # number of card records
+     |      |                   |- 0.1.1.2.5.1: <status>       # cards status
      |      |        |- 0.1.1.2.6:  <events>                   # number of event records
+     |      |                   |- 0.1.1.2.6.1: <status>       # events status
      |      |        |- 0.1.1.2.7:  <door1>                    # door 1 name
      |      |        |- 0.1.1.2.8:  <door2>                    # door 2 name
      |      |        |- 0.1.1.2.9:  <door3>                    # door 3 name
