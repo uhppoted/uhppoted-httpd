@@ -59,8 +59,11 @@ Logs namespace
      |      |        |- 0.1.1.1.1:  <name>                     # name
      |      |        |- 0.1.1.1.2:  <ID>                       # serial number
      |      |        |- 0.1.1.1.3:  <address>                  # address:port
-     |      |                   |- 0.1.1.1.3.1:  <configured>  # configured address:port
-     |      |        |- 0.1.1.1.4:  <datetime>                 # system date/time
+     |      |                   |- 0.1.1.1.3.1: <configured>   # configured address:port
+     |      |                   |- 0.1.1.1.3.2: <status>       # address status
+     |      |        |- 0.1.1.1.4:  <datetime>                 # controller date/time
+     |      |                   |- 0.1.1.1.4.1: <now>          # system date/time
+     |      |                   |- 0.1.1.1.4.2: <status>       # controller date/time status
      |      |        |- 0.1.1.1.5:  <cards>                    # number of card records
      |      |        |- 0.1.1.1.6:  <events>                   # number of event records
      |      |        |- 0.1.1.1.7:  <door1>                    # door 1 name
@@ -75,8 +78,11 @@ Logs namespace
      |      |        |- 0.1.1.2.1:  <name>                     # name
      |      |        |- 0.1.1.2.2:  <ID>                       # serial number
      |      |        |- 0.1.1.2.3:  <address>                  # address:port
-     |      |                   |- 0.1.1.2.3.1:  <configured>  # configured address:port
-     |      |        |- 0.1.1.2.4:  <datetime>                 # system date/time
+     |      |                   |- 0.1.1.2.3.1: <configured>   # configured address:port
+     |      |                   |- 0.1.1.2.3.2: <status>       # address status
+     |      |        |- 0.1.1.2.4:  <datetime>                 # controller date/time
+     |      |                   |- 0.1.1.2.4.1: <now>          # system date/time
+     |      |                   |- 0.1.1.2.4.2: <status>       # controller date/time status
      |      |        |- 0.1.1.2.5:  <cards>                    # number of card records
      |      |        |- 0.1.1.2.6:  <events>                   # number of event records
      |      |        |- 0.1.1.2.7:  <door1>                    # door 1 name

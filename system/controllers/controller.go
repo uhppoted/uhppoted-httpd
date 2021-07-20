@@ -243,12 +243,18 @@ func (c *Controller) AsObjects() []interface{} {
 		status     status
 	}
 
+	type tinfo struct {
+		datetime string
+		system   string
+		status   status
+	}
+
 	created := c.created.Format("2006-01-02 15:04:05")
 	status := StatusUnknown
 	name := ""
 	deviceID := ""
 	address := addr{}
-	datetime := ""
+	datetime := tinfo{}
 	cards := ""
 	events := ""
 	doors := map[uint8]string{1: "", 2: "", 3: "", 4: ""}
@@ -310,22 +316,19 @@ func (c *Controller) AsObjects() []interface{} {
 					}
 				}
 
-				//			now := types.DateTime(time.Now().In(tz))
+				now := time.Now().In(tz)
 				t := time.Time(*cached.datetime)
 				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-				//			delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-				//
-				//			if delta > WINDOW {
-				//				v.SystemTime.Status = StatusError
-				//			} else {
-				//				v.SystemTime.Status = StatusOk
-				//			}
-				//
 
-				dt := types.DateTime(T)
-				datetime = fmt.Sprintf("%v", &dt)
-				//			v.SystemTime.DateTime = &dt
-				//			v.SystemTime.Expected = &now
+				datetime.datetime = T.Format("2006-01-02 15:04:05 MST")
+				datetime.system = now.Format("2006-01-02 15:04:05 MST")
+
+				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+				if delta <= WINDOW {
+					datetime.status = StatusOk
+				} else {
+					datetime.status = StatusError
+				}
 			}
 
 			// ... set ACL field from cached value
@@ -356,7 +359,9 @@ func (c *Controller) AsObjects() []interface{} {
 		object{OID: c.OID + ".3", Value: address.address},
 		object{OID: c.OID + ".3.1", Value: address.configured},
 		object{OID: c.OID + ".3.2", Value: fmt.Sprintf("%v", address.status)},
-		object{OID: c.OID + ".4", Value: datetime},
+		object{OID: c.OID + ".4", Value: datetime.datetime},
+		object{OID: c.OID + ".4.1", Value: datetime.system},
+		object{OID: c.OID + ".4.2", Value: fmt.Sprintf("%v", datetime.status)},
 		object{OID: c.OID + ".5", Value: cards},
 		object{OID: c.OID + ".6", Value: events},
 		object{OID: c.OID + ".7", Value: doors[1]},

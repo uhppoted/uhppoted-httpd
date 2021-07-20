@@ -4,13 +4,11 @@
 
 - [ ] system
       - rework controllers to use OID's
+        -- make interface .0 the LAN type and the actual value the status
         -- add/update/delete operation logging
         -- datetime
            -- PDT invalid timezone ???
            -- timezone
-           -- datetime.datetime
-           -- datetime.expected
-           -- datetime.status 
 
         -- don't overwrite 'modified' fields on update
         -- (?) new controller not being persisted

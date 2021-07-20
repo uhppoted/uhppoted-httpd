@@ -158,11 +158,15 @@ function object (o) {
           break
 
         case k + '.4':
-          v.datetime = {
-            datetime: o.value,
-            expected: o.value,
-            status: 'unknown'
-          }
+          v.datetime.datetime = o.value
+          break
+
+        case k + '.4.1':
+          v.datetime.expected = o.value
+          break
+
+        case k + '.4.2':
+          v.datetime.status = o.value
           break
 
         case k + '.5':
@@ -236,16 +240,6 @@ function object (o) {
 //   }
 
 //   DB.controllers.set(oid, controller)
-// }
-
-// function remove (object) {
-//   const oid = object.OID
-//
-//   DB.controllers.forEach((v, k) => {
-//     if (oid === k) {
-//       v.status = 'deleted'
-//     }
-//   })
 // }
 
 function iface (c) {
