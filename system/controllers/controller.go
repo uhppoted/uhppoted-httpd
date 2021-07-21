@@ -6,6 +6,7 @@ import (
 	"math"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
@@ -40,14 +41,6 @@ type controller struct {
 	Deleted    bool
 
 	created time.Time
-}
-
-func (c *controller) Created() time.Time {
-	if c != nil {
-		return c.created
-	}
-
-	return time.Now()
 }
 
 func (c *Controller) deserialize(bytes []byte) error {
@@ -112,10 +105,6 @@ func (c *Controller) serialize() ([]byte, error) {
 	}
 
 	return json.MarshalIndent(record, "", "  ")
-}
-
-func (c *Controller) AsView() interface{} {
-	return nil
 }
 
 func (c *Controller) AsObjects() []interface{} {
@@ -287,21 +276,17 @@ func (c *Controller) AsRuleEntity() interface{} {
 }
 
 func (c *Controller) String() string {
-	if c != nil {
-		s := fmt.Sprintf("%v", c.OID)
-
-		if c.Name != nil {
-			s += fmt.Sprintf(" %v", *c.Name)
-		}
-
-		if c.DeviceID != nil {
-			s += fmt.Sprintf(" %v", *c.DeviceID)
-		}
-
-		return s
+	if c == nil {
+		return ""
 	}
 
-	return ""
+	s := []string{
+		c.OID,
+		stringify(c.Name),
+		stringify(c.DeviceID),
+	}
+
+	return strings.TrimSpace(strings.Join(s, " "))
 }
 
 func (c *Controller) IsValid() bool {

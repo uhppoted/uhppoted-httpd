@@ -4,14 +4,14 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- add/update/delete operation authorisation
-        -- make interface .0 the LAN type and the actual value the status
-        -- make property status suffix consistently .1 (?)
+        -- cleanup no longer used stuff
         -- don't overwrite 'modified' fields on update (e.g. create => delete+background refresh)
+        -- add/update/delete operation authorisation
+        -- make interface .0 the LAN type and the actual value the status (?)
+        -- make property status suffix consistently .1 or .0 (?)
         -- (?) new controller not being persisted
         -- update catalog on controller added/deleted
         -- update LAN on controller added/deleted
-        -- cleanup no longer used stuff
 
       - PDT invalid timezone ???
       - signout page "doesn't have permission" ????

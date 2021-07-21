@@ -9,7 +9,6 @@ import (
 	"net"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -286,45 +285,6 @@ func (cc *ControllerSet) Delete(c Controller) (*Controller, error) {
 	return nil, nil
 }
 
-func (cc *ControllerSet) AsView() interface{} {
-	lan := struct {
-		OID              string `json:"OID"`
-		Type             string `json:"type"`
-		Name             string `json:"name"`
-		BindAddress      string `json:"bind-address"`
-		BroadcastAddress string `json:"broadcast-address"`
-		ListenAddress    string `json:"listen-address"`
-	}{
-		OID:              cc.LAN.OID,
-		Type:             "LAN",
-		Name:             cc.LAN.Name,
-		BindAddress:      fmt.Sprintf("%v", cc.LAN.BindAddress),
-		BroadcastAddress: fmt.Sprintf("%v", cc.LAN.BroadcastAddress),
-		ListenAddress:    fmt.Sprintf("%v", cc.LAN.ListenAddress),
-	}
-
-	list := []interface{}{}
-	for _, c := range cc.Controllers {
-		if c.IsValid() {
-			if record := c.AsView(); record != nil {
-				list = append(list, record)
-			}
-		}
-	}
-
-	sort.SliceStable(list, func(i, j int) bool {
-		return list[i].(sortable).Created().Before(list[j].(sortable).Created())
-	})
-
-	return struct {
-		Interface   interface{} `json:"interface"`
-		Controllers interface{} `json:"controllers"`
-	}{
-		Interface:   lan,
-		Controllers: list,
-	}
-}
-
 func (cc *ControllerSet) AsObjects() []interface{} {
 	objects := []interface{}{}
 	lan := cc.LAN.AsObjects()
@@ -338,10 +298,6 @@ func (cc *ControllerSet) AsObjects() []interface{} {
 			}
 		}
 	}
-
-	//	sort.SliceStable(list, func(i, j int) bool {
-	//		return list[i].(sortable).Created().Before(list[j].(sortable).Created())
-	//	})
 
 	return objects
 }
