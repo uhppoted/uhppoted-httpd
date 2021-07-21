@@ -9,6 +9,7 @@ import (
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -114,126 +115,7 @@ func (c *Controller) serialize() ([]byte, error) {
 }
 
 func (c *Controller) AsView() interface{} {
-	if c == nil {
-		return nil
-	}
-
-	v := controller{
-		OID:      c.OID,
-		Name:     "",
-		DeviceID: "",
-		IP: ip{
-			Configured: c.IP,
-		},
-		Doors: map[uint8]string{1: "", 2: "", 3: "", 4: ""},
-
-		Status: StatusUnknown,
-		SystemTime: datetime{
-			Status: StatusUnknown,
-		},
-		Cards: cards{
-			Status: StatusUnknown,
-		},
-		Deleted: c.deleted != nil,
-
-		created: c.created,
-	}
-
-	if c.Name != nil {
-		v.Name = fmt.Sprintf("%v", *c.Name)
-	}
-
-	if c.DeviceID != nil && *c.DeviceID != 0 {
-		v.DeviceID = fmt.Sprintf("%v", *c.DeviceID)
-	}
-
-	if c.IP != nil {
-		v.IP.Address = &(*c.IP)
-	}
-
-	for _, i := range []uint8{1, 2, 3, 4} {
-		if d, ok := c.Doors[i]; ok {
-			v.Doors[i] = d
-		}
-	}
-
-	if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
-		v.Status = StatusNew
-	}
-
-	if c.DeviceID == nil || *c.DeviceID == 0 {
-		return &v
-	}
-
-	if cached, ok := cache.cache[*c.DeviceID]; ok {
-		// ... set status field from cached value
-		dt := time.Now().Sub(cached.touched)
-		switch {
-		case dt < DeviceOk:
-			v.Status = StatusOk
-
-		case dt < DeviceUncertain:
-			v.Status = StatusUncertain
-		}
-
-		// ... set IP address field from cached value
-		if cached.address != nil {
-			v.IP.Address = &(*cached.address)
-
-			switch {
-			case c.IP == nil:
-				v.IP.Status = StatusUnknown
-
-			case cached.address.Equal(c.IP):
-				v.IP.Status = StatusOk
-
-			default:
-				v.IP.Status = StatusError
-			}
-		}
-
-		// ... set system date/time field from cached value
-		if cached.datetime != nil {
-			tz := time.Local
-			if c.TimeZone != nil {
-				if l, err := timezone(*c.TimeZone); err != nil {
-					warn(err)
-				} else {
-					tz = l
-				}
-			}
-
-			now := types.DateTime(time.Now().In(tz))
-			t := time.Time(*cached.datetime)
-			T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-			delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-
-			if delta > WINDOW {
-				v.SystemTime.Status = StatusError
-			} else {
-				v.SystemTime.Status = StatusOk
-			}
-
-			dt := types.DateTime(T)
-			v.SystemTime.DateTime = &dt
-			v.SystemTime.Expected = &now
-		}
-
-		// ... set ACL field from cached value
-		if cached.cards != nil {
-			v.Cards.Records = records(*cached.cards)
-			if cached.acl == StatusUnknown {
-				v.Cards.Status = StatusUncertain
-			} else {
-				v.Cards.Status = cached.acl
-			}
-		}
-
-		// ... set events field from cached value
-		v.Events = (*records)(cached.events)
-	}
-
-	return &v
+	return nil
 }
 
 func (c *Controller) AsObjects() []interface{} {
@@ -261,7 +143,7 @@ func (c *Controller) AsObjects() []interface{} {
 
 	created := c.created.Format("2006-01-02 15:04:05")
 	status := StatusUnknown
-	name := ""
+	name := stringify(c.Name)
 	deviceID := ""
 	address := addr{}
 	datetime := tinfo{}
@@ -269,10 +151,6 @@ func (c *Controller) AsObjects() []interface{} {
 	events := einfo{}
 
 	doors := map[uint8]string{1: "", 2: "", 3: "", 4: ""}
-
-	if c.Name != nil {
-		name = fmt.Sprintf("%v", *c.Name)
-	}
 
 	if c.DeviceID != nil && *c.DeviceID != 0 {
 		deviceID = fmt.Sprintf("%v", *c.DeviceID)
@@ -369,7 +247,7 @@ func (c *Controller) AsObjects() []interface{} {
 		object{OID: c.OID + ".2", Value: deviceID},
 		object{OID: c.OID + ".3", Value: address.address},
 		object{OID: c.OID + ".3.1", Value: address.configured},
-		object{OID: c.OID + ".3.2", Value: fmt.Sprintf("%v", address.status)},
+		object{OID: c.OID + ".3.2", Value: stringify(address.status)},
 		object{OID: c.OID + ".4", Value: datetime.datetime},
 		object{OID: c.OID + ".4.1", Value: datetime.system},
 		object{OID: c.OID + ".4.2", Value: fmt.Sprintf("%v", datetime.status)},
@@ -446,30 +324,33 @@ func (c *Controller) IsSaveable() bool {
 	return true
 }
 
-func (c *Controller) set(oid string, value string) ([]interface{}, error) {
+func (c *Controller) set(uid string, oid string, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	if c != nil {
 		switch oid {
 		case c.OID + ".1":
+			c.log("update", uid, c.OID, "name", stringify(c.Name), value)
 			name := types.Name(value)
 			c.Name = &name
 			objects = append(objects, object{
 				OID:   c.OID + ".1",
-				Value: fmt.Sprintf("%v", c.Name),
+				Value: stringify(c.Name),
 			})
 
 		case c.OID + ".2":
 			if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 				if id, err := strconv.ParseUint(value, 10, 32); err == nil {
-					uid := uint32(id)
-					c.DeviceID = &uid
+					c.log("update", uid, c.OID, "device-id", stringify(c.DeviceID), value)
+					cid := uint32(id)
+					c.DeviceID = &cid
 					objects = append(objects, object{
 						OID:   c.OID + ".2",
-						Value: fmt.Sprintf("%v", uid),
+						Value: stringify(cid),
 					})
 				}
 			} else if value == "" {
+				c.log("update", uid, c.OID, "device-id", stringify(c.DeviceID), value)
 				c.DeviceID = nil
 				objects = append(objects, object{
 					OID:   c.OID + ".2",
@@ -481,6 +362,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, error) {
 			if addr, err := core.ResolveAddr(value); err != nil {
 				return nil, err
 			} else {
+				c.log("update", uid, c.OID, "address", stringify(c.IP), value)
 				c.IP = addr
 				objects = append(objects, object{
 					OID:   c.OID + ".3",
@@ -492,6 +374,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, error) {
 			if tz, err := types.Timezone(value); err != nil {
 				return nil, err
 			} else {
+				c.log("update", uid, c.OID, "timezone", stringify(c.TimeZone), tz.String())
 				tzs := tz.String()
 				c.TimeZone = &tzs
 
@@ -518,6 +401,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, error) {
 			}
 
 		case c.OID + ".7":
+			c.log("update", uid, c.OID, "door[1]", stringify(c.Doors[1]), value)
 			c.Doors[1] = value
 			objects = append(objects, object{
 				OID:   c.OID + ".7",
@@ -525,6 +409,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, error) {
 			})
 
 		case c.OID + ".8":
+			c.log("update", uid, c.OID, "door[2]", stringify(c.Doors[2]), value)
 			c.Doors[2] = value
 			objects = append(objects, object{
 				OID:   c.OID + ".8",
@@ -532,6 +417,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, error) {
 			})
 
 		case c.OID + ".9":
+			c.log("update", uid, c.OID, "door[3]", stringify(c.Doors[3]), value)
 			c.Doors[3] = value
 			objects = append(objects, object{
 				OID:   c.OID + ".9",
@@ -539,6 +425,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, error) {
 			})
 
 		case c.OID + ".10":
+			c.log("update", uid, c.OID, "door[4]", stringify(c.Doors[4]), value)
 			c.Doors[4] = value
 			objects = append(objects, object{
 				OID:   c.OID + ".10",
@@ -547,6 +434,7 @@ func (c *Controller) set(oid string, value string) ([]interface{}, error) {
 		}
 
 		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+			c.log("delete", uid, c.OID, "device-id", "", "")
 			now := time.Now()
 			c.deleted = &now
 
@@ -583,4 +471,31 @@ func (c *Controller) clone() *Controller {
 	}
 
 	return nil
+}
+
+func (c *Controller) log(operation, uid, OID, field, current, value string) {
+	type info struct {
+		OID        string `json:"OID"`
+		Controller string `json:"controller"`
+		Field      string `json:"field"`
+		Current    string `json:"current"`
+		Updated    string `json:"new"`
+	}
+
+	if trail != nil {
+		record := audit.LogEntry{
+			UID:       uid,
+			Module:    OID,
+			Operation: operation,
+			Info: info{
+				OID:        OID,
+				Controller: stringify(c.DeviceID),
+				Field:      field,
+				Current:    current,
+				Updated:    value,
+			},
+		}
+
+		trail.Write(record)
+	}
 }

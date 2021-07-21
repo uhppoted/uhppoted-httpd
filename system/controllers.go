@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
-	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
@@ -21,10 +19,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 	defer sys.Unlock()
 
-	// add/update ?
-
-	//objects, clist, err := unpack(m)
-	objects, _, err := unpack(m)
+	objects, err := unpack(m)
 	if err != nil {
 		return nil, &types.HttpdError{
 			Status: http.StatusBadRequest,
@@ -37,61 +32,20 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 		Objects []interface{} `json:"objects,omitempty"`
 	}{}
 
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
+	}
+
 	shadow := sys.controllers.Clone()
 
-	// Update objects
 	for _, object := range objects {
-		if updated, err := shadow.UpdateByOID(object.OID, object.Value); err != nil {
+		if updated, err := shadow.UpdateByOID(uid, object.OID, object.Value); err != nil {
 			return nil, err
 		} else if updated != nil {
 			list.Objects = append(list.Objects, updated...)
 		}
 	}
-
-	// Add/update/delete controllers
-	//loop:
-	//for _, c := range clist {
-	//		// ... delete?
-	//		if c.OID != "" && (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
-	//			for _, v := range shadow.Controllers {
-	//				if v.OID == c.OID {
-	//					if r, err := sys.delete(shadow, c, auth); err != nil {
-	//						return nil, err
-	//					} else if r != nil {
-	//						if view := r.AsView(); view != nil {
-	//							list.Deleted = append(list.Deleted, view)
-	//						}
-	//					}
-	//				}
-	//			}
-	//
-	//			continue loop
-	//		}
-
-	// // ... update controller?
-	// for _, v := range shadow.Controllers {
-	// 	if v.OID == c.OID {
-	// 		if r, err := sys.update(shadow, c, auth); err != nil {
-	// 			return nil, err
-	// 		} else if r != nil {
-	// 			if view := r.AsView(); view != nil {
-	// 				list.Updated = append(list.Updated, view)
-	// 			}
-	// 		}
-	//
-	// 		continue loop
-	// 	}
-	// }
-
-	//		// ... add controller
-	//		if r, err := sys.add(shadow, c, auth); err != nil {
-	//			return nil, err
-	//		} else if r != nil {
-	//			if view := r.AsView(); view != nil {
-	//				list.Added = append(list.Added, view)
-	//			}
-	//		}
-	//}
 
 	if err := save(shadow); err != nil {
 		return nil, err
@@ -242,76 +196,21 @@ func validate(c *controllers.ControllerSet) error {
 	return nil
 }
 
-func unpack(m map[string]interface{}) ([]object, []controllers.Controller, error) {
+func unpack(m map[string]interface{}) ([]object, error) {
 	o := struct {
 		Objects []object `json:"objects"`
-
-		ControllerSet []struct {
-			ID       string
-			OID      *string
-			Name     *string
-			DeviceID *uint32
-			IP       *string
-			Doors    map[uint8]string
-			DateTime *string
-		} `json:"controllers"`
 	}{}
 
 	blob, err := json.Marshal(m)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	log.Printf("INFO %v", fmt.Sprintf("UNPACK %s\n", string(blob)))
 
 	if err := json.Unmarshal(blob, &o); err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	list := []controllers.Controller{}
-
-	for _, r := range o.ControllerSet {
-		record := controllers.Controller{}
-
-		if r.OID != nil {
-			record.OID = *r.OID
-		}
-
-		if r.Name != nil {
-			name := types.Name(*r.Name)
-			record.Name = &name
-		}
-
-		if r.DeviceID != nil {
-			record.DeviceID = r.DeviceID
-		}
-
-		if r.IP != nil && *r.IP != "" {
-			if addr, err := core.ResolveAddr(*r.IP); err != nil {
-				return nil, nil, err
-			} else {
-				record.IP = addr
-			}
-		}
-
-		if r.DateTime != nil {
-			if tz, err := types.Timezone(strings.TrimSpace(*r.DateTime)); err != nil {
-				return nil, nil, err
-			} else {
-				tzs := tz.String()
-				record.TimeZone = &tzs
-			}
-		}
-
-		if r.Doors != nil && len(r.Doors) > 0 {
-			record.Doors = map[uint8]string{}
-			for k, v := range r.Doors {
-				record.Doors[k] = v
-			}
-		}
-
-		list = append(list, record)
-	}
-
-	return o.Objects, list, nil
+	return o.Objects, nil
 }

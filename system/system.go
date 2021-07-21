@@ -73,8 +73,8 @@ func init() {
 	}()
 }
 
-func Init(conf, controllers, doors string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
-	sys.controllers.Load(controllers, retention)
+func Init(conf, boards, doors string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
+	sys.controllers.Load(boards, retention)
 
 	bytes, err := ioutil.ReadFile(doors)
 	if err != nil {
@@ -89,6 +89,8 @@ func Init(conf, controllers, doors string, cards cards.Cards, trail audit.Trail,
 	sys.conf = conf
 	sys.cards = cards
 	sys.audit = trail
+
+	controllers.SetAuditTrail(trail)
 
 	sys.controllers.Print()
 	//	if b, err := json.MarshalIndent(sys.doors, "", "  "); err == nil {

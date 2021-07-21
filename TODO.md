@@ -4,12 +4,11 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- add/update/delete operation logging
+        -- add/update/delete operation authorisation
         -- make interface .0 the LAN type and the actual value the status
         -- make property status suffix consistently .1 (?)
         -- don't overwrite 'modified' fields on update (e.g. create => delete+background refresh)
         -- (?) new controller not being persisted
-        -- add/update/delete operation authorisation
         -- update catalog on controller added/deleted
         -- update LAN on controller added/deleted
         -- cleanup no longer used stuff
@@ -30,7 +29,6 @@
 
       - add controller name to uhppote-core
       - add timezone to uhppote-core
-      - config.Device.Address should be a typed value with String() to "" for nil
       - validate Local::Device timezone on initialization
       - cache expiry
       - Use sync.Map for cache
@@ -102,21 +100,6 @@
       - include login cookie when redirecting to login.html to avoid the initial double click
       - restyle avatar to have a border and be a bit floaty (i.e. not be glued to top-right)
 
-- [ ] Take a look at:
-      - [Shoelace](https://shoelace.style)
-      - [WebFlow](https://www.toptal.com/designers/webflow/webflow-advantages)
-      - [ExpertX](https://www.toptal.com/designers/webflow/webflow-advantages)
-      - [gridstack](https://gridstackjs.com)
-      - [toptal](https://www.toptal.com/designers/ux/notification-design)
-      - [Tabulator](http://tabulator.info)
-      - [Arwes](https://arwes.dev)
-      - https://blog.datawrapper.de/beautifulcolors/
-      - http://csszengarden.com/219
-      - Colorways (for themes)
-      - https://thenounproject.com
-      - [retool](https://retool.com)
-      - [plurid](https://github.com/plurid/plurid)
-
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
 - [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 
@@ -177,6 +160,21 @@
 - [ ] Support alternative auth providers e.g. auth0
 - [ ] gitdb (?)
 - [ ] [CRDT's](https://josephg.com/blog/crdts-are-the-future)
+- [ ] UI widgets and frameworks:
+      - [Shoelace](https://shoelace.style)
+      - [WebFlow](https://www.toptal.com/designers/webflow/webflow-advantages)
+      - [ExpertX](https://www.toptal.com/designers/webflow/webflow-advantages)
+      - [gridstack](https://gridstackjs.com)
+      - [toptal](https://www.toptal.com/designers/ux/notification-design)
+      - [Tabulator](http://tabulator.info)
+      - [Arwes](https://arwes.dev)
+      - https://blog.datawrapper.de/beautifulcolors/
+      - http://csszengarden.com/219
+      - Colorways (for themes)
+      - https://thenounproject.com
+      - [retool](https://retool.com)
+      - [plurid](https://github.com/plurid/plurid)
+
 
 ## NOTES
 

@@ -12,6 +12,7 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppote-core/uhppote"
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
@@ -80,12 +81,13 @@ func (l *LAN) clone() *LAN {
 	return nil
 }
 
-func (l *LAN) set(oid string, value string) ([]interface{}, error) {
+func (l *LAN) set(uid string, oid string, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	if l != nil {
 		switch oid {
 		case l.OID + ".1":
+			l.log("update", uid, l.OID, "name", stringify(l.Name), value)
 			l.Name = value
 			objects = append(objects, object{
 				OID:   l.OID + ".1",
@@ -96,6 +98,7 @@ func (l *LAN) set(oid string, value string) ([]interface{}, error) {
 			if addr, err := core.ResolveBindAddr(value); err != nil {
 				return nil, err
 			} else {
+				l.log("update", uid, l.OID, "bind", stringify(l.BindAddress), value)
 				l.BindAddress = *addr
 				objects = append(objects, object{
 					OID:   l.OID + ".2",
@@ -107,6 +110,7 @@ func (l *LAN) set(oid string, value string) ([]interface{}, error) {
 			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
 				return nil, err
 			} else {
+				l.log("update", uid, l.OID, "broadcast", stringify(l.BroadcastAddress), value)
 				l.BroadcastAddress = *addr
 				objects = append(objects, object{
 					OID:   l.OID + ".3",
@@ -118,6 +122,7 @@ func (l *LAN) set(oid string, value string) ([]interface{}, error) {
 			if addr, err := core.ResolveListenAddr(value); err != nil {
 				return nil, err
 			} else {
+				l.log("update", uid, l.OID, "listen", stringify(l.ListenAddress), value)
 				l.ListenAddress = *addr
 				objects = append(objects, object{
 					OID:   l.OID + ".4",
@@ -388,5 +393,32 @@ func (l *LAN) synchTime(controllers []*Controller) {
 				log.Printf("INFO  sychronized device-time %v %v", response.DeviceID, response.DateTime)
 			}
 		}
+	}
+}
+
+func (l *LAN) log(operation, uid, OID, field, current, value string) {
+	type info struct {
+		OID       string `json:"OID"`
+		Interface string `json:"interface"`
+		Field     string `json:"field"`
+		Current   string `json:"current"`
+		Updated   string `json:"new"`
+	}
+
+	if trail != nil {
+		record := audit.LogEntry{
+			UID:       uid,
+			Module:    OID,
+			Operation: operation,
+			Info: info{
+				OID:       OID,
+				Interface: "LAN",
+				Field:     field,
+				Current:   current,
+				Updated:   value,
+			},
+		}
+
+		trail.Write(record)
 	}
 }

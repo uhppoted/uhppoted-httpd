@@ -15,6 +15,7 @@ import (
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
@@ -35,6 +36,11 @@ type sortable interface {
 type object catalog.Object
 
 var guard sync.Mutex
+var trail audit.Trail
+
+func SetAuditTrail(t audit.Trail) {
+	trail = t
+}
 
 func NewControllerSet() ControllerSet {
 	return ControllerSet{
@@ -194,20 +200,20 @@ func (cc *ControllerSet) Add(c Controller) (*Controller, error) {
 	return record, nil
 }
 
-func (cc *ControllerSet) UpdateByOID(oid string, value string) ([]interface{}, error) {
+func (cc *ControllerSet) UpdateByOID(uid string, oid string, value string) ([]interface{}, error) {
 	if cc == nil {
 		return nil, nil
 	}
 
 	// ... interface
 	if cc.LAN != nil && strings.HasPrefix(oid, cc.LAN.OID) {
-		return cc.LAN.set(oid, value)
+		return cc.LAN.set(uid, oid, value)
 	}
 
 	// ... controllers
 	for _, c := range cc.Controllers {
 		if c != nil && strings.HasPrefix(oid, c.OID) {
-			return c.set(oid, value)
+			return c.set(uid, oid, value)
 		}
 	}
 
@@ -219,6 +225,7 @@ func (cc *ControllerSet) UpdateByOID(oid string, value string) ([]interface{}, e
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
+			c.log("add", uid, c.OID, "controller", "", "")
 			objects = append(objects, object{
 				OID:   c.OID,
 				Value: "new",
@@ -512,4 +519,23 @@ func scrub(cc *ControllerSet) error {
 
 func warn(err error) {
 	log.Printf("ERROR %v", err)
+}
+
+func stringify(i interface{}) string {
+	switch v := i.(type) {
+	case *uint32:
+		if v != nil {
+			return fmt.Sprintf("%v", *v)
+		}
+
+	case *string:
+		if v != nil {
+			return fmt.Sprintf("%v", *v)
+		}
+
+	default:
+		return fmt.Sprintf("%v", i)
+	}
+
+	return ""
 }
