@@ -4,9 +4,8 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- cleanup no longer used stuff
-        -- don't overwrite 'modified' fields on update (e.g. create => delete+background refresh)
         -- add/update/delete operation authorisation
+        -- cleanup no longer used stuff
         -- make interface .0 the LAN type and the actual value the status (?)
         -- make property status suffix consistently .1 or .0 (?)
         -- (?) new controller not being persisted

@@ -153,7 +153,10 @@ function update (element, value, status) {
     }
 
     // update fields not pending or modified
-    element.value = v
+    if (element !== document.activeElement) {
+      element.value = v
+    }
+
     set(element, value)
   }
 }

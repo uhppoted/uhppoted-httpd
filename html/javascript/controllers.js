@@ -111,8 +111,11 @@ function update (element, value, status) {
       return
     }
 
-    // update fields not pending or modified
-    element.value = v
+    // update fields not pending, modified or editing
+    if (element !== document.activeElement) {
+      element.value = v
+    }
+
     set(element, value, status)
   }
 }
