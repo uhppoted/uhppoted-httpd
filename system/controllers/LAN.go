@@ -53,6 +53,10 @@ var cache = deviceCache{
 	cache: map[uint32]device{},
 }
 
+func (l *LAN) String() string {
+	return fmt.Sprintf("%v", l.Name)
+}
+
 func (l *LAN) AsObjects() []interface{} {
 	objects := []interface{}{
 		object{OID: l.OID, Value: "LAN"},
@@ -63,6 +67,22 @@ func (l *LAN) AsObjects() []interface{} {
 	}
 
 	return objects
+}
+
+func (l *LAN) AsRuleEntity() interface{} {
+	type entity struct {
+		Type string
+		Name string
+	}
+
+	if l != nil {
+		return &entity{
+			Type: "LAN",
+			Name: fmt.Sprintf("%v", l.Name),
+		}
+	}
+
+	return &entity{}
 }
 
 func (l *LAN) clone() *LAN {
@@ -85,18 +105,32 @@ func (l *LAN) clone() *LAN {
 func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
+	f := func(field string, value interface{}) error {
+		if auth == nil {
+			return nil
+		}
+
+		return auth.CanUpdateInterface(l, field, value)
+	}
+
 	if l != nil {
 		switch oid {
 		case l.OID + ".1":
-			l.log(auth, "update", l.OID, "name", stringify(l.Name), value)
-			l.Name = value
-			objects = append(objects, object{
-				OID:   l.OID + ".1",
-				Value: l.Name,
-			})
+			if err := f("name", value); err != nil {
+				return nil, err
+			} else {
+				l.log(auth, "update", l.OID, "name", stringify(l.Name), value)
+				l.Name = value
+				objects = append(objects, object{
+					OID:   l.OID + ".1",
+					Value: l.Name,
+				})
+			}
 
 		case l.OID + ".2":
 			if addr, err := core.ResolveBindAddr(value); err != nil {
+				return nil, err
+			} else if err := f("bind", addr); err != nil {
 				return nil, err
 			} else {
 				l.log(auth, "update", l.OID, "bind", stringify(l.BindAddress), value)
@@ -110,6 +144,8 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 		case l.OID + ".3":
 			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
 				return nil, err
+			} else if err := f("broadcast", addr); err != nil {
+				return nil, err
 			} else {
 				l.log(auth, "update", l.OID, "broadcast", stringify(l.BroadcastAddress), value)
 				l.BroadcastAddress = *addr
@@ -121,6 +157,8 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 
 		case l.OID + ".4":
 			if addr, err := core.ResolveListenAddr(value); err != nil {
+				return nil, err
+			} else if err = f("listen", addr); err != nil {
 				return nil, err
 			} else {
 				l.log(auth, "update", l.OID, "listen", stringify(l.ListenAddress), value)

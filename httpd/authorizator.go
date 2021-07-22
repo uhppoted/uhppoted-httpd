@@ -54,6 +54,36 @@ func (a *authorizator) UID() string {
 	return "?"
 }
 
+func (a *authorizator) CanUpdateInterface(lan auth.Operant, field string, value interface{}) error {
+	msg := fmt.Errorf("Not authorized to update interface %v", lan)
+	err := fmt.Errorf("Not authorized for operation %s", "update::interface")
+
+	if a != nil && lan != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"INTERFACE": lan.AsRuleEntity(),
+			"FIELD":     field,
+			"VALUE":     value,
+		}
+
+		if err = a.eval("system", "update::interface", &r, m); err != nil {
+			return types.Unauthorized(msg, err)
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::interface %s, field:%s, value:%v", toString(lan), field, value))
+	}
+
+	return types.Unauthorized(msg, err)
+}
+
 func (a *authorizator) CanAddController(controller auth.Operant) error {
 	msg := fmt.Errorf("Not authorized to add controller")
 	err := fmt.Errorf("Not authorized for operation %s", "add::controller")
@@ -68,7 +98,7 @@ func (a *authorizator) CanAddController(controller auth.Operant) error {
 			"CONTROLLER": controller.AsRuleEntity(),
 		}
 
-		if err := a.eval("system", "add", &r, m); err != nil {
+		if err := a.eval("system", "add::controller", &r, m); err != nil {
 			return types.Unauthorized(msg, err)
 		}
 
@@ -97,7 +127,7 @@ func (a *authorizator) CanUpdateController(original, updated auth.Operant) error
 			"UPDATED":  updated.AsRuleEntity(),
 		}
 
-		if err = a.eval("system", "update", &r, m); err != nil {
+		if err = a.eval("system", "update::controller", &r, m); err != nil {
 			return types.Unauthorized(msg, err)
 		}
 
@@ -125,7 +155,7 @@ func (a *authorizator) CanDeleteController(controller auth.Operant) error {
 			"CONTROLLER": controller.AsRuleEntity(),
 		}
 
-		if err := a.eval("system", "delete", &r, m); err != nil {
+		if err := a.eval("system", "delete::controller", &r, m); err != nil {
 			return types.Unauthorized(msg, err)
 		}
 
