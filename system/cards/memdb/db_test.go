@@ -22,11 +22,15 @@ func (x *stub) UID() string {
 	return "stub"
 }
 
+func (x *stub) CanUpdateInterface(lan auth.Operant, field string, value interface{}) error {
+	return fmt.Errorf("not authorised")
+}
+
 func (x *stub) CanAddController(controller auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 
-func (x *stub) CanUpdateController(before, after auth.Operant) error {
+func (x *stub) CanUpdateController(controller auth.Operant, field string, value interface{}) error {
 	return fmt.Errorf("not authorised")
 }
 
