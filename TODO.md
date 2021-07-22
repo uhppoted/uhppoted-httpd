@@ -4,8 +4,6 @@
 
 - [ ] system
       - rework controllers to use OID's
-        -- LAN update operation authorisation
-        -- controller update operation authorisation
         -- update LAN+catalog after deleting a controller
         -- cleanup no longer used stuff
         -- make interface .0 the LAN type and the actual value the status (?)

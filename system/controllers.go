@@ -62,32 +62,6 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	return list, nil
 }
 
-func (s *system) update(shadow *controllers.ControllerSet, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
-	var current *controllers.Controller
-
-	for _, v := range s.controllers.Controllers {
-		if v.OID == c.OID {
-			current = v
-			break
-		}
-	}
-
-	record, err := shadow.Update(c)
-	if err != nil {
-		return nil, types.BadRequest(err, fmt.Errorf("Invalid 'update' request (%w)", err))
-	}
-
-	if auth != nil {
-		if err := auth.CanUpdateController(current, record); err != nil {
-			return nil, types.Unauthorized(fmt.Errorf("Not authorized to update controller"), err)
-		}
-	}
-
-	s.log("update", map[string]interface{}{"original": current, "updated": record}, auth)
-
-	return record, nil
-}
-
 func save(c *controllers.ControllerSet) error {
 	if err := validate(c); err != nil {
 		return err

@@ -6,7 +6,6 @@ import (
 	"math"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
@@ -281,13 +280,7 @@ func (c *Controller) String() string {
 		return ""
 	}
 
-	s := []string{
-		c.OID,
-		stringify(c.Name),
-		stringify(c.DeviceID),
-	}
-
-	return strings.TrimSpace(strings.Join(s, " "))
+	return fmt.Sprintf("%v (%v)", stringify(c.Name), stringify(c.DeviceID))
 }
 
 func (c *Controller) IsValid() bool {
@@ -313,19 +306,33 @@ func (c *Controller) IsSaveable() bool {
 func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
+	f := func(field string, value interface{}) error {
+		if auth == nil {
+			return nil
+		}
+
+		return auth.CanUpdateController(c, field, value)
+	}
+
 	if c != nil {
 		switch oid {
 		case c.OID + ".1":
-			c.log(auth, "update", c.OID, "name", stringify(c.Name), value)
-			name := types.Name(value)
-			c.Name = &name
-			objects = append(objects, object{
-				OID:   c.OID + ".1",
-				Value: stringify(c.Name),
-			})
+			if err := f("name", value); err != nil {
+				return nil, err
+			} else {
+				c.log(auth, "update", c.OID, "name", stringify(c.Name), value)
+				name := types.Name(value)
+				c.Name = &name
+				objects = append(objects, object{
+					OID:   c.OID + ".1",
+					Value: stringify(c.Name),
+				})
+			}
 
 		case c.OID + ".2":
-			if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
+			if err := f("deviceID", value); err != nil {
+				return nil, err
+			} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 				if id, err := strconv.ParseUint(value, 10, 32); err == nil {
 					c.log(auth, "update", c.OID, "device-id", stringify(c.DeviceID), value)
 					cid := uint32(id)
@@ -347,6 +354,8 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 		case c.OID + ".3":
 			if addr, err := core.ResolveAddr(value); err != nil {
 				return nil, err
+			} else if err := f("address", addr); err != nil {
+				return nil, err
 			} else {
 				c.log(auth, "update", c.OID, "address", stringify(c.IP), value)
 				c.IP = addr
@@ -358,6 +367,8 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 
 		case c.OID + ".4":
 			if tz, err := types.Timezone(value); err != nil {
+				return nil, err
+			} else if err := f("timezone", tz); err != nil {
 				return nil, err
 			} else {
 				c.log(auth, "update", c.OID, "timezone", stringify(c.TimeZone), tz.String())
@@ -387,43 +398,53 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			}
 
 		case c.OID + ".7":
-			c.log(auth, "update", c.OID, "door[1]", stringify(c.Doors[1]), value)
-			c.Doors[1] = value
-			objects = append(objects, object{
-				OID:   c.OID + ".7",
-				Value: fmt.Sprintf("%v", c.Doors[1]),
-			})
+			if err := f("door[1]", value); err != nil {
+				return nil, err
+			} else {
+				c.log(auth, "update", c.OID, "door[1]", stringify(c.Doors[1]), value)
+				c.Doors[1] = value
+				objects = append(objects, object{
+					OID:   c.OID + ".7",
+					Value: fmt.Sprintf("%v", c.Doors[1]),
+				})
+			}
 
 		case c.OID + ".8":
-			c.log(auth, "update", c.OID, "door[2]", stringify(c.Doors[2]), value)
-			c.Doors[2] = value
-			objects = append(objects, object{
-				OID:   c.OID + ".8",
-				Value: fmt.Sprintf("%v", c.Doors[2]),
-			})
+			if err := f("door[2]", value); err != nil {
+				return nil, err
+			} else {
+				c.log(auth, "update", c.OID, "door[2]", stringify(c.Doors[2]), value)
+				c.Doors[2] = value
+				objects = append(objects, object{
+					OID:   c.OID + ".8",
+					Value: fmt.Sprintf("%v", c.Doors[2]),
+				})
+			}
 
 		case c.OID + ".9":
-			c.log(auth, "update", c.OID, "door[3]", stringify(c.Doors[3]), value)
-			c.Doors[3] = value
-			objects = append(objects, object{
-				OID:   c.OID + ".9",
-				Value: fmt.Sprintf("%v", c.Doors[3]),
-			})
+			if err := f("door[3]", value); err != nil {
+				return nil, err
+			} else {
+				c.log(auth, "update", c.OID, "door[3]", stringify(c.Doors[3]), value)
+				c.Doors[3] = value
+				objects = append(objects, object{
+					OID:   c.OID + ".9",
+					Value: fmt.Sprintf("%v", c.Doors[3]),
+				})
+			}
 
 		case c.OID + ".10":
-			c.log(auth, "update", c.OID, "door[4]", stringify(c.Doors[4]), value)
-			c.Doors[4] = value
-			objects = append(objects, object{
-				OID:   c.OID + ".10",
-				Value: fmt.Sprintf("%v", c.Doors[4]),
-			})
+			if err := f("door[4]", value); err != nil {
+				return nil, err
+			} else {
+				c.log(auth, "update", c.OID, "door[4]", stringify(c.Doors[4]), value)
+				c.Doors[4] = value
+				objects = append(objects, object{
+					OID:   c.OID + ".10",
+					Value: fmt.Sprintf("%v", c.Doors[4]),
+				})
+			}
 		}
-
-		//		if auth != nil {
-		//			if err := auth.CanUpdateController(current, record); err != nil {
-		//				return nil, err
-		//			}
-		//		}
 
 		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
 			if auth != nil {

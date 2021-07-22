@@ -78,7 +78,7 @@ func (a *authorizator) CanUpdateInterface(lan auth.Operant, field string, value 
 			return nil
 		}
 
-		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::interface %s, field:%s, value:%v", toString(lan), field, value))
+		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::interface %v, field:%v, value:%v", toString(lan), field, value))
 	}
 
 	return types.Unauthorized(msg, err)
@@ -112,19 +112,20 @@ func (a *authorizator) CanAddController(controller auth.Operant) error {
 	return types.Unauthorized(msg, err)
 }
 
-func (a *authorizator) CanUpdateController(original, updated auth.Operant) error {
-	msg := fmt.Errorf("Not authorized to update controller")
+func (a *authorizator) CanUpdateController(controller auth.Operant, field string, value interface{}) error {
+	msg := fmt.Errorf("Not authorized to update controller %v", controller)
 	err := fmt.Errorf("Not authorized for operation %s", "update::controller")
 
-	if a != nil && original != nil && updated != nil {
+	if a != nil && controller != nil {
 		r := result{
 			Allow:  false,
 			Refuse: false,
 		}
 
 		m := map[string]interface{}{
-			"ORIGINAL": original.AsRuleEntity(),
-			"UPDATED":  updated.AsRuleEntity(),
+			"CONTROLLER": controller.AsRuleEntity(),
+			"FIELD":      field,
+			"VALUE":      value,
 		}
 
 		if err = a.eval("system", "update::controller", &r, m); err != nil {
@@ -135,7 +136,7 @@ func (a *authorizator) CanUpdateController(original, updated auth.Operant) error
 			return nil
 		}
 
-		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::controller %s %s", toString(original), toString(updated)))
+		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::controller %v, field:%v, value:%v", controller, field, value))
 	}
 
 	return types.Unauthorized(msg, err)
