@@ -420,6 +420,12 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 		}
 
 		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+			if auth != nil {
+				if err := auth.CanDeleteController(c); err != nil {
+					return nil, err
+				}
+			}
+
 			c.log(auth, "delete", c.OID, "device-id", "", "")
 			now := time.Now()
 			c.deleted = &now

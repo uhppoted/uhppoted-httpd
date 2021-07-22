@@ -101,33 +101,6 @@ func (s *system) update(shadow *controllers.ControllerSet, c controllers.Control
 	return record, nil
 }
 
-func (s *system) delete(shadow *controllers.ControllerSet, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
-	record, err := shadow.Delete(c)
-	if err != nil {
-		return nil, &types.HttpdError{
-			Status: http.StatusUnauthorized,
-			Err:    err,
-			Detail: fmt.Errorf("Invalid 'update' request (%w)", err),
-		}
-	}
-
-	if record != nil && auth != nil {
-		if err := auth.CanDeleteController(record); err != nil {
-			return nil, &types.HttpdError{
-				Status: http.StatusUnauthorized,
-				Err:    fmt.Errorf("Not authorized to delete controller"),
-				Detail: fmt.Errorf("Invalid 'update' request (%w)", fmt.Errorf("Not authorized to delete controller")),
-			}
-		}
-	}
-
-	catalog.Delete(record.OID)
-
-	s.log("delete", record, auth)
-
-	return record, nil
-}
-
 func save(c *controllers.ControllerSet) error {
 	if err := validate(c); err != nil {
 		return err

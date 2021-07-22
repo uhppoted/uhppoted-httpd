@@ -285,6 +285,9 @@ func (cc *ControllerSet) Delete(c Controller) (*Controller, error) {
 			c.deleted = &now
 			record.deleted = &now
 			cc.LAN.delete(*record)
+
+			catalog.Delete(c.OID)
+
 			return &c, nil
 		}
 	}
