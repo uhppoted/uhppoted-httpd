@@ -19,8 +19,19 @@ jobs:
         go-version: ^1.16
       id: go
 
+    - name: Setup NPM
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install sass
+      run: npm install -g sass
+
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
+
+    - name: Install eslint
+      run: npm install eslint eslint-config-standard eslint-plugin-promise eslint-plugin-import eslint-plugin-node --save-dev
 
     - name: Build
       run: make build-all

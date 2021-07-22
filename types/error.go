@@ -1,5 +1,9 @@
 package types
 
+import (
+	"net/http"
+)
+
 type HttpdError struct {
 	Status int
 	Err    error
@@ -8,4 +12,12 @@ type HttpdError struct {
 
 func (e *HttpdError) Error() string {
 	return e.Err.Error()
+}
+
+func Unauthorized(msg, err error) *HttpdError {
+	return &HttpdError{
+		Status: http.StatusUnauthorized,
+		Err:    msg,
+		Detail: err,
+	}
 }

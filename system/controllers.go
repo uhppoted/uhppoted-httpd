@@ -32,15 +32,10 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 		Objects []interface{} `json:"objects,omitempty"`
 	}{}
 
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
-
 	shadow := sys.controllers.Clone()
 
 	for _, object := range objects {
-		if updated, err := shadow.UpdateByOID(uid, object.OID, object.Value); err != nil {
+		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value); err != nil {
 			return nil, err
 		} else if updated != nil {
 			list.Objects = append(list.Objects, updated...)
@@ -70,27 +65,6 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	})
 
 	return list, nil
-}
-
-func (s *system) add(shadow *controllers.ControllerSet, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {
-	if auth != nil {
-		if err := auth.CanAddController(&c); err != nil {
-			return nil, &types.HttpdError{
-				Status: http.StatusUnauthorized,
-				Err:    fmt.Errorf("Not authorized to add controller"),
-				Detail: err,
-			}
-		}
-	}
-
-	record, err := shadow.Add(c)
-	if err != nil {
-		return nil, err
-	}
-
-	s.log("add", record, auth)
-
-	return record, nil
 }
 
 func (s *system) update(shadow *controllers.ControllerSet, c controllers.Controller, auth auth.OpAuth) (*controllers.Controller, error) {

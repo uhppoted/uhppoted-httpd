@@ -11,6 +11,7 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -309,13 +310,13 @@ func (c *Controller) IsSaveable() bool {
 	return true
 }
 
-func (c *Controller) set(uid string, oid string, value string) ([]interface{}, error) {
+func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	if c != nil {
 		switch oid {
 		case c.OID + ".1":
-			c.log("update", uid, c.OID, "name", stringify(c.Name), value)
+			c.log(auth, "update", c.OID, "name", stringify(c.Name), value)
 			name := types.Name(value)
 			c.Name = &name
 			objects = append(objects, object{
@@ -326,7 +327,7 @@ func (c *Controller) set(uid string, oid string, value string) ([]interface{}, e
 		case c.OID + ".2":
 			if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 				if id, err := strconv.ParseUint(value, 10, 32); err == nil {
-					c.log("update", uid, c.OID, "device-id", stringify(c.DeviceID), value)
+					c.log(auth, "update", c.OID, "device-id", stringify(c.DeviceID), value)
 					cid := uint32(id)
 					c.DeviceID = &cid
 					objects = append(objects, object{
@@ -335,7 +336,7 @@ func (c *Controller) set(uid string, oid string, value string) ([]interface{}, e
 					})
 				}
 			} else if value == "" {
-				c.log("update", uid, c.OID, "device-id", stringify(c.DeviceID), value)
+				c.log(auth, "update", c.OID, "device-id", stringify(c.DeviceID), value)
 				c.DeviceID = nil
 				objects = append(objects, object{
 					OID:   c.OID + ".2",
@@ -347,7 +348,7 @@ func (c *Controller) set(uid string, oid string, value string) ([]interface{}, e
 			if addr, err := core.ResolveAddr(value); err != nil {
 				return nil, err
 			} else {
-				c.log("update", uid, c.OID, "address", stringify(c.IP), value)
+				c.log(auth, "update", c.OID, "address", stringify(c.IP), value)
 				c.IP = addr
 				objects = append(objects, object{
 					OID:   c.OID + ".3",
@@ -359,7 +360,7 @@ func (c *Controller) set(uid string, oid string, value string) ([]interface{}, e
 			if tz, err := types.Timezone(value); err != nil {
 				return nil, err
 			} else {
-				c.log("update", uid, c.OID, "timezone", stringify(c.TimeZone), tz.String())
+				c.log(auth, "update", c.OID, "timezone", stringify(c.TimeZone), tz.String())
 				tzs := tz.String()
 				c.TimeZone = &tzs
 
@@ -386,7 +387,7 @@ func (c *Controller) set(uid string, oid string, value string) ([]interface{}, e
 			}
 
 		case c.OID + ".7":
-			c.log("update", uid, c.OID, "door[1]", stringify(c.Doors[1]), value)
+			c.log(auth, "update", c.OID, "door[1]", stringify(c.Doors[1]), value)
 			c.Doors[1] = value
 			objects = append(objects, object{
 				OID:   c.OID + ".7",
@@ -394,7 +395,7 @@ func (c *Controller) set(uid string, oid string, value string) ([]interface{}, e
 			})
 
 		case c.OID + ".8":
-			c.log("update", uid, c.OID, "door[2]", stringify(c.Doors[2]), value)
+			c.log(auth, "update", c.OID, "door[2]", stringify(c.Doors[2]), value)
 			c.Doors[2] = value
 			objects = append(objects, object{
 				OID:   c.OID + ".8",
@@ -402,7 +403,7 @@ func (c *Controller) set(uid string, oid string, value string) ([]interface{}, e
 			})
 
 		case c.OID + ".9":
-			c.log("update", uid, c.OID, "door[3]", stringify(c.Doors[3]), value)
+			c.log(auth, "update", c.OID, "door[3]", stringify(c.Doors[3]), value)
 			c.Doors[3] = value
 			objects = append(objects, object{
 				OID:   c.OID + ".9",
@@ -410,7 +411,7 @@ func (c *Controller) set(uid string, oid string, value string) ([]interface{}, e
 			})
 
 		case c.OID + ".10":
-			c.log("update", uid, c.OID, "door[4]", stringify(c.Doors[4]), value)
+			c.log(auth, "update", c.OID, "door[4]", stringify(c.Doors[4]), value)
 			c.Doors[4] = value
 			objects = append(objects, object{
 				OID:   c.OID + ".10",
@@ -419,7 +420,7 @@ func (c *Controller) set(uid string, oid string, value string) ([]interface{}, e
 		}
 
 		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
-			c.log("delete", uid, c.OID, "device-id", "", "")
+			c.log(auth, "delete", c.OID, "device-id", "", "")
 			now := time.Now()
 			c.deleted = &now
 
@@ -458,13 +459,18 @@ func (c *Controller) clone() *Controller {
 	return nil
 }
 
-func (c *Controller) log(operation, uid, OID, field, current, value string) {
+func (c *Controller) log(auth auth.OpAuth, operation, OID, field, current, value string) {
 	type info struct {
 		OID        string `json:"OID"`
 		Controller string `json:"controller"`
 		Field      string `json:"field"`
 		Current    string `json:"current"`
 		Updated    string `json:"new"`
+	}
+
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
 	}
 
 	if trail != nil {

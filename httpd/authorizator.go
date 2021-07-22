@@ -55,6 +55,9 @@ func (a *authorizator) UID() string {
 }
 
 func (a *authorizator) CanAddController(controller auth.Operant) error {
+	msg := fmt.Errorf("Not authorized to add controller")
+	err := fmt.Errorf("Not authorized for operation %s", "add::controller")
+
 	if a != nil && controller != nil {
 		r := result{
 			Allow:  false,
@@ -66,17 +69,17 @@ func (a *authorizator) CanAddController(controller auth.Operant) error {
 		}
 
 		if err := a.eval("system", "add", &r, m); err != nil {
-			return err
+			return types.Unauthorized(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
 			return nil
 		}
 
-		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::controller %s", toString(controller)))
+		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::controller %s", toString(controller)))
 	}
 
-	return fmt.Errorf("Not authorized for operation %s", "add::controller")
+	return types.Unauthorized(msg, err)
 }
 
 func (a *authorizator) CanUpdateController(original, updated auth.Operant) error {

@@ -33,10 +33,10 @@ build: format
 test: build
 	go test ./...
 
-vet: build
+vet: test
 	go vet ./...
 
-lint: build
+lint: vet
 	golint ./...
 	npx eslint html/javascript/*.js
 
@@ -46,11 +46,7 @@ benchmark: build
 coverage: build
 	go test -cover ./...
 
-build-all: 
-	mkdir -p bin
-	go build -o bin ./...
-	go test ./...
-	go vet ./...
+build-all: vet
 	mkdir -p dist/$(DIST)/windows
 	mkdir -p dist/$(DIST)/darwin
 	mkdir -p dist/$(DIST)/linux

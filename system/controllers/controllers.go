@@ -15,6 +15,7 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
@@ -184,7 +185,7 @@ func (cc *ControllerSet) Print() {
 	}
 }
 
-func (cc *ControllerSet) Add(c Controller) (*Controller, error) {
+func (cc *ControllerSet) Add(auth auth.OpAuth, c Controller) (*Controller, error) {
 	id := uint32(0)
 	if c.DeviceID != nil {
 		id = *c.DeviceID
@@ -194,37 +195,43 @@ func (cc *ControllerSet) Add(c Controller) (*Controller, error) {
 	record.OID = catalog.Get(id)
 	record.created = time.Now()
 
+	if auth != nil {
+		if err := auth.CanAddController(record); err != nil {
+			return nil, err
+		}
+	}
+
 	cc.Controllers = append(cc.Controllers, record)
 
 	return record, nil
 }
 
-func (cc *ControllerSet) UpdateByOID(uid string, oid string, value string) ([]interface{}, error) {
+func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
 	if cc == nil {
 		return nil, nil
 	}
 
 	// ... interface
 	if cc.LAN != nil && strings.HasPrefix(oid, cc.LAN.OID) {
-		return cc.LAN.set(uid, oid, value)
+		return cc.LAN.set(auth, oid, value)
 	}
 
 	// ... controllers
 	for _, c := range cc.Controllers {
 		if c != nil && strings.HasPrefix(oid, c.OID) {
-			return c.set(uid, oid, value)
+			return c.set(auth, oid, value)
 		}
 	}
 
 	objects := []interface{}{}
 
 	if oid == "<new>" {
-		if c, err := cc.Add(Controller{}); err != nil {
+		if c, err := cc.Add(auth, Controller{}); err != nil {
 			return nil, err
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
-			c.log("add", uid, c.OID, "controller", "", "")
+			c.log(auth, "add", c.OID, "controller", "", "")
 			objects = append(objects, object{
 				OID:   c.OID,
 				Value: "new",

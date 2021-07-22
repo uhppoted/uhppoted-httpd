@@ -13,6 +13,7 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
@@ -81,13 +82,13 @@ func (l *LAN) clone() *LAN {
 	return nil
 }
 
-func (l *LAN) set(uid string, oid string, value string) ([]interface{}, error) {
+func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	if l != nil {
 		switch oid {
 		case l.OID + ".1":
-			l.log("update", uid, l.OID, "name", stringify(l.Name), value)
+			l.log(auth, "update", l.OID, "name", stringify(l.Name), value)
 			l.Name = value
 			objects = append(objects, object{
 				OID:   l.OID + ".1",
@@ -98,7 +99,7 @@ func (l *LAN) set(uid string, oid string, value string) ([]interface{}, error) {
 			if addr, err := core.ResolveBindAddr(value); err != nil {
 				return nil, err
 			} else {
-				l.log("update", uid, l.OID, "bind", stringify(l.BindAddress), value)
+				l.log(auth, "update", l.OID, "bind", stringify(l.BindAddress), value)
 				l.BindAddress = *addr
 				objects = append(objects, object{
 					OID:   l.OID + ".2",
@@ -110,7 +111,7 @@ func (l *LAN) set(uid string, oid string, value string) ([]interface{}, error) {
 			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
 				return nil, err
 			} else {
-				l.log("update", uid, l.OID, "broadcast", stringify(l.BroadcastAddress), value)
+				l.log(auth, "update", l.OID, "broadcast", stringify(l.BroadcastAddress), value)
 				l.BroadcastAddress = *addr
 				objects = append(objects, object{
 					OID:   l.OID + ".3",
@@ -122,7 +123,7 @@ func (l *LAN) set(uid string, oid string, value string) ([]interface{}, error) {
 			if addr, err := core.ResolveListenAddr(value); err != nil {
 				return nil, err
 			} else {
-				l.log("update", uid, l.OID, "listen", stringify(l.ListenAddress), value)
+				l.log(auth, "update", l.OID, "listen", stringify(l.ListenAddress), value)
 				l.ListenAddress = *addr
 				objects = append(objects, object{
 					OID:   l.OID + ".4",
@@ -396,13 +397,18 @@ func (l *LAN) synchTime(controllers []*Controller) {
 	}
 }
 
-func (l *LAN) log(operation, uid, OID, field, current, value string) {
+func (l *LAN) log(auth auth.OpAuth, operation, OID, field, current, value string) {
 	type info struct {
 		OID       string `json:"OID"`
 		Interface string `json:"interface"`
 		Field     string `json:"field"`
 		Current   string `json:"current"`
 		Updated   string `json:"new"`
+	}
+
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
 	}
 
 	if trail != nil {
