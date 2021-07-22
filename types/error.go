@@ -21,3 +21,11 @@ func Unauthorized(msg, err error) *HttpdError {
 		Detail: err,
 	}
 }
+
+func BadRequest(msg, err error) *HttpdError {
+	return &HttpdError{
+		Status: http.StatusBadRequest,
+		Err:    msg,
+		Detail: err,
+	}
+}

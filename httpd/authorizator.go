@@ -83,6 +83,9 @@ func (a *authorizator) CanAddController(controller auth.Operant) error {
 }
 
 func (a *authorizator) CanUpdateController(original, updated auth.Operant) error {
+	msg := fmt.Errorf("Not authorized to update controller")
+	err := fmt.Errorf("Not authorized for operation %s", "update::controller")
+
 	if a != nil && original != nil && updated != nil {
 		r := result{
 			Allow:  false,
@@ -94,18 +97,18 @@ func (a *authorizator) CanUpdateController(original, updated auth.Operant) error
 			"UPDATED":  updated.AsRuleEntity(),
 		}
 
-		if err := a.eval("system", "update", &r, m); err != nil {
-			return err
+		if err = a.eval("system", "update", &r, m); err != nil {
+			return types.Unauthorized(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
 			return nil
 		}
 
-		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::controller %s %s", toString(original), toString(updated)))
+		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::controller %s %s", toString(original), toString(updated)))
 	}
 
-	return fmt.Errorf("Not authorized for operation %s", "update::controller")
+	return types.Unauthorized(msg, err)
 }
 
 func (a *authorizator) CanDeleteController(controller auth.Operant) error {

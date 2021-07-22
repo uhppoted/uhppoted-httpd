@@ -419,6 +419,12 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			})
 		}
 
+		//		if auth != nil {
+		//			if err := auth.CanUpdateController(current, record); err != nil {
+		//				return nil, err
+		//			}
+		//		}
+
 		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
 			if auth != nil {
 				if err := auth.CanDeleteController(c); err != nil {

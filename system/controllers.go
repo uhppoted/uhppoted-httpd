@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -21,11 +20,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 	objects, err := unpack(m)
 	if err != nil {
-		return nil, &types.HttpdError{
-			Status: http.StatusBadRequest,
-			Err:    fmt.Errorf("Invalid request (%v)", err),
-			Detail: fmt.Errorf("Error unpacking 'post' request (%w)", err),
-		}
+		return nil, err
 	}
 
 	list := struct {
@@ -79,20 +74,12 @@ func (s *system) update(shadow *controllers.ControllerSet, c controllers.Control
 
 	record, err := shadow.Update(c)
 	if err != nil {
-		return nil, &types.HttpdError{
-			Status: http.StatusBadRequest,
-			Err:    err,
-			Detail: fmt.Errorf("Invalid 'update' request (%w)", err),
-		}
+		return nil, types.BadRequest(err, fmt.Errorf("Invalid 'update' request (%w)", err))
 	}
 
 	if auth != nil {
 		if err := auth.CanUpdateController(current, record); err != nil {
-			return nil, &types.HttpdError{
-				Status: http.StatusUnauthorized,
-				Err:    fmt.Errorf("Not authorized to update controller"),
-				Detail: err,
-			}
+			return nil, types.Unauthorized(fmt.Errorf("Not authorized to update controller"), err)
 		}
 	}
 
@@ -111,7 +98,7 @@ func save(c *controllers.ControllerSet) error {
 
 func validate(c *controllers.ControllerSet) error {
 	if err := c.Validate(); err != nil {
-		return err
+		return types.BadRequest(err, err)
 	}
 
 	doors := map[string]string{}
@@ -120,20 +107,12 @@ func validate(c *controllers.ControllerSet) error {
 		for _, v := range r.Doors {
 			if v != "" {
 				if _, ok := sys.doors.Doors[v]; !ok {
-					return &types.HttpdError{
-						Status: http.StatusBadRequest,
-						Err:    fmt.Errorf("Invalid door ID"),
-						Detail: fmt.Errorf("controller %v: invalid door ID (%v)", r.OID, v),
-					}
+					return types.BadRequest(fmt.Errorf("Invalid door ID"), fmt.Errorf("controller %v: invalid door ID (%v)", r.OID, v))
 				}
 			}
 
 			if rid, ok := doors[v]; ok && v != "" {
-				return &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("%v door assigned to more than one controller", sys.doors.Doors[v].Name),
-					Detail: fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID),
-				}
+				return types.BadRequest(fmt.Errorf("%v door assigned to more than one controller", sys.doors.Doors[v].Name), fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID))
 			}
 
 			doors[v] = r.OID
@@ -144,19 +123,23 @@ func validate(c *controllers.ControllerSet) error {
 }
 
 func unpack(m map[string]interface{}) ([]object, error) {
+	f := func(err error) error {
+		return types.BadRequest(fmt.Errorf("Invalid request (%v)", err), fmt.Errorf("Error unpacking 'post' request (%w)", err))
+	}
+
 	o := struct {
 		Objects []object `json:"objects"`
 	}{}
 
 	blob, err := json.Marshal(m)
 	if err != nil {
-		return nil, err
+		return nil, f(err)
 	}
 
 	log.Printf("INFO %v", fmt.Sprintf("UNPACK %s\n", string(blob)))
 
 	if err := json.Unmarshal(blob, &o); err != nil {
-		return nil, err
+		return nil, f(err)
 	}
 
 	return o.Objects, nil
