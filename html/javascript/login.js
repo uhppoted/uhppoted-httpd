@@ -31,7 +31,7 @@ export function login (event) {
       window.location = url
     })
     .catch(function (err) {
-      warning(err)
+      warning(`Error logging in (${err.message.toLowerCase()})`)
     })
 }
 

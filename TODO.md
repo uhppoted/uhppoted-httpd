@@ -2,7 +2,6 @@
 
 ### IN PROGRESS
 
-- [ ] "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'
 - [ ] system
       - rework controllers to use OID's
         -- cleanup no longer used stuff
@@ -117,6 +116,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Neatened up login error reporting
 - [x] Menu pops up when just vaguely over area
 - [x] Make a nice synthesized HTML page for logout when server is down
 - [x] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
