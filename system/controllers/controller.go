@@ -11,6 +11,7 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -323,6 +324,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				c.log(auth, "update", c.OID, "name", stringify(c.Name), value)
 				name := types.Name(value)
 				c.Name = &name
+				c.unconfigured = false
 				objects = append(objects, object{
 					OID:   c.OID + ".1",
 					Value: stringify(c.Name),
@@ -337,6 +339,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 					c.log(auth, "update", c.OID, "device-id", stringify(c.DeviceID), value)
 					cid := uint32(id)
 					c.DeviceID = &cid
+					c.unconfigured = false
 					objects = append(objects, object{
 						OID:   c.OID + ".2",
 						Value: stringify(cid),
@@ -345,6 +348,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			} else if value == "" {
 				c.log(auth, "update", c.OID, "device-id", stringify(c.DeviceID), value)
 				c.DeviceID = nil
+				c.unconfigured = false
 				objects = append(objects, object{
 					OID:   c.OID + ".2",
 					Value: "",
@@ -359,6 +363,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			} else {
 				c.log(auth, "update", c.OID, "address", stringify(c.IP), value)
 				c.IP = addr
+				c.unconfigured = false
 				objects = append(objects, object{
 					OID:   c.OID + ".3",
 					Value: fmt.Sprintf("%v", c.IP),
@@ -374,25 +379,28 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				c.log(auth, "update", c.OID, "timezone", stringify(c.TimeZone), tz.String())
 				tzs := tz.String()
 				c.TimeZone = &tzs
+				c.unconfigured = false
 
-				if cached, ok := cache.cache[*c.DeviceID]; ok {
-					if cached.datetime != nil {
-						tz := time.Local
-						if c.TimeZone != nil {
-							if l, err := timezone(*c.TimeZone); err != nil {
-								warn(err)
-							} else {
-								tz = l
+				if c.DeviceID != nil {
+					if cached, ok := cache.cache[*c.DeviceID]; ok {
+						if cached.datetime != nil {
+							tz := time.Local
+							if c.TimeZone != nil {
+								if l, err := timezone(*c.TimeZone); err != nil {
+									warn(err)
+								} else {
+									tz = l
+								}
 							}
+
+							t := time.Time(*cached.datetime)
+							dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+
+							objects = append(objects, object{
+								OID:   c.OID + ".4",
+								Value: dt.Format("2006-01-02 15:04 MST"),
+							})
 						}
-
-						t := time.Time(*cached.datetime)
-						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-
-						objects = append(objects, object{
-							OID:   c.OID + ".4",
-							Value: dt.Format("2006-01-02 15:04 MST"),
-						})
 					}
 				}
 			}
@@ -403,6 +411,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			} else {
 				c.log(auth, "update", c.OID, "door[1]", stringify(c.Doors[1]), value)
 				c.Doors[1] = value
+				c.unconfigured = false
 				objects = append(objects, object{
 					OID:   c.OID + ".7",
 					Value: fmt.Sprintf("%v", c.Doors[1]),
@@ -415,6 +424,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			} else {
 				c.log(auth, "update", c.OID, "door[2]", stringify(c.Doors[2]), value)
 				c.Doors[2] = value
+				c.unconfigured = false
 				objects = append(objects, object{
 					OID:   c.OID + ".8",
 					Value: fmt.Sprintf("%v", c.Doors[2]),
@@ -427,6 +437,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			} else {
 				c.log(auth, "update", c.OID, "door[3]", stringify(c.Doors[3]), value)
 				c.Doors[3] = value
+				c.unconfigured = false
 				objects = append(objects, object{
 					OID:   c.OID + ".9",
 					Value: fmt.Sprintf("%v", c.Doors[3]),
@@ -439,6 +450,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			} else {
 				c.log(auth, "update", c.OID, "door[4]", stringify(c.Doors[4]), value)
 				c.Doors[4] = value
+				c.unconfigured = false
 				objects = append(objects, object{
 					OID:   c.OID + ".10",
 					Value: fmt.Sprintf("%v", c.Doors[4]),
@@ -461,6 +473,8 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				OID:   c.OID,
 				Value: "deleted",
 			})
+
+			catalog.Delete(c.OID)
 		}
 	}
 

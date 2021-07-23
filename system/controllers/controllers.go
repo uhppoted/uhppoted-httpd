@@ -29,10 +29,6 @@ type ControllerSet struct {
 	LAN         *LAN          `json:"LAN"`
 }
 
-type sortable interface {
-	Created() time.Time
-}
-
 type object catalog.Object
 
 var guard sync.Mutex
@@ -185,27 +181,6 @@ func (cc *ControllerSet) Print() {
 	}
 }
 
-func (cc *ControllerSet) Add(auth auth.OpAuth, c Controller) (*Controller, error) {
-	id := uint32(0)
-	if c.DeviceID != nil {
-		id = *c.DeviceID
-	}
-
-	record := c.clone()
-	record.OID = catalog.Get(id)
-	record.created = time.Now()
-
-	if auth != nil {
-		if err := auth.CanAddController(record); err != nil {
-			return nil, err
-		}
-	}
-
-	cc.Controllers = append(cc.Controllers, record)
-
-	return record, nil
-}
-
 func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
 	if cc == nil {
 		return nil, nil
@@ -226,7 +201,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid string, value string)
 	objects := []interface{}{}
 
 	if oid == "<new>" {
-		if c, err := cc.Add(auth, Controller{}); err != nil {
+		if c, err := cc.add(auth, Controller{}); err != nil {
 			return nil, err
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' controller")
@@ -242,57 +217,25 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid string, value string)
 	return objects, nil
 }
 
-func (cc *ControllerSet) Update(c Controller) (*Controller, error) {
-	for _, record := range cc.Controllers {
-		if record.OID == c.OID {
-			if c.Name != nil {
-				record.Name = c.Name
-			}
+func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error) {
+	id := uint32(0)
+	if c.DeviceID != nil {
+		id = *c.DeviceID
+	}
 
-			if c.DeviceID != nil && *c.DeviceID != 0 {
-				id := *c.DeviceID
-				record.DeviceID = &id
-			}
+	record := c.clone()
+	record.OID = catalog.Get(id)
+	record.created = time.Now()
 
-			if c.IP != nil {
-				record.IP = c.IP.Clone()
-			}
-
-			if c.TimeZone != nil {
-				tz := *c.TimeZone
-				record.TimeZone = &tz
-			}
-
-			if c.Doors != nil {
-				for k, v := range c.Doors {
-					record.Doors[k] = v
-				}
-			}
-
-			record.unconfigured = false
-
-			return record, nil
+	if auth != nil {
+		if err := auth.CanAddController(record); err != nil {
+			return nil, err
 		}
 	}
 
-	return nil, fmt.Errorf("Invalid controller OID '%v'", c.OID)
-}
+	cc.Controllers = append(cc.Controllers, record)
 
-func (cc *ControllerSet) Delete(c Controller) (*Controller, error) {
-	for _, record := range cc.Controllers {
-		if record.OID == c.OID {
-			now := time.Now()
-			c.deleted = &now
-			record.deleted = &now
-			cc.LAN.delete(*record)
-
-			catalog.Delete(c.OID)
-
-			return &c, nil
-		}
-	}
-
-	return nil, nil
+	return record, nil
 }
 
 func (cc *ControllerSet) AsObjects() []interface{} {

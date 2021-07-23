@@ -2,15 +2,13 @@
 
 ### IN PROGRESS
 
+- [ ] "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'
 - [ ] system
       - rework controllers to use OID's
-        -- update LAN+catalog after deleting a controller
         -- cleanup no longer used stuff
         -- make interface .0 the LAN type and the actual value the status (?)
         -- make property status suffix consistently .1 or .0 (?)
         -- (?) new controller not being persisted
-        -- update catalog on controller added/deleted
-        -- update LAN on controller added/deleted
 
       - PDT invalid timezone ???
       - signout page "doesn't have permission" ????
@@ -37,7 +35,6 @@
       - configure systime window
       - use uhppoted-lib::healthcheck
 
-- [ ] "TypeError: Failed to fetch" on httpd stopped + login + 'Enter'
 - [ ] [TOML](https://toml.io) files
 
 - [ ] tabular

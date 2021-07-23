@@ -48,6 +48,7 @@ const (
 )
 
 const WINDOW = 300 // 5 minutes
+const CACHE_EXPIRY = 120 * time.Second
 
 var cache = deviceCache{
 	cache: map[uint32]device{},
@@ -287,6 +288,14 @@ func (l *LAN) compareACL(controllers []*Controller, permissions acl.ACL) error {
 }
 
 func (l *LAN) refresh(controllers []*Controller) {
+	expired := time.Now().Add(-CACHE_EXPIRY)
+	for k, v := range cache.cache {
+		if v.touched.Before(expired) {
+			delete(cache.cache, k)
+			log.Printf("Controller %v cache entry expired", k)
+		}
+	}
+
 	list := map[uint32]struct{}{}
 	for _, c := range controllers {
 		if c.DeviceID != nil && *c.DeviceID != 0 {
@@ -356,15 +365,6 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
 	}
 }
 
-func (l *LAN) delete(c Controller) {
-	cache.guard.Lock()
-	defer cache.guard.Unlock()
-
-	if l != nil && c.DeviceID != nil && *c.DeviceID != 0 {
-		delete(cache.cache, *c.DeviceID)
-	}
-}
-
 func (l *LAN) store(id uint32, info interface{}) {
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
@@ -374,34 +374,42 @@ func (l *LAN) store(id uint32, info interface{}) {
 		cached = device{}
 	}
 
-	cached.touched = time.Now()
-
 	switch v := info.(type) {
 	case uhppoted.GetDeviceResponse:
 		addr := core.Address(v.Address)
 		cached.address = &addr
+		cached.touched = time.Now()
+		cache.cache[id] = cached
 
 	case uhppoted.GetStatusResponse:
 		datetime := types.DateTime(v.Status.SystemDateTime)
 		cached.datetime = &datetime
+		cached.touched = time.Now()
+		cache.cache[id] = cached
 
 	case uhppoted.GetCardRecordsResponse:
 		cards := v.Cards
 		cached.cards = &cards
+		cached.touched = time.Now()
+		cache.cache[id] = cached
 
 	case uhppoted.GetEventRangeResponse:
 		events := v.Events.Last
 		cached.events = events
+		cached.touched = time.Now()
+		cache.cache[id] = cached
 
 	case acl.Diff:
-		if len(v.Updated)+len(v.Added)+len(v.Deleted) > 0 {
-			cached.acl = StatusError
-		} else {
-			cached.acl = StatusOk
+		if ok {
+			if len(v.Updated)+len(v.Added)+len(v.Deleted) > 0 {
+				cached.acl = StatusError
+			} else {
+				cached.acl = StatusOk
+			}
+
+			cache.cache[id] = cached
 		}
 	}
-
-	cache.cache[id] = cached
 }
 
 func (l *LAN) synchTime(controllers []*Controller) {
