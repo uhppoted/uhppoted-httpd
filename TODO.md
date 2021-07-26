@@ -2,7 +2,6 @@
 
 ### IN PROGRESS
 
-- signout page "doesn't have permission" ????
 - [ ] system
       - PDT invalid timezone ???
       - nicer auth handling for e.g. /images
@@ -111,6 +110,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Signout page "doesn't have permission"
 - [x] Neatened up login error reporting
 - [x] Menu pops up when just vaguely over area
 - [x] Make a nice synthesized HTML page for logout when server is down

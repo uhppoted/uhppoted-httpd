@@ -16,13 +16,13 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uid, role, ok := d.authorized(w, r, path)
-	if !ok {
+	if path == "/logout" {
+		d.logout(w, r)
 		return
 	}
 
-	if path == "/logout" {
-		d.logout(w, r)
+	uid, role, ok := d.authorized(w, r, path)
+	if !ok {
 		return
 	}
 
