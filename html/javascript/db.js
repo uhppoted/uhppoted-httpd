@@ -35,7 +35,7 @@ function object (o) {
   const oid = o.OID
 
   // ... interfaces
-  if (oid === '0.1.1.0.1') {
+  if (oid === '0.1.1.1.1') {
     if (!DB.interfaces.has(oid)) {
       DB.interfaces.set(oid, {
         OID: oid,
@@ -81,7 +81,7 @@ function object (o) {
 
   // ... update controller property?
 
-  if (/^0\.1\.1\.[1-9][0-9]*$/.test(oid)) {
+  if (/^0\.1\.1\.2\.[1-9][0-9]*$/.test(oid)) {
     if (DB.controllers.has(oid)) {
       const record = DB.controllers.get(oid)
       record.status = o.value
@@ -115,7 +115,6 @@ function object (o) {
 
       switch (oid) {
         case k:
-          console.log('STATUS: ', o)
           v.status = o.value
           break
 

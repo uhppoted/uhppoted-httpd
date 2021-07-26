@@ -42,7 +42,7 @@ func NewControllerSet() ControllerSet {
 	return ControllerSet{
 		Controllers: []*Controller{},
 		LAN: &LAN{
-			OID:    "0.1.1.0.1",
+			OID:    "0.1.1.1.1",
 			status: StatusOk,
 		},
 		retention: 6 * time.Hour,

@@ -2,21 +2,15 @@
 
 ### IN PROGRESS
 
+- signout page "doesn't have permission" ????
 - [ ] system
-      - rework controllers to use OID's
-        -- cleanup no longer used stuff
-        -- make property status suffix consistently .1 or .0 (?)
-        -- (?) new controller not being persisted
+      - cleanup no longer used stuff
+      - (?) new controller not being persisted
 
       - PDT invalid timezone ???
-      - signout page "doesn't have permission" ????
-      - marshal cards.Records as "" if StatusUnknown
       - nicer auth handling for e.g. /images
         -- auth.Local should return err only if not .*
       - initialise LAN/all from uhppoted.conf (?)
-      - fix Firefox layout
-        -- internal table layout seems to include padding where Chrome doesn't
-        -- explicitly remove border from table rows/cells maybe (?)
       - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
       - logic around correcting time is weird
         -- enter to update doesn't always work
@@ -33,12 +27,16 @@
       - use uhppoted-lib::healthcheck
       - move values to catalog
 
+- [ ] Fix Firefox layout
+      - internal table layout seems to include padding where Chrome doesn't
+      - explicitly remove border from table rows/cells maybe (?)
+
 - [ ] [TOML](https://toml.io) files
 
 - [ ] tabular
-      - [ ] New table row submitted with error cannot be discarded
-      - [ ] empty list: make first row a 'new' row
-      - [ ] Commonalise controller and card handling into tabular.js
+      - New table row submitted with error cannot be discarded
+      - Empty list: make first row a 'new' row
+      - Commonalise controller and card handling into tabular.js
 
 - [ ] ACL
       - wrap ACL update in goroutine
@@ -57,6 +55,7 @@
       - unit tests for ACL rules
 
 - [ ] Card holders
+      - Marshal cards.Records as "" if StatusUnknown
       - highlight current row (?)
       - unit tests for auth rules
       - card type should probably be a string (because otherwise 0 is a reserved number)

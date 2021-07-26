@@ -58,7 +58,7 @@ func Get(deviceID uint32) string {
 loop:
 	for {
 		item += 1
-		oid := fmt.Sprintf("0.1.1.%d", item)
+		oid := fmt.Sprintf("0.1.1.2.%d", item)
 		for v, _ := range catalog.controllers {
 			if v == oid {
 				continue loop
