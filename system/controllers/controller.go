@@ -79,7 +79,7 @@ func (c *Controller) serialize() ([]byte, error) {
 		return nil, nil
 	}
 
-	if (c.Name == nil || *c.Name != "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+	if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
 		return nil, nil
 	}
 

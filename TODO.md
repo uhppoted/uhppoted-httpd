@@ -4,14 +4,10 @@
 
 - signout page "doesn't have permission" ????
 - [ ] system
-      - cleanup no longer used stuff
-      - (?) new controller not being persisted
-
       - PDT invalid timezone ???
       - nicer auth handling for e.g. /images
         -- auth.Local should return err only if not .*
       - initialise LAN/all from uhppoted.conf (?)
-      - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
       - logic around correcting time is weird
         -- enter to update doesn't always work
         -- set() is updating dataset.original which seems wrong but ...
@@ -19,6 +15,7 @@
       - add controller name to uhppote-core
       - add timezone to uhppote-core
       - validate Local::Device timezone on initialization
+      - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
       - Use sync.Map for cache
       - limit number of pending 'update' requests (e.g. if device is not responding)
       - configure update interval

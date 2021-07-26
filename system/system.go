@@ -117,12 +117,10 @@ func System() interface{} {
 
 	return struct {
 		Objects []interface{} `json:"objects"`
-		//		Controllers []interface{} `json:"controllers"`
-		Doors []types.Door `json:"doors"`
+		Doors   []types.Door  `json:"doors"`
 	}{
 		Objects: objects,
-		//		Controllers: []interface{}{controllers},
-		Doors: doors,
+		Doors:   doors,
 	}
 }
 
