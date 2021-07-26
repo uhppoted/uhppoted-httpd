@@ -26,6 +26,8 @@ type LAN struct {
 	BroadcastAddress core.BroadcastAddr `json:"broadcast-address"`
 	ListenAddress    core.ListenAddr    `json:"listen-address"`
 	Debug            bool               `json:"debug"`
+
+	status status
 }
 
 type deviceCache struct {
@@ -60,7 +62,8 @@ func (l *LAN) String() string {
 
 func (l *LAN) AsObjects() []interface{} {
 	objects := []interface{}{
-		object{OID: l.OID, Value: "LAN"},
+		object{OID: l.OID, Value: fmt.Sprintf("%v", l.status)},
+		object{OID: l.OID + ".0", Value: "LAN"},
 		object{OID: l.OID + ".1", Value: l.Name},
 		object{OID: l.OID + ".2", Value: fmt.Sprintf("%v", l.BindAddress)},
 		object{OID: l.OID + ".3", Value: fmt.Sprintf("%v", l.BroadcastAddress)},
@@ -95,6 +98,8 @@ func (l *LAN) clone() *LAN {
 			BroadcastAddress: l.BroadcastAddress,
 			ListenAddress:    l.ListenAddress,
 			Debug:            l.Debug,
+
+			status: l.status,
 		}
 
 		return &lan

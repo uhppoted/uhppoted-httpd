@@ -5,7 +5,6 @@
 - [ ] system
       - rework controllers to use OID's
         -- cleanup no longer used stuff
-        -- make interface .0 the LAN type and the actual value the status (?)
         -- make property status suffix consistently .1 or .0 (?)
         -- (?) new controller not being persisted
 
@@ -26,13 +25,13 @@
       - add controller name to uhppote-core
       - add timezone to uhppote-core
       - validate Local::Device timezone on initialization
-      - cache expiry
       - Use sync.Map for cache
       - limit number of pending 'update' requests (e.g. if device is not responding)
       - configure update interval
       - configure ok/uncertain intervals
       - configure systime window
       - use uhppoted-lib::healthcheck
+      - move values to catalog
 
 - [ ] [TOML](https://toml.io) files
 

@@ -1,6 +1,6 @@
 rule LAN "Only LISTEN address can be changed" {
      when
- 	     OP == "update:interface" && FIELD == "listen"
+ 	     OP == "update::interface" && FIELD == "listen"
  	 then
  	     RESULT.Allow = true;
          Retract("LAN");

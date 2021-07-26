@@ -46,11 +46,14 @@ Logs namespace
      |
      |- 0.1.1                                                  # controller set
      |      |
-     |      |- 0.1.1.0: 'LAN'                                  # controller set interface
-     |      |        |- 0.1.1.0.1: <name>                      # interface name
-     |      |        |- 0.1.1.1.2: <bind>                      # bind address
-     |      |        |- 0.1.1.1.3: <broadcast>                 # broadcast address
-     |      |        |- 0.1.1.1.4: <listen>                    # listen address
+     |      |- 0.1.1.0:                                        # controller set interfaces
+     |      |        |
+     |      |        |- 0.1.1.0.1: <status>                    # interface #1
+     |      |                   |- 0.1.1.0.1.0: <type>         # interface #1 type
+     |      |                   |- 0.1.1.0.1.1: <name>         # interface #1 name
+     |      |                   |- 0.1.1.1.1.2: <bind>         # interface #1 bind address
+     |      |                   |- 0.1.1.1.1.3: <broadcast>    # interface #1 broadcast address
+     |      |                   |- 0.1.1.1.1.4: <listen>       # interface #1 listen address
      |      |
      |      |- 0.1.1.1: <status>                               # UHPPOTE controller #1
      |      |        |- 0.1.1.1.0                              #

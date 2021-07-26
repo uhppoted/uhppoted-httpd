@@ -35,17 +35,17 @@ function object (o) {
   const oid = o.OID
 
   // ... interfaces
-  if (oid === '0.1.1.0') {
+  if (oid === '0.1.1.0.1') {
     if (!DB.interfaces.has(oid)) {
       DB.interfaces.set(oid, {
         OID: oid,
-        type: o.value,
+        type: 'LAN',
         name: 'LAN',
         bind: '',
         broadcast: '',
         listen: '',
 
-        status: 'ok',
+        status: o.value,
         mark: 0
       })
 
@@ -56,6 +56,10 @@ function object (o) {
   DB.interfaces.forEach((v, k) => {
     if (oid.startsWith(k)) {
       switch (oid) {
+        case k + '.0':
+          v.type = o.value
+          break
+
         case k + '.1':
           v.name = o.value
           break

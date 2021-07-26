@@ -56,7 +56,7 @@ func (a *authorizator) UID() string {
 
 func (a *authorizator) CanUpdateInterface(lan auth.Operant, field string, value interface{}) error {
 	msg := fmt.Errorf("Not authorized to update interface %v", lan)
-	err := fmt.Errorf("Not authorized for operation %s", "update::interface")
+	err := fmt.Errorf("Not authorized for operation %v field:%v value:%v", "update::interface", field, value)
 
 	if a != nil && lan != nil {
 		r := result{

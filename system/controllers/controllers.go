@@ -41,8 +41,11 @@ func SetAuditTrail(t audit.Trail) {
 func NewControllerSet() ControllerSet {
 	return ControllerSet{
 		Controllers: []*Controller{},
-		LAN:         &LAN{},
-		retention:   6 * time.Hour,
+		LAN: &LAN{
+			OID:    "0.1.1.0.1",
+			status: StatusOk,
+		},
+		retention: 6 * time.Hour,
 	}
 }
 
@@ -62,7 +65,9 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 		LAN         *LAN              `json:"LAN"`
 	}{
 		Controllers: []json.RawMessage{},
-		LAN:         &LAN{},
+		LAN: &LAN{
+			status: StatusOk,
+		},
 	}
 
 	bytes, err := ioutil.ReadFile(file)
@@ -85,6 +90,7 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 		BroadcastAddress: blob.LAN.BroadcastAddress,
 		ListenAddress:    blob.LAN.ListenAddress,
 		Debug:            blob.LAN.Debug,
+		status:           StatusOk,
 	}
 
 	for _, v := range blob.Controllers {
