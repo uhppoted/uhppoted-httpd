@@ -2,9 +2,13 @@
 
 ### IN PROGRESS
 
-- [ ] system
-      - Fixed log dates
 
+- [ ] system
+      - configure update interval
+      - configure ok/uncertain intervals
+      - configure systime window
+      - Fix `get-events` log string
+      - Fix `get-status` log string
       - initialise LAN/all from uhppoted.conf (?)
       - logic around correcting time is weird
         -- enter to update doesn't always work
@@ -15,9 +19,6 @@
       - validate Local::Device timezone on initialization
       - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
       - limit number of pending 'update' requests (e.g. if device is not responding)
-      - configure update interval
-      - configure ok/uncertain intervals
-      - configure systime window
       - use uhppoted-lib::healthcheck
       - move values to catalog
 
@@ -91,9 +92,6 @@
 - [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 
 - [ ] Fonts
-- [ ] favicon
-      - convert text to paths and cleanup SVG
-      - Safari
 - [ ] User settings
       - automatic logout enabled/timeout
       - change password
@@ -104,10 +102,12 @@
 - [ ] Hamburger menu (?)
 - [ ] Style SVG icons with SASS
 - [ ] Structure CSS somehow :-(
+- [ ] Thoroughly rethink the whole timezone thing
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] favicon
 - [x] Signout page "doesn't have permission"
 - [x] Neatened up login error reporting
 - [x] Menu pops up when just vaguely over area

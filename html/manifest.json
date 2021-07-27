@@ -1,10 +1,6 @@
 {
     "name": "uhppoted",
     "short_name": "uhppoted",
-    "icons": [{
-        "src": "images/favicon-512x512.png",
-        "sizes": "512x512"
-    }],
     "background_color": "#ffffff",
     "theme_color": "#ffffff",
     "display": "fullscreen"
