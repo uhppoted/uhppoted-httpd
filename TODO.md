@@ -3,9 +3,9 @@
 ### IN PROGRESS
 
 - [ ] system
+      - Use sync.Map for cache
       - PDT invalid timezone ???
-      - nicer auth handling for e.g. /images
-        -- auth.Local should return err only if not .*
+
       - initialise LAN/all from uhppoted.conf (?)
       - logic around correcting time is weird
         -- enter to update doesn't always work
@@ -15,7 +15,6 @@
       - add timezone to uhppote-core
       - validate Local::Device timezone on initialization
       - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
-      - Use sync.Map for cache
       - limit number of pending 'update' requests (e.g. if device is not responding)
       - configure update interval
       - configure ok/uncertain intervals

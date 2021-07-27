@@ -32,8 +32,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !strings.HasPrefix(path, "/images/") && !strings.HasPrefix(path, "/css/") && !strings.HasPrefix(path, "/javascript/") && path != "/manifest.json" {
-		_, _, ok := d.authorized(w, r, path)
-		if !ok {
+		if _, _, ok := d.authorized(w, r, path); !ok {
 			return
 		}
 	}
