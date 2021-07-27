@@ -106,11 +106,15 @@ func timezone(s string) (*time.Location, error) {
 		return time.Local, nil
 	}
 
-	re = regexp.MustCompile("UTC([+-][0-9]{1,2})")
 	if tz, err := time.LoadLocation(s); err == nil {
 		return tz, nil
 	}
 
+	if time.Now().Format("MST") == s {
+		return time.Local, nil
+	}
+
+	re = regexp.MustCompile("UTC([+-][0-9]{1,2})")
 	if match := re.FindStringSubmatch(s); match != nil {
 		if offset, err := strconv.Atoi(match[1]); err == nil {
 			if offset != 0 {

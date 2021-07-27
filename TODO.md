@@ -3,8 +3,7 @@
 ### IN PROGRESS
 
 - [ ] system
-      - Use sync.Map for cache
-      - PDT invalid timezone ???
+      - Fixed log dates
 
       - initialise LAN/all from uhppoted.conf (?)
       - logic around correcting time is weird
