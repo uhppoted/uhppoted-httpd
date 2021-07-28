@@ -15,6 +15,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/cards"
 	"github.com/uhppoted/uhppoted-httpd/httpd/controllers"
+	"github.com/uhppoted/uhppoted-httpd/httpd/doors"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
@@ -66,6 +67,10 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	switch path {
 	case "/system":
 		controllers.Fetch(w, r, d.timeout)
+		return
+
+	case "/doors":
+		doors.Fetch(w, r, d.timeout)
 		return
 
 	case "/cardholders":

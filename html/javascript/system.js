@@ -1,6 +1,6 @@
 /* global */
 
-import { getAsJSON, postAsJSON, dismiss, warning } from './uhppoted.js'
+import { busy, unbusy, dismiss, warning, getAsJSON, postAsJSON } from './uhppoted.js'
 import * as controllers from './controllers.js'
 import * as LAN from './interface.js'
 import { DB } from './db.js'
@@ -234,24 +234,6 @@ export function refreshed () {
   })
 
   DB.refreshed('controllers')
-}
-
-export function busy () {
-  const windmill = document.getElementById('windmill')
-  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
-
-  windmill.dataset.count = (queued + 1).toString()
-}
-
-export function unbusy () {
-  const windmill = document.getElementById('windmill')
-  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
-
-  if (queued > 1) {
-    windmill.dataset.count = (queued - 1).toString()
-  } else {
-    delete (windmill.dataset.count)
-  }
 }
 
 // Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid

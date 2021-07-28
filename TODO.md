@@ -2,6 +2,19 @@
 
 ### IN PROGRESS
 
+- Doors
+  - [ ] Fix ACL for reworked types.Door
+  - [ ] HTML: put table etc inside a div to get layout consistent across pages
+  - [ ] Deduplicate `status`
+  - [ ] Deduplicate `type object status`
+  - [ ] Move `doors.update` to _common.js_
+  - [ ] Move `doors.mark` to _common.js_
+  - [ ] Move `doors.percolate` to _common.js_
+  - [ ] Move `doors.set` to _common.js_
+  - [ ] Assign doors to controllers in _DOORS_ page and (optionally) make controller doors readonly
+
+- [ ] Cards
+      - migrate to OIDs
 
 - [ ] system
       - configure update interval

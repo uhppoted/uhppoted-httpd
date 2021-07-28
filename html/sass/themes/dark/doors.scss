@@ -1,0 +1,10 @@
+@charset 'UTF-8';
+
+@import '_uhppoted';
+@import '_tabular';
+@import '../../stylesheets/doors';
+
+tr.controller td input[data-status="error"] {
+  font-weight: normal; 
+}
+

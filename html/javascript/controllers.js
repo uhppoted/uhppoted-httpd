@@ -201,7 +201,7 @@ export function commit (...rows) {
 }
 
 export function add (oid) {
-  const uuid = rowID(oid)
+  const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('controllers').querySelector('table tbody')
 
   if (tbody) {
@@ -308,8 +308,4 @@ function percolate (oid, f) {
       f(oidx)
     }
   }
-}
-
-function rowID (oid) {
-  return 'R' + oid.replaceAll(/[^0-9]/g, '')
 }

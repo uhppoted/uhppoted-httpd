@@ -17,6 +17,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/config"
@@ -47,6 +48,23 @@ func NewControllerSet() ControllerSet {
 		},
 		retention: 6 * time.Hour,
 	}
+}
+
+func (cc *ControllerSet) AsObjects() []interface{} {
+	objects := []interface{}{}
+	lan := cc.LAN.AsObjects()
+
+	objects = append(objects, lan...)
+
+	for _, c := range cc.Controllers {
+		if c.IsValid() {
+			if l := c.AsObjects(); l != nil {
+				objects = append(objects, l...)
+			}
+		}
+	}
+
+	return objects
 }
 
 func (cc *ControllerSet) Load(file string, retention time.Duration) error {
@@ -136,7 +154,6 @@ func (cc *ControllerSet) Save() error {
 	}
 
 	for _, c := range cc.Controllers {
-		fmt.Printf(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> %v\n", c)
 		if record, err := c.serialize(); err == nil && record != nil {
 			fmt.Printf("                             >>>> %v\n", record)
 			serializable.Controllers = append(serializable.Controllers, record)
@@ -246,23 +263,6 @@ func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error
 	return record, nil
 }
 
-func (cc *ControllerSet) AsObjects() []interface{} {
-	objects := []interface{}{}
-	lan := cc.LAN.AsObjects()
-
-	objects = append(objects, lan...)
-
-	for _, c := range cc.Controllers {
-		if c.IsValid() {
-			if record := c.AsObjects(); record != nil {
-				objects = append(objects, record...)
-			}
-		}
-	}
-
-	return objects
-}
-
 func (cc *ControllerSet) Refresh() {
 	cc.LAN.refresh(cc.Controllers)
 
@@ -304,7 +304,7 @@ func (cc *ControllerSet) Clone() *ControllerSet {
 	return &shadow
 }
 
-func Export(file string, controllers []*Controller, doors map[string]types.Door) error {
+func Export(file string, controllers []*Controller, doors map[string]doors.Door) error {
 	guard.Lock()
 
 	defer guard.Unlock()

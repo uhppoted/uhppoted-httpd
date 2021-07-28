@@ -39,7 +39,7 @@
         <ul>
           <li class="selected">SYSTEM</li>
           <li><a href="./cards.html" draggable="false">CARDS</a></li>
-          <li>DOORS</li>
+          <li><a href="./doors.html" draggable="false">DOORS</a></li>
           <li>EVENTS</li>
           <li>LOGS</li>
         </ul>
@@ -219,7 +219,7 @@
                           data-original=""
                           data-value="">
                     <option value="">-</option>{{range $.system.Doors}}
-                    <option value="{{.ID}}">{{.Name}}</option>{{end}}
+                    <option value="{{.OID}}">{{.Name}}</option>{{end}}
                   </select>
                 </td>
 
@@ -235,7 +235,7 @@
                           data-value=""  
                           readonly>
                     <option value="">-</option>{{range $.system.Doors}}
-                    <option value="{{.ID}}">{{.Name}}</option>{{end}}
+                    <option value="{{.OID}}">{{.Name}}</option>{{end}}
                   </select>
                 </td>
 
@@ -251,7 +251,7 @@
                           data-value=""  
                           readonly>
                     <option value="">-</option>{{range $.system.Doors}}
-                    <option value="{{.ID}}">{{.Name}}</option>{{end}}
+                    <option value="{{.OID}}">{{.Name}}</option>{{end}}
                   </select>
                 </td>
 
@@ -266,7 +266,7 @@
                           data-original=""
                           data-value="">
                     <option value="">-</option>{{range $.system.Doors}}
-                    <option value="{{.ID}}">{{.Name}}</option>{{end}}
+                    <option value="{{.OID}}">{{.Name}}</option>{{end}}
                   </select>
                 </td>
             </template>
@@ -314,7 +314,7 @@
     var constants = {
       theme: {{$.context.Theme}},
       doors: [ {{range .system.Doors}}
-         {id:{{.ID}}, door: {{.Name}}},{{end}} 
+         {id:{{.OID}}, door: {{.Name}}},{{end}} 
       ]
     }
   </script>

@@ -2,9 +2,7 @@ package system
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"sort"
 	"strings"
@@ -16,27 +14,21 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
+	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
 var sys = system{
-	doors: struct {
-		Doors map[string]types.Door `json:"doors"`
-	}{
-		Doors: map[string]types.Door{},
-	},
-
+	doors:       doors.NewDoors(),
 	controllers: controllers.NewControllerSet(),
 	taskQ:       NewTaskQ(),
 }
 
 type system struct {
 	sync.RWMutex
-	conf  string
-	doors struct {
-		Doors map[string]types.Door `json:"doors"`
-	}
+	conf        string
+	doors       doors.Doors
 	controllers controllers.ControllerSet
 	cards       cards.Cards
 	audit       audit.Trail
@@ -74,17 +66,8 @@ func init() {
 }
 
 func Init(conf, boards, doors string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
+	sys.doors.Load(doors)
 	sys.controllers.Load(boards, retention)
-
-	bytes, err := ioutil.ReadFile(doors)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(bytes, &sys.doors)
-	if err != nil {
-		return err
-	}
 
 	sys.conf = conf
 	sys.cards = cards
@@ -93,9 +76,7 @@ func Init(conf, boards, doors string, cards cards.Cards, trail audit.Trail, rete
 	controllers.SetAuditTrail(trail)
 
 	sys.controllers.Print()
-	//	if b, err := json.MarshalIndent(sys.doors, "", "  "); err == nil {
-	//		fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
-	//	}
+	sys.doors.Print()
 
 	return nil
 }
@@ -105,22 +86,23 @@ func System() interface{} {
 
 	defer sys.RUnlock()
 
-	objects := sys.controllers.AsObjects()
-	//	controllers := sys.controllers.AsView()
+	objects := []interface{}{}
+	objects = append(objects, sys.controllers.AsObjects()...)
+	objects = append(objects, sys.doors.AsObjects()...)
 
-	doors := []types.Door{}
+	d := []doors.Door{}
 	for _, v := range sys.doors.Doors {
-		doors = append(doors, v)
+		d = append(d, v)
 	}
 
-	sort.SliceStable(doors, func(i, j int) bool { return doors[i].Name < doors[j].Name })
+	sort.SliceStable(d, func(i, j int) bool { return d[i].Name < d[j].Name })
 
 	return struct {
 		Objects []interface{} `json:"objects"`
-		Doors   []types.Door  `json:"doors"`
+		Doors   []doors.Door  `json:"doors"`
 	}{
 		Objects: objects,
-		Doors:   doors,
+		Doors:   d,
 	}
 }
 
@@ -209,15 +191,16 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 
 			for _, c := range sys.controllers.Controllers {
 				for _, v := range c.Doors {
-					if v == door.ID {
+					if v == door.OID {
 						if c.DeviceID != nil && *c.DeviceID > 0 {
-							if l, ok := acl[*c.DeviceID]; ok {
-								if card, ok := l[p.CardNumber]; !ok {
-									log.Printf("WARN %v", fmt.Errorf("consolidate: card %v not initialised for controller %v", p.CardNumber, *c.DeviceID))
-								} else {
-									card.Doors[door.Door] = 1
-								}
-							}
+							// FIXME: reinstate once the 'doors' rework is done
+							// if l, ok := acl[*c.DeviceID]; ok {
+							// 	if card, ok := l[p.CardNumber]; !ok {
+							// 		log.Printf("WARN %v", fmt.Errorf("consolidate: card %v not initialised for controller %v", p.CardNumber, *c.DeviceID))
+							// 	} else {
+							// 		card.Doors[door.Door] = 1
+							// 	}
+							// }
 						}
 
 						continue loop

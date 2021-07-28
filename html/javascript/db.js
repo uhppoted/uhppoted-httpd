@@ -1,6 +1,7 @@
 export const DB = {
   interfaces: new Map(),
   controllers: new Map(),
+  doors: new Map(),
 
   updated: function (tag, recordset) {
     if (recordset) {
@@ -79,7 +80,7 @@ function object (o) {
     }
   })
 
-  // ... update controller property?
+  // ... controllers
 
   if (/^0\.1\.1\.2\.[1-9][0-9]*$/.test(oid)) {
     if (DB.controllers.has(oid)) {
@@ -188,10 +189,58 @@ function object (o) {
       }
     }
   })
+
+  // ... doors
+
+  if (/^0\.3.[1-9][0-9]*$/.test(oid)) {
+    if (DB.doors.has(oid)) {
+      const record = DB.doors.get(oid)
+      record.status = o.value
+      record.mark = 0
+      return
+    }
+
+    DB.doors.set(oid, {
+      OID: oid,
+      created: '',
+      name: '',
+      status: o.value,
+      mark: 0
+    })
+
+    return
+  }
+
+  DB.doors.forEach((v, k) => {
+    if (oid.startsWith(k)) {
+      // INTERIM HACK
+      if (v.status === 'new') {
+        v.status = 'unknown'
+      }
+
+      switch (oid) {
+        case k:
+          v.status = o.value
+          break
+
+        case k + '.0.1':
+          v.created = o.value
+          break
+
+        case k + '.1':
+          v.name = o.value
+          break
+      }
+    }
+  })
 }
 
 function mark () {
   DB.controllers.forEach(v => {
+    v.mark += 1
+  })
+
+  DB.doors.forEach(v => {
     v.mark += 1
   })
 }
@@ -200,6 +249,12 @@ function sweep () {
   DB.controllers.forEach((v, k) => {
     if (v.mark >= 25 && v.status === 'deleted') {
       DB.controllers.delete(k)
+    }
+  })
+
+  DB.doors.forEach((v, k) => {
+    if (v.mark >= 25 && v.status === 'deleted') {
+      DB.doors.delete(k)
     }
   })
 }

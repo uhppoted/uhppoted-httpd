@@ -163,6 +163,24 @@ export function resetIdle () {
   idleTimer = setTimeout(onIdle, 15 * 60 * 1000)
 }
 
+export function busy () {
+  const windmill = document.getElementById('windmill')
+  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+
+  windmill.dataset.count = (queued + 1).toString()
+}
+
+export function unbusy () {
+  const windmill = document.getElementById('windmill')
+  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+
+  if (queued > 1) {
+    windmill.dataset.count = (queued - 1).toString()
+  } else {
+    delete (windmill.dataset.count)
+  }
+}
+
 function offline () {
   document.body.innerHTML = '<div id="offline"><div><div><p>SYSTEM OFFLINE</p></div><div><a href="index.html">RELOAD</a><div></div></div>'
 }

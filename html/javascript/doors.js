@@ -1,0 +1,419 @@
+/* global */
+
+import { busy, unbusy, dismiss, warning, getAsJSON } from './uhppoted.js'
+// import { , postAsJSON,  } from './uhppoted.js'
+import { DB } from './db.js'
+
+// export function onEdited (tag, event) {
+//   switch (tag) {
+//     case 'interface':
+//       LAN.set(event.target, event.target.value)
+//       break
+
+//     case 'controller': {
+//       controllers.set(event.target, event.target.value)
+//       break
+//     }
+//   }
+// }
+
+// export function onEnter (tag, event) {
+//   if (event.key === 'Enter') {
+//     switch (tag) {
+//       case 'interface':
+//         LAN.set(event.target, event.target.value)
+//         break
+
+//       case 'controller': {
+//         controllers.set(event.target, event.target.value)
+//         break
+//       }
+//     }
+//   }
+// }
+
+// export function onTick (tag, event) {
+//   switch (tag) {
+//     case 'interface':
+//       LAN.set(event.target, event.target.checked)
+//       break
+
+//     case 'controller': {
+//       controllers.set(event.target, event.target.checked)
+//       break
+//     }
+//   }
+// }
+
+// export function onCommit (tag, event) {
+//   switch (tag) {
+//     case 'interface':
+//       LAN.commit(event.target)
+//       break
+
+//     case 'controller': {
+//       const id = event.target.dataset.record
+//       const row = document.getElementById(id)
+
+//       controllers.commit(row)
+//     }
+//       break
+
+//     default:
+//       console.log(`onCommit('${tag}', ...)::NOT IMPLEMENTED`)
+//   }
+// }
+
+// export function onCommitAll (tag, event) {
+//   switch (tag) {
+//     case 'controller': {
+//       const tbody = document.getElementById('controllers').querySelector('table tbody')
+//       if (tbody) {
+//         const rows = tbody.rows
+//         const list = []
+
+//         for (let i = 0; i < rows.length; i++) {
+//           const row = rows[i]
+//           if (row.classList.contains('modified') || row.classList.contains('new')) {
+//             list.push(row)
+//           }
+//         }
+
+//         controllers.commit(...list)
+//       }
+//     }
+//       break
+//   }
+// }
+
+// export function onRollback (tag, event) {
+//   switch (tag) {
+//     case 'interface':
+//       LAN.rollback('interface', event.target)
+//       break
+
+//     case 'controller': {
+//       const id = event.target.dataset.record
+//       const row = document.getElementById(id)
+//       controllers.rollback(row)
+//       break
+//     }
+
+//     default:
+//       console.log(`onRollback('${tag}', ...)::NOT IMPLEMENTED`)
+//   }
+// }
+
+// export function onRollbackAll (tag, event) {
+//   switch (tag) {
+//     case 'controller': {
+//       const rows = document.getElementById('controllers').querySelector('table tbody').rows
+//       for (let i = rows.length; i > 0; i--) {
+//         controllers.rollback(rows[i - 1])
+//       }
+//       break
+//     }
+//   }
+// }
+
+// export function onNew (tag, event) {
+//   if (tag === 'controller') {
+//     controllers.onNew()
+//   }
+// }
+
+export function onRefresh (event) {
+  if (event && event.target && event.target.id === 'refresh') {
+    busy()
+    dismiss()
+  }
+
+  get()
+}
+
+export function get () {
+  getAsJSON('/doors')
+    .then(response => {
+      unbusy()
+
+      if (response.redirected) {
+        window.location = response.url
+      } else {
+        switch (response.status) {
+          case 200:
+            response.json().then(object => {
+              if (object && object.system && object.system.objects) {
+                DB.updated('objects', object.system.objects)
+              }
+
+              refreshed()
+            })
+            break
+
+          default:
+            response.text().then(message => { warning(message) })
+        }
+      }
+    })
+    .catch(function (err) {
+      console.log(err)
+    })
+}
+
+// export function post (tag, records, reset, cleanup) {
+//   busy()
+
+//   postAsJSON('/system', { [tag]: records })
+//     .then(response => {
+//       if (response.redirected) {
+//         window.location = response.url
+//       } else {
+//         switch (response.status) {
+//           case 200:
+//             response.json().then(object => {
+//               if (object && object.system && object.system.objects) {
+//                 DB.updated('objects', object.system.objects)
+//               }
+
+//               refreshed()
+//             })
+//             break
+
+//           default:
+//             reset()
+//             response.text().then(message => { warning(message) })
+//         }
+//       }
+//     })
+//     .catch(function (err) {
+//       reset()
+//       warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+//     })
+//     .finally(() => {
+//       cleanup()
+//       unbusy()
+//     })
+// }
+
+export function refreshed () {
+  const list = []
+
+  DB.doors.forEach(c => {
+    list.push(c)
+  })
+
+  list.sort((p, q) => {
+    if (p.created < q.created) {
+      return -1
+    }
+
+    if (p.created < q.created) {
+      return +1
+    }
+
+    return 0
+  })
+
+  list.forEach(c => {
+    const row = updateFromDB(c.OID, c)
+    if (row) {
+      if (c.status === 'new') {
+        row.classList.add('new')
+      } else {
+        row.classList.remove('new')
+      }
+    }
+  })
+
+  DB.refreshed('doors')
+}
+
+function updateFromDB (oid, record) {
+  let row = document.querySelector("div#doors tr[data-oid='" + oid + "']")
+
+  // if (record.status === 'deleted') {
+  //   deleted(row)
+  //   return
+  // }
+
+  if (!row) {
+    row = add(oid)
+  }
+
+  const name = row.querySelector(`[data-oid="${oid}.1"]`)
+
+  row.dataset.status = record.status
+
+  update(name, record.name)
+
+  return row
+}
+
+function add (oid) {
+  const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
+  const tbody = document.getElementById('doors').querySelector('table tbody')
+
+  if (tbody) {
+    const template = document.querySelector('#door')
+    const row = tbody.insertRow()
+
+    row.id = uuid
+    row.classList.add('controller')
+    row.classList.add('new')
+    row.dataset.oid = oid
+    row.dataset.status = 'unknown'
+    row.innerHTML = template.innerHTML
+
+    const commit = row.querySelector('td span.commit')
+    commit.id = uuid + '_commit'
+    commit.dataset.record = uuid
+    commit.dataset.enabled = 'false'
+
+    const rollback = row.querySelector('td span.rollback')
+    rollback.id = uuid + '_rollback'
+    rollback.dataset.record = uuid
+    rollback.dataset.enabled = 'false'
+
+    const fields = [
+      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' }
+    ]
+
+    fields.forEach(f => {
+      const field = row.querySelector(f.selector)
+      const flag = row.querySelector(f.flag)
+
+      field.id = uuid + '-' + f.suffix
+      field.value = ''
+      field.dataset.oid = f.oid
+      field.dataset.record = uuid
+      field.dataset.original = ''
+      field.dataset.value = ''
+
+      flag.id = 'F' + f.oid
+    })
+
+    return row
+  }
+}
+
+function update (element, value, status) {
+  if (element && value) {
+    const v = value.toString()
+    const oid = element.dataset.oid
+    const flag = document.getElementById(`F${oid}`)
+    const previous = element.dataset.original
+
+    element.dataset.original = v
+
+    // check for conflicts with concurrently edited fields
+    if (element.classList.contains('modified')) {
+      if (previous !== v && element.dataset.value !== v) {
+        mark('conflict', element, flag)
+      } else if (element.dataset.value !== v) {
+        unmark('conflict', element, flag)
+      } else {
+        unmark('conflict', element, flag)
+        unmark('modified', element, flag)
+      }
+
+      percolate(oid, modified)
+      return
+    }
+
+    // check for conflicts with concurrently submitted fields
+    if (element.classList.contains('pending')) {
+      if (previous !== v && element.dataset.value !== v) {
+        mark('conflict', element, flag)
+      } else {
+        unmark('conflict', element, flag)
+      }
+
+      return
+    }
+
+    // update fields not pending, modified or editing
+    if (element !== document.activeElement) {
+      element.value = v
+    }
+
+    set(element, value, status)
+  }
+}
+
+function set (element, value, status) {
+  const oid = element.dataset.oid
+  const original = element.dataset.original
+  const v = value.toString()
+  const flag = document.getElementById(`F${oid}`)
+
+  element.dataset.value = v
+
+  if (status) {
+    element.dataset.status = status
+  } else {
+    element.dataset.status = ''
+  }
+
+  if (v !== original) {
+    mark('modified', element, flag)
+  } else {
+    unmark('modified', element, flag)
+  }
+
+  percolate(oid, modified)
+}
+
+function modified (oid) {
+  const element = document.querySelector(`[data-oid="${oid}"]`)
+
+  if (element) {
+    const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
+    const re = /^\.[0-9]+$/
+    let count = 0
+
+    list.forEach(e => {
+      if (e.classList.contains('modified')) {
+        const oidx = e.dataset.oid
+        if (oidx.startsWith(oid) && re.test(oidx.substring(oid.length))) {
+          count = count + 1
+        }
+      }
+    })
+
+    if (count > 0) {
+      element.dataset.modified = count > 1 ? 'multiple' : 'single'
+      element.classList.add('modified')
+    } else {
+      element.dataset.modified = null
+      element.classList.remove('modified')
+    }
+  }
+}
+
+function percolate (oid, f) {
+  let oidx = oid
+
+  while (oidx) {
+    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
+    oidx = match ? match[1] : null
+    if (oidx) {
+      f(oidx)
+    }
+  }
+}
+
+function mark (clazz, ...elements) {
+  elements.forEach(e => {
+    if (e) {
+      e.classList.add(clazz)
+    }
+  })
+}
+
+function unmark (clazz, ...elements) {
+  elements.forEach(e => {
+    if (e) {
+      e.classList.remove(clazz)
+    }
+  })
+}
