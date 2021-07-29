@@ -1,5 +1,8 @@
 #controls {  
-  margin-bottom: 4px;
+  background: $content-table-background-header;
+  padding: 4px 4px 4px 4px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
 
 th.name {

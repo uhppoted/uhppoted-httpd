@@ -4,7 +4,7 @@
 
 - Doors
   - [ ] Fix ACL for reworked types.Door
-  - [ ] HTML: put table etc inside a div to get layout consistent across pages
+  - [x] Fix top margin
   - [ ] Deduplicate `status`
   - [ ] Deduplicate `type object status`
   - [ ] Move `doors.update` to _common.js_
