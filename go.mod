@@ -8,6 +8,6 @@ require (
 	github.com/hyperjumptech/grule-rule-engine v1.8.2
 	github.com/sirupsen/logrus v1.6.0 // indirect
 	github.com/uhppoted/uhppote-core v0.7.2-0.20210707183226-68ac3e362340
-	github.com/uhppoted/uhppoted-lib v0.7.2-0.20210706184102-6fd85557467c // indirect
+	github.com/uhppoted/uhppoted-lib v0.7.2-0.20210729185117-7dcdc500a76e // indirect
 	golang.org/x/sys v0.0.0-20210426230700-d19ff857e887
 )

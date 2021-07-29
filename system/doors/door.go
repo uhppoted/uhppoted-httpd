@@ -3,6 +3,9 @@ package doors
 import (
 	"fmt"
 	"time"
+
+	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 )
 
 type Door struct {
@@ -30,10 +33,106 @@ func (d *Door) AsObjects() []interface{} {
 	return objects
 }
 
-func (d *Door) Clone() Door {
+func (d *Door) AsRuleEntity() interface{} {
+	type entity struct {
+		Name string
+	}
+
+	if d != nil {
+		return &entity{
+			Name: fmt.Sprintf("%v", d.Name),
+		}
+	}
+
+	return &entity{}
+}
+
+func (d *Door) clone() Door {
 	return Door{
-		OID:  d.OID,
-		Name: d.Name,
+		OID:     d.OID,
+		Name:    d.Name,
+		created: d.created,
+	}
+}
+
+func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+	objects := []interface{}{}
+
+	f := func(field string, value interface{}) error {
+		if auth == nil {
+			return nil
+		}
+
+		return auth.CanUpdateDoor(d, field, value)
+	}
+
+	if d != nil {
+		switch oid {
+		case d.OID + ".1":
+			if err := f("name", value); err != nil {
+				return nil, err
+			} else {
+				d.log(auth, "update", d.OID, "name", stringify(d.Name), value)
+				d.Name = value
+				objects = append(objects, object{
+					OID:   d.OID + ".1",
+					Value: stringify(d.Name),
+				})
+			}
+		}
+
+		//		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+		//			if auth != nil {
+		//				if err := auth.CanDeleteController(c); err != nil {
+		//					return nil, err
+		//				}
+		//			}
+		//
+		//			c.log(auth, "delete", c.OID, "device-id", "", "")
+		//			now := time.Now()
+		//			c.deleted = &now
+		//
+		//			objects = append(objects, object{
+		//				OID:   c.OID,
+		//				Value: "deleted",
+		//			})
+		//
+		//			catalog.Delete(c.OID)
+		//		}
+	}
+
+	return objects, nil
+}
+
+func (d *Door) log(auth auth.OpAuth, operation, OID, field, current, value string) {
+	type info struct {
+		OID     string `json:"OID"`
+		Door    string `json:"door"`
+		Field   string `json:"field"`
+		Current string `json:"current"`
+		Updated string `json:"new"`
+	}
+
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
+	}
+
+	if trail != nil {
+		record := audit.LogEntry{
+			UID:       uid,
+			Module:    OID,
+			Operation: operation,
+			Info: info{
+				OID:     OID,
+				Door:    stringify(d.Name),
+				Field:   field,
+				Current: current,
+				Updated: value,
+			},
+		}
+
+		trail.Write(record)
 	}
 }
 

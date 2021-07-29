@@ -3,15 +3,22 @@
 ### IN PROGRESS
 
 - Doors
-  - [ ] Fix ACL for reworked types.Door
-  - [x] Fix top margin
   - [ ] Deduplicate `status`
+  - [ ] sort order different on Firefox and Chrome (sigh!)
+  - [ ] edit
+  - [ ] add
+  - [ ] delete
+  - [ ] save
+  - [ ] Display controller+door
+  - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`
-  - [ ] Move `doors.update` to _common.js_
-  - [ ] Move `doors.mark` to _common.js_
-  - [ ] Move `doors.percolate` to _common.js_
-  - [ ] Move `doors.set` to _common.js_
+  - [ ] Move `doors.update` to tabular.js_
+  - [ ] Move `doors.mark` to _tabular.js_
+  - [ ] Move `doors.percolate` to _tabular.js_
+  - [ ] Move `doors.set` to _tabular.js_
+  - [ ] Move `onEdited`, `onRollback`, etc to _tabular.js_
   - [ ] Assign doors to controllers in _DOORS_ page and (optionally) make controller doors readonly
+  - [x] Fix top margin
 
 - [ ] Cards
       - migrate to OIDs

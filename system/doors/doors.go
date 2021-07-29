@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
@@ -18,11 +21,11 @@ type object catalog.Object
 
 var guard sync.Mutex
 
-// var trail audit.Trail
+var trail audit.Trail
 
-// func SetAuditTrail(t audit.Trail) {
-//     trail = t
-// }
+func SetAuditTrail(t audit.Trail) {
+	trail = t
+}
 
 func NewDoors() Doors {
 	return Doors{
@@ -159,41 +162,40 @@ func (dd *Doors) Print() {
 	}
 }
 
-// func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
-//     if cc == nil {
-//         return nil, nil
-//     }
+func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+	if dd == nil {
+		return nil, nil
+	}
 
-//     // ... interface
-//     if cc.LAN != nil && strings.HasPrefix(oid, cc.LAN.OID) {
-//         return cc.LAN.set(auth, oid, value)
-//     }
+	for k, d := range dd.Doors {
+		if strings.HasPrefix(oid, d.OID) {
+			objects, err := d.set(auth, oid, value)
+			if err == nil {
+				dd.Doors[k] = d
+			}
 
-//     // ... controllers
-//     for _, c := range cc.Controllers {
-//         if c != nil && strings.HasPrefix(oid, c.OID) {
-//             return c.set(auth, oid, value)
-//         }
-//     }
+			return objects, err
+		}
+	}
 
-//     objects := []interface{}{}
+	objects := []interface{}{}
 
-//     if oid == "<new>" {
-//         if c, err := cc.add(auth, Controller{}); err != nil {
-//             return nil, err
-//         } else if c == nil {
-//             return nil, fmt.Errorf("Failed to add 'new' controller")
-//         } else {
-//             c.log(auth, "add", c.OID, "controller", "", "")
-//             objects = append(objects, object{
-//                 OID:   c.OID,
-//                 Value: "new",
-//             })
-//         }
-//     }
+	//     if oid == "<new>" {
+	//         if c, err := cc.add(auth, Controller{}); err != nil {
+	//             return nil, err
+	//         } else if c == nil {
+	//             return nil, fmt.Errorf("Failed to add 'new' controller")
+	//         } else {
+	//             c.log(auth, "add", c.OID, "controller", "", "")
+	//             objects = append(objects, object{
+	//                 OID:   c.OID,
+	//                 Value: "new",
+	//             })
+	//         }
+	//     }
 
-//     return objects, nil
-// }
+	return objects, nil
+}
 
 // func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error) {
 //     id := uint32(0)
@@ -240,22 +242,17 @@ func (dd *Doors) Print() {
 //     }
 // }
 
-// func (cc *ControllerSet) Clone() *ControllerSet {
-//     shadow := ControllerSet{
-//         file:        cc.file,
-//         retention:   cc.retention,
-//         Controllers: make([]*Controller, len(cc.Controllers)),
-//         LAN:         &LAN{},
-//     }
+func (dd *Doors) Clone() *Doors {
+	shadow := Doors{
+		Doors: map[string]Door{},
+	}
 
-//     for k, v := range cc.Controllers {
-//         shadow.Controllers[k] = v.clone()
-//     }
+	for k, v := range dd.Doors {
+		shadow.Doors[k] = v.clone()
+	}
 
-//     shadow.LAN = cc.LAN.clone()
-
-//     return &shadow
-// }
+	return &shadow
+}
 
 // func Export(file string, controllers []*Controller, doors map[string]types.Door) error {
 //     guard.Lock()

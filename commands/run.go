@@ -81,14 +81,17 @@ func (cmd *Run) Execute(args ...interface{}) error {
 			GRules struct {
 				System string
 				Cards  string
+				Doors  string
 			}
 		}{
 			GRules: struct {
 				System string
 				Cards  string
+				Doors  string
 			}{
 				System: conf.HTTPD.DB.Rules.System,
 				Cards:  conf.HTTPD.DB.Rules.Cards,
+				Doors:  conf.HTTPD.DB.Rules.Doors,
 			},
 		},
 

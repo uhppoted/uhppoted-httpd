@@ -246,6 +246,36 @@ func (a *authorizator) CanDeleteCardHolder(ch auth.Operant) error {
 	return fmt.Errorf("Not authorized for operation %s", "delete::card")
 }
 
+func (a *authorizator) CanUpdateDoor(door auth.Operant, field string, value interface{}) error {
+	msg := fmt.Errorf("Not authorized to update door %v", door)
+	err := fmt.Errorf("Not authorized for operation %s", "update::door")
+
+	if a != nil && door != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"DOOR":  door.AsRuleEntity(),
+			"FIELD": field,
+			"VALUE": value,
+		}
+
+		if err = a.eval("doors", "update::door", &r, m); err != nil {
+			return types.Unauthorized(msg, err)
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::door %v, field:%v, value:%v", door, field, value))
+	}
+
+	return types.Unauthorized(msg, err)
+}
+
 func (a *authorizator) eval(ruleset string, op string, r *result, m map[string]interface{}) error {
 	context := ast.NewDataContext()
 

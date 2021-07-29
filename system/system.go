@@ -2,6 +2,7 @@ package system
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"sort"
@@ -13,6 +14,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -34,6 +36,8 @@ type system struct {
 	audit       audit.Trail
 	taskQ       TaskQ
 }
+
+type object catalog.Object
 
 func (s *system) refresh() {
 	if s == nil {
@@ -65,8 +69,8 @@ func init() {
 	}()
 }
 
-func Init(conf, boards, doors string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
-	sys.doors.Load(doors)
+func Init(conf, boards, doorsfile string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
+	sys.doors.Load(doorsfile)
 	sys.controllers.Load(boards, retention)
 
 	sys.conf = conf
@@ -74,6 +78,7 @@ func Init(conf, boards, doors string, cards cards.Cards, trail audit.Trail, rete
 	sys.audit = trail
 
 	controllers.SetAuditTrail(trail)
+	doors.SetAuditTrail(trail)
 
 	sys.controllers.Print()
 	sys.doors.Print()
@@ -234,6 +239,29 @@ func (s *system) log(op string, info interface{}, auth auth.OpAuth) {
 			Info:      info,
 		})
 	}
+}
+
+func unpack(m map[string]interface{}) ([]object, error) {
+	f := func(err error) error {
+		return types.BadRequest(fmt.Errorf("Invalid request (%v)", err), fmt.Errorf("Error unpacking 'post' request (%w)", err))
+	}
+
+	o := struct {
+		Objects []object `json:"objects"`
+	}{}
+
+	blob, err := json.Marshal(m)
+	if err != nil {
+		return nil, f(err)
+	}
+
+	log.Printf("DEBUG %v", fmt.Sprintf("UNPACK %s\n", string(blob)))
+
+	if err := json.Unmarshal(blob, &o); err != nil {
+		return nil, f(err)
+	}
+
+	return o.Objects, nil
 }
 
 func clean(s string) string {

@@ -1,17 +1,12 @@
 package system
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
-
-type object catalog.Object
 
 func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()
@@ -94,27 +89,4 @@ func validate(c *controllers.ControllerSet) error {
 	}
 
 	return nil
-}
-
-func unpack(m map[string]interface{}) ([]object, error) {
-	f := func(err error) error {
-		return types.BadRequest(fmt.Errorf("Invalid request (%v)", err), fmt.Errorf("Error unpacking 'post' request (%w)", err))
-	}
-
-	o := struct {
-		Objects []object `json:"objects"`
-	}{}
-
-	blob, err := json.Marshal(m)
-	if err != nil {
-		return nil, f(err)
-	}
-
-	log.Printf("INFO %v", fmt.Sprintf("UNPACK %s\n", string(blob)))
-
-	if err := json.Unmarshal(blob, &o); err != nil {
-		return nil, f(err)
-	}
-
-	return o.Objects, nil
 }

@@ -1,28 +1,23 @@
 /* global */
 
-import { busy, unbusy, dismiss, warning, getAsJSON } from './uhppoted.js'
-// import { , postAsJSON,  } from './uhppoted.js'
+import { busy, unbusy, dismiss, warning, getAsJSON, postAsJSON } from './uhppoted.js'
 import { DB } from './db.js'
 
-// export function onEdited (tag, event) {
-//   switch (tag) {
-//     case 'interface':
-//       LAN.set(event.target, event.target.value)
-//       break
+export function onEdited (tag, event) {
+  switch (tag) {
+    case 'door':
+      set(event.target, event.target.value)
+      break
+  }
+}
 
-//     case 'controller': {
-//       controllers.set(event.target, event.target.value)
-//       break
-//     }
-//   }
-// }
-
-// export function onEnter (tag, event) {
-//   if (event.key === 'Enter') {
-//     switch (tag) {
-//       case 'interface':
-//         LAN.set(event.target, event.target.value)
-//         break
+export function onEnter (tag, event) {
+  console.log('onEnter', tag)
+  //   if (event.key === 'Enter') {
+  //     switch (tag) {
+  //       case 'interface':
+  //         LAN.set(event.target, event.target.value)
+  //         break
 
 //       case 'controller': {
 //         controllers.set(event.target, event.target.value)
@@ -30,7 +25,7 @@ import { DB } from './db.js'
 //       }
 //     }
 //   }
-// }
+}
 
 // export function onTick (tag, event) {
 //   switch (tag) {
@@ -42,25 +37,6 @@ import { DB } from './db.js'
 //       controllers.set(event.target, event.target.checked)
 //       break
 //     }
-//   }
-// }
-
-// export function onCommit (tag, event) {
-//   switch (tag) {
-//     case 'interface':
-//       LAN.commit(event.target)
-//       break
-
-//     case 'controller': {
-//       const id = event.target.dataset.record
-//       const row = document.getElementById(id)
-
-//       controllers.commit(row)
-//     }
-//       break
-
-//     default:
-//       console.log(`onCommit('${tag}', ...)::NOT IMPLEMENTED`)
 //   }
 // }
 
@@ -86,35 +62,58 @@ import { DB } from './db.js'
 //   }
 // }
 
-// export function onRollback (tag, event) {
-//   switch (tag) {
-//     case 'interface':
-//       LAN.rollback('interface', event.target)
-//       break
+export function commit (...rows) {
+  const list = []
 
-//     case 'controller': {
-//       const id = event.target.dataset.record
-//       const row = document.getElementById(id)
-//       controllers.rollback(row)
-//       break
-//     }
+  rows.forEach(row => {
+    const oid = row.dataset.oid
+    const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
+    children.forEach(e => {
+      if (e.dataset.value !== e.dataset.original) {
+        list.push(e)
+      }
+    })
+  })
 
-//     default:
-//       console.log(`onRollback('${tag}', ...)::NOT IMPLEMENTED`)
-//   }
-// }
+  const records = []
+  list.forEach(e => {
+    const oid = e.dataset.oid
+    const value = e.dataset.value
+    records.push({ oid: oid, value: value })
+  })
 
-// export function onRollbackAll (tag, event) {
-//   switch (tag) {
-//     case 'controller': {
-//       const rows = document.getElementById('controllers').querySelector('table tbody').rows
-//       for (let i = rows.length; i > 0; i--) {
-//         controllers.rollback(rows[i - 1])
-//       }
-//       break
-//     }
-//   }
-// }
+  const reset = function () {
+    list.forEach(e => {
+      const flag = document.getElementById(`F${e.dataset.oid}`)
+      unmark('pending', e, flag)
+      mark('modified', e, flag)
+    })
+  }
+
+  const cleanup = function () {
+    list.forEach(e => {
+      const flag = document.getElementById(`F${e.dataset.oid}`)
+      unmark('pending', e, flag)
+    })
+  }
+
+  list.forEach(e => {
+    const flag = document.getElementById(`F${e.dataset.oid}`)
+    mark('pending', e, flag)
+    unmark('modified', e, flag)
+  })
+
+  post('objects', records, reset, cleanup)
+}
+
+export function rollback (row) {
+  if (row && row.classList.contains('new')) {
+    DB.delete('door', row.dataset.oid)
+    refreshed()
+  } else {
+    revert(row)
+  }
+}
 
 // export function onNew (tag, event) {
 //   if (tag === 'controller') {
@@ -160,40 +159,40 @@ export function get () {
     })
 }
 
-// export function post (tag, records, reset, cleanup) {
-//   busy()
+export function post (tag, records, reset, cleanup) {
+  busy()
 
-//   postAsJSON('/system', { [tag]: records })
-//     .then(response => {
-//       if (response.redirected) {
-//         window.location = response.url
-//       } else {
-//         switch (response.status) {
-//           case 200:
-//             response.json().then(object => {
-//               if (object && object.system && object.system.objects) {
-//                 DB.updated('objects', object.system.objects)
-//               }
+  postAsJSON('/doors', { [tag]: records })
+    .then(response => {
+      if (response.redirected) {
+        window.location = response.url
+      } else {
+        switch (response.status) {
+          case 200:
+            response.json().then(object => {
+              if (object && object.system && object.system.objects) {
+                DB.updated('objects', object.system.objects)
+              }
 
-//               refreshed()
-//             })
-//             break
+              refreshed()
+            })
+            break
 
-//           default:
-//             reset()
-//             response.text().then(message => { warning(message) })
-//         }
-//       }
-//     })
-//     .catch(function (err) {
-//       reset()
-//       warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-//     })
-//     .finally(() => {
-//       cleanup()
-//       unbusy()
-//     })
-// }
+          default:
+            reset()
+            response.text().then(message => { warning(message) })
+        }
+      }
+    })
+    .catch(function (err) {
+      reset()
+      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+    })
+    .finally(() => {
+      cleanup()
+      unbusy()
+    })
+}
 
 export function refreshed () {
   const list = []
@@ -361,6 +360,17 @@ function set (element, value, status) {
   }
 
   percolate(oid, modified)
+}
+
+function revert (row) {
+  const fields = row.querySelectorAll('.field')
+
+  fields.forEach((item) => {
+    item.value = item.dataset.original
+    set(item, item.dataset.original)
+  })
+
+  row.classList.remove('modified')
 }
 
 function modified (oid) {
