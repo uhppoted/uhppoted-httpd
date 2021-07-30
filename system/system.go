@@ -19,6 +19,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
+	"github.com/uhppoted/uhppoted-lib/config"
 )
 
 var sys = system{
@@ -57,21 +58,9 @@ func (s *system) refresh() {
 	})
 }
 
-func init() {
-	go func() {
-		time.Sleep(2500 * time.Millisecond)
-		sys.refresh()
-
-		c := time.Tick(30 * time.Second)
-		for _ = range c {
-			sys.refresh()
-		}
-	}()
-}
-
-func Init(conf, boards, doorsfile string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
-	sys.doors.Load(doorsfile)
-	sys.controllers.Load(boards, retention)
+func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
+	sys.doors.Load(cfg.HTTPD.System.Doors)
+	sys.controllers.Load(cfg.HTTPD.System.Controllers, retention)
 
 	sys.conf = conf
 	sys.cards = cards
@@ -82,6 +71,16 @@ func Init(conf, boards, doorsfile string, cards cards.Cards, trail audit.Trail, 
 
 	sys.controllers.Print()
 	sys.doors.Print()
+
+	go func() {
+		time.Sleep(2500 * time.Millisecond)
+		sys.refresh()
+
+		c := time.Tick(cfg.HTTPD.System.Refresh)
+		for _ = range c {
+			sys.refresh()
+		}
+	}()
 
 	return nil
 }

@@ -26,7 +26,6 @@
       - migrate to OIDs
 
 - [ ] system
-      - configure update interval
       - configure ok/uncertain intervals
       - configure systime window
       - Fix `get-events` log string
