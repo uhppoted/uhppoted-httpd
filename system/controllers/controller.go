@@ -35,7 +35,7 @@ type controller struct {
 	IP       ip
 	Doors    map[uint8]string
 
-	Status     status
+	Status     types.Status
 	SystemTime datetime
 	Cards      cards
 	Events     *records
@@ -112,27 +112,27 @@ func (c *Controller) AsObjects() []interface{} {
 	type addr struct {
 		address    string
 		configured string
-		status     status
+		status     types.Status
 	}
 
 	type tinfo struct {
 		datetime string
 		system   string
-		status   status
+		status   types.Status
 	}
 
 	type cinfo struct {
 		cards  string
-		status status
+		status types.Status
 	}
 
 	type einfo struct {
 		events string
-		status status
+		status types.Status
 	}
 
 	created := c.created.Format("2006-01-02 15:04:05")
-	status := StatusUnknown
+	status := types.StatusUnknown
 	name := stringify(c.Name)
 	deviceID := ""
 	address := addr{}
@@ -163,10 +163,10 @@ func (c *Controller) AsObjects() []interface{} {
 			dt := time.Now().Sub(cached.touched)
 			switch {
 			case dt < DeviceOk:
-				status = StatusOk
+				status = types.StatusOk
 
 			case dt < DeviceUncertain:
-				status = StatusUncertain
+				status = types.StatusUncertain
 			}
 
 			// ... set IP address field from cached value
@@ -174,13 +174,13 @@ func (c *Controller) AsObjects() []interface{} {
 				address.address = fmt.Sprintf("%v", cached.address)
 				switch {
 				case c.IP == nil || (c.IP != nil && cached.address.Equal(c.IP)):
-					address.status = StatusOk
+					address.status = types.StatusOk
 
 				case c.IP != nil && !cached.address.Equal(c.IP):
-					address.status = StatusError
+					address.status = types.StatusError
 
 				default:
-					address.status = StatusUnknown
+					address.status = types.StatusUnknown
 				}
 			}
 
@@ -204,17 +204,17 @@ func (c *Controller) AsObjects() []interface{} {
 
 				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
 				if delta <= WINDOW {
-					datetime.status = StatusOk
+					datetime.status = types.StatusOk
 				} else {
-					datetime.status = StatusError
+					datetime.status = types.StatusError
 				}
 			}
 
 			// ... set ACL field from cached value
 			if cached.cards != nil {
 				cards.cards = fmt.Sprintf("%d", *cached.cards)
-				if cached.acl == StatusUnknown {
-					cards.status = StatusUncertain
+				if cached.acl == types.StatusUnknown {
+					cards.status = types.StatusUncertain
 				} else {
 					cards.status = cached.acl
 				}
@@ -222,12 +222,12 @@ func (c *Controller) AsObjects() []interface{} {
 
 			// ... set events field from cached value
 			events.events = fmt.Sprintf("%v", (*records)(cached.events))
-			events.status = StatusOk
+			events.status = types.StatusOk
 		}
 	}
 
 	if c.deleted != nil {
-		status = StatusDeleted
+		status = types.StatusDeleted
 	}
 
 	objects := []interface{}{

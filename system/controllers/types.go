@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -15,44 +14,44 @@ import (
 type datetime struct {
 	Expected *types.DateTime
 	DateTime *types.DateTime
-	Status   status
+	Status   types.Status
 }
 
 func (dt datetime) String() string {
-	if dt.DateTime == nil || dt.Status == StatusUnknown {
+	if dt.DateTime == nil || dt.Status == types.StatusUnknown {
 		return ""
 	}
 
 	return dt.DateTime.Format("2006-01-02 15:04 MST")
 }
 
-func (dt datetime) MarshalJSON() ([]byte, error) {
-	object := struct {
-		DateTime string `json:"DateTime"`
-		Status   string `json:"Status"`
-		Expected string `json:"Expected"`
-	}{
-		DateTime: dt.String(),
-		Status:   dt.Status.String(),
-		Expected: dt.Expected.Format("2006-01-02 15:04 MST"),
-	}
-
-	return json.Marshal(object)
-}
+// func (dt datetime) MarshalJSON() ([]byte, error) {
+// 	object := struct {
+// 		DateTime string `json:"DateTime"`
+// 		Status   string `json:"Status"`
+// 		Expected string `json:"Expected"`
+// 	}{
+// 		DateTime: dt.String(),
+// 		Status:   dt.Status.String(),
+// 		Expected: dt.Expected.Format("2006-01-02 15:04 MST"),
+// 	}
+//
+// 	return json.Marshal(object)
+// }
 
 type ip struct {
 	Configured *core.Address
 	Address    *core.Address
-	Status     status
+	Status     types.Status
 }
 
 type cards struct {
 	Records records
-	Status  status
+	Status  types.Status
 }
 
 func (c cards) String() string {
-	if c.Status == StatusUnknown {
+	if c.Status == types.StatusUnknown {
 		return ""
 	}
 

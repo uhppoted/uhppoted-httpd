@@ -7,6 +7,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Door struct {
@@ -22,7 +23,7 @@ func (d *Door) IsValid() bool {
 
 func (d *Door) AsObjects() []interface{} {
 	created := d.created.Format("2006-01-02 15:04:05")
-	status := StatusOk
+	status := types.StatusOk
 	name := stringify(d.Name)
 
 	objects := []interface{}{

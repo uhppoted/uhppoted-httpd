@@ -27,7 +27,7 @@ type LAN struct {
 	ListenAddress    core.ListenAddr    `json:"listen-address"`
 	Debug            bool               `json:"debug"`
 
-	status status
+	status types.Status
 }
 
 type deviceCache struct {
@@ -41,7 +41,7 @@ type device struct {
 	datetime *types.DateTime
 	cards    *uint32
 	events   *uint32
-	acl      status
+	acl      types.Status
 }
 
 const (
@@ -407,9 +407,9 @@ func (l *LAN) store(id uint32, info interface{}) {
 	case acl.Diff:
 		if ok {
 			if len(v.Updated)+len(v.Added)+len(v.Deleted) > 0 {
-				cached.acl = StatusError
+				cached.acl = types.StatusError
 			} else {
-				cached.acl = StatusOk
+				cached.acl = types.StatusOk
 			}
 
 			cache.cache[id] = cached

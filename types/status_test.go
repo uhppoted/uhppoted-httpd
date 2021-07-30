@@ -1,4 +1,4 @@
-package doors
+package types
 
 import (
 	"testing"

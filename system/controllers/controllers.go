@@ -44,7 +44,7 @@ func NewControllerSet() ControllerSet {
 		Controllers: []*Controller{},
 		LAN: &LAN{
 			OID:    "0.1.1.1.1",
-			status: StatusOk,
+			status: types.StatusOk,
 		},
 		retention: 6 * time.Hour,
 	}
@@ -84,7 +84,7 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 	}{
 		Controllers: []json.RawMessage{},
 		LAN: &LAN{
-			status: StatusOk,
+			status: types.StatusOk,
 		},
 	}
 
@@ -108,7 +108,7 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 		BroadcastAddress: blob.LAN.BroadcastAddress,
 		ListenAddress:    blob.LAN.ListenAddress,
 		Debug:            blob.LAN.Debug,
-		status:           StatusOk,
+		status:           types.StatusOk,
 	}
 
 	for _, v := range blob.Controllers {

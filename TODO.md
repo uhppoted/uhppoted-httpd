@@ -4,7 +4,6 @@
 
 - [ ] Make OID a type with:
       - HasPrefix
-- [ ] Deduplicate `status`
 
 - Doors
   - [ ] sort order different on Firefox and Chrome (sigh!)
@@ -130,7 +129,8 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
-- [x] favicon
+- [x] Deduplicate `status`
+- [x] /favicon.ico
 - [x] Signout page "doesn't have permission"
 - [x] Neatened up login error reporting
 - [x] Menu pops up when just vaguely over area
