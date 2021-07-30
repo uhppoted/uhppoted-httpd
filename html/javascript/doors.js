@@ -3,64 +3,13 @@
 import { busy, unbusy, dismiss, warning, getAsJSON, postAsJSON } from './uhppoted.js'
 import { DB } from './db.js'
 
-export function onEdited (tag, event) {
-  switch (tag) {
-    case 'door':
-      set(event.target, event.target.value)
-      break
-  }
+export function create () {
+  const records = [{ oid: '<new>', value: '' }]
+  const reset = function () {}
+  const cleanup = function () {}
+
+  post('objects', records, reset, cleanup)
 }
-
-export function onEnter (tag, event) {
-  console.log('onEnter', tag)
-  //   if (event.key === 'Enter') {
-  //     switch (tag) {
-  //       case 'interface':
-  //         LAN.set(event.target, event.target.value)
-  //         break
-
-//       case 'controller': {
-//         controllers.set(event.target, event.target.value)
-//         break
-//       }
-//     }
-//   }
-}
-
-// export function onTick (tag, event) {
-//   switch (tag) {
-//     case 'interface':
-//       LAN.set(event.target, event.target.checked)
-//       break
-
-//     case 'controller': {
-//       controllers.set(event.target, event.target.checked)
-//       break
-//     }
-//   }
-// }
-
-// export function onCommitAll (tag, event) {
-//   switch (tag) {
-//     case 'controller': {
-//       const tbody = document.getElementById('controllers').querySelector('table tbody')
-//       if (tbody) {
-//         const rows = tbody.rows
-//         const list = []
-
-//         for (let i = 0; i < rows.length; i++) {
-//           const row = rows[i]
-//           if (row.classList.contains('modified') || row.classList.contains('new')) {
-//             list.push(row)
-//           }
-//         }
-
-//         controllers.commit(...list)
-//       }
-//     }
-//       break
-//   }
-// }
 
 export function commit (...rows) {
   const list = []
@@ -108,18 +57,12 @@ export function commit (...rows) {
 
 export function rollback (row) {
   if (row && row.classList.contains('new')) {
-    DB.delete('door', row.dataset.oid)
+    DB.delete('doors', row.dataset.oid)
     refreshed()
   } else {
     revert(row)
   }
 }
-
-// export function onNew (tag, event) {
-//   if (tag === 'controller') {
-//     controllers.onNew()
-//   }
-// }
 
 export function onRefresh (event) {
   if (event && event.target && event.target.id === 'refresh') {
@@ -213,10 +156,10 @@ export function refreshed () {
     return 0
   })
 
-  list.forEach(c => {
-    const row = updateFromDB(c.OID, c)
+  list.forEach(d => {
+    const row = updateFromDB(d.OID, d)
     if (row) {
-      if (c.status === 'new') {
+      if (d.status === 'new') {
         row.classList.add('new')
       } else {
         row.classList.remove('new')
@@ -227,13 +170,36 @@ export function refreshed () {
   DB.refreshed('doors')
 }
 
+export function set (element, value, status) {
+  const oid = element.dataset.oid
+  const original = element.dataset.original
+  const v = value.toString()
+  const flag = document.getElementById(`F${oid}`)
+
+  element.dataset.value = v
+
+  if (status) {
+    element.dataset.status = status
+  } else {
+    element.dataset.status = ''
+  }
+
+  if (v !== original) {
+    mark('modified', element, flag)
+  } else {
+    unmark('modified', element, flag)
+  }
+
+  percolate(oid, modified)
+}
+
 function updateFromDB (oid, record) {
   let row = document.querySelector("div#doors tr[data-oid='" + oid + "']")
 
-  // if (record.status === 'deleted') {
-  //   deleted(row)
-  //   return
-  // }
+  if (record.status === 'deleted') {
+    deleted(row)
+    return
+  }
 
   if (!row) {
     row = add(oid)
@@ -257,7 +223,7 @@ function add (oid) {
     const row = tbody.insertRow()
 
     row.id = uuid
-    row.classList.add('controller')
+    row.classList.add('door')
     row.classList.add('new')
     row.dataset.oid = oid
     row.dataset.status = 'unknown'
@@ -339,29 +305,6 @@ function update (element, value, status) {
   }
 }
 
-function set (element, value, status) {
-  const oid = element.dataset.oid
-  const original = element.dataset.original
-  const v = value.toString()
-  const flag = document.getElementById(`F${oid}`)
-
-  element.dataset.value = v
-
-  if (status) {
-    element.dataset.status = status
-  } else {
-    element.dataset.status = ''
-  }
-
-  if (v !== original) {
-    mark('modified', element, flag)
-  } else {
-    unmark('modified', element, flag)
-  }
-
-  percolate(oid, modified)
-}
-
 function revert (row) {
   const fields = row.querySelectorAll('.field')
 
@@ -396,6 +339,21 @@ function modified (oid) {
     } else {
       element.dataset.modified = null
       element.classList.remove('modified')
+    }
+  }
+}
+
+function deleted (row) {
+  const tbody = document.getElementById('doors').querySelector('table tbody')
+
+  if (tbody && row) {
+    const rows = tbody.rows
+
+    for (let ix = 0; ix < rows.length; ix++) {
+      if (rows[ix].id === row.id) {
+        tbody.deleteRow(ix)
+        break
+      }
     }
   }
 }

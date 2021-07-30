@@ -129,44 +129,44 @@ th.doors {
   width: 100%;
 }
 
-tr.controller {
+tr.door {
 }
 
-tr.controller td:nth-child(n+7) { 
+tr.door td:nth-child(n+7) { 
   width:100% 
 } 
 
-tr.controller[data-status="unknown"] {
+tr.door[data-status="unknown"] {
 }
 
-tr.controller td input {
+tr.door td input {
   color: $content-table-item-normal;
 }
 
-tr.controller[data-status="unconfigured"] td input {
+tr.door[data-status="unconfigured"] td input {
   color: $content-table-row-unconfigured;
   font-style: italic;
 }
 
-tr.controller[data-status="unknown"] td input {
+tr.door[data-status="unknown"] td input {
   color: $content-table-item-unknown;
   font-style: italic;
 }
 
-tr.controller[data-status="uncertain"] td input {
+tr.door[data-status="uncertain"] td input {
   color: $content-table-item-uncertain;
 }
 
-tr.controller[data-status="error"] td input {
+tr.door[data-status="error"] td input {
   color: $content-table-item-error;
 }
 
-tr.controller td input[data-status="unknown"] {
+tr.door td input[data-status="unknown"] {
   color: $content-table-item-unknown;
   font-style: italic;
 }
 
-tr.controller td input[data-status="uncertain"] {
+tr.door td input[data-status="uncertain"] {
   color: $content-table-item-uncertain;
 }
 
@@ -175,26 +175,26 @@ tr.controller td input[data-status="error"] {
   font-weight: bold; 
 }
 
-tr.controller td input:focus {
+tr.door td input:focus {
   border: 1px solid red;
 }
 
-tr.controller td img.flag.modified {
+tr.door td img.flag.modified {
    filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
    visibility: visible;
 }
 
-tr.controller td img.flag.pending {
+tr.door td img.flag.pending {
    filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
    visibility: visible;
 }
 
-tr.controller td img.flag.conflict {
+tr.door td img.flag.conflict {
    filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
    visibility: visible;
 }
 
-tr.controller td input.name {
+tr.door td input.name {
   width: 90px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
@@ -202,11 +202,11 @@ tr.controller td input.name {
   outline: none;
 }
 
-tr.controller td input.name:focus {
+tr.door td input.name:focus {
   border: 1px solid red;
 }
 
-tr.controller td input.ID {
+tr.door td input.ID {
   width: 88px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
@@ -215,13 +215,13 @@ tr.controller td input.ID {
   -moz-appearance:textfield;
 }
 
-tr.controller td input.ID::-webkit-inner-spin-button, 
-tr.controller td input.ID::-webkit-outer-spin-button { 
+tr.door td input.ID::-webkit-inner-spin-button, 
+tr.door td input.ID::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
 }
 
-tr.controller td input.IP {
+tr.door td input.IP {
   min-width: 112px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
@@ -229,7 +229,7 @@ tr.controller td input.IP {
   outline: none;
 }
 
-tr.controller td input.datetime {
+tr.door td input.datetime {
   min-width: 176px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
@@ -237,7 +237,7 @@ tr.controller td input.datetime {
   outline: none;
 }
 
-tr.controller td input.cards {
+tr.door td input.cards {
   width: 72px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
@@ -247,7 +247,7 @@ tr.controller td input.cards {
   -moz-appearance:textfield;
 }
 
-tr.controller td input.events {
+tr.door td input.events {
   width: 72px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
@@ -257,7 +257,7 @@ tr.controller td input.events {
   -moz-appearance:textfield;
 }
 
-tr.controller td select.door1,.door2,.door3,.door4 {
+tr.door td select.door1,.door2,.door3,.door4 {
   width: 72px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
@@ -265,7 +265,7 @@ tr.controller td select.door1,.door2,.door3,.door4 {
   outline: none;
 }
 
-tr.controller td select {
+tr.door td select {
   font: 400 0.9em Arial;
   border: none;
   outline: none;
@@ -274,20 +274,20 @@ tr.controller td select {
   -moz-appearance: none;
 }
 
-tr.controller[data-status="unconfigured"] td select {
+tr.door[data-status="unconfigured"] td select {
   color: $content-table-row-unconfigured;
   font-style: italic;
 }
 
-tr.controller[data-status="unknown"] td select {
+tr.door[data-status="unknown"] td select {
   color: $content-table-item-unknown;
   font-style: italic;
 }
 
-tr.controller[data-status="uncertain"] td select {
+tr.door[data-status="uncertain"] td select {
   color: $content-table-item-uncertain;
 }
 
-tr.controller[data-status="error"] td select {
+tr.door[data-status="error"] td select {
   color: $content-table-item-error;
 }

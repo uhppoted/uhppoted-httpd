@@ -21,8 +21,17 @@ export const DB = {
 
           record.mark = 0
           record.status = 'deleted'
-          break
         }
+        break
+
+      case 'doors':
+        if (oid && this.doors.has(oid)) {
+          const record = this.doors.get(oid)
+
+          record.mark = 0
+          record.status = 'deleted'
+        }
+        break
     }
   },
 

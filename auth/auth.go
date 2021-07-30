@@ -34,6 +34,7 @@ type OpAuth interface {
 	CanDeleteCardHolder(cardHolder Operant) error
 
 	CanUpdateDoor(door Operant, field string, value interface{}) error
+	CanAddDoor(door Operant) error
 }
 
 type Operant interface {

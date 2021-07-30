@@ -2,11 +2,12 @@
 
 ### IN PROGRESS
 
+- [ ] Make OID a type with:
+      - HasPrefix
+- [ ] Deduplicate `status`
+
 - Doors
-  - [ ] Deduplicate `status`
   - [ ] sort order different on Firefox and Chrome (sigh!)
-  - [ ] edit
-  - [ ] add
   - [ ] delete
   - [ ] save
   - [ ] Display controller+door
@@ -18,6 +19,8 @@
   - [ ] Move `doors.set` to _tabular.js_
   - [ ] Move `onEdited`, `onRollback`, etc to _tabular.js_
   - [ ] Assign doors to controllers in _DOORS_ page and (optionally) make controller doors readonly
+  - [x] add
+  - [x] edit
   - [x] Fix top margin
 
 - [ ] Cards

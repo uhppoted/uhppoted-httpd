@@ -2,6 +2,7 @@ package doors
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
@@ -16,7 +17,7 @@ type Door struct {
 }
 
 func (d *Door) IsValid() bool {
-	return true
+	return strings.TrimSpace(d.Name) != ""
 }
 
 func (d *Door) AsObjects() []interface{} {

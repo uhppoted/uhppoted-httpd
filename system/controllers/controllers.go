@@ -212,13 +212,13 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid string, value string)
 	}
 
 	// ... interface
-	if cc.LAN != nil && strings.HasPrefix(oid, cc.LAN.OID) {
+	if cc.LAN != nil && strings.HasPrefix(oid, cc.LAN.OID+".") {
 		return cc.LAN.set(auth, oid, value)
 	}
 
 	// ... controllers
 	for _, c := range cc.Controllers {
-		if c != nil && strings.HasPrefix(oid, c.OID) {
+		if c != nil && strings.HasPrefix(oid, c.OID+".") {
 			return c.set(auth, oid, value)
 		}
 	}

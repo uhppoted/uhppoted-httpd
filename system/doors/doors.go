@@ -73,11 +73,9 @@ func (dd *Doors) Load(file string) error {
 		created = created.Add(1 * time.Second)
 	}
 
-	// for _, v := range cc.Controllers {
-	//     if v.DeviceID != nil && *v.DeviceID != 0 {
-	//         catalog.PutController(*v.DeviceID, v.OID)
-	//     }
-	// }
+	for _, v := range dd.Doors {
+		catalog.PutDoor(v.OID)
+	}
 
 	return nil
 }
@@ -168,7 +166,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]inte
 	}
 
 	for k, d := range dd.Doors {
-		if strings.HasPrefix(oid, d.OID) {
+		if strings.HasPrefix(oid, d.OID+".") {
 			objects, err := d.set(auth, oid, value)
 			if err == nil {
 				dd.Doors[k] = d
@@ -180,43 +178,39 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]inte
 
 	objects := []interface{}{}
 
-	//     if oid == "<new>" {
-	//         if c, err := cc.add(auth, Controller{}); err != nil {
-	//             return nil, err
-	//         } else if c == nil {
-	//             return nil, fmt.Errorf("Failed to add 'new' controller")
-	//         } else {
-	//             c.log(auth, "add", c.OID, "controller", "", "")
-	//             objects = append(objects, object{
-	//                 OID:   c.OID,
-	//                 Value: "new",
-	//             })
-	//         }
-	//     }
+	if oid == "<new>" {
+		if d, err := dd.add(auth, Door{}); err != nil {
+			return nil, err
+		} else if d == nil {
+			return nil, fmt.Errorf("Failed to add 'new' door")
+		} else {
+			d.log(auth, "add", d.OID, "door", "", "")
+			dd.Doors[d.OID] = *d
+			objects = append(objects, object{
+				OID:   d.OID,
+				Value: "new",
+			})
+		}
+	}
 
 	return objects, nil
 }
 
-// func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error) {
-//     id := uint32(0)
-//     if c.DeviceID != nil {
-//         id = *c.DeviceID
-//     }
+func (dd *Doors) add(auth auth.OpAuth, d Door) (*Door, error) {
+	oid := catalog.NewDoor()
 
-//     record := c.clone()
-//     record.OID = catalog.Get(id)
-//     record.created = time.Now()
+	record := d.clone()
+	record.OID = oid
+	record.created = time.Now()
 
-//     if auth != nil {
-//         if err := auth.CanAddController(record); err != nil {
-//             return nil, err
-//         }
-//     }
+	if auth != nil {
+		if err := auth.CanAddDoor(&record); err != nil {
+			return nil, err
+		}
+	}
 
-//     cc.Controllers = append(cc.Controllers, record)
-
-//     return record, nil
-// }
+	return &record, nil
+}
 
 // func (cc *ControllerSet) Refresh() {
 //     cc.LAN.refresh(cc.Controllers)

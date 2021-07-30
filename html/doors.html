@@ -49,7 +49,7 @@
       <main>
         <div style="width:100%;">
           <div id="controls" data-oid="0.3">
-            <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('door', event)" />
+            <img id="commitall" class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('door', event, 'doors')" />
             <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('door', event)" />
             <div id="message" class="message">
               <div>
@@ -57,7 +57,7 @@
                 <button class="dismiss" onclick="dismiss()">&#9746;</button>
               </div>
             </div>
-            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('controller')" />
+            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('door')" />
             <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh(event)" />
           </div>
 
@@ -66,6 +66,9 @@
               <thead>
                 <tr>
                   <th class="name topleft">Door</th>
+                  <th class="controller colheader">Controller</th>
+                  <th class="ID colheader">ID</th>
+                  <th class="door colheader">Door</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -86,6 +89,50 @@
                   <span class="control commit"   onclick="onCommit('door', event)"   data-record="" data-enabled="false">&#9745;</span>
                   <span class="control rollback" onclick="onRollback('door', event)" data-record="" data-enabled="false">&#9746;</span>
                 </td>
+
+                <td class="controller">
+                  <img class="flag ID" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field ID"
+                         type="text" 
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('door', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
+                </td>
+                <td class="ID">
+                  <img class="flag ID" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field ID"
+                         type="number" 
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('door', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
+                </td>
+                <td>
+                  <img class="flag door" src="images/{{$.context.Theme}}/corner.svg" />
+                  <select class="field door"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited('door', event)" 
+                          data-record=""
+                          data-original=""
+                          data-value=""  
+                          readonly>
+                    <option value="">-</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                  </select>
+                </td>
             </template>
 
           </div>
@@ -105,9 +152,9 @@
 
   <script type="module">
     import { retheme, dismiss, resetIdle, onMenu, onSignOut } from "./javascript/uhppoted.js"
-    import { onRefresh, onEdited, onEnter } from "./javascript/doors.js"
-    import { onCommit, onRollback, onRollbackAll } from "./javascript/edit.js"
-    // import { onTick, , onCommitAll, , onNew, onRefresh } from "./javascript/system.js"
+    import { onRefresh  } from "./javascript/doors.js"
+    import { onEdited, onEnter, onTick, onCommit, onCommitAll, onRollback, onRollbackAll, onNew } from "./javascript/edit.js"
+    // import { , , onRefresh } from "./javascript/system.js"
 
     window.retheme = retheme
     window.dismiss = dismiss
@@ -117,15 +164,15 @@
     window.onEnter = onEnter
     // window.onTick = onTick
     window.onCommit = onCommit
-    // window.onCommitAll = onCommitAll
+    window.onCommitAll = onCommitAll
     window.onRollback = onRollback
     window.onRollbackAll = onRollbackAll
-    // window.onNew = onNew
+    window.onNew = onNew
     // window.onRefresh = onRefresh
 
     resetIdle()
     onRefresh()
-    setInterval(onRefresh, 15000)
+    // setInterval(onRefresh, 15000)
   </script>
 
   <!-- global information initialised by Go template -->
