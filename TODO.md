@@ -4,10 +4,11 @@
 
 - [ ] Make OID a type with:
       - HasPrefix
+- [ ] Start commonalising CSS
 
 - Doors
-  - [ ] sort order different on Firefox and Chrome (sigh!)
   - [ ] delete
+  - [ ] sort order different on Firefox and Chrome (sigh!)
   - [ ] save
   - [ ] Display controller+door
   - [ ] Fix ACL for reworked types.Door
@@ -18,9 +19,6 @@
   - [ ] Move `doors.set` to _tabular.js_
   - [ ] Move `onEdited`, `onRollback`, etc to _tabular.js_
   - [ ] Assign doors to controllers in _DOORS_ page and (optionally) make controller doors readonly
-  - [x] add
-  - [x] edit
-  - [x] Fix top margin
 
 - [ ] Cards
       - migrate to OIDs

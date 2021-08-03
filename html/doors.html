@@ -69,6 +69,9 @@
                   <th class="controller colheader">Controller</th>
                   <th class="ID colheader">ID</th>
                   <th class="door colheader">Door</th>
+                  <th class="mode colheader">Mode</th>
+                  <th class="delay colheader">Delay</th>
+                  <th class="profiles colheader">Time Profiles</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -116,8 +119,22 @@
                          readonly />
                 </td>
                 <td>
-                  <img class="flag door" src="images/{{$.context.Theme}}/corner.svg" />
-                  <select class="field door"
+                  <img class="flag doorID" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field doorID"
+                         type="number" 
+                         min="1"
+                         max="4"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('door', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
+                </td>
+                <td>
+                  <img class="flag mode" src="images/{{$.context.Theme}}/corner.svg" />
+                  <select class="field mode"
                           type="text" 
                           value=""
                           placeholder="-"
@@ -127,11 +144,36 @@
                           data-value=""  
                           readonly>
                     <option value="">-</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
+                    <option value="controlled">controlled</option>
+                    <option value="normally open">normally open</option>
+                    <option value="normally closed">normally closed</option>
                   </select>
+                </td>
+                <td class="delay">
+                  <img class="flag delay" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field delay"
+                         type="number" 
+                         min="0"
+                         max="60"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('door', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
+                </td>
+                <td class="profiles">
+                  <img class="flag profiles" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field profiles"
+                         type="text" 
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('door', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
                 </td>
             </template>
 

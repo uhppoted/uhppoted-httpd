@@ -1,87 +1,3 @@
-table.interface {
-  background: $content-table-background-header;
-  margin-top: 30px; 
-  margin-bottom: 4px;
-  padding-top: 0px;
-  padding-bottom: 2px;
-  padding-left: 4px;
-  padding-right: 4px;
-  font: 400 0.9em Arial;
-  color: $solarize-base01;
-  border-radius: 3px;
-}
-
-table.interface tr {
-  padding-top: 0px;
-  padding-bottom: 0px;
-} 
-
-table.interface td {
-  font-variant: small-caps;
-}
-
-table.interface td img.flag {
-  width: 6px;
-  height: 6px;
-  margin-left: 0px;
-  margin-right: 6px;
-  visibility: hidden;
- }
-
-table.interface td img.flag.modified {
-   filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
-   visibility: visible;
-}
-
-table.interface td img.flag.pending {
-   filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
-   visibility: visible;
-}
-
-table.interface td img.flag.conflict {
-   filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
-   visibility: visible;
-}
-
-table.interface td input {
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-  color: $solarize-base01;
-  font: 400 0.9em Arial;
-}
-
-table.interface td input:focus {
-  border: 1px solid red;
-}
-
-table.interface td input.name {
-  padding: 0px 0px 0px 0px;
-  border: none;
-  font-weight: bold;
-}
-
-table.interface td span.control {
-  padding: 0px 0px 0px 0px;
-  font-size: 1.4rem;
-  font-weight: bold;
-  cursor: pointer;
-  visibility: hidden;
-}
-
-table.interface td span.commit {
-  color: $content-table-commit;  
-}
-
-table.interface td span.rollback {
-  color: $content-table-rollback;  
-}
-
-table.interface.modified td span.control {
-  visibility: visible;
-}
-
 #controls {
     background: $content-table-background-header;
     padding: 4px 4px 4px 4px;
@@ -102,33 +18,6 @@ th.name {
   border-bottom: 1px;
 }
 
-th.ID {
-  min-width: 88px;
-}
-
-th.IP {
-  min-width: 112px;
-}
-
-th.datetime {
-  min-width: 176px;
-}
-
-th.cards {
-  min-width: 72px;
-  text-align: center; 
-}
-
-th.events {
-  min-width: 72px;
-  text-align: center; 
-}
-
-th.doors {
-  min-width: 76px;
-  width: 100%;
-}
-
 tr.door {
 }
 
@@ -139,8 +28,28 @@ tr.door td:nth-child(n+7) {
 tr.door[data-status="unknown"] {
 }
 
+tr.door td img.flag.modified {
+   filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+   visibility: visible;
+}
+
+tr.door td img.flag.pending {
+   filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
+   visibility: visible;
+}
+
+tr.door td img.flag.conflict {
+   filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
+   visibility: visible;
+}
+
 tr.door td input {
   color: $content-table-item-normal;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 2px 4px 2px 4px;
+  outline: none;
+  -moz-appearance:textfield;
 }
 
 tr.door[data-status="unconfigured"] td input {
@@ -170,105 +79,14 @@ tr.door td input[data-status="uncertain"] {
   color: $content-table-item-uncertain;
 }
 
-tr.controller td input[data-status="error"] {
-  color: $content-table-item-error;
-  font-weight: bold; 
-}
-
 tr.door td input:focus {
   border: 1px solid red;
 }
 
-tr.door td img.flag.modified {
-   filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
-   visibility: visible;
-}
-
-tr.door td img.flag.pending {
-   filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
-   visibility: visible;
-}
-
-tr.door td img.flag.conflict {
-   filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
-   visibility: visible;
-}
-
-tr.door td input.name {
-  width: 90px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-}
-
-tr.door td input.name:focus {
-  border: 1px solid red;
-}
-
-tr.door td input.ID {
-  width: 88px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-  -moz-appearance:textfield;
-}
-
-tr.door td input.ID::-webkit-inner-spin-button, 
-tr.door td input.ID::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
-}
-
-tr.door td input.IP {
-  min-width: 112px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-}
-
-tr.door td input.datetime {
-  min-width: 176px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-}
-
-tr.door td input.cards {
-  width: 72px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-  text-align: center; 
-  -moz-appearance:textfield;
-}
-
-tr.door td input.events {
-  width: 72px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-  text-align: center; 
-  -moz-appearance:textfield;
-}
-
-tr.door td select.door1,.door2,.door3,.door4 {
-  width: 72px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-}
-
 tr.door td select {
-  font: 400 0.9em Arial;
   border: none;
   outline: none;
+  font: 400 0.9em Arial;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -291,3 +109,35 @@ tr.door[data-status="uncertain"] td select {
 tr.door[data-status="error"] td select {
   color: $content-table-item-error;
 }
+
+
+tr.door td input.name {
+  width: 90px;
+}
+
+tr.door td input.ID {
+  width: 88px;
+}
+
+tr.door td input.ID::-webkit-inner-spin-button, 
+tr.door td input.ID::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+tr.door td input.doorID {
+  width: 72px;
+}
+
+tr.door td input.mode {
+  text-align: center; 
+}
+
+tr.door td input.delay {
+  text-align: center; 
+}
+
+tr.door td input.profiles {
+  text-align: center; 
+}
+
