@@ -33,12 +33,12 @@ func NewDoors() Doors {
 	}
 }
 
-func (dd *Doors) AsObjects() []interface{} {
+func (dd *Doors) AsObjects(resolver catalog.Lookup) []interface{} {
 	objects := []interface{}{}
 
 	for _, d := range dd.Doors {
 		if d.IsValid() {
-			if l := d.AsObjects(); l != nil {
+			if l := d.AsObjects(resolver); l != nil {
 				objects = append(objects, l...)
 			}
 		}

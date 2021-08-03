@@ -21,7 +21,7 @@ th.name {
 tr.door {
 }
 
-tr.door td:nth-child(n+7) { 
+tr.door td:last-child { 
   width:100% 
 } 
 
@@ -50,6 +50,12 @@ tr.door td input {
   padding: 2px 4px 2px 4px;
   outline: none;
   -moz-appearance:textfield;
+}
+
+tr.door td input[type=number]::-webkit-inner-spin-button, 
+tr.door td input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
 }
 
 tr.door[data-status="unconfigured"] td input {
@@ -110,23 +116,14 @@ tr.door[data-status="error"] td select {
   color: $content-table-item-error;
 }
 
-
 tr.door td input.name {
   width: 90px;
 }
 
-tr.door td input.ID {
-  width: 88px;
-}
-
-tr.door td input.ID::-webkit-inner-spin-button, 
-tr.door td input.ID::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+tr.door td input.deviceID {
 }
 
 tr.door td input.doorID {
-  width: 72px;
 }
 
 tr.door td input.mode {

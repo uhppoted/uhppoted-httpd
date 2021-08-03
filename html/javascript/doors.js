@@ -98,7 +98,7 @@ export function get () {
       }
     })
     .catch(function (err) {
-      console.log(err)
+      console.error(err)
     })
 }
 
@@ -206,10 +206,16 @@ function updateFromDB (oid, record) {
   }
 
   const name = row.querySelector(`[data-oid="${oid}.1"]`)
+  const controller = row.querySelector(`[data-oid="${oid}.0.2.2"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}.0.2.3"]`)
+  const door = row.querySelector(`[data-oid="${oid}.0.2.4"]`)
 
   row.dataset.status = record.status
 
   update(name, record.name)
+  update(controller, record.controller)
+  update(deviceID, record.deviceID)
+  update(door, record.door)
 
   return row
 }
@@ -240,7 +246,10 @@ function add (oid) {
     rollback.dataset.enabled = 'false'
 
     const fields = [
-      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' }
+      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' },
+      { suffix: 'controller', oid: `${oid}.0.2.2`, selector: 'td input.controller', flag: 'td img.controller' },
+      { suffix: 'deviceID', oid: `${oid}.0.2.3`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
+      { suffix: 'doorID', oid: `${oid}.0.2.4`, selector: 'td input.doorID', flag: 'td img.doorID' }
     ]
 
     fields.forEach(f => {

@@ -5,9 +5,13 @@
 - [ ] Make OID a type with:
       - HasPrefix
 - [ ] Start commonalising CSS
+      - controllers 'padding' column a la doors
+      - cards 'padding' column a la doors
 
 - Doors
-  - [ ] delete
+  - [ ] automatically create doors 1-4 for controllers
+  - [ ] delete when name is blank and controller is not assigned
+  - [ ] sort by controller + door
   - [ ] sort order different on Firefox and Chrome (sigh!)
   - [ ] save
   - [ ] Display controller+door

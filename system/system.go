@@ -28,6 +28,8 @@ var sys = system{
 	taskQ:       NewTaskQ(),
 }
 
+var resolver = Resolver{}
+
 type system struct {
 	sync.RWMutex
 	conf        string
@@ -92,7 +94,7 @@ func System() interface{} {
 
 	objects := []interface{}{}
 	objects = append(objects, sys.controllers.AsObjects()...)
-	objects = append(objects, sys.doors.AsObjects()...)
+	objects = append(objects, sys.doors.AsObjects(resolver)...)
 
 	d := []doors.Door{}
 	for _, v := range sys.doors.Doors {

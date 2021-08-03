@@ -72,6 +72,7 @@
                   <th class="mode colheader">Mode</th>
                   <th class="delay colheader">Delay</th>
                   <th class="profiles colheader">Time Profiles</th>
+                  <th class="colheader"></th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -94,8 +95,8 @@
                 </td>
 
                 <td class="controller">
-                  <img class="flag ID" src="images/{{$.context.Theme}}/corner.svg" />
-                  <input class="field ID"
+                  <img class="flag controller" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field controller"
                          type="text" 
                          value=""
                          placeholder="-"
@@ -105,9 +106,9 @@
                          data-value="" 
                          readonly />
                 </td>
-                <td class="ID">
-                  <img class="flag ID" src="images/{{$.context.Theme}}/corner.svg" />
-                  <input class="field ID"
+                <td class="deviceID">
+                  <img class="flag deviceID" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field deviceID"
                          type="number" 
                          min="0"
                          value=""
@@ -175,6 +176,8 @@
                          data-value="" 
                          readonly />
                 </td>
+                <!-- padding (for tr::last-child) -->
+                <td></td>
             </template>
 
           </div>
@@ -196,7 +199,6 @@
     import { retheme, dismiss, resetIdle, onMenu, onSignOut } from "./javascript/uhppoted.js"
     import { onRefresh  } from "./javascript/doors.js"
     import { onEdited, onEnter, onTick, onCommit, onCommitAll, onRollback, onRollbackAll, onNew } from "./javascript/edit.js"
-    // import { , , onRefresh } from "./javascript/system.js"
 
     window.retheme = retheme
     window.dismiss = dismiss
@@ -204,13 +206,13 @@
     window.onSignOut = onSignOut
     window.onEdited = onEdited
     window.onEnter = onEnter
-    // window.onTick = onTick
+    window.onTick = onTick
     window.onCommit = onCommit
     window.onCommitAll = onCommitAll
     window.onRollback = onRollback
     window.onRollbackAll = onRollbackAll
     window.onNew = onNew
-    // window.onRefresh = onRefresh
+    window.onRefresh = onRefresh
 
     resetIdle()
     onRefresh()

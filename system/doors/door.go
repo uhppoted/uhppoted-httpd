@@ -7,6 +7,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -14,21 +15,39 @@ type Door struct {
 	OID  string `json:"OID"`
 	Name string `json:"name"`
 
-	created time.Time
+	created    time.Time
+	controller struct {
+		created time.Time
+		OID     string
+		name    string
+		ID      uint32
+		door    uint32
+	}
 }
 
 func (d *Door) IsValid() bool {
 	return strings.TrimSpace(d.Name) != ""
 }
 
-func (d *Door) AsObjects() []interface{} {
+func (d *Door) AsObjects(resolver catalog.Lookup) []interface{} {
 	created := d.created.Format("2006-01-02 15:04:05")
 	status := types.StatusOk
 	name := stringify(d.Name)
 
+	controllerOID := d.lookup(resolver, fmt.Sprintf("controller.OID for door.OID[%v]", d.OID))
+	controllerCreated := d.lookup(resolver, fmt.Sprintf("controller.Created for door.OID[%v]", d.OID))
+	controllerName := d.lookup(resolver, fmt.Sprintf("controller.Name for door.OID[%v]", d.OID))
+	controllerID := d.lookup(resolver, fmt.Sprintf("controller.ID for door.OID[%v]", d.OID))
+	controllerDoor := d.lookup(resolver, fmt.Sprintf("controller.Door for door.OID[%v]", d.OID))
+
 	objects := []interface{}{
 		object{OID: d.OID, Value: fmt.Sprintf("%v", status)},
 		object{OID: d.OID + ".0.1", Value: created},
+		object{OID: d.OID + ".0.2", Value: stringify(controllerOID)},
+		object{OID: d.OID + ".0.2.1", Value: stringify(controllerCreated)},
+		object{OID: d.OID + ".0.2.2", Value: stringify(controllerName)},
+		object{OID: d.OID + ".0.2.3", Value: stringify(controllerID)},
+		object{OID: d.OID + ".0.2.4", Value: stringify(controllerDoor)},
 		object{OID: d.OID + ".1", Value: name},
 	}
 
@@ -104,6 +123,16 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 	}
 
 	return objects, nil
+}
+
+func (d *Door) lookup(resolver catalog.Lookup, query string) string {
+	v := resolver.Get(query)
+
+	if v != nil && len(v) > 0 {
+		return stringify(v[0])
+	}
+
+	return ""
 }
 
 func (d *Door) log(auth auth.OpAuth, operation, OID, field, current, value string) {

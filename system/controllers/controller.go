@@ -276,6 +276,26 @@ func (c *Controller) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
+func (c *Controller) Get(field string) interface{} {
+	if c != nil {
+		switch field {
+		case "OID":
+			return c.OID
+
+		case "created":
+			return c.created
+
+		case "name":
+			return c.Name
+
+		case "ID":
+			return c.DeviceID
+		}
+	}
+
+	return nil
+}
+
 func (c *Controller) String() string {
 	if c == nil {
 		return ""

@@ -200,8 +200,17 @@ function object (o) {
   })
 
   // ... doors
+  if (/^0\.3\..*$/.test(oid)) {
+    door(o)
+  }
+}
 
-  if (/^0\.3.[1-9][0-9]*$/.test(oid)) {
+function door (o) {
+  const oid = o.OID
+
+  // ... doors
+
+  if (/^0\.3\.[1-9][0-9]*$/.test(oid)) {
     if (DB.doors.has(oid)) {
       const record = DB.doors.get(oid)
       record.status = o.value
@@ -212,6 +221,9 @@ function object (o) {
     DB.doors.set(oid, {
       OID: oid,
       created: '',
+      controller: '',
+      deviceID: '',
+      door: '',
       name: '',
       status: o.value,
       mark: 0
@@ -234,6 +246,18 @@ function object (o) {
 
         case k + '.0.1':
           v.created = o.value
+          break
+
+        case k + '.0.2.2':
+          v.controller = o.value
+          break
+
+        case k + '.0.2.3':
+          v.deviceID = o.value
+          break
+
+        case k + '.0.2.4':
+          v.door = o.value
           break
 
         case k + '.1':
