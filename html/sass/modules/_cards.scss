@@ -11,22 +11,21 @@ th.name {
 }
 
 th.cardnumber {
-  min-width: 96px;
+  min-width: 72px;
 }
 
 th.from {
-  min-width: 80px;
+  min-width: 72px;
 }
 
 th.to {
-  min-width: 80px;
+  min-width: 72px;
 }
 
-th.groups {
-  min-width: 160px;
+th.grouph {
 }
 
-tr td:nth-child(n+5) { 
+tr td:last-child { 
   width:100% 
 } 
 
@@ -43,11 +42,12 @@ td input.name:focus {
 }
 
 td input.cardnumber {
-  width: 80px;
+  width: 72px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
   outline: none;
+  -moz-appearance:textfield;
 }
 
 td input.cardnumber:focus {
@@ -61,12 +61,18 @@ td input.cardnumber::-webkit-outer-spin-button {
 }
 
 input.from {
-  width: 124px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
   font: 400 0.9em Arial;
   outline: none;
+}
+
+input.from::-webkit-datetime-edit { 
+}
+
+input.from::-webkit-calendar-picker-indicator { 
+  margin-left: 0px;
 }
 
 td input.from:focus {
@@ -74,12 +80,18 @@ td input.from:focus {
 }
 
 td input.to {
-  width: 124px;
   padding: 2px 4px 2px 4px;
   border: 1px solid transparent;
   border-radius: 3px;
   font: 400 0.9em Arial;
   outline: none;
+}
+
+input.to::-webkit-datetime-edit { 
+}
+
+input.to::-webkit-calendar-picker-indicator { 
+  margin-left: 0px;
 }
 
 td input.to:focus {

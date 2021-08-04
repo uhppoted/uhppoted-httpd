@@ -70,6 +70,7 @@
                   <th class="from       colheader">From</th>
                   <th class="to         colheader">To</th>{{range .groups}}
                   <th class="grouph     colheader">{{.Name}}</th>{{else}}</th>{{end}}
+                  <th class="padding    colheader"></th>
                 </tr>
               </thead>
               <tbody>{{range $cardholder := .cards}}
@@ -146,6 +147,8 @@
                       <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
                     </label>
                   </td>{{end}}
+                  <!-- 'padding' column (CSS: tr::last-child) -->
+                  <td class="padding"></td>                  
                 </tr>{{else}}<tr class="empty"><td/><td/><td/><td/><td/><td/></tr>{{end}}
               </tbody>
               <tfoot>

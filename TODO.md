@@ -5,7 +5,6 @@
 - [ ] Make OID a type with:
       - HasPrefix
 - [ ] Commonalise CSS
-      - cards 'padding' column a la doors
 
 - Doors
   - [ ] automatically create doors 1-4 for controllers
