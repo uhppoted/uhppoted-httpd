@@ -4,8 +4,7 @@
 
 - [ ] Make OID a type with:
       - HasPrefix
-- [ ] Start commonalising CSS
-      - controllers 'padding' column a la doors
+- [ ] Commonalise CSS
       - cards 'padding' column a la doors
 
 - Doors
