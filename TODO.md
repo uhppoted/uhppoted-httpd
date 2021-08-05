@@ -8,8 +8,6 @@
 
 - Doors
   - [ ] 'global' OID cache
-         - delay
-         - mode
   - [ ] automatically create doors 1-4 for controllers
   - [ ] delete when name is blank and controller is not assigned
   - [ ] sort by controller + door

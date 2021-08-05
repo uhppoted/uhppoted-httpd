@@ -26,6 +26,9 @@ func (r Resolver) Get(query string) []interface{} {
 	case strings.HasPrefix(query, "controller.Door for door.OID"):
 		return r.lookupControllerForDoor(query)
 
+	case strings.HasPrefix(query, "controller.Door.Mode for door.OID"):
+		return r.lookupControllerForDoor(query)
+
 	case strings.HasPrefix(query, "controller.Door.Delay for door.OID"):
 		return r.lookupControllerForDoor(query)
 	}
@@ -34,7 +37,7 @@ func (r Resolver) Get(query string) []interface{} {
 }
 
 func (r Resolver) lookupControllerForDoor(query string) []interface{} {
-	re := regexp.MustCompile(`controller.(OID|Created|Name|ID|Door|Door\.Delay) for door.OID\[(.*?)\]`)
+	re := regexp.MustCompile(`controller.(OID|Created|Name|ID|Door|Door\.Mode|Door\.Delay) for door.OID\[(.*?)\]`)
 
 	match := re.FindStringSubmatch(query)
 	if match == nil || len(match) < 3 {
@@ -59,6 +62,8 @@ func (r Resolver) lookupControllerForDoor(query string) []interface{} {
 					resultset = append(resultset, c.Get("ID"))
 				case "Door":
 					resultset = append(resultset, k)
+				case "Door.Mode":
+					resultset = append(resultset, c.Get(fmt.Sprintf("Door[%v].Mode", oid)))
 				case "Door.Delay":
 					resultset = append(resultset, c.Get(fmt.Sprintf("Door[%v].Delay", oid)))
 				}

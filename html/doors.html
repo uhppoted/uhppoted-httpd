@@ -71,7 +71,6 @@
                   <th class="door colheader">Door</th>
                   <th class="mode colheader">Mode</th>
                   <th class="delay colheader">Delay</th>
-                  <th class="profiles colheader">Time Profiles</th>
                   <th class="padding colheader"></th>
                 </tr>
               </thead>
@@ -94,7 +93,7 @@
                   <span class="control rollback" onclick="onRollback('door', event)" data-record="" data-enabled="false">&#9746;</span>
                 </td>
 
-                <td class="controller">
+                <td>
                   <img class="flag controller" src="images/{{$.context.Theme}}/corner.svg" />
                   <input class="field controller"
                          type="text" 
@@ -106,7 +105,7 @@
                          data-value="" 
                          readonly />
                 </td>
-                <td class="deviceID">
+                <td>
                   <img class="flag deviceID" src="images/{{$.context.Theme}}/corner.svg" />
                   <input class="field deviceID"
                          type="number" 
@@ -150,24 +149,12 @@
                     <option value="normally closed">normally closed</option>
                   </select>
                 </td>
-                <td class="delay">
+                <td>
                   <img class="flag delay" src="images/{{$.context.Theme}}/corner.svg" />
                   <input class="field delay"
                          type="number" 
                          min="0"
                          max="60"
-                         value=""
-                         placeholder="-"
-                         onchange="onEdited('door', event)" 
-                         data-record=""
-                         data-original=""
-                         data-value="" 
-                         readonly />
-                </td>
-                <td class="profiles">
-                  <img class="flag profiles" src="images/{{$.context.Theme}}/corner.svg" />
-                  <input class="field profiles"
-                         type="text" 
                          value=""
                          placeholder="-"
                          onchange="onEdited('door', event)" 

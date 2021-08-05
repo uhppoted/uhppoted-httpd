@@ -292,21 +292,26 @@ func (c *Controller) Get(field string) interface{} {
 			return c.DeviceID
 		}
 
-		re := regexp.MustCompile(`Door\[(.+?)\]\.Delay`)
-		if match := re.FindStringSubmatch(field); match != nil && len(match) > 1 {
+		re := regexp.MustCompile(`Door\[(.+?)\]\.(Mode|Delay)`)
+		if match := re.FindStringSubmatch(field); match != nil && len(match) > 2 {
 			oid := match[1]
+			field := match[2]
 			for k, v := range c.Doors {
 				if v == oid && c.DeviceID != nil {
 					if cached, ok := cache.cache[*c.DeviceID]; ok {
 						if d, ok := cached.doors[k]; ok {
-							return d.delay
+							switch field {
+							case "Mode":
+								return d.mode
+							case "Delay":
+								return d.delay
+							}
 						}
 					}
 					break
 				}
 			}
 		}
-
 	}
 
 	return nil

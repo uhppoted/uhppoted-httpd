@@ -42,6 +42,7 @@ type device struct {
 	cards    *uint32
 	events   *uint32
 	doors    map[uint8]struct {
+		mode  uhppoted.ControlState
 		delay uint8
 	}
 	acl types.Status
@@ -373,6 +374,16 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
 	}
 
 	for _, d := range []uint8{1, 2, 3, 4} {
+		if delay, err := api.GetDoorControl(uhppoted.GetDoorControlRequest{DeviceID: uhppoted.DeviceID(id), Door: d}); err != nil {
+			log.Printf("%v", err)
+		} else if delay == nil {
+			log.Printf("Got %v response to get-door-control request for %v", delay, id)
+		} else {
+			l.store(id, *delay)
+		}
+	}
+
+	for _, d := range []uint8{1, 2, 3, 4} {
 		if delay, err := api.GetDoorDelay(uhppoted.GetDoorDelayRequest{DeviceID: uhppoted.DeviceID(id), Door: d}); err != nil {
 			log.Printf("%v", err)
 		} else if delay == nil {
@@ -391,6 +402,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 	if !ok {
 		cached = device{
 			doors: map[uint8]struct {
+				mode  uhppoted.ControlState
 				delay uint8
 			}{},
 		}
@@ -418,6 +430,14 @@ func (l *LAN) store(id uint32, info interface{}) {
 	case uhppoted.GetEventRangeResponse:
 		events := v.Events.Last
 		cached.events = events
+		cached.touched = time.Now()
+		cache.cache[id] = cached
+
+	case uhppoted.GetDoorControlResponse:
+		d := v.Door
+		door, _ := cached.doors[d]
+		door.mode = v.Control
+		cached.doors[d] = door
 		cached.touched = time.Now()
 		cache.cache[id] = cached
 

@@ -254,7 +254,7 @@ function add (oid) {
       { suffix: 'controller', oid: `${oid}.0.2.2`, selector: 'td input.controller', flag: 'td img.controller' },
       { suffix: 'deviceID', oid: `${oid}.0.2.3`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
       { suffix: 'doorID', oid: `${oid}.0.2.4`, selector: 'td input.doorID', flag: 'td img.doorID' },
-      // { suffix: 'mode', oid: `${oid}.0.2.5`, selector: 'td input.mode', flag: 'td img.mode' },
+      { suffix: 'mode', oid: `${oid}.0.2.5`, selector: 'td select.mode', flag: 'td img.mode' },
       { suffix: 'delay', oid: `${oid}.0.2.6`, selector: 'td input.delay', flag: 'td img.delay' }
     ]
 
@@ -262,14 +262,18 @@ function add (oid) {
       const field = row.querySelector(f.selector)
       const flag = row.querySelector(f.flag)
 
-      field.id = uuid + '-' + f.suffix
-      field.value = ''
-      field.dataset.oid = f.oid
-      field.dataset.record = uuid
-      field.dataset.original = ''
-      field.dataset.value = ''
+      if (field) {
+        field.id = uuid + '-' + f.suffix
+        field.value = ''
+        field.dataset.oid = f.oid
+        field.dataset.record = uuid
+        field.dataset.original = ''
+        field.dataset.value = ''
 
-      flag.id = 'F' + f.oid
+        flag.id = 'F' + f.oid
+      } else {
+        console.error(f)
+      }
     })
 
     return row
