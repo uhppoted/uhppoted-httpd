@@ -39,6 +39,8 @@ func (d *Door) AsObjects(resolver catalog.Lookup) []interface{} {
 	controllerName := d.lookup(resolver, fmt.Sprintf("controller.Name for door.OID[%v]", d.OID))
 	controllerID := d.lookup(resolver, fmt.Sprintf("controller.ID for door.OID[%v]", d.OID))
 	controllerDoor := d.lookup(resolver, fmt.Sprintf("controller.Door for door.OID[%v]", d.OID))
+	controllerDoorMode := d.lookup(resolver, fmt.Sprintf("controller.Door.Mode for door.OID[%v]", d.OID))
+	controllerDoorDelay := d.lookup(resolver, fmt.Sprintf("controller.Door.Delay for door.OID[%v]", d.OID))
 
 	objects := []interface{}{
 		object{OID: d.OID, Value: fmt.Sprintf("%v", status)},
@@ -48,6 +50,8 @@ func (d *Door) AsObjects(resolver catalog.Lookup) []interface{} {
 		object{OID: d.OID + ".0.2.2", Value: stringify(controllerName)},
 		object{OID: d.OID + ".0.2.3", Value: stringify(controllerID)},
 		object{OID: d.OID + ".0.2.4", Value: stringify(controllerDoor)},
+		object{OID: d.OID + ".0.2.5", Value: stringify(controllerDoorMode)},
+		object{OID: d.OID + ".0.2.6", Value: stringify(controllerDoorDelay)},
 		object{OID: d.OID + ".1", Value: name},
 	}
 

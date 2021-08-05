@@ -69,6 +69,7 @@ input.from {
 }
 
 input.from::-webkit-datetime-edit { 
+  max-width: 80px;
 }
 
 input.from::-webkit-calendar-picker-indicator { 
@@ -88,6 +89,7 @@ td input.to {
 }
 
 input.to::-webkit-datetime-edit { 
+  max-width: 80px;
 }
 
 input.to::-webkit-calendar-picker-indicator { 

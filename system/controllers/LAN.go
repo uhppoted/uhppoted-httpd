@@ -41,7 +41,10 @@ type device struct {
 	datetime *types.DateTime
 	cards    *uint32
 	events   *uint32
-	acl      types.Status
+	doors    map[uint8]struct {
+		delay uint8
+	}
+	acl types.Status
 }
 
 const (
@@ -368,6 +371,16 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
 	} else {
 		l.store(id, *events)
 	}
+
+	for _, d := range []uint8{1, 2, 3, 4} {
+		if delay, err := api.GetDoorDelay(uhppoted.GetDoorDelayRequest{DeviceID: uhppoted.DeviceID(id), Door: d}); err != nil {
+			log.Printf("%v", err)
+		} else if delay == nil {
+			log.Printf("Got %v response to get-door-delay request for %v", delay, id)
+		} else {
+			l.store(id, *delay)
+		}
+	}
 }
 
 func (l *LAN) store(id uint32, info interface{}) {
@@ -376,7 +389,11 @@ func (l *LAN) store(id uint32, info interface{}) {
 
 	cached, ok := cache.cache[id]
 	if !ok {
-		cached = device{}
+		cached = device{
+			doors: map[uint8]struct {
+				delay uint8
+			}{},
+		}
 	}
 
 	switch v := info.(type) {
@@ -401,6 +418,14 @@ func (l *LAN) store(id uint32, info interface{}) {
 	case uhppoted.GetEventRangeResponse:
 		events := v.Events.Last
 		cached.events = events
+		cached.touched = time.Now()
+		cache.cache[id] = cached
+
+	case uhppoted.GetDoorDelayResponse:
+		d := v.Door
+		door, _ := cached.doors[d]
+		door.delay = v.Delay
+		cached.doors[d] = door
 		cached.touched = time.Now()
 		cache.cache[id] = cached
 

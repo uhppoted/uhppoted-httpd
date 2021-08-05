@@ -291,6 +291,22 @@ func (c *Controller) Get(field string) interface{} {
 		case "ID":
 			return c.DeviceID
 		}
+
+		re := regexp.MustCompile(`Door\[(.+?)\]\.Delay`)
+		if match := re.FindStringSubmatch(field); match != nil && len(match) > 1 {
+			oid := match[1]
+			for k, v := range c.Doors {
+				if v == oid && c.DeviceID != nil {
+					if cached, ok := cache.cache[*c.DeviceID]; ok {
+						if d, ok := cached.doors[k]; ok {
+							return d.delay
+						}
+					}
+					break
+				}
+			}
+		}
+
 	}
 
 	return nil

@@ -7,12 +7,14 @@
 - [ ] Commonalise CSS
 
 - Doors
+  - [ ] 'global' OID cache
+         - delay
+         - mode
   - [ ] automatically create doors 1-4 for controllers
   - [ ] delete when name is blank and controller is not assigned
   - [ ] sort by controller + door
   - [ ] sort order different on Firefox and Chrome (sigh!)
   - [ ] save
-  - [ ] Display controller+door
   - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`
   - [ ] Move `doors.update` to tabular.js_

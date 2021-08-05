@@ -209,6 +209,8 @@ function updateFromDB (oid, record) {
   const controller = row.querySelector(`[data-oid="${oid}.0.2.2"]`)
   const deviceID = row.querySelector(`[data-oid="${oid}.0.2.3"]`)
   const door = row.querySelector(`[data-oid="${oid}.0.2.4"]`)
+  const mode = row.querySelector(`[data-oid="${oid}.0.2.5"]`)
+  const delay = row.querySelector(`[data-oid="${oid}.0.2.6"]`)
 
   row.dataset.status = record.status
 
@@ -216,6 +218,8 @@ function updateFromDB (oid, record) {
   update(controller, record.controller)
   update(deviceID, record.deviceID)
   update(door, record.door)
+  update(mode, record.mode)
+  update(delay, record.delay)
 
   return row
 }
@@ -249,7 +253,9 @@ function add (oid) {
       { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' },
       { suffix: 'controller', oid: `${oid}.0.2.2`, selector: 'td input.controller', flag: 'td img.controller' },
       { suffix: 'deviceID', oid: `${oid}.0.2.3`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
-      { suffix: 'doorID', oid: `${oid}.0.2.4`, selector: 'td input.doorID', flag: 'td img.doorID' }
+      { suffix: 'doorID', oid: `${oid}.0.2.4`, selector: 'td input.doorID', flag: 'td img.doorID' },
+      // { suffix: 'mode', oid: `${oid}.0.2.5`, selector: 'td input.mode', flag: 'td img.mode' },
+      { suffix: 'delay', oid: `${oid}.0.2.6`, selector: 'td input.delay', flag: 'td img.delay' }
     ]
 
     fields.forEach(f => {

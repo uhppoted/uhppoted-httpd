@@ -1,6 +1,7 @@
 package system
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -24,13 +25,16 @@ func (r Resolver) Get(query string) []interface{} {
 
 	case strings.HasPrefix(query, "controller.Door for door.OID"):
 		return r.lookupControllerForDoor(query)
+
+	case strings.HasPrefix(query, "controller.Door.Delay for door.OID"):
+		return r.lookupControllerForDoor(query)
 	}
 
 	return nil
 }
 
 func (r Resolver) lookupControllerForDoor(query string) []interface{} {
-	re := regexp.MustCompile(`controller.(OID|Created|Name|ID|Door) for door.OID\[(.*?)\]`)
+	re := regexp.MustCompile(`controller.(OID|Created|Name|ID|Door|Door\.Delay) for door.OID\[(.*?)\]`)
 
 	match := re.FindStringSubmatch(query)
 	if match == nil || len(match) < 3 {
@@ -55,6 +59,8 @@ func (r Resolver) lookupControllerForDoor(query string) []interface{} {
 					resultset = append(resultset, c.Get("ID"))
 				case "Door":
 					resultset = append(resultset, k)
+				case "Door.Delay":
+					resultset = append(resultset, c.Get(fmt.Sprintf("Door[%v].Delay", oid)))
 				}
 				break
 			}

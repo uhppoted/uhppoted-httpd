@@ -225,6 +225,8 @@ function door (o) {
       deviceID: '',
       door: '',
       name: '',
+      mode: '',
+      delay: '',
       status: o.value,
       mark: 0
     })
@@ -258,6 +260,14 @@ function door (o) {
 
         case k + '.0.2.4':
           v.door = o.value
+          break
+
+        case k + '.0.2.5':
+          v.mode = o.value
+          break
+
+        case k + '.0.2.6':
+          v.delay = o.value
           break
 
         case k + '.1':

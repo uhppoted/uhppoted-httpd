@@ -73,10 +73,10 @@ Logs namespace
 |    |               |                       |- 0.1.1.1.2.5.1: <status>      #    cards status
 |    |               |          |- 0.1.1.2.1.6:  <events>                    #    number of event records
 |    |               |                       |- 0.1.1.1.2.6.1: <status>      #    events status
-|    |               |          |- 0.1.1.2.1.7:  <door1>                     #    door 1 name
-|    |               |          |- 0.1.1.2.1.8:  <door2>                     #    door 2 name
-|    |               |          |- 0.1.1.2.1.9:  <door3>                     #    door 3 name
-|    |               |          |- 0.1.1.2.1.10: <door4>                     #    door 4 name
+|    |               |          |- 0.1.1.2.1.7:  <door1>                     #    door 1 (OID)
+|    |               |          |- 0.1.1.2.1.8:  <door2>                     #    door 2 (OID)
+|    |               |          |- 0.1.1.2.1.9:  <door3>                     #    door 3 (OID)
+|    |               |          |- 0.1.1.2.1.10: <door4>                     #    door 4 (OID)
 |    |               |
 |    |               |- 0.1.1.2.2: <status>                                  # controller #2
 |    |               |          |- ...
@@ -98,5 +98,7 @@ Logs namespace
 |    |      |                   |- 0.3.1.0.2.2: <name>                       #               controller name
 |    |      |                   |- 0.3.1.0.2.3: <deviceID>                   #               controller serial number
 |    |      |                   |- 0.3.1.0.2.4: <door>                       #               controller door number
+|    |      |                   |- 0.3.1.0.2.5: <mode>                       #               controller door control mode
+|    |      |                   |- 0.3.1.0.2.6: <delay>                      #               controller door open delay
 |    |      |                                                                #
 |    |      |- 0.3.1.1: <name>                                               #    name
