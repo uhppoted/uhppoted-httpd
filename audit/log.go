@@ -51,7 +51,7 @@ func (l *trail) Write(entry LogEntry) {
 	if info, err := json.Marshal(entry.Info); err == nil {
 		logmsg = fmt.Sprintf("%-10v %-10v %-10v %s", entry.UID, entry.Module, entry.Operation, info)
 	} else {
-		logmsg = fmt.Sprintf("%-10v %-10v %-10v %+v", entry.UID, entry.Module, entry.Operation, entry.Info)
+		logmsg = fmt.Sprintf("%-10v %-10v %-10v %v", entry.UID, entry.Module, entry.Operation, entry.Info)
 	}
 
 	if l.logger != nil {

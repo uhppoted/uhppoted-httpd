@@ -35,6 +35,7 @@ type OpAuth interface {
 
 	CanUpdateDoor(door Operant, field string, value interface{}) error
 	CanAddDoor(door Operant) error
+	CanDeleteDoor(controller Operant) error
 }
 
 type Operant interface {

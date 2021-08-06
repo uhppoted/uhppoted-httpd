@@ -58,6 +58,10 @@ func (x *stub) CanUpdateDoor(door auth.Operant, field string, value interface{})
 	return fmt.Errorf("not authorised")
 }
 
+func (x *stub) CanDeleteDoor(door auth.Operant) error {
+	return fmt.Errorf("not authorised")
+}
+
 func (x *stub) Write(e audit.LogEntry) {
 	x.write(e)
 }

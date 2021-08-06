@@ -32,9 +32,9 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 		}
 	}
 
-	if err := save(shadow); err != nil {
-		return nil, err
-	}
+	// if err := save(shadow); err != nil {
+	// 	return nil, err
+	// }
 
 	sys.controllers = *shadow
 

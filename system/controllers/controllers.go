@@ -249,7 +249,7 @@ func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error
 	}
 
 	record := c.clone()
-	record.OID = catalog.Get(id)
+	record.OID = catalog.GetController(id)
 	record.created = time.Now()
 
 	if auth != nil {
@@ -276,7 +276,7 @@ loop:
 		}
 
 		id := k
-		oid := catalog.Get(k)
+		oid := catalog.GetController(k)
 
 		cc.Controllers = append(cc.Controllers, &Controller{
 			OID:          oid,

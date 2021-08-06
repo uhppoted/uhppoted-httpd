@@ -304,6 +304,34 @@ func (a *authorizator) CanUpdateDoor(door auth.Operant, field string, value inte
 	return types.Unauthorized(msg, err)
 }
 
+func (a *authorizator) CanDeleteDoor(door auth.Operant) error {
+	msg := fmt.Errorf("Not authorized to delete door")
+	err := fmt.Errorf("Not authorized for operation %s", "delete::door")
+
+	if a != nil && door != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"DOOR": door.AsRuleEntity(),
+		}
+
+		if err := a.eval("doors", "delete::door", &r, m); err != nil {
+			return types.Unauthorized(msg, err)
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("delete::door %s", toString(door)))
+	}
+
+	return types.Unauthorized(msg, err)
+}
+
 func (a *authorizator) eval(ruleset string, op string, r *result, m map[string]interface{}) error {
 	context := ast.NewDataContext()
 

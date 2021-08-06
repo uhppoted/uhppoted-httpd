@@ -120,10 +120,16 @@ tr.door td input.name {
   width: 90px;
 }
 
+tr.door td input.controller {
+  pointer-events: none;
+}
+
 tr.door td input.deviceID {
+  pointer-events: none;
 }
 
 tr.door td input.doorID {
+  pointer-events: none;
 }
 
 tr.door td input.mode {

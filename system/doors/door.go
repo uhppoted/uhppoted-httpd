@@ -15,32 +15,35 @@ type Door struct {
 	OID  string `json:"OID"`
 	Name string `json:"name"`
 
-	created    time.Time
-	controller struct {
-		created time.Time
-		OID     string
-		name    string
-		ID      uint32
-		door    uint32
-	}
+	created time.Time
+	deleted *time.Time
 }
 
 func (d *Door) IsValid() bool {
-	return strings.TrimSpace(d.Name) != ""
+	if d != nil {
+		controller := d.lookup("controller.OID for door.OID[%v]")
+		door := d.lookup("controller.Door for door.OID[%v]")
+
+		if strings.TrimSpace(d.Name) != "" || (controller != "" && door != "") {
+			return true
+		}
+	}
+
+	return false
 }
 
-func (d *Door) AsObjects(resolver catalog.Lookup) []interface{} {
+func (d *Door) AsObjects() []interface{} {
 	created := d.created.Format("2006-01-02 15:04:05")
 	status := types.StatusOk
 	name := stringify(d.Name)
 
-	controllerOID := d.lookup(resolver, fmt.Sprintf("controller.OID for door.OID[%v]", d.OID))
-	controllerCreated := d.lookup(resolver, fmt.Sprintf("controller.Created for door.OID[%v]", d.OID))
-	controllerName := d.lookup(resolver, fmt.Sprintf("controller.Name for door.OID[%v]", d.OID))
-	controllerID := d.lookup(resolver, fmt.Sprintf("controller.ID for door.OID[%v]", d.OID))
-	controllerDoor := d.lookup(resolver, fmt.Sprintf("controller.Door for door.OID[%v]", d.OID))
-	controllerDoorMode := d.lookup(resolver, fmt.Sprintf("controller.Door.Mode for door.OID[%v]", d.OID))
-	controllerDoorDelay := d.lookup(resolver, fmt.Sprintf("controller.Door.Delay for door.OID[%v]", d.OID))
+	controllerOID := d.lookup("controller.OID for door.OID[%[1]v]")
+	controllerCreated := d.lookup("controller.Created for door.OID[%[1]v]")
+	controllerName := d.lookup("controller.Name for door.OID[%[1]v]")
+	controllerID := d.lookup("controller.ID for door.OID[%[1]v]")
+	controllerDoor := d.lookup("controller.Door for door.OID[%[1]v]")
+	controllerDoorMode := d.lookup("controller.Door.Mode for door.OID[%[1]v]")
+	controllerDoorDelay := d.lookup("controller.Door.Delay for door.OID[%[1]v]")
 
 	objects := []interface{}{
 		object{OID: d.OID, Value: fmt.Sprintf("%v", status)},
@@ -92,6 +95,8 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 	}
 
 	if d != nil {
+		name := stringify(d.Name)
+
 		switch oid {
 		case d.OID + ".1":
 			if err := f("name", value); err != nil {
@@ -106,31 +111,32 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 			}
 		}
 
-		//		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
-		//			if auth != nil {
-		//				if err := auth.CanDeleteController(c); err != nil {
-		//					return nil, err
-		//				}
-		//			}
-		//
-		//			c.log(auth, "delete", c.OID, "device-id", "", "")
-		//			now := time.Now()
-		//			c.deleted = &now
-		//
-		//			objects = append(objects, object{
-		//				OID:   c.OID,
-		//				Value: "deleted",
-		//			})
-		//
-		//			catalog.Delete(c.OID)
-		//		}
+		if !d.IsValid() {
+			if auth != nil {
+				if err := auth.CanDeleteDoor(d); err != nil {
+					return nil, err
+				}
+			}
+
+			d.log(auth, "delete", d.OID, "name", name, "")
+			now := time.Now()
+			d.deleted = &now
+
+			objects = append(objects, object{
+				OID:   d.OID,
+				Value: "deleted",
+			})
+
+			catalog.Delete(d.OID)
+		}
 	}
 
 	return objects, nil
 }
 
-func (d *Door) lookup(resolver catalog.Lookup, query string) string {
-	v := resolver.Get(query)
+func (d *Door) lookup(query string) string {
+	q := fmt.Sprintf(query, d.OID)
+	v := catalog.Get(q)
 
 	if v != nil && len(v) > 0 {
 		return stringify(v[0])

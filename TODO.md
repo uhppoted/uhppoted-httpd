@@ -5,14 +5,22 @@
 - [ ] Make OID a type with:
       - HasPrefix
 - [ ] Commonalise CSS
+- [x] Make cards and events fields non-focusable
 
 - Doors
-  - [ ] 'global' OID cache
+  - [x] Delete when name is blank and controller is not assigned
+  - [x] Use Door.IsValid for system page door list
+  - [x] Make controller and door fields non-focusable
+  - [ ] Update controller door lists with current doors from DB
   - [ ] automatically create doors 1-4 for controllers
-  - [ ] delete when name is blank and controller is not assigned
-  - [ ] sort by controller + door
-  - [ ] sort order different on Firefox and Chrome (sigh!)
+  - [ ] Show door number (or something) on system page when door is assigned but blank
+  - [ ] 'global' OID cache
   - [ ] save
+  - [ ] set door delay
+  - [ ] door delay status
+  - [ ] set door control state
+  - [ ] door control state status
+  - [ ] sort order different on Firefox and Chrome (sigh!)
   - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`
   - [ ] Move `doors.update` to tabular.js_
@@ -20,7 +28,6 @@
   - [ ] Move `doors.percolate` to _tabular.js_
   - [ ] Move `doors.set` to _tabular.js_
   - [ ] Move `onEdited`, `onRollback`, etc to _tabular.js_
-  - [ ] Assign doors to controllers in _DOORS_ page and (optionally) make controller doors readonly
 
 - [ ] Cards
       - migrate to OIDs

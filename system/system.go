@@ -61,6 +61,8 @@ func (s *system) refresh() {
 }
 
 func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
+	catalog.SetResolver(resolver)
+
 	sys.doors.Load(cfg.HTTPD.System.Doors)
 	sys.controllers.Load(cfg.HTTPD.System.Controllers, retention)
 
@@ -94,11 +96,13 @@ func System() interface{} {
 
 	objects := []interface{}{}
 	objects = append(objects, sys.controllers.AsObjects()...)
-	objects = append(objects, sys.doors.AsObjects(resolver)...)
+	objects = append(objects, sys.doors.AsObjects()...)
 
 	d := []doors.Door{}
 	for _, v := range sys.doors.Doors {
-		d = append(d, v)
+		if v.IsValid() {
+			d = append(d, v)
+		}
 	}
 
 	sort.SliceStable(d, func(i, j int) bool { return d[i].Name < d[j].Name })

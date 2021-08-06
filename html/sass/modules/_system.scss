@@ -245,12 +245,14 @@ tr.controller td input.datetime {
 tr.controller td input.cards {
   width: 72px;
   text-align: center; 
+  pointer-events: none;
   -moz-appearance:textfield;
 }
 
 tr.controller td input.events {
   width: 72px;
   text-align: center; 
+  pointer-events: none;
   -moz-appearance:textfield;
 }
 
