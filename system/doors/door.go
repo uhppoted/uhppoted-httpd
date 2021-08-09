@@ -10,19 +10,18 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
+	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type Door struct {
-	OID   string `json:"OID"`
-	Name  string `json:"name"`
-	Delay uint8  `json:"delay"`
-	Mode  mode   `json:"mode"`
+	OID   string                `json:"OID"`
+	Name  string                `json:"name"`
+	Delay uint8                 `json:"delay"`
+	Mode  uhppoted.ControlState `json:"mode"`
 
 	created time.Time
 	deleted *time.Time
 }
-
-type mode string
 
 var created = time.Now()
 
@@ -40,24 +39,38 @@ func (d *Door) IsValid() bool {
 }
 
 func (d *Door) AsObjects() []interface{} {
+
 	delay := struct {
-		delay      string
+		delay      uint8
 		configured uint8
 		status     types.Status
 	}{
-		delay:      d.lookup("controller.Door.Delay for door.OID[%[1]v]"),
 		configured: d.Delay,
 		status:     types.StatusUnknown,
 	}
 
-	mode := struct {
-		mode       string
-		configured string
+	minfo := struct {
+		mode       mode
+		configured mode
 		status     types.Status
 	}{
-		mode:       d.lookup("controller.Door.Mode for door.OID[%[1]v]"),
-		configured: stringify(d.Mode),
+		configured: mode(d.Mode),
 		status:     types.StatusUnknown,
+	}
+
+	if v, ok := d.lookup("controller.Door.Delay for door.OID[%[1]v]").(uint8); ok {
+		delay.delay = v
+
+		if v != d.Delay {
+			delay.status = types.StatusError
+		}
+	}
+
+	if v, ok := d.lookup("controller.Door.Mode for door.OID[%[1]v]").(uhppoted.ControlState); ok {
+		minfo.mode = mode(v)
+		if v != d.Mode {
+			minfo.status = types.StatusError
+		}
 	}
 
 	created := d.created.Format("2006-01-02 15:04:05")
@@ -79,12 +92,12 @@ func (d *Door) AsObjects() []interface{} {
 		object{OID: d.OID + ".0.2.3", Value: stringify(controllerID)},
 		object{OID: d.OID + ".0.2.4", Value: stringify(controllerDoor)},
 		object{OID: d.OID + ".1", Value: name},
-		object{OID: d.OID + ".2", Value: delay.delay},
+		object{OID: d.OID + ".2", Value: stringify(delay.delay)},
 		object{OID: d.OID + ".2.1", Value: stringify(delay.status)},
 		object{OID: d.OID + ".2.2", Value: stringify(delay.configured)},
-		object{OID: d.OID + ".3", Value: mode.mode},
-		object{OID: d.OID + ".3.1", Value: stringify(mode.status)},
-		object{OID: d.OID + ".3.2", Value: stringify(mode.configured)},
+		object{OID: d.OID + ".3", Value: stringify(minfo.mode)},
+		object{OID: d.OID + ".3.1", Value: stringify(minfo.status)},
+		object{OID: d.OID + ".3.2", Value: stringify(minfo.configured)},
 	}
 
 	return objects
@@ -115,7 +128,7 @@ func (d *Door) UnmarshalJSON(bytes []byte) error {
 		Created time.Time `json:"created"`
 	}{
 		Delay:   5,
-		Mode:    "controlled",
+		Mode:    mode(uhppoted.Controlled),
 		Created: created,
 	}
 
@@ -126,7 +139,7 @@ func (d *Door) UnmarshalJSON(bytes []byte) error {
 	d.OID = record.OID
 	d.Name = record.Name
 	d.Delay = record.Delay
-	d.Mode = record.Mode
+	d.Mode = uhppoted.ControlState(record.Mode)
 	d.created = record.Created
 
 	return nil
@@ -193,15 +206,15 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 	return objects, nil
 }
 
-func (d *Door) lookup(query string) string {
+func (d *Door) lookup(query string) interface{} {
 	q := fmt.Sprintf(query, d.OID)
 	v := catalog.Get(q)
 
 	if v != nil && len(v) > 0 {
-		return stringify(v[0])
+		return v[0]
 	}
 
-	return ""
+	return nil
 }
 
 func (d *Door) log(auth auth.OpAuth, operation, OID, field, current, value string) {
@@ -248,12 +261,24 @@ func stringify(i interface{}) string {
 			return fmt.Sprintf("%v", *v)
 		}
 
+	case mode:
+		switch i.(mode) {
+		case mode(uhppoted.Controlled):
+			return "controlled"
+		case mode(uhppoted.NormallyOpen):
+			return "normally open"
+		case mode(uhppoted.NormallyClosed):
+			return "normally closed"
+		}
+
 	default:
 		return fmt.Sprintf("%v", i)
 	}
 
 	return ""
 }
+
+type mode uhppoted.ControlState
 
 func (m *mode) UnmarshalJSON(bytes []byte) error {
 	var s string
@@ -264,11 +289,11 @@ func (m *mode) UnmarshalJSON(bytes []byte) error {
 
 	switch s {
 	case "controlled":
-		*m = mode("controlled")
+		*m = mode(uhppoted.Controlled)
 	case "normally open":
-		*m = mode("normally open")
+		*m = mode(uhppoted.NormallyOpen)
 	case "normally closed":
-		*m = mode("normally closed")
+		*m = mode(uhppoted.NormallyClosed)
 
 	default:
 		return fmt.Errorf("Invalid door control state ('%v')", s)

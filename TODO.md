@@ -10,7 +10,10 @@
 - [ ] Generate menu in template
 
 - Doors
-  - [ ] Calculate door delay and control state status
+  - [ ] Replace uhppoted.ControlState with core type
+        -- JSON marshal/unmarshal
+        -- Stringer
+        -- remove local 'mode' type
   - [ ] Set controller door delay
   - [ ] Set controller door control state
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
