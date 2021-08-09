@@ -44,7 +44,22 @@ export const DB = {
 function object (o) {
   const oid = o.OID
 
-  // ... interfaces
+  if (/^0\.1\.1\.1\..*$/.test(oid)) {
+    interfaces(o)
+  }
+
+  if (/^0\.1\.1\.2\..*$/.test(oid)) {
+    controller(o)
+  }
+
+  if (/^0\.3\..*$/.test(oid)) {
+    door(o)
+  }
+}
+
+function interfaces (o) {
+  const oid = o.OID
+
   if (oid === '0.1.1.1.1') {
     if (!DB.interfaces.has(oid)) {
       DB.interfaces.set(oid, {
@@ -88,8 +103,10 @@ function object (o) {
       }
     }
   })
+}
 
-  // ... controllers
+function controller (o) {
+  const oid = o.OID
 
   if (/^0\.1\.1\.2\.[1-9][0-9]*$/.test(oid)) {
     if (DB.controllers.has(oid)) {
@@ -198,11 +215,6 @@ function object (o) {
       }
     }
   })
-
-  // ... doors
-  if (/^0\.3\..*$/.test(oid)) {
-    door(o)
-  }
 }
 
 function door (o) {
@@ -225,8 +237,8 @@ function door (o) {
       deviceID: '',
       door: '',
       name: '',
-      mode: '',
-      delay: '',
+      delay: { delay: '', configured: '', status: 'unknown' },
+      mode: { mode: '', configured: '', status: 'unknown' },
       status: o.value,
       mark: 0
     })
@@ -262,16 +274,32 @@ function door (o) {
           v.door = o.value
           break
 
-        case k + '.0.2.5':
-          v.mode = o.value
-          break
-
-        case k + '.0.2.6':
-          v.delay = o.value
-          break
-
         case k + '.1':
           v.name = o.value
+          break
+
+        case k + '.2':
+          v.delay.delay = o.value
+          break
+
+        case k + '.2.1':
+          v.delay.status = o.value
+          break
+
+        case k + '.2.2':
+          v.delay.configured = o.value
+          break
+
+        case k + '.3':
+          v.mode.mode = o.value
+          break
+
+        case k + '.3.1':
+          v.mode.status = o.value
+          break
+
+        case k + '.3.2':
+          v.mode.configured = o.value
           break
       }
     }

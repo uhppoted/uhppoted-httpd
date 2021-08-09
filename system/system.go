@@ -63,8 +63,13 @@ func (s *system) refresh() {
 func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
 	catalog.SetResolver(resolver)
 
-	sys.doors.Load(cfg.HTTPD.System.Doors)
-	sys.controllers.Load(cfg.HTTPD.System.Controllers, retention)
+	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
+		return err
+	}
+
+	if err := sys.controllers.Load(cfg.HTTPD.System.Controllers, retention); err != nil {
+		return err
+	}
 
 	sys.conf = conf
 	sys.cards = cards

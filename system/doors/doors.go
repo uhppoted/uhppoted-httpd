@@ -48,8 +48,6 @@ func (dd *Doors) AsObjects() []interface{} {
 }
 
 func (dd *Doors) Load(file string) error {
-	created := time.Now()
-
 	blob := struct {
 		Doors []Door `json:"doors"`
 	}{
@@ -70,7 +68,6 @@ func (dd *Doors) Load(file string) error {
 		d.created = created
 		dd.Doors[d.OID] = d
 
-		created = created.Add(1 * time.Second)
 	}
 
 	for _, v := range dd.Doors {

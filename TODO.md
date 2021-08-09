@@ -10,14 +10,13 @@
 - [ ] Generate menu in template
 
 - Doors
+  - [ ] Calculate door delay and control state status
+  - [ ] Set controller door delay
+  - [ ] Set controller door control state
+  - [ ] Show door number (or something) on system page when door is assigned but name is blank
   - [ ] Dynamically update controller door lists with current doors from DB
-  - [ ] Show door number (or something) on system page when door is assigned but blank
   - [ ] (?) Automatically create doors 1-4 for controllers
   - [ ] Save
-  - [ ] Set door delay
-  - [ ] Set door control state
-  - [ ] Show door delay status
-  - [ ] Show door control state status
   - [ ] 'global' OID cache
   - [ ] Sort order different on Firefox and Chrome (sigh!)
   - [ ] Fix ACL for reworked types.Door

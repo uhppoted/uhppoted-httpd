@@ -81,8 +81,18 @@ tr.door td input[data-status="unknown"] {
   font-style: italic;
 }
 
+tr.door td input[data-status="unconfigured"] {
+  color: $content-table-item-unconfigured;
+  font-style: italic;
+}
+
 tr.door td input[data-status="uncertain"] {
   color: $content-table-item-uncertain;
+}
+
+tr.door td input[data-status="error"] {
+  color: $content-table-item-error;
+  font-weight: bold; 
 }
 
 tr.door td input:focus {
@@ -116,6 +126,25 @@ tr.door[data-status="error"] td select {
   color: $content-table-item-error;
 }
 
+tr.door td select[data-status="unknown"] {
+  color: $content-table-item-unknown;
+  font-style: italic;
+}
+
+tr.door td select[data-status="unconfigured"] {
+  color: $content-table-row-unconfigured;
+  font-style: italic;
+}
+
+tr.door td select[data-status="uncertain"] {
+  color: $content-table-item-uncertain;
+}
+
+tr.door td select[data-status="error"] {
+  color: $content-table-item-error;
+  font-weight: bold; 
+}
+
 tr.door td input.name {
   width: 90px;
 }
@@ -137,10 +166,6 @@ tr.door td input.mode {
 }
 
 tr.door td input.delay {
-  text-align: center; 
-}
-
-tr.door td input.profiles {
   text-align: center; 
 }
 

@@ -1,6 +1,7 @@
 package doors
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -12,12 +13,18 @@ import (
 )
 
 type Door struct {
-	OID  string `json:"OID"`
-	Name string `json:"name"`
+	OID   string `json:"OID"`
+	Name  string `json:"name"`
+	Delay uint8  `json:"delay"`
+	Mode  mode   `json:"mode"`
 
 	created time.Time
 	deleted *time.Time
 }
+
+type mode string
+
+var created = time.Now()
 
 func (d *Door) IsValid() bool {
 	if d != nil {
@@ -33,6 +40,26 @@ func (d *Door) IsValid() bool {
 }
 
 func (d *Door) AsObjects() []interface{} {
+	delay := struct {
+		delay      string
+		configured uint8
+		status     types.Status
+	}{
+		delay:      d.lookup("controller.Door.Delay for door.OID[%[1]v]"),
+		configured: d.Delay,
+		status:     types.StatusUnknown,
+	}
+
+	mode := struct {
+		mode       string
+		configured string
+		status     types.Status
+	}{
+		mode:       d.lookup("controller.Door.Mode for door.OID[%[1]v]"),
+		configured: stringify(d.Mode),
+		status:     types.StatusUnknown,
+	}
+
 	created := d.created.Format("2006-01-02 15:04:05")
 	status := types.StatusOk
 	name := stringify(d.Name)
@@ -42,8 +69,6 @@ func (d *Door) AsObjects() []interface{} {
 	controllerName := d.lookup("controller.Name for door.OID[%[1]v]")
 	controllerID := d.lookup("controller.ID for door.OID[%[1]v]")
 	controllerDoor := d.lookup("controller.Door for door.OID[%[1]v]")
-	controllerDoorMode := d.lookup("controller.Door.Mode for door.OID[%[1]v]")
-	controllerDoorDelay := d.lookup("controller.Door.Delay for door.OID[%[1]v]")
 
 	objects := []interface{}{
 		object{OID: d.OID, Value: fmt.Sprintf("%v", status)},
@@ -53,9 +78,13 @@ func (d *Door) AsObjects() []interface{} {
 		object{OID: d.OID + ".0.2.2", Value: stringify(controllerName)},
 		object{OID: d.OID + ".0.2.3", Value: stringify(controllerID)},
 		object{OID: d.OID + ".0.2.4", Value: stringify(controllerDoor)},
-		object{OID: d.OID + ".0.2.5", Value: stringify(controllerDoorMode)},
-		object{OID: d.OID + ".0.2.6", Value: stringify(controllerDoorDelay)},
 		object{OID: d.OID + ".1", Value: name},
+		object{OID: d.OID + ".2", Value: delay.delay},
+		object{OID: d.OID + ".2.1", Value: stringify(delay.status)},
+		object{OID: d.OID + ".2.2", Value: stringify(delay.configured)},
+		object{OID: d.OID + ".3", Value: mode.mode},
+		object{OID: d.OID + ".3.1", Value: stringify(mode.status)},
+		object{OID: d.OID + ".3.2", Value: stringify(mode.configured)},
 	}
 
 	return objects
@@ -75,10 +104,40 @@ func (d *Door) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
+func (d *Door) UnmarshalJSON(bytes []byte) error {
+	created = created.Add(1 * time.Minute)
+
+	record := struct {
+		OID     string    `json:"OID"`
+		Name    string    `json:"name,omitempty"`
+		Delay   uint8     `json:"delay,omitempty"`
+		Mode    mode      `json:"mode,omitempty"`
+		Created time.Time `json:"created"`
+	}{
+		Delay:   5,
+		Mode:    "controlled",
+		Created: created,
+	}
+
+	if err := json.Unmarshal(bytes, &record); err != nil {
+		return err
+	}
+
+	d.OID = record.OID
+	d.Name = record.Name
+	d.Delay = record.Delay
+	d.Mode = record.Mode
+	d.created = record.Created
+
+	return nil
+}
+
 func (d *Door) clone() Door {
 	return Door{
 		OID:     d.OID,
 		Name:    d.Name,
+		Delay:   d.Delay,
+		Mode:    d.Mode,
 		created: d.created,
 	}
 }
@@ -194,4 +253,26 @@ func stringify(i interface{}) string {
 	}
 
 	return ""
+}
+
+func (m *mode) UnmarshalJSON(bytes []byte) error {
+	var s string
+
+	if err := json.Unmarshal(bytes, &s); err != nil {
+		return err
+	}
+
+	switch s {
+	case "controlled":
+		*m = mode("controlled")
+	case "normally open":
+		*m = mode("normally open")
+	case "normally closed":
+		*m = mode("normally closed")
+
+	default:
+		return fmt.Errorf("Invalid door control state ('%v')", s)
+	}
+
+	return nil
 }
