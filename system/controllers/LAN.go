@@ -14,6 +14,7 @@ import (
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
@@ -488,6 +489,64 @@ func (l *LAN) synchTime(controllers []*Controller) {
 				log.Printf("ERROR %v", err)
 			} else if response != nil {
 				log.Printf("INFO  sychronized device-time %v %v", response.DeviceID, response.DateTime)
+			}
+		}
+	}
+}
+
+func (l *LAN) synchDoors(controllers []*Controller) {
+	api := l.api(controllers)
+
+	for _, c := range controllers {
+		if c.DeviceID != nil {
+			device := uhppoted.DeviceID(*c.DeviceID)
+
+			// ... update door delays
+			for _, door := range []uint8{1, 2, 3, 4} {
+				if oid, ok := c.Doors[door]; ok && oid != "" {
+					configured := catalog.Get(fmt.Sprintf("door.Delay.Configured for door.OID[%[1]v]", oid))
+					actual := catalog.Get(fmt.Sprintf("door.Delay for door.OID[%[1]v]", oid))
+
+					if configured != nil && len(configured) > 0 && (actual == nil || len(actual) < 1 || actual[0] != configured[0]) {
+						delay := configured[0].(uint8)
+
+						request := uhppoted.SetDoorDelayRequest{
+							DeviceID: device,
+							Door:     door,
+							Delay:    delay,
+						}
+
+						if response, err := api.SetDoorDelay(request); err != nil {
+							log.Printf("ERROR %v", err)
+						} else if response != nil {
+							log.Printf("INFO  %v: sychronized door %v delay (%v)", response.DeviceID, door, delay)
+						}
+					}
+				}
+			}
+
+			// ... update door control states
+			for _, door := range []uint8{1, 2, 3, 4} {
+				if oid, ok := c.Doors[door]; ok && oid != "" {
+					configured := catalog.Get(fmt.Sprintf("door.Mode.Configured for door.OID[%[1]v]", oid))
+					actual := catalog.Get(fmt.Sprintf("door.Mode for door.OID[%[1]v]", oid))
+
+					if configured != nil && len(configured) > 0 && (actual == nil || len(actual) < 1 || actual[0] != configured[0]) {
+						mode := configured[0].(uhppoted.ControlState)
+
+						request := uhppoted.SetDoorControlRequest{
+							DeviceID: device,
+							Door:     door,
+							Control:  mode,
+						}
+
+						if response, err := api.SetDoorControl(request); err != nil {
+							log.Printf("ERROR %v", err)
+						} else if response != nil {
+							log.Printf("INFO  %v: sychronized door %v control (%v)", response.DeviceID, door, mode)
+						}
+					}
+				}
 			}
 		}
 	}

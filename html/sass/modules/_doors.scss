@@ -88,6 +88,8 @@ tr.door td input[data-status="unconfigured"] {
 
 tr.door td input[data-status="uncertain"] {
   color: $content-table-item-uncertain;
+  font-style: italic;
+  font-weight: bold;
 }
 
 tr.door td input[data-status="error"] {
@@ -120,6 +122,8 @@ tr.door[data-status="unknown"] td select {
 
 tr.door[data-status="uncertain"] td select {
   color: $content-table-item-uncertain;
+  font-style: italic;
+  font-weight: bold; 
 }
 
 tr.door[data-status="error"] td select {
@@ -138,6 +142,8 @@ tr.door td select[data-status="unconfigured"] {
 
 tr.door td select[data-status="uncertain"] {
   color: $content-table-item-uncertain;
+  font-style: italic;
+  font-weight: bold; 
 }
 
 tr.door td select[data-status="error"] {

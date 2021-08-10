@@ -31,13 +31,25 @@ func (r Resolver) Get(query string) []interface{} {
 
 	case strings.HasPrefix(query, "controller.Door.Delay for door.OID"):
 		return r.lookupControllerForDoor(query)
+
+	case strings.HasPrefix(query, "door.Delay for door.OID"):
+		return r.lookupDoor(query)
+
+	case strings.HasPrefix(query, "door.Delay.Configured for door.OID"):
+		return r.lookupDoor(query)
+
+	case strings.HasPrefix(query, "door.Mode for door.OID"):
+		return r.lookupDoor(query)
+
+	case strings.HasPrefix(query, "door.Mode.Configured for door.OID"):
+		return r.lookupDoor(query)
 	}
 
 	return nil
 }
 
 func (r Resolver) lookupControllerForDoor(query string) []interface{} {
-	re := regexp.MustCompile(`controller.(OID|Created|Name|ID|Door|Door\.Mode|Door\.Delay) for door.OID\[(.*?)\]`)
+	re := regexp.MustCompile(`controller\.(OID|Created|Name|ID|Door|Door\.Mode|Door\.Delay) for door\.OID\[(.*?)\]`)
 
 	match := re.FindStringSubmatch(query)
 	if match == nil || len(match) < 3 {
@@ -73,4 +85,34 @@ func (r Resolver) lookupControllerForDoor(query string) []interface{} {
 	}
 
 	return resultset
+}
+
+func (r Resolver) lookupDoor(query string) []interface{} {
+	re := regexp.MustCompile(`door\.(Delay|Delay\.Configured|Mode|Mode\.Configured) for door\.OID\[(.*?)\]`)
+
+	match := re.FindStringSubmatch(query)
+	if match == nil || len(match) < 3 {
+		return nil
+	}
+
+	field := match[1]
+	oid := match[2]
+
+	if door, ok := sys.doors.Doors[oid]; ok {
+		switch field {
+		case "Delay":
+			return []interface{}{door.Get("Delay")}
+
+		case "Delay.Configured":
+			return []interface{}{door.Get("Delay.Configured")}
+
+		case "Mode":
+			return []interface{}{door.Get("Mode")}
+
+		case "Mode.Configured":
+			return []interface{}{door.Get("Mode.Configured")}
+		}
+	}
+
+	return nil
 }

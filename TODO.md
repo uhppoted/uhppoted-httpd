@@ -14,8 +14,8 @@
         -- JSON marshal/unmarshal
         -- Stringer
         -- remove local 'mode' type
-  - [ ] Set controller door delay
-  - [ ] Set controller door control state
+  - [x] Set controller door delay
+  - [x] Set controller door control state
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
   - [ ] Dynamically update controller door lists with current doors from DB
   - [ ] (?) Automatically create doors 1-4 for controllers

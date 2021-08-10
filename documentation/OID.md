@@ -103,6 +103,6 @@ Logs namespace
 |    |      |- 0.3.1.2: <delay>                                              #    door open delay
 |    |               |- 0.3.1.2.1: <status>                                  #    door open delay status
 |    |               |- 0.3.1.2.2: <configured>                              #    configured door open delay
-|    |      |- 0.3.1.3: <mode>                                               #    door control state
+|    |      |- 0.3.1.3: <control>                                            #    door control state
 |    |               |- 0.3.1.2.1: <status>                                  #    door control state status
 |    |               |- 0.3.1.2.2: <configured>                              #    configured door control state

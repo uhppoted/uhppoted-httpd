@@ -221,9 +221,6 @@ function updateFromDB (oid, record) {
   update(delay, record.delay.configured, record.delay.status)
   update(mode, record.mode.configured, record.mode.status)
 
-  delay.dataset.original = record.delay.configured
-  mode.dataset.original = record.mode.configured
-
   return row
 }
 

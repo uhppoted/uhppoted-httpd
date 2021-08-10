@@ -386,6 +386,7 @@ func Export(file string, controllers []*Controller, doors map[string]doors.Door)
 
 func (cc *ControllerSet) Sync() {
 	cc.LAN.synchTime(cc.Controllers)
+	cc.LAN.synchDoors(cc.Controllers)
 }
 
 func (cc *ControllerSet) Compare(permissions acl.ACL) error {

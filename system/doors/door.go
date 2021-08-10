@@ -40,7 +40,6 @@ func (d *Door) IsValid() bool {
 }
 
 func (d *Door) AsObjects() []interface{} {
-
 	delay := struct {
 		delay      uint8
 		configured uint8
@@ -61,15 +60,18 @@ func (d *Door) AsObjects() []interface{} {
 
 	if v, ok := d.lookup("controller.Door.Delay for door.OID[%[1]v]").(uint8); ok {
 		delay.delay = v
-
-		if v != d.Delay {
+		if v == d.Delay {
+			delay.status = types.StatusOk
+		} else {
 			delay.status = types.StatusError
 		}
 	}
 
 	if v, ok := d.lookup("controller.Door.Mode for door.OID[%[1]v]").(uhppoted.ControlState); ok {
 		minfo.mode = mode(v)
-		if v != d.Mode {
+		if v == d.Mode {
+			minfo.status = types.StatusOk
+		} else {
 			minfo.status = types.StatusError
 		}
 	}
@@ -116,6 +118,34 @@ func (d *Door) AsRuleEntity() interface{} {
 	}
 
 	return &entity{}
+}
+
+func (d *Door) Get(field string) interface{} {
+	if d != nil {
+		switch field {
+		case "Delay":
+			if v := d.lookup("controller.Door.Delay for door.OID[%[1]v]"); v != nil {
+				if vv, ok := v.(uint8); ok {
+					return vv
+				}
+			}
+
+		case "Delay.Configured":
+			return d.Delay
+
+		case "Mode":
+			if v := d.lookup("controller.Door.Mode for door.OID[%[1]v]"); v != nil {
+				if vv, ok := v.(uhppoted.ControlState); ok {
+					return vv
+				}
+			}
+
+		case "Mode.Configured":
+			return d.Mode
+		}
+	}
+
+	return nil
 }
 
 func (d *Door) UnmarshalJSON(bytes []byte) error {
@@ -191,8 +221,14 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 			} else {
 				d.log(auth, "update", d.OID, "delay", stringify(d.Delay), value)
 				d.Delay = uint8(v)
+
 				objects = append(objects, object{
-					OID:   d.OID + ".2",
+					OID:   d.OID + ".2.1",
+					Value: stringify(types.StatusUncertain),
+				})
+
+				objects = append(objects, object{
+					OID:   d.OID + ".2.2",
 					Value: stringify(d.Delay),
 				})
 			}
@@ -213,8 +249,14 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 				}
 
 				d.log(auth, "update", d.OID, "delay", stringify(d.Delay), value)
+
 				objects = append(objects, object{
-					OID:   d.OID + ".3",
+					OID:   d.OID + ".3.1",
+					Value: stringify(types.StatusUncertain),
+				})
+
+				objects = append(objects, object{
+					OID:   d.OID + ".3.2",
 					Value: stringify(d.Mode),
 				})
 			}

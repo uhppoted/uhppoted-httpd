@@ -33,6 +33,7 @@ $content-table-background-even:     $solarize-base2                !default;
 $content-table-row-modified:        lighten($solarize-yellow, 50%) !default;
 $content-table-row-new:             lighten($solarize-blue, 30%)   !default;
 $content-table-row-unconfigured:    $solarize-yellow               !default;
+$content-table-row-uncertain:       $solarize-violet               !default;
 $content-table-background-pending:  transparentize($solarize-violet, 0.5);
 $content-table-item-conflict:       transparentize($solarize-orange, 0.75);
 $content-table-border:              $solarize-blue !default;
@@ -45,7 +46,7 @@ $content-table-text:                $solarize-base03 !default;
 $content-table-item-normal:         $solarize-base03 !default;
 $content-table-item-unknown:        $solarize-base1  !default;
 $content-table-item-unconfigured:   $solarize-yellow !default;
-$content-table-item-uncertain:      $solarize-base0  !default;
+$content-table-item-uncertain:      $solarize-violet !default;
 $content-table-item-error:          $solarize-red    !default;
 $content-table-scrollbar-color:     auto             !default;
 

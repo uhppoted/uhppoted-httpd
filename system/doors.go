@@ -42,13 +42,13 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	// 	},
 	// })
 
-	// sys.taskQ.Add(Task{
-	// 	f: func() {
-	// 		info("Updating controllers from configuration")
-	// 		sys.controllers.Sync()
-	// 		UpdateACL()
-	// 	},
-	// })
+	sys.taskQ.Add(Task{
+		f: func() {
+			info("Updating doors from configuration")
+			sys.controllers.Sync()
+			// 		UpdateACL()
+		},
+	})
 
 	return list, nil
 }
