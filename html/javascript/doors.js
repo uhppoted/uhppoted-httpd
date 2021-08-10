@@ -218,8 +218,8 @@ function updateFromDB (oid, record) {
   update(controller, record.controller)
   update(deviceID, record.deviceID)
   update(door, record.door)
-  update(delay, record.delay.delay, record.delay.status)
-  update(mode, record.mode.mode, record.mode.status)
+  update(delay, record.delay.configured, record.delay.status)
+  update(mode, record.mode.configured, record.mode.status)
 
   delay.dataset.original = record.delay.configured
   mode.dataset.original = record.mode.configured

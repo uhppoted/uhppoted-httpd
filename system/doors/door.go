@@ -3,6 +3,7 @@ package doors
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -179,6 +180,42 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 				objects = append(objects, object{
 					OID:   d.OID + ".1",
 					Value: stringify(d.Name),
+				})
+			}
+
+		case d.OID + ".2":
+			if err := f("delay", value); err != nil {
+				return nil, err
+			} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
+				return nil, err
+			} else {
+				d.log(auth, "update", d.OID, "delay", stringify(d.Delay), value)
+				d.Delay = uint8(v)
+				objects = append(objects, object{
+					OID:   d.OID + ".2",
+					Value: stringify(d.Delay),
+				})
+			}
+
+		case d.OID + ".3":
+			if err := f("mode", value); err != nil {
+				return nil, err
+			} else {
+				switch value {
+				case "controlled":
+					d.Mode = uhppoted.Controlled
+				case "normally open":
+					d.Mode = uhppoted.NormallyOpen
+				case "normally closed":
+					d.Mode = uhppoted.NormallyClosed
+				default:
+					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
+				}
+
+				d.log(auth, "update", d.OID, "delay", stringify(d.Delay), value)
+				objects = append(objects, object{
+					OID:   d.OID + ".3",
+					Value: stringify(d.Mode),
 				})
 			}
 		}
