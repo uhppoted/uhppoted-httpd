@@ -6,21 +6,19 @@
       - HasPrefix
 - [ ] Commonalise CSS
       - migrate shared CSS to 'common'
-      - move 'common' into 'tabular'
+      - (eventually) move 'common' into 'tabular'
 - [ ] Generate menu in template
+  - [ ] 'global' OID cache
 
 - Doors
-  - [ ] Replace uhppoted.ControlState with core type
-        -- JSON marshal/unmarshal
-        -- Stringer
-        -- remove local 'mode' type
-  - [x] Set controller door delay
-  - [x] Set controller door control state
+  - [x] Replace uhppoted.ControlState with core type
+  - [ ] Save
+  - [ ] Mouseover for error detail (?)
+  - [ ] Refresh cache after setting doors (?)
+        - or mark as 'dirty'
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
   - [ ] Dynamically update controller door lists with current doors from DB
   - [ ] (?) Automatically create doors 1-4 for controllers
-  - [ ] Save
-  - [ ] 'global' OID cache
   - [ ] Sort order different on Firefox and Chrome (sigh!)
   - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`

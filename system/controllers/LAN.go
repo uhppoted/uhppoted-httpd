@@ -43,7 +43,7 @@ type device struct {
 	cards    *uint32
 	events   *uint32
 	doors    map[uint8]struct {
-		mode  uhppoted.ControlState
+		mode  core.ControlState
 		delay uint8
 	}
 	acl types.Status
@@ -403,7 +403,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 	if !ok {
 		cached = device{
 			doors: map[uint8]struct {
-				mode  uhppoted.ControlState
+				mode  core.ControlState
 				delay uint8
 			}{},
 		}
@@ -532,7 +532,7 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 					actual := catalog.Get(fmt.Sprintf("door.Mode for door.OID[%[1]v]", oid))
 
 					if configured != nil && len(configured) > 0 && (actual == nil || len(actual) < 1 || actual[0] != configured[0]) {
-						mode := configured[0].(uhppoted.ControlState)
+						mode := configured[0].(core.ControlState)
 
 						request := uhppoted.SetDoorControlRequest{
 							DeviceID: device,

@@ -7,18 +7,18 @@ import (
 	"strings"
 	"time"
 
+	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
-	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type Door struct {
-	OID   string                `json:"OID"`
-	Name  string                `json:"name"`
-	Delay uint8                 `json:"delay"`
-	Mode  uhppoted.ControlState `json:"mode"`
+	OID   string            `json:"OID"`
+	Name  string            `json:"name"`
+	Delay uint8             `json:"delay"`
+	Mode  core.ControlState `json:"mode"`
 
 	created time.Time
 	deleted *time.Time
@@ -50,11 +50,11 @@ func (d *Door) AsObjects() []interface{} {
 	}
 
 	minfo := struct {
-		mode       mode
-		configured mode
+		mode       core.ControlState
+		configured core.ControlState
 		status     types.Status
 	}{
-		configured: mode(d.Mode),
+		configured: d.Mode,
 		status:     types.StatusUnknown,
 	}
 
@@ -67,8 +67,8 @@ func (d *Door) AsObjects() []interface{} {
 		}
 	}
 
-	if v, ok := d.lookup("controller.Door.Mode for door.OID[%[1]v]").(uhppoted.ControlState); ok {
-		minfo.mode = mode(v)
+	if v, ok := d.lookup("controller.Door.Mode for door.OID[%[1]v]").(core.ControlState); ok {
+		minfo.mode = v
 		if v == d.Mode {
 			minfo.status = types.StatusOk
 		} else {
@@ -135,7 +135,7 @@ func (d *Door) Get(field string) interface{} {
 
 		case "Mode":
 			if v := d.lookup("controller.Door.Mode for door.OID[%[1]v]"); v != nil {
-				if vv, ok := v.(uhppoted.ControlState); ok {
+				if vv, ok := v.(core.ControlState); ok {
 					return vv
 				}
 			}
@@ -152,14 +152,14 @@ func (d *Door) UnmarshalJSON(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     string    `json:"OID"`
-		Name    string    `json:"name,omitempty"`
-		Delay   uint8     `json:"delay,omitempty"`
-		Mode    mode      `json:"mode,omitempty"`
-		Created time.Time `json:"created"`
+		OID     string            `json:"OID"`
+		Name    string            `json:"name,omitempty"`
+		Delay   uint8             `json:"delay,omitempty"`
+		Mode    core.ControlState `json:"mode,omitempty"`
+		Created time.Time         `json:"created"`
 	}{
 		Delay:   5,
-		Mode:    mode(uhppoted.Controlled),
+		Mode:    core.Controlled,
 		Created: created,
 	}
 
@@ -170,7 +170,7 @@ func (d *Door) UnmarshalJSON(bytes []byte) error {
 	d.OID = record.OID
 	d.Name = record.Name
 	d.Delay = record.Delay
-	d.Mode = uhppoted.ControlState(record.Mode)
+	d.Mode = record.Mode
 	d.created = record.Created
 
 	return nil
@@ -239,11 +239,11 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 			} else {
 				switch value {
 				case "controlled":
-					d.Mode = uhppoted.Controlled
+					d.Mode = core.Controlled
 				case "normally open":
-					d.Mode = uhppoted.NormallyOpen
+					d.Mode = core.NormallyOpen
 				case "normally closed":
-					d.Mode = uhppoted.NormallyClosed
+					d.Mode = core.NormallyClosed
 				default:
 					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
 				}
@@ -340,43 +340,9 @@ func stringify(i interface{}) string {
 			return fmt.Sprintf("%v", *v)
 		}
 
-	case mode:
-		switch i.(mode) {
-		case mode(uhppoted.Controlled):
-			return "controlled"
-		case mode(uhppoted.NormallyOpen):
-			return "normally open"
-		case mode(uhppoted.NormallyClosed):
-			return "normally closed"
-		}
-
 	default:
 		return fmt.Sprintf("%v", i)
 	}
 
 	return ""
-}
-
-type mode uhppoted.ControlState
-
-func (m *mode) UnmarshalJSON(bytes []byte) error {
-	var s string
-
-	if err := json.Unmarshal(bytes, &s); err != nil {
-		return err
-	}
-
-	switch s {
-	case "controlled":
-		*m = mode(uhppoted.Controlled)
-	case "normally open":
-		*m = mode(uhppoted.NormallyOpen)
-	case "normally closed":
-		*m = mode(uhppoted.NormallyClosed)
-
-	default:
-		return fmt.Errorf("Invalid door control state ('%v')", s)
-	}
-
-	return nil
 }
