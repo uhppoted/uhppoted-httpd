@@ -218,8 +218,42 @@ function updateFromDB (oid, record) {
   update(controller, record.controller)
   update(deviceID, record.deviceID)
   update(door, record.door)
-  update(delay, record.delay.configured, record.delay.status)
-  update(mode, record.mode.configured, record.mode.status)
+  update(delay, record.delay.delay, record.delay.status)
+  update(mode, record.mode.mode, record.mode.status)
+
+  { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)
+
+    if (tooltip) {
+      const p = tooltip.querySelector('p')
+      const err = record.delay.err && record.delay.err !== '' ? record.delay.err : ''
+      const enabled = !!(record.delay.err && record.delay.err !== '')
+
+      p.innerHTML = err
+
+      if (enabled) {
+        tooltip.classList.add('enabled')
+      } else {
+        tooltip.classList.remove('enabled')
+      }
+    }
+  }
+
+  { const tooltip = row.querySelector(`[data-oid="${oid}.3"] + div.tooltip-content`)
+
+    if (tooltip) {
+      const p = tooltip.querySelector('p')
+      const err = record.mode.err && record.mode.err !== '' ? record.mode.err : ''
+      const enabled = !!(record.mode.err && record.mode.err !== '')
+
+      p.innerHTML = err
+
+      if (enabled) {
+        tooltip.classList.add('enabled')
+      } else {
+        tooltip.classList.remove('enabled')
+      }
+    }
+  }
 
   return row
 }

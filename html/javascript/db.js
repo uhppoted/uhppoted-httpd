@@ -237,8 +237,8 @@ function door (o) {
       deviceID: '',
       door: '',
       name: '',
-      delay: { delay: '', configured: '', status: 'unknown' },
-      mode: { mode: '', configured: '', status: 'unknown' },
+      delay: { delay: '', configured: '', status: 'unknown', err: '' },
+      mode: { mode: '', configured: '', status: 'unknown', err: '' },
       status: o.value,
       mark: 0
     })
@@ -290,6 +290,10 @@ function door (o) {
           v.delay.configured = o.value
           break
 
+        case k + '.2.3':
+          v.delay.err = o.value
+          break
+
         case k + '.3':
           v.mode.mode = o.value
           break
@@ -300,6 +304,10 @@ function door (o) {
 
         case k + '.3.2':
           v.mode.configured = o.value
+          break
+
+        case k + '.3.3':
+          v.mode.err = o.value
           break
       }
     }

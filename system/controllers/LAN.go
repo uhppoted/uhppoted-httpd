@@ -519,6 +519,12 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorDelay(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
+							if cached, ok := cache.cache[*c.DeviceID]; ok {
+								if d, ok := cached.doors[door]; ok {
+									d.delay = response.Delay
+								}
+							}
+
 							log.Printf("INFO  %v: sychronized door %v delay (%v)", response.DeviceID, door, delay)
 						}
 					}
@@ -543,6 +549,12 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorControl(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
+							if cached, ok := cache.cache[*c.DeviceID]; ok {
+								if d, ok := cached.doors[door]; ok {
+									d.mode = response.Control
+								}
+							}
+
 							log.Printf("INFO  %v: sychronized door %v control (%v)", response.DeviceID, door, mode)
 						}
 					}

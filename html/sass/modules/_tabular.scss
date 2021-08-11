@@ -5,7 +5,7 @@
   display: block; 
   height: 90%;
   margin-bottom: 32px;
-  overflow: auto; 
+  overflow: visible; 
   color: $content-table-text;
   scrollbar-color: $content-table-scrollbar-color;
 }

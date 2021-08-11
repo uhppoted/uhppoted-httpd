@@ -44,6 +44,7 @@ func (d *Door) AsObjects() []interface{} {
 		delay      uint8
 		configured uint8
 		status     types.Status
+		err        string
 	}{
 		configured: d.Delay,
 		status:     types.StatusUnknown,
@@ -53,6 +54,7 @@ func (d *Door) AsObjects() []interface{} {
 		mode       core.ControlState
 		configured core.ControlState
 		status     types.Status
+		err        string
 	}{
 		configured: d.Mode,
 		status:     types.StatusUnknown,
@@ -64,6 +66,7 @@ func (d *Door) AsObjects() []interface{} {
 			delay.status = types.StatusOk
 		} else {
 			delay.status = types.StatusError
+			delay.err = fmt.Sprintf("Door delay (%vs) does not match configuration (%vs)", v, d.Delay)
 		}
 	}
 
@@ -73,6 +76,7 @@ func (d *Door) AsObjects() []interface{} {
 			minfo.status = types.StatusOk
 		} else {
 			minfo.status = types.StatusError
+			minfo.err = fmt.Sprintf("Door control state ('%v') does not match configuration ('%v')", v, d.Mode)
 		}
 	}
 
@@ -98,9 +102,11 @@ func (d *Door) AsObjects() []interface{} {
 		object{OID: d.OID + ".2", Value: stringify(delay.delay)},
 		object{OID: d.OID + ".2.1", Value: stringify(delay.status)},
 		object{OID: d.OID + ".2.2", Value: stringify(delay.configured)},
+		object{OID: d.OID + ".2.3", Value: stringify(delay.err)},
 		object{OID: d.OID + ".3", Value: stringify(minfo.mode)},
 		object{OID: d.OID + ".3.1", Value: stringify(minfo.status)},
 		object{OID: d.OID + ".3.2", Value: stringify(minfo.configured)},
+		object{OID: d.OID + ".3.3", Value: stringify(minfo.err)},
 	}
 
 	return objects
@@ -214,29 +220,38 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 			}
 
 		case d.OID + ".2":
+			delay := d.Delay
+
 			if err := f("delay", value); err != nil {
 				return nil, err
 			} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
 				return nil, err
 			} else {
-				d.log(auth, "update", d.OID, "delay", stringify(d.Delay), value)
 				d.Delay = uint8(v)
 
 				objects = append(objects, object{
-					OID:   d.OID + ".2.1",
-					Value: stringify(types.StatusUncertain),
+					OID:   d.OID + ".2",
+					Value: stringify(d.Delay),
 				})
 
 				objects = append(objects, object{
 					OID:   d.OID + ".2.2",
 					Value: stringify(d.Delay),
 				})
+
+				objects = append(objects, object{
+					OID:   d.OID + ".2.1",
+					Value: stringify(types.StatusUncertain),
+				})
+
+				d.log(auth, "update", d.OID, "delay", stringify(delay), value)
 			}
 
 		case d.OID + ".3":
 			if err := f("mode", value); err != nil {
 				return nil, err
 			} else {
+				mode := d.Mode
 				switch value {
 				case "controlled":
 					d.Mode = core.Controlled
@@ -248,17 +263,22 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
 				}
 
-				d.log(auth, "update", d.OID, "delay", stringify(d.Delay), value)
-
 				objects = append(objects, object{
-					OID:   d.OID + ".3.1",
-					Value: stringify(types.StatusUncertain),
+					OID:   d.OID + ".3",
+					Value: stringify(d.Mode),
 				})
 
 				objects = append(objects, object{
 					OID:   d.OID + ".3.2",
 					Value: stringify(d.Mode),
 				})
+
+				objects = append(objects, object{
+					OID:   d.OID + ".3.1",
+					Value: stringify(types.StatusUncertain),
+				})
+
+				d.log(auth, "update", d.OID, "mode", stringify(mode), value)
 			}
 		}
 

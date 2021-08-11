@@ -50,8 +50,8 @@
       <main>
         <div style="width:100%;">
           <div id="controls" data-oid="0.3">
-            <img id="commitall" class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('door', event, 'doors')" />
-            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('door', event)" />
+            <img id="commitall" class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('door', event, 'doors')" draggable="false" />
+            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('door', event)"  draggable="false"  />
             <div id="message" class="message">
               <div>
                 <span class="warning" id="warning"></span>
@@ -133,7 +133,7 @@
                          data-value="" 
                          readonly />
                 </td>
-                <td>
+                <td class="tooltip-wrap">
                   <img class="flag mode" src="images/{{$.context.Theme}}/corner.svg" />
                   <select class="field mode"
                           type="text" 
@@ -148,8 +148,11 @@
                     <option value="normally open">normally open</option>
                     <option value="normally closed">normally closed</option>
                   </select>
+                  <div class="tooltip-content">
+                    <p></p>
+                  </div> 
                 </td>
-                <td>
+                <td class="tooltip-wrap">
                   <img class="flag delay" src="images/{{$.context.Theme}}/corner.svg" />
                   <input class="field delay"
                          type="number" 
@@ -161,6 +164,9 @@
                          data-record=""
                          data-original=""
                          data-value="" />
+                  <div class="tooltip-content">
+                    <p></p>
+                  </div> 
                 </td>
                 <!-- 'padding' column (CSS: tr::last-child) -->
                 <td class="padding"></td>

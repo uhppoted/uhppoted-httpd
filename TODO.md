@@ -12,10 +12,11 @@
 
 - Doors
   - [x] Replace uhppoted.ControlState with core type
+  - [x] Mouseover for error detail
+  - [ ] Mark cache entry as 'dirty' after setting door delay/mode
+  - [ ] Figure out editing to make config match actual 
+        (e.g. normally closed, config is controlled -> can't update to 'controlled')
   - [ ] Save
-  - [ ] Mouseover for error detail (?)
-  - [ ] Refresh cache after setting doors (?)
-        - or mark as 'dirty'
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
   - [ ] Dynamically update controller door lists with current doors from DB
   - [ ] (?) Automatically create doors 1-4 for controllers
