@@ -13,8 +13,10 @@
 - Doors
   - [x] Figure out editing to make config match actual 
   - [x] Delay displaying as '0' on startup
-  - [ ] Sort order different on every refresh
-        - and maybe Firefox and Chrome (????)
+  - [x] Sort order different on every refresh
+  - [x] Sort order different between Firefox and Chrome
+  - [x] Move `doors.mark` to _edit.js_
+  - [x] Move `doors.percolate` to _edit.js_
   - [ ] Custom 'mode' dropdown to handle option click 
         https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
   - [ ] Mark cache entry as 'dirty' after setting door delay/mode
@@ -25,8 +27,6 @@
   - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`
   - [ ] Move `doors.update` to tabular.js_
-  - [x] Move `doors.mark` to _tabular.js_
-  - [x] Move `doors.percolate` to _tabular.js_
   - [ ] Move `doors.set` to _tabular.js_
   - [ ] Move `onEdited`, `onRollback`, etc to _tabular.js_
   - [ ] Check/update dark mode

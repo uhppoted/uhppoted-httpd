@@ -65,7 +65,6 @@ func (dd *Doors) Load(file string) error {
 	}
 
 	for _, d := range blob.Doors {
-		d.created = created
 		dd.Doors[d.OID] = d
 
 	}

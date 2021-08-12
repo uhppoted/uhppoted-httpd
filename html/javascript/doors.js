@@ -148,13 +148,11 @@ export function refreshed () {
   list.sort((p, q) => {
     if (p.created < q.created) {
       return -1
-    }
-
-    if (p.created < q.created) {
+    } else if (p.created > q.created) {
       return +1
+    } else {
+      return 0
     }
-
-    return 0
   })
 
   list.forEach(d => {
