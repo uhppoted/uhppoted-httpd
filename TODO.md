@@ -8,24 +8,25 @@
       - migrate shared CSS to 'common'
       - (eventually) move 'common' into 'tabular'
 - [ ] Generate menu in template
-  - [ ] 'global' OID cache
+- [ ] 'global' OID cache
 
 - Doors
-  - [x] Replace uhppoted.ControlState with core type
-  - [x] Mouseover for error detail
+  - [x] Figure out editing to make config match actual 
+  - [ ] Delay displaying as '0' on startup
+  - [ ] Sort order different on every refresh
+        - and maybe Firefox and Chrome (????)
+  - [ ] Custom 'mode' dropdown to handle option click 
+        https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
   - [ ] Mark cache entry as 'dirty' after setting door delay/mode
-  - [ ] Figure out editing to make config match actual 
-        (e.g. normally closed, config is controlled -> can't update to 'controlled')
   - [ ] Save
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
   - [ ] Dynamically update controller door lists with current doors from DB
   - [ ] (?) Automatically create doors 1-4 for controllers
-  - [ ] Sort order different on Firefox and Chrome (sigh!)
   - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`
   - [ ] Move `doors.update` to tabular.js_
-  - [ ] Move `doors.mark` to _tabular.js_
-  - [ ] Move `doors.percolate` to _tabular.js_
+  - [x] Move `doors.mark` to _tabular.js_
+  - [x] Move `doors.percolate` to _tabular.js_
   - [ ] Move `doors.set` to _tabular.js_
   - [ ] Move `onEdited`, `onRollback`, etc to _tabular.js_
   - [ ] Check/update dark mode
@@ -52,8 +53,6 @@
       - move values to catalog
 
 - [ ] Fix Firefox layout
-      - internal table layout seems to include padding where Chrome doesn't
-      - explicitly remove border from table rows/cells maybe (?)
 
 - [ ] [TOML](https://toml.io) files
 

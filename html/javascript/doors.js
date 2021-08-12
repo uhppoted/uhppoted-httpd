@@ -1,6 +1,7 @@
 /* global */
 
 import { busy, unbusy, dismiss, warning, getAsJSON, postAsJSON } from './uhppoted.js'
+import { mark, unmark, modified, percolate } from './edit.js'
 import { DB } from './db.js'
 
 export function create () {
@@ -18,7 +19,7 @@ export function commit (...rows) {
     const oid = row.dataset.oid
     const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
     children.forEach(e => {
-      if (e.dataset.value !== e.dataset.original) {
+      if (e.classList.contains('modified')) {
         list.push(e)
       }
     })
@@ -221,6 +222,8 @@ function updateFromDB (oid, record) {
   update(delay, record.delay.delay, record.delay.status)
   update(mode, record.mode.mode, record.mode.status)
 
+  delay.dataset.configured = record.delay.configured
+
   { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)
 
     if (tooltip) {
@@ -363,37 +366,10 @@ function revert (row) {
 
   fields.forEach((item) => {
     item.value = item.dataset.original
-    set(item, item.dataset.original)
+    set(item, item.dataset.original, item.dataset.status)
   })
 
   row.classList.remove('modified')
-}
-
-function modified (oid) {
-  const element = document.querySelector(`[data-oid="${oid}"]`)
-
-  if (element) {
-    const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
-    const re = /^\.[0-9]+$/
-    let count = 0
-
-    list.forEach(e => {
-      if (e.classList.contains('modified')) {
-        const oidx = e.dataset.oid
-        if (oidx.startsWith(oid) && re.test(oidx.substring(oid.length))) {
-          count = count + 1
-        }
-      }
-    })
-
-    if (count > 0) {
-      element.dataset.modified = count > 1 ? 'multiple' : 'single'
-      element.classList.add('modified')
-    } else {
-      element.dataset.modified = null
-      element.classList.remove('modified')
-    }
-  }
 }
 
 function deleted (row) {
@@ -409,32 +385,4 @@ function deleted (row) {
       }
     }
   }
-}
-
-function percolate (oid, f) {
-  let oidx = oid
-
-  while (oidx) {
-    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
-    oidx = match ? match[1] : null
-    if (oidx) {
-      f(oidx)
-    }
-  }
-}
-
-function mark (clazz, ...elements) {
-  elements.forEach(e => {
-    if (e) {
-      e.classList.add(clazz)
-    }
-  })
-}
-
-function unmark (clazz, ...elements) {
-  elements.forEach(e => {
-    if (e) {
-      e.classList.remove(clazz)
-    }
-  })
 }

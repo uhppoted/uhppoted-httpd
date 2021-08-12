@@ -235,13 +235,18 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 				})
 
 				objects = append(objects, object{
+					OID:   d.OID + ".2.1",
+					Value: stringify(types.StatusUncertain),
+				})
+
+				objects = append(objects, object{
 					OID:   d.OID + ".2.2",
 					Value: stringify(d.Delay),
 				})
 
 				objects = append(objects, object{
-					OID:   d.OID + ".2.1",
-					Value: stringify(types.StatusUncertain),
+					OID:   d.OID + ".2.3",
+					Value: "",
 				})
 
 				d.log(auth, "update", d.OID, "delay", stringify(delay), value)
@@ -269,13 +274,18 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 				})
 
 				objects = append(objects, object{
+					OID:   d.OID + ".3.1",
+					Value: stringify(types.StatusUncertain),
+				})
+
+				objects = append(objects, object{
 					OID:   d.OID + ".3.2",
 					Value: stringify(d.Mode),
 				})
 
 				objects = append(objects, object{
-					OID:   d.OID + ".3.1",
-					Value: stringify(types.StatusUncertain),
+					OID:   d.OID + ".3.3",
+					Value: "",
 				})
 
 				d.log(auth, "update", d.OID, "mode", stringify(mode), value)
