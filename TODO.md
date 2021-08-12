@@ -12,7 +12,7 @@
 
 - Doors
   - [x] Figure out editing to make config match actual 
-  - [ ] Delay displaying as '0' on startup
+  - [x] Delay displaying as '0' on startup
   - [ ] Sort order different on every refresh
         - and maybe Firefox and Chrome (????)
   - [ ] Custom 'mode' dropdown to handle option click 

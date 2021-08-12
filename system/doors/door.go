@@ -40,73 +40,81 @@ func (d *Door) IsValid() bool {
 }
 
 func (d *Door) AsObjects() []interface{} {
-	delay := struct {
-		delay      uint8
-		configured uint8
-		status     types.Status
-		err        string
+	created := d.created.Format("2006-01-02 15:04:05")
+	status := stringify(types.StatusOk)
+	name := stringify(d.Name)
+
+	controller := struct {
+		OID     string
+		created string
+		name    string
+		ID      string
+		door    string
 	}{
-		configured: d.Delay,
-		status:     types.StatusUnknown,
+		OID:     stringify(d.lookup("controller.OID for door.OID[%[1]v]")),
+		created: stringify(d.lookup("controller.Created for door.OID[%[1]v]")),
+		name:    stringify(d.lookup("controller.Name for door.OID[%[1]v]")),
+		ID:      stringify(d.lookup("controller.ID for door.OID[%[1]v]")),
+		door:    stringify(d.lookup("controller.Door for door.OID[%[1]v]")),
 	}
 
-	minfo := struct {
-		mode       core.ControlState
-		configured core.ControlState
-		status     types.Status
+	delay := struct {
+		delay      string
+		configured string
+		status     string
 		err        string
 	}{
-		configured: d.Mode,
-		status:     types.StatusUnknown,
+		configured: stringify(d.Delay),
+		status:     stringify(types.StatusUnknown),
+	}
+
+	control := struct {
+		control    string
+		configured string
+		status     string
+		err        string
+	}{
+		configured: stringify(d.Mode),
+		status:     stringify(types.StatusUnknown),
 	}
 
 	if v, ok := d.lookup("controller.Door.Delay for door.OID[%[1]v]").(uint8); ok {
-		delay.delay = v
+		delay.delay = stringify(v)
 		if v == d.Delay {
-			delay.status = types.StatusOk
+			delay.status = stringify(types.StatusOk)
 		} else {
-			delay.status = types.StatusError
+			delay.status = stringify(types.StatusError)
 			delay.err = fmt.Sprintf("Door delay (%vs) does not match configuration (%vs)", v, d.Delay)
 		}
 	}
 
 	if v, ok := d.lookup("controller.Door.Mode for door.OID[%[1]v]").(core.ControlState); ok {
-		minfo.mode = v
+		control.control = stringify(v)
 		if v == d.Mode {
-			minfo.status = types.StatusOk
+			control.status = stringify(types.StatusOk)
 		} else {
-			minfo.status = types.StatusError
-			minfo.err = fmt.Sprintf("Door control state ('%v') does not match configuration ('%v')", v, d.Mode)
+			control.status = stringify(types.StatusError)
+			control.err = fmt.Sprintf("Door control state ('%v') does not match configuration ('%v')", v, d.Mode)
 		}
 	}
 
-	created := d.created.Format("2006-01-02 15:04:05")
-	status := types.StatusOk
-	name := stringify(d.Name)
-
-	controllerOID := d.lookup("controller.OID for door.OID[%[1]v]")
-	controllerCreated := d.lookup("controller.Created for door.OID[%[1]v]")
-	controllerName := d.lookup("controller.Name for door.OID[%[1]v]")
-	controllerID := d.lookup("controller.ID for door.OID[%[1]v]")
-	controllerDoor := d.lookup("controller.Door for door.OID[%[1]v]")
-
 	objects := []interface{}{
-		object{OID: d.OID, Value: fmt.Sprintf("%v", status)},
+		object{OID: d.OID, Value: status},
 		object{OID: d.OID + ".0.1", Value: created},
-		object{OID: d.OID + ".0.2", Value: stringify(controllerOID)},
-		object{OID: d.OID + ".0.2.1", Value: stringify(controllerCreated)},
-		object{OID: d.OID + ".0.2.2", Value: stringify(controllerName)},
-		object{OID: d.OID + ".0.2.3", Value: stringify(controllerID)},
-		object{OID: d.OID + ".0.2.4", Value: stringify(controllerDoor)},
+		object{OID: d.OID + ".0.2", Value: controller.OID},
+		object{OID: d.OID + ".0.2.1", Value: controller.created},
+		object{OID: d.OID + ".0.2.2", Value: controller.name},
+		object{OID: d.OID + ".0.2.3", Value: controller.ID},
+		object{OID: d.OID + ".0.2.4", Value: controller.door},
 		object{OID: d.OID + ".1", Value: name},
-		object{OID: d.OID + ".2", Value: stringify(delay.delay)},
-		object{OID: d.OID + ".2.1", Value: stringify(delay.status)},
-		object{OID: d.OID + ".2.2", Value: stringify(delay.configured)},
-		object{OID: d.OID + ".2.3", Value: stringify(delay.err)},
-		object{OID: d.OID + ".3", Value: stringify(minfo.mode)},
-		object{OID: d.OID + ".3.1", Value: stringify(minfo.status)},
-		object{OID: d.OID + ".3.2", Value: stringify(minfo.configured)},
-		object{OID: d.OID + ".3.3", Value: stringify(minfo.err)},
+		object{OID: d.OID + ".2", Value: delay.delay},
+		object{OID: d.OID + ".2.1", Value: delay.status},
+		object{OID: d.OID + ".2.2", Value: delay.configured},
+		object{OID: d.OID + ".2.3", Value: delay.err},
+		object{OID: d.OID + ".3", Value: control.control},
+		object{OID: d.OID + ".3.1", Value: control.status},
+		object{OID: d.OID + ".3.2", Value: control.configured},
+		object{OID: d.OID + ".3.3", Value: control.err},
 	}
 
 	return objects
