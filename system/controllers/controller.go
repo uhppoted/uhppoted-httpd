@@ -6,6 +6,7 @@ import (
 	"math"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
@@ -276,10 +277,11 @@ func (c *Controller) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (c *Controller) Get(field string) interface{} {
+func (c *Controller) Get(key string) interface{} {
+	f := strings.ToLower(key)
 	if c != nil {
-		switch field {
-		case "OID":
+		switch f {
+		case "oid":
 			return c.OID
 
 		case "created":
@@ -288,23 +290,30 @@ func (c *Controller) Get(field string) interface{} {
 		case "name":
 			return c.Name
 
-		case "ID":
+		case "id":
 			return c.DeviceID
 		}
 
-		re := regexp.MustCompile(`Door\[(.+?)\]\.(Mode|Delay)`)
-		if match := re.FindStringSubmatch(field); match != nil && len(match) > 2 {
+		re := regexp.MustCompile(`^door\[(.+?)\]\.(.*)$`)
+		if match := re.FindStringSubmatch(f); match != nil && len(match) > 2 {
 			oid := match[1]
 			field := match[2]
+
 			for k, v := range c.Doors {
 				if v == oid && c.DeviceID != nil {
 					if cached, ok := cache.cache[*c.DeviceID]; ok {
 						if d, ok := cached.doors[k]; ok {
 							switch field {
-							case "Mode":
+							case "mode":
 								return d.mode
-							case "Delay":
+							case "delay":
 								return d.delay
+							case "control":
+								return d.mode
+							case "delay.dirty":
+								return cached.dirty[fmt.Sprintf("door.%v.delay", k)]
+							case "control.dirty":
+								return cached.dirty[fmt.Sprintf("door.%v.control", k)]
 							}
 						}
 					}

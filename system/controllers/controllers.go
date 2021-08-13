@@ -155,7 +155,6 @@ func (cc *ControllerSet) Save() error {
 
 	for _, c := range cc.Controllers {
 		if record, err := c.serialize(); err == nil && record != nil {
-			fmt.Printf("                             >>>> %v\n", record)
 			serializable.Controllers = append(serializable.Controllers, record)
 		}
 	}

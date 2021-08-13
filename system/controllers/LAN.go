@@ -46,7 +46,8 @@ type device struct {
 		mode  core.ControlState
 		delay uint8
 	}
-	acl types.Status
+	acl   types.Status
+	dirty map[string]bool
 }
 
 const (
@@ -406,6 +407,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 				mode  core.ControlState
 				delay uint8
 			}{},
+			dirty: map[string]bool{},
 		}
 	}
 
@@ -440,6 +442,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 		door.mode = v.Control
 		cached.doors[d] = door
 		cached.touched = time.Now()
+		delete(cached.dirty, fmt.Sprintf("door.%v.control", d))
 		cache.cache[id] = cached
 
 	case uhppoted.GetDoorDelayResponse:
@@ -448,6 +451,7 @@ func (l *LAN) store(id uint32, info interface{}) {
 		door.delay = v.Delay
 		cached.doors[d] = door
 		cached.touched = time.Now()
+		delete(cached.dirty, fmt.Sprintf("door.%v.delay", d))
 		cache.cache[id] = cached
 
 	case acl.Diff:
@@ -488,7 +492,7 @@ func (l *LAN) synchTime(controllers []*Controller) {
 			if response, err := api.SetTime(request); err != nil {
 				log.Printf("ERROR %v", err)
 			} else if response != nil {
-				log.Printf("INFO  sychronized device-time %v %v", response.DeviceID, response.DateTime)
+				log.Printf("INFO  synchronized device-time %v %v", response.DeviceID, response.DateTime)
 			}
 		}
 	}
@@ -504,8 +508,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			// ... update door delays
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured := catalog.Get(fmt.Sprintf("door.Delay.Configured for door.OID[%[1]v]", oid))
-					actual := catalog.Get(fmt.Sprintf("door.Delay for door.OID[%[1]v]", oid))
+					configured := catalog.Get(fmt.Sprintf("door.delay.configured for door.OID[%[1]v]", oid))
+					actual := catalog.Get(fmt.Sprintf("door.delay for door.OID[%[1]v]", oid))
 
 					if configured != nil && len(configured) > 0 && (actual == nil || len(actual) < 1 || actual[0] != configured[0]) {
 						delay := configured[0].(uint8)
@@ -522,10 +526,13 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 							if cached, ok := cache.cache[*c.DeviceID]; ok {
 								if d, ok := cached.doors[door]; ok {
 									d.delay = response.Delay
+									cached.dirty[fmt.Sprintf("door.%v.delay", door)] = true
+									cached.doors[door] = d
+									cache.cache[*c.DeviceID] = cached
 								}
 							}
 
-							log.Printf("INFO  %v: sychronized door %v delay (%v)", response.DeviceID, door, delay)
+							log.Printf("INFO  %v: synchronized door %v delay (%v)", response.DeviceID, door, delay)
 						}
 					}
 				}
@@ -552,10 +559,13 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 							if cached, ok := cache.cache[*c.DeviceID]; ok {
 								if d, ok := cached.doors[door]; ok {
 									d.mode = response.Control
+									cached.dirty[fmt.Sprintf("door.%v.control", door)] = true
+									cached.doors[door] = d
+									cache.cache[*c.DeviceID] = cached
 								}
 							}
 
-							log.Printf("INFO  %v: sychronized door %v control (%v)", response.DeviceID, door, mode)
+							log.Printf("INFO  %v: synchronized door %v control (%v)", response.DeviceID, door, mode)
 						}
 					}
 				}

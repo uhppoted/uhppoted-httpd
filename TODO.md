@@ -9,26 +9,24 @@
       - (eventually) move 'common' into 'tabular'
 - [ ] Generate menu in template
 - [ ] 'global' OID cache
+- [ ] Export to uhppoted.conf
+      - --export command line argument 
+      - 'export' admin menu option
+      - 'auto-export' admin menu option
 
 - Doors
-  - [x] Figure out editing to make config match actual 
-  - [x] Delay displaying as '0' on startup
-  - [x] Sort order different on every refresh
-  - [x] Sort order different between Firefox and Chrome
-  - [x] Move `doors.mark` to _edit.js_
-  - [x] Move `doors.percolate` to _edit.js_
+  - [x] Mark cache entry as 'dirty' after setting door delay/mode
+  - [ ] Save
   - [ ] Custom 'mode' dropdown to handle option click 
         https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
-  - [ ] Mark cache entry as 'dirty' after setting door delay/mode
-  - [ ] Save
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
   - [ ] Dynamically update controller door lists with current doors from DB
   - [ ] (?) Automatically create doors 1-4 for controllers
   - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`
-  - [ ] Move `doors.update` to tabular.js_
-  - [ ] Move `doors.set` to _tabular.js_
-  - [ ] Move `onEdited`, `onRollback`, etc to _tabular.js_
+  - [ ] Move `doors.update` to edit.js_
+  - [ ] Move `doors.set` to _edit.js_
+  - [ ] Move `onEdited`, `onRollback`, etc to _edit.js_
   - [ ] Check/update dark mode
 
 - [ ] Cards

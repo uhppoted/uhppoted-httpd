@@ -80,9 +80,20 @@ func (d *Door) AsObjects() []interface{} {
 
 	if v, ok := d.lookup("controller.Door.Delay for door.OID[%[1]v]").(uint8); ok {
 		delay.delay = stringify(v)
-		if v == d.Delay {
+
+		dirty := false
+		if p, ok := d.lookup("controller.door.delay.dirty for door.OID[%[1]v]").(bool); ok {
+			dirty = p
+		}
+
+		switch {
+		case dirty:
+			delay.status = stringify(types.StatusUncertain)
+
+		case v == d.Delay:
 			delay.status = stringify(types.StatusOk)
-		} else {
+
+		default:
 			delay.status = stringify(types.StatusError)
 			delay.err = fmt.Sprintf("Door delay (%vs) does not match configuration (%vs)", v, d.Delay)
 		}
@@ -90,9 +101,20 @@ func (d *Door) AsObjects() []interface{} {
 
 	if v, ok := d.lookup("controller.Door.Mode for door.OID[%[1]v]").(core.ControlState); ok {
 		control.control = stringify(v)
-		if v == d.Mode {
+
+		dirty := false
+		if v, ok := d.lookup("controller.door.control.dirty for door.OID[%[1]v]").(bool); ok {
+			dirty = v
+		}
+
+		switch {
+		case dirty:
+			control.status = stringify(types.StatusUncertain)
+
+		case v == d.Mode:
 			control.status = stringify(types.StatusOk)
-		} else {
+
+		default:
 			control.status = stringify(types.StatusError)
 			control.err = fmt.Sprintf("Door control state ('%v') does not match configuration ('%v')", v, d.Mode)
 		}
@@ -135,26 +157,27 @@ func (d *Door) AsRuleEntity() interface{} {
 }
 
 func (d *Door) Get(field string) interface{} {
+	f := strings.ToLower(field)
 	if d != nil {
-		switch field {
-		case "Delay":
-			if v := d.lookup("controller.Door.Delay for door.OID[%[1]v]"); v != nil {
+		switch f {
+		case "delay":
+			if v := d.lookup("controller.door.delay for door.OID[%[1]v]"); v != nil {
 				if vv, ok := v.(uint8); ok {
 					return vv
 				}
 			}
 
-		case "Delay.Configured":
+		case "delay.configured":
 			return d.Delay
 
-		case "Mode":
-			if v := d.lookup("controller.Door.Mode for door.OID[%[1]v]"); v != nil {
+		case "mode":
+			if v := d.lookup("controller.door.mode for door.OID[%[1]v]"); v != nil {
 				if vv, ok := v.(core.ControlState); ok {
 					return vv
 				}
 			}
 
-		case "Mode.Configured":
+		case "mode.configured":
 			return d.Mode
 		}
 	}
