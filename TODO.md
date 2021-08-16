@@ -8,11 +8,13 @@
       - migrate shared CSS to 'common'
       - (eventually) move 'common' into 'tabular'
 - [ ] 'global' OID cache
-- [ ] Login
-      - include login cookie when redirecting to login.html to avoid the initial double click
+      - 'lookup service' for OID's corresponding to fields (?)
+
 - [ ] Controllers are permanently 'uncertain' ?
 
 - Doors
+  - [ ] Move configured delay and control to catalog cache
+        - Update serialize and deserialize to use catalog cache values
   - [ ] Save
   - [ ] (?) Should only update door values with a corresponding edit (currently updating all)
   - [ ] Custom 'mode' dropdown to handle option click 
@@ -134,6 +136,7 @@
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Login initial double click
 - [x] Deduplicate `status`
 - [x] /favicon.ico
 - [x] Signout page "doesn't have permission"

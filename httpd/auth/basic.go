@@ -249,7 +249,7 @@ func (b *Basic) validateLoginCookie(r *http.Request) error {
 	}
 
 	_, ok := b.logins[*lid]
-	if !ok {
+	if !ok && r.URL.Path != "/authenticate" {
 		return fmt.Errorf("No extant login for login ID '%v'", *lid)
 	}
 
