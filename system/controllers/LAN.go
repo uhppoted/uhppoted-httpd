@@ -42,12 +42,7 @@ type device struct {
 	datetime *types.DateTime
 	cards    *uint32
 	events   *uint32
-	doors    map[uint8]struct {
-		mode  core.ControlState
-		delay uint8
-	}
-	acl   types.Status
-	dirty map[string]bool
+	acl      types.Status
 }
 
 const (
@@ -292,7 +287,7 @@ func (l *LAN) compareACL(controllers []*Controller, permissions acl.ACL) error {
 
 	for _, v := range devices {
 		id := v.DeviceID
-		l.store(id, compare[id])
+		l.store(id, compare[id], nil)
 	}
 
 	return nil
@@ -334,13 +329,21 @@ func (l *LAN) refresh(controllers []*Controller) {
 		for k, _ := range list {
 			id := k
 			go func() {
-				l.update(api, id)
+				var controller *Controller
+				for _, c := range controllers {
+					if c.DeviceID != nil && *c.DeviceID == id {
+						controller = c
+						break
+					}
+				}
+
+				l.update(api, id, controller)
 			}()
 		}
 	}()
 }
 
-func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
+func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller) {
 	log.Printf("%v: refreshing LAN controller status", id)
 
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
@@ -348,7 +351,7 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
 	} else if info == nil {
 		log.Printf("Got %v response to get-device request for %v", info, id)
 	} else {
-		l.store(id, *info)
+		l.store(id, *info, controller)
 	}
 
 	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
@@ -356,7 +359,7 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
 	} else if status == nil {
 		log.Printf("Got %v response to get-status request for %v", status, id)
 	} else {
-		l.store(id, *status)
+		l.store(id, *status, controller)
 	}
 
 	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
@@ -364,7 +367,7 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
 	} else if cards == nil {
 		log.Printf("Got %v response to get-card-records request for %v", cards, id)
 	} else {
-		l.store(id, *cards)
+		l.store(id, *cards, controller)
 	}
 
 	if events, err := api.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
@@ -372,17 +375,7 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
 	} else if events == nil {
 		log.Printf("Got %v response to get-event-range request for %v", events, id)
 	} else {
-		l.store(id, *events)
-	}
-
-	for _, d := range []uint8{1, 2, 3, 4} {
-		if delay, err := api.GetDoorControl(uhppoted.GetDoorControlRequest{DeviceID: uhppoted.DeviceID(id), Door: d}); err != nil {
-			log.Printf("%v", err)
-		} else if delay == nil {
-			log.Printf("Got %v response to get-door-control request for %v", delay, id)
-		} else {
-			l.store(id, *delay)
-		}
+		l.store(id, *events, controller)
 	}
 
 	for _, d := range []uint8{1, 2, 3, 4} {
@@ -391,24 +384,28 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32) {
 		} else if delay == nil {
 			log.Printf("Got %v response to get-door-delay request for %v", delay, id)
 		} else {
-			l.store(id, *delay)
+			l.store(id, *delay, controller)
+		}
+	}
+
+	for _, d := range []uint8{1, 2, 3, 4} {
+		if control, err := api.GetDoorControl(uhppoted.GetDoorControlRequest{DeviceID: uhppoted.DeviceID(id), Door: d}); err != nil {
+			log.Printf("%v", err)
+		} else if control == nil {
+			log.Printf("Got %v response to get-door-control request for %v", control, id)
+		} else {
+			l.store(id, *control, controller)
 		}
 	}
 }
 
-func (l *LAN) store(id uint32, info interface{}) {
+func (l *LAN) store(id uint32, info interface{}, controller *Controller) {
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
 
 	cached, ok := cache.cache[id]
 	if !ok {
-		cached = device{
-			doors: map[uint8]struct {
-				mode  core.ControlState
-				delay uint8
-			}{},
-			dirty: map[string]bool{},
-		}
+		cached = device{}
 	}
 
 	switch v := info.(type) {
@@ -436,23 +433,21 @@ func (l *LAN) store(id uint32, info interface{}) {
 		cached.touched = time.Now()
 		cache.cache[id] = cached
 
-	case uhppoted.GetDoorControlResponse:
-		d := v.Door
-		door, _ := cached.doors[d]
-		door.mode = v.Control
-		cached.doors[d] = door
-		cached.touched = time.Now()
-		delete(cached.dirty, fmt.Sprintf("door.%v.control", d))
-		cache.cache[id] = cached
-
 	case uhppoted.GetDoorDelayResponse:
-		d := v.Door
-		door, _ := cached.doors[d]
-		door.delay = v.Delay
-		cached.doors[d] = door
-		cached.touched = time.Now()
-		delete(cached.dirty, fmt.Sprintf("door.%v.delay", d))
-		cache.cache[id] = cached
+		if controller != nil {
+			if door, ok := controller.Doors[v.Door]; ok {
+				oid := door + ".2"
+				catalog.PutV(oid, v.Delay, false)
+			}
+		}
+
+	case uhppoted.GetDoorControlResponse:
+		if controller != nil {
+			if door, ok := controller.Doors[v.Door]; ok {
+				oid := door + ".3"
+				catalog.PutV(oid, v.Control, false)
+			}
+		}
 
 	case acl.Diff:
 		if ok {
@@ -509,9 +504,9 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
 					configured := catalog.Get(fmt.Sprintf("door.delay.configured for door.OID[%[1]v]", oid))
-					actual := catalog.Get(fmt.Sprintf("door.delay for door.OID[%[1]v]", oid))
+					actual, _ := catalog.GetV(oid + ".2")
 
-					if configured != nil && len(configured) > 0 && (actual == nil || len(actual) < 1 || actual[0] != configured[0]) {
+					if configured != nil && len(configured) > 0 && (actual == nil || actual != configured[0]) {
 						delay := configured[0].(uint8)
 
 						request := uhppoted.SetDoorDelayRequest{
@@ -523,15 +518,7 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorDelay(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
-							if cached, ok := cache.cache[*c.DeviceID]; ok {
-								if d, ok := cached.doors[door]; ok {
-									d.delay = response.Delay
-									cached.dirty[fmt.Sprintf("door.%v.delay", door)] = true
-									cached.doors[door] = d
-									cache.cache[*c.DeviceID] = cached
-								}
-							}
-
+							catalog.PutV(oid+".2", delay, true)
 							log.Printf("INFO  %v: synchronized door %v delay (%v)", response.DeviceID, door, delay)
 						}
 					}
@@ -542,9 +529,9 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
 					configured := catalog.Get(fmt.Sprintf("door.Mode.Configured for door.OID[%[1]v]", oid))
-					actual := catalog.Get(fmt.Sprintf("door.Mode for door.OID[%[1]v]", oid))
+					actual, _ := catalog.GetV(oid + ".3")
 
-					if configured != nil && len(configured) > 0 && (actual == nil || len(actual) < 1 || actual[0] != configured[0]) {
+					if configured != nil && len(configured) > 0 && (actual == nil || actual != configured[0]) {
 						mode := configured[0].(core.ControlState)
 
 						request := uhppoted.SetDoorControlRequest{
@@ -556,15 +543,7 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorControl(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
-							if cached, ok := cache.cache[*c.DeviceID]; ok {
-								if d, ok := cached.doors[door]; ok {
-									d.mode = response.Control
-									cached.dirty[fmt.Sprintf("door.%v.control", door)] = true
-									cached.doors[door] = d
-									cache.cache[*c.DeviceID] = cached
-								}
-							}
-
+							catalog.PutV(oid+".3", mode, true)
 							log.Printf("INFO  %v: synchronized door %v control (%v)", response.DeviceID, door, mode)
 						}
 					}

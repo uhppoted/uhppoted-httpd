@@ -293,34 +293,6 @@ func (c *Controller) Get(key string) interface{} {
 		case "id":
 			return c.DeviceID
 		}
-
-		re := regexp.MustCompile(`^door\[(.+?)\]\.(.*)$`)
-		if match := re.FindStringSubmatch(f); match != nil && len(match) > 2 {
-			oid := match[1]
-			field := match[2]
-
-			for k, v := range c.Doors {
-				if v == oid && c.DeviceID != nil {
-					if cached, ok := cache.cache[*c.DeviceID]; ok {
-						if d, ok := cached.doors[k]; ok {
-							switch field {
-							case "mode":
-								return d.mode
-							case "delay":
-								return d.delay
-							case "control":
-								return d.mode
-							case "delay.dirty":
-								return cached.dirty[fmt.Sprintf("door.%v.delay", k)]
-							case "control.dirty":
-								return cached.dirty[fmt.Sprintf("door.%v.control", k)]
-							}
-						}
-					}
-					break
-				}
-			}
-		}
 	}
 
 	return nil

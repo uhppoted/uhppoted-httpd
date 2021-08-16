@@ -7,16 +7,14 @@
 - [ ] Commonalise CSS
       - migrate shared CSS to 'common'
       - (eventually) move 'common' into 'tabular'
-- [ ] Generate menu in template
 - [ ] 'global' OID cache
-- [ ] Export to uhppoted.conf
-      - --export command line argument 
-      - 'export' admin menu option
-      - 'auto-export' admin menu option
+- [ ] Login
+      - include login cookie when redirecting to login.html to avoid the initial double click
+- [ ] Controllers are permanently 'uncertain' ?
 
 - Doors
-  - [x] Mark cache entry as 'dirty' after setting door delay/mode
   - [ ] Save
+  - [ ] (?) Should only update door values with a corresponding edit (currently updating all)
   - [ ] Custom 'mode' dropdown to handle option click 
         https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
@@ -33,6 +31,10 @@
       - migrate to OIDs
 
 - [ ] system
+      - [ ] Export to uhppoted.conf
+        - --export command line argument 
+        - 'export' admin menu option
+        - 'auto-export' admin menu option
       - configure ok/uncertain intervals
       - configure systime window
       - Fix `get-events` log string
@@ -109,9 +111,8 @@
       
 - [ ] Events
       - https://jvns.ca/blog/2021/01/12/day-36--server-sent-events-are-cool--and-a-fun-bug/
-      
+- [ ] Generate menu in template
 - [ ] Login
-      - include login cookie when redirecting to login.html to avoid the initial double click
       - restyle avatar to have a border and be a bit floaty (i.e. not be glued to top-right)
 
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html

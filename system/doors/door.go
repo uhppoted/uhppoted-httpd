@@ -78,13 +78,8 @@ func (d *Door) AsObjects() []interface{} {
 		status:     stringify(types.StatusUnknown),
 	}
 
-	if v, ok := d.lookup("controller.Door.Delay for door.OID[%[1]v]").(uint8); ok {
-		delay.delay = stringify(v)
-
-		dirty := false
-		if p, ok := d.lookup("controller.door.delay.dirty for door.OID[%[1]v]").(bool); ok {
-			dirty = p
-		}
+	if v, dirty := catalog.GetV(d.OID + ".2"); v != nil {
+		delay.delay = stringify(v.(uint8))
 
 		switch {
 		case dirty:
@@ -99,13 +94,8 @@ func (d *Door) AsObjects() []interface{} {
 		}
 	}
 
-	if v, ok := d.lookup("controller.Door.Mode for door.OID[%[1]v]").(core.ControlState); ok {
-		control.control = stringify(v)
-
-		dirty := false
-		if v, ok := d.lookup("controller.door.control.dirty for door.OID[%[1]v]").(bool); ok {
-			dirty = v
-		}
+	if v, dirty := catalog.GetV(d.OID + ".3"); v != nil {
+		control.control = stringify(v.(core.ControlState))
 
 		switch {
 		case dirty:
@@ -160,22 +150,8 @@ func (d *Door) Get(field string) interface{} {
 	f := strings.ToLower(field)
 	if d != nil {
 		switch f {
-		case "delay":
-			if v := d.lookup("controller.door.delay for door.OID[%[1]v]"); v != nil {
-				if vv, ok := v.(uint8); ok {
-					return vv
-				}
-			}
-
 		case "delay.configured":
 			return d.Delay
-
-		case "mode":
-			if v := d.lookup("controller.door.mode for door.OID[%[1]v]"); v != nil {
-				if vv, ok := v.(core.ControlState); ok {
-					return vv
-				}
-			}
 
 		case "mode.configured":
 			return d.Mode
