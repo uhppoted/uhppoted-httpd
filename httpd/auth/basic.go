@@ -19,16 +19,24 @@ type Basic struct {
 	logins       map[uuid.UUID]*login
 	sessions     map[uuid.UUID]*session
 	stale        time.Duration
+	urls         map[string]struct{}
 }
 
-func NewBasicAuthenticator(auth auth.IAuth, cookieMaxAge int, stale time.Duration) *Basic {
-	return &Basic{
+func NewBasicAuthenticator(auth auth.IAuth, cookieMaxAge int, stale time.Duration, urls []string) *Basic {
+	a := Basic{
 		auth:         auth,
 		cookieMaxAge: cookieMaxAge,
 		logins:       map[uuid.UUID]*login{},
 		sessions:     map[uuid.UUID]*session{},
 		stale:        stale,
+		urls:         map[string]struct{}{},
 	}
+
+	for _, u := range urls {
+		a.urls[u] = struct{}{}
+	}
+
+	return &a
 }
 
 func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
@@ -248,9 +256,10 @@ func (b *Basic) validateLoginCookie(r *http.Request) error {
 		return fmt.Errorf("Invalid login ID (%v)", lid)
 	}
 
-	_, ok := b.logins[*lid]
-	if !ok && r.URL.Path != "/authenticate" {
-		return fmt.Errorf("No extant login for login ID '%v'", *lid)
+	if _, ok := b.logins[*lid]; !ok {
+		if _, ok := b.urls[r.URL.Path]; !ok {
+			return fmt.Errorf("No extant login for login ID '%v'", *lid)
+		}
 	}
 
 	delete(b.logins, *lid)

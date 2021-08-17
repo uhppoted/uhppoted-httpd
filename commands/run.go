@@ -61,7 +61,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 			return err
 		}
 
-		authentication = auth.NewBasicAuthenticator(p, conf.HTTPD.Security.CookieMaxAge, conf.HTTPD.Security.StaleTime)
+		authentication = auth.NewBasicAuthenticator(p, conf.HTTPD.Security.CookieMaxAge, conf.HTTPD.Security.StaleTime, []string{"/authenticate"})
 	}
 
 	trail := audit.NewAuditTrail(conf.HTTPD.Audit.File)
