@@ -503,11 +503,11 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			// ... update door delays
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured := catalog.Get(fmt.Sprintf("door.delay.configured for door.OID[%[1]v]", oid))
+					configured, _ := catalog.GetV(oid + ".2.2")
 					actual, _ := catalog.GetV(oid + ".2")
 
-					if configured != nil && len(configured) > 0 && (actual == nil || actual != configured[0]) {
-						delay := configured[0].(uint8)
+					if configured != nil && (actual == nil || actual != configured) {
+						delay := configured.(uint8)
 
 						request := uhppoted.SetDoorDelayRequest{
 							DeviceID: device,
@@ -528,11 +528,11 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			// ... update door control states
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured := catalog.Get(fmt.Sprintf("door.Mode.Configured for door.OID[%[1]v]", oid))
+					configured, _ := catalog.GetV(oid + ".3.2")
 					actual, _ := catalog.GetV(oid + ".3")
 
-					if configured != nil && len(configured) > 0 && (actual == nil || actual != configured[0]) {
-						mode := configured[0].(core.ControlState)
+					if configured != nil && (actual == nil || actual != configured) {
+						mode := configured.(core.ControlState)
 
 						request := uhppoted.SetDoorControlRequest{
 							DeviceID: device,

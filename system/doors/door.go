@@ -15,11 +15,11 @@ import (
 )
 
 type Door struct {
-	OID   string            `json:"OID"`
-	Name  string            `json:"name"`
-	Delay uint8             `json:"delay"`
-	Mode  core.ControlState `json:"mode"`
+	OID  string `json:"OID"`
+	Name string `json:"name"`
 
+	delay   uint8
+	mode    core.ControlState
 	created time.Time
 	deleted *time.Time
 }
@@ -64,7 +64,7 @@ func (d *Door) AsObjects() []interface{} {
 		status     string
 		err        string
 	}{
-		configured: stringify(d.Delay),
+		configured: stringify(d.delay),
 		status:     stringify(types.StatusUnknown),
 	}
 
@@ -74,7 +74,7 @@ func (d *Door) AsObjects() []interface{} {
 		status     string
 		err        string
 	}{
-		configured: stringify(d.Mode),
+		configured: stringify(d.mode),
 		status:     stringify(types.StatusUnknown),
 	}
 
@@ -85,12 +85,12 @@ func (d *Door) AsObjects() []interface{} {
 		case dirty:
 			delay.status = stringify(types.StatusUncertain)
 
-		case v == d.Delay:
+		case v == d.delay:
 			delay.status = stringify(types.StatusOk)
 
 		default:
 			delay.status = stringify(types.StatusError)
-			delay.err = fmt.Sprintf("Door delay (%vs) does not match configuration (%vs)", v, d.Delay)
+			delay.err = fmt.Sprintf("Door delay (%vs) does not match configuration (%vs)", v, d.delay)
 		}
 	}
 
@@ -101,12 +101,12 @@ func (d *Door) AsObjects() []interface{} {
 		case dirty:
 			control.status = stringify(types.StatusUncertain)
 
-		case v == d.Mode:
+		case v == d.mode:
 			control.status = stringify(types.StatusOk)
 
 		default:
 			control.status = stringify(types.StatusError)
-			control.err = fmt.Sprintf("Door control state ('%v') does not match configuration ('%v')", v, d.Mode)
+			control.err = fmt.Sprintf("Door control state ('%v') does not match configuration ('%v')", v, d.mode)
 		}
 	}
 
@@ -146,22 +146,7 @@ func (d *Door) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (d *Door) Get(field string) interface{} {
-	f := strings.ToLower(field)
-	if d != nil {
-		switch f {
-		case "delay.configured":
-			return d.Delay
-
-		case "mode.configured":
-			return d.Mode
-		}
-	}
-
-	return nil
-}
-
-func (d *Door) UnmarshalJSON(bytes []byte) error {
+func (d *Door) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
@@ -182,8 +167,8 @@ func (d *Door) UnmarshalJSON(bytes []byte) error {
 
 	d.OID = record.OID
 	d.Name = record.Name
-	d.Delay = record.Delay
-	d.Mode = record.Mode
+	d.delay = record.Delay
+	d.mode = record.Mode
 	d.created = record.Created
 
 	return nil
@@ -193,8 +178,8 @@ func (d *Door) clone() Door {
 	return Door{
 		OID:     d.OID,
 		Name:    d.Name,
-		Delay:   d.Delay,
-		Mode:    d.Mode,
+		delay:   d.delay,
+		mode:    d.mode,
 		created: d.created,
 	}
 }
@@ -227,18 +212,20 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 			}
 
 		case d.OID + ".2":
-			delay := d.Delay
+			delay := d.delay
 
 			if err := f("delay", value); err != nil {
 				return nil, err
 			} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
 				return nil, err
 			} else {
-				d.Delay = uint8(v)
+				d.delay = uint8(v)
+
+				catalog.PutV(d.OID+".2.2", d.delay, false)
 
 				objects = append(objects, object{
 					OID:   d.OID + ".2",
-					Value: stringify(d.Delay),
+					Value: stringify(d.delay),
 				})
 
 				objects = append(objects, object{
@@ -248,7 +235,7 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 
 				objects = append(objects, object{
 					OID:   d.OID + ".2.2",
-					Value: stringify(d.Delay),
+					Value: stringify(d.delay),
 				})
 
 				objects = append(objects, object{
@@ -263,21 +250,23 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 			if err := f("mode", value); err != nil {
 				return nil, err
 			} else {
-				mode := d.Mode
+				mode := d.mode
 				switch value {
 				case "controlled":
-					d.Mode = core.Controlled
+					d.mode = core.Controlled
 				case "normally open":
-					d.Mode = core.NormallyOpen
+					d.mode = core.NormallyOpen
 				case "normally closed":
-					d.Mode = core.NormallyClosed
+					d.mode = core.NormallyClosed
 				default:
 					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
 				}
 
+				catalog.PutV(d.OID+".3.2", d.mode, false)
+
 				objects = append(objects, object{
 					OID:   d.OID + ".3",
-					Value: stringify(d.Mode),
+					Value: stringify(d.mode),
 				})
 
 				objects = append(objects, object{
@@ -287,7 +276,7 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 
 				objects = append(objects, object{
 					OID:   d.OID + ".3.2",
-					Value: stringify(d.Mode),
+					Value: stringify(d.mode),
 				})
 
 				objects = append(objects, object{

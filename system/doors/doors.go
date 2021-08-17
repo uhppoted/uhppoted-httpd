@@ -49,9 +49,9 @@ func (dd *Doors) AsObjects() []interface{} {
 
 func (dd *Doors) Load(file string) error {
 	blob := struct {
-		Doors []Door `json:"doors"`
+		Doors []json.RawMessage `json:"doors"`
 	}{
-		Doors: []Door{},
+		Doors: []json.RawMessage{},
 	}
 
 	bytes, err := os.ReadFile(file)
@@ -64,13 +64,21 @@ func (dd *Doors) Load(file string) error {
 		return err
 	}
 
-	for _, d := range blob.Doors {
-		dd.Doors[d.OID] = d
+	for _, v := range blob.Doors {
+		var d Door
+		if err := d.deserialize(v); err == nil {
+			if _, ok := dd.Doors[d.OID]; ok {
+				return fmt.Errorf("door '%v': duplicate OID (%v)", d.Name, d.OID)
+			}
 
+			dd.Doors[d.OID] = d
+		}
 	}
 
 	for _, v := range dd.Doors {
 		catalog.PutDoor(v.OID)
+		catalog.PutV(v.OID+".2.2", v.delay, false)
+		catalog.PutV(v.OID+".3.2", v.mode, false)
 	}
 
 	return nil
