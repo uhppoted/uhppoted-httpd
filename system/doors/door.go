@@ -39,6 +39,14 @@ func (d *Door) IsValid() bool {
 	return false
 }
 
+func (d *Door) IsDeleted() bool {
+	if d != nil && d.deleted != nil {
+		return true
+	}
+
+	return false
+}
+
 func (d *Door) AsObjects() []interface{} {
 	created := d.created.Format("2006-01-02 15:04:05")
 	status := stringify(types.StatusOk)
@@ -146,6 +154,24 @@ func (d *Door) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
+func (d Door) serialize() ([]byte, error) {
+	record := struct {
+		OID     string            `json:"OID"`
+		Name    string            `json:"name,omitempty"`
+		Delay   uint8             `json:"delay,omitempty"`
+		Mode    core.ControlState `json:"mode,omitempty"`
+		Created string            `json:"created"`
+	}{
+		OID:     d.OID,
+		Name:    d.Name,
+		Delay:   d.delay,
+		Mode:    d.mode,
+		Created: d.created.Format("2006-01-02 15:04:05"),
+	}
+
+	return json.Marshal(record)
+}
+
 func (d *Door) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
@@ -154,11 +180,10 @@ func (d *Door) deserialize(bytes []byte) error {
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
-		Created time.Time         `json:"created"`
+		Created string            `json:"created"`
 	}{
-		Delay:   5,
-		Mode:    core.Controlled,
-		Created: created,
+		Delay: 5,
+		Mode:  core.Controlled,
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -169,7 +194,11 @@ func (d *Door) deserialize(bytes []byte) error {
 	d.Name = record.Name
 	d.delay = record.Delay
 	d.mode = record.Mode
-	d.created = record.Created
+	d.created = created
+
+	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {
+		d.created = t
+	}
 
 	return nil
 }

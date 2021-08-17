@@ -10,18 +10,19 @@
 - [ ] 'global' OID cache
       - 'lookup service' for OID's corresponding to fields (?)
 
+- [ ] Still getting double click for login from 'reload' page
 - [ ] Controllers are permanently 'uncertain' ?
 
 - Doors
-  - [ ] Move configured delay and control to catalog cache
-        - Update serialize and deserialize to use catalog cache values
-  - [ ] Save
+  - [x] Move configured delay and control to catalog cache
+  - [x] Save
+  - [ ] Sweep
+  - [ ] Show door number (or something) on system page when door is assigned but name is blank
+        -- (?) set placeholder on 'doors' page (?)
   - [ ] (?) Should only update door values with a corresponding edit (currently updating all)
   - [ ] Custom 'mode' dropdown to handle option click 
         https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
-  - [ ] Show door number (or something) on system page when door is assigned but name is blank
   - [ ] Dynamically update controller door lists with current doors from DB
-  - [ ] (?) Automatically create doors 1-4 for controllers
   - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`
   - [ ] Move `doors.update` to edit.js_
@@ -33,11 +34,11 @@
       - migrate to OIDs
 
 - [ ] system
-      - [ ] Export to uhppoted.conf
+      - [ ] Configure ok/uncertain intervals
+      - Export to uhppoted.conf
         - --export command line argument 
         - 'export' admin menu option
         - 'auto-export' admin menu option
-      - configure ok/uncertain intervals
       - configure systime window
       - Fix `get-events` log string
       - Fix `get-status` log string
