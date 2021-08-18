@@ -182,5 +182,17 @@ export function unbusy () {
 }
 
 function offline () {
+  const cookies = document.cookie.split(';')
+
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i]
+    const ix = cookie.indexOf('=')
+    const name = ix > -1 ? cookie.substr(0, ix) : cookie
+
+    if (name === 'JSESSIONID') {
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    }
+  }
+
   document.body.innerHTML = '<div id="offline"><div><div><p>SYSTEM OFFLINE</p></div><div><a href="index.html">RELOAD</a><div></div></div>'
 }

@@ -10,7 +10,7 @@
 - [ ] 'global' OID cache
       - 'lookup service' for OID's corresponding to fields (?)
 
-- [ ] Still getting double click for login from 'reload' page
+- [x] Still getting double click for login from 'reload' page
 - [x] Controllers are coloured 'uncertain' ?
 
 - Doors
