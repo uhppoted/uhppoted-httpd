@@ -26,6 +26,7 @@ var sys = system{
 	doors:       doors.NewDoors(),
 	controllers: controllers.NewControllerSet(),
 	taskQ:       NewTaskQ(),
+	retention:   6 * time.Hour,
 }
 
 type system struct {
@@ -36,6 +37,7 @@ type system struct {
 	cards       cards.Cards
 	audit       audit.Trail
 	taskQ       TaskQ
+	retention   time.Duration // time after which 'deleted' items are permanently removed
 }
 
 type object catalog.Object
@@ -50,7 +52,7 @@ func (s *system) refresh() {
 	})
 
 	sys.taskQ.Add(Task{
-		f: s.controllers.Sweep,
+		f: s.sweep,
 	})
 
 	sys.taskQ.Add(Task{
@@ -63,13 +65,14 @@ func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail, 
 		return err
 	}
 
-	if err := sys.controllers.Load(cfg.HTTPD.System.Controllers, retention); err != nil {
+	if err := sys.controllers.Load(cfg.HTTPD.System.Controllers); err != nil {
 		return err
 	}
 
 	sys.conf = conf
 	sys.cards = cards
 	sys.audit = trail
+	sys.retention = retention
 
 	controllers.SetAuditTrail(trail)
 	doors.SetAuditTrail(trail)
@@ -245,6 +248,14 @@ func (s *system) log(op string, info interface{}, auth auth.OpAuth) {
 			Info:      info,
 		})
 	}
+}
+
+func (s *system) sweep() {
+	cutoff := time.Now().Add(-s.retention)
+	log.Printf("INFO  Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
+
+	s.controllers.Sweep(s.retention)
+	s.doors.Sweep(s.retention)
 }
 
 func unpack(m map[string]interface{}) ([]object, error) {

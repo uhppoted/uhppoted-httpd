@@ -11,14 +11,15 @@
       - 'lookup service' for OID's corresponding to fields (?)
 
 - [ ] Still getting double click for login from 'reload' page
-- [ ] Controllers are permanently 'uncertain' ?
+- [x] Controllers are coloured 'uncertain' ?
 
 - Doors
-  - [ ] Sweep
+  - [x] Sweep
   - [ ] Dynamically update controller door lists with current doors from DB
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
         -- (?) set placeholder on 'doors' page (?)
   - [ ] (?) Should only update door values with a corresponding edit (currently updating all)
+        -- values marked 'dirty' (?)
   - [ ] Custom 'mode' dropdown to handle option click 
         https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
   - [ ] Fix ACL for reworked types.Door

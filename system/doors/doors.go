@@ -109,8 +109,10 @@ func (dd Doors) Save() error {
 	}
 
 	for _, d := range dd.Doors {
-		if record, err := d.serialize(); err == nil && record != nil {
-			serializable.Doors = append(serializable.Doors, record)
+		if d.IsValid() && !d.IsDeleted() {
+			if record, err := d.serialize(); err == nil && record != nil {
+				serializable.Doors = append(serializable.Doors, record)
+			}
 		}
 	}
 
@@ -141,18 +143,16 @@ func (dd Doors) Save() error {
 	return os.Rename(tmp.Name(), dd.file)
 }
 
-// func (cc *ControllerSet) Sweep() {
-//     if cc == nil {
-//         return
-//     }
-
-//     cutoff := time.Now().Add(-cc.retention)
-//     for i, v := range cc.Controllers {
-//         if v.deleted != nil && v.deleted.Before(cutoff) {
-//             cc.Controllers = append(cc.Controllers[:i], cc.Controllers[i+1:]...)
-//         }
-//     }
-// }
+func (dd *Doors) Sweep(retention time.Duration) {
+	if dd != nil {
+		cutoff := time.Now().Add(-retention)
+		for i, v := range dd.Doors {
+			if v.deleted != nil && v.deleted.Before(cutoff) {
+				delete(dd.Doors, i)
+			}
+		}
+	}
+}
 
 func (dd *Doors) Print() {
 	if dd != nil {

@@ -25,7 +25,6 @@ import (
 
 type ControllerSet struct {
 	file        string        `json:"-"`
-	retention   time.Duration `json:"-"`
 	Controllers []*Controller `json:"controllers"`
 	LAN         *LAN          `json:"LAN"`
 }
@@ -46,7 +45,6 @@ func NewControllerSet() ControllerSet {
 			OID:    "0.1.1.1.1",
 			status: types.StatusOk,
 		},
-		retention: 6 * time.Hour,
 	}
 }
 
@@ -67,7 +65,7 @@ func (cc *ControllerSet) AsObjects() []interface{} {
 	return objects
 }
 
-func (cc *ControllerSet) Load(file string, retention time.Duration) error {
+func (cc *ControllerSet) Load(file string) error {
 	type controller struct {
 		OID      string           `json:"OID"`
 		Name     *types.Name      `json:"name,omitempty"`
@@ -99,7 +97,6 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 	}
 
 	cc.file = file
-	cc.retention = retention
 	cc.Controllers = []*Controller{}
 	cc.LAN = &LAN{
 		OID:              blob.LAN.OID,
@@ -196,12 +193,12 @@ func (cc *ControllerSet) Save() error {
 	return os.Rename(tmp.Name(), cc.file)
 }
 
-func (cc *ControllerSet) Sweep() {
+func (cc *ControllerSet) Sweep(retention time.Duration) {
 	if cc == nil {
 		return
 	}
 
-	cutoff := time.Now().Add(-cc.retention)
+	cutoff := time.Now().Add(-retention)
 	for i, v := range cc.Controllers {
 		if v.deleted != nil && v.deleted.Before(cutoff) {
 			cc.Controllers = append(cc.Controllers[:i], cc.Controllers[i+1:]...)
@@ -299,7 +296,6 @@ loop:
 func (cc *ControllerSet) Clone() *ControllerSet {
 	shadow := ControllerSet{
 		file:        cc.file,
-		retention:   cc.retention,
 		Controllers: make([]*Controller, len(cc.Controllers)),
 		LAN:         &LAN{},
 	}

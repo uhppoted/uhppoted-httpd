@@ -402,7 +402,9 @@ func stringify(i interface{}) string {
 		}
 
 	default:
-		return fmt.Sprintf("%v", i)
+		if i != nil {
+			return fmt.Sprintf("%v", i)
+		}
 	}
 
 	return ""
