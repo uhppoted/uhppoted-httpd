@@ -163,10 +163,10 @@ func (c *Controller) AsObjects() []interface{} {
 			// ... set status field from cached value
 			dt := time.Now().Sub(cached.touched)
 			switch {
-			case dt < DeviceOk:
+			case dt < windows.deviceOk:
 				status = types.StatusOk
 
-			case dt < DeviceUncertain:
+			case dt < windows.deviceUncertain:
 				status = types.StatusUncertain
 			}
 

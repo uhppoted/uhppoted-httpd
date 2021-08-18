@@ -60,7 +60,7 @@ func (s *system) refresh() {
 	})
 }
 
-func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
+func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail) error {
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
 		return err
 	}
@@ -72,9 +72,10 @@ func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail, 
 	sys.conf = conf
 	sys.cards = cards
 	sys.audit = trail
-	sys.retention = retention
+	sys.retention = cfg.HTTPD.Retention
 
 	controllers.SetAuditTrail(trail)
+	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok, cfg.HTTPD.System.Windows.Uncertain)
 	doors.SetAuditTrail(trail)
 
 	sys.controllers.Print()

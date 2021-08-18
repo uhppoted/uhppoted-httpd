@@ -45,11 +45,6 @@ type device struct {
 	acl      types.Status
 }
 
-const (
-	DeviceOk        = 10 * time.Second
-	DeviceUncertain = 20 * time.Second
-)
-
 const WINDOW = 300 // 5 minutes
 const CACHE_EXPIRY = 120 * time.Second
 

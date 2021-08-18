@@ -12,6 +12,7 @@
 
 - [x] Still getting double click for login from 'reload' page
 - [x] Controllers are coloured 'uncertain' ?
+- [x] Configure system ok/uncertain intervals
 
 - Doors
   - [x] Sweep
@@ -33,7 +34,6 @@
       - migrate to OIDs
 
 - [ ] system
-      - [ ] Configure ok/uncertain intervals
       - Export to uhppoted.conf
         - --export command line argument 
         - 'export' admin menu option

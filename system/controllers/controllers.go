@@ -34,8 +34,21 @@ type object catalog.Object
 var guard sync.Mutex
 var trail audit.Trail
 
+var windows = struct {
+	deviceOk        time.Duration
+	deviceUncertain time.Duration
+}{
+	deviceOk:        60 * time.Second,
+	deviceUncertain: 300 * time.Second,
+}
+
 func SetAuditTrail(t audit.Trail) {
 	trail = t
+}
+
+func SetWindows(ok, uncertain time.Duration) {
+	windows.deviceOk = ok
+	windows.deviceUncertain = uncertain
 }
 
 func NewControllerSet() ControllerSet {
