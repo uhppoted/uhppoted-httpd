@@ -28,8 +28,6 @@ var sys = system{
 	taskQ:       NewTaskQ(),
 }
 
-var resolver = Resolver{}
-
 type system struct {
 	sync.RWMutex
 	conf        string
@@ -61,8 +59,6 @@ func (s *system) refresh() {
 }
 
 func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail, retention time.Duration) error {
-	catalog.SetResolver(resolver)
-
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
 		return err
 	}

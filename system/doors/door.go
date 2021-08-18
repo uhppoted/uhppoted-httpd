@@ -28,8 +28,15 @@ var created = time.Now()
 
 func (d *Door) IsValid() bool {
 	if d != nil {
-		controller := d.lookup("controller.OID for door.OID[%v]")
-		door := d.lookup("controller.Door for door.OID[%v]")
+		controller := ""
+		if v, _ := catalog.GetV(d.OID + "0.2"); v != nil {
+			controller = stringify(v)
+		}
+
+		door := ""
+		if v, _ := catalog.GetV(d.OID + "0.2.4"); v != nil {
+			door = stringify(v)
+		}
 
 		if strings.TrimSpace(d.Name) != "" || (controller != "" && door != "") {
 			return true
@@ -59,11 +66,11 @@ func (d *Door) AsObjects() []interface{} {
 		ID      string
 		door    string
 	}{
-		OID:     stringify(d.lookup("controller.OID for door.OID[%[1]v]")),
-		created: stringify(d.lookup("controller.Created for door.OID[%[1]v]")),
-		name:    stringify(d.lookup("controller.Name for door.OID[%[1]v]")),
-		ID:      stringify(d.lookup("controller.ID for door.OID[%[1]v]")),
-		door:    stringify(d.lookup("controller.Door for door.OID[%[1]v]")),
+		OID:     stringify(d.lookup(".0.2")),
+		created: stringify(d.lookup(".0.2.1")),
+		name:    stringify(d.lookup(".0.2.2")),
+		ID:      stringify(d.lookup(".0.2.3")),
+		door:    stringify(d.lookup(".0.2.4")),
 	}
 
 	delay := struct {
@@ -87,7 +94,7 @@ func (d *Door) AsObjects() []interface{} {
 	}
 
 	if v, dirty := catalog.GetV(d.OID + ".2"); v != nil {
-		delay.delay = stringify(v.(uint8))
+		delay.delay = stringify(v)
 
 		switch {
 		case dirty:
@@ -340,12 +347,11 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 	return objects, nil
 }
 
-func (d *Door) lookup(query string) interface{} {
-	q := fmt.Sprintf(query, d.OID)
-	v := catalog.Get(q)
+func (d *Door) lookup(suffix string) interface{} {
+	v, _ := catalog.GetV(d.OID + suffix)
 
-	if v != nil && len(v) > 0 {
-		return v[0]
+	if v != nil {
+		return v
 	}
 
 	return nil

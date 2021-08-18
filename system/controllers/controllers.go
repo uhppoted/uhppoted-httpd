@@ -119,9 +119,19 @@ func (cc *ControllerSet) Load(file string, retention time.Duration) error {
 	}
 
 	catalog.PutInterface(cc.LAN.OID)
-	for _, v := range cc.Controllers {
-		if v.DeviceID != nil && *v.DeviceID != 0 {
-			catalog.PutController(*v.DeviceID, v.OID)
+	for _, c := range cc.Controllers {
+		if c.DeviceID != nil && *c.DeviceID != 0 {
+			catalog.PutController(*c.DeviceID, c.OID)
+		}
+
+		for _, d := range []uint8{1, 2, 3, 4} {
+			if oid, ok := c.Doors[d]; ok && oid != "" {
+				catalog.PutV(oid+".0.2", c.OID, false)
+				catalog.PutV(oid+".0.2.1", c.created, false)
+				catalog.PutV(oid+".0.2.2", c.Name, false)
+				catalog.PutV(oid+".0.2.3", c.DeviceID, false)
+				catalog.PutV(oid+".0.2.4", d, false)
+			}
 		}
 	}
 

@@ -14,15 +14,13 @@
 - [ ] Controllers are permanently 'uncertain' ?
 
 - Doors
-  - [x] Move configured delay and control to catalog cache
-  - [x] Save
   - [ ] Sweep
+  - [ ] Dynamically update controller door lists with current doors from DB
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
         -- (?) set placeholder on 'doors' page (?)
   - [ ] (?) Should only update door values with a corresponding edit (currently updating all)
   - [ ] Custom 'mode' dropdown to handle option click 
         https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
-  - [ ] Dynamically update controller door lists with current doors from DB
   - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`
   - [ ] Move `doors.update` to edit.js_
@@ -130,13 +128,13 @@
       - https://jn3008.tumblr.com/post/618100274778783744
 - [ ] Lighthouse test (Chrome dev tools)
 - [ ] Hamburger menu (?)
-- [ ] Style SVG icons with SASS
-- [ ] Structure CSS somehow :-(
 - [ ] Thoroughly rethink the whole timezone thing
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
+- [x] Style SVG icons with SASS
+- [x] Structure CSS somehow
 - [x] Login initial double click
 - [x] Deduplicate `status`
 - [x] /favicon.ico

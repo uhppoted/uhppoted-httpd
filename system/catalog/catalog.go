@@ -21,15 +21,10 @@ var catalog = struct {
 }
 
 var guard sync.Mutex
-var resolver Lookup
 
 type controller struct {
 	ID      uint32
 	deleted bool
-}
-
-func SetResolver(r Lookup) {
-	resolver = r
 }
 
 func PutInterface(oid string) {
@@ -54,14 +49,6 @@ func PutDoor(oid string) {
 	defer guard.Unlock()
 
 	catalog.doors[oid] = struct{}{}
-}
-
-func Get(query string) []interface{} {
-	if resolver == nil {
-		return nil
-	}
-
-	return resolver.Get(query)
 }
 
 func GetController(deviceID uint32) string {
