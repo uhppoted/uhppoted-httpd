@@ -45,9 +45,6 @@ type device struct {
 	acl      types.Status
 }
 
-const WINDOW = 300 // 5 minutes
-const CACHE_EXPIRY = 120 * time.Second
-
 var cache = deviceCache{
 	cache: map[uint32]device{},
 }
@@ -289,7 +286,7 @@ func (l *LAN) compareACL(controllers []*Controller, permissions acl.ACL) error {
 }
 
 func (l *LAN) refresh(controllers []*Controller) {
-	expired := time.Now().Add(-CACHE_EXPIRY)
+	expired := time.Now().Add(-windows.cacheExpiry)
 	for k, v := range cache.cache {
 		if v.touched.Before(expired) {
 			delete(cache.cache, k)

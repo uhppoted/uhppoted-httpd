@@ -10,16 +10,18 @@
 - [ ] 'global' OID cache
       - 'lookup service' for OID's corresponding to fields (?)
 
-- [ ] Add systime window to configuration
-- [ ] <sigh> double click for login is back - after 'refresh' :-( :-(
+- [x] Add systime window to configuration
+- [x] Add cache expirty time to configuration
+- [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
+- [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Doors
   - [x] Dynamically update controller door lists with current doors from DB
+  - [ ] Should only update door values with a corresponding edit (currently updating all)
+        -- values marked 'dirty' (?)
   - [ ] 'door' select chooses first item if list changes while select is open
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
         -- (?) set placeholder on 'doors' page (?)
-  - [ ] (?) Should only update door values with a corresponding edit (currently updating all)
-        -- values marked 'dirty' (?)
   - [ ] Custom 'mode' dropdown to handle option click 
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element

@@ -75,7 +75,11 @@ func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail) 
 	sys.retention = cfg.HTTPD.Retention
 
 	controllers.SetAuditTrail(trail)
-	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok, cfg.HTTPD.System.Windows.Uncertain)
+	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
+		cfg.HTTPD.System.Windows.Uncertain,
+		cfg.HTTPD.System.Windows.Systime,
+		cfg.HTTPD.System.Windows.CacheExpiry)
+
 	doors.SetAuditTrail(trail)
 
 	sys.controllers.Print()

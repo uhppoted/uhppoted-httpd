@@ -204,7 +204,7 @@ func (c *Controller) AsObjects() []interface{} {
 				datetime.system = now.Format("2006-01-02 15:04:05 MST")
 
 				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-				if delta <= WINDOW {
+				if delta <= math.Abs(windows.systime.Seconds()) {
 					datetime.status = types.StatusOk
 				} else {
 					datetime.status = types.StatusError
