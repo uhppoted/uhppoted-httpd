@@ -125,6 +125,10 @@ func (d *Door) AsObjects() []interface{} {
 		}
 	}
 
+	if d.deleted != nil {
+		status = stringify(types.StatusDeleted)
+	}
+
 	objects := []interface{}{
 		object{OID: d.OID, Value: status},
 		object{OID: d.OID + ".0.1", Value: created},
@@ -217,6 +221,7 @@ func (d *Door) clone() Door {
 		delay:   d.delay,
 		mode:    d.mode,
 		created: d.created,
+		deleted: d.deleted,
 	}
 }
 

@@ -40,7 +40,7 @@ func (dd *Doors) AsObjects() []interface{} {
 	objects := []interface{}{}
 
 	for _, d := range dd.Doors {
-		if d.IsValid() {
+		if d.IsValid() || d.IsDeleted() {
 			if l := d.AsObjects(); l != nil {
 				objects = append(objects, l...)
 			}

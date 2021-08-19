@@ -10,19 +10,19 @@
 - [ ] 'global' OID cache
       - 'lookup service' for OID's corresponding to fields (?)
 
-- [x] Still getting double click for login from 'reload' page
-- [x] Controllers are coloured 'uncertain' ?
-- [x] Configure system ok/uncertain intervals
+- [ ] Add systime window to configuration
+- [ ] <sigh> double click for login is back - after 'refresh' :-( :-(
 
 - Doors
-  - [x] Sweep
-  - [ ] Dynamically update controller door lists with current doors from DB
+  - [x] Dynamically update controller door lists with current doors from DB
+  - [ ] 'door' select chooses first item if list changes while select is open
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
         -- (?) set placeholder on 'doors' page (?)
   - [ ] (?) Should only update door values with a corresponding edit (currently updating all)
         -- values marked 'dirty' (?)
   - [ ] Custom 'mode' dropdown to handle option click 
-        https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
+        - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
+        - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
   - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`
   - [ ] Move `doors.update` to edit.js_
@@ -34,14 +34,20 @@
       - migrate to OIDs
 
 - [ ] system
+      - Input + datalist for timezone ?????
+        - https://demo.agektmr.com/datalist/
       - Export to uhppoted.conf
-        - --export command line argument 
+        - 'export' command line argument 
         - 'export' admin menu option
-        - 'auto-export' admin menu option
-      - configure systime window
+        - 'auto-export' option (?)
+
+      - Import from uhppoted.conf
+        - 'import' command line argument 
+        - 'import' admin menu option
+        - 'auto-import' option (?)
+
       - Fix `get-events` log string
       - Fix `get-status` log string
-      - initialise LAN/all from uhppoted.conf (?)
       - logic around correcting time is weird
         -- enter to update doesn't always work
         -- set() is updating dataset.original which seems wrong but ...
@@ -133,38 +139,6 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
-
-- [x] Style SVG icons with SASS
-- [x] Structure CSS somehow
-- [x] Login initial double click
-- [x] Deduplicate `status`
-- [x] /favicon.ico
-- [x] Signout page "doesn't have permission"
-- [x] Neatened up login error reporting
-- [x] Menu pops up when just vaguely over area
-- [x] Make a nice synthesized HTML page for logout when server is down
-- [x] Logout always i.e. ignore POST http://127.0.0.1:8080/logout net::ERR_CONNECTION_REFUSED
-- [x] Logs out on POST to e.g. /system when not authorised. Should show error instead.
-- [x] Warning message doesn't align left if commitall and/or rollbackall are not visible
-- [x] 127.0.0.1/:323 The specified value "\u003Cnil\u003E" cannot be parsed, or is out of range.
-- [x] Navigation
-- [x] Not redirecting to login.html after restart
-- [x] Fix 'login unauthorized'
-- [x] Abstract authentication/authorization
-- [x] Javascript modules
-- [x] eslint
-- [x] Fix 'message' bar 
-- [x] Salt stored password hashes
-- [x] Double GET index.html on login (?)
-- [x] Login token
-- [x] TLS
-- [x] Automatic logout
-- [x] Implement session
-- [x] Show logged in user
-- [x] Sign out
-- [x] login page
-- [x] SASS/CSS
-- [x] Templatize HTML and set label text etc from file
 
 ## TODO
 

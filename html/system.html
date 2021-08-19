@@ -219,8 +219,7 @@
                           data-record=""
                           data-original=""
                           data-value="">
-                    <option value="">-</option>{{range $.system.Doors}}
-                    <option value="{{.OID}}">{{.Name}}</option>{{end}}
+                    <option value="">-</option>
                   </select>
                 </td>
 
@@ -235,8 +234,7 @@
                           data-original=""
                           data-value=""  
                           readonly>
-                    <option value="">-</option>{{range $.system.Doors}}
-                    <option value="{{.OID}}">{{.Name}}</option>{{end}}
+                    <option value="">-</option>
                   </select>
                 </td>
 
@@ -251,8 +249,7 @@
                           data-original=""
                           data-value=""  
                           readonly>
-                    <option value="">-</option>{{range $.system.Doors}}
-                    <option value="{{.OID}}">{{.Name}}</option>{{end}}
+                    <option value="">-</option>
                   </select>
                 </td>
 
@@ -266,8 +263,7 @@
                           data-record=""
                           data-original=""
                           data-value="">
-                    <option value="">-</option>{{range $.system.Doors}}
-                    <option value="{{.OID}}">{{.Name}}</option>{{end}}
+                    <option value="">-</option>
                   </select>
                 </td>
 
@@ -287,8 +283,6 @@
   </body>
 
   <!-- SCRIPTS -->
-
-  <script type="module" src="./javascript/system.js"></script>
 
   <script type="module">
     import { retheme, dismiss, resetIdle, onMenu, onSignOut } from "./javascript/uhppoted.js"
@@ -317,9 +311,6 @@
   <script>
     var constants = {
       theme: {{$.context.Theme}},
-      doors: [ {{range .system.Doors}}
-         {id:{{.OID}}, door: {{.Name}}},{{end}} 
-      ]
     }
   </script>
 

@@ -26,6 +26,46 @@ export function updateFromDB (oid, record) {
   const door3 = row.querySelector(`[data-oid="${oid}.9"]`)
   const door4 = row.querySelector(`[data-oid="${oid}.10"]`)
 
+  // ... populate door dropdowns
+  const doors = []
+
+  DB.doors.forEach(d => {
+    if (d.status !== 'deleted') {
+      doors.push({ OID: d.OID, name: d.name, status: d.status })
+    }
+  })
+
+  doors.sort((p, q) => {
+    const u = p.name.toLowerCase()
+    const v = q.name.toLowerCase()
+
+    return u < v ? -1 : (u < q ? +1 : 0)
+  }); // https://eslint.org/docs/2.0.0/rules/no-unexpected-multiline
+
+  [door1, door2, door3, door4].forEach(select => {
+    const options = select.options
+    let ix = 1
+
+    doors.forEach(d => {
+      if (ix < options.length) {
+        if (options[ix].value !== d.OID) {
+          options.add(new Option(d.name, d.OID, false, false), ix)
+        } else {
+          // options[ix].label = d.name
+        }
+      } else {
+        options.add(new Option(d.name, d.OID, false, false))
+      }
+
+      ix++
+    })
+
+    while (options.length > (doors.length + 1)) {
+      options.remove(options.length - 1)
+    }
+  })
+
+  // ... set record values
   row.dataset.status = record.status
 
   update(name, record.name)

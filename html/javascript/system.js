@@ -197,6 +197,12 @@ export function post (tag, records, reset, cleanup) {
 }
 
 export function refreshed () {
+  // ... update interface section
+  DB.interfaces.forEach(c => {
+    LAN.updateFromDB(c.OID, c)
+  })
+
+  // ... update controllers
   const list = []
 
   DB.controllers.forEach(c => {
@@ -204,19 +210,7 @@ export function refreshed () {
   })
 
   list.sort((p, q) => {
-    if (p.created < q.created) {
-      return -1
-    }
-
-    if (p.created < q.created) {
-      return +1
-    }
-
-    return 0
-  })
-
-  DB.interfaces.forEach(c => {
-    LAN.updateFromDB(c.OID, c)
+    return p.created < q.created ? -1 : (p.created < q.created ? +1 : 0)
   })
 
   list.forEach(c => {
@@ -233,6 +227,7 @@ export function refreshed () {
     }
   })
 
+  // ... mark and sweep the DB
   DB.refreshed('controllers')
 }
 
