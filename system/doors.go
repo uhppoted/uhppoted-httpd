@@ -61,14 +61,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	sys.doors = *shadow
-
-	sys.taskQ.Add(Task{
-		f: func() {
-			info("Updating doors from configuration")
-			sys.controllers.Sync()
-			// 		UpdateACL()
-		},
-	})
+	sys.updated()
 
 	return list, nil
 }

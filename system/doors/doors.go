@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -152,6 +153,24 @@ func (dd *Doors) Sweep(retention time.Duration) {
 			}
 		}
 	}
+}
+
+func (dd Doors) Find(name string) (Door, bool) {
+	clean := func(s string) string {
+		return strings.ToLower(regexp.MustCompile(`\s+`).ReplaceAllString(s, ""))
+	}
+
+	p := clean(name)
+
+	if p != "" {
+		for _, d := range dd.Doors {
+			if p == clean(d.Name) {
+				return d, true
+			}
+		}
+	}
+
+	return Door{}, false
 }
 
 func (dd *Doors) Print() {

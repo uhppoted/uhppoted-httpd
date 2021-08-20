@@ -1,7 +1,6 @@
 import * as doors from './doors.js'
 
 export function onEdited (tag, event) {
-  console.log('onEdited')
   switch (tag) {
     case 'door':
       doors.set(event.target, event.target.value)

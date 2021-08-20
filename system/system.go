@@ -1,7 +1,6 @@
 package system
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -10,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
@@ -18,7 +16,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/types"
-	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/config"
 )
 
@@ -133,110 +130,30 @@ func Groups() interface{} {
 	return sys.cards.Groups()
 }
 
-func UpdateACL() {
-	if permissions, err := sys.cards.ACL(); err != nil {
-		warn(err)
-	} else if acl, err := consolidate(permissions); err != nil {
-		warn(err)
-	} else if acl == nil {
-		warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
-	} else {
-		sys.controllers.UpdateACL(*acl)
-	}
-}
+func (s *system) updated() {
+	//	s.taskQ.Add(Task{
+	//		f: func() {
+	//			if err := controllers.Export(sys.conf, shadow.Controllers, sys.doors.Doors); err != nil {
+	//				warn(err)
+	//			}
+	//		},
+	//	})
 
-func CompareACL() {
-	if permissions, err := sys.cards.ACL(); err != nil {
-		warn(err)
-	} else if acl, err := consolidate(permissions); err != nil {
-		warn(err)
-	} else if acl == nil {
-		warn(fmt.Errorf("Invalid ACL from permissions: %v", acl))
-	} else if err := sys.controllers.Compare(*acl); err != nil {
-		warn(err)
-	}
-}
-
-func UpdateCardHolders(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
-	response, err := sys.cards.Post(m, auth)
-	if err != nil {
-		return nil, err
-	}
-
-	sys.taskQ.Add(Task{
-		f: UpdateACL,
+	s.taskQ.Add(Task{
+		f: func() {
+			info("Updating controllers from configuration")
+			sys.controllers.Sync()
+			UpdateACL()
+		},
 	})
-
-	return response, nil
 }
 
-func consolidate(list []types.Permissions) (*acl.ACL, error) {
-	// initialise empty ACL
-	acl := make(acl.ACL)
+func (s *system) sweep() {
+	cutoff := time.Now().Add(-s.retention)
+	log.Printf("INFO  Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
 
-	for _, c := range sys.controllers.Controllers {
-		if c.DeviceID != nil && *c.DeviceID > 0 {
-			acl[*c.DeviceID] = map[uint32]core.Card{}
-		}
-	}
-
-	// create ACL with all cards on all controllers
-	for _, p := range list {
-		for _, l := range acl {
-			if _, ok := l[p.CardNumber]; !ok {
-				from := core.Date(p.From)
-				to := core.Date(p.To)
-
-				l[p.CardNumber] = core.Card{
-					CardNumber: p.CardNumber,
-					From:       &from,
-					To:         &to,
-					Doors:      map[uint8]int{1: 0, 2: 0, 3: 0, 4: 0},
-				}
-			}
-		}
-	}
-
-	// update ACL cards from permissions
-
-	for _, p := range list {
-	loop:
-		for _, d := range p.Doors {
-			door, ok := sys.doors.Doors[d]
-			if !ok {
-				log.Printf("WARN %v", fmt.Errorf("consolidate: invalid door %v for card %v", d, p.CardNumber))
-				continue
-			}
-
-			for _, c := range sys.controllers.Controllers {
-				for _, v := range c.Doors {
-					if v == door.OID {
-						if c.DeviceID != nil && *c.DeviceID > 0 {
-							// FIXME: reinstate once the 'doors' rework is done
-							// if l, ok := acl[*c.DeviceID]; ok {
-							// 	if card, ok := l[p.CardNumber]; !ok {
-							// 		log.Printf("WARN %v", fmt.Errorf("consolidate: card %v not initialised for controller %v", p.CardNumber, *c.DeviceID))
-							// 	} else {
-							// 		card.Doors[door.Door] = 1
-							// 	}
-							// }
-						}
-
-						continue loop
-					}
-				}
-			}
-
-			log.Printf("WARN %v", fmt.Errorf("consolidate: card %v, door %v - no controller assigned", p.CardNumber, door))
-		}
-	}
-
-	var b bytes.Buffer
-
-	acl.Print(&b)
-	log.Printf("INFO %v", fmt.Sprintf("ACL\n%s", string(b.Bytes())))
-
-	return &acl, nil
+	s.controllers.Sweep(s.retention)
+	s.doors.Sweep(s.retention)
 }
 
 func (s *system) log(op string, info interface{}, auth auth.OpAuth) {
@@ -253,14 +170,6 @@ func (s *system) log(op string, info interface{}, auth auth.OpAuth) {
 			Info:      info,
 		})
 	}
-}
-
-func (s *system) sweep() {
-	cutoff := time.Now().Add(-s.retention)
-	log.Printf("INFO  Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
-
-	s.controllers.Sweep(s.retention)
-	s.doors.Sweep(s.retention)
 }
 
 func unpack(m map[string]interface{}) ([]object, error) {

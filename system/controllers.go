@@ -37,22 +37,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}
 
 	sys.controllers = *shadow
-
-	sys.taskQ.Add(Task{
-		f: func() {
-			if err := controllers.Export(sys.conf, shadow.Controllers, sys.doors.Doors); err != nil {
-				warn(err)
-			}
-		},
-	})
-
-	sys.taskQ.Add(Task{
-		f: func() {
-			info("Updating controllers from configuration")
-			sys.controllers.Sync()
-			UpdateACL()
-		},
-	})
+	sys.updated()
 
 	return list, nil
 }

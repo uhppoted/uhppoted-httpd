@@ -6,7 +6,7 @@
       - HasPrefix
 - [ ] Commonalise CSS
       - migrate shared CSS to 'common'
-      - (eventually) move 'common' into 'tabular'
+      - move 'common' into 'tabular'
 - [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 - [ ] 'global' OID cache
@@ -15,7 +15,8 @@
 - Doors
   - [x] Should only update door values with a corresponding edit
   - [x] Show door number (or something) on system page when door is assigned but name is blank
-  - [ ] Fix ACL for reworked types.Door
+  - [x] Fix ACL for reworked types.Door
+  - [ ] Check/update dark mode
   - [ ] 'door' select chooses first item if list changes while select is open
   - [ ] Custom 'mode' dropdown to handle option click 
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
@@ -24,12 +25,12 @@
   - [ ] Move `doors.update` to edit.js_
   - [ ] Move `doors.set` to _edit.js_
   - [ ] Move `onEdited`, `onRollback`, etc to _edit.js_
-  - [ ] Check/update dark mode
 
 - [ ] Cards
       - migrate to OIDs
 
 - [ ] system
+      - move values to catalog
       - Input + datalist for timezone ?????
         - https://demo.agektmr.com/datalist/
       - Export to uhppoted.conf
@@ -54,7 +55,6 @@
       - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
       - limit number of pending 'update' requests (e.g. if device is not responding)
       - use uhppoted-lib::healthcheck
-      - move values to catalog
 
 - [ ] Fix Firefox layout
 
