@@ -220,8 +220,10 @@ function updateFromDB (oid, record) {
   update(delay, record.delay.delay, record.delay.status)
   update(mode, record.mode.mode, record.mode.status)
 
-  delay.dataset.configured = record.delay.configured
+  // ... set placeholders for blank names
+  name.placeholder = record.name !== '' ? '-' : `<D${oid}>`.replaceAll('.', '')
 
+  // ... set tooltips for error'd values
   { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)
 
     if (tooltip) {

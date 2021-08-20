@@ -47,14 +47,17 @@ export function updateFromDB (oid, record) {
     let ix = 1
 
     doors.forEach(d => {
+      const value = d.OID
+      const label = d.name !== '' ? d.name : `<D${d.OID}>`.replaceAll('.', '')
+
       if (ix < options.length) {
-        if (options[ix].value !== d.OID) {
-          options.add(new Option(d.name, d.OID, false, false), ix)
-        } else {
-          // options[ix].label = d.name
+        if (options[ix].value !== value) {
+          options.add(new Option(label, value, false, false), ix)
+        } else if (options[ix].label !== label) {
+          options[ix].label = label
         }
       } else {
-        options.add(new Option(d.name, d.OID, false, false))
+        options.add(new Option(label, value, false, false))
       }
 
       ix++

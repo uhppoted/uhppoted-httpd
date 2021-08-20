@@ -29,12 +29,12 @@ var created = time.Now()
 func (d *Door) IsValid() bool {
 	if d != nil {
 		controller := ""
-		if v, _ := catalog.GetV(d.OID + "0.2"); v != nil {
+		if v, _ := catalog.GetV(d.OID + ".0.2"); v != nil {
 			controller = stringify(v)
 		}
 
 		door := ""
-		if v, _ := catalog.GetV(d.OID + "0.2.4"); v != nil {
+		if v, _ := catalog.GetV(d.OID + ".0.2.4"); v != nil {
 			door = stringify(v)
 		}
 
@@ -52,6 +52,10 @@ func (d *Door) IsDeleted() bool {
 	}
 
 	return false
+}
+
+func (d Door) String() string {
+	return fmt.Sprintf("%v", d.Name)
 }
 
 func (d *Door) AsObjects() []interface{} {

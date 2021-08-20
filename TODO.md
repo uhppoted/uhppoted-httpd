@@ -7,16 +7,14 @@
 - [ ] Commonalise CSS
       - migrate shared CSS to 'common'
       - (eventually) move 'common' into 'tabular'
+- [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
+- [ ] 'reload' crashes with 'site can't be reached' if no response from server
 - [ ] 'global' OID cache
       - 'lookup service' for OID's corresponding to fields (?)
 
-- [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
-- [ ] 'reload' crashes with 'site can't be reached' if no response from server
-
 - Doors
   - [x] Should only update door values with a corresponding edit
-  - [ ] Show door number (or something) on system page when door is assigned but name is blank
-        -- (?) set placeholder on 'doors' page (?)
+  - [x] Show door number (or something) on system page when door is assigned but name is blank
   - [ ] Fix ACL for reworked types.Door
   - [ ] 'door' select chooses first item if list changes while select is open
   - [ ] Custom 'mode' dropdown to handle option click 

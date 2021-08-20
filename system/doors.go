@@ -43,7 +43,13 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 					return nil, types.BadRequest(fmt.Errorf("Door %v not defined for controller %v", k, c), fmt.Errorf("controller %v: invalid door (%v)", c, k))
 
 				} else if door.IsDeleted() {
-					return nil, types.BadRequest(fmt.Errorf("Deleting door %v in use by controller %v", door, c), fmt.Errorf("door %v: deleting door in use by controller %v", v, c))
+					name := fmt.Sprintf("%v", door)
+
+					if name == "" {
+						return nil, types.BadRequest(fmt.Errorf("Deleting door in use by controller %v", c), fmt.Errorf("door %v: deleting door in use by controller %v", v, c))
+					} else {
+						return nil, types.BadRequest(fmt.Errorf("Deleting door %v in use by controller %v", door, c), fmt.Errorf("door %v: deleting door in use by controller %v", v, c))
+					}
 				}
 			}
 		}
