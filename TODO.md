@@ -10,22 +10,18 @@
 - [ ] 'global' OID cache
       - 'lookup service' for OID's corresponding to fields (?)
 
-- [x] Add systime window to configuration
-- [x] Add cache expirty time to configuration
 - [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Doors
-  - [x] Dynamically update controller door lists with current doors from DB
-  - [ ] Should only update door values with a corresponding edit (currently updating all)
-        -- values marked 'dirty' (?)
-  - [ ] 'door' select chooses first item if list changes while select is open
+  - [x] Should only update door values with a corresponding edit
   - [ ] Show door number (or something) on system page when door is assigned but name is blank
         -- (?) set placeholder on 'doors' page (?)
+  - [ ] Fix ACL for reworked types.Door
+  - [ ] 'door' select chooses first item if list changes while select is open
   - [ ] Custom 'mode' dropdown to handle option click 
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
-  - [ ] Fix ACL for reworked types.Door
   - [ ] Deduplicate `type object status`
   - [ ] Move `doors.update` to edit.js_
   - [ ] Move `doors.set` to _edit.js_

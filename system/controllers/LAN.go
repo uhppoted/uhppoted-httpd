@@ -496,9 +496,9 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
 					configured, _ := catalog.GetV(oid + ".2.2")
-					actual, _ := catalog.GetV(oid + ".2")
+					actual, dirty := catalog.GetV(oid + ".2")
 
-					if configured != nil && (actual == nil || actual != configured) {
+					if configured != nil && (actual == nil || actual != configured) && dirty {
 						delay := configured.(uint8)
 
 						request := uhppoted.SetDoorDelayRequest{
@@ -521,9 +521,9 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
 					configured, _ := catalog.GetV(oid + ".3.2")
-					actual, _ := catalog.GetV(oid + ".3")
+					actual, dirty := catalog.GetV(oid + ".3")
 
-					if configured != nil && (actual == nil || actual != configured) {
+					if configured != nil && (actual == nil || actual != configured) && dirty {
 						mode := configured.(core.ControlState)
 
 						request := uhppoted.SetDoorControlRequest{
