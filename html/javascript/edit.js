@@ -1,9 +1,10 @@
 import * as doors from './doors.js'
+import { busy, dismiss } from './uhppoted.js'
 
 export function onEdited (tag, event) {
   switch (tag) {
     case 'door':
-      doors.set(event.target, event.target.value)
+      set(event.target, event.target.value)
       break
   }
 }
@@ -12,7 +13,7 @@ export function onEnter (tag, event) {
   if (event.key === 'Enter') {
     switch (tag) {
       case 'door': {
-        doors.set(event.target, event.target.value, event.target.dataset.status)
+        set(event.target, event.target.value, event.target.dataset.status)
 
         // Handles the case where 'Enter' is pressed on a field
         // to 'accept' the actual value which is different from
@@ -40,7 +41,7 @@ export function onChoose (tag, event) {
   event.target.selectedIndex = -1
   // switch (tag) {
   //   case 'door': {
-  //     doors.set(event.target, event.target.checked)
+  //     set(event.target, event.target.checked)
   //     break
   //   }
   // }
@@ -49,7 +50,7 @@ export function onChoose (tag, event) {
 export function onTick (tag, event) {
   switch (tag) {
     case 'door': {
-      doors.set(event.target, event.target.checked)
+      set(event.target, event.target.checked)
       break
     }
   }
@@ -117,6 +118,19 @@ export function onNew (tag, event) {
   }
 }
 
+export function onRefresh (tag, event) {
+  if (event && event.target && event.target.id === 'refresh') {
+    busy()
+    dismiss()
+  }
+
+  switch (tag) {
+    case 'doors':
+      doors.get()
+      break
+  }
+}
+
 export function mark (clazz, ...elements) {
   elements.forEach(e => {
     if (e) {
@@ -131,6 +145,73 @@ export function unmark (clazz, ...elements) {
       e.classList.remove(clazz)
     }
   })
+}
+
+export function set (element, value, status) {
+  const oid = element.dataset.oid
+  const original = element.dataset.original
+  const v = value.toString()
+  const flag = document.getElementById(`F${oid}`)
+
+  element.dataset.value = v
+
+  if (status) {
+    element.dataset.status = status
+  } else {
+    element.dataset.status = ''
+  }
+
+  if (v !== original) {
+    mark('modified', element, flag)
+  } else {
+    unmark('modified', element, flag)
+  }
+
+  percolate(oid, modified)
+}
+
+export function update (element, value, status) {
+  if (element && value) {
+    const v = value.toString()
+    const oid = element.dataset.oid
+    const flag = document.getElementById(`F${oid}`)
+    const previous = element.dataset.original
+
+    element.dataset.original = v
+
+    // check for conflicts with concurrently edited fields
+    if (element.classList.contains('modified')) {
+      if (previous !== v && element.dataset.value !== v) {
+        mark('conflict', element, flag)
+      } else if (element.dataset.value !== v) {
+        unmark('conflict', element, flag)
+      } else {
+        unmark('conflict', element, flag)
+        unmark('modified', element, flag)
+      }
+
+      percolate(oid, modified)
+      return
+    }
+
+    // check for conflicts with concurrently submitted fields
+    if (element.classList.contains('pending')) {
+      if (previous !== v && element.dataset.value !== v) {
+        mark('conflict', element, flag)
+      } else {
+        unmark('conflict', element, flag)
+      }
+
+      return
+    }
+
+    // update fields not pending, modified or editing
+    if (element !== document.activeElement) {
+      element.value = v
+    }
+
+    set(element, value, status)
+  }
 }
 
 export function modified (oid) {

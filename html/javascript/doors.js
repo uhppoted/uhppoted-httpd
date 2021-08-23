@@ -1,7 +1,7 @@
 /* global */
 
-import { busy, unbusy, dismiss, warning, getAsJSON, postAsJSON } from './uhppoted.js'
-import { mark, unmark, modified, percolate } from './edit.js'
+import { busy, unbusy, warning, getAsJSON, postAsJSON } from './uhppoted.js'
+import { set, update, mark, unmark } from './edit.js'
 import { DB } from './db.js'
 
 export function create () {
@@ -63,15 +63,6 @@ export function rollback (row) {
   } else {
     revert(row)
   }
-}
-
-export function onRefresh (event) {
-  if (event && event.target && event.target.id === 'refresh') {
-    busy()
-    dismiss()
-  }
-
-  get()
 }
 
 export function get () {
@@ -167,29 +158,6 @@ export function refreshed () {
   })
 
   DB.refreshed('doors')
-}
-
-export function set (element, value, status) {
-  const oid = element.dataset.oid
-  const original = element.dataset.original
-  const v = value.toString()
-  const flag = document.getElementById(`F${oid}`)
-
-  element.dataset.value = v
-
-  if (status) {
-    element.dataset.status = status
-  } else {
-    element.dataset.status = ''
-  }
-
-  if (v !== original) {
-    mark('modified', element, flag)
-  } else {
-    unmark('modified', element, flag)
-  }
-
-  percolate(oid, modified)
 }
 
 function updateFromDB (oid, record) {
@@ -314,50 +282,6 @@ function add (oid) {
     })
 
     return row
-  }
-}
-
-function update (element, value, status) {
-  if (element && value) {
-    const v = value.toString()
-    const oid = element.dataset.oid
-    const flag = document.getElementById(`F${oid}`)
-    const previous = element.dataset.original
-
-    element.dataset.original = v
-
-    // check for conflicts with concurrently edited fields
-    if (element.classList.contains('modified')) {
-      if (previous !== v && element.dataset.value !== v) {
-        mark('conflict', element, flag)
-      } else if (element.dataset.value !== v) {
-        unmark('conflict', element, flag)
-      } else {
-        unmark('conflict', element, flag)
-        unmark('modified', element, flag)
-      }
-
-      percolate(oid, modified)
-      return
-    }
-
-    // check for conflicts with concurrently submitted fields
-    if (element.classList.contains('pending')) {
-      if (previous !== v && element.dataset.value !== v) {
-        mark('conflict', element, flag)
-      } else {
-        unmark('conflict', element, flag)
-      }
-
-      return
-    }
-
-    // update fields not pending, modified or editing
-    if (element !== document.activeElement) {
-      element.value = v
-    }
-
-    set(element, value, status)
   }
 }
 

@@ -64,6 +64,10 @@
   color: $content-table-text;
 }
 
+.tabular tbody tr td select {
+  color: $content-table-text;
+}
+
 .tabular tbody tr:nth-child(odd) {
   background: $content-table-background-odd;
 }

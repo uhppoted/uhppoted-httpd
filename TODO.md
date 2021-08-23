@@ -12,22 +12,18 @@
 - [ ] 'global' OID cache
       - 'lookup service' for OID's corresponding to fields (?)
 
+- Migrate cards to OIDs
+  - [ ] GetAsObjects
+
 - Doors
-  - [x] Should only update door values with a corresponding edit
-  - [x] Show door number (or something) on system page when door is assigned but name is blank
-  - [x] Fix ACL for reworked types.Door
-  - [ ] Check/update dark mode
-  - [ ] 'door' select chooses first item if list changes while select is open
+  - [x] Check/update dark mode
+  - [x] Move `doors.set` to _edit.js_
+  - [x] Move `doors.update` to edit.js_
+  - [x] Move `onEdited`, `onRollback`, etc to _edit.js_
   - [ ] Custom 'mode' dropdown to handle option click 
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
-  - [ ] Deduplicate `type object status`
-  - [ ] Move `doors.update` to edit.js_
-  - [ ] Move `doors.set` to _edit.js_
-  - [ ] Move `onEdited`, `onRollback`, etc to _edit.js_
-
-- [ ] Cards
-      - migrate to OIDs
+  - [ ] 'door' select chooses first item if list changes while select is open
 
 - [ ] system
       - move values to catalog
