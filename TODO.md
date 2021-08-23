@@ -9,8 +9,12 @@
       - move 'common' into 'tabular'
 - [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
-- [ ] 'global' OID cache
-      - 'lookup service' for OID's corresponding to fields (?)
+- [x] 'global' OID cache
+
+- OID schema
+  - [x] doors
+  - [ ] controllers
+  - [ ] LAN
 
 - Migrate cards to OIDs
   - [ ] GetAsObjects

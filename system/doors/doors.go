@@ -81,8 +81,8 @@ func (dd *Doors) Load(file string) error {
 
 	for _, v := range dd.Doors {
 		catalog.PutDoor(v.OID)
-		catalog.PutV(v.OID+".2.2", v.delay, false)
-		catalog.PutV(v.OID+".3.2", v.mode, false)
+		catalog.PutV(v.OID+DoorDelayConfigured, v.delay, false)
+		catalog.PutV(v.OID+DoorControlConfigured, v.mode, false)
 	}
 
 	dd.file = file

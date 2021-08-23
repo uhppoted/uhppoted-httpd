@@ -495,10 +495,10 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			// ... update door delays
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured, _ := catalog.GetV(oid + ".2.2")
-					actual, dirty := catalog.GetV(oid + ".2")
+					configured, modified := catalog.GetV(oid + catalog.DoorDelayConfigured)
+					actual, _ := catalog.GetV(oid + catalog.DoorDelay)
 
-					if configured != nil && (actual == nil || actual != configured) && dirty {
+					if configured != nil && (actual == nil || actual != configured) && modified {
 						delay := configured.(uint8)
 
 						request := uhppoted.SetDoorDelayRequest{
@@ -510,7 +510,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorDelay(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
-							catalog.PutV(oid+".2", delay, true)
+							catalog.PutV(oid+catalog.DoorDelayConfigured, delay, false)
+							catalog.PutV(oid+catalog.DoorDelay, delay, true)
 							log.Printf("INFO  %v: synchronized door %v delay (%v)", response.DeviceID, door, delay)
 						}
 					}
@@ -520,10 +521,10 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			// ... update door control states
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured, _ := catalog.GetV(oid + ".3.2")
-					actual, dirty := catalog.GetV(oid + ".3")
+					configured, modified := catalog.GetV(oid + catalog.DoorControlConfigured)
+					actual, _ := catalog.GetV(oid + catalog.DoorControl)
 
-					if configured != nil && (actual == nil || actual != configured) && dirty {
+					if configured != nil && (actual == nil || actual != configured) && modified {
 						mode := configured.(core.ControlState)
 
 						request := uhppoted.SetDoorControlRequest{
@@ -535,7 +536,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorControl(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
-							catalog.PutV(oid+".3", mode, true)
+							catalog.PutV(oid+catalog.DoorControlConfigured, mode, false)
+							catalog.PutV(oid+catalog.DoorControl, mode, true)
 							log.Printf("INFO  %v: synchronized door %v control (%v)", response.DeviceID, door, mode)
 						}
 					}
