@@ -10,14 +10,24 @@
 - [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
+- [ ] Weird error when clicking on unauthorised groups link
+      ```
+      Error clicking on aunu2021/08/24 11:44:51 WARN  Error formatting page 'html/unauthorized.html' (html/template:unauthorized.html: ends in a non-text context: {stateJSRegexp delimNone urlPartNone jsCtxRegexp attrNone elementScript <nil>})
+      ```
+
 - OID schema
   - [x] doors
   - [ ] controllers
   - [ ] LAN
 
 - Migrate cards to OIDs
-  - [x] GetAsObjects
+  - [x] AsObjects
   - [ ] JS: updateFromDB
+
+- Groups
+  - [x] HTML + JS + CSS skeleton
+  - [ ] Commonalise tooltips CSS
+  - [ ] AsObjects
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click 
