@@ -2,20 +2,30 @@ package cards
 
 import (
 	"fmt"
+	"sort"
 
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type CardHolders map[string]*CardHolder
 
 type CardHolder struct {
-	ID     string
+	OID    string
 	Name   *types.Name
 	Card   *types.Card
 	From   *types.Date
 	To     *types.Date
 	Groups map[string]bool
 }
+
+type object catalog.Object
+
+const CardName = catalog.CardName
+const CardNumber = catalog.CardNumber
+const CardFrom = catalog.CardFrom
+const CardTo = catalog.CardTo
+const CardGroups = catalog.CardGroups
 
 func (c *CardHolder) Clone() *CardHolder {
 	name := c.Name.Copy()
@@ -27,7 +37,7 @@ func (c *CardHolder) Clone() *CardHolder {
 	}
 
 	replicant := &CardHolder{
-		ID:     c.ID,
+		OID:    c.OID,
 		Name:   name,
 		Card:   card,
 		From:   c.From,
@@ -47,7 +57,42 @@ func (c *CardHolder) IsDeleted() bool {
 }
 
 func (c *CardHolder) AsObjects() []interface{} {
-	return nil
+	status := stringify(types.StatusOk)
+	name := stringify(c.Name)
+	number := stringify(c.Card)
+	from := stringify(c.From)
+	to := stringify(c.To)
+
+	objects := []interface{}{
+		object{OID: c.OID, Value: status},
+		object{OID: c.OID + CardName, Value: name},
+		object{OID: c.OID + CardNumber, Value: number},
+		object{OID: c.OID + CardFrom, Value: from},
+		object{OID: c.OID + CardTo, Value: to},
+	}
+
+	keys := []string{}
+	for k, _ := range c.Groups {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+
+	for ix, k := range keys {
+		if v, ok := c.Groups[k]; ok && v {
+			objects = append(objects, object{
+				OID:   c.OID + CardGroups + fmt.Sprintf(".%v.1", ix+1),
+				Value: stringify(k),
+			})
+
+			objects = append(objects, object{
+				OID:   c.OID + CardGroups + fmt.Sprintf(".%v.2", ix+1),
+				Value: stringify(lookup(k + ".1")),
+			})
+		}
+	}
+
+	return objects
 }
 
 func (c *CardHolder) AsRuleEntity() interface{} {
@@ -78,4 +123,33 @@ func (c *CardHolder) AsRuleEntity() interface{} {
 	}
 
 	return &entity{}
+}
+
+func lookup(oid string) interface{} {
+	if v, _ := catalog.GetV(oid); v != nil {
+		return v
+	}
+
+	return nil
+}
+
+func stringify(i interface{}) string {
+	switch v := i.(type) {
+	case *uint32:
+		if v != nil {
+			return fmt.Sprintf("%v", *v)
+		}
+
+	case *string:
+		if v != nil {
+			return fmt.Sprintf("%v", *v)
+		}
+
+	default:
+		if i != nil {
+			return fmt.Sprintf("%v", i)
+		}
+	}
+
+	return ""
 }

@@ -102,7 +102,7 @@ func TestCardHolderAddWithAuditTrail(t *testing.T) {
 
 	dbt.Post(rq, nil)
 
-	expected := `{"UID":"","Module":"memdb","Operation":"add","Info":{"ID":"C02","Name":"Dobby","Card":1234567,"From":"2021-01-02","To":"2021-12-30","Groups":{"G05":true}}}`
+	expected := `{"UID":"","Module":"memdb","Operation":"add","Info":{"OID":"C02","Name":"Dobby","Card":1234567,"From":"2021-01-02","To":"2021-12-30","Groups":{"G05":true}}}`
 
 	if logentry == nil {
 		t.Fatalf("Missing audit trail entry")
@@ -257,8 +257,8 @@ func TestCardHolderUpdateWithAuditTrail(t *testing.T) {
 	dbt.Post(rq, nil)
 
 	expected := `{"UID":"","Module":"memdb","Operation":"update","Info":` +
-		`{"original":{"ID":"C01","Name":"Hagrid","Card":6514231,"From":"2021-01-02","To":"2021-12-30","Groups":{}},` +
-		`"updated":{"ID":"C01","Name":"Hagrid","Card":1234567,"From":"2021-01-02","To":"2021-12-30","Groups":{}}}}`
+		`{"original":{"OID":"C01","Name":"Hagrid","Card":6514231,"From":"2021-01-02","To":"2021-12-30","Groups":{}},` +
+		`"updated":{"OID":"C01","Name":"Hagrid","Card":1234567,"From":"2021-01-02","To":"2021-12-30","Groups":{}}}}`
 
 	if logentry == nil {
 		t.Fatalf("Missing audit trail entry")
@@ -408,7 +408,7 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 
 	dbt.Post(rq, nil)
 
-	expected := `{"UID":"","Module":"memdb","Operation":"delete","Info":{"ID":"C01","Name":"Hagrid","Card":6514231,"From":"2021-01-02","To":"2021-12-30","Groups":{}}}`
+	expected := `{"UID":"","Module":"memdb","Operation":"delete","Info":{"OID":"C01","Name":"Hagrid","Card":6514231,"From":"2021-01-02","To":"2021-12-30","Groups":{}}}`
 
 	if logentry == nil {
 		t.Fatalf("Missing audit trail entry")

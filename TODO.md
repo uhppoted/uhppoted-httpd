@@ -16,7 +16,8 @@
   - [ ] LAN
 
 - Migrate cards to OIDs
-  - [ ] GetAsObjects
+  - [x] GetAsObjects
+  - [ ] JS: updateFromDB
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click 

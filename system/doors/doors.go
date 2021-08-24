@@ -176,7 +176,7 @@ func (dd Doors) Find(name string) (Door, bool) {
 func (dd *Doors) Print() {
 	if dd != nil {
 		if b, err := json.MarshalIndent(dd.Doors, "", "  "); err == nil {
-			fmt.Printf("-----------------\n%s\n-----------------\n", string(b))
+			fmt.Printf("-----------------\n%s\n", string(b))
 		}
 	}
 }

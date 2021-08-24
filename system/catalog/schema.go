@@ -2,6 +2,14 @@ package catalog
 
 type Suffix string
 
+const CardName = ".1"
+const CardNumber = ".2"
+const CardFrom = ".3"
+const CardTo = ".4"
+const CardGroups = ".5"
+
+const GroupName = ".1"
+
 const DoorCreated = ".0.1"
 const DoorControllerOID = ".0.2"
 const DoorControllerCreated = ".0.2.1"

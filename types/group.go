@@ -1,7 +1,7 @@
 package types
 
 type Group struct {
-	ID   string
+	OID  string
 	Name string
 }
 
@@ -9,7 +9,7 @@ type Groups map[string]Group
 
 func (g *Group) Clone() Group {
 	return Group{
-		ID:   g.ID,
+		OID:  g.OID,
 		Name: g.Name,
 	}
 }

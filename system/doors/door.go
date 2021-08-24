@@ -373,9 +373,7 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 }
 
 func (d *Door) lookup(suffix catalog.Suffix) interface{} {
-	v, _ := catalog.GetV(d.OID + string(suffix))
-
-	if v != nil {
+	if v, _ := catalog.GetV(d.OID + string(suffix)); v != nil {
 		return v
 	}
 

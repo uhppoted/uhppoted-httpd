@@ -62,6 +62,7 @@ func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail) 
 
 	sys.controllers.Print()
 	sys.doors.Print()
+	sys.cards.Print()
 
 	go func() {
 		time.Sleep(2500 * time.Millisecond)

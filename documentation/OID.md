@@ -40,9 +40,9 @@ Logs namespace
 
 # OID tree
 
-0                                                                          # 'root'
+0                                                                            # root
 |
-|- 0.1                                                                      # 'system'
+|- 0.1                                                                       # system
 |    |
 |    |- 0.1.1                                                                # controller set
 |    |      |
@@ -55,9 +55,9 @@ Logs namespace
 |    |      |                   |- 0.1.1.1.1.3: <broadcast>                  #    broadcast address
 |    |      |                   |- 0.1.1.1.1.4: <listen>                     #    listen address
 |    |      |
-|    |      |- 0.1.1.2:                                                      # controllers
+|    |      |- 0.1.1.2:                                                      # boards
 |    |               |
-|    |               |- 0.1.1.2.1: <status>                                  # controller #1
+|    |               |- 0.1.1.2.1: <status>                                  # board #1
 |    |               |          |- 0.1.1.2.1.0: <type>                       #    type
 |    |               |          |            |- 0.1.1.2.1.0.1: <created>     #    created date/time
 |    |               |          |                                            #
@@ -78,18 +78,28 @@ Logs namespace
 |    |               |          |- 0.1.1.2.1.9:  <door3>                     #    door 3 (OID)
 |    |               |          |- 0.1.1.2.1.10: <door4>                     #    door 4 (OID)
 |    |               |
-|    |               |- 0.1.1.2.2: <status>                                  # controller #2
+|    |               |- 0.1.1.2.2: <status>                                  # board #2
 |    |               |          |- ...
 |    |               |
 |    |               |- ...
 |    |
-|    |- 0.1.2                                                                # controller set #2
-|    |      |
-|    |      |- ...
-|    |
 |    |- ...
 |
-|- 0.3                                                                       # 'doors'
+|- 0.2                                                                       # cards
+|    |- 0.2.1: <status>                                                      # card #1
+|    |      |- 0.2.1.1: <name>                                               #      name
+|    |      |- 0.2.1.2: <number>                                             #      card number
+|    |      |- 0.2.1.3: <from>                                               #      'valid from' date
+|    |      |- 0.2.1.4: <to>                                                 #      'valid until' date
+|    |      |- 0.2.1.5                                                       #      groups
+|    |               |- 0.2.1.5.1                                            #      group #1
+|    |               |           |- 0.2.1.5.1.1: <oid>                       #            OID
+|    |               |           |- 0.2.1.5.1.2: <name>                      #            name
+|    |               |                                                       #
+|    |               |- ...                                                  #      group #2
+|    |- ...
+|
+|- 0.3                                                                       # doors
 |    |- 0.3.1: <status>                                                      # door #1
 |    |      |- 0.3.1.0:                                                      #
 |    |      |        |- 0.3.1.0.1: <created>                                 #    created date/time
@@ -108,3 +118,7 @@ Logs namespace
 |    |               |- 0.3.1.2.1: <status>                                  #    door control state status
 |    |               |- 0.3.1.2.2: <configured>                              #    configured door control state
 |    |               |- 0.3.1.2.3: <error>                                   #    door control state error info
+|
+|- 0.4                                                                       # groups
+|    |- 0.4.1                                                                # group #1
+|    |      |- 0.4.1.1: <name>                                               #       Name

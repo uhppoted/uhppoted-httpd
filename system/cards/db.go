@@ -9,6 +9,7 @@ type Cards interface {
 	Groups() types.Groups
 	CardHolders() CardHolders
 	AsObjects() []interface{}
+	Print()
 
 	ACL() ([]types.Permissions, error)
 	Post(map[string]interface{}, auth.OpAuth) (interface{}, error)

@@ -8,6 +8,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -73,21 +74,21 @@ func date(s string) *types.Date {
 	return &d
 }
 
-func dbx(cardholders ...types.CardHolder) *fdb {
+func dbx(cardholders ...cards.CardHolder) *fdb {
 	p := fdb{
 		data: data{
 			Tables: tables{
 				Groups: types.Groups{
 					"G05": group("G05"),
 				},
-				CardHolders: types.CardHolders{},
+				CardHolders: cards.CardHolders{},
 			},
 		},
 	}
 
 	for i, _ := range cardholders {
 		c := cardholders[i].Clone()
-		p.data.Tables.CardHolders[c.ID] = c
+		p.data.Tables.CardHolders[c.OID] = c
 	}
 
 	return &p
@@ -95,17 +96,17 @@ func dbx(cardholders ...types.CardHolder) *fdb {
 
 func group(id string) types.Group {
 	return types.Group{
-		ID:   id,
+		OID:  id,
 		Name: "",
 	}
 }
 
-func cardholder(id, name string, card uint32, groups ...string) types.CardHolder {
+func cardholder(id, name string, card uint32, groups ...string) cards.CardHolder {
 	n := types.Name(name)
 	c := types.Card(card)
 
-	cardholder := types.CardHolder{
-		ID:     id,
+	cardholder := cards.CardHolder{
+		OID:    id,
 		Name:   &n,
 		Card:   &c,
 		From:   date("2021-01-02"),

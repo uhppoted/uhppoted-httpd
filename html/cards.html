@@ -39,8 +39,8 @@
         <ul>
           <li><a href="./system.html" draggable="false">SYSTEM</a></li>
           <li class="selected">CARDS</li>
+          <li>GROUPS</li>
           <li><a href="./doors.html" draggable="false">DOORS</a></li>
-          <li>SCHEDULES</li>
           <li>EVENTS</li>
           <li>LOGS</li>
         </ul>
@@ -75,7 +75,7 @@
                 </tr>
               </thead>
               <tbody>{{range $cardholder := .cards}}
-                 {{$cid := $cardholder.ID}}
+                 {{$cid := $cardholder.OID}}
                  <tr id="{{$cid}}">
                   <td class="rowheader" style="display:flex; flex-direction:row;">
                     <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
@@ -136,13 +136,13 @@
                   <td>
                     <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
                     <label class="group">
-                    <input id="{{$cid}}-{{.ID}}"
+                    <input id="{{$cid}}-{{.OID}}"
                            class="field"
                            type="checkbox" 
                            onclick="onTick(event)"
                            data-record="{{$cid}}" 
-                           data-original="{{index $cardholder.Groups .ID}}" 
-                           data-value="{{index $cardholder.Groups .ID}}"{{if index $cardholder.Groups .ID}}
+                           data-original="{{index $cardholder.Groups .OID}}" 
+                           data-value="{{index $cardholder.Groups .OID}}"{{if index $cardholder.Groups .OID}}
                            checked />{{else}}/>{{end}}
                       <img class="no"  src="images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
                       <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
@@ -191,7 +191,7 @@
   <script>
     var constants = {
       theme: {{$.context.Theme}},
-      groups: [ {{range .groups}}{{.ID}},{{end}} ]
+      groups: [ {{range .groups}}{{.OID}},{{end}} ]
     }
   </script>
 

@@ -13,6 +13,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -37,6 +38,8 @@ type result struct {
 	Updated []interface{} `json:"updated"`
 	Deleted []interface{} `json:"deleted"`
 }
+
+const GroupName = catalog.GroupName
 
 func (d *data) copy() *data {
 	shadow := data{
@@ -70,6 +73,10 @@ func NewDB(file string, rules cards.IRules, trail audit.Trail) (*fdb, error) {
 		return nil, err
 	}
 
+	for _, v := range f.data.Tables.Groups {
+		catalog.PutV(v.OID+GroupName, v.Name, false)
+	}
+
 	return &f, nil
 }
 
@@ -95,6 +102,14 @@ func (d *fdb) CardHolders() cards.CardHolders {
 	return list
 }
 
+func (d *fdb) Print() {
+	if d != nil {
+		if b, err := json.MarshalIndent(d.CardHolders, "", "  "); err == nil {
+			fmt.Printf("-----------------\n%s\n", string(b))
+		}
+	}
+}
+
 func (d *fdb) AsObjects() []interface{} {
 	objects := []interface{}{}
 
@@ -106,17 +121,10 @@ func (d *fdb) AsObjects() []interface{} {
 		if record.IsValid() || record.IsDeleted() {
 			if l := record.AsObjects(); l != nil {
 				fmt.Printf(">>> DEBUG: %v %v\n", k, l)
+				objects = append(objects, l...)
 			}
 		}
 	}
-
-	//	for _, d := range dd.Doors {
-	//		if d.IsValid() || d.IsDeleted() {
-	//			if l := d.AsObjects(); l != nil {
-	//				objects = append(objects, l...)
-	//			}
-	//		}
-	//	}
 
 	return objects
 }
@@ -175,16 +183,16 @@ func (d *fdb) Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, err
 
 loop:
 	for _, c := range cardholders {
-		if c.ID == "" {
+		if c.OID == "" {
 			return nil, &types.HttpdError{
 				Status: http.StatusBadRequest,
 				Err:    fmt.Errorf("Invalid cardholder ID"),
-				Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid cardholder ID '%v'", c.ID)),
+				Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid cardholder ID '%v'", c.OID)),
 			}
 		}
 
 		for _, record := range d.data.Tables.CardHolders {
-			if record.ID == c.ID {
+			if record.OID == c.OID {
 				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
 					if r, err := d.delete(shadow, c, auth); err != nil {
 						return nil, err
@@ -233,14 +241,14 @@ func (d *fdb) add(shadow *data, ch cards.CardHolder, auth auth.OpAuth) (interfac
 		}
 	}
 
-	shadow.Tables.CardHolders[record.ID] = record
+	shadow.Tables.CardHolders[record.OID] = record
 	d.log("add", record, auth)
 
 	return record, nil
 }
 
 func (d *fdb) update(shadow *data, ch cards.CardHolder, auth auth.OpAuth) (interface{}, error) {
-	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
+	if record, ok := shadow.Tables.CardHolders[ch.OID]; ok {
 		if ch.Name != nil {
 			record.Name = ch.Name
 		}
@@ -263,7 +271,7 @@ func (d *fdb) update(shadow *data, ch cards.CardHolder, auth auth.OpAuth) (inter
 			}
 		}
 
-		current := d.data.Tables.CardHolders[ch.ID]
+		current := d.data.Tables.CardHolders[ch.OID]
 		if auth != nil {
 			if err := auth.CanUpdateCardHolder(current, record); err != nil {
 				return nil, &types.HttpdError{
@@ -283,7 +291,7 @@ func (d *fdb) update(shadow *data, ch cards.CardHolder, auth auth.OpAuth) (inter
 }
 
 func (d *fdb) delete(shadow *data, ch cards.CardHolder, auth auth.OpAuth) (interface{}, error) {
-	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
+	if record, ok := shadow.Tables.CardHolders[ch.OID]; ok {
 		if auth != nil {
 			if err := auth.CanDeleteCardHolder(record); err != nil {
 				return nil, &types.HttpdError{
@@ -294,7 +302,7 @@ func (d *fdb) delete(shadow *data, ch cards.CardHolder, auth auth.OpAuth) (inter
 			}
 		}
 
-		delete(shadow.Tables.CardHolders, ch.ID)
+		delete(shadow.Tables.CardHolders, ch.OID)
 
 		d.log("delete", record, auth)
 
@@ -365,7 +373,7 @@ func validate(d *data) error {
 			return &types.HttpdError{
 				Status: http.StatusBadRequest,
 				Err:    fmt.Errorf("Name and card number cannot both be empty"),
-				Detail: fmt.Errorf("record %v: Card holder and card number cannot both be blank", r.ID),
+				Detail: fmt.Errorf("record %v: Card holder and card number cannot both be blank", r.OID),
 			}
 		}
 
@@ -375,11 +383,11 @@ func validate(d *data) error {
 				return &types.HttpdError{
 					Status: http.StatusBadRequest,
 					Err:    fmt.Errorf("Duplicate card number (%v)", card),
-					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", card, id, r.ID),
+					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", card, id, r.OID),
 				}
 			}
 
-			cards[card] = r.ID
+			cards[card] = r.OID
 		}
 	}
 
@@ -423,7 +431,7 @@ func unpack(m map[string]interface{}) ([]cards.CardHolder, error) {
 
 	for _, r := range o.CardHolders {
 		record := cards.CardHolder{
-			ID:     strings.TrimSpace(r.ID),
+			OID:    strings.TrimSpace(r.ID),
 			Groups: map[string]bool{},
 		}
 
