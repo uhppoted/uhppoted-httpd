@@ -8,6 +8,7 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/engine"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -358,7 +359,7 @@ func (a *authorizator) eval(ruleset string, op string, r *result, m map[string]i
 	return nil
 }
 
-func makeOP(ch types.CardHolder) *card {
+func makeOP(ch cards.CardHolder) *card {
 	cardNumber := uint32(0)
 	if ch.Card != nil {
 		cardNumber = uint32(*ch.Card)

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -29,8 +28,8 @@ var sys = system{
 type system struct {
 	sync.RWMutex
 	conf        string
-	doors       doors.Doors
 	controllers controllers.ControllerSet
+	doors       doors.Doors
 	cards       cards.Cards
 	audit       audit.Trail
 	taskQ       TaskQ
@@ -85,6 +84,7 @@ func System() interface{} {
 	objects := []interface{}{}
 	objects = append(objects, sys.controllers.AsObjects()...)
 	objects = append(objects, sys.doors.AsObjects()...)
+	objects = append(objects, sys.cards.AsObjects()...)
 
 	return struct {
 		Objects []interface{} `json:"objects"`

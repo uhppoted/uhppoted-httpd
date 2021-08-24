@@ -7,7 +7,8 @@ import (
 
 type Cards interface {
 	Groups() types.Groups
-	CardHolders() types.CardHolders
+	CardHolders() CardHolders
+	AsObjects() []interface{}
 
 	ACL() ([]types.Permissions, error)
 	Post(map[string]interface{}, auth.OpAuth) (interface{}, error)

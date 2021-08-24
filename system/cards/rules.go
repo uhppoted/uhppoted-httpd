@@ -1,9 +1,7 @@
 package cards
 
-import (
-	"github.com/uhppoted/uhppoted-httpd/types"
-)
+import ()
 
 type IRules interface {
-	Eval(types.CardHolder) ([]string, error)
+	Eval(CardHolder) ([]string, error)
 }

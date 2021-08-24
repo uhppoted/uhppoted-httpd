@@ -6,7 +6,7 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/ast"
 	"github.com/hyperjumptech/grule-rule-engine/engine"
 
-	"github.com/uhppoted/uhppoted-httpd/types"
+	"github.com/uhppoted/uhppoted-httpd/system/cards"
 )
 
 type rules struct {
@@ -60,7 +60,7 @@ func NewGrule(library *ast.KnowledgeLibrary) (*rules, error) {
 	}, nil
 }
 
-func (r *rules) Eval(ch types.CardHolder) ([]string, error) {
+func (r *rules) Eval(ch cards.CardHolder) ([]string, error) {
 	if r != nil {
 		dd := doors{
 			allowed:   []string{},
@@ -101,7 +101,7 @@ func (r *rules) Eval(ch types.CardHolder) ([]string, error) {
 	return nil, nil
 }
 
-func makeCH(ch types.CardHolder) *card {
+func makeCH(ch cards.CardHolder) *card {
 	cardNumber := uint32(0)
 	if ch.Card != nil {
 		cardNumber = uint32(*ch.Card)

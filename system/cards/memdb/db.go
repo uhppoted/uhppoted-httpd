@@ -30,7 +30,7 @@ type data struct {
 
 type tables struct {
 	Groups      types.Groups      `json:"groups"`
-	CardHolders types.CardHolders `json:"cardholders"`
+	CardHolders cards.CardHolders `json:"cardholders"`
 }
 
 type result struct {
@@ -42,7 +42,7 @@ func (d *data) copy() *data {
 	shadow := data{
 		Tables: tables{
 			Groups:      d.Tables.Groups.Clone(),
-			CardHolders: types.CardHolders{},
+			CardHolders: cards.CardHolders{},
 		},
 	}
 
@@ -59,7 +59,7 @@ func NewDB(file string, rules cards.IRules, trail audit.Trail) (*fdb, error) {
 		data: data{
 			Tables: tables{
 				Groups:      types.Groups{},
-				CardHolders: types.CardHolders{},
+				CardHolders: cards.CardHolders{},
 			},
 		},
 		rules: rules,
@@ -81,18 +81,44 @@ func (d *fdb) Groups() types.Groups {
 	return d.data.Tables.Groups
 }
 
-func (d *fdb) CardHolders() types.CardHolders {
+func (d *fdb) CardHolders() cards.CardHolders {
 	d.RLock()
 
 	defer d.RUnlock()
 
-	list := types.CardHolders{}
+	list := cards.CardHolders{}
 
 	for cid, record := range d.data.Tables.CardHolders {
 		list[cid] = record.Clone()
 	}
 
 	return list
+}
+
+func (d *fdb) AsObjects() []interface{} {
+	objects := []interface{}{}
+
+	d.RLock()
+
+	defer d.RUnlock()
+
+	for k, record := range d.data.Tables.CardHolders {
+		if record.IsValid() || record.IsDeleted() {
+			if l := record.AsObjects(); l != nil {
+				fmt.Printf(">>> DEBUG: %v %v\n", k, l)
+			}
+		}
+	}
+
+	//	for _, d := range dd.Doors {
+	//		if d.IsValid() || d.IsDeleted() {
+	//			if l := d.AsObjects(); l != nil {
+	//				objects = append(objects, l...)
+	//			}
+	//		}
+	//	}
+
+	return objects
 }
 
 func (d *fdb) ACL() ([]types.Permissions, error) {
@@ -194,11 +220,10 @@ loop:
 	return list, nil
 }
 
-func (d *fdb) add(shadow *data, ch types.CardHolder, auth auth.OpAuth) (interface{}, error) {
+func (d *fdb) add(shadow *data, ch cards.CardHolder, auth auth.OpAuth) (interface{}, error) {
 	record := ch.Clone()
 
 	if auth != nil {
-
 		if err := auth.CanAddCardHolder(record); err != nil {
 			return nil, &types.HttpdError{
 				Status: http.StatusUnauthorized,
@@ -206,7 +231,6 @@ func (d *fdb) add(shadow *data, ch types.CardHolder, auth auth.OpAuth) (interfac
 				Detail: err,
 			}
 		}
-
 	}
 
 	shadow.Tables.CardHolders[record.ID] = record
@@ -215,7 +239,7 @@ func (d *fdb) add(shadow *data, ch types.CardHolder, auth auth.OpAuth) (interfac
 	return record, nil
 }
 
-func (d *fdb) update(shadow *data, ch types.CardHolder, auth auth.OpAuth) (interface{}, error) {
+func (d *fdb) update(shadow *data, ch cards.CardHolder, auth auth.OpAuth) (interface{}, error) {
 	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
 		if ch.Name != nil {
 			record.Name = ch.Name
@@ -258,7 +282,7 @@ func (d *fdb) update(shadow *data, ch types.CardHolder, auth auth.OpAuth) (inter
 	return nil, nil
 }
 
-func (d *fdb) delete(shadow *data, ch types.CardHolder, auth auth.OpAuth) (interface{}, error) {
+func (d *fdb) delete(shadow *data, ch cards.CardHolder, auth auth.OpAuth) (interface{}, error) {
 	if record, ok := shadow.Tables.CardHolders[ch.ID]; ok {
 		if auth != nil {
 			if err := auth.CanDeleteCardHolder(record); err != nil {
@@ -374,7 +398,7 @@ func clean(d *data) error {
 	return nil
 }
 
-func unpack(m map[string]interface{}) ([]types.CardHolder, error) {
+func unpack(m map[string]interface{}) ([]cards.CardHolder, error) {
 	o := struct {
 		CardHolders []struct {
 			ID     string
@@ -395,10 +419,10 @@ func unpack(m map[string]interface{}) ([]types.CardHolder, error) {
 		return nil, err
 	}
 
-	cardholders := []types.CardHolder{}
+	cardholders := []cards.CardHolder{}
 
 	for _, r := range o.CardHolders {
-		record := types.CardHolder{
+		record := cards.CardHolder{
 			ID:     strings.TrimSpace(r.ID),
 			Groups: map[string]bool{},
 		}

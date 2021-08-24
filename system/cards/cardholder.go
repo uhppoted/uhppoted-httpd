@@ -1,17 +1,19 @@
-package types
+package cards
 
 import (
 	"fmt"
+
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type CardHolders map[string]*CardHolder
 
 type CardHolder struct {
 	ID     string
-	Name   *Name
-	Card   *Card
-	From   *Date
-	To     *Date
+	Name   *types.Name
+	Card   *types.Card
+	From   *types.Date
+	To     *types.Date
 	Groups map[string]bool
 }
 
@@ -34,6 +36,18 @@ func (c *CardHolder) Clone() *CardHolder {
 	}
 
 	return replicant
+}
+
+func (c *CardHolder) IsValid() bool {
+	return true
+}
+
+func (c *CardHolder) IsDeleted() bool {
+	return false
+}
+
+func (c *CardHolder) AsObjects() []interface{} {
+	return nil
 }
 
 func (c *CardHolder) AsRuleEntity() interface{} {
