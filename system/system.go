@@ -39,24 +39,6 @@ type system struct {
 
 type object catalog.Object
 
-func (s *system) refresh() {
-	if s == nil {
-		return
-	}
-
-	sys.taskQ.Add(Task{
-		f: s.controllers.Refresh,
-	})
-
-	sys.taskQ.Add(Task{
-		f: s.sweep,
-	})
-
-	sys.taskQ.Add(Task{
-		f: CompareACL,
-	})
-}
-
 func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail) error {
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
 		return err
@@ -104,21 +86,10 @@ func System() interface{} {
 	objects = append(objects, sys.controllers.AsObjects()...)
 	objects = append(objects, sys.doors.AsObjects()...)
 
-	d := []doors.Door{}
-	for _, v := range sys.doors.Doors {
-		if v.IsValid() {
-			d = append(d, v)
-		}
-	}
-
-	sort.SliceStable(d, func(i, j int) bool { return d[i].Name < d[j].Name })
-
 	return struct {
 		Objects []interface{} `json:"objects"`
-		Doors   []doors.Door  `json:"doors"`
 	}{
 		Objects: objects,
-		Doors:   d,
 	}
 }
 
@@ -128,6 +99,24 @@ func Cards() interface{} {
 
 func Groups() interface{} {
 	return sys.cards.Groups()
+}
+
+func (s *system) refresh() {
+	if s == nil {
+		return
+	}
+
+	sys.taskQ.Add(Task{
+		f: s.controllers.Refresh,
+	})
+
+	sys.taskQ.Add(Task{
+		f: s.sweep,
+	})
+
+	sys.taskQ.Add(Task{
+		f: CompareACL,
+	})
 }
 
 func (s *system) updated() {

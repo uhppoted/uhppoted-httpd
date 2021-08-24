@@ -9,7 +9,6 @@
       - move 'common' into 'tabular'
 - [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
-- [x] 'global' OID cache
 
 - OID schema
   - [x] doors
@@ -20,17 +19,13 @@
   - [ ] GetAsObjects
 
 - Doors
-  - [x] Check/update dark mode
-  - [x] Move `doors.set` to _edit.js_
-  - [x] Move `doors.update` to edit.js_
-  - [x] Move `onEdited`, `onRollback`, etc to _edit.js_
   - [ ] Custom 'mode' dropdown to handle option click 
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
   - [ ] 'door' select chooses first item if list changes while select is open
 
 - [ ] system
-      - move values to catalog
+      - move values to global cache
       - Input + datalist for timezone ?????
         - https://demo.agektmr.com/datalist/
       - Export to uhppoted.conf
