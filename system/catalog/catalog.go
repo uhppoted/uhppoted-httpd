@@ -91,7 +91,7 @@ func NewDoor() string {
 loop:
 	for {
 		item += 1
-		oid := fmt.Sprintf("0.3.%d", item)
+		oid := fmt.Sprintf("0.2.%d", item)
 		for v, _ := range catalog.doors {
 			if v == oid {
 				continue loop

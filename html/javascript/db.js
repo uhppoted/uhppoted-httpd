@@ -1,6 +1,7 @@
 export const DB = {
   interfaces: new Map(),
   controllers: new Map(),
+  cards: new Map(),
   doors: new Map(),
 
   updated: function (tag, recordset) {
@@ -46,14 +47,12 @@ function object (o) {
 
   if (/^0\.1\.1\.1\..*$/.test(oid)) {
     interfaces(o)
-  }
-
-  if (/^0\.1\.1\.2\..*$/.test(oid)) {
+  } else if (/^0\.1\.1\.2\..*$/.test(oid)) {
     controller(o)
-  }
-
-  if (/^0\.3\..*$/.test(oid)) {
+  } else if (/^0\.2\..*$/.test(oid)) {
     door(o)
+  } else if (/^0\.3\..*$/.test(oid)) {
+    card(o)
   }
 }
 
@@ -220,9 +219,7 @@ function controller (o) {
 function door (o) {
   const oid = o.OID
 
-  // ... doors
-
-  if (/^0\.3\.[1-9][0-9]*$/.test(oid)) {
+  if (/^0\.2\.[1-9][0-9]*$/.test(oid)) {
     if (DB.doors.has(oid)) {
       const record = DB.doors.get(oid)
       record.status = o.value
@@ -308,6 +305,64 @@ function door (o) {
 
         case k + '.3.3':
           v.mode.err = o.value
+          break
+      }
+    }
+  })
+}
+
+function card (o) {
+  console.log('card', o)
+  const oid = o.OID
+
+  if (/^0\.3\.[1-9][0-9]*$/.test(oid)) {
+    if (DB.cards.has(oid)) {
+      const record = DB.cards.get(oid)
+      record.status = o.value
+      record.mark = 0
+      return
+    }
+
+    DB.cards.set(oid, {
+      OID: oid,
+      name: '',
+      number: '',
+      from: '',
+      to: '',
+      groups: [],
+      status: o.value,
+      mark: 0
+    })
+
+    return
+  }
+
+  DB.cards.forEach((v, k) => {
+    if (oid.startsWith(k)) {
+      // INTERIM HACK
+      if (v.status === 'new') {
+        v.status = 'unknown'
+      }
+
+      switch (oid) {
+        case k:
+          v.status = o.value
+          break
+
+        case k + '.1':
+          v.name = o.value
+          break
+
+        case k + '.2':
+          v.number = o.value
+          break
+
+        case k + '.3':
+          v.from = o.value
+          break
+
+        case k + '.4':
+          v.to = o.value
           break
       }
     }

@@ -12,7 +12,7 @@
 
 - [ ] Weird error when clicking on unauthorised groups link
       ```
-      Error clicking on aunu2021/08/24 11:44:51 WARN  Error formatting page 'html/unauthorized.html' (html/template:unauthorized.html: ends in a non-text context: {stateJSRegexp delimNone urlPartNone jsCtxRegexp attrNone elementScript <nil>})
+      2021/08/24 11:44:51 WARN  Error formatting page 'html/unauthorized.html' (html/template:unauthorized.html: ends in a non-text context: {stateJSRegexp delimNone urlPartNone jsCtxRegexp attrNone elementScript <nil>})
       ```
 
 - OID schema

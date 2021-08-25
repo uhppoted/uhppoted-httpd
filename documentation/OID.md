@@ -85,39 +85,39 @@ Logs namespace
 |    |
 |    |- ...
 |
-|- 0.2                                                                       # cards
-|    |- 0.2.1: <status>                                                      # card #1
-|    |      |- 0.2.1.1: <name>                                               #      name
-|    |      |- 0.2.1.2: <number>                                             #      card number
-|    |      |- 0.2.1.3: <from>                                               #      'valid from' date
-|    |      |- 0.2.1.4: <to>                                                 #      'valid until' date
-|    |      |- 0.2.1.5                                                       #      groups
-|    |               |- 0.2.1.5.1                                            #      group #1
-|    |               |           |- 0.2.1.5.1.1: <oid>                       #            OID
-|    |               |           |- 0.2.1.5.1.2: <name>                      #            name
+|- 0.2                                                                       # doors
+|    |- 0.2.1: <status>                                                      # door #1
+|    |      |- 0.2.1.0:                                                      #
+|    |      |        |- 0.2.1.0.1: <created>                                 #    created date/time
+|    |      |        |- 0.2.1.0.2: <controller>                              #    associated controller OID
+|    |      |                   |- 0.2.1.0.2.1: <created>                    #               controller created date/time
+|    |      |                   |- 0.2.1.0.2.2: <name>                       #               controller name
+|    |      |                   |- 0.2.1.0.2.3: <deviceID>                   #               controller serial number
+|    |      |                   |- 0.2.1.0.2.4: <door>                       #               controller door number
+|    |      |                                                                #
+|    |      |- 0.2.1.1: <name>                                               #    name
+|    |      |- 0.2.1.2: <delay>                                              #    door open delay
+|    |               |- 0.2.1.2.1: <status>                                  #    door open delay status
+|    |               |- 0.2.1.2.2: <configured>                              #    configured door open delay
+|    |               |- 0.2.1.2.3: <error>                                   #    door delay error info
+|    |      |- 0.2.1.3: <control>                                            #    door control state
+|    |               |- 0.2.1.2.1: <status>                                  #    door control state status
+|    |               |- 0.2.1.2.2: <configured>                              #    configured door control state
+|    |               |- 0.2.1.2.3: <error>                                   #    door control state error info
+|
+|- 0.3                                                                       # cards
+|    |- 0.3.1: <status>                                                      # card #1
+|    |      |- 0.3.1.1: <name>                                               #      name
+|    |      |- 0.3.1.2: <number>                                             #      card number
+|    |      |- 0.3.1.3: <from>                                               #      'valid from' date
+|    |      |- 0.3.1.4: <to>                                                 #      'valid until' date
+|    |      |- 0.3.1.5                                                       #      groups
+|    |               |- 0.3.1.5.1                                            #      group #1
+|    |               |           |- 0.3.1.5.1.1: <oid>                       #            OID
+|    |               |           |- 0.3.1.5.1.2: <name>                      #            name
 |    |               |                                                       #
 |    |               |- ...                                                  #      group #2
 |    |- ...
-|
-|- 0.3                                                                       # doors
-|    |- 0.3.1: <status>                                                      # door #1
-|    |      |- 0.3.1.0:                                                      #
-|    |      |        |- 0.3.1.0.1: <created>                                 #    created date/time
-|    |      |        |- 0.3.1.0.2: <controller>                              #    associated controller OID
-|    |      |                   |- 0.3.1.0.2.1: <created>                    #               controller created date/time
-|    |      |                   |- 0.3.1.0.2.2: <name>                       #               controller name
-|    |      |                   |- 0.3.1.0.2.3: <deviceID>                   #               controller serial number
-|    |      |                   |- 0.3.1.0.2.4: <door>                       #               controller door number
-|    |      |                                                                #
-|    |      |- 0.3.1.1: <name>                                               #    name
-|    |      |- 0.3.1.2: <delay>                                              #    door open delay
-|    |               |- 0.3.1.2.1: <status>                                  #    door open delay status
-|    |               |- 0.3.1.2.2: <configured>                              #    configured door open delay
-|    |               |- 0.3.1.2.3: <error>                                   #    door delay error info
-|    |      |- 0.3.1.3: <control>                                            #    door control state
-|    |               |- 0.3.1.2.1: <status>                                  #    door control state status
-|    |               |- 0.3.1.2.2: <configured>                              #    configured door control state
-|    |               |- 0.3.1.2.3: <error>                                   #    door control state error info
 |
 |- 0.4                                                                       # groups
 |    |- 0.4.1                                                                # group #1

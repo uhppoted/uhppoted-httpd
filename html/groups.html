@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>uhppoted-httpd: GROUPS</title>
+    <link rel="manifest"   href="manifest.json">
+    <link rel="icon"       href="images/favicon.svg">
+    <link rel="stylesheet" href="css/{{$.context.Theme}}/groups.css" type="text/css">
+    <meta charset="UTF-8">
+  </head>
+
+  <body> 
+    <div id="content">
+
+      <!-- HEADER -->
+      <header>
+        <img id="logo" src="images/{{$.context.Theme}}/logo.png"  />
+          
+        <div id="dashboard">
+          <span id="windmill"></span>
+        </div>
+
+        <div id="user" onmouseleave="onMenu(event, false)">
+          <div id="avatar" onclick="onMenu(event, true)">
+            <p>admin</p>
+            <img src="images/{{$.context.Theme}}/user-cog-solid.svg" />
+          </div>
+          <div class="menu">
+            <a href="#" onclick="onSignOut(event)">Sign out</a>
+            <a href="#" onclick="retheme('light')">light</a>
+            <a href="#" onclick="retheme('dark')">dark</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- NAV -->
+
+      <nav>
+        <ul>
+          <li><a href="./system.html" draggable="false">SYSTEM</a></li>
+          <li><a href="./cards.html" draggable="false">CARDS</a></li>
+          <li class="selected">GROUPS</li>
+          <li><a href="./doors.html" draggable="false">DOORS</a></li>
+          <li>EVENTS</li>
+          <li>LOGS</li>
+        </ul>
+      </nav>
+
+      <!-- MAIN -->
+      <main>
+        <div style="width:100%;">
+          <div id="controls" data-oid="0.3">
+            <img id="commitall" class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('group', event, 'groups')" draggable="false" />
+            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('group', event)"  draggable="false"  />
+            <div id="message" class="message">
+              <div>
+                <span class="warning" id="warning"></span>
+                <button class="dismiss" onclick="dismiss()">&#9746;</button>
+              </div>
+            </div>
+            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('group')" />
+            <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('groups', event)" />
+          </div>
+
+          <div id="groups">
+            <table class="tabular">
+              <thead>
+                <tr>
+                  <th class="name topleft">Group</th>
+                  <th class="padding colheader"></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+
+            <template id="group">
+                <td class="rowheader" style="display:flex; flex-direction:row;">
+                  <img class="flag name" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field name" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         onchange="onEdited('group', event)" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" />
+                  <span class="control commit"   onclick="onCommit('group', event)"   data-record="" data-enabled="false">&#9745;</span>
+                  <span class="control rollback" onclick="onRollback('group', event)" data-record="" data-enabled="false">&#9746;</span>
+                </td>
+
+                <!-- 'padding' column (CSS: tr::last-child) -->
+                <td class="padding"></td>
+            </template>
+
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer>
+        <p>v0.0.0</p>
+      </footer>
+    </div>
+  </body>
+
+  <!-- SCRIPTS -->
+
+  <script type="module">
+    import { retheme, dismiss, resetIdle, onMenu, onSignOut } from "./javascript/uhppoted.js"
+    import { onEdited, 
+             onEnter, 
+             onChoose, 
+             onTick, 
+             onCommit, 
+             onCommitAll, 
+             onRollback, 
+             onRollbackAll, 
+             onNew, 
+             onRefresh } from "./javascript/edit.js"
+
+    window.retheme = retheme
+    window.dismiss = dismiss
+    window.onMenu = onMenu
+    window.onSignOut = onSignOut
+    window.onEdited = onEdited
+    window.onEnter = onEnter
+    window.onChoose = onChoose
+    window.onTick = onTick
+    window.onCommit = onCommit
+    window.onCommitAll = onCommitAll
+    window.onRollback = onRollback
+    window.onRollbackAll = onRollbackAll
+    window.onNew = onNew
+    window.onRefresh = onRefresh
+
+    const refresh = function() {
+      onRefresh('groups')      
+    }
+
+    resetIdle()
+    refresh()
+    setInterval(refresh, 15000)
+  </script>
+
+  <!-- global information initialised by Go template -->
+  <script>
+    var constants = {
+      theme: {{$.context.Theme}}
+    }
+  </script>
+
+
+</html>
