@@ -79,17 +79,22 @@ func (c *CardHolder) AsObjects() []interface{} {
 	sort.Strings(keys)
 
 	for ix, k := range keys {
-		if v, ok := c.Groups[k]; ok && v {
-			objects = append(objects, object{
-				OID:   c.OID + CardGroups + fmt.Sprintf(".%v.1", ix+1),
-				Value: stringify(k),
-			})
+		v, ok := c.Groups[k]
+		member := ok && v
+		objects = append(objects, object{
+			OID:   c.OID + CardGroups + fmt.Sprintf(".%v.1", ix+1),
+			Value: stringify(k),
+		})
 
-			objects = append(objects, object{
-				OID:   c.OID + CardGroups + fmt.Sprintf(".%v.2", ix+1),
-				Value: stringify(lookup(k + ".1")),
-			})
-		}
+		objects = append(objects, object{
+			OID:   c.OID + CardGroups + fmt.Sprintf(".%v.2", ix+1),
+			Value: stringify(lookup(k + ".1")),
+		})
+
+		objects = append(objects, object{
+			OID:   c.OID + CardGroups + fmt.Sprintf(".%v.3", ix+1),
+			Value: stringify(member),
+		})
 	}
 
 	return objects

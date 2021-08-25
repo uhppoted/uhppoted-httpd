@@ -117,10 +117,9 @@ func (d *fdb) AsObjects() []interface{} {
 
 	defer d.RUnlock()
 
-	for k, record := range d.data.Tables.CardHolders {
+	for _, record := range d.data.Tables.CardHolders {
 		if record.IsValid() || record.IsDeleted() {
 			if l := record.AsObjects(); l != nil {
-				fmt.Printf(">>> DEBUG: %v %v\n", k, l)
 				objects = append(objects, l...)
 			}
 		}

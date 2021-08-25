@@ -33,64 +33,6 @@ tr.door td img.flag.conflict {
    visibility: visible;
 }
 
-tr.door td input {
-  color: $content-table-item-normal;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  padding: 2px 4px 2px 4px;
-  outline: none;
-  -moz-appearance:textfield;
-}
-
-tr.door td input[type=number]::-webkit-inner-spin-button, 
-tr.door td input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
-}
-
-tr.door[data-status="unconfigured"] td input {
-  color: $content-table-row-unconfigured;
-  font-style: italic;
-}
-
-tr.door[data-status="unknown"] td input {
-  color: $content-table-item-unknown;
-  font-style: italic;
-}
-
-tr.door[data-status="uncertain"] td input {
-  color: $content-table-item-uncertain;
-}
-
-tr.door[data-status="error"] td input {
-  color: $content-table-item-error;
-}
-
-tr.door td input[data-status="unknown"] {
-  color: $content-table-item-unknown;
-  font-style: italic;
-}
-
-tr.door td input[data-status="unconfigured"] {
-  color: $content-table-item-unconfigured;
-  font-style: italic;
-}
-
-tr.door td input[data-status="uncertain"] {
-  color: $content-table-item-uncertain;
-  font-style: italic;
-  font-weight: bold;
-}
-
-tr.door td input[data-status="error"] {
-  color: $content-table-item-error;
-  font-weight: bold; 
-}
-
-tr.door td input:focus {
-  border: 1px solid red;
-}
-
 tr.door td select {
   border: none;
   outline: none;

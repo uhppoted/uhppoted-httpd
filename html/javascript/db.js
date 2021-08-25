@@ -37,8 +37,8 @@ export const DB = {
   },
 
   refreshed: function (tag) {
-    mark()
-    sweep()
+    mark(tag)
+    sweep(tag)
   }
 }
 
@@ -312,7 +312,6 @@ function door (o) {
 }
 
 function card (o) {
-  console.log('card', o)
   const oid = o.OID
 
   if (/^0\.3\.[1-9][0-9]*$/.test(oid)) {
@@ -329,7 +328,7 @@ function card (o) {
       number: '',
       from: '',
       to: '',
-      groups: [],
+      groups: new Map(),
       status: o.value,
       mark: 0
     })
@@ -364,12 +363,38 @@ function card (o) {
         case k + '.4':
           v.to = o.value
           break
+
+        default:
+          if (oid.startsWith(k + '.5.')) {
+            const m = oid.match(/^(0\.3\.[1-9][0-9]*\.5\.[1-9][0-9]*)(\.[1-3])$/)
+            if (m && m.length > 2) {
+              const suboid = m[1]
+              const suffix = m[2]
+
+              if (!v.groups.has(suboid)) {
+                v.groups.set(suboid, { oid: '', name: '', member: false })
+              }
+
+              const group = v.groups.get(suboid)
+              switch (suffix) {
+                case '.1':
+                  group.oid = o.value
+                  break
+                case '.2':
+                  group.name = o.value
+                  break
+                case '.3':
+                  group.member = o.value === 'true'
+                  break
+              }
+            }
+          }
       }
     }
   })
 }
 
-function mark () {
+function mark (tag) {
   DB.controllers.forEach(v => {
     v.mark += 1
   })
@@ -377,9 +402,13 @@ function mark () {
   DB.doors.forEach(v => {
     v.mark += 1
   })
+
+  DB.cards.forEach(v => {
+    v.mark += 1
+  })
 }
 
-function sweep () {
+function sweep (tag) {
   DB.controllers.forEach((v, k) => {
     if (v.mark >= 25 && v.status === 'deleted') {
       DB.controllers.delete(k)
@@ -387,6 +416,12 @@ function sweep () {
   })
 
   DB.doors.forEach((v, k) => {
+    if (v.mark >= 25 && v.status === 'deleted') {
+      DB.doors.delete(k)
+    }
+  })
+
+  DB.cards.forEach((v, k) => {
     if (v.mark >= 25 && v.status === 'deleted') {
       DB.doors.delete(k)
     }

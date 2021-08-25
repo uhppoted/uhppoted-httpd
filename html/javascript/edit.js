@@ -1,4 +1,5 @@
 import * as doors from './doors.js'
+import * as cards from './cards.js'
 import { busy, dismiss } from './uhppoted.js'
 
 export function onEdited (tag, event) {
@@ -127,6 +128,10 @@ export function onRefresh (tag, event) {
   switch (tag) {
     case 'doors':
       doors.get()
+      break
+
+    case 'cards':
+      cards.get()
       break
   }
 }

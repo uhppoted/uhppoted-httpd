@@ -10,7 +10,7 @@
 - [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
-- [ ] Weird error when clicking on unauthorised groups link
+- [x] Error when clicking on unauthorised groups link
       ```
       2021/08/24 11:44:51 WARN  Error formatting page 'html/unauthorized.html' (html/template:unauthorized.html: ends in a non-text context: {stateJSRegexp delimNone urlPartNone jsCtxRegexp attrNone elementScript <nil>})
       ```
@@ -23,6 +23,11 @@
 - Migrate cards to OIDs
   - [x] AsObjects
   - [ ] JS: updateFromDB
+  - [ ] Fix number field styling
+  - [ ] DB mark/sweep can be called multiple times for the same update
+        - make time based (?)
+        - make update ID base (?)
+        - or just use tag (?)
 
 - Groups
   - [x] HTML + JS + CSS skeleton
@@ -119,9 +124,13 @@
         -- use hash of DB to identify changes
         -- CRDT ??
       
+- [ ] Security
+      - /system, /doors , /cards, etc all return everything. Need finer grained access 
+      - Templates have access to everything - need finer grained access 
+
 - [ ] Events
       - https://jvns.ca/blog/2021/01/12/day-36--server-sent-events-are-cool--and-a-fun-bug/
-- [ ] Generate menu in template
+
 - [ ] Login
       - restyle avatar to have a border and be a bit floaty (i.e. not be glued to top-right)
 
@@ -145,6 +154,8 @@
 ## TODO
 
 - [ ] [CRDT](https://concordant.io/software)
+       - https://josephg.com/blog/crdts-go-brrr
+       - [Braid](https://braid.org
 - [ ] [XHTML](https://www.nayuki.io/page/practical-guide-to-xhtml)
 - [ ] Redesign using RDF/OWL triples ? 
       - https://github.com/severin-lemaignan/minimalkb

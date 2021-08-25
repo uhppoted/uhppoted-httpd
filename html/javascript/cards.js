@@ -1,7 +1,151 @@
 /* global constants */
 
 import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
+import { update } from './edit.js'
+import { DB } from './db.js'
 
+export function get () {
+  getAsJSON('/cards')
+    .then(response => {
+      unbusy()
+
+      if (response.redirected) {
+        window.location = response.url
+      } else {
+        switch (response.status) {
+          case 200:
+            response.json().then(object => {
+              if (object && object.system && object.system.objects) {
+                DB.updated('objects', object.system.objects)
+              }
+
+              refreshed()
+            })
+            break
+
+          default:
+            response.text().then(message => { warning(message) })
+        }
+      }
+    })
+    .catch(function (err) {
+      console.error(err)
+    })
+}
+
+function refreshed () {
+  const list = []
+
+  DB.cards.forEach(c => {
+    list.push(c)
+  })
+
+  // list.sort((p, q) => {
+  //   if (p.created < q.created) {
+  //     return -1
+  //   } else if (p.created > q.created) {
+  //     return +1
+  //   } else {
+  //     return 0
+  //   }
+  // })
+
+  list.forEach(d => {
+    const row = updateFromDB(d.OID, d)
+    if (row) {
+      if (d.status === 'new') {
+        row.classList.add('new')
+      } else {
+        row.classList.remove('new')
+      }
+    }
+  })
+
+  DB.refreshed('cards')
+}
+
+function updateFromDB (oid, record) {
+  let row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
+
+  // if (record.status === 'deleted') {
+  //   deleted(row)
+  //   return
+  // }
+
+  if (!row) {
+    row = add(oid)
+  }
+
+  const name = row.querySelector(`[data-oid="${oid}.1"]`)
+  const number = row.querySelector(`[data-oid="${oid}.2"]`)
+  const from = row.querySelector(`[data-oid="${oid}.3"]`)
+  const to = row.querySelector(`[data-oid="${oid}.4"]`)
+
+  row.dataset.status = record.status
+
+  update(name, record.name)
+  update(number, record.number)
+  update(from, record.from)
+  update(to, record.to)
+
+  return row
+}
+
+function add (oid) {
+  const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
+  const tbody = document.getElementById('cards').querySelector('table tbody')
+
+  if (tbody) {
+    const template = document.querySelector('#card')
+    const row = tbody.insertRow()
+
+    row.id = uuid
+    row.classList.add('card')
+    row.classList.add('new')
+    row.dataset.oid = oid
+    row.dataset.status = 'unknown'
+    row.innerHTML = template.innerHTML
+
+    const commit = row.querySelector('td span.commit')
+    commit.id = uuid + '_commit'
+    commit.dataset.record = uuid
+    commit.dataset.enabled = 'false'
+
+    const rollback = row.querySelector('td span.rollback')
+    rollback.id = uuid + '_rollback'
+    rollback.dataset.record = uuid
+    rollback.dataset.enabled = 'false'
+
+    const fields = [
+      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' },
+      { suffix: 'number', oid: `${oid}.2`, selector: 'td input.number', flag: 'td img.number' },
+      { suffix: 'from', oid: `${oid}.3`, selector: 'td input.from', flag: 'td img.from' },
+      { suffix: 'to', oid: `${oid}.4`, selector: 'td input.to', flag: 'td img.to' }
+    ]
+
+    fields.forEach(f => {
+      const field = row.querySelector(f.selector)
+      const flag = row.querySelector(f.flag)
+
+      if (field) {
+        field.id = uuid + '-' + f.suffix
+        field.value = ''
+        field.dataset.oid = f.oid
+        field.dataset.record = uuid
+        field.dataset.original = ''
+        field.dataset.value = ''
+
+        flag.id = 'F' + f.oid
+      } else {
+        console.error(f)
+      }
+    })
+
+    return row
+  }
+}
+
+/** OLD STUFF **/
 export function onEdited (event) {
   set(event.target, event.target.value)
 }
@@ -248,23 +392,23 @@ function updated (list) {
       }
 
       if (record.Name) {
-        update(document.getElementById(id + '-name'), record.Name)
+        updateX(document.getElementById(id + '-name'), record.Name)
       }
 
       if (record.Card) {
-        update(document.getElementById(id + '-card'), record.Card)
+        updateX(document.getElementById(id + '-card'), record.Card)
       }
 
       if (record.From) {
-        update(document.getElementById(id + '-from'), record.From)
+        updateX(document.getElementById(id + '-from'), record.From)
       }
 
       if (record.To) {
-        update(document.getElementById(id + '-to'), record.To)
+        updateX(document.getElementById(id + '-to'), record.To)
       }
 
       Object.entries(record.Groups).forEach(([k, v]) => {
-        update(document.getElementById(id + '-' + k), v)
+        updateX(document.getElementById(id + '-' + k), v)
       })
     })
   }
@@ -332,7 +476,7 @@ function set (element, value) {
   }
 }
 
-function update (element, value) {
+function updateX (element, value) {
   const v = value.toString()
 
   if (element) {

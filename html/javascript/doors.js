@@ -129,7 +129,7 @@ export function post (tag, records, reset, cleanup) {
     })
 }
 
-export function refreshed () {
+function refreshed () {
   const list = []
 
   DB.doors.forEach(c => {

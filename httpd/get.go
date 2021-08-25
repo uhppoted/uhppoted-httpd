@@ -73,8 +73,12 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		doors.Fetch(w, r, d.timeout)
 		return
 
-	case "/cardholders":
+	case "/cards":
 		cards.Fetch(w, r, d.timeout)
+		return
+
+	case "/cardholders":
+		cards.FetchX(w, r, d.timeout)
 		return
 	}
 

@@ -34,13 +34,12 @@
       </header>
 
       <!-- NAV -->
-
       <nav>
         <ul>
           <li><a href="./system.html" draggable="false">SYSTEM</a></li>
+          <li><a href="./doors.html" draggable="false">DOORS</a></li>
           <li class="selected">CARDS</li>
           <li><a href="./groups.html" draggable="false">GROUPS</a></li>
-          <li><a href="./doors.html" draggable="false">DOORS</a></li>
           <li>EVENTS</li>
           <li>LOGS</li>
         </ul>
@@ -62,7 +61,7 @@
             <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh()" />
           </div>
 
-          <div id="cardholders">
+          <div id="cards">
             <table class="tabular">
               <thead>
                 <tr>
@@ -74,87 +73,73 @@
                   <th class="padding    colheader"></th>
                 </tr>
               </thead>
-              <tbody>{{range $cardholder := .cards}}
-                 {{$cid := $cardholder.OID}}
-                 <tr id="{{$cid}}">
-                  <td class="rowheader" style="display:flex; flex-direction:row;">
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-name" 
-                           class="field name"
-                           type="text"                            
-                           value="{{$cardholder.Name}}"
-                           placeholder="-"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{$cardholder.Name}}"
-                           data-value="{{$cardholder.Name}}" />
-                    <span class="control commit" id="{{$cid}}_commit" onclick="onCommit(event)" data-record="{{$cid}}" data-enabled="false">&#9745;</span>
-                    <span class="control rollback" id="{{$cid}}_rollback" onclick="onRollback(event)" data-record="{{$cid}}" data-enabled="false">&#9746;</span>
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-card" 
-                           class="field cardnumber"
-                           type="number" 
-                           min="0"
-                           value="{{$cardholder.Card}}"
-                           placeholder="6152346"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{$cardholder.Card}}"
-                           data-value="{{$cardholder.Card}}" />
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-from" 
-                           class="field from"
-                           type="date" 
-                           value="{{$cardholder.From.Format "2006-01-02"}}"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{$cardholder.From.Format "2006-01-02"}}"
-                           data-value="{{$cardholder.From.Format "2006-01-02"}}" 
-                           required />
-                  </td>
-
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <input id="{{$cid}}-to" 
-                           class="field to"
-                           type="date" 
-                           value="{{$cardholder.To.Format "2006-01-02"}}"
-                           onchange="onEdited(event)" 
-                           data-record="{{$cid}}"
-                           data-original="{{$cardholder.To.Format "2006-01-02"}}"
-                           data-value="{{$cardholder.To.Format "2006-01-02"}}" 
-                           required />
-                  </td>
-
-                  {{range $.groups}}
-                  <td>
-                    <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                    <label class="group">
-                    <input id="{{$cid}}-{{.OID}}"
-                           class="field"
-                           type="checkbox" 
-                           onclick="onTick(event)"
-                           data-record="{{$cid}}" 
-                           data-original="{{index $cardholder.Groups .OID}}" 
-                           data-value="{{index $cardholder.Groups .OID}}"{{if index $cardholder.Groups .OID}}
-                           checked />{{else}}/>{{end}}
-                      <img class="no"  src="images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
-                      <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
-                    </label>
-                  </td>{{end}}
-                  <!-- 'padding' column (CSS: tr::last-child) -->
-                  <td class="padding"></td>                  
-                </tr>{{else}}<tr class="empty"><td/><td/><td/><td/><td/><td/></tr>{{end}}
-              </tbody>
-              <tfoot>
-              </tfoot>
+              <tbody></tbody>
+              <tfoot></tfoot>
             </table>
+
+            <template id="card">
+              <td class="rowheader" style="display:flex; flex-direction:row;">
+                <img class="flag name" src="images/{{$.context.Theme}}/corner.svg" />
+                <input class="field name"
+                       type="text"                            
+                       placeholder="-"
+                       onchange="onEdited('card', event)" 
+                       data-record=""
+                       data-original=""
+                       data-value="" />
+                <span class="control commit"   onclick="onCommit('card', event)"   data-record="" data-enabled="false">&#9745;</span>
+                <span class="control rollback" onclick="onRollback('card', event)" data-record="" data-enabled="false">&#9746;</span>
+              </td>
+              <td>
+                <img class="flag number" src="images/{{$.context.Theme}}/corner.svg" />
+                <input class="field number"
+                       type="number" 
+                       min="0"
+                       placeholder="6152346"
+                       onchange="onEdited('card', event)" 
+                       data-record=""
+                       data-original=""
+                       data-value="" />
+              </td>
+              <td>
+                <img class="flag from" src="images/{{$.context.Theme}}/corner.svg" />
+                <input class="field from"
+                       type="date" 
+                       onchange="onEdited('card', event)" 
+                       data-record=""
+                       data-original=""
+                       data-value="" 
+                       required />
+              </td>
+              <td>
+                <img class="flag to" src="images/{{$.context.Theme}}/corner.svg" />
+                <input class="field to"
+                       type="date" 
+                       onchange="onEdited('card', event)" 
+                       data-record=""
+                       data-original=""
+                       data-value="" 
+                       required />
+              </td>
+              {{range $.groups}}
+              <td>
+                <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                <label class="group">
+                <input class="field"
+                       type="checkbox" 
+                       onclick="onTick(event)"
+                       data-record="" 
+                       data-original="" 
+                       data-value="" />
+                <img class="no"  src="images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
+                <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
+                </label>
+              </td>{{end}}
+              
+              <!-- 'padding' column (CSS: tr::last-child) -->
+              <td class="padding"></td>                  
+            </template>
+
           </div>
         </div>
       </main>
@@ -170,7 +155,8 @@
  
   <script type="module">
     import { retheme, dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
-    import { onEdited, onTick, onCommit, onCommitAll, onRollback, onRollbackAll, onNew, onRefresh } from "./javascript/cardholders.js"
+    import { onEdited, onTick, onCommit, onCommitAll, onRollback, onRollbackAll, onNew } from "./javascript/cards.js"
+    import { onRefresh } from "./javascript/edit.js"
 
     window.retheme = retheme
     window.dismiss = dismiss
@@ -184,7 +170,13 @@
     window.onNew = onNew
     window.onRefresh = onRefresh
 
-    resetIdle();
+    const refresh = function() {
+      onRefresh('cards')      
+    }
+
+    resetIdle()
+    refresh()
+    // setInterval(refresh, 15000)
   </script>
 
   <!-- global information initialised by Go template -->
