@@ -212,7 +212,14 @@ export function update (element, value, status) {
 
     // update fields not pending, modified or editing
     if (element !== document.activeElement) {
+      switch (element.getAttribute('type').toLowerCase()) {
+        case 'checkbox':
+        element.checked = (v === 'true')
+        break
+
+        default:
       element.value = v
+      }
     }
 
     set(element, value, status)
@@ -257,3 +264,4 @@ export function percolate (oid, f) {
     }
   }
 }
+

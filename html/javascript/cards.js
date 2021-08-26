@@ -1,7 +1,7 @@
 /* global constants */
 
 import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
-import { update } from './edit.js'
+import { update} from './edit.js'
 import { DB } from './db.js'
 
 export function get () {
@@ -73,7 +73,7 @@ function updateFromDB (oid, record) {
   // }
 
   if (!row) {
-    row = add(oid)
+    row = add(oid, record)
   }
 
   const name = row.querySelector(`[data-oid="${oid}.1"]`)
@@ -88,10 +88,18 @@ function updateFromDB (oid, record) {
   update(from, record.from)
   update(to, record.to)
 
+  record.groups.forEach((v, k) => {
+    const group = row.querySelector(`[data-oid="${k}.3"]`)
+
+    if (group) {
+      update(group, v.member)
+    }
+  })
+
   return row
 }
 
-function add (oid) {
+function add (oid, record) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('cards').querySelector('table tbody')
 
@@ -122,6 +130,20 @@ function add (oid) {
       { suffix: 'from', oid: `${oid}.3`, selector: 'td input.from', flag: 'td img.from' },
       { suffix: 'to', oid: `${oid}.4`, selector: 'td input.to', flag: 'td img.to' }
     ]
+
+    record.groups.forEach((v, k) => {
+      const m = v.oid.match(/^0\.4\.([1-9][0-9]*)$/)
+      if (m && m.length > 1) {
+        const gid = m[1]
+
+        fields.push({
+          suffix: `g${gid}`,
+          oid: `${k}.3`,
+          selector: `td input.g${gid}`,
+          flag: `td img.g${gid}`
+        })
+      }
+    })
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)

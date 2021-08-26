@@ -121,11 +121,11 @@
                        data-value="" 
                        required />
               </td>
-              {{range $.groups}}
+              {{range .groups}}
               <td>
-                <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                <img class="flag g{{ suffix .OID }}" src="images/{{$.context.Theme}}/corner.svg" />
                 <label class="group">
-                <input class="field"
+                <input class="field g{{ suffix .OID }}"
                        type="checkbox" 
                        onclick="onTick(event)"
                        data-record="" 

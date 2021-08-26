@@ -22,7 +22,7 @@
 
 - Migrate cards to OIDs
   - [x] AsObjects
-  - [ ] JS: updateFromDB
+  - [x] JS: updateFromDB
   - [ ] Fix number field styling
   - [ ] DB mark/sweep can be called multiple times for the same update
         - make time based (?)

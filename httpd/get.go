@@ -129,7 +129,20 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 		}
 	}
 
-	t, err := template.ParseFiles(filename)
+	functions := template.FuncMap{
+		"suffix": func(v string) string {
+			tokens := strings.Split(v, ".")
+			if len(tokens) > 0 {
+				return tokens[len(tokens)-1]
+			}
+
+			return v
+		},
+	}
+
+	// Ref. https://stackoverflow.com/questions/49043292/error-template-is-an-incomplete-or-empty-template
+	name := filepath.Base(filename)
+	t, err := template.New(name).Funcs(functions).ParseFiles(filename)
 	if err != nil {
 		warn(fmt.Errorf("Error parsing template '%s' (%w)", filename, err))
 		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)
