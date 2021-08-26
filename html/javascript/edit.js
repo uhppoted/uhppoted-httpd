@@ -214,11 +214,11 @@ export function update (element, value, status) {
     if (element !== document.activeElement) {
       switch (element.getAttribute('type').toLowerCase()) {
         case 'checkbox':
-        element.checked = (v === 'true')
-        break
+          element.checked = (v === 'true')
+          break
 
         default:
-      element.value = v
+          element.value = v
       }
     }
 
@@ -264,4 +264,3 @@ export function percolate (oid, f) {
     }
   }
 }
-

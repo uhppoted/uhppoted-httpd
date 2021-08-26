@@ -3,7 +3,7 @@ th.name {
   border-bottom: 1px;
 }
 
-th.cardnumber {
+th.number {
   min-width: 72px;
 }
 
@@ -24,41 +24,14 @@ tr td:last-child {
 
 td input.name {
   width: 120px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
 }
 
-td input.name:focus {
-  border: 1px solid red;
-}
-
-td input.cardnumber {
+td input.number {
   width: 72px;
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  outline: none;
-  -moz-appearance:textfield;
-}
-
-td input.cardnumber:focus {
-  border: 1px solid red;
-}
-
-td input.cardnumber::-webkit-inner-spin-button, 
-td input.cardnumber::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
 }
 
 input.from {
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
   font: 400 0.9em Arial;
-  outline: none;
 }
 
 input.from::-webkit-datetime-edit { 
@@ -69,16 +42,8 @@ input.from::-webkit-calendar-picker-indicator {
   margin-left: 0px;
 }
 
-td input.from:focus {
-  border: 1px solid red;
-}
-
 td input.to {
-  padding: 2px 4px 2px 4px;
-  border: 1px solid transparent;
-  border-radius: 3px;
   font: 400 0.9em Arial;
-  outline: none;
 }
 
 input.to::-webkit-datetime-edit { 
@@ -87,10 +52,6 @@ input.to::-webkit-datetime-edit {
 
 input.to::-webkit-calendar-picker-indicator { 
   margin-left: 0px;
-}
-
-td input.to:focus {
-  border: 1px solid red;
 }
 
 td label.group {

@@ -10,27 +10,20 @@
 - [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
-- [x] Error when clicking on unauthorised groups link
-      ```
-      2021/08/24 11:44:51 WARN  Error formatting page 'html/unauthorized.html' (html/template:unauthorized.html: ends in a non-text context: {stateJSRegexp delimNone urlPartNone jsCtxRegexp attrNone elementScript <nil>})
-      ```
-
 - OID schema
-  - [x] doors
   - [ ] controllers
   - [ ] LAN
 
 - Migrate cards to OIDs
-  - [x] AsObjects
   - [x] JS: updateFromDB
-  - [ ] Fix number field styling
+  - [x] Fix number field styling
+  - [ ] Rework edit to use edit.js
   - [ ] DB mark/sweep can be called multiple times for the same update
         - make time based (?)
         - make update ID base (?)
         - or just use tag (?)
 
 - Groups
-  - [x] HTML + JS + CSS skeleton
   - [ ] Commonalise tooltips CSS
   - [ ] AsObjects
 

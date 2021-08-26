@@ -1,7 +1,7 @@
 /* global constants */
 
 import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
-import { update} from './edit.js'
+import { update } from './edit.js'
 import { DB } from './db.js'
 
 export function get () {
