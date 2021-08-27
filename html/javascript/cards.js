@@ -89,7 +89,7 @@ function updateFromDB (oid, record) {
   update(to, record.to)
 
   record.groups.forEach((v, k) => {
-    const group = row.querySelector(`[data-oid="${k}.3"]`)
+    const group = row.querySelector(`[data-oid="${k}.2"]`)
 
     if (group) {
       update(group, v.member)
@@ -138,7 +138,7 @@ function add (oid, record) {
 
         fields.push({
           suffix: `g${gid}`,
-          oid: `${k}.3`,
+          oid: `${k}.2`,
           selector: `td input.g${gid}`,
           flag: `td img.g${gid}`
         })
@@ -395,7 +395,7 @@ export function onRefresh (event) {
       }
     })
     .catch(function (err) {
-      console.log(err)
+      console.error(err)
     })
 }
 
@@ -588,7 +588,6 @@ function apply (element, f) {
 
 function rowToRecord (id, row) {
   const name = row.querySelector('#' + id + '-name')
-  console.log('### ', id, row, name)
   const card = row.querySelector('#' + id + '-card')
   const from = row.querySelector('#' + id + '-from')
   const to = row.querySelector('#' + id + '-to')

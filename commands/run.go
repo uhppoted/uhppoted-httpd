@@ -15,7 +15,6 @@ import (
 	auth "github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/system/cards/grule"
-	"github.com/uhppoted/uhppoted-httpd/system/cards/memdb"
 	"github.com/uhppoted/uhppoted-lib/config"
 )
 
@@ -107,12 +106,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		log.Fatal(fmt.Errorf("Error initialising ACL ruleset (%v)", err))
 	}
 
-	db, err := memdb.NewDB(conf.HTTPD.DB.File, ruleset, h.Audit)
-	if err != nil {
-		log.Fatal(fmt.Errorf("Error loading DB (%v)", err))
-	}
-
-	if err := system.Init(*conf, cmd.configuration, db, trail); err != nil {
+	if err := system.Init(*conf, cmd.configuration, ruleset, trail); err != nil {
 		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 

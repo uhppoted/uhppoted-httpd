@@ -8,10 +8,10 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type CardHolders map[string]*CardHolder
+type CardHolders map[catalog.OID]*CardHolder
 
 type CardHolder struct {
-	OID    string
+	OID    catalog.OID
 	Name   *types.Name
 	Card   *types.Card
 	From   *types.Date
@@ -64,11 +64,11 @@ func (c *CardHolder) AsObjects() []interface{} {
 	to := stringify(c.To)
 
 	objects := []interface{}{
-		object{OID: c.OID, Value: status},
-		object{OID: c.OID + CardName, Value: name},
-		object{OID: c.OID + CardNumber, Value: number},
-		object{OID: c.OID + CardFrom, Value: from},
-		object{OID: c.OID + CardTo, Value: to},
+		object{OID: string(c.OID), Value: status},
+		object{OID: catalog.Join(c.OID, CardName), Value: name},
+		object{OID: catalog.Join(c.OID, CardNumber), Value: number},
+		object{OID: catalog.Join(c.OID, CardFrom), Value: from},
+		object{OID: catalog.Join(c.OID, CardTo), Value: to},
 	}
 
 	keys := []string{}
@@ -82,17 +82,12 @@ func (c *CardHolder) AsObjects() []interface{} {
 		v, ok := c.Groups[k]
 		member := ok && v
 		objects = append(objects, object{
-			OID:   c.OID + CardGroups + fmt.Sprintf(".%v.1", ix+1),
+			OID:   catalog.Join(c.OID, CardGroups.Append(fmt.Sprintf(".%v.1", ix+1))),
 			Value: stringify(k),
 		})
 
 		objects = append(objects, object{
-			OID:   c.OID + CardGroups + fmt.Sprintf(".%v.2", ix+1),
-			Value: stringify(lookup(k + ".1")),
-		})
-
-		objects = append(objects, object{
-			OID:   c.OID + CardGroups + fmt.Sprintf(".%v.3", ix+1),
+			OID:   catalog.Join(c.OID, CardGroups.Append(fmt.Sprintf(".%v.2", ix+1))),
 			Value: stringify(member),
 		})
 	}

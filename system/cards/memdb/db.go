@@ -21,7 +21,6 @@ type fdb struct {
 	sync.RWMutex
 	file  string
 	data  data
-	audit audit.Trail
 	rules cards.IRules
 }
 
@@ -41,6 +40,8 @@ type result struct {
 
 const GroupName = catalog.GroupName
 
+var trail audit.Trail
+
 func (d *data) copy() *data {
 	shadow := data{
 		Tables: tables{
@@ -56,7 +57,11 @@ func (d *data) copy() *data {
 	return &shadow
 }
 
-func NewDB(file string, rules cards.IRules, trail audit.Trail) (*fdb, error) {
+func SetAuditTrail(t audit.Trail) {
+	trail = t
+}
+
+func NewDB(file string, rules cards.IRules) (*fdb, error) {
 	f := fdb{
 		file: file,
 		data: data{
@@ -66,7 +71,6 @@ func NewDB(file string, rules cards.IRules, trail audit.Trail) (*fdb, error) {
 			},
 		},
 		rules: rules,
-		audit: trail,
 	}
 
 	if err := load(&f.data, f.file); err != nil {
@@ -104,7 +108,7 @@ func (d *fdb) CardHolders() cards.CardHolders {
 
 func (d *fdb) Print() {
 	if d != nil {
-		if b, err := json.MarshalIndent(d.CardHolders, "", "  "); err == nil {
+		if b, err := json.MarshalIndent(d.data.Tables.CardHolders, "", "  "); err == nil {
 			fmt.Printf("-----------------\n%s\n", string(b))
 		}
 	}
@@ -386,7 +390,7 @@ func validate(d *data) error {
 				}
 			}
 
-			cards[card] = r.OID
+			cards[card] = string(r.OID)
 		}
 	}
 
@@ -430,7 +434,7 @@ func unpack(m map[string]interface{}) ([]cards.CardHolder, error) {
 
 	for _, r := range o.CardHolders {
 		record := cards.CardHolder{
-			OID:    strings.TrimSpace(r.ID),
+			OID:    catalog.OID(strings.TrimSpace(r.ID)),
 			Groups: map[string]bool{},
 		}
 
@@ -450,13 +454,13 @@ func unpack(m map[string]interface{}) ([]cards.CardHolder, error) {
 }
 
 func (d *fdb) log(op string, info interface{}, auth auth.OpAuth) {
-	if d.audit != nil {
+	if trail != nil {
 		uid := ""
 		if auth != nil {
 			uid = auth.UID()
 		}
 
-		d.audit.Write(audit.LogEntry{
+		trail.Write(audit.LogEntry{
 			UID:       uid,
 			Module:    "memdb",
 			Operation: op,

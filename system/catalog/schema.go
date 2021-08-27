@@ -1,12 +1,10 @@
 package catalog
 
-type Suffix string
-
-const CardName = ".1"
-const CardNumber = ".2"
-const CardFrom = ".3"
-const CardTo = ".4"
-const CardGroups = ".5"
+const CardName Suffix = ".1"
+const CardNumber Suffix = ".2"
+const CardFrom Suffix = ".3"
+const CardTo Suffix = ".4"
+const CardGroups Suffix = ".5"
 
 const GroupName = ".1"
 

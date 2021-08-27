@@ -11,6 +11,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
+	"github.com/uhppoted/uhppoted-httpd/system/cards/memdb"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
@@ -38,12 +39,17 @@ type system struct {
 
 type object catalog.Object
 
-func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail) error {
+func Init(cfg config.Config, conf string, permissions cards.IRules, trail audit.Trail) error {
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
 		return err
 	}
 
 	if err := sys.controllers.Load(cfg.HTTPD.System.Controllers); err != nil {
+		return err
+	}
+
+	cards, err := memdb.NewDB(cfg.HTTPD.DB.File, permissions)
+	if err != nil {
 		return err
 	}
 
@@ -53,12 +59,13 @@ func Init(cfg config.Config, conf string, cards cards.Cards, trail audit.Trail) 
 	sys.retention = cfg.HTTPD.Retention
 
 	controllers.SetAuditTrail(trail)
+	doors.SetAuditTrail(trail)
+	memdb.SetAuditTrail(trail)
+
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
 		cfg.HTTPD.System.Windows.Uncertain,
 		cfg.HTTPD.System.Windows.Systime,
 		cfg.HTTPD.System.Windows.CacheExpiry)
-
-	doors.SetAuditTrail(trail)
 
 	sys.controllers.Print()
 	sys.doors.Print()

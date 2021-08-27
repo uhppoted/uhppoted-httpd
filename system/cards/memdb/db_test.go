@@ -9,6 +9,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -106,7 +107,7 @@ func cardholder(id, name string, card uint32, groups ...string) cards.CardHolder
 	c := types.Card(card)
 
 	cardholder := cards.CardHolder{
-		OID:    id,
+		OID:    catalog.OID(id),
 		Name:   &n,
 		Card:   &c,
 		From:   date("2021-01-02"),

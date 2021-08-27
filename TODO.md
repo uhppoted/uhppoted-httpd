@@ -1,11 +1,16 @@
 ## v0.7.x
 
+-  git/content-addressable filesystem (https://jvns.ca/blog/confusing-explanations/)
+
 ### IN PROGRESS
 
 - [ ] Make OID a type with:
       - HasPrefix
 - [ ] Commonalise CSS
       - migrate shared CSS to 'common'
+        - [ ] system
+        - [ ] doors
+        - [x] cards
       - move 'common' into 'tabular'
 - [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
@@ -18,6 +23,7 @@
   - [x] JS: updateFromDB
   - [x] Fix number field styling
   - [ ] Rework edit to use edit.js
+  - [ ] Sort by created
   - [ ] DB mark/sweep can be called multiple times for the same update
         - make time based (?)
         - make update ID base (?)

@@ -79,7 +79,7 @@ func TestCardHolderAddWithAuditTrail(t *testing.T) {
 	var logentry []byte
 
 	dbt := dbx(hagrid)
-	dbt.audit = &stub{
+	trail = &stub{
 		write: func(e audit.LogEntry) {
 			logentry, _ = json.Marshal(e)
 		},
@@ -238,7 +238,7 @@ func TestCardHolderUpdateWithAuditTrail(t *testing.T) {
 	var logentry []byte
 
 	dbt := dbx(hagrid)
-	dbt.audit = &stub{
+	trail = &stub{
 		write: func(e audit.LogEntry) {
 			logentry, _ = json.Marshal(e)
 		},
@@ -390,7 +390,7 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 	var logentry []byte
 
 	dbt := dbx(hagrid)
-	dbt.audit = &stub{
+	trail = &stub{
 		write: func(e audit.LogEntry) {
 			logentry, _ = json.Marshal(e)
 		},

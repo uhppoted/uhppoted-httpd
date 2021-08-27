@@ -24,17 +24,25 @@ Controller namespace
 
 ### 0.2.x.x
 
-Cards namespace
+Doors namespace
 
 ### 0.3.x.x
 
-Doors/access namespace
+Cards namespace
 
 ### 0.4.x.x
 
-Events namespace
+Groups namespace
 
 ### 0.5.x.x
+
+Schedules namespace
+
+### 0.6.x.x
+
+Events namespace
+
+### 0.7.x.x
 
 Logs namespace
 
@@ -114,7 +122,7 @@ Logs namespace
 |    |      |- 0.3.1.5                                                       #      groups
 |    |               |- 0.3.1.5.1                                            #      group #1
 |    |               |           |- 0.3.1.5.1.1: <oid>                       #            OID
-|    |               |           |- 0.3.1.5.1.2: <name>                      #            name
+|    |               |           |- 0.3.1.5.1.2: <member>                    #            true/false
 |    |               |                                                       #
 |    |               |- ...                                                  #      group #2
 |    |- ...

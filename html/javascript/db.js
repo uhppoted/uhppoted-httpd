@@ -381,9 +381,6 @@ function card (o) {
                   group.oid = o.value
                   break
                 case '.2':
-                  group.name = o.value
-                  break
-                case '.3':
                   group.member = o.value === 'true'
                   break
               }
