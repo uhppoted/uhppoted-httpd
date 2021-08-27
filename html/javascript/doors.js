@@ -1,7 +1,7 @@
 /* global */
 
 import { busy, unbusy, warning, getAsJSON, postAsJSON } from './uhppoted.js'
-import { set, update, mark, unmark } from './edit.js'
+import { update, revert, mark, unmark } from './edit.js'
 import { DB } from './db.js'
 
 export function create () {
@@ -283,17 +283,6 @@ function add (oid) {
 
     return row
   }
-}
-
-function revert (row) {
-  const fields = row.querySelectorAll('.field')
-
-  fields.forEach((item) => {
-    item.value = item.dataset.original
-    set(item, item.dataset.original, item.dataset.status)
-  })
-
-  row.classList.remove('modified')
 }
 
 function deleted (row) {

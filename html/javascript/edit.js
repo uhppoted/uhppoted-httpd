@@ -7,6 +7,10 @@ export function onEdited (tag, event) {
     case 'door':
       set(event.target, event.target.value)
       break
+
+    case 'card':
+      set(event.target, event.target.value)
+      break
   }
 }
 
@@ -81,7 +85,7 @@ export function onCommitAll (tag, event, table) {
   }
 
   switch (tag) {
-    case 'door': {
+    case 'doors': {
       doors.commit(...list)
       break
     }
@@ -96,18 +100,30 @@ export function onRollback (tag, event) {
     case 'door':
       doors.rollback(row)
       break
+
+    case 'card':
+      cards.rollback(row)
+      break
   }
 }
 
 export function onRollbackAll (tag, event) {
   switch (tag) {
-    case 'door': {
+    case 'doors': {
       const rows = document.getElementById('doors').querySelector('table tbody').rows
       for (let i = rows.length; i > 0; i--) {
         doors.rollback(rows[i - 1])
       }
-      break
     }
+      break
+
+    case 'cards': {
+      const rows = document.getElementById('cards').querySelector('table tbody').rows
+      for (let i = rows.length; i > 0; i--) {
+        cards.rollback(rows[i - 1])
+      }
+    }
+      break
   }
 }
 
@@ -173,6 +189,17 @@ export function set (element, value, status) {
   }
 
   percolate(oid, modified)
+}
+
+export function revert (row) {
+  const fields = row.querySelectorAll('.field')
+
+  fields.forEach((item) => {
+    item.value = item.dataset.original
+    set(item, item.dataset.original, item.dataset.status)
+  })
+
+  row.classList.remove('modified')
 }
 
 export function update (element, value, status) {

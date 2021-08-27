@@ -1,8 +1,17 @@
 /* global constants */
 
 import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
-import { update } from './edit.js'
+import { update, revert } from './edit.js'
 import { DB } from './db.js'
+
+export function rollback (row) {
+  if (row && row.classList.contains('new')) {
+    DB.delete('cards', row.dataset.oid)
+    refreshed()
+  } else {
+    revert(row)
+  }
+}
 
 export function get () {
   getAsJSON('/cards')
@@ -199,32 +208,32 @@ export function onCommitAll (event) {
   }
 }
 
-export function onRollback (event, op) {
-  if (op && op === 'delete') {
-    onDelete(event.target.dataset.record)
-    return
-  }
+// export function onRollback (event, op) {
+//   if (op && op === 'delete') {
+//     onDelete(event.target.dataset.record)
+//     return
+//   }
+//
+//   onRevert(event.target.dataset.record)
+// }
 
-  onRevert(event.target.dataset.record)
-}
-
-export function onRollbackAll (event) {
-  const tbody = document.getElementById('cardholders').querySelector('table tbody')
-
-  if (tbody) {
-    const rows = tbody.rows
-
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i]
-
-      if (row.classList.contains('new')) {
-        onDelete(row.id)
-      } else if (row.classList.contains('modified')) {
-        onRevert(row.id)
-      }
-    }
-  }
-}
+// export function onRollbackAll (event) {
+//   const tbody = document.getElementById('cardholders').querySelector('table tbody')
+//
+//   if (tbody) {
+//     const rows = tbody.rows
+//
+//     for (let i = 0; i < rows.length; i++) {
+//       const row = rows[i]
+//
+//       if (row.classList.contains('new')) {
+//         onDelete(row.id)
+//       } else if (row.classList.contains('modified')) {
+//         onRevert(row.id)
+//       }
+//     }
+//   }
+// }
 
 export function onUpdate (...list) {
   const rows = []

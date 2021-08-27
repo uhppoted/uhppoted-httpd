@@ -4,8 +4,14 @@
 
 ### IN PROGRESS
 
-- [ ] Make OID a type with:
-      - HasPrefix
+- [ ] Make OID a type
+      - [x] cards
+      - [ ] doors
+      - [ ] interfaces
+      - [ ] controllers
+      - [ ] catalog
+      - [ ] cache
+      
 - [ ] Commonalise CSS
       - migrate shared CSS to 'common'
         - [ ] system
@@ -22,8 +28,13 @@
 - Migrate cards to OIDs
   - [x] JS: updateFromDB
   - [x] Fix number field styling
-  - [ ] Rework edit to use edit.js
+  - [x] Use rollback from edit.js
+  - [x] Use rollback-all from edit.js
+  - [ ] Use commit from edit.js
+  - [ ] Use commit-all from edit.js
+  - [ ] onNew
   - [ ] Sort by created
+  - [ ] Cleanup cards.js
   - [ ] DB mark/sweep can be called multiple times for the same update
         - make time based (?)
         - make update ID base (?)
