@@ -1,5 +1,6 @@
 package catalog
 
+const CardCreated Suffix = ".0.1"
 const CardName Suffix = ".1"
 const CardNumber Suffix = ".2"
 const CardFrom Suffix = ".3"

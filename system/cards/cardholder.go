@@ -3,6 +3,7 @@ package cards
 import (
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -17,10 +18,13 @@ type CardHolder struct {
 	From   *types.Date
 	To     *types.Date
 	Groups map[string]bool
+
+	Created time.Time `json:"-"`
 }
 
 type object catalog.Object
 
+const CardCreated = catalog.CardCreated
 const CardName = catalog.CardName
 const CardNumber = catalog.CardNumber
 const CardFrom = catalog.CardFrom
@@ -58,6 +62,7 @@ func (c *CardHolder) IsDeleted() bool {
 
 func (c *CardHolder) AsObjects() []interface{} {
 	status := stringify(types.StatusOk)
+	created := c.Created.Format("2006-01-02 15:04:05")
 	name := stringify(c.Name)
 	number := stringify(c.Card)
 	from := stringify(c.From)
@@ -65,6 +70,7 @@ func (c *CardHolder) AsObjects() []interface{} {
 
 	objects := []interface{}{
 		object{OID: string(c.OID), Value: status},
+		object{OID: catalog.Join(c.OID, CardCreated), Value: created},
 		object{OID: catalog.Join(c.OID, CardName), Value: name},
 		object{OID: catalog.Join(c.OID, CardNumber), Value: number},
 		object{OID: catalog.Join(c.OID, CardFrom), Value: from},

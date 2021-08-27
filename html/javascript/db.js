@@ -324,6 +324,7 @@ function card (o) {
 
     DB.cards.set(oid, {
       OID: oid,
+      created: '',
       name: '',
       number: '',
       from: '',
@@ -342,10 +343,14 @@ function card (o) {
       if (v.status === 'new') {
         v.status = 'unknown'
       }
-
+      console.log(oid)
       switch (oid) {
         case k:
           v.status = o.value
+          break
+
+        case k + '.0.1':
+          v.created = o.value
           break
 
         case k + '.1':

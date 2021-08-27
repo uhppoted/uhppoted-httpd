@@ -115,6 +115,9 @@ Logs namespace
 |
 |- 0.3                                                                       # cards
 |    |- 0.3.1: <status>                                                      # card #1
+|    |      |- 0.3.1.0:                                                      #
+|    |      |        |- 0.3.1.0.1: <created>                                 #      created date/time
+|    |      |                                                                # 
 |    |      |- 0.3.1.1: <name>                                               #      name
 |    |      |- 0.3.1.2: <number>                                             #      card number
 |    |      |- 0.3.1.3: <from>                                               #      'valid from' date

@@ -210,7 +210,7 @@ export function refreshed () {
   })
 
   list.sort((p, q) => {
-    return p.created < q.created ? -1 : (p.created < q.created ? +1 : 0)
+    return p.created.localeCompare(q.created)
   })
 
   list.forEach(c => {

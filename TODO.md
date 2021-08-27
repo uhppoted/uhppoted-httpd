@@ -11,12 +11,13 @@
       - [ ] controllers
       - [ ] catalog
       - [ ] cache
-      
+
 - [ ] Commonalise CSS
       - migrate shared CSS to 'common'
         - [ ] system
         - [ ] doors
         - [x] cards
+        - [ ] tooltips
       - move 'common' into 'tabular'
 - [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
@@ -30,10 +31,14 @@
   - [x] Fix number field styling
   - [x] Use rollback from edit.js
   - [x] Use rollback-all from edit.js
+  - [x] Sort by created
   - [ ] Use commit from edit.js
   - [ ] Use commit-all from edit.js
+  - [ ] Unit test for AsObjects
+  - [ ] `card` serialize/deserialize
+  - [ ] Split cards and groups into separate files
+  - [ ] onTick
   - [ ] onNew
-  - [ ] Sort by created
   - [ ] Cleanup cards.js
   - [ ] DB mark/sweep can be called multiple times for the same update
         - make time based (?)
@@ -41,7 +46,6 @@
         - or just use tag (?)
 
 - Groups
-  - [ ] Commonalise tooltips CSS
   - [ ] AsObjects
 
 - Doors
@@ -51,6 +55,8 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 - [ ] system
+      - [ ] Fix `get-events` log string
+      - [ ] Fix `get-status` log string
       - move values to global cache
       - Input + datalist for timezone ?????
         - https://demo.agektmr.com/datalist/
@@ -64,8 +70,6 @@
         - 'import' admin menu option
         - 'auto-import' option (?)
 
-      - Fix `get-events` log string
-      - Fix `get-status` log string
       - logic around correcting time is weird
         -- enter to update doesn't always work
         -- set() is updating dataset.original which seems wrong but ...

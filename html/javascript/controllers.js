@@ -39,7 +39,7 @@ export function updateFromDB (oid, record) {
     const u = p.name.toLowerCase()
     const v = q.name.toLowerCase()
 
-    return u < v ? -1 : (u < q ? +1 : 0)
+    return u.localeCompare(v)
   }); // https://eslint.org/docs/2.0.0/rules/no-unexpected-multiline
 
   [door1, door2, door3, door4].forEach(select => {

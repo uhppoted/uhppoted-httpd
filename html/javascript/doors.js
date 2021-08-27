@@ -137,13 +137,7 @@ function refreshed () {
   })
 
   list.sort((p, q) => {
-    if (p.created < q.created) {
-      return -1
-    } else if (p.created > q.created) {
-      return +1
-    } else {
-      return 0
-    }
+    return p.created.localeCompare(q.created)
   })
 
   list.forEach(d => {

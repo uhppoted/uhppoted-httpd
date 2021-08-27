@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
@@ -79,6 +80,13 @@ func NewDB(file string, rules cards.IRules) (*fdb, error) {
 
 	for _, v := range f.data.Tables.Groups {
 		catalog.PutV(v.OID+GroupName, v.Name, false)
+	}
+
+	created := time.Time{}
+
+	for _, c := range f.data.Tables.CardHolders {
+		created = created.Add(1 * time.Minute)
+		c.Created = created
 	}
 
 	return &f, nil
