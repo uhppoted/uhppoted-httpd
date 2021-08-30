@@ -28,7 +28,7 @@
   - [x] Use onCommit from edit.js
   - [x] Use onCommitAll from edit.js
   - [x] Use onRollbackAll from edit.js
-  - [ ] Sort on 'created'
+  - [x] Include 'created' in card.Clone
   - [ ] Update commit for OIDs
         - [x] name
         - [ ] card number

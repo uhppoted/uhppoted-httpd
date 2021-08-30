@@ -48,6 +48,8 @@ func (c *CardHolder) Clone() *CardHolder {
 		From:   c.From,
 		To:     c.To,
 		Groups: groups,
+
+		Created: c.Created,
 	}
 
 	return replicant
