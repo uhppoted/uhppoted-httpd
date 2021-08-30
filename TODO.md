@@ -26,13 +26,15 @@
 
 - Migrate cards to OIDs
   - [x] Use onCommit from edit.js
+  - [x] Use onCommitAll from edit.js
+  - [x] Use onRollbackAll from edit.js
+  - [ ] Sort on 'created'
   - [ ] Update commit for OIDs
         - [x] name
         - [ ] card number
         - [ ] from
         - [ ] to
         - [ ] groups
-  - [ ] Use commit-all from edit.js
   - [ ] Unit test for AsObjects
   - [ ] `card` serialize/deserialize
   - [ ] Split cards and groups into separate files

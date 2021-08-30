@@ -93,9 +93,9 @@ export function onCommitAll (tag, event, table) {
       doors.commit(...list)
       break
 
-    // case 'cards':
-    //   cards.commit(...list)
-    //   break
+    case 'cards':
+      cards.commit(...list)
+      break
   }
 }
 
