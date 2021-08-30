@@ -250,9 +250,9 @@ function add (oid, record) {
 }
 
 /** OLD STUFF **/
-export function onEdited (event) {
-  set(event.target, event.target.value)
-}
+// export function onEdited (event) {
+//   set(event.target, event.target.value)
+// }
 
 export function onTick (event) {
   set(event.target, event.target.checked)
@@ -380,84 +380,84 @@ export function onDelete (id) {
   }
 }
 
-export function onRevert (id) {
-  const row = document.getElementById(id)
+// export function onRevert (id) {
+//   const row = document.getElementById(id)
+//
+//   if (row) {
+//     const fields = row.querySelectorAll('.field')
+//
+//     fields.forEach((item) => {
+//       if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
+//         switch (item.getAttribute('type').toLowerCase()) {
+//           case 'text':
+//           case 'number':
+//           case 'date':
+//             item.value = item.dataset.original
+//             break
+//
+//           case 'checkbox':
+//             item.checked = item.dataset.original === 'true'
+//             break
+//         }
+//       }
+//
+//       set(item, item.dataset.original)
+//     })
+//
+//     row.classList.remove('modified')
+//   }
+// }
 
-  if (row) {
-    const fields = row.querySelectorAll('.field')
-
-    fields.forEach((item) => {
-      if ((item.dataset.record === id) && (item.dataset.value !== item.dataset.original)) {
-        switch (item.getAttribute('type').toLowerCase()) {
-          case 'text':
-          case 'number':
-          case 'date':
-            item.value = item.dataset.original
-            break
-
-          case 'checkbox':
-            item.checked = item.dataset.original === 'true'
-            break
-        }
-      }
-
-      set(item, item.dataset.original)
-    })
-
-    row.classList.remove('modified')
-  }
-}
-
-export function onNew (event) {
-  const tbody = document.getElementById('cardholders').querySelector('table tbody')
-
-  if (tbody) {
-    const row = tbody.insertRow()
-    const name = row.insertCell()
-    const card = row.insertCell()
-    const from = row.insertCell()
-    const to = row.insertCell()
-    const groups = []
-    const uuid = 'U' + uuidv4()
-
-    // 'constants' is a global object initialised by the Go template
-    for (let i = 0; i < constants.groups.length; i++) {
-      groups.push(row.insertCell())
-    }
-
-    row.id = uuid
-    row.classList.add('new')
-
-    name.style = 'display:flex; flex-direction:row;'
-    name.classList.add('rowheader')
-
-    name.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                     '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />' +
-                     '<span class="control commit" id="' + uuid + '_commit" onclick="onCommit(event)" data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
-                     '<span class="control rollback" id="' + uuid + '_rollback" onclick="onRollback(event, \'delete\')" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
-
-    card.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                     '<input id="' + uuid + '-card" class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="6152346" />'
-
-    from.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                     '<input id="' + uuid + '-from" class="field from" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
-
-    to.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                   '<input id="' + uuid + '-to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
-
-    for (let i = 0; i < groups.length; i++) {
-      const g = groups[i]
-      const id = uuid + '-' + constants.groups[i]
-
-      g.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-                    '<label class="group">' +
-                    '<input id="' + id + '" class="field" type="checkbox" onclick="onTick(event)" data-record="' + uuid + '" data-original="false" data-value="false" />' +
-                    '<img class="no"  src="images/times-solid.svg" />' +
-                    '<img class="yes" src="images/check-solid.svg" />' +
-                    '</label>'
-    }
-  }
-}
+// export function onNew (event) {
+//   const tbody = document.getElementById('cardholders').querySelector('table tbody')
+//
+//   if (tbody) {
+//     const row = tbody.insertRow()
+//     const name = row.insertCell()
+//     const card = row.insertCell()
+//     const from = row.insertCell()
+//     const to = row.insertCell()
+//     const groups = []
+//     const uuid = 'U' + uuidv4()
+//
+//     // 'constants' is a global object initialised by the Go template
+//     for (let i = 0; i < constants.groups.length; i++) {
+//       groups.push(row.insertCell())
+//     }
+//
+//     row.id = uuid
+//     row.classList.add('new')
+//
+//     name.style = 'display:flex; flex-direction:row;'
+//     name.classList.add('rowheader')
+//
+//     name.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+//                      '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />' +
+//                      '<span class="control commit" id="' + uuid + '_commit" onclick="onCommit(event)" data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
+//                      '<span class="control rollback" id="' + uuid + '_rollback" onclick="onRollback(event, \'delete\')" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
+//
+//     card.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+//                      '<input id="' + uuid + '-card" class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="6152346" />'
+//
+//     from.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+//                      '<input id="' + uuid + '-from" class="field from" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
+//
+//     to.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+//                    '<input id="' + uuid + '-to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
+//
+//     for (let i = 0; i < groups.length; i++) {
+//       const g = groups[i]
+//       const id = uuid + '-' + constants.groups[i]
+//
+//       g.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+//                     '<label class="group">' +
+//                     '<input id="' + id + '" class="field" type="checkbox" onclick="onTick(event)" data-record="' + uuid + '" data-original="false" data-value="false" />' +
+//                     '<img class="no"  src="images/times-solid.svg" />' +
+//                     '<img class="yes" src="images/check-solid.svg" />' +
+//                     '</label>'
+//     }
+//   }
+// }
 
 export function onRefresh (event) {
   busy()
@@ -715,9 +715,9 @@ function rowToRecord (id, row) {
   return [record, fields]
 }
 
-// Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
-function uuidv4 () {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  )
-}
+// // Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
+// function uuidv4 () {
+//   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+//     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+//   )
+// }

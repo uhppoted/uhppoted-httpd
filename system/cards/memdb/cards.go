@@ -169,7 +169,7 @@ func (d *fdb) CardHolders() cards.CardHolders {
 	return list
 }
 
-func (d fdb) Print() {
+func (d *fdb) Print() {
 	if b, err := json.MarshalIndent(d.data.Tables.CardHolders, "", "  "); err == nil {
 		fmt.Printf("----------------- CARDS\n%s\n", string(b))
 	}
