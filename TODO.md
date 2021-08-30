@@ -4,34 +4,27 @@
 
 ### IN PROGRESS
 
-- [ ] Make OID a type
-      - [x] cards
-      - [ ] doors
-      - [ ] interfaces
-      - [ ] controllers
-      - [ ] catalog
-      - [ ] cache
+- OID
+  - [ ] Add controllers to schema
+  - [ ] Add LAN to schema
+  - [ ] Store all values in catalog and 'realize' local copies from cache
+  - [ ] Make OID a type
+        - [ ] doors
+        - [ ] interfaces
+        - [ ] controllers
+        - [ ] catalog
+        - [ ] cache
 
 - [ ] Commonalise CSS
       - migrate shared CSS to 'common'
         - [ ] system
         - [ ] doors
-        - [x] cards
         - [ ] tooltips
       - move 'common' into 'tabular'
 - [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
-- OID schema
-  - [ ] controllers
-  - [ ] LAN
-
 - Migrate cards to OIDs
-  - [x] JS: updateFromDB
-  - [x] Fix number field styling
-  - [x] Use rollback from edit.js
-  - [x] Use rollback-all from edit.js
-  - [x] Sort by created
   - [ ] Use commit from edit.js
   - [ ] Use commit-all from edit.js
   - [ ] Unit test for AsObjects

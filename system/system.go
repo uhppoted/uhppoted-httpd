@@ -15,13 +15,15 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
+	"github.com/uhppoted/uhppoted-httpd/system/groups"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/config"
 )
 
 var sys = system{
-	doors:       doors.NewDoors(),
 	controllers: controllers.NewControllerSet(),
+	doors:       doors.NewDoors(),
+	groups:      groups.NewGroups(),
 	taskQ:       NewTaskQ(),
 	retention:   6 * time.Hour,
 }
@@ -32,6 +34,7 @@ type system struct {
 	controllers controllers.ControllerSet
 	doors       doors.Doors
 	cards       cards.Cards
+	groups      groups.Groups
 	audit       audit.Trail
 	taskQ       TaskQ
 	retention   time.Duration // time after which 'deleted' items are permanently removed
@@ -48,7 +51,11 @@ func Init(cfg config.Config, conf string, permissions cards.IRules, trail audit.
 		return err
 	}
 
-	cards, err := memdb.NewDB(cfg.HTTPD.DB.File, permissions)
+	if err := sys.groups.Load(cfg.HTTPD.System.Groups); err != nil {
+		return err
+	}
+
+	cards, err := memdb.NewDB(cfg.HTTPD.System.Cards, permissions)
 	if err != nil {
 		return err
 	}
@@ -69,6 +76,7 @@ func Init(cfg config.Config, conf string, permissions cards.IRules, trail audit.
 
 	sys.controllers.Print()
 	sys.doors.Print()
+	sys.groups.Print()
 	sys.cards.Print()
 
 	go func() {

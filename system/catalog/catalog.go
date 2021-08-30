@@ -14,10 +14,12 @@ var catalog = struct {
 	interfaces  map[string]struct{}
 	controllers map[string]controller
 	doors       map[string]struct{}
+	groups      map[OID]struct{}
 }{
 	interfaces:  map[string]struct{}{},
 	controllers: map[string]controller{},
 	doors:       map[string]struct{}{},
+	groups:      map[OID]struct{}{},
 }
 
 var guard sync.Mutex
@@ -49,6 +51,13 @@ func PutDoor(oid string) {
 	defer guard.Unlock()
 
 	catalog.doors[oid] = struct{}{}
+}
+
+func PutGroup(oid OID) {
+	guard.Lock()
+	defer guard.Unlock()
+
+	catalog.groups[oid] = struct{}{}
 }
 
 func GetController(deviceID uint32) string {

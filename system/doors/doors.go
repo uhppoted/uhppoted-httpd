@@ -173,11 +173,9 @@ func (dd Doors) Find(name string) (Door, bool) {
 	return Door{}, false
 }
 
-func (dd *Doors) Print() {
-	if dd != nil {
-		if b, err := json.MarshalIndent(dd.Doors, "", "  "); err == nil {
-			fmt.Printf("-----------------\n%s\n", string(b))
-		}
+func (dd Doors) Print() {
+	if b, err := json.MarshalIndent(dd.Doors, "", "  "); err == nil {
+		fmt.Printf("----------------- DOORS\n%s\n", string(b))
 	}
 }
 

@@ -13,6 +13,10 @@ func Join(oid OID, suffix Suffix) string {
 	return regexp.MustCompile(`\.+`).ReplaceAllString(fmt.Sprintf("%v.%v", oid, suffix), ".")
 }
 
+func (oid OID) Append(suffix Suffix) string {
+	return regexp.MustCompile(`\.+`).ReplaceAllString(fmt.Sprintf("%v.%v", oid, suffix), ".")
+}
+
 func (oid OID) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(oid))
 }

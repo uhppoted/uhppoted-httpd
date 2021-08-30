@@ -227,7 +227,7 @@ func (cc *ControllerSet) Sweep(retention time.Duration) {
 
 func (cc *ControllerSet) Print() {
 	if b, err := json.MarshalIndent(cc, "", "  "); err == nil {
-		fmt.Printf("-----------------\n%s\n", string(b))
+		fmt.Printf("----------------- CONTROLLERS\n%s\n", string(b))
 	}
 }
 

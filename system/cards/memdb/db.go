@@ -79,7 +79,7 @@ func NewDB(file string, rules cards.IRules) (*fdb, error) {
 	}
 
 	for _, v := range f.data.Tables.Groups {
-		catalog.PutV(v.OID+GroupName, v.Name, false)
+		catalog.PutV(catalog.OID(v.OID).Append(GroupName), v.Name, false)
 	}
 
 	created := time.Time{}
@@ -114,11 +114,9 @@ func (d *fdb) CardHolders() cards.CardHolders {
 	return list
 }
 
-func (d *fdb) Print() {
-	if d != nil {
-		if b, err := json.MarshalIndent(d.data.Tables.CardHolders, "", "  "); err == nil {
-			fmt.Printf("-----------------\n%s\n", string(b))
-		}
+func (d fdb) Print() {
+	if b, err := json.MarshalIndent(d.data.Tables.CardHolders, "", "  "); err == nil {
+		fmt.Printf("----------------- CARDS\n%s\n", string(b))
 	}
 }
 
