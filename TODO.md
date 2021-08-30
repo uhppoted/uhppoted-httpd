@@ -25,7 +25,13 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [ ] Use commit from edit.js
+  - [x] Use onCommit from edit.js
+  - [ ] Update commit for OIDs
+        - [x] name
+        - [ ] card number
+        - [ ] from
+        - [ ] to
+        - [ ] groups
   - [ ] Use commit-all from edit.js
   - [ ] Unit test for AsObjects
   - [ ] `card` serialize/deserialize

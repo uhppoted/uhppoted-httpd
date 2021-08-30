@@ -5,6 +5,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -129,6 +130,136 @@ func (c *CardHolder) AsRuleEntity() interface{} {
 	}
 
 	return &entity{}
+}
+
+// TODO make unexported after rationalising 'Cards' implementation
+func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+	objects := []interface{}{}
+
+	f := func(field string, value interface{}) error {
+		//			if auth == nil {
+		//				return nil
+		//			}
+		//
+		//			return auth.CanUpdateDoor(d, field, value)
+		return nil
+	}
+
+	if c != nil {
+		// name := stringify(c.Name)
+
+		switch oid {
+		case catalog.Join(c.OID, CardName):
+			if err := f("name", value); err != nil {
+				return nil, err
+			} else {
+				//				d.log(auth, "update", d.OID, "name", stringify(d.Name), value)
+				v := types.Name(value)
+				c.Name = &v
+				objects = append(objects, object{
+					OID:   c.OID.Append(CardName),
+					Value: stringify(c.Name),
+				})
+			}
+
+			//		case d.OID + DoorDelay:
+			//			delay := d.delay
+			//
+			//			if err := f("delay", value); err != nil {
+			//				return nil, err
+			//			} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
+			//				return nil, err
+			//			} else {
+			//				d.delay = uint8(v)
+			//
+			//				catalog.PutV(d.OID+DoorDelayConfigured, d.delay, true)
+			//
+			//				objects = append(objects, object{
+			//					OID:   d.OID + DoorDelay,
+			//					Value: stringify(d.delay),
+			//				})
+			//
+			//				objects = append(objects, object{
+			//					OID:   d.OID + DoorDelayStatus,
+			//					Value: stringify(types.StatusUncertain),
+			//				})
+			//
+			//				objects = append(objects, object{
+			//					OID:   d.OID + DoorDelayConfigured,
+			//					Value: stringify(d.delay),
+			//				})
+			//
+			//				objects = append(objects, object{
+			//					OID:   d.OID + DoorDelayError,
+			//					Value: "",
+			//				})
+			//
+			//				d.log(auth, "update", d.OID, "delay", stringify(delay), value)
+			//			}
+			//
+			//		case d.OID + DoorControl:
+			//			if err := f("mode", value); err != nil {
+			//				return nil, err
+			//			} else {
+			//				mode := d.mode
+			//				switch value {
+			//				case "controlled":
+			//					d.mode = core.Controlled
+			//				case "normally open":
+			//					d.mode = core.NormallyOpen
+			//				case "normally closed":
+			//					d.mode = core.NormallyClosed
+			//				default:
+			//					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
+			//				}
+			//
+			//				catalog.PutV(d.OID+DoorControlConfigured, d.mode, true)
+			//
+			//				objects = append(objects, object{
+			//					OID:   d.OID + DoorControl,
+			//					Value: stringify(d.mode),
+			//				})
+			//
+			//				objects = append(objects, object{
+			//					OID:   d.OID + DoorControlStatus,
+			//					Value: stringify(types.StatusUncertain),
+			//				})
+			//
+			//				objects = append(objects, object{
+			//					OID:   d.OID + DoorControlConfigured,
+			//					Value: stringify(d.mode),
+			//				})
+			//
+			//				objects = append(objects, object{
+			//					OID:   d.OID + DoorControlError,
+			//					Value: "",
+			//				})
+			//
+			//				d.log(auth, "update", d.OID, "mode", stringify(mode), value)
+			//			}
+			//		}
+			//
+			//		if !d.IsValid() {
+			//			if auth != nil {
+			//				if err := auth.CanDeleteDoor(d); err != nil {
+			//					return nil, err
+			//				}
+			//			}
+			//
+			//			d.log(auth, "delete", d.OID, "name", name, "")
+			//			now := time.Now()
+			//			d.deleted = &now
+			//
+			//			objects = append(objects, object{
+			//				OID:   d.OID,
+			//				Value: "deleted",
+			//			})
+			//
+			//			catalog.Delete(d.OID)
+		}
+	}
+
+	return objects, nil
 }
 
 func lookup(oid string) interface{} {

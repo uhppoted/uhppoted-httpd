@@ -343,7 +343,7 @@ function card (o) {
       if (v.status === 'new') {
         v.status = 'unknown'
       }
-      console.log(oid)
+
       switch (oid) {
         case k:
           v.status = o.value

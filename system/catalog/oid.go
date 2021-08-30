@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 type OID string
@@ -15,6 +16,13 @@ func Join(oid OID, suffix Suffix) string {
 
 func (oid OID) Append(suffix Suffix) string {
 	return regexp.MustCompile(`\.+`).ReplaceAllString(fmt.Sprintf("%v.%v", oid, suffix), ".")
+}
+
+func (oid OID) Contains(o string) bool {
+	p := fmt.Sprintf("%v", oid)
+	q := fmt.Sprintf("%v", o)
+
+	return strings.HasPrefix(q, p+".")
 }
 
 func (oid OID) MarshalJSON() ([]byte, error) {

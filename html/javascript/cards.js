@@ -1,7 +1,7 @@
 /* global constants */
 
 import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
-import { update, revert } from './edit.js'
+import { update, revert, mark, unmark } from './edit.js'
 import { DB } from './db.js'
 
 export function rollback (row) {
@@ -39,6 +39,85 @@ export function get () {
     })
     .catch(function (err) {
       console.error(err)
+    })
+}
+
+export function commit (...rows) {
+  const list = []
+
+  rows.forEach(row => {
+    const oid = row.dataset.oid
+    const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
+    children.forEach(e => {
+      if (e.classList.contains('modified')) {
+        list.push(e)
+      }
+    })
+  })
+
+  const records = []
+  list.forEach(e => {
+    const oid = e.dataset.oid
+    const value = e.dataset.value
+    records.push({ oid: oid, value: value })
+  })
+
+  const reset = function () {
+    list.forEach(e => {
+      const flag = document.getElementById(`F${e.dataset.oid}`)
+      unmark('pending', e, flag)
+      mark('modified', e, flag)
+    })
+  }
+
+  const cleanup = function () {
+    list.forEach(e => {
+      const flag = document.getElementById(`F${e.dataset.oid}`)
+      unmark('pending', e, flag)
+    })
+  }
+
+  list.forEach(e => {
+    const flag = document.getElementById(`F${e.dataset.oid}`)
+    mark('pending', e, flag)
+    unmark('modified', e, flag)
+  })
+
+  post('objects', records, reset, cleanup)
+}
+
+function post (tag, records, reset, cleanup) {
+  busy()
+
+  postAsJSON('/cards', { [tag]: records })
+    .then(response => {
+      if (response.redirected) {
+        window.location = response.url
+      } else {
+        switch (response.status) {
+          case 200:
+            response.json().then(object => {
+              if (object && object.system && object.system.objects) {
+                DB.updated('objects', object.system.objects)
+              }
+
+              refreshed()
+            })
+            break
+
+          default:
+            reset()
+            response.text().then(message => { warning(message) })
+        }
+      }
+    })
+    .catch(function (err) {
+      reset()
+      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+    })
+    .finally(() => {
+      cleanup()
+      unbusy()
     })
 }
 
@@ -179,28 +258,28 @@ export function onTick (event) {
   set(event.target, event.target.checked)
 }
 
-export function onCommit (event) {
-  onUpdate(event.target.dataset.record)
-}
+// export function onCommit (event) {
+//   onUpdate(event.target.dataset.record)
+// }
 
-export function onCommitAll (event) {
-  const tbody = document.getElementById('cardholders').querySelector('table tbody')
-
-  if (tbody) {
-    const rows = tbody.rows
-    const list = []
-
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i]
-
-      if (row.classList.contains('modified') || row.classList.contains('new')) {
-        list.push(row.id)
-      }
-    }
-
-    onUpdate(...list)
-  }
-}
+// export function onCommitAll (event) {
+//   const tbody = document.getElementById('cardholders').querySelector('table tbody')
+//
+//   if (tbody) {
+//     const rows = tbody.rows
+//     const list = []
+//
+//     for (let i = 0; i < rows.length; i++) {
+//       const row = rows[i]
+//
+//       if (row.classList.contains('modified') || row.classList.contains('new')) {
+//         list.push(row.id)
+//       }
+//     }
+//
+//     onUpdate(...list)
+//   }
+// }
 
 // export function onRollback (event, op) {
 //   if (op && op === 'delete') {

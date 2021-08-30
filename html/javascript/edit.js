@@ -69,6 +69,10 @@ export function onCommit (tag, event) {
     case 'door':
       doors.commit(row)
       break
+
+    case 'card':
+      cards.commit(row)
+      break
   }
 }
 
@@ -85,10 +89,13 @@ export function onCommitAll (tag, event, table) {
   }
 
   switch (tag) {
-    case 'doors': {
+    case 'doors':
       doors.commit(...list)
       break
-    }
+
+    // case 'cards':
+    //   cards.commit(...list)
+    //   break
   }
 }
 
