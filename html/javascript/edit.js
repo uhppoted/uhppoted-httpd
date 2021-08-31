@@ -1,6 +1,8 @@
 import * as doors from './doors.js'
 import * as cards from './cards.js'
-import { busy, dismiss } from './uhppoted.js'
+import * as groups from './groups.js'
+import * as db from './db.js'
+import { busy, unbusy, warning, dismiss, getAsJSON } from './uhppoted.js'
 
 export function onEdited (tag, event) {
   switch (tag) {
@@ -156,6 +158,10 @@ export function onRefresh (tag, event) {
     case 'cards':
       cards.get()
       break
+
+    case 'groups':
+      get('/groups', groups.refreshed)
+      break
   }
 }
 
@@ -287,6 +293,21 @@ export function modified (oid) {
   }
 }
 
+export function deleted (tag, row) {
+  const tbody = document.getElementById(tag).querySelector('table tbody')
+
+  if (tbody && row) {
+    const rows = tbody.rows
+
+    for (let ix = 0; ix < rows.length; ix++) {
+      if (rows[ix].id === row.id) {
+        tbody.deleteRow(ix)
+        break
+      }
+    }
+  }
+}
+
 export function percolate (oid, f) {
   let oidx = oid
 
@@ -297,4 +318,33 @@ export function percolate (oid, f) {
       f(oidx)
     }
   }
+}
+
+function get (url, refreshed) {
+  getAsJSON(url)
+    .then(response => {
+      unbusy()
+
+      if (response.redirected) {
+        window.location = response.url
+      } else {
+        switch (response.status) {
+          case 200:
+            response.json().then(object => {
+              if (object && object.system && object.system.objects) {
+                db.DB.updated('objects', object.system.objects)
+              }
+
+              refreshed()
+            })
+            break
+
+          default:
+            response.text().then(message => { warning(message) })
+        }
+      }
+    })
+    .catch(function (err) {
+      console.error(err)
+    })
 }

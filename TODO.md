@@ -25,12 +25,7 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [x] Use onCommit from edit.js
-  - [x] Use onCommitAll from edit.js
-  - [x] Use onRollbackAll from edit.js
-  - [x] Include 'created' in card.Clone
   - [ ] Update commit for OIDs
-        - [x] name
         - [ ] card number
         - [ ] from
         - [ ] to
@@ -47,7 +42,12 @@
         - or just use tag (?)
 
 - Groups
-  - [ ] AsObjects
+  - [x] AsObjects
+  - [x] `get`
+  - [ ] edit
+  - [ ] rollback
+  - [ ] commit
+  - [ ] doors
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click 

@@ -1,13 +1,14 @@
-// /* global */
+/* global */
 
 import * as system from './system.js'
+import { deleted } from './edit.js'
 import { DB } from './db.js'
 
 export function updateFromDB (oid, record) {
   let row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
 
   if (record.status === 'deleted') {
-    deleted(row)
+    deleted('controllers', row)
     return
   }
 
@@ -308,21 +309,6 @@ function revert (row) {
   })
 
   row.classList.remove('modified')
-}
-
-function deleted (row) {
-  const tbody = document.getElementById('controllers').querySelector('table tbody')
-
-  if (tbody && row) {
-    const rows = tbody.rows
-
-    for (let ix = 0; ix < rows.length; ix++) {
-      if (rows[ix].id === row.id) {
-        tbody.deleteRow(ix)
-        break
-      }
-    }
-  }
 }
 
 function mark (clazz, ...elements) {

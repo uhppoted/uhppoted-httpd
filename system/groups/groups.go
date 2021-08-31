@@ -14,6 +14,8 @@ type Groups struct {
 	file string `json:"-"`
 }
 
+type object catalog.Object
+
 func NewGroups() Groups {
 	return Groups{
 		Groups: map[catalog.OID]Group{},
@@ -63,4 +65,18 @@ func (gg Groups) Print() {
 	if b, err := json.MarshalIndent(gg.Groups, "", "  "); err == nil {
 		fmt.Printf("----------------- GROUPS\n%s\n", string(b))
 	}
+}
+
+func (gg *Groups) AsObjects() []interface{} {
+	objects := []interface{}{}
+
+	for _, g := range gg.Groups {
+		if g.IsValid() || g.IsDeleted() {
+			if l := g.AsObjects(); l != nil {
+				objects = append(objects, l...)
+			}
+		}
+	}
+
+	return objects
 }

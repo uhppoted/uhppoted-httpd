@@ -1,8 +1,9 @@
 export const DB = {
   interfaces: new Map(),
   controllers: new Map(),
-  cards: new Map(),
   doors: new Map(),
+  cards: new Map(),
+  groups: new Map(),
 
   updated: function (tag, recordset) {
     if (recordset) {
@@ -53,6 +54,8 @@ function object (o) {
     door(o)
   } else if (/^0\.3\..*$/.test(oid)) {
     card(o)
+  } else if (/^0\.4\..*$/.test(oid)) {
+    group(o)
   }
 }
 
@@ -396,6 +399,52 @@ function card (o) {
   })
 }
 
+function group (o) {
+  const oid = o.OID
+
+  if (/^0\.4\.[1-9][0-9]*$/.test(oid)) {
+    if (DB.groups.has(oid)) {
+      const record = DB.groups.get(oid)
+      record.status = o.value
+      record.mark = 0
+      return
+    }
+
+    DB.groups.set(oid, {
+      OID: oid,
+      created: '',
+      name: '',
+      status: o.value,
+      mark: 0
+    })
+
+    return
+  }
+
+  DB.groups.forEach((v, k) => {
+    if (oid.startsWith(k)) {
+      // INTERIM HACK
+      if (v.status === 'new') {
+        v.status = 'unknown'
+      }
+
+      switch (oid) {
+        case k:
+          v.status = o.value
+          break
+
+        case k + '.0.1':
+          v.created = o.value
+          break
+
+        case k + '.1':
+          v.name = o.value
+          break
+      }
+    }
+  })
+}
+
 function mark (tag) {
   DB.controllers.forEach(v => {
     v.mark += 1
@@ -406,6 +455,10 @@ function mark (tag) {
   })
 
   DB.cards.forEach(v => {
+    v.mark += 1
+  })
+
+  DB.groups.forEach(v => {
     v.mark += 1
   })
 }
@@ -426,6 +479,12 @@ function sweep (tag) {
   DB.cards.forEach((v, k) => {
     if (v.mark >= 25 && v.status === 'deleted') {
       DB.doors.delete(k)
+    }
+  })
+
+  DB.groups.forEach((v, k) => {
+    if (v.mark >= 25 && v.status === 'deleted') {
+      DB.groups.delete(k)
     }
   })
 }

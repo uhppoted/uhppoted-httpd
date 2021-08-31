@@ -1,7 +1,7 @@
 /* global */
 
 import { busy, unbusy, warning, getAsJSON, postAsJSON } from './uhppoted.js'
-import { update, revert, mark, unmark } from './edit.js'
+import { update, revert, deleted, mark, unmark } from './edit.js'
 import { DB } from './db.js'
 
 export function create () {
@@ -158,7 +158,7 @@ function updateFromDB (oid, record) {
   let row = document.querySelector("div#doors tr[data-oid='" + oid + "']")
 
   if (record.status === 'deleted') {
-    deleted(row)
+    deleted('doors', row)
     return
   }
 
@@ -276,20 +276,5 @@ function add (oid) {
     })
 
     return row
-  }
-}
-
-function deleted (row) {
-  const tbody = document.getElementById('doors').querySelector('table tbody')
-
-  if (tbody && row) {
-    const rows = tbody.rows
-
-    for (let ix = 0; ix < rows.length; ix++) {
-      if (rows[ix].id === row.id) {
-        tbody.deleteRow(ix)
-        break
-      }
-    }
   }
 }

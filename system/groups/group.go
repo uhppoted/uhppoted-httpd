@@ -2,9 +2,12 @@ package groups
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Group struct {
@@ -19,6 +22,40 @@ const GroupName = catalog.GroupName
 const GroupCreated = catalog.GroupCreated
 
 var created = time.Now()
+
+func (g Group) IsValid() bool {
+	if strings.TrimSpace(g.Name) != "" {
+		return true
+	}
+
+	return false
+}
+
+func (g Group) IsDeleted() bool {
+	if g.deleted != nil {
+		return true
+	}
+
+	return false
+}
+
+func (g *Group) AsObjects() []interface{} {
+	created := g.created.Format("2006-01-02 15:04:05")
+	status := stringify(types.StatusOk)
+	name := stringify(g.Name)
+
+	if g.deleted != nil {
+		status = stringify(types.StatusDeleted)
+	}
+
+	objects := []interface{}{
+		object{OID: string(g.OID), Value: status},
+		object{OID: g.OID.Append(GroupCreated), Value: created},
+		object{OID: g.OID.Append(GroupName), Value: name},
+	}
+
+	return objects
+}
 
 func (g Group) serialize() ([]byte, error) {
 	record := struct {
@@ -56,4 +93,25 @@ func (g *Group) deserialize(bytes []byte) error {
 	}
 
 	return nil
+}
+
+func stringify(i interface{}) string {
+	switch v := i.(type) {
+	case *uint32:
+		if v != nil {
+			return fmt.Sprintf("%v", *v)
+		}
+
+	case *string:
+		if v != nil {
+			return fmt.Sprintf("%v", *v)
+		}
+
+	default:
+		if i != nil {
+			return fmt.Sprintf("%v", i)
+		}
+	}
+
+	return ""
 }

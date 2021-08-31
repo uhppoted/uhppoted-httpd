@@ -101,6 +101,7 @@ func System() interface{} {
 	objects = append(objects, sys.controllers.AsObjects()...)
 	objects = append(objects, sys.doors.AsObjects()...)
 	objects = append(objects, sys.cards.AsObjects()...)
+	objects = append(objects, sys.groups.AsObjects()...)
 
 	return struct {
 		Objects []interface{} `json:"objects"`
