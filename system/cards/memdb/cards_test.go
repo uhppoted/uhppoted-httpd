@@ -44,6 +44,10 @@ func (x *stub) CanAddCardHolder(cardHolder auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 
+func (x *stub) CanUpdateCard(door auth.Operant, field string, value interface{}) error {
+	return fmt.Errorf("not authorised")
+}
+
 func (x *stub) CanUpdateCardHolder(before, after auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }

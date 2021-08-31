@@ -40,6 +40,21 @@ func SetAuditTrail(t audit.Trail) {
 	trail = t
 }
 
+func (c CardHolder) String() string {
+	name := "-"
+	number := "-"
+
+	if c.Name != nil {
+		name = fmt.Sprintf("%v", c.Name)
+	}
+
+	if c.Card != nil {
+		number = fmt.Sprintf("%v", c.Card)
+	}
+
+	return fmt.Sprintf("%v (%v)", number, name)
+}
+
 func (c *CardHolder) Clone() *CardHolder {
 	name := c.Name.Copy()
 	card := c.Card.Copy()
@@ -115,14 +130,20 @@ func (c *CardHolder) AsObjects() []interface{} {
 func (c *CardHolder) AsRuleEntity() interface{} {
 	type entity struct {
 		Name   string
-		Card   uint32
+		Number uint32
+		From   string
+		To     string
 		Groups []string
 	}
 
 	if c != nil {
-		cardNumber := uint32(0)
+		name := fmt.Sprintf("%v", c.Name)
+		number := uint32(0)
+		from := fmt.Sprintf("%v", c.From)
+		to := fmt.Sprintf("%v", c.To)
+
 		if c.Card != nil {
-			cardNumber = uint32(*c.Card)
+			number = uint32(*c.Card)
 		}
 
 		groups := []string{}
@@ -133,8 +154,10 @@ func (c *CardHolder) AsRuleEntity() interface{} {
 		}
 
 		return &entity{
-			Name:   fmt.Sprintf("%v", c.Name),
-			Card:   cardNumber,
+			Name:   name,
+			Number: number,
+			From:   from,
+			To:     to,
 			Groups: groups,
 		}
 	}
@@ -147,12 +170,11 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
-		//			if auth == nil {
-		//				return nil
-		//			}
-		//
-		//			return auth.CanUpdateDoor(d, field, value)
-		return nil
+		if auth == nil {
+			return nil
+		}
+
+		return auth.CanUpdateCard(c, field, value)
 	}
 
 	if c != nil {
@@ -173,9 +195,9 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 			}
 
 		case catalog.Join(c.OID, CardNumber):
-			if err := f("number", value); err != nil {
+			if n, err := strconv.ParseUint(value, 10, 32); err != nil {
 				return nil, err
-			} else if n, err := strconv.ParseUint(value, 10, 32); err != nil {
+			} else if err := f("number", n); err != nil {
 				return nil, err
 			} else {
 				c.log(auth, "update", c.OID, "number", stringify(c.Card), value)

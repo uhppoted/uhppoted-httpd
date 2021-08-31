@@ -222,6 +222,36 @@ func (a *authorizator) CanUpdateCardHolder(original, updated auth.Operant) error
 	return fmt.Errorf("Not authorized for operation %s", "update::card")
 }
 
+func (a *authorizator) CanUpdateCard(card auth.Operant, field string, value interface{}) error {
+	msg := fmt.Errorf("Not authorized to update card %v", card)
+	err := fmt.Errorf("Not authorized for operation %s", "update::card")
+
+	if a != nil && card != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"CARD":  card.AsRuleEntity(),
+			"FIELD": field,
+			"VALUE": value,
+		}
+
+		if err = a.eval("cards", "update::card", &r, m); err != nil {
+			return types.Unauthorized(msg, err)
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::card %v, field:%v, value:%v", card, field, value))
+	}
+
+	return types.Unauthorized(msg, err)
+}
+
 func (a *authorizator) CanDeleteCardHolder(ch auth.Operant) error {
 	if a != nil && ch != nil {
 		r := result{

@@ -31,7 +31,7 @@
         - [x] from
         - [x] to
         - [ ] groups
-        - [ ] authorization
+        - [x] authorization
   - [ ] onNew
   - [ ] delete
   - [ ] save
