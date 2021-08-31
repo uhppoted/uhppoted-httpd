@@ -26,7 +26,7 @@
 
 - Migrate cards to OIDs
   - [ ] Update commit for OIDs
-        - [ ] card number
+        - [x] card number
         - [ ] from
         - [ ] to
         - [ ] groups

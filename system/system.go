@@ -55,19 +55,21 @@ func Init(cfg config.Config, conf string, permissions cards.IRules, trail audit.
 		return err
 	}
 
-	cards, err := memdb.NewDB(cfg.HTTPD.System.Cards, permissions)
+	cc, err := memdb.NewDB(cfg.HTTPD.System.Cards, permissions)
 	if err != nil {
 		return err
 	}
 
 	sys.conf = conf
-	sys.cards = cards
+	sys.cards = cc
 	sys.audit = trail
 	sys.retention = cfg.HTTPD.Retention
 
 	controllers.SetAuditTrail(trail)
 	doors.SetAuditTrail(trail)
 	memdb.SetAuditTrail(trail)
+	cards.SetAuditTrail(trail)
+	groups.SetAuditTrail(trail)
 
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
 		cfg.HTTPD.System.Windows.Uncertain,

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
@@ -15,6 +16,12 @@ type Groups struct {
 }
 
 type object catalog.Object
+
+var trail audit.Trail
+
+func SetAuditTrail(t audit.Trail) {
+	trail = t
+}
 
 func NewGroups() Groups {
 	return Groups{

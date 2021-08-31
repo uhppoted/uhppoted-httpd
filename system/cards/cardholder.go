@@ -3,8 +3,10 @@ package cards
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -31,6 +33,12 @@ const CardNumber = catalog.CardNumber
 const CardFrom = catalog.CardFrom
 const CardTo = catalog.CardTo
 const CardGroups = catalog.CardGroups
+
+var trail audit.Trail
+
+func SetAuditTrail(t audit.Trail) {
+	trail = t
+}
 
 func (c *CardHolder) Clone() *CardHolder {
 	name := c.Name.Copy()
@@ -155,12 +163,27 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				//				d.log(auth, "update", d.OID, "name", stringify(d.Name), value)
+				c.log(auth, "update", c.OID, "name", stringify(c.Name), value)
 				v := types.Name(value)
 				c.Name = &v
 				objects = append(objects, object{
 					OID:   c.OID.Append(CardName),
 					Value: stringify(c.Name),
+				})
+			}
+
+		case catalog.Join(c.OID, CardNumber):
+			if err := f("number", value); err != nil {
+				return nil, err
+			} else if n, err := strconv.ParseUint(value, 10, 32); err != nil {
+				return nil, err
+			} else {
+				c.log(auth, "update", c.OID, "number", stringify(c.Card), value)
+				v := types.Card(n)
+				c.Card = &v
+				objects = append(objects, object{
+					OID:   c.OID.Append(CardNumber),
+					Value: stringify(c.Card),
 				})
 			}
 
@@ -262,6 +285,38 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 	}
 
 	return objects, nil
+}
+
+func (c *CardHolder) log(auth auth.OpAuth, operation string, oid catalog.OID, field, current, value string) {
+	type info struct {
+		OID     string `json:"OID"`
+		Card    string `json:"card"`
+		Field   string `json:"field"`
+		Current string `json:"current"`
+		Updated string `json:"new"`
+	}
+
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
+	}
+
+	if trail != nil {
+		record := audit.LogEntry{
+			UID:       uid,
+			Module:    stringify(oid),
+			Operation: operation,
+			Info: info{
+				OID:     stringify(oid),
+				Card:    stringify(c.Card),
+				Field:   field,
+				Current: current,
+				Updated: value,
+			},
+		}
+
+		trail.Write(record)
+	}
 }
 
 func lookup(oid string) interface{} {

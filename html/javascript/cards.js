@@ -408,56 +408,56 @@ export function onDelete (id) {
 //   }
 // }
 
-// export function onNew (event) {
-//   const tbody = document.getElementById('cardholders').querySelector('table tbody')
-//
-//   if (tbody) {
-//     const row = tbody.insertRow()
-//     const name = row.insertCell()
-//     const card = row.insertCell()
-//     const from = row.insertCell()
-//     const to = row.insertCell()
-//     const groups = []
-//     const uuid = 'U' + uuidv4()
-//
-//     // 'constants' is a global object initialised by the Go template
-//     for (let i = 0; i < constants.groups.length; i++) {
-//       groups.push(row.insertCell())
-//     }
-//
-//     row.id = uuid
-//     row.classList.add('new')
-//
-//     name.style = 'display:flex; flex-direction:row;'
-//     name.classList.add('rowheader')
-//
-//     name.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-//                      '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />' +
-//                      '<span class="control commit" id="' + uuid + '_commit" onclick="onCommit(event)" data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
-//                      '<span class="control rollback" id="' + uuid + '_rollback" onclick="onRollback(event, \'delete\')" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
-//
-//     card.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-//                      '<input id="' + uuid + '-card" class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="6152346" />'
-//
-//     from.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-//                      '<input id="' + uuid + '-from" class="field from" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
-//
-//     to.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-//                    '<input id="' + uuid + '-to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
-//
-//     for (let i = 0; i < groups.length; i++) {
-//       const g = groups[i]
-//       const id = uuid + '-' + constants.groups[i]
-//
-//       g.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-//                     '<label class="group">' +
-//                     '<input id="' + id + '" class="field" type="checkbox" onclick="onTick(event)" data-record="' + uuid + '" data-original="false" data-value="false" />' +
-//                     '<img class="no"  src="images/times-solid.svg" />' +
-//                     '<img class="yes" src="images/check-solid.svg" />' +
-//                     '</label>'
-//     }
-//   }
-// }
+export function onNew (event) {
+  const tbody = document.getElementById('cardholders').querySelector('table tbody')
+
+  if (tbody) {
+    const row = tbody.insertRow()
+    const name = row.insertCell()
+    const card = row.insertCell()
+    const from = row.insertCell()
+    const to = row.insertCell()
+    const groups = []
+    const uuid = 'U' + uuidv4()
+
+    // 'constants' is a global object initialised by the Go template
+    for (let i = 0; i < constants.groups.length; i++) {
+      groups.push(row.insertCell())
+    }
+
+    row.id = uuid
+    row.classList.add('new')
+
+    name.style = 'display:flex; flex-direction:row;'
+    name.classList.add('rowheader')
+
+    name.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                     '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />' +
+                     '<span class="control commit" id="' + uuid + '_commit" onclick="onCommit(event)" data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
+                     '<span class="control rollback" id="' + uuid + '_rollback" onclick="onRollback(event, \'delete\')" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
+
+    card.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                     '<input id="' + uuid + '-card" class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="6152346" />'
+
+    from.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                     '<input id="' + uuid + '-from" class="field from" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
+
+    to.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                   '<input id="' + uuid + '-to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
+
+    for (let i = 0; i < groups.length; i++) {
+      const g = groups[i]
+      const id = uuid + '-' + constants.groups[i]
+
+      g.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
+                    '<label class="group">' +
+                    '<input id="' + id + '" class="field" type="checkbox" onclick="onTick(event)" data-record="' + uuid + '" data-original="false" data-value="false" />' +
+                    '<img class="no"  src="images/times-solid.svg" />' +
+                    '<img class="yes" src="images/check-solid.svg" />' +
+                    '</label>'
+    }
+  }
+}
 
 export function onRefresh (event) {
   busy()
