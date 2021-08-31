@@ -187,100 +187,37 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 				})
 			}
 
-			//		case d.OID + DoorDelay:
-			//			delay := d.delay
-			//
-			//			if err := f("delay", value); err != nil {
-			//				return nil, err
-			//			} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
-			//				return nil, err
-			//			} else {
-			//				d.delay = uint8(v)
-			//
-			//				catalog.PutV(d.OID+DoorDelayConfigured, d.delay, true)
-			//
-			//				objects = append(objects, object{
-			//					OID:   d.OID + DoorDelay,
-			//					Value: stringify(d.delay),
-			//				})
-			//
-			//				objects = append(objects, object{
-			//					OID:   d.OID + DoorDelayStatus,
-			//					Value: stringify(types.StatusUncertain),
-			//				})
-			//
-			//				objects = append(objects, object{
-			//					OID:   d.OID + DoorDelayConfigured,
-			//					Value: stringify(d.delay),
-			//				})
-			//
-			//				objects = append(objects, object{
-			//					OID:   d.OID + DoorDelayError,
-			//					Value: "",
-			//				})
-			//
-			//				d.log(auth, "update", d.OID, "delay", stringify(delay), value)
-			//			}
-			//
-			//		case d.OID + DoorControl:
-			//			if err := f("mode", value); err != nil {
-			//				return nil, err
-			//			} else {
-			//				mode := d.mode
-			//				switch value {
-			//				case "controlled":
-			//					d.mode = core.Controlled
-			//				case "normally open":
-			//					d.mode = core.NormallyOpen
-			//				case "normally closed":
-			//					d.mode = core.NormallyClosed
-			//				default:
-			//					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
-			//				}
-			//
-			//				catalog.PutV(d.OID+DoorControlConfigured, d.mode, true)
-			//
-			//				objects = append(objects, object{
-			//					OID:   d.OID + DoorControl,
-			//					Value: stringify(d.mode),
-			//				})
-			//
-			//				objects = append(objects, object{
-			//					OID:   d.OID + DoorControlStatus,
-			//					Value: stringify(types.StatusUncertain),
-			//				})
-			//
-			//				objects = append(objects, object{
-			//					OID:   d.OID + DoorControlConfigured,
-			//					Value: stringify(d.mode),
-			//				})
-			//
-			//				objects = append(objects, object{
-			//					OID:   d.OID + DoorControlError,
-			//					Value: "",
-			//				})
-			//
-			//				d.log(auth, "update", d.OID, "mode", stringify(mode), value)
-			//			}
-			//		}
-			//
-			//		if !d.IsValid() {
-			//			if auth != nil {
-			//				if err := auth.CanDeleteDoor(d); err != nil {
-			//					return nil, err
-			//				}
-			//			}
-			//
-			//			d.log(auth, "delete", d.OID, "name", name, "")
-			//			now := time.Now()
-			//			d.deleted = &now
-			//
-			//			objects = append(objects, object{
-			//				OID:   d.OID,
-			//				Value: "deleted",
-			//			})
-			//
-			//			catalog.Delete(d.OID)
+		case catalog.Join(c.OID, CardFrom):
+			if err := f("from", value); err != nil {
+				return nil, err
+			} else if from, err := types.ParseDate(value); err != nil {
+				return nil, err
+			} else if from == nil {
+				return nil, fmt.Errorf("invalid 'from' date (%v)", value)
+			} else {
+				c.log(auth, "update", c.OID, "from", stringify(c.From), value)
+				c.From = from
+				objects = append(objects, object{
+					OID:   c.OID.Append(CardFrom),
+					Value: stringify(c.From),
+				})
+			}
+
+		case catalog.Join(c.OID, CardTo):
+			if err := f("to", value); err != nil {
+				return nil, err
+			} else if to, err := types.ParseDate(value); err != nil {
+				return nil, err
+			} else if to == nil {
+				return nil, fmt.Errorf("invalid 'to' date (%v)", value)
+			} else {
+				c.log(auth, "update", c.OID, "to", stringify(c.To), value)
+				c.To = to
+				objects = append(objects, object{
+					OID:   c.OID.Append(CardTo),
+					Value: stringify(c.To),
+				})
+			}
 		}
 	}
 

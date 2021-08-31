@@ -9,6 +9,15 @@ import (
 
 type Date core.Date
 
+func ParseDate(s string) (*Date, error) {
+	if t, err := time.Parse("2006-01-02", s); err == nil {
+		d := Date(t)
+		return &d, nil
+	} else {
+		return nil, err
+	}
+}
+
 func (d *Date) Copy() *Date {
 	if d == nil {
 		return nil

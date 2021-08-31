@@ -25,16 +25,20 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
+  - [ ] onTick
   - [ ] Update commit for OIDs
         - [x] card number
-        - [ ] from
-        - [ ] to
+        - [x] from
+        - [x] to
         - [ ] groups
+        - [ ] authorization
+  - [ ] onNew
+  - [ ] delete
+  - [ ] save
+  - [ ] validate
   - [ ] Unit test for AsObjects
   - [ ] `card` serialize/deserialize
   - [ ] Split cards and groups into separate files
-  - [ ] onTick
-  - [ ] onNew
   - [ ] Cleanup cards.js
   - [ ] DB mark/sweep can be called multiple times for the same update
         - make time based (?)
