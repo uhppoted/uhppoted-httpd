@@ -23,7 +23,7 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [ ] onTick
+  - [x] onTick
   - [ ] Update commit for OIDs
         - [ ] groups
   - [ ] onNew

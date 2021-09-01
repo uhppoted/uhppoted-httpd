@@ -114,13 +114,13 @@ func (c *CardHolder) AsObjects() []interface{} {
 		v, ok := c.Groups[k]
 		member := ok && v
 		objects = append(objects, object{
-			OID:   catalog.Join(c.OID, CardGroups.Append(fmt.Sprintf(".%v.1", ix+1))),
-			Value: stringify(k),
+			OID:   catalog.Join(c.OID, CardGroups.Append(fmt.Sprintf(".%v", ix+1))),
+			Value: stringify(member),
 		})
 
 		objects = append(objects, object{
-			OID:   catalog.Join(c.OID, CardGroups.Append(fmt.Sprintf(".%v.2", ix+1))),
-			Value: stringify(member),
+			OID:   catalog.Join(c.OID, CardGroups.Append(fmt.Sprintf(".%v.1", ix+1))),
+			Value: stringify(k),
 		})
 	}
 

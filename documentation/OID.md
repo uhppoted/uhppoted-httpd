@@ -123,11 +123,10 @@ Logs namespace
 |    |      |- 0.3.1.3: <from>                                               #      'valid from' date
 |    |      |- 0.3.1.4: <to>                                                 #      'valid until' date
 |    |      |- 0.3.1.5                                                       #      groups
-|    |               |- 0.3.1.5.1                                            #      group #1
-|    |               |           |- 0.3.1.5.1.1: <oid>                       #            OID
-|    |               |           |- 0.3.1.5.1.2: <member>                    #            true/false
+|    |               |- 0.3.1.5.1 <member>                                   #      group #1: member
+|    |               |           |- 0.3.1.5.1.1: <oid>                       #                group OID
 |    |               |                                                       #
-|    |               |- ...                                                  #      group #2
+|    |               |- ...                                                  #      group #2...
 |    |- ...
 |
 |- 0.4                                                                       # groups

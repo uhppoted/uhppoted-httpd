@@ -374,7 +374,7 @@ function card (o) {
 
         default:
           if (oid.startsWith(k + '.5.')) {
-            const m = oid.match(/^(0\.3\.[1-9][0-9]*\.5\.[1-9][0-9]*)(\.[1-3])$/)
+            const m = oid.match(/^(0\.3\.[1-9][0-9]*\.5\.[1-9][0-9]*)(\.[1-3])?$/)
             if (m && m.length > 2) {
               const suboid = m[1]
               const suffix = m[2]
@@ -384,13 +384,11 @@ function card (o) {
               }
 
               const group = v.groups.get(suboid)
-              switch (suffix) {
-                case '.1':
-                  group.oid = o.value
-                  break
-                case '.2':
-                  group.member = o.value === 'true'
-                  break
+
+              if (!suffix) {
+                group.member = o.value === 'true'
+              } else if (suffix === '.1') {
+                group.oid = o.value
               }
             }
           }

@@ -127,7 +127,7 @@
                 <label class="group">
                 <input class="field g{{ suffix .OID }}"
                        type="checkbox" 
-                       onclick="onTick(event)"
+                       onclick="onTick('card', event)"
                        data-record="" 
                        data-original="" 
                        data-value="" />
@@ -155,8 +155,10 @@
  
   <script type="module">
     import { retheme, dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
-    import { onTick, onNew } from "./javascript/cards.js"
+    import { onNew } from "./javascript/cards.js"
     import { onEdited, 
+             onEnter,
+             onTick, 
              onCommit, 
              onCommitAll,
              onRollback, 
@@ -167,6 +169,7 @@
     window.dismiss = dismiss
     window.onSignOut = onSignOut
     window.onEdited = onEdited
+    window.onEnter = onEnter
     window.onTick = onTick
     window.onCommit = onCommit
     window.onCommitAll = onCommitAll

@@ -63,10 +63,9 @@ export function onChoose (tag, event) {
 
 export function onTick (tag, event) {
   switch (tag) {
-    case 'door': {
-      set(event.target, event.target.checked)
+    case 'card':
+      set(event.target, event.target.checked ? 'true' : '')
       break
-    }
   }
 }
 
@@ -285,20 +284,34 @@ export function modified (oid) {
 
   if (element) {
     const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
-    const re = /^\.[0-9]+$/
-    let count = 0
+    const set = new Set()
 
     list.forEach(e => {
       if (e.classList.contains('modified')) {
         const oidx = e.dataset.oid
-        if (oidx.startsWith(oid) && re.test(oidx.substring(oid.length))) {
-          count = count + 1
+        if (oidx.startsWith(oid)) {
+          set.add(oidx)
         }
       }
     })
 
-    if (count > 0) {
-      element.dataset.modified = count > 1 ? 'multiple' : 'single'
+    // .. count the 'unique parent' OIDs
+    const f = (p, q) => p.length < q.length
+    const r = (acc, v) => {
+      if (!acc.find(e => v.startsWith(e))) {
+        acc.push(v)
+      }
+
+      return acc
+    }
+
+    const count = [...set].sort(f).reduce(r, []).length
+
+    if (count > 1) {
+      element.dataset.modified = 'multiple'
+      element.classList.add('modified')
+    } else if (count > 0) {
+      element.dataset.modified = 'single'
       element.classList.add('modified')
     } else {
       element.dataset.modified = null
