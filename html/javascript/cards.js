@@ -1,17 +1,8 @@
 /* global constants */
 
 import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
-import { update, revert, mark, unmark } from './edit.js'
+import { update, mark, unmark } from './edit.js'
 import { DB } from './db.js'
-
-export function rollback (row) {
-  if (row && row.classList.contains('new')) {
-    DB.delete('cards', row.dataset.oid)
-    refreshed()
-  } else {
-    revert(row)
-  }
-}
 
 export function get () {
   getAsJSON('/cards')

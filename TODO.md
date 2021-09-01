@@ -1,12 +1,10 @@
 ## v0.7.x
 
--  git/content-addressable filesystem (https://jvns.ca/blog/confusing-explanations/)
-
 ### IN PROGRESS
 
 - OID
-  - [ ] Add controllers to schema
   - [ ] Add LAN to schema
+  - [ ] Add controllers to schema
   - [ ] Store all values in catalog and 'realize' local copies from cache
   - [ ] Make OID a type
         - [ ] doors
@@ -27,17 +25,13 @@
 - Migrate cards to OIDs
   - [ ] onTick
   - [ ] Update commit for OIDs
-        - [x] card number
-        - [x] from
-        - [x] to
         - [ ] groups
-        - [x] authorization
   - [ ] onNew
   - [ ] delete
-  - [ ] save
   - [ ] validate
-  - [ ] Unit test for AsObjects
+  - [ ] save
   - [ ] `card` serialize/deserialize
+  - [ ] Unit test for AsObjects
   - [ ] Split cards and groups into separate files
   - [ ] Cleanup cards.js
   - [ ] DB mark/sweep can be called multiple times for the same update
@@ -46,10 +40,10 @@
         - or just use tag (?)
 
 - Groups
-  - [x] AsObjects
-  - [x] `get`
-  - [ ] edit
-  - [ ] rollback
+  - [x] onEdit
+  - [x] onEnter
+  - [x] rollback
+  - [x] rollback-all
   - [ ] commit
   - [ ] doors
 
@@ -94,6 +88,7 @@
       - New table row submitted with error cannot be discarded
       - Empty list: make first row a 'new' row
       - Commonalise controller and card handling into tabular.js
+      - filter columns
 
 - [ ] ACL
       - wrap ACL update in goroutine
@@ -131,10 +126,8 @@
         -- e.g. add -> commit only enabled after modified
       - genericize JS:refresh
 
-      - filter columns
         -- pins!
       - undo/revert (?)
-      - use internal DB rather than element dataset (?)
       - virtual DOM
       - search & pin
       - labels from translations
@@ -144,7 +137,7 @@
         -- CRDT ??
       
 - [ ] Security
-      - /system, /doors , /cards, etc all return everything. Need finer grained access 
+      - GET /system, /doors , /cards, etc all return everything. Need finer grained access 
       - Templates have access to everything - need finer grained access 
 
 - [ ] Events
@@ -216,3 +209,5 @@
 - [WenAuthN](https://trustfoundry.net/passwords-are-dead-long-live-webauthn)
 - [ZUI](https://zircleui.github.io/docs/examples/home.html)
 - [plurid](https://github.com/plurid/plurid)
+- [git/content-addressable filesystem](https://jvns.ca/blog/confusing-explanations)
+

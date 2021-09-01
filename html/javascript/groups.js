@@ -56,15 +56,6 @@ import { DB } from './db.js'
 //   post('objects', records, reset, cleanup)
 // }
 
-// export function rollback (row) {
-//   if (row && row.classList.contains('new')) {
-//     DB.delete('doors', row.dataset.oid)
-//     refreshed()
-//   } else {
-//     revert(row)
-//   }
-// }
-
 // export function post (tag, records, reset, cleanup) {
 //   busy()
 
@@ -197,13 +188,3 @@ function add (oid) {
   }
 }
 
-// function revert (row) {
-//   const fields = row.querySelectorAll('.field')
-
-//   fields.forEach((item) => {
-//     item.value = item.dataset.original
-//     set(item, item.dataset.original, item.dataset.status)
-//   })
-
-//   row.classList.remove('modified')
-// }

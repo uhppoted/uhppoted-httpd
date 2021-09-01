@@ -13,31 +13,38 @@ export function onEdited (tag, event) {
     case 'card':
       set(event.target, event.target.value)
       break
+
+    case 'group':
+      set(event.target, event.target.value)
+      break
   }
 }
 
 export function onEnter (tag, event) {
   if (event.key === 'Enter') {
     switch (tag) {
-      case 'door': {
+      case 'door':
         set(event.target, event.target.value, event.target.dataset.status)
 
-        // Handles the case where 'Enter' is pressed on a field
-        // to 'accept' the actual value which is different from
-        // the 'configured' value.
-        const element = event.target
-        const configured = element.dataset.configured
-        const v = element.dataset.value
-        const oid = element.dataset.oid
-        const flag = document.getElementById(`F${oid}`)
+        { // Handles the case where 'Enter' is pressed on a field
+          // to 'accept' the actual value which is different from
+          // the 'configured' value.
+          const element = event.target
+          const configured = element.dataset.configured
+          const v = element.dataset.value
+          const oid = element.dataset.oid
+          const flag = document.getElementById(`F${oid}`)
 
-        if (configured && v !== configured) {
-          mark('modified', element, flag)
-          percolate(oid, modified)
+          if (configured && v !== configured) {
+            mark('modified', element, flag)
+            percolate(oid, modified)
+          }
         }
-
         break
-      }
+
+      case 'group':
+        set(event.target, event.target.value)
+        break
     }
   }
 }
@@ -107,31 +114,38 @@ export function onRollback (tag, event) {
 
   switch (tag) {
     case 'door':
-      doors.rollback(row)
+      rollback('doors', row, doors.refreshed)
       break
 
     case 'card':
-      cards.rollback(row)
+      rollback('cards', row, cards.refreshed)
+      break
+
+    case 'group':
+      rollback('groups', row, groups.refreshed)
       break
   }
 }
 
 export function onRollbackAll (tag, event) {
-  switch (tag) {
-    case 'doors': {
-      const rows = document.getElementById('doors').querySelector('table tbody').rows
-      for (let i = rows.length; i > 0; i--) {
-        doors.rollback(rows[i - 1])
-      }
+  const f = function (table, recordset, refreshed) {
+    const rows = document.getElementById(table).querySelector('table tbody').rows
+    for (let i = rows.length; i > 0; i--) {
+      rollback(tag, rows[i - 1], refreshed)
     }
+  }
+
+  switch (tag) {
+    case 'doors':
+      f('doors', 'doors', doors.refreshed)
       break
 
-    case 'cards': {
-      const rows = document.getElementById('cards').querySelector('table tbody').rows
-      for (let i = rows.length; i > 0; i--) {
-        cards.rollback(rows[i - 1])
-      }
-    }
+    case 'cards':
+      f('cards', 'cards', doors.refreshed)
+      break
+
+    case 'groups':
+      f('groups', 'groups', groups.refreshed)
       break
   }
 }
@@ -347,4 +361,13 @@ function get (url, refreshed) {
     .catch(function (err) {
       console.error(err)
     })
+}
+
+function rollback (recordset, row, refreshed) {
+  if (row && row.classList.contains('new')) {
+    db.DB.delete(recordset, row.dataset.oid)
+    refreshed()
+  } else {
+    revert(row)
+  }
 }

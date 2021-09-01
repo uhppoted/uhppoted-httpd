@@ -1,7 +1,7 @@
 /* global */
 
 import { busy, unbusy, warning, getAsJSON, postAsJSON } from './uhppoted.js'
-import { update, revert, deleted, mark, unmark } from './edit.js'
+import { update, deleted, mark, unmark } from './edit.js'
 import { DB } from './db.js'
 
 export function create () {
@@ -54,15 +54,6 @@ export function commit (...rows) {
   })
 
   post('objects', records, reset, cleanup)
-}
-
-export function rollback (row) {
-  if (row && row.classList.contains('new')) {
-    DB.delete('doors', row.dataset.oid)
-    refreshed()
-  } else {
-    revert(row)
-  }
 }
 
 export function get () {
