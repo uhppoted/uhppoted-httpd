@@ -46,25 +46,6 @@ export function onTick (tag, event) {
   }
 }
 
-export function onCommit (tag, event) {
-  switch (tag) {
-    case 'interface':
-      LAN.commit(event.target)
-      break
-
-    case 'controller': {
-      const id = event.target.dataset.record
-      const row = document.getElementById(id)
-
-      controllers.commit(row)
-    }
-      break
-
-    default:
-      console.log(`onCommit('${tag}', ...)::NOT IMPLEMENTED`)
-  }
-}
-
 export function onCommitAll (tag, event) {
   switch (tag) {
     case 'controller': {

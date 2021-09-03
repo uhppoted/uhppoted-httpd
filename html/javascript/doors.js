@@ -1,57 +1,13 @@
 /* global */
 
 import { busy, unbusy, warning, getAsJSON, postAsJSON } from './uhppoted.js'
-import { update, deleted, mark, unmark } from './edit.js'
+import { update, deleted } from './edit.js'
 import { DB } from './db.js'
 
 export function create () {
   const records = [{ oid: '<new>', value: '' }]
   const reset = function () {}
   const cleanup = function () {}
-
-  post('objects', records, reset, cleanup)
-}
-
-export function commit (...rows) {
-  const list = []
-
-  rows.forEach(row => {
-    const oid = row.dataset.oid
-    const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
-    children.forEach(e => {
-      if (e.classList.contains('modified')) {
-        list.push(e)
-      }
-    })
-  })
-
-  const records = []
-  list.forEach(e => {
-    const oid = e.dataset.oid
-    const value = e.dataset.value
-    records.push({ oid: oid, value: value })
-  })
-
-  const reset = function () {
-    list.forEach(e => {
-      const flag = document.getElementById(`F${e.dataset.oid}`)
-      unmark('pending', e, flag)
-      mark('modified', e, flag)
-    })
-  }
-
-  const cleanup = function () {
-    list.forEach(e => {
-      const flag = document.getElementById(`F${e.dataset.oid}`)
-      unmark('pending', e, flag)
-    })
-  }
-
-  list.forEach(e => {
-    const flag = document.getElementById(`F${e.dataset.oid}`)
-    mark('pending', e, flag)
-    unmark('modified', e, flag)
-  })
 
   post('objects', records, reset, cleanup)
 }
@@ -85,7 +41,7 @@ export function get () {
     })
 }
 
-export function post (tag, records, reset, cleanup) {
+function post (tag, records, reset, cleanup) {
   busy()
 
   postAsJSON('/doors', { [tag]: records })
@@ -120,7 +76,7 @@ export function post (tag, records, reset, cleanup) {
     })
 }
 
-function refreshed () {
+export function refreshed () {
   const list = []
 
   DB.doors.forEach(c => {

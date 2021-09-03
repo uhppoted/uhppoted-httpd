@@ -1,3 +1,5 @@
+import * as LAN from './interface.js'
+import * as controllers from './controllers.js'
 import * as doors from './doors.js'
 import * as cards from './cards.js'
 import * as groups from './groups.js'
@@ -5,6 +7,16 @@ import * as db from './db.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
 const pages = {
+  doors: {
+    url: '/doors',
+    refreshed: doors.refreshed
+  },
+
+  cards: {
+    url: '/cards',
+    refreshed: cards.refreshed
+  },
+
   groups: {
     url: '/groups',
     refreshed: groups.refreshed
@@ -74,12 +86,20 @@ export function onCommit (tag, event) {
   const row = document.getElementById(id)
 
   switch (tag) {
+    case 'interface':
+      LAN.commit(event.target)
+      break
+
+    case 'controller':
+      controllers.commit(row)
+      break
+
     case 'door':
-      doors.commit(row)
+      commit(pages.doors, row)
       break
 
     case 'card':
-      cards.commit(row)
+      commit(pages.cards, row)
       break
 
     case 'group':
@@ -102,11 +122,11 @@ export function onCommitAll (tag, event, table) {
 
   switch (tag) {
     case 'doors':
-      doors.commit(...list)
+      commit(pages.doors, ...list)
       break
 
     case 'cards':
-      cards.commit(...list)
+      commit(pages.cards, ...list)
       break
 
     case 'groups':
