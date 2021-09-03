@@ -23,7 +23,6 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [x] onTick
   - [ ] Update commit for OIDs
         - [ ] groups
   - [ ] onNew
@@ -40,11 +39,11 @@
         - or just use tag (?)
 
 - Groups
-  - [x] onEdit
-  - [x] onEnter
-  - [x] rollback
-  - [x] rollback-all
-  - [ ] commit
+  - [x] commit
+  - [ ] validate
+  - [ ] add
+  - [ ] delete
+  - [ ] save
   - [ ] doors
 
 - Doors

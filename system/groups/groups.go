@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
@@ -74,6 +75,19 @@ func (gg Groups) Print() {
 	}
 }
 
+func (gg *Groups) Clone() *Groups {
+	shadow := Groups{
+		Groups: map[catalog.OID]Group{},
+		file:   gg.file,
+	}
+
+	for k, v := range gg.Groups {
+		shadow.Groups[k] = v.clone()
+	}
+
+	return &shadow
+}
+
 func (gg *Groups) AsObjects() []interface{} {
 	objects := []interface{}{}
 
@@ -86,4 +100,40 @@ func (gg *Groups) AsObjects() []interface{} {
 	}
 
 	return objects
+}
+
+func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+	if gg == nil {
+		return nil, nil
+	}
+
+	for k, g := range gg.Groups {
+		if g.OID.Contains(oid) {
+			objects, err := g.set(auth, oid, value)
+			if err == nil {
+				gg.Groups[k] = g
+			}
+
+			return objects, err
+		}
+	}
+
+	objects := []interface{}{}
+
+	// if oid == "<new>" {
+	// 	if g, err := gg.add(auth, Group{}); err != nil {
+	// 		return nil, err
+	// 	} else if g == nil {
+	// 		return nil, fmt.Errorf("Failed to add 'new' group")
+	// 	} else {
+	// 		g.log(auth, "add", g.OID, "group", "", "")
+	// 		gg.Groups[d.OID] = *g
+	// 		objects = append(objects, object{
+	// 			OID:   g.OID,
+	// 			Value: "new",
+	// 		})
+	// 	}
+	// }
+
+	return objects, nil
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd/cards"
 	"github.com/uhppoted/uhppoted-httpd/httpd/controllers"
 	"github.com/uhppoted/uhppoted-httpd/httpd/doors"
+	"github.com/uhppoted/uhppoted-httpd/httpd/groups"
 )
 
 func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +65,16 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		}
 
 		cards.Post(w, r, d.timeout, auth)
+		return
+	}
+
+	if match, err := regexp.MatchString(`/groups`, path); err == nil && match {
+		auth, err := NewAuthorizator(uid, role, d.grule.groups)
+		if err != nil {
+			http.Error(w, "Error executing request", http.StatusInternalServerError)
+		}
+
+		groups.Post(w, r, d.timeout, auth)
 		return
 	}
 

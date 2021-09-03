@@ -2,7 +2,14 @@ import * as doors from './doors.js'
 import * as cards from './cards.js'
 import * as groups from './groups.js'
 import * as db from './db.js'
-import { busy, unbusy, warning, dismiss, getAsJSON } from './uhppoted.js'
+import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
+
+const pages = {
+  groups: {
+    url: '/groups',
+    refreshed: groups.refreshed
+  }
+}
 
 export function onEdited (tag, event) {
   switch (tag) {
@@ -49,16 +56,9 @@ export function onEnter (tag, event) {
   }
 }
 
+// ???
 export function onChoose (tag, event) {
-  console.log('onChoose', event)
-
   event.target.selectedIndex = -1
-  // switch (tag) {
-  //   case 'door': {
-  //     set(event.target, event.target.checked)
-  //     break
-  //   }
-  // }
 }
 
 export function onTick (tag, event) {
@@ -80,6 +80,10 @@ export function onCommit (tag, event) {
 
     case 'card':
       cards.commit(row)
+      break
+
+    case 'group':
+      commit(pages.groups, row)
       break
   }
 }
@@ -103,6 +107,10 @@ export function onCommitAll (tag, event, table) {
 
     case 'cards':
       cards.commit(...list)
+      break
+
+    case 'groups':
+      commit(pages.groups, ...list)
       break
   }
 }
@@ -383,4 +391,83 @@ function rollback (recordset, row, refreshed) {
   } else {
     revert(row)
   }
+}
+
+function commit (page, ...rows) {
+  const list = []
+
+  rows.forEach(row => {
+    const oid = row.dataset.oid
+    const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
+    children.forEach(e => {
+      if (e.classList.contains('modified')) {
+        list.push(e)
+      }
+    })
+  })
+
+  const records = []
+  list.forEach(e => {
+    const oid = e.dataset.oid
+    const value = e.dataset.value
+    records.push({ oid: oid, value: value })
+  })
+
+  const reset = function () {
+    list.forEach(e => {
+      const flag = document.getElementById(`F${e.dataset.oid}`)
+      unmark('pending', e, flag)
+      mark('modified', e, flag)
+    })
+  }
+
+  const cleanup = function () {
+    list.forEach(e => {
+      const flag = document.getElementById(`F${e.dataset.oid}`)
+      unmark('pending', e, flag)
+    })
+  }
+
+  list.forEach(e => {
+    const flag = document.getElementById(`F${e.dataset.oid}`)
+    mark('pending', e, flag)
+    unmark('modified', e, flag)
+  })
+
+  post(page, records, reset, cleanup)
+}
+
+function post (page, records, reset, cleanup, refreshed) {
+  busy()
+
+  postAsJSON(page.url, { objects: records })
+    .then(response => {
+      if (response.redirected) {
+        window.location = response.url
+      } else {
+        switch (response.status) {
+          case 200:
+            response.json().then(object => {
+              if (object && object.system && object.system.objects) {
+                db.DB.updated('objects', object.system.objects)
+              }
+
+              page.refreshed()
+            })
+            break
+
+          default:
+            reset()
+            response.text().then(message => { warning(message) })
+        }
+      }
+    })
+    .catch(function (err) {
+      reset()
+      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+    })
+    .finally(() => {
+      cleanup()
+      unbusy()
+    })
 }

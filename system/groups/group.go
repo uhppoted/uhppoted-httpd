@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -39,6 +41,15 @@ func (g Group) IsDeleted() bool {
 	return false
 }
 
+func (g Group) clone() Group {
+	return Group{
+		OID:     g.OID,
+		Name:    g.Name,
+		created: g.created,
+		deleted: g.deleted,
+	}
+}
+
 func (g *Group) AsObjects() []interface{} {
 	created := g.created.Format("2006-01-02 15:04:05")
 	status := stringify(types.StatusOk)
@@ -55,6 +66,59 @@ func (g *Group) AsObjects() []interface{} {
 	}
 
 	return objects
+}
+
+func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+	objects := []interface{}{}
+
+	f := func(field string, value interface{}) error {
+		// if auth == nil {
+		// 	return nil
+		// }
+		//
+		// return auth.CanUpdateGroup(d, field, value)
+
+		return nil
+	}
+
+	if g != nil {
+		// name := stringify(g.Name)
+
+		switch oid {
+		case g.OID.Append(GroupName):
+			if err := f("name", value); err != nil {
+				return nil, err
+			} else {
+				g.log(auth, "update", g.OID, "name", stringify(g.Name), value)
+				g.Name = value
+				objects = append(objects, object{
+					OID:   g.OID.Append(GroupName),
+					Value: stringify(g.Name),
+				})
+			}
+		}
+
+		// if !g.IsValid() {
+		// 	if auth != nil {
+		// 		if err := auth.CanDeleteGroup(d); err != nil {
+		// 			return nil, err
+		// 		}
+		// 	}
+		//
+		// 	g.log(auth, "delete", g.OID, "name", name, "")
+		// 	now := time.Now()
+		// 	g.deleted = &now
+		//
+		// 	objects = append(objects, object{
+		// 		OID:   g.OID,
+		// 		Value: "deleted",
+		// 	})
+		//
+		// 	catalog.Delete(g.OID)
+		// }
+	}
+
+	return objects, nil
 }
 
 func (g Group) serialize() ([]byte, error) {
@@ -93,6 +157,38 @@ func (g *Group) deserialize(bytes []byte) error {
 	}
 
 	return nil
+}
+
+func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field, current, value string) {
+	type info struct {
+		OID     string `json:"OID"`
+		Group   string `json:"group"`
+		Field   string `json:"field"`
+		Current string `json:"current"`
+		Updated string `json:"new"`
+	}
+
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
+	}
+
+	if trail != nil {
+		record := audit.LogEntry{
+			UID:       uid,
+			Module:    stringify(OID),
+			Operation: operation,
+			Info: info{
+				OID:     stringify(OID),
+				Group:   stringify(g.Name),
+				Field:   field,
+				Current: current,
+				Updated: value,
+			},
+		}
+
+		trail.Write(record)
+	}
 }
 
 func stringify(i interface{}) string {

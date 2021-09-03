@@ -36,6 +36,7 @@ type HTTPD struct {
 			System string
 			Cards  string
 			Doors  string
+			Groups string
 		}
 	}
 	Audit audit.Trail
@@ -49,6 +50,7 @@ type dispatcher struct {
 		system *ast.KnowledgeLibrary
 		cards  *ast.KnowledgeLibrary
 		doors  *ast.KnowledgeLibrary
+		groups *ast.KnowledgeLibrary
 	}
 	timeout time.Duration
 }
@@ -66,10 +68,12 @@ func (h *HTTPD) Run() {
 		system *ast.KnowledgeLibrary
 		cards  *ast.KnowledgeLibrary
 		doors  *ast.KnowledgeLibrary
+		groups *ast.KnowledgeLibrary
 	}{
 		system: ast.NewKnowledgeLibrary(),
 		cards:  ast.NewKnowledgeLibrary(),
 		doors:  ast.NewKnowledgeLibrary(),
+		groups: ast.NewKnowledgeLibrary(),
 	}
 
 	if err := builder.NewRuleBuilder(rules.system).BuildRuleFromResource("system", "0.0.0", pkg.NewFileResource(h.DB.GRules.System)); err != nil {
@@ -82,6 +86,10 @@ func (h *HTTPD) Run() {
 
 	if err := builder.NewRuleBuilder(rules.doors).BuildRuleFromResource("doors", "0.0.0", pkg.NewFileResource(h.DB.GRules.Doors)); err != nil {
 		log.Fatal(fmt.Errorf("Error loading doors auth ruleset (%v)", err))
+	}
+
+	if err := builder.NewRuleBuilder(rules.groups).BuildRuleFromResource("groups", "0.0.0", pkg.NewFileResource(h.DB.GRules.Groups)); err != nil {
+		log.Fatal(fmt.Errorf("Error loading groups auth ruleset (%v)", err))
 	}
 
 	d := dispatcher{
