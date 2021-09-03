@@ -1,5 +1,3 @@
-/* global constants */
-
 import { getAsJSON, postAsJSON, warning, dismiss } from './uhppoted.js'
 import { update, mark, unmark } from './edit.js'
 import { DB } from './db.js'
@@ -241,120 +239,6 @@ function add (oid, record) {
 }
 
 /** OLD STUFF **/
-// export function onEdited (event) {
-//   set(event.target, event.target.value)
-// }
-
-// export function onTick (event) {
-//   set(event.target, event.target.checked)
-// }
-
-// export function onCommit (event) {
-//   onUpdate(event.target.dataset.record)
-// }
-
-// export function onCommitAll (event) {
-//   const tbody = document.getElementById('cardholders').querySelector('table tbody')
-//
-//   if (tbody) {
-//     const rows = tbody.rows
-//     const list = []
-//
-//     for (let i = 0; i < rows.length; i++) {
-//       const row = rows[i]
-//
-//       if (row.classList.contains('modified') || row.classList.contains('new')) {
-//         list.push(row.id)
-//       }
-//     }
-//
-//     onUpdate(...list)
-//   }
-// }
-
-// export function onRollback (event, op) {
-//   if (op && op === 'delete') {
-//     onDelete(event.target.dataset.record)
-//     return
-//   }
-//
-//   onRevert(event.target.dataset.record)
-// }
-
-// export function onRollbackAll (event) {
-//   const tbody = document.getElementById('cardholders').querySelector('table tbody')
-//
-//   if (tbody) {
-//     const rows = tbody.rows
-//
-//     for (let i = 0; i < rows.length; i++) {
-//       const row = rows[i]
-//
-//       if (row.classList.contains('new')) {
-//         onDelete(row.id)
-//       } else if (row.classList.contains('modified')) {
-//         onRevert(row.id)
-//       }
-//     }
-//   }
-// }
-
-export function onUpdate (...list) {
-  const rows = []
-  const records = []
-  const fields = []
-
-  list.forEach(id => {
-    const row = document.getElementById(id)
-    if (row) {
-      const [record, f] = rowToRecord(id, row)
-
-      rows.push(row)
-      records.push(record)
-      fields.push(...f)
-    }
-  })
-
-  const reset = function () {
-    rows.forEach(r => r.classList.add('modified'))
-    fields.forEach(f => { apply(f, (c) => { c.classList.add('modified') }) })
-  }
-
-  busy()
-
-  rows.forEach(r => r.classList.remove('modified'))
-  fields.forEach(f => { apply(f, (c) => { c.classList.remove('modified') }) })
-  fields.forEach(f => { apply(f, (c) => { c.classList.add('pending') }) })
-
-  postAsJSON('/cardholders', { cardholders: records })
-    .then(response => {
-      if (response.redirected) {
-        window.location = response.url
-      } else {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              updated(object.db.updated)
-              deleted(object.db.deleted)
-            })
-            break
-
-          default:
-            reset()
-            response.text().then(message => { warning(message) })
-        }
-      }
-    })
-    .catch(function (err) {
-      reset()
-      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-    })
-    .finally(() => {
-      unbusy()
-      fields.forEach(f => { apply(f, (c) => { c.classList.remove('pending') }) })
-    })
-}
-
 export function onDelete (id) {
   const tbody = document.getElementById('cardholders').querySelector('table tbody')
   const row = document.getElementById(id)
@@ -481,26 +365,26 @@ function updated (list) {
   }
 }
 
-function deleted (list) {
-  const tbody = document.getElementById('cardholders').querySelector('table tbody')
-
-  if (tbody && list) {
-    list.forEach((record) => {
-      const id = record.ID
-      const row = document.getElementById(id)
-
-      if (row) {
-        const rows = tbody.rows
-        for (let i = 0; i < rows.length; i++) {
-          if (rows[i].id === id) {
-            tbody.deleteRow(i)
-            break
-          }
-        }
-      }
-    })
-  }
-}
+// function deleted (list) {
+//   const tbody = document.getElementById('cardholders').querySelector('table tbody')
+//
+//   if (tbody && list) {
+//     list.forEach((record) => {
+//       const id = record.ID
+//       const row = document.getElementById(id)
+//
+//       if (row) {
+//         const rows = tbody.rows
+//         for (let i = 0; i < rows.length; i++) {
+//           if (rows[i].id === id) {
+//             tbody.deleteRow(i)
+//             break
+//           }
+//         }
+//       }
+//     })
+//   }
+// }
 
 function set (element, value) {
   const tbody = document.getElementById('cardholders').querySelector('table tbody')
@@ -631,56 +515,49 @@ function apply (element, f) {
   }
 }
 
-function rowToRecord (id, row) {
-  const name = row.querySelector('#' + id + '-name')
-  const card = row.querySelector('#' + id + '-card')
-  const from = row.querySelector('#' + id + '-from')
-  const to = row.querySelector('#' + id + '-to')
-  const fields = []
-
-  const record = {
-    id: id,
-    groups: {}
-  }
-
-  if (name && name.dataset.value !== name.dataset.original) {
-    const field = row.querySelector('#' + id + '-name')
-    record.name = field.value
-    fields.push(field)
-  }
-
-  if (card && card.dataset.value !== card.dataset.original) {
-    const field = row.querySelector('#' + id + '-card')
-    record.card = Number(field.value)
-    fields.push(field)
-  }
-
-  if (from && from.dataset.value !== from.dataset.original) {
-    const field = row.querySelector('#' + id + '-from')
-    record.from = field.value
-    fields.push(field)
-  }
-
-  if (to && to.dataset.value !== to.dataset.original) {
-    const field = row.querySelector('#' + id + '-to')
-    record.to = field.value
-    fields.push(field)
-  }
-
-  constants.groups.forEach((gid) => {
-    const field = row.querySelector('#' + id + '-' + gid)
-    if (field && field.dataset.value !== field.dataset.original) {
-      record.groups[gid] = field.checked
-      fields.push(field)
-    }
-  })
-
-  return [record, fields]
-}
-
-// // Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
-// function uuidv4 () {
-//   return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-//     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-//   )
+// function rowToRecord (id, row) {
+//   const name = row.querySelector('#' + id + '-name')
+//   const card = row.querySelector('#' + id + '-card')
+//   const from = row.querySelector('#' + id + '-from')
+//   const to = row.querySelector('#' + id + '-to')
+//   const fields = []
+//
+//   const record = {
+//     id: id,
+//     groups: {}
+//   }
+//
+//   if (name && name.dataset.value !== name.dataset.original) {
+//     const field = row.querySelector('#' + id + '-name')
+//     record.name = field.value
+//     fields.push(field)
+//   }
+//
+//   if (card && card.dataset.value !== card.dataset.original) {
+//     const field = row.querySelector('#' + id + '-card')
+//     record.card = Number(field.value)
+//     fields.push(field)
+//   }
+//
+//   if (from && from.dataset.value !== from.dataset.original) {
+//     const field = row.querySelector('#' + id + '-from')
+//     record.from = field.value
+//     fields.push(field)
+//   }
+//
+//   if (to && to.dataset.value !== to.dataset.original) {
+//     const field = row.querySelector('#' + id + '-to')
+//     record.to = field.value
+//     fields.push(field)
+//   }
+//
+//   constants.groups.forEach((gid) => {
+//     const field = row.querySelector('#' + id + '-' + gid)
+//     if (field && field.dataset.value !== field.dataset.original) {
+//       record.groups[gid] = field.checked
+//       fields.push(field)
+//     }
+//   })
+//
+//   return [record, fields]
 // }

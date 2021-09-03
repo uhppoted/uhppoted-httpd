@@ -180,8 +180,8 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 	if c != nil {
 		// name := stringify(c.Name)
 
-		switch oid {
-		case catalog.Join(c.OID, CardName):
+		switch {
+		case oid == catalog.Join(c.OID, CardName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
@@ -194,7 +194,7 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 				})
 			}
 
-		case catalog.Join(c.OID, CardNumber):
+		case oid == catalog.Join(c.OID, CardNumber):
 			if n, err := strconv.ParseUint(value, 10, 32); err != nil {
 				return nil, err
 			} else if err := f("number", n); err != nil {
@@ -209,7 +209,7 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 				})
 			}
 
-		case catalog.Join(c.OID, CardFrom):
+		case oid == catalog.Join(c.OID, CardFrom):
 			if err := f("from", value); err != nil {
 				return nil, err
 			} else if from, err := types.ParseDate(value); err != nil {
@@ -225,7 +225,7 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 				})
 			}
 
-		case catalog.Join(c.OID, CardTo):
+		case oid == catalog.Join(c.OID, CardTo):
 			if err := f("to", value); err != nil {
 				return nil, err
 			} else if to, err := types.ParseDate(value); err != nil {
@@ -239,6 +239,31 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 					OID:   c.OID.Append(CardTo),
 					Value: stringify(c.To),
 				})
+			}
+
+		case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
+			keys := []string{}
+			for k, _ := range c.Groups {
+				keys = append(keys, k)
+			}
+
+			sort.Strings(keys)
+
+			for ix, k := range keys {
+				gid := catalog.Join(c.OID, CardGroups.Append(fmt.Sprintf(".%v", ix+1)))
+
+				if gid == oid {
+					if err := f("group", value); err != nil {
+						return nil, err
+					} else {
+						c.log(auth, "update", c.OID, "group", stringify(c.Groups[k]), value)
+						c.Groups[k] = value == "true"
+						objects = append(objects, object{
+							OID:   gid,
+							Value: stringify(c.Groups[k]),
+						})
+					}
+				}
 			}
 		}
 	}

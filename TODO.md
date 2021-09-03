@@ -24,14 +24,14 @@
 
 - Migrate cards to OIDs
   - [ ] Update commit for OIDs
-        - [ ] groups
+        - [x] groups
   - [ ] onNew
   - [ ] delete
   - [ ] validate
   - [ ] save
   - [ ] `card` serialize/deserialize
-  - [ ] Unit test for AsObjects
   - [ ] Split cards and groups into separate files
+  - [ ] Unit test for AsObjects
   - [ ] Cleanup cards.js
   - [ ] DB mark/sweep can be called multiple times for the same update
         - make time based (?)
