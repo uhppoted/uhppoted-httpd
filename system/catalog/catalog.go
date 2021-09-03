@@ -11,12 +11,12 @@ type Object struct {
 }
 
 var catalog = struct {
-	interfaces  map[string]struct{}
+	interfaces  map[OID]struct{}
 	controllers map[string]controller
 	doors       map[string]struct{}
 	groups      map[OID]struct{}
 }{
-	interfaces:  map[string]struct{}{},
+	interfaces:  map[OID]struct{}{},
 	controllers: map[string]controller{},
 	doors:       map[string]struct{}{},
 	groups:      map[OID]struct{}{},
@@ -29,7 +29,7 @@ type controller struct {
 	deleted bool
 }
 
-func PutInterface(oid string) {
+func PutInterface(oid OID) {
 	guard.Lock()
 	defer guard.Unlock()
 

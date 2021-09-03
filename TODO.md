@@ -3,12 +3,12 @@
 ### IN PROGRESS
 
 - OID
-  - [ ] Add LAN to schema
+  - [x] Add LAN to schema
   - [ ] Add controllers to schema
   - [ ] Store all values in catalog and 'realize' local copies from cache
   - [ ] Make OID a type
         - [ ] doors
-        - [ ] interfaces
+        - [x] interfaces
         - [ ] controllers
         - [ ] catalog
         - [ ] cache

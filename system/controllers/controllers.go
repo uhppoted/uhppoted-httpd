@@ -237,7 +237,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid string, value string)
 	}
 
 	// ... interface
-	if cc.LAN != nil && strings.HasPrefix(oid, cc.LAN.OID+".") {
+	if cc.LAN != nil && cc.LAN.OID.Contains(oid) {
 		return cc.LAN.set(auth, oid, value)
 	}
 

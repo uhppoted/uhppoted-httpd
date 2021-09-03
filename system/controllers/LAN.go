@@ -21,7 +21,7 @@ import (
 )
 
 type LAN struct {
-	OID              string             `json:"OID"`
+	OID              catalog.OID        `json:"OID"`
 	Name             string             `json:"name"`
 	BindAddress      core.BindAddr      `json:"bind-address"`
 	BroadcastAddress core.BroadcastAddr `json:"broadcast-address"`
@@ -45,6 +45,12 @@ type device struct {
 	acl      types.Status
 }
 
+const LANName = catalog.InterfaceName
+const LANType = catalog.InterfaceType
+const LANBindAddress = catalog.LANBindAddress
+const LANBroadcastAddress = catalog.LANBroadcastAddress
+const LANListenAddress = catalog.LANListenAddress
+
 var cache = deviceCache{
 	cache: map[uint32]device{},
 }
@@ -55,12 +61,12 @@ func (l *LAN) String() string {
 
 func (l *LAN) AsObjects() []interface{} {
 	objects := []interface{}{
-		object{OID: l.OID, Value: fmt.Sprintf("%v", l.status)},
-		object{OID: l.OID + ".0", Value: "LAN"},
-		object{OID: l.OID + ".1", Value: l.Name},
-		object{OID: l.OID + ".2", Value: fmt.Sprintf("%v", l.BindAddress)},
-		object{OID: l.OID + ".3", Value: fmt.Sprintf("%v", l.BroadcastAddress)},
-		object{OID: l.OID + ".4", Value: fmt.Sprintf("%v", l.ListenAddress)},
+		object{OID: stringify(l.OID), Value: fmt.Sprintf("%v", l.status)},
+		object{OID: l.OID.Append(LANType), Value: "LAN"},
+		object{OID: l.OID.Append(LANName), Value: l.Name},
+		object{OID: l.OID.Append(LANBindAddress), Value: fmt.Sprintf("%v", l.BindAddress)},
+		object{OID: l.OID.Append(LANBroadcastAddress), Value: fmt.Sprintf("%v", l.BroadcastAddress)},
+		object{OID: l.OID.Append(LANListenAddress), Value: fmt.Sprintf("%v", l.ListenAddress)},
 	}
 
 	return objects
@@ -114,19 +120,19 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 
 	if l != nil {
 		switch oid {
-		case l.OID + ".1":
+		case l.OID.Append(LANName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
 				l.log(auth, "update", l.OID, "name", stringify(l.Name), value)
 				l.Name = value
 				objects = append(objects, object{
-					OID:   l.OID + ".1",
+					OID:   l.OID.Append(LANName),
 					Value: l.Name,
 				})
 			}
 
-		case l.OID + ".2":
+		case l.OID.Append(LANBindAddress):
 			if addr, err := core.ResolveBindAddr(value); err != nil {
 				return nil, err
 			} else if err := f("bind", addr); err != nil {
@@ -135,12 +141,12 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 				l.log(auth, "update", l.OID, "bind", stringify(l.BindAddress), value)
 				l.BindAddress = *addr
 				objects = append(objects, object{
-					OID:   l.OID + ".2",
+					OID:   l.OID.Append(LANBindAddress),
 					Value: fmt.Sprintf("%v", l.BindAddress),
 				})
 			}
 
-		case l.OID + ".3":
+		case l.OID.Append(LANBroadcastAddress):
 			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
 				return nil, err
 			} else if err := f("broadcast", addr); err != nil {
@@ -149,12 +155,12 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 				l.log(auth, "update", l.OID, "broadcast", stringify(l.BroadcastAddress), value)
 				l.BroadcastAddress = *addr
 				objects = append(objects, object{
-					OID:   l.OID + ".3",
+					OID:   l.OID.Append(LANBroadcastAddress),
 					Value: fmt.Sprintf("%v", l.BroadcastAddress),
 				})
 			}
 
-		case l.OID + ".4":
+		case l.OID.Append(LANListenAddress):
 			if addr, err := core.ResolveListenAddr(value); err != nil {
 				return nil, err
 			} else if err = f("listen", addr); err != nil {
@@ -163,7 +169,7 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 				l.log(auth, "update", l.OID, "listen", stringify(l.ListenAddress), value)
 				l.ListenAddress = *addr
 				objects = append(objects, object{
-					OID:   l.OID + ".4",
+					OID:   l.OID.Append(LANListenAddress),
 					Value: fmt.Sprintf("%v", l.ListenAddress),
 				})
 			}
@@ -547,7 +553,7 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 	}
 }
 
-func (l *LAN) log(auth auth.OpAuth, operation, OID, field, current, value string) {
+func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field, current, value string) {
 	type info struct {
 		OID       string `json:"OID"`
 		Interface string `json:"interface"`
@@ -564,10 +570,10 @@ func (l *LAN) log(auth auth.OpAuth, operation, OID, field, current, value string
 	if trail != nil {
 		record := audit.LogEntry{
 			UID:       uid,
-			Module:    OID,
+			Module:    stringify(OID),
 			Operation: operation,
 			Info: info{
-				OID:       OID,
+				OID:       stringify(OID),
 				Interface: "LAN",
 				Field:     field,
 				Current:   current,

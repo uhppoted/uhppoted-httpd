@@ -1,5 +1,11 @@
 package catalog
 
+const InterfaceType Suffix = ".0"
+const InterfaceName Suffix = ".1"
+const LANBindAddress Suffix = ".2"
+const LANBroadcastAddress Suffix = ".3"
+const LANListenAddress Suffix = ".4"
+
 const CardCreated Suffix = ".0.1"
 const CardName Suffix = ".1"
 const CardNumber Suffix = ".2"
