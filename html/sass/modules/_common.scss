@@ -86,3 +86,29 @@ tr td input:focus {
   border: 1px solid red;
 }
 
+.tooltip-wrap {
+  position: relative;
+}
+
+.tooltip-wrap .tooltip-content {
+  color: #800000ff;
+  background-color: #ff000020;
+  width: fit-content;
+  white-space: nowrap;
+  padding-top: .2em;
+  padding-bottom: .2em;
+  padding-left: .5em;
+  padding-right: .5em;
+
+  display: none;
+  position: absolute;
+  top: 28px;
+  left: 28px;
+
+  overflow: visible;
+  border-radius: 2px;
+}
+
+.tooltip-wrap:hover .tooltip-content.enabled {
+  display: block;
+}

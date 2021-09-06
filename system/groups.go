@@ -2,7 +2,7 @@ package system
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	// "github.com/uhppoted/uhppoted-httpd/types"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
@@ -29,11 +29,11 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 		}
 	}
 
-	// // ... validate
-	// if err := shadow.Validate(); err != nil {
-	//     return nil, types.BadRequest(err, err)
-	// }
-	//
+	// ... validate
+	if err := shadow.Validate(); err != nil {
+		return nil, types.BadRequest(err, err)
+	}
+
 	// for _, c := range sys.controllers.Controllers {
 	//     for k, v := range c.Doors {
 	//         if v != "" {

@@ -3,12 +3,10 @@
 ### IN PROGRESS
 
 - OID
-  - [x] Add LAN to schema
   - [ ] Add controllers to schema
   - [ ] Store all values in catalog and 'realize' local copies from cache
   - [ ] Make OID a type
         - [ ] doors
-        - [x] interfaces
         - [ ] controllers
         - [ ] catalog
         - [ ] cache
@@ -17,14 +15,12 @@
       - migrate shared CSS to 'common'
         - [ ] system
         - [ ] doors
-        - [ ] tooltips
+        - [x] tooltips
       - move 'common' into 'tabular'
-- [ ] <sigh> double click for login seems to back - after 'refresh' :-( :-(
+- [ ] <sigh> double click for login seems to be back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [ ] Update commit for OIDs
-        - [x] groups
   - [ ] onNew
   - [ ] delete
   - [ ] validate
@@ -39,8 +35,7 @@
         - or just use tag (?)
 
 - Groups
-  - [x] commit
-  - [ ] validate
+  - [x] validate
   - [ ] add
   - [ ] delete
   - [ ] save

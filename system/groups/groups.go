@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
@@ -136,4 +137,39 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]int
 	// }
 
 	return objects, nil
+}
+
+func (gg *Groups) Validate() error {
+	if gg != nil {
+		return validate(*gg)
+	}
+
+	return nil
+}
+
+func validate(gg Groups) error {
+	names := map[string]string{}
+
+	for k, g := range gg.Groups {
+		if g.deleted != nil {
+			continue
+		}
+
+		if g.OID == "" {
+			return fmt.Errorf("Invalid group OID (%v)", g.OID)
+		}
+
+		if k != g.OID {
+			return fmt.Errorf("Group %s: mismatched group OID %v (expected %v)", g.Name, g.OID, k)
+		}
+
+		n := strings.TrimSpace(strings.ToLower(g.Name))
+		if v, ok := names[n]; ok && n != "" {
+			return fmt.Errorf("'%v': duplicate group name (%v)", g.Name, v)
+		}
+
+		names[n] = g.Name
+	}
+
+	return nil
 }
