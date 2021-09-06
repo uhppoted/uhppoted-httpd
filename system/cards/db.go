@@ -11,7 +11,6 @@ type Cards interface {
 	UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error)
 	Print()
 
-	Groups() types.Groups
 	CardHolders() CardHolders
 	ACL() ([]types.Permissions, error)
 	Post(map[string]interface{}, auth.OpAuth) (interface{}, error)

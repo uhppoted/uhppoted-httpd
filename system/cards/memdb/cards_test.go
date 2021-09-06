@@ -83,9 +83,6 @@ func dbx(cardholders ...cards.CardHolder) *fdb {
 	p := fdb{
 		data: data{
 			Tables: tables{
-				Groups: types.Groups{
-					"G05": group("G05"),
-				},
 				CardHolders: cards.CardHolders{},
 			},
 		},

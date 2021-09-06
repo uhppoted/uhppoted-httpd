@@ -30,7 +30,6 @@ type data struct {
 }
 
 type tables struct {
-	Groups      types.Groups      `json:"groups"`
 	CardHolders cards.CardHolders `json:"cardholders"`
 }
 
@@ -46,7 +45,6 @@ var trail audit.Trail
 func (d *data) copy() *data {
 	shadow := data{
 		Tables: tables{
-			Groups:      d.Tables.Groups.Clone(),
 			CardHolders: cards.CardHolders{},
 		},
 	}
@@ -67,7 +65,7 @@ func NewDB(file string, rules cards.IRules) (*fdb, error) {
 		file: file,
 		data: data{
 			Tables: tables{
-				Groups:      types.Groups{},
+				//Groups:      types.Groups{},
 				CardHolders: cards.CardHolders{},
 			},
 		},
@@ -76,10 +74,6 @@ func NewDB(file string, rules cards.IRules) (*fdb, error) {
 
 	if err := load(&f.data, f.file); err != nil {
 		return nil, err
-	}
-
-	for _, v := range f.data.Tables.Groups {
-		catalog.PutV(catalog.OID(v.OID).Append(GroupName), v.Name, false)
 	}
 
 	created := time.Time{}
@@ -95,7 +89,6 @@ func NewDB(file string, rules cards.IRules) (*fdb, error) {
 func (d *fdb) Clone() cards.Cards {
 	shadow := data{
 		Tables: tables{
-			Groups:      d.data.Tables.Groups.Clone(),
 			CardHolders: cards.CardHolders{},
 		},
 	}
@@ -145,14 +138,6 @@ func (cc *fdb) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interf
 	//	}
 
 	return objects, nil
-}
-
-func (d *fdb) Groups() types.Groups {
-	d.RLock()
-
-	defer d.RUnlock()
-
-	return d.data.Tables.Groups
 }
 
 func (d *fdb) CardHolders() cards.CardHolders {
@@ -329,12 +314,6 @@ func (d *fdb) update(shadow *data, ch cards.CardHolder, auth auth.OpAuth) (inter
 			record.To = ch.To
 		}
 
-		for gid, gg := range ch.Groups {
-			if _, ok := shadow.Tables.Groups[gid]; ok {
-				record.Groups[gid] = gg
-			}
-		}
-
 		current := d.data.Tables.CardHolders[ch.OID]
 		if auth != nil {
 			if err := auth.CanUpdateCardHolder(current, record); err != nil {
@@ -381,7 +360,7 @@ func save(d *data, file string) error {
 		return err
 	}
 
-	if err := clean(d); err != nil {
+	if err := scrub(d); err != nil {
 		return err
 	}
 
@@ -458,15 +437,7 @@ func validate(d *data) error {
 	return nil
 }
 
-func clean(d *data) error {
-	for _, r := range d.Tables.CardHolders {
-		for gid, _ := range r.Groups {
-			if _, ok := d.Tables.Groups[gid]; !ok {
-				delete(r.Groups, gid)
-			}
-		}
-	}
-
+func scrub(d *data) error {
 	return nil
 }
 

@@ -81,10 +81,6 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	case "/groups":
 		groups.Fetch(w, r, d.timeout)
 		return
-
-		// case "/cardholders":
-		// 	cards.FetchX(w, r, d.timeout)
-		// 	return
 	}
 
 	if strings.HasSuffix(path, ".html") {

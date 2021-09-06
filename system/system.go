@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -117,7 +118,22 @@ func Cards() interface{} {
 }
 
 func Groups() interface{} {
-	return sys.cards.Groups()
+	type group struct {
+		OID  string
+		Name string
+	}
+
+	list := []group{}
+	for k, _ := range sys.groups.Groups {
+		list = append(list, group{
+			OID:  fmt.Sprintf("%v", k),
+			Name: sys.groups.Groups[k].Name,
+		})
+	}
+
+	sort.SliceStable(list, func(i, j int) bool { return list[i].OID < list[j].OID })
+
+	return list
 }
 
 func (s *system) refresh() {

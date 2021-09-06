@@ -21,7 +21,7 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [ ] Split cards and groups into separate files
+  - [x] Split cards and groups into separate files
   - [ ] onNew
   - [ ] delete
   - [ ] validate
@@ -43,7 +43,7 @@
   - [ ] doors
 
 - Doors
-  - [ ] Custom 'mode' dropdown to handle option click 
+  - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
   - [ ] 'door' select chooses first item if list changes while select is open
