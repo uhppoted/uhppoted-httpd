@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
@@ -68,6 +69,60 @@ func (gg *Groups) Load(file string) error {
 	gg.file = file
 
 	return nil
+}
+
+func (gg Groups) Save() error {
+	if err := validate(gg); err != nil {
+		return err
+	}
+
+	if err := scrub(gg); err != nil {
+		return err
+	}
+
+	if gg.file == "" {
+		return nil
+	}
+
+	serializable := struct {
+		Groups []json.RawMessage `json:"groups"`
+	}{
+		Groups: []json.RawMessage{},
+	}
+
+	for _, g := range gg.Groups {
+		if g.IsValid() && !g.IsDeleted() {
+			if record, err := g.serialize(); err == nil && record != nil {
+				serializable.Groups = append(serializable.Groups, record)
+			}
+		}
+	}
+
+	b, err := json.MarshalIndent(serializable, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	tmp, err := os.CreateTemp("", "uhppoted-groups.*")
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(b); err != nil {
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(gg.file), 0770); err != nil {
+		return err
+	}
+
+	return os.Rename(tmp.Name(), gg.file)
 }
 
 func (gg Groups) Print() {
@@ -171,5 +226,9 @@ func validate(gg Groups) error {
 		names[n] = g.Name
 	}
 
+	return nil
+}
+
+func scrub(gg Groups) error {
 	return nil
 }

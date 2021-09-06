@@ -21,14 +21,15 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
+  - [ ] Split cards and groups into separate files
   - [ ] onNew
   - [ ] delete
   - [ ] validate
   - [ ] save
   - [ ] `card` serialize/deserialize
-  - [ ] Split cards and groups into separate files
   - [ ] Unit test for AsObjects
   - [ ] Cleanup cards.js
+  - [ ] Replace dataset.original with value from DB
   - [ ] DB mark/sweep can be called multiple times for the same update
         - make time based (?)
         - make update ID base (?)
@@ -36,9 +37,9 @@
 
 - Groups
   - [x] validate
+  - [x] save
   - [ ] add
   - [ ] delete
-  - [ ] save
   - [ ] doors
 
 - Doors
