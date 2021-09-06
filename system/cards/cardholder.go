@@ -271,6 +271,11 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 	return objects, nil
 }
 
+// TODO remove - temporary implementation pending memdb move to 'cards' package
+func (c *CardHolder) Log(auth auth.OpAuth, operation string, oid catalog.OID, field, current, value string) {
+	c.log(auth, operation, oid, field, current, value)
+}
+
 func (c *CardHolder) log(auth auth.OpAuth, operation string, oid catalog.OID, field, current, value string) {
 	type info struct {
 		OID     string `json:"OID"`

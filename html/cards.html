@@ -57,7 +57,7 @@
                 <button class="dismiss" onclick="dismiss()">&#9746;</button>
               </div>
             </div>
-            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew()" />
+            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('card')" />
             <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh()" />
           </div>
 
@@ -155,7 +155,7 @@
  
   <script type="module">
     import { retheme, dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
-    import { onNew } from "./javascript/cards.js"
+    import {  } from "./javascript/cards.js"
     import { onEdited, 
              onEnter,
              onTick, 
@@ -163,6 +163,7 @@
              onCommitAll,
              onRollback, 
              onRollbackAll, 
+             onNew,
              onRefresh } from "./javascript/edit.js"
 
     window.retheme = retheme

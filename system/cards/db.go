@@ -13,5 +13,5 @@ type Cards interface {
 
 	CardHolders() CardHolders
 	ACL() ([]types.Permissions, error)
-	Post(map[string]interface{}, auth.OpAuth) (interface{}, error)
+	//	Post(map[string]interface{}, auth.OpAuth) (interface{}, error)
 }

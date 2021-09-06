@@ -22,14 +22,16 @@
 
 - Migrate cards to OIDs
   - [x] Split cards and groups into separate files
-  - [ ] onNew
+  - [x] onNew
+  - [ ] Make `cards` look like doors, groups, etc
+  - [ ] Update unit tests for new implementation
+  - [ ] Replace dataset.original with value from DB
   - [ ] delete
   - [ ] validate
   - [ ] save
   - [ ] `card` serialize/deserialize
   - [ ] Unit test for AsObjects
   - [ ] Cleanup cards.js
-  - [ ] Replace dataset.original with value from DB
   - [ ] DB mark/sweep can be called multiple times for the same update
         - make time based (?)
         - make update ID base (?)
@@ -40,7 +42,8 @@
   - [x] save
   - [ ] add
   - [ ] delete
-  - [ ] doors
+  - [ ] doors/permissions
+  - [ ] Update ACL to use reworked groups
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -76,6 +79,8 @@
       - use uhppoted-lib::healthcheck
 
 - [ ] Fix Firefox layout
+      - spacing/padding/margins
+      - rollback icon size
 
 - [ ] [TOML](https://toml.io) files
 

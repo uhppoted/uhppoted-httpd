@@ -6,7 +6,6 @@ import (
 	"log"
 
 	core "github.com/uhppoted/uhppote-core/types"
-	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
@@ -36,18 +35,18 @@ func CompareACL() {
 	}
 }
 
-func UpdateCardHolders(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
-	response, err := sys.cards.Post(m, auth)
-	if err != nil {
-		return nil, err
-	}
-
-	sys.taskQ.Add(Task{
-		f: UpdateACL,
-	})
-
-	return response, nil
-}
+// func UpdateCardHolders(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+// 	response, err := sys.cards.Post(m, auth)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+//
+// 	sys.taskQ.Add(Task{
+// 		f: UpdateACL,
+// 	})
+//
+// 	return response, nil
+// }
 
 func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	// initialise empty ACL

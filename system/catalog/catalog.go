@@ -14,11 +14,13 @@ var catalog = struct {
 	interfaces  map[OID]struct{}
 	controllers map[string]controller
 	doors       map[string]struct{}
+	cards       map[OID]struct{}
 	groups      map[OID]struct{}
 }{
 	interfaces:  map[OID]struct{}{},
 	controllers: map[string]controller{},
 	doors:       map[string]struct{}{},
+	cards:       map[OID]struct{}{},
 	groups:      map[OID]struct{}{},
 }
 
@@ -51,6 +53,13 @@ func PutDoor(oid string) {
 	defer guard.Unlock()
 
 	catalog.doors[oid] = struct{}{}
+}
+
+func PutCard(oid OID) {
+	guard.Lock()
+	defer guard.Unlock()
+
+	catalog.cards[oid] = struct{}{}
 }
 
 func PutGroup(oid OID) {
@@ -108,6 +117,27 @@ loop:
 		}
 
 		catalog.doors[oid] = struct{}{}
+		return oid
+	}
+}
+
+func NewCard() OID {
+	guard.Lock()
+	defer guard.Unlock()
+
+	item := 0
+loop:
+	for {
+		item += 1
+		oid := OID(fmt.Sprintf("0.3.%d", item))
+		for v, _ := range catalog.cards {
+			if v == oid {
+				continue loop
+			}
+		}
+
+		catalog.cards[oid] = struct{}{}
+
 		return oid
 	}
 }

@@ -34,6 +34,15 @@ export const DB = {
           record.status = 'deleted'
         }
         break
+
+      case 'cards':
+        if (oid && this.cards.has(oid)) {
+          const record = this.cards.get(oid)
+
+          record.mark = 0
+          record.status = 'deleted'
+        }
+        break
     }
   },
 

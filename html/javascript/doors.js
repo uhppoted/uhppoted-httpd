@@ -1,16 +1,8 @@
 /* global */
 
-import { busy, unbusy, warning, getAsJSON, postAsJSON } from './uhppoted.js'
+import { unbusy, warning, getAsJSON } from './uhppoted.js'
 import { update, deleted } from './edit.js'
 import { DB } from './db.js'
-
-export function create () {
-  const records = [{ oid: '<new>', value: '' }]
-  const reset = function () {}
-  const cleanup = function () {}
-
-  post('objects', records, reset, cleanup)
-}
 
 export function get () {
   getAsJSON('/doors')
@@ -38,41 +30,6 @@ export function get () {
     })
     .catch(function (err) {
       console.error(err)
-    })
-}
-
-function post (tag, records, reset, cleanup) {
-  busy()
-
-  postAsJSON('/doors', { [tag]: records })
-    .then(response => {
-      if (response.redirected) {
-        window.location = response.url
-      } else {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              if (object && object.system && object.system.objects) {
-                DB.updated('objects', object.system.objects)
-              }
-
-              refreshed()
-            })
-            break
-
-          default:
-            reset()
-            response.text().then(message => { warning(message) })
-        }
-      }
-    })
-    .catch(function (err) {
-      reset()
-      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-    })
-    .finally(() => {
-      cleanup()
-      unbusy()
     })
 }
 

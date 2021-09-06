@@ -180,7 +180,11 @@ export function onRollbackAll (tag, event) {
 export function onNew (tag, event) {
   switch (tag) {
     case 'door':
-      doors.create()
+      create(pages.doors)
+      break
+
+    case 'card':
+      create(pages.cards)
       break
   }
 }
@@ -406,6 +410,7 @@ function get (url, refreshed) {
 
 function rollback (recordset, row, refreshed) {
   if (row && row.classList.contains('new')) {
+    console.log('rollback', recordset)
     db.DB.delete(recordset, row.dataset.oid)
     refreshed()
   } else {
@@ -455,6 +460,14 @@ function commit (page, ...rows) {
   })
 
   post(page, records, reset, cleanup)
+}
+
+function create (page) {
+  const records = [{ oid: '<new>', value: '' }]
+  const reset = function () {}
+  const cleanup = function () {}
+
+  post(page, records, reset, cleanup, page.refreshed)
 }
 
 function post (page, records, reset, cleanup, refreshed) {
