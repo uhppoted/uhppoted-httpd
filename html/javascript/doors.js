@@ -1,7 +1,7 @@
 /* global */
 
 import { unbusy, warning, getAsJSON } from './uhppoted.js'
-import { update, deleted } from './edit.js'
+import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
 
 export function get () {

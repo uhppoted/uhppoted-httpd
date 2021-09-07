@@ -1,7 +1,7 @@
 /* global */
 
 import * as system from './system.js'
-import { deleted } from './edit.js'
+import { deleted } from './tabular.js'
 import { DB } from './db.js'
 
 export function updateFromDB (oid, record) {

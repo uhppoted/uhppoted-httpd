@@ -186,6 +186,10 @@ export function onNew (tag, event) {
     case 'card':
       create(pages.cards)
       break
+
+    case 'group':
+      create(pages.groups)
+      break
   }
 }
 

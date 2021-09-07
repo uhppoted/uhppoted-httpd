@@ -14,9 +14,10 @@
 - [ ] Commonalise CSS
       - migrate shared CSS to 'common'
         - [ ] system
+        - [ ] cards
         - [x] doors
         - [x] groups
-      - merge 'common' and 'tabular'
+      - (???) merge 'common' and 'tabular'
 - [ ] <sigh> double click for login seems to be back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
