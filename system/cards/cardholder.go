@@ -2,6 +2,7 @@ package cards
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"strconv"
 	"time"
@@ -23,6 +24,7 @@ type CardHolder struct {
 	Groups map[string]bool
 
 	Created time.Time `json:"-"`
+	deleted *time.Time
 }
 
 type object catalog.Object
@@ -73,16 +75,31 @@ func (c *CardHolder) Clone() *CardHolder {
 		Groups: groups,
 
 		Created: c.Created,
+		deleted: c.deleted,
 	}
 
 	return replicant
 }
 
 func (c *CardHolder) IsValid() bool {
-	return true
+	if c != nil {
+		if c.Name != nil && *c.Name != "" {
+			return true
+		}
+
+		if c.Card != nil && *c.Card != 0 {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (c *CardHolder) IsDeleted() bool {
+	if c != nil && c.deleted != nil {
+		return true
+	}
+
 	return false
 }
 
@@ -93,6 +110,10 @@ func (c *CardHolder) AsObjects() []interface{} {
 	number := stringify(c.Card)
 	from := stringify(c.From)
 	to := stringify(c.To)
+
+	if c.deleted != nil {
+		status = stringify(types.StatusDeleted)
+	}
 
 	objects := []interface{}{
 		object{OID: string(c.OID), Value: status},
@@ -178,7 +199,7 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 	}
 
 	if c != nil {
-		// name := stringify(c.Name)
+		clone := c.Clone()
 
 		switch {
 		case oid == catalog.Join(c.OID, CardName):
@@ -195,18 +216,31 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 			}
 
 		case oid == catalog.Join(c.OID, CardNumber):
-			if n, err := strconv.ParseUint(value, 10, 32); err != nil {
-				return nil, err
-			} else if err := f("number", n); err != nil {
-				return nil, err
-			} else {
-				c.log(auth, "update", c.OID, "number", stringify(c.Card), value)
-				v := types.Card(n)
-				c.Card = &v
-				objects = append(objects, object{
-					OID:   c.OID.Append(CardNumber),
-					Value: stringify(c.Card),
-				})
+			if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
+				if n, err := strconv.ParseUint(value, 10, 32); err != nil {
+					return nil, err
+				} else if err := f("number", n); err != nil {
+					return nil, err
+				} else {
+					c.log(auth, "update", c.OID, "number", stringify(c.Card), value)
+					v := types.Card(n)
+					c.Card = &v
+					objects = append(objects, object{
+						OID:   c.OID.Append(CardNumber),
+						Value: stringify(c.Card),
+					})
+				}
+			} else if value == "" {
+				if err := f("number", 0); err != nil {
+					return nil, err
+				} else {
+					c.log(auth, "update", c.OID, "number", stringify(c.Card), value)
+					c.Card = nil
+					objects = append(objects, object{
+						OID:   c.OID.Append(CardNumber),
+						Value: "",
+					})
+				}
 			}
 
 		case oid == catalog.Join(c.OID, CardFrom):
@@ -266,6 +300,26 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 				}
 			}
 		}
+
+		if (c.Name == nil || *c.Name == "") && (c.Card == nil || *c.Card == 0) {
+			if auth != nil {
+				if err := auth.CanDeleteCard(clone); err != nil {
+					return nil, err
+				}
+			}
+
+			c.log(auth, "delete", c.OID, "card", "", "")
+			now := time.Now()
+			c.deleted = &now
+
+			objects = append(objects, object{
+				OID:   stringify(c.OID),
+				Value: "deleted",
+			})
+
+			catalog.Delete(stringify(c.OID))
+		}
+
 	}
 
 	return objects, nil

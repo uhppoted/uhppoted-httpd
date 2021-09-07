@@ -280,6 +280,18 @@ func (a *authorizator) CanUpdateCard(card auth.Operant, field string, value inte
 	return types.Unauthorized(msg, err)
 }
 
+func (a *authorizator) CanDeleteCard(card auth.Operant) error {
+	ruleset := "cards"
+	op := "delete::card"
+	msg := fmt.Errorf("Not authorized to delete card")
+
+	m := map[string]interface{}{
+		"CARD": card.AsRuleEntity(),
+	}
+
+	return a.evaluate(ruleset, op, card, m, msg)
+}
+
 func (a *authorizator) CanDeleteCardHolder(ch auth.Operant) error {
 	if a != nil && ch != nil {
 		r := result{

@@ -22,9 +22,9 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [ ] delete
+  - [x] delete
   - [ ] Make `cards.go` look like doors, groups, etc
-  - [ ] Update unit tests for new implementation
+  - [ ] Update unit tests for OID'd implementation
   - [ ] Replace dataset.original with value from DB
   - [ ] validate
   - [ ] save
