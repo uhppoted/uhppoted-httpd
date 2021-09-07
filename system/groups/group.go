@@ -68,6 +68,20 @@ func (g *Group) AsObjects() []interface{} {
 	return objects
 }
 
+func (g *Group) AsRuleEntity() interface{} {
+	type entity struct {
+		Name string
+	}
+
+	if g != nil {
+		return &entity{
+			Name: fmt.Sprintf("%v", g.Name),
+		}
+	}
+
+	return &entity{}
+}
+
 func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 

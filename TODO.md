@@ -37,8 +37,10 @@
         - or just use tag (?)
 
 - Groups
-  - [ ] add
+  - [x] add
   - [ ] delete
+  - [ ] add: asynchronoulsy update card membership columns
+  - [ ] delete: asynchronoulsy update card membership columns
   - [ ] doors/permissions
   - [ ] Update ACL to use reworked groups
 

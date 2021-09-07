@@ -3,6 +3,7 @@ package httpd
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/hyperjumptech/grule-rule-engine/ast"
 	"github.com/hyperjumptech/grule-rule-engine/engine"
@@ -386,6 +387,39 @@ func (a *authorizator) CanDeleteDoor(door auth.Operant) error {
 		}
 
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("delete::door %s", toString(door)))
+	}
+
+	return types.Unauthorized(msg, err)
+}
+
+func (a *authorizator) CanAddGroup(group auth.Operant) error {
+	return a.evaluate("groups", "add::group", "group", group)
+}
+
+func (a *authorizator) evaluate(ruleset, op, tag string, operant auth.Operant) error {
+	msg := fmt.Errorf("Not authorized to add %s", tag)
+	err := fmt.Errorf("Not authorized for operation %s", op)
+
+	if a != nil && operant != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		t := strings.ToUpper(tag)
+		m := map[string]interface{}{
+			t: operant.AsRuleEntity(),
+		}
+
+		if err := a.eval(ruleset, op, &r, m); err != nil {
+			return types.Unauthorized(msg, err)
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("%v %v", op, toString(operant)))
 	}
 
 	return types.Unauthorized(msg, err)

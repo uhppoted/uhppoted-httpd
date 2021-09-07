@@ -142,6 +142,27 @@ loop:
 	}
 }
 
+func NewGroup() OID {
+	guard.Lock()
+	defer guard.Unlock()
+
+	item := 0
+loop:
+	for {
+		item += 1
+		oid := OID(fmt.Sprintf("0.4.%d", item))
+		for v, _ := range catalog.groups {
+			if v == oid {
+				continue loop
+			}
+		}
+
+		catalog.groups[oid] = struct{}{}
+
+		return oid
+	}
+}
+
 func Delete(oid string) {
 	guard.Lock()
 	defer guard.Unlock()

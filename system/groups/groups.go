@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
@@ -176,20 +177,20 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]int
 
 	objects := []interface{}{}
 
-	// if oid == "<new>" {
-	// 	if g, err := gg.add(auth, Group{}); err != nil {
-	// 		return nil, err
-	// 	} else if g == nil {
-	// 		return nil, fmt.Errorf("Failed to add 'new' group")
-	// 	} else {
-	// 		g.log(auth, "add", g.OID, "group", "", "")
-	// 		gg.Groups[d.OID] = *g
-	// 		objects = append(objects, object{
-	// 			OID:   g.OID,
-	// 			Value: "new",
-	// 		})
-	// 	}
-	// }
+	if oid == "<new>" {
+		if g, err := gg.add(auth, Group{}); err != nil {
+			return nil, err
+		} else if g == nil {
+			return nil, fmt.Errorf("Failed to add 'new' group")
+		} else {
+			g.log(auth, "add", g.OID, "group", "", "")
+			gg.Groups[g.OID] = *g
+			objects = append(objects, object{
+				OID:   stringify(g.OID),
+				Value: "new",
+			})
+		}
+	}
 
 	return objects, nil
 }
@@ -200,6 +201,22 @@ func (gg *Groups) Validate() error {
 	}
 
 	return nil
+}
+
+func (gg *Groups) add(auth auth.OpAuth, g Group) (*Group, error) {
+	oid := catalog.NewGroup()
+
+	record := g.clone()
+	record.OID = oid
+	record.created = time.Now()
+
+	if auth != nil {
+		if err := auth.CanAddGroup(&record); err != nil {
+			return nil, err
+		}
+	}
+
+	return &record, nil
 }
 
 func validate(gg Groups) error {

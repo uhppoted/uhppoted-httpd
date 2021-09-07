@@ -54,9 +54,9 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 	// }
 
 	// ... save
-	if err := shadow.Save(); err != nil {
-		return nil, err
-	}
+	// if err := shadow.Save(); err != nil {
+	// 	return nil, err
+	// }
 
 	sys.groups = *shadow
 	sys.updated()
