@@ -86,17 +86,15 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
-		// if auth == nil {
-		// 	return nil
-		// }
-		//
-		// return auth.CanUpdateGroup(d, field, value)
+		if auth != nil {
+			return auth.CanUpdateGroup(g, field, value)
+		}
 
 		return nil
 	}
 
 	if g != nil {
-		// name := stringify(g.Name)
+		name := stringify(g.Name)
 
 		switch oid {
 		case g.OID.Append(GroupName):
@@ -112,24 +110,24 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 			}
 		}
 
-		// if !g.IsValid() {
-		// 	if auth != nil {
-		// 		if err := auth.CanDeleteGroup(d); err != nil {
-		// 			return nil, err
-		// 		}
-		// 	}
-		//
-		// 	g.log(auth, "delete", g.OID, "name", name, "")
-		// 	now := time.Now()
-		// 	g.deleted = &now
-		//
-		// 	objects = append(objects, object{
-		// 		OID:   g.OID,
-		// 		Value: "deleted",
-		// 	})
-		//
-		// 	catalog.Delete(g.OID)
-		// }
+		if !g.IsValid() {
+			if auth != nil {
+				if err := auth.CanDeleteGroup(g); err != nil {
+					return nil, err
+				}
+			}
+
+			g.log(auth, "delete", g.OID, "name", name, "")
+			now := time.Now()
+			g.deleted = &now
+
+			objects = append(objects, object{
+				OID:   stringify(g.OID),
+				Value: "deleted",
+			})
+
+			catalog.Delete(stringify(g.OID))
+		}
 	}
 
 	return objects, nil

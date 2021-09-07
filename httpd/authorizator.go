@@ -3,7 +3,6 @@ package httpd
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/hyperjumptech/grule-rule-engine/ast"
 	"github.com/hyperjumptech/grule-rule-engine/engine"
@@ -393,22 +392,68 @@ func (a *authorizator) CanDeleteDoor(door auth.Operant) error {
 }
 
 func (a *authorizator) CanAddGroup(group auth.Operant) error {
-	return a.evaluate("groups", "add::group", "group", group)
+	ruleset := "groups"
+	op := "add::group"
+	msg := fmt.Errorf("Not authorized to add group")
+
+	m := map[string]interface{}{
+		"GROUP": group.AsRuleEntity(),
+	}
+
+	return a.evaluate(ruleset, op, group, m, msg)
 }
 
-func (a *authorizator) evaluate(ruleset, op, tag string, operant auth.Operant) error {
-	msg := fmt.Errorf("Not authorized to add %s", tag)
+func (a *authorizator) CanUpdateGroup(group auth.Operant, field string, value interface{}) error {
+	ruleset := "groups"
+	op := "update::group"
+	msg := fmt.Errorf("Not authorized to update group %v", group)
+	err := fmt.Errorf("Not authorized for operation %s", op)
+
+	if a != nil && group != nil {
+		r := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"GROUP": group.AsRuleEntity(),
+			"FIELD": field,
+			"VALUE": value,
+		}
+
+		if err = a.eval(ruleset, op, &r, m); err != nil {
+			return types.Unauthorized(msg, err)
+		}
+
+		if r.Allow && !r.Refuse {
+			return nil
+		}
+
+		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("%v %v, field:%v, value:%v", op, group, field, value))
+	}
+
+	return types.Unauthorized(msg, err)
+}
+
+func (a *authorizator) CanDeleteGroup(group auth.Operant) error {
+	ruleset := "groups"
+	op := "delete::group"
+	msg := fmt.Errorf("Not authorized to delete group")
+
+	m := map[string]interface{}{
+		"GROUP": group.AsRuleEntity(),
+	}
+
+	return a.evaluate(ruleset, op, group, m, msg)
+}
+
+func (a *authorizator) evaluate(ruleset, op string, operant auth.Operant, m map[string]interface{}, msg error) error {
 	err := fmt.Errorf("Not authorized for operation %s", op)
 
 	if a != nil && operant != nil {
 		r := result{
 			Allow:  false,
 			Refuse: false,
-		}
-
-		t := strings.ToUpper(tag)
-		m := map[string]interface{}{
-			t: operant.AsRuleEntity(),
 		}
 
 		if err := a.eval(ruleset, op, &r, m); err != nil {

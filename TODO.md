@@ -38,7 +38,7 @@
 
 - Groups
   - [x] add
-  - [ ] delete
+  - [x] delete
   - [ ] add: asynchronoulsy update card membership columns
   - [ ] delete: asynchronoulsy update card membership columns
   - [ ] doors/permissions
