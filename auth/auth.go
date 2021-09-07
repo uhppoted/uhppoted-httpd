@@ -29,10 +29,6 @@ type OpAuth interface {
 	CanUpdateController(controller Operant, field string, value interface{}) error
 	CanDeleteController(controller Operant) error
 
-	CanAddCardHolder(cardHolder Operant) error
-	CanUpdateCardHolder(original, updated Operant) error
-	CanDeleteCardHolder(cardHolder Operant) error
-
 	CanAddCard(card Operant) error
 	CanUpdateCard(card Operant, field string, value interface{}) error
 	CanDeleteCard(card Operant) error

@@ -8,7 +8,6 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/engine"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -171,57 +170,6 @@ func (a *authorizator) CanDeleteController(controller auth.Operant) error {
 	return types.Unauthorized(msg, err)
 }
 
-func (a *authorizator) CanAddCardHolder(ch auth.Operant) error {
-	if a != nil && ch != nil {
-		r := result{
-			Allow:  false,
-			Refuse: false,
-		}
-
-		m := map[string]interface{}{
-			"CH": ch.AsRuleEntity(),
-		}
-
-		if err := a.eval("cards", "add", &r, m); err != nil {
-			return err
-		}
-
-		if r.Allow && !r.Refuse {
-			return nil
-		}
-
-		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::card %v", toString(ch)))
-	}
-
-	return fmt.Errorf("Not authorized for operation %s", "add::card")
-}
-
-func (a *authorizator) CanUpdateCardHolder(original, updated auth.Operant) error {
-	if a != nil && original != nil && updated != nil {
-		r := result{
-			Allow:  false,
-			Refuse: false,
-		}
-
-		m := map[string]interface{}{
-			"ORIGINAL": original.AsRuleEntity(),
-			"UPDATED":  updated.AsRuleEntity(),
-		}
-
-		if err := a.eval("cards", "update", &r, m); err != nil {
-			return err
-		}
-
-		if r.Allow && !r.Refuse {
-			return nil
-		}
-
-		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::card %v %v", toString(original), toString(updated)))
-	}
-
-	return fmt.Errorf("Not authorized for operation %s", "update::card")
-}
-
 func (a *authorizator) CanAddCard(card auth.Operant) error {
 	msg := fmt.Errorf("Not authorized to add card")
 	err := fmt.Errorf("Not authorized for operation %s", "add::card")
@@ -290,31 +238,6 @@ func (a *authorizator) CanDeleteCard(card auth.Operant) error {
 	}
 
 	return a.evaluate(ruleset, op, card, m, msg)
-}
-
-func (a *authorizator) CanDeleteCardHolder(ch auth.Operant) error {
-	if a != nil && ch != nil {
-		r := result{
-			Allow:  false,
-			Refuse: false,
-		}
-
-		m := map[string]interface{}{
-			"CH": ch.AsRuleEntity(),
-		}
-
-		if err := a.eval("cards", "delete", &r, m); err != nil {
-			return err
-		}
-
-		if r.Allow && !r.Refuse {
-			return nil
-		}
-
-		return fmt.Errorf("Not authorized for %s", fmt.Sprintf("delete::card %v", toString(ch)))
-	}
-
-	return fmt.Errorf("Not authorized for operation %s", "delete::card")
 }
 
 func (a *authorizator) CanAddDoor(door auth.Operant) error {
@@ -506,26 +429,6 @@ func (a *authorizator) eval(ruleset string, op string, r *result, m map[string]i
 	}
 
 	return nil
-}
-
-func makeOP(ch cards.CardHolder) *card {
-	cardNumber := uint32(0)
-	if ch.Card != nil {
-		cardNumber = uint32(*ch.Card)
-	}
-
-	groups := []string{}
-	for k, v := range ch.Groups {
-		if v {
-			groups = append(groups, k)
-		}
-	}
-
-	return &card{
-		Name:   fmt.Sprintf("%v", ch.Name),
-		Card:   cardNumber,
-		Groups: groups,
-	}
 }
 
 func toString(entity interface{}) string {
