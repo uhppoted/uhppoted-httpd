@@ -7,67 +7,6 @@ th.name {
   border-bottom: 1px;
 }
 
-tr.door {
-  overflow: visible;
-}
-
-tr.door td:last-child { 
-  width:100% 
-} 
-
-tr.door[data-status="unknown"] {
-}
-
-tr.door td select {
-  border: none;
-  outline: none;
-  font: 400 0.9em Arial;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-tr.door[data-status="unconfigured"] td select {
-  color: $content-table-row-unconfigured;
-  font-style: italic;
-}
-
-tr.door[data-status="unknown"] td select {
-  color: $content-table-item-unknown;
-  font-style: italic;
-}
-
-tr.door[data-status="uncertain"] td select {
-  color: $content-table-item-uncertain;
-  font-style: italic;
-  font-weight: bold; 
-}
-
-tr.door[data-status="error"] td select {
-  color: $content-table-item-error;
-}
-
-tr.door td select[data-status="unknown"] {
-  color: $content-table-item-unknown;
-  font-style: italic;
-}
-
-tr.door td select[data-status="unconfigured"] {
-  color: $content-table-row-unconfigured;
-  font-style: italic;
-}
-
-tr.door td select[data-status="uncertain"] {
-  color: $content-table-item-uncertain;
-  font-style: italic;
-  font-weight: bold; 
-}
-
-tr.door td select[data-status="error"] {
-  color: $content-table-item-error;
-  font-weight: bold; 
-}
-
 tr.door td input.name {
   width: 90px;
 }

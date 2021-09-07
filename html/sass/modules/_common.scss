@@ -13,6 +13,17 @@
    display: block;
 }
 
+tr {
+  overflow: visible;
+}
+
+tr[data-status="unknown"] {
+}
+
+tr td:last-child { 
+  width:100% 
+} 
+
 tr td img.flag.modified {
    filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
    visibility: visible;
@@ -84,6 +95,57 @@ tr td input[data-status="error"] {
 
 tr td input:focus {
   border: 1px solid red;
+}
+
+tr td select {
+  color: $content-table-item-normal;
+  border: none;
+  outline: none;
+  font: 400 0.9em Arial;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+tr[data-status="unconfigured"] td select {
+  color: $content-table-row-unconfigured;
+  font-style: italic;
+}
+
+tr[data-status="unknown"] td select {
+  color: $content-table-item-unknown;
+  font-style: italic;
+}
+
+tr[data-status="uncertain"] td select {
+  color: $content-table-item-uncertain;
+  font-style: italic;
+  font-weight: bold; 
+}
+
+tr[data-status="error"] td select {
+  color: $content-table-item-error;
+}
+
+tr td select[data-status="unknown"] {
+  color: $content-table-item-unknown;
+  font-style: italic;
+}
+
+tr td select[data-status="unconfigured"] {
+  color: $content-table-row-unconfigured;
+  font-style: italic;
+}
+
+tr td select[data-status="uncertain"] {
+  color: $content-table-item-uncertain;
+  font-style: italic;
+  font-weight: bold; 
+}
+
+tr td select[data-status="error"] {
+  color: $content-table-item-error;
+  font-weight: bold; 
 }
 
 .tooltip-wrap {

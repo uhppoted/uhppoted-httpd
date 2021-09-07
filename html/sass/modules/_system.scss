@@ -19,6 +19,10 @@ table.interface td {
   font-variant: small-caps;
 }
 
+table.interface tr td:last-child { 
+  width:min-content; 
+} 
+
 table.interface td img.flag {
   width: 6px;
   height: 6px;
