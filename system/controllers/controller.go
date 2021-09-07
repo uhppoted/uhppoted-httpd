@@ -45,6 +45,24 @@ type controller struct {
 	created time.Time
 }
 
+const ControllerCreated = catalog.ControllerCreated
+const ControllerName = catalog.ControllerName
+const ControllerDeviceID = catalog.ControllerDeviceID
+const ControllerAddress = catalog.ControllerAddress
+const ControllerAddressConfigured = catalog.ControllerAddressConfigured
+const ControllerAddressStatus = catalog.ControllerAddressStatus
+const ControllerDateTime = catalog.ControllerDateTime
+const ControllerDateTimeSystem = catalog.ControllerDateTimeSystem
+const ControllerDateTimeStatus = catalog.ControllerDateTimeStatus
+const ControllerCards = catalog.ControllerCards
+const ControllerCardsStatus = catalog.ControllerCardsStatus
+const ControllerEvents = catalog.ControllerEvents
+const ControllerEventsStatus = catalog.ControllerEventsStatus
+const ControllerDoor1 = catalog.ControllerDoor1
+const ControllerDoor2 = catalog.ControllerDoor2
+const ControllerDoor3 = catalog.ControllerDoor3
+const ControllerDoor4 = catalog.ControllerDoor4
+
 func (c *Controller) deserialize(bytes []byte) error {
 	record := struct {
 		OID      string           `json:"OID"`
@@ -233,23 +251,23 @@ func (c *Controller) AsObjects() []interface{} {
 
 	objects := []interface{}{
 		object{OID: c.OID, Value: fmt.Sprintf("%v", status)},
-		object{OID: c.OID + ".0.1", Value: created},
-		object{OID: c.OID + ".1", Value: name},
-		object{OID: c.OID + ".2", Value: deviceID},
-		object{OID: c.OID + ".3", Value: address.address},
-		object{OID: c.OID + ".3.1", Value: address.configured},
-		object{OID: c.OID + ".3.2", Value: stringify(address.status)},
-		object{OID: c.OID + ".4", Value: datetime.datetime},
-		object{OID: c.OID + ".4.1", Value: datetime.system},
-		object{OID: c.OID + ".4.2", Value: fmt.Sprintf("%v", datetime.status)},
-		object{OID: c.OID + ".5", Value: cards.cards},
-		object{OID: c.OID + ".5.1", Value: fmt.Sprintf("%v", cards.status)},
-		object{OID: c.OID + ".6", Value: events.events},
-		object{OID: c.OID + ".6.1", Value: fmt.Sprintf("%v", events.status)},
-		object{OID: c.OID + ".7", Value: doors[1]},
-		object{OID: c.OID + ".8", Value: doors[2]},
-		object{OID: c.OID + ".9", Value: doors[3]},
-		object{OID: c.OID + ".10", Value: doors[4]},
+		object{OID: c.OID + ControllerCreated, Value: created},
+		object{OID: c.OID + ControllerName, Value: name},
+		object{OID: c.OID + ControllerDeviceID, Value: deviceID},
+		object{OID: c.OID + ControllerAddress, Value: address.address},
+		object{OID: c.OID + ControllerAddressConfigured, Value: address.configured},
+		object{OID: c.OID + ControllerAddressStatus, Value: stringify(address.status)},
+		object{OID: c.OID + ControllerDateTime, Value: datetime.datetime},
+		object{OID: c.OID + ControllerDateTimeSystem, Value: datetime.system},
+		object{OID: c.OID + ControllerDateTimeStatus, Value: fmt.Sprintf("%v", datetime.status)},
+		object{OID: c.OID + ControllerCards, Value: cards.cards},
+		object{OID: c.OID + ControllerCardsStatus, Value: fmt.Sprintf("%v", cards.status)},
+		object{OID: c.OID + ControllerEvents, Value: events.events},
+		object{OID: c.OID + ControllerEventsStatus, Value: fmt.Sprintf("%v", events.status)},
+		object{OID: c.OID + ControllerDoor1, Value: doors[1]},
+		object{OID: c.OID + ControllerDoor2, Value: doors[2]},
+		object{OID: c.OID + ControllerDoor3, Value: doors[3]},
+		object{OID: c.OID + ControllerDoor4, Value: doors[4]},
 	}
 
 	return objects
@@ -339,7 +357,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 
 	if c != nil {
 		switch oid {
-		case c.OID + ".1":
+		case c.OID + ControllerName:
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
@@ -353,7 +371,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				})
 			}
 
-		case c.OID + ".2":
+		case c.OID + ControllerDeviceID:
 			if err := f("deviceID", value); err != nil {
 				return nil, err
 			} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
@@ -377,7 +395,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				})
 			}
 
-		case c.OID + ".3":
+		case c.OID + ControllerAddress:
 			if addr, err := core.ResolveAddr(value); err != nil {
 				return nil, err
 			} else if err := f("address", addr); err != nil {
@@ -392,7 +410,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				})
 			}
 
-		case c.OID + ".4":
+		case c.OID + ControllerDateTime:
 			if tz, err := types.Timezone(value); err != nil {
 				return nil, err
 			} else if err := f("timezone", tz); err != nil {
@@ -427,7 +445,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				}
 			}
 
-		case c.OID + ".7":
+		case c.OID + ControllerDoor1:
 			if err := f("door[1]", value); err != nil {
 				return nil, err
 			} else {
@@ -440,7 +458,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				})
 			}
 
-		case c.OID + ".8":
+		case c.OID + ControllerDoor2:
 			if err := f("door[2]", value); err != nil {
 				return nil, err
 			} else {
@@ -453,7 +471,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				})
 			}
 
-		case c.OID + ".9":
+		case c.OID + ControllerDoor3:
 			if err := f("door[3]", value); err != nil {
 				return nil, err
 			} else {
@@ -466,7 +484,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				})
 			}
 
-		case c.OID + ".10":
+		case c.OID + ControllerDoor4:
 			if err := f("door[4]", value); err != nil {
 				return nil, err
 			} else {

@@ -3,7 +3,7 @@
 ### IN PROGRESS
 
 - OID
-  - [ ] Add controllers to schema
+  - [x] Add controllers to schema
   - [ ] Store all values in catalog and 'realize' local copies from cache
   - [ ] Make OID a type
         - [ ] doors
@@ -15,18 +15,15 @@
       - migrate shared CSS to 'common'
         - [ ] system
         - [ ] doors
-        - [x] tooltips
       - move 'common' into 'tabular'
 - [ ] <sigh> double click for login seems to be back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [x] Split cards and groups into separate files
-  - [x] onNew
-  - [ ] Make `cards` look like doors, groups, etc
+  - [ ] delete
+  - [ ] Make `cards.go` look like doors, groups, etc
   - [ ] Update unit tests for new implementation
   - [ ] Replace dataset.original with value from DB
-  - [ ] delete
   - [ ] validate
   - [ ] save
   - [ ] `card` serialize/deserialize
@@ -38,8 +35,6 @@
         - or just use tag (?)
 
 - Groups
-  - [x] validate
-  - [x] save
   - [ ] add
   - [ ] delete
   - [ ] doors/permissions
@@ -126,7 +121,7 @@
         -- e.g. add -> commit only enabled after modified
       - genericize JS:refresh
 
-        -- pins!
+      - pin selected rows
       - undo/revert (?)
       - virtual DOM
       - search & pin
