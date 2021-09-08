@@ -86,9 +86,9 @@ func consolidate(list []types.Permissions) (*acl.ACL, error) {
 				continue
 			}
 
-			cid := lookup(door.OID + catalog.DoorControllerOID) // controller OID
-			did := uint8(0)                                     // controller door
-			if v := lookup(door.OID + catalog.DoorControllerDoor); v != nil {
+			cid := lookup(door.OID.Append(catalog.DoorControllerOID)) // controller OID
+			did := uint8(0)                                           // controller door
+			if v := lookup(door.OID.Append(catalog.DoorControllerDoor)); v != nil {
 				if w, ok := v.(uint8); ok {
 					did = w
 				}

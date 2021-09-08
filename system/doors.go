@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -39,7 +40,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	for _, c := range sys.controllers.Controllers {
 		for k, v := range c.Doors {
 			if v != "" {
-				if door, ok := shadow.Doors[v]; !ok {
+				if door, ok := shadow.Doors[catalog.OID(v)]; !ok {
 					return nil, types.BadRequest(fmt.Errorf("Door %v not defined for controller %v", k, c), fmt.Errorf("controller %v: invalid door (%v)", c, k))
 
 				} else if door.IsDeleted() {

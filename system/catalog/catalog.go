@@ -13,13 +13,13 @@ type Object struct {
 var catalog = struct {
 	interfaces  map[OID]struct{}
 	controllers map[string]controller
-	doors       map[string]struct{}
+	doors       map[OID]struct{}
 	cards       map[OID]struct{}
 	groups      map[OID]struct{}
 }{
 	interfaces:  map[OID]struct{}{},
 	controllers: map[string]controller{},
-	doors:       map[string]struct{}{},
+	doors:       map[OID]struct{}{},
 	cards:       map[OID]struct{}{},
 	groups:      map[OID]struct{}{},
 }
@@ -48,7 +48,7 @@ func PutController(deviceID uint32, oid string) {
 	}
 }
 
-func PutDoor(oid string) {
+func PutDoor(oid OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -101,7 +101,7 @@ loop:
 	}
 }
 
-func NewDoor() string {
+func NewDoor() OID {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -109,7 +109,7 @@ func NewDoor() string {
 loop:
 	for {
 		item += 1
-		oid := fmt.Sprintf("0.2.%d", item)
+		oid := OID(fmt.Sprintf("0.2.%d", item))
 		for v, _ := range catalog.doors {
 			if v == oid {
 				continue loop

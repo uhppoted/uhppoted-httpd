@@ -3,26 +3,24 @@
 ### IN PROGRESS
 
 - OID
-  - [x] Add controllers to schema
   - [ ] Store all values in catalog and 'realize' local copies from cache
   - [ ] Make OID a type
-        - [ ] doors
+        - [x] doors
         - [ ] controllers
         - [ ] catalog
         - [ ] cache
+        - [ ] move all _stringify's_ to OID
+        - [ ] make object.OID an OID
 
 - [ ] Commonalise CSS
       - migrate shared CSS to 'common'
         - [ ] system
         - [ ] cards
-        - [x] doors
-        - [x] groups
       - (???) merge 'common' and 'tabular'
 - [ ] <sigh> double click for login seems to be back - after 'refresh' :-( :-(
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [x] delete
   - [ ] Make `cards.go` look like doors, groups, etc
   - [ ] Update unit tests for OID'd implementation
   - [ ] Replace dataset.original with value from DB
@@ -37,8 +35,6 @@
         - or just use tag (?)
 
 - Groups
-  - [x] add
-  - [x] delete
   - [ ] add: asynchronoulsy update card membership columns
   - [ ] delete: asynchronoulsy update card membership columns
   - [ ] doors/permissions

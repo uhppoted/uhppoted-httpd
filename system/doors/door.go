@@ -15,8 +15,8 @@ import (
 )
 
 type Door struct {
-	OID  string `json:"OID"`
-	Name string `json:"name"`
+	OID  catalog.OID `json:"OID"`
+	Name string      `json:"name"`
 
 	delay   uint8
 	mode    core.ControlState
@@ -45,12 +45,12 @@ const DoorControlError = catalog.DoorControlError
 func (d *Door) IsValid() bool {
 	if d != nil {
 		controller := ""
-		if v, _ := catalog.GetV(d.OID + DoorControllerOID); v != nil {
+		if v, _ := catalog.GetV(d.OID.Append(DoorControllerOID)); v != nil {
 			controller = stringify(v)
 		}
 
 		door := ""
-		if v, _ := catalog.GetV(d.OID + DoorControllerDoor); v != nil {
+		if v, _ := catalog.GetV(d.OID.Append(DoorControllerDoor)); v != nil {
 			door = stringify(v)
 		}
 
@@ -113,7 +113,7 @@ func (d *Door) AsObjects() []interface{} {
 		status:     stringify(types.StatusUnknown),
 	}
 
-	if v, dirty := catalog.GetV(d.OID + DoorDelay); v != nil {
+	if v, dirty := catalog.GetV(d.OID.Append(DoorDelay)); v != nil {
 		delay.delay = stringify(v)
 
 		switch {
@@ -129,7 +129,7 @@ func (d *Door) AsObjects() []interface{} {
 		}
 	}
 
-	if v, dirty := catalog.GetV(d.OID + DoorControl); v != nil {
+	if v, dirty := catalog.GetV(d.OID.Append(DoorControl)); v != nil {
 		control.control = stringify(v.(core.ControlState))
 
 		switch {
@@ -150,22 +150,22 @@ func (d *Door) AsObjects() []interface{} {
 	}
 
 	objects := []interface{}{
-		object{OID: d.OID, Value: status},
-		object{OID: d.OID + DoorCreated, Value: created},
-		object{OID: d.OID + DoorControllerOID, Value: controller.OID},
-		object{OID: d.OID + DoorControllerCreated, Value: controller.created},
-		object{OID: d.OID + DoorControllerName, Value: controller.name},
-		object{OID: d.OID + DoorControllerID, Value: controller.ID},
-		object{OID: d.OID + DoorControllerDoor, Value: controller.door},
-		object{OID: d.OID + DoorName, Value: name},
-		object{OID: d.OID + DoorDelay, Value: delay.delay},
-		object{OID: d.OID + DoorDelayStatus, Value: delay.status},
-		object{OID: d.OID + DoorDelayConfigured, Value: delay.configured},
-		object{OID: d.OID + DoorDelayError, Value: delay.err},
-		object{OID: d.OID + DoorControl, Value: control.control},
-		object{OID: d.OID + DoorControlStatus, Value: control.status},
-		object{OID: d.OID + DoorControlConfigured, Value: control.configured},
-		object{OID: d.OID + DoorControlError, Value: control.err},
+		object{OID: stringify(d.OID), Value: status},
+		object{OID: d.OID.Append(DoorCreated), Value: created},
+		object{OID: d.OID.Append(DoorControllerOID), Value: controller.OID},
+		object{OID: d.OID.Append(DoorControllerCreated), Value: controller.created},
+		object{OID: d.OID.Append(DoorControllerName), Value: controller.name},
+		object{OID: d.OID.Append(DoorControllerID), Value: controller.ID},
+		object{OID: d.OID.Append(DoorControllerDoor), Value: controller.door},
+		object{OID: d.OID.Append(DoorName), Value: name},
+		object{OID: d.OID.Append(DoorDelay), Value: delay.delay},
+		object{OID: d.OID.Append(DoorDelayStatus), Value: delay.status},
+		object{OID: d.OID.Append(DoorDelayConfigured), Value: delay.configured},
+		object{OID: d.OID.Append(DoorDelayError), Value: delay.err},
+		object{OID: d.OID.Append(DoorControl), Value: control.control},
+		object{OID: d.OID.Append(DoorControlStatus), Value: control.status},
+		object{OID: d.OID.Append(DoorControlConfigured), Value: control.configured},
+		object{OID: d.OID.Append(DoorControlError), Value: control.err},
 	}
 
 	return objects
@@ -187,7 +187,7 @@ func (d *Door) AsRuleEntity() interface{} {
 
 func (d Door) serialize() ([]byte, error) {
 	record := struct {
-		OID     string            `json:"OID"`
+		OID     catalog.OID       `json:"OID"`
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
@@ -207,7 +207,7 @@ func (d *Door) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     string            `json:"OID"`
+		OID     catalog.OID       `json:"OID"`
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
@@ -260,19 +260,19 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 		name := stringify(d.Name)
 
 		switch oid {
-		case d.OID + DoorName:
+		case d.OID.Append(DoorName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
 				d.log(auth, "update", d.OID, "name", stringify(d.Name), value)
 				d.Name = value
 				objects = append(objects, object{
-					OID:   d.OID + DoorName,
+					OID:   d.OID.Append(DoorName),
 					Value: stringify(d.Name),
 				})
 			}
 
-		case d.OID + DoorDelay:
+		case d.OID.Append(DoorDelay):
 			delay := d.delay
 
 			if err := f("delay", value); err != nil {
@@ -282,32 +282,32 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 			} else {
 				d.delay = uint8(v)
 
-				catalog.PutV(d.OID+DoorDelayConfigured, d.delay, true)
+				catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, true)
 
 				objects = append(objects, object{
-					OID:   d.OID + DoorDelay,
+					OID:   d.OID.Append(DoorDelay),
 					Value: stringify(d.delay),
 				})
 
 				objects = append(objects, object{
-					OID:   d.OID + DoorDelayStatus,
+					OID:   d.OID.Append(DoorDelayStatus),
 					Value: stringify(types.StatusUncertain),
 				})
 
 				objects = append(objects, object{
-					OID:   d.OID + DoorDelayConfigured,
+					OID:   d.OID.Append(DoorDelayConfigured),
 					Value: stringify(d.delay),
 				})
 
 				objects = append(objects, object{
-					OID:   d.OID + DoorDelayError,
+					OID:   d.OID.Append(DoorDelayError),
 					Value: "",
 				})
 
 				d.log(auth, "update", d.OID, "delay", stringify(delay), value)
 			}
 
-		case d.OID + DoorControl:
+		case d.OID.Append(DoorControl):
 			if err := f("mode", value); err != nil {
 				return nil, err
 			} else {
@@ -323,25 +323,25 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
 				}
 
-				catalog.PutV(d.OID+DoorControlConfigured, d.mode, true)
+				catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, true)
 
 				objects = append(objects, object{
-					OID:   d.OID + DoorControl,
+					OID:   d.OID.Append(DoorControl),
 					Value: stringify(d.mode),
 				})
 
 				objects = append(objects, object{
-					OID:   d.OID + DoorControlStatus,
+					OID:   d.OID.Append(DoorControlStatus),
 					Value: stringify(types.StatusUncertain),
 				})
 
 				objects = append(objects, object{
-					OID:   d.OID + DoorControlConfigured,
+					OID:   d.OID.Append(DoorControlConfigured),
 					Value: stringify(d.mode),
 				})
 
 				objects = append(objects, object{
-					OID:   d.OID + DoorControlError,
+					OID:   d.OID.Append(DoorControlError),
 					Value: "",
 				})
 
@@ -361,11 +361,11 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 			d.deleted = &now
 
 			objects = append(objects, object{
-				OID:   d.OID,
+				OID:   stringify(d.OID),
 				Value: "deleted",
 			})
 
-			catalog.Delete(d.OID)
+			catalog.Delete(stringify(d.OID))
 		}
 	}
 
@@ -373,20 +373,20 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 }
 
 func (d *Door) lookup(suffix catalog.Suffix) interface{} {
-	if v, _ := catalog.GetV(d.OID + string(suffix)); v != nil {
+	if v, _ := catalog.GetV(d.OID.Append(suffix)); v != nil {
 		return v
 	}
 
 	return nil
 }
 
-func (d *Door) log(auth auth.OpAuth, operation, OID, field, current, value string) {
+func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field, current, value string) {
 	type info struct {
-		OID     string `json:"OID"`
-		Door    string `json:"door"`
-		Field   string `json:"field"`
-		Current string `json:"current"`
-		Updated string `json:"new"`
+		OID     catalog.OID `json:"OID"`
+		Door    string      `json:"door"`
+		Field   string      `json:"field"`
+		Current string      `json:"current"`
+		Updated string      `json:"new"`
 	}
 
 	uid := ""
@@ -397,7 +397,7 @@ func (d *Door) log(auth auth.OpAuth, operation, OID, field, current, value strin
 	if trail != nil {
 		record := audit.LogEntry{
 			UID:       uid,
-			Module:    OID,
+			Module:    stringify(OID),
 			Operation: operation,
 			Info: info{
 				OID:     OID,

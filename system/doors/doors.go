@@ -16,7 +16,7 @@ import (
 )
 
 type Doors struct {
-	Doors map[string]Door `json:"doors"`
+	Doors map[catalog.OID]Door `json:"doors"`
 
 	file string `json:"-"`
 }
@@ -33,7 +33,7 @@ func SetAuditTrail(t audit.Trail) {
 
 func NewDoors() Doors {
 	return Doors{
-		Doors: map[string]Door{},
+		Doors: map[catalog.OID]Door{},
 	}
 }
 
@@ -81,8 +81,8 @@ func (dd *Doors) Load(file string) error {
 
 	for _, v := range dd.Doors {
 		catalog.PutDoor(v.OID)
-		catalog.PutV(v.OID+DoorDelayConfigured, v.delay, false)
-		catalog.PutV(v.OID+DoorControlConfigured, v.mode, false)
+		catalog.PutV(v.OID.Append(DoorDelayConfigured), v.delay, false)
+		catalog.PutV(v.OID.Append(DoorControlConfigured), v.mode, false)
 	}
 
 	dd.file = file
@@ -185,7 +185,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]inte
 	}
 
 	for k, d := range dd.Doors {
-		if strings.HasPrefix(oid, d.OID+".") {
+		if d.OID.Contains(oid) {
 			objects, err := d.set(auth, oid, value)
 			if err == nil {
 				dd.Doors[k] = d
@@ -206,7 +206,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]inte
 			d.log(auth, "add", d.OID, "door", "", "")
 			dd.Doors[d.OID] = *d
 			objects = append(objects, object{
-				OID:   d.OID,
+				OID:   stringify(d.OID),
 				Value: "new",
 			})
 		}
@@ -233,7 +233,7 @@ func (dd *Doors) add(auth auth.OpAuth, d Door) (*Door, error) {
 
 func (dd *Doors) Clone() *Doors {
 	shadow := Doors{
-		Doors: map[string]Door{},
+		Doors: map[catalog.OID]Door{},
 		file:  dd.file,
 	}
 
