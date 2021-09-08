@@ -17,11 +17,13 @@
         - [ ] system
         - [ ] cards
       - (???) merge 'common' and 'tabular'
-- [ ] <sigh> double click for login seems to be back - after 'refresh' :-( :-(
+- [ ] <sigh> double click for login seems to be back - after 'idle signout'
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
   - [ ] Make `cards.go` look like doors, groups, etc
+  - [ ] Horizontal overflow not scrolling
+  - [ ] Sort order occasionally goes wonky
   - [ ] Update unit tests for OID'd implementation
   - [ ] Replace dataset.original with value from DB
   - [ ] validate
@@ -35,8 +37,15 @@
         - or just use tag (?)
 
 - Groups
-  - [ ] add: asynchronoulsy update card membership columns
-  - [ ] delete: asynchronoulsy update card membership columns
+  - [ ] commit/rollback-all shown on edit new group
+  - [ ] add: asynchronously update card membership columns
+        - [ ] thead
+        - [ ] tbody
+        - [ ] card records
+        - [ ] onTick
+        - [ ] shuffle by index
+        - [ ] insert before padding
+  - [ ] delete: asynchronously update card membership columns
   - [ ] doors/permissions
   - [ ] Update ACL to use reworked groups
 

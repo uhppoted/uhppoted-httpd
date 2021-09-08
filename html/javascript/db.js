@@ -397,7 +397,7 @@ function card (o) {
               if (!suffix) {
                 group.member = o.value === 'true'
               } else if (suffix === '.1') {
-                group.oid = o.value
+                group.OID = o.value
               }
             }
           }
@@ -421,6 +421,7 @@ function group (o) {
       OID: oid,
       created: '',
       name: '',
+      index: 0,
       status: o.value,
       mark: 0
     })
@@ -446,6 +447,10 @@ function group (o) {
 
         case k + '.1':
           v.name = o.value
+          break
+
+        case k + '.2':
+          v.index = parseInt(o.value, 10)
           break
       }
     }

@@ -132,3 +132,4 @@ Logs namespace
 |- 0.4                                                                       # groups
 |    |- 0.4.1                                                                # group #1
 |    |      |- 0.4.1.1: <name>                                               #       Name
+|    |      |- 0.4.1.2: <index>                                              #       Index (display order)

@@ -1,4 +1,4 @@
-import { getAsJSON, warning, dismiss } from './uhppoted.js'
+import { unbusy, getAsJSON, warning } from './uhppoted.js'
 import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
 
@@ -32,6 +32,57 @@ export function get () {
 }
 
 export function refreshed () {
+  // ... groups
+  const columns = document.querySelectorAll('.colheader.grouph')
+  const groups = []
+  
+  DB.groups.forEach(g => {
+    if (g.status && g.status !== '<new>' && g.status !== 'deleted') {
+      groups.push(g)
+    }
+  })
+  
+  groups.sort((p, q) => {
+    return p.index - q.index
+  })
+  
+  const missing = groups.filter(g => {
+    for (let v of columns) {
+      if (v.dataset.oid === g.OID) {
+        return false
+      }
+    }
+
+    return true
+  })
+  
+  missing.forEach(g => {
+    const gid = g.OID.match(/^0\.4\.([1-9][0-9]*)$/)[1]
+    const table = document.querySelector('#cards table')
+    const thead = table.tHead
+    const tbody = table.tBodies[0]
+    const template = document.querySelector('#group')
+    const column = thead.rows[0].appendChild(document.createElement('th'))
+
+    column.classList.add('colheader')
+    column.classList.add('grouph')
+    column.dataset.oid = g.OID
+    column.innerHTML = g.name
+
+    for (let row of tbody.rows) {
+      const cell = row.insertCell(-1)
+    
+      cell.innerHTML = template.innerHTML
+
+      const flag = cell.querySelector('.flag')
+      const field = cell.querySelector('.field')
+
+      flag.classList.add(`g${gid}`)
+      field.classList.add(`g${gid}`)
+    }
+  })
+
+  // ... cards
   const list = []
 
   DB.cards.forEach(c => {
@@ -124,7 +175,7 @@ function add (oid, record) {
     ]
 
     record.groups.forEach((v, k) => {
-      const m = v.oid.match(/^0\.4\.([1-9][0-9]*)$/)
+      const m = v.OID.match(/^0\.4\.([1-9][0-9]*)$/)
       if (m && m.length > 1) {
         const gid = m[1]
 
@@ -158,327 +209,3 @@ function add (oid, record) {
     return row
   }
 }
-
-/** OLD STUFF **/
-export function onDelete (id) {
-  const tbody = document.getElementById('cardholders').querySelector('table tbody')
-  const row = document.getElementById(id)
-
-  if (row) {
-    const rows = tbody.rows
-
-    for (let ix = 0; ix < rows.length; ix++) {
-      if (rows[ix].id === id) {
-        tbody.deleteRow(ix)
-        break
-      }
-    }
-  }
-}
-
-// export function onNew (event) {
-// const tbody = document.getElementById('cardholders').querySelector('table tbody')
-//
-// if (tbody) {
-//   const row = tbody.insertRow()
-//   const name = row.insertCell()
-//   const card = row.insertCell()
-//   const from = row.insertCell()
-//   const to = row.insertCell()
-//   const groups = []
-//   const uuid = 'U' + uuidv4()
-//
-//   // 'constants' is a global object initialised by the Go template
-//   for (let i = 0; i < constants.groups.length; i++) {
-//     groups.push(row.insertCell())
-//   }
-//
-//   row.id = uuid
-//   row.classList.add('new')
-//
-//   name.style = 'display:flex; flex-direction:row;'
-//   name.classList.add('rowheader')
-//
-//   name.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-//                    '<input id="' + uuid + '-name" class="field name" type="text" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="-" />' +
-//                    '<span class="control commit" id="' + uuid + '_commit" onclick="onCommit(event)" data-record="' + uuid + '" data-enabled="false">&#9745;</span>' +
-//                    '<span class="control rollback" id="' + uuid + '_rollback" onclick="onRollback(event, \'delete\')" data-record="' + uuid + '" data-enabled="false">&#9746;</span>'
-//
-//   card.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-//                    '<input id="' + uuid + '-card" class="field cardnumber" type="number" min="0" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" placeholder="6152346" />'
-//
-//   from.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-//                    '<input id="' + uuid + '-from" class="field from" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
-//
-//   to.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-//                  '<input id="' + uuid + '-to" class="field to" type="date" value="" onchange="onEdited(event)" data-record="' + uuid + '" data-original="" data-value="" required />'
-//
-//   for (let i = 0; i < groups.length; i++) {
-//     const g = groups[i]
-//     const id = uuid + '-' + constants.groups[i]
-//
-//     g.innerHTML = '<img class="flag" src="images/' + constants.theme + '/corner.svg" />' +
-//                   '<label class="group">' +
-//                   '<input id="' + id + '" class="field" type="checkbox" onclick="onTick(event)" data-record="' + uuid + '" data-original="false" data-value="false" />' +
-//                   '<img class="no"  src="images/times-solid.svg" />' +
-//                   '<img class="yes" src="images/check-solid.svg" />' +
-//                   '</label>'
-//   }
-// }
-// }
-
-export function onRefresh (event) {
-  busy()
-  dismiss()
-
-  getAsJSON('/cardholders')
-    .then(response => {
-      unbusy()
-
-      switch (response.status) {
-        case 200:
-          response.json().then(object => { refresh(object.db) })
-          break
-
-        default:
-          response.text().then(message => { warning(message) })
-      }
-    })
-    .catch(function (err) {
-      console.error(err)
-    })
-}
-
-function refresh (db) {
-  updated(Object.values(db.cardholders))
-}
-
-function updated (list) {
-  if (list) {
-    list.forEach((record) => {
-      const id = record.ID
-      const row = document.getElementById(id)
-
-      if (row) {
-        row.classList.remove('new')
-      }
-
-      if (record.Name) {
-        updateX(document.getElementById(id + '-name'), record.Name)
-      }
-
-      if (record.Card) {
-        updateX(document.getElementById(id + '-card'), record.Card)
-      }
-
-      if (record.From) {
-        updateX(document.getElementById(id + '-from'), record.From)
-      }
-
-      if (record.To) {
-        updateX(document.getElementById(id + '-to'), record.To)
-      }
-
-      Object.entries(record.Groups).forEach(([k, v]) => {
-        updateX(document.getElementById(id + '-' + k), v)
-      })
-    })
-  }
-}
-
-// function deleted (list) {
-//   const tbody = document.getElementById('cardholders').querySelector('table tbody')
-//
-//   if (tbody && list) {
-//     list.forEach((record) => {
-//       const id = record.ID
-//       const row = document.getElementById(id)
-//
-//       if (row) {
-//         const rows = tbody.rows
-//         for (let i = 0; i < rows.length; i++) {
-//           if (rows[i].id === id) {
-//             tbody.deleteRow(i)
-//             break
-//           }
-//         }
-//       }
-//     })
-//   }
-// }
-
-function set (element, value) {
-  const tbody = document.getElementById('cardholders').querySelector('table tbody')
-  const rowid = element.dataset.record
-  const row = document.getElementById(rowid)
-  const original = element.dataset.original
-  const v = value.toString()
-
-  element.dataset.value = v
-
-  if (v !== original) {
-    apply(element, (c) => { c.classList.add('modified') })
-  } else {
-    apply(element, (c) => { c.classList.remove('modified') })
-  }
-
-  if (row) {
-    const unmodified = Array.from(row.children).every(item => !item.classList.contains('modified'))
-    if (unmodified) {
-      row.classList.remove('modified')
-    } else {
-      row.classList.add('modified')
-    }
-  }
-
-  if (tbody) {
-    const rows = tbody.rows
-    const commitall = document.getElementById('commitall')
-    const rollbackall = document.getElementById('rollbackall')
-    let count = 0
-
-    for (let i = 0; i < rows.length; i++) {
-      if (rows[i].classList.contains('modified') || rows[i].classList.contains('new')) {
-        count++
-      }
-    }
-
-    commitall.style.display = count > 1 ? 'block' : 'none'
-    rollbackall.style.display = count > 1 ? 'block' : 'none'
-  }
-}
-
-function updateX (element, value) {
-  const v = value.toString()
-
-  if (element) {
-    const td = cell(element)
-    element.dataset.original = v
-
-    // check for conflicts with concurrently modified fields
-
-    if (td && td.classList.contains('modified')) {
-      if (element.dataset.value !== v.toString()) {
-        td.classList.add('conflict')
-      } else {
-        td.classList.remove('modified')
-        td.classList.remove('conflict')
-      }
-
-      return
-    }
-
-    // mark fields with unexpected values after submit
-
-    if (td && td.classList.contains('pending')) {
-      if (element.dataset.value !== v.toString()) {
-        td.classList.add('conflict')
-      } else {
-        td.classList.remove('conflict')
-      }
-    }
-
-    // update unmodified fields
-
-    switch (element.getAttribute('type').toLowerCase()) {
-      case 'text':
-      case 'number':
-      case 'date':
-        element.value = v
-        break
-
-      case 'checkbox':
-        element.checked = (v === 'true')
-        break
-    }
-
-    set(element, value)
-  }
-}
-
-function busy () {
-  const windmill = document.getElementById('windmill')
-  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
-
-  windmill.dataset.count = (queued + 1).toString()
-}
-
-function unbusy () {
-  const windmill = document.getElementById('windmill')
-  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
-
-  if (queued > 1) {
-    windmill.dataset.count = (queued - 1).toString()
-  } else {
-    delete (windmill.dataset.count)
-  }
-}
-
-function cell (element) {
-  let td = element
-
-  for (let i = 0; i < 10; i++) {
-    if (td.tagName.toLowerCase() === 'td') {
-      return td
-    }
-
-    td = td.parentElement
-  }
-
-  return null
-}
-
-function apply (element, f) {
-  const td = cell(element)
-
-  if (td) {
-    f(td)
-  }
-}
-
-// function rowToRecord (id, row) {
-//   const name = row.querySelector('#' + id + '-name')
-//   const card = row.querySelector('#' + id + '-card')
-//   const from = row.querySelector('#' + id + '-from')
-//   const to = row.querySelector('#' + id + '-to')
-//   const fields = []
-//
-//   const record = {
-//     id: id,
-//     groups: {}
-//   }
-//
-//   if (name && name.dataset.value !== name.dataset.original) {
-//     const field = row.querySelector('#' + id + '-name')
-//     record.name = field.value
-//     fields.push(field)
-//   }
-//
-//   if (card && card.dataset.value !== card.dataset.original) {
-//     const field = row.querySelector('#' + id + '-card')
-//     record.card = Number(field.value)
-//     fields.push(field)
-//   }
-//
-//   if (from && from.dataset.value !== from.dataset.original) {
-//     const field = row.querySelector('#' + id + '-from')
-//     record.from = field.value
-//     fields.push(field)
-//   }
-//
-//   if (to && to.dataset.value !== to.dataset.original) {
-//     const field = row.querySelector('#' + id + '-to')
-//     record.to = field.value
-//     fields.push(field)
-//   }
-//
-//   constants.groups.forEach((gid) => {
-//     const field = row.querySelector('#' + id + '-' + gid)
-//     if (field && field.dataset.value !== field.dataset.original) {
-//       record.groups[gid] = field.checked
-//       fields.push(field)
-//     }
-//   })
-//
-//   return [record, fields]
-// }

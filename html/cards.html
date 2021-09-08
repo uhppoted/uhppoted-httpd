@@ -69,7 +69,7 @@
                   <th class="number  colheader">Card Number</th>
                   <th class="from    colheader">From</th>
                   <th class="to      colheader">To</th>{{range .groups}}
-                  <th class="grouph  colheader">{{.Name}}</th>{{else}}</th>{{end}}
+                  <th class="grouph  colheader" data-OID="{{ .OID }}">{{.Name}}</th>{{else}}</th>{{end}}
                   <th class="padding colheader"></th>
                 </tr>
               </thead>
@@ -125,19 +125,33 @@
               <td>
                 <img class="flag g{{ suffix .OID }}" src="images/{{$.context.Theme}}/corner.svg" />
                 <label class="group">
-                <input class="field g{{ suffix .OID }}"
-                       type="checkbox" 
-                       onclick="onTick('card', event)"
-                       data-record="" 
-                       data-original="" 
-                       data-value="" />
-                <img class="no"  src="images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
-                <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
+                  <input class="field g{{ suffix .OID }}"
+                         type="checkbox" 
+                         onclick="onTick('card', event)"
+                         data-record="" 
+                         data-original="" 
+                         data-value="" />
+                  <img class="no"  src="images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
+                  <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
                 </label>
               </td>{{end}}
               
               <!-- 'padding' column (CSS: tr::last-child) -->
               <td class="padding"></td>                  
+            </template>
+
+            <template id="group">
+                <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                <label class="group">
+                  <input class="field"
+                         type="checkbox" 
+                         onclick="onTick('card', event)"
+                         data-record="" 
+                         data-original="" 
+                         data-value="" />
+                  <img class="no"  src="images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
+                  <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
+                </label>
             </template>
 
           </div>
@@ -155,7 +169,6 @@
  
   <script type="module">
     import { retheme, dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
-    import {  } from "./javascript/cards.js"
     import { onEdited, 
              onEnter,
              onTick, 
@@ -185,7 +198,7 @@
 
     resetIdle()
     refresh()
-    // setInterval(refresh, 15000)
+    setInterval(refresh, 15000)
   </script>
 
   <!-- global information initialised by Go template -->

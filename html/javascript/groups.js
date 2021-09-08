@@ -1,26 +1,17 @@
 /* global */
 
-// import { busy, unbusy, warning, getAsJSON, postAsJSON } from './uhppoted.js'
 import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
-
-// export function create () {
-//   const records = [{ oid: '<new>', value: '' }]
-//   const reset = function () {}
-//   const cleanup = function () {}
-
-//   post('objects', records, reset, cleanup)
-// }
 
 export function refreshed () {
   const list = []
 
-  DB.groups.forEach(c => {
-    list.push(c)
+  DB.groups.forEach(g => {
+    list.push(g)
   })
 
   list.sort((p, q) => {
-    return p.created.localeCompare(q.created)
+    return p.index - q.index
   })
 
   list.forEach(d => {

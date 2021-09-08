@@ -13,15 +13,18 @@ import (
 )
 
 type Group struct {
-	OID  catalog.OID `json:"OID"`
-	Name string      `json:"name"`
+	OID   catalog.OID `json:"OID"`
+	Name  string      `json:"name"`
+	Index uint32      `json:"index"`
 
 	created time.Time
 	deleted *time.Time
 }
 
+const Null = catalog.Null
 const GroupName = catalog.GroupName
 const GroupCreated = catalog.GroupCreated
+const GroupIndex = catalog.GroupIndex
 
 var created = time.Now()
 
@@ -45,6 +48,7 @@ func (g Group) clone() Group {
 	return Group{
 		OID:     g.OID,
 		Name:    g.Name,
+		Index:   g.Index,
 		created: g.created,
 		deleted: g.deleted,
 	}
@@ -54,15 +58,17 @@ func (g *Group) AsObjects() []interface{} {
 	created := g.created.Format("2006-01-02 15:04:05")
 	status := stringify(types.StatusOk)
 	name := stringify(g.Name)
+	index := stringify(g.Index)
 
 	if g.deleted != nil {
 		status = stringify(types.StatusDeleted)
 	}
 
 	objects := []interface{}{
-		object{OID: string(g.OID), Value: status},
-		object{OID: g.OID.Append(GroupCreated), Value: created},
-		object{OID: g.OID.Append(GroupName), Value: name},
+		catalog.NewObject(g.OID, Null, status),
+		catalog.NewObject(g.OID, GroupCreated, created),
+		catalog.NewObject(g.OID, GroupName, name),
+		catalog.NewObject(g.OID, GroupIndex, index),
 	}
 
 	return objects
@@ -103,10 +109,7 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 			} else {
 				g.log(auth, "update", g.OID, "name", stringify(g.Name), value)
 				g.Name = value
-				objects = append(objects, object{
-					OID:   g.OID.Append(GroupName),
-					Value: stringify(g.Name),
-				})
+				objects = append(objects, catalog.NewObject(g.OID, GroupName, g.Name))
 			}
 		}
 
@@ -120,11 +123,7 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 			g.log(auth, "delete", g.OID, "name", name, "")
 			now := time.Now()
 			g.deleted = &now
-
-			objects = append(objects, object{
-				OID:   stringify(g.OID),
-				Value: "deleted",
-			})
+			objects = append(objects, catalog.NewObject(g.OID, Null, "deleted"))
 
 			catalog.Delete(stringify(g.OID))
 		}
@@ -135,12 +134,14 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 
 func (g Group) serialize() ([]byte, error) {
 	record := struct {
-		OID     catalog.OID `json:"OID"`
-		Name    string      `json:"name,omitempty"`
-		Created string      `json:"created"`
+		OID  catalog.OID `json:"OID"`
+		Name string      `json:"name,omitempty"`
+		//		Index   uint32      `json:"index,omitempty"`
+		Created string `json:"created"`
 	}{
-		OID:     g.OID,
-		Name:    g.Name,
+		OID:  g.OID,
+		Name: g.Name,
+		//		Index:   g.Index,
 		Created: g.created.Format("2006-01-02 15:04:05"),
 	}
 
@@ -153,6 +154,7 @@ func (g *Group) deserialize(bytes []byte) error {
 	record := struct {
 		OID     string `json:"OID"`
 		Name    string `json:"name,omitempty"`
+		Index   uint32 `json:"index,omitempty"`
 		Created string `json:"created"`
 	}{}
 
@@ -162,6 +164,7 @@ func (g *Group) deserialize(bytes []byte) error {
 
 	g.OID = catalog.OID(record.OID)
 	g.Name = record.Name
+	g.Index = record.Index
 	g.created = created
 
 	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {

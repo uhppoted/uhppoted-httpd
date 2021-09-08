@@ -1,5 +1,7 @@
 package catalog
 
+const Null Suffix = ""
+
 const InterfaceType Suffix = ".0"
 const InterfaceName Suffix = ".1"
 const LANBindAddress Suffix = ".2"
@@ -31,8 +33,9 @@ const CardFrom Suffix = ".3"
 const CardTo Suffix = ".4"
 const CardGroups Suffix = ".5"
 
-const GroupName Suffix = ".1"
 const GroupCreated Suffix = ".0.1"
+const GroupName Suffix = ".1"
+const GroupIndex Suffix = ".2"
 
 const DoorCreated = ".0.1"
 const DoorControllerOID = ".0.2"
