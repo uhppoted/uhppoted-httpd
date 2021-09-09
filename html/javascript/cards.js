@@ -35,19 +35,19 @@ export function refreshed () {
   // ... groups
   const columns = document.querySelectorAll('.colheader.grouph')
   const groups = []
-  
+
   DB.groups.forEach(g => {
     if (g.status && g.status !== '<new>' && g.status !== 'deleted') {
       groups.push(g)
     }
   })
-  
+
   groups.sort((p, q) => {
     return p.index - q.index
   })
-  
+
   const missing = groups.filter(g => {
-    for (let v of columns) {
+    for (const v of columns) {
       if (v.dataset.oid === g.OID) {
         return false
       }
@@ -55,7 +55,7 @@ export function refreshed () {
 
     return true
   })
-  
+
   missing.forEach(g => {
     const gid = g.OID.match(/^0\.4\.([1-9][0-9]*)$/)[1]
     const table = document.querySelector('#cards table')
@@ -69,9 +69,11 @@ export function refreshed () {
     column.dataset.oid = g.OID
     column.innerHTML = g.name
 
-    for (let row of tbody.rows) {
+    for (const row of tbody.rows) {
+      const uuid = row.dataset.record
+      const oid = row.dataset.oid + '.5.' + gid
       const cell = row.insertCell(-1)
-    
+
       cell.innerHTML = template.innerHTML
 
       const flag = cell.querySelector('.flag')
@@ -79,6 +81,15 @@ export function refreshed () {
 
       flag.classList.add(`g${gid}`)
       field.classList.add(`g${gid}`)
+
+      flag.id = 'F' + oid
+
+      field.id = uuid + '-' + `g${gid}`
+      field.dataset.oid = oid
+      field.dataset.record = uuid
+      field.dataset.original = ''
+      field.dataset.value = ''
+      field.checked = false
     }
   })
 

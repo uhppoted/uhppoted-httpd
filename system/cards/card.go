@@ -3,7 +3,6 @@ package cards
 import (
 	"fmt"
 	"regexp"
-	"sort"
 	"strconv"
 	"time"
 
@@ -124,25 +123,26 @@ func (c *CardHolder) AsObjects() []interface{} {
 		object{OID: catalog.Join(c.OID, CardTo), Value: to},
 	}
 
-	keys := []string{}
-	for k, _ := range c.Groups {
-		keys = append(keys, k)
-	}
+	groups := catalog.Groups()
+	re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
 
-	sort.Strings(keys)
+	for _, group := range groups {
+		g := fmt.Sprintf("%v", group)
 
-	for ix, k := range keys {
-		v, ok := c.Groups[k]
-		member := ok && v
-		objects = append(objects, object{
-			OID:   catalog.Join(c.OID, CardGroups.Append(fmt.Sprintf(".%v", ix+1))),
-			Value: stringify(member),
-		})
+		if m := re.FindStringSubmatch(g); m != nil && len(m) > 2 {
+			gid := m[2]
+			member := c.Groups[g]
 
-		objects = append(objects, object{
-			OID:   catalog.Join(c.OID, CardGroups.Append(fmt.Sprintf(".%v.1", ix+1))),
-			Value: stringify(k),
-		})
+			objects = append(objects, object{
+				OID:   catalog.Join(c.OID, CardGroups.Append(gid)),
+				Value: stringify(member),
+			})
+
+			objects = append(objects, object{
+				OID:   catalog.Join(c.OID, CardGroups.Append(gid+".1")),
+				Value: stringify(group),
+			})
+		}
 	}
 
 	return objects
@@ -276,27 +276,19 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 			}
 
 		case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
-			keys := []string{}
-			for k, _ := range c.Groups {
-				keys = append(keys, k)
-			}
+			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(oid); m != nil && len(m) > 1 {
+				gid := m[1]
+				k := "0.4." + gid
 
-			sort.Strings(keys)
-
-			for ix, k := range keys {
-				gid := catalog.Join(c.OID, CardGroups.Append(fmt.Sprintf(".%v", ix+1)))
-
-				if gid == oid {
-					if err := f("group", value); err != nil {
-						return nil, err
-					} else {
-						c.log(auth, "update", c.OID, "group", stringify(c.Groups[k]), value)
-						c.Groups[k] = value == "true"
-						objects = append(objects, object{
-							OID:   gid,
-							Value: stringify(c.Groups[k]),
-						})
-					}
+				if err := f("group", value); err != nil {
+					return nil, err
+				} else {
+					c.log(auth, "update", c.OID, "group", k, value)
+					c.Groups[k] = value == "true"
+					objects = append(objects, object{
+						OID:   catalog.Join(c.OID, CardGroups.Append(gid)),
+						Value: stringify(c.Groups[gid]),
+					})
 				}
 			}
 		}

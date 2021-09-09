@@ -21,8 +21,8 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [ ] Make `cards.go` look like doors, groups, etc
   - [ ] Horizontal overflow not scrolling
+  - [ ] Make `cards.go` look like doors, groups, etc
   - [ ] Sort order occasionally goes wonky
   - [ ] Update unit tests for OID'd implementation
   - [ ] Replace dataset.original with value from DB
@@ -39,12 +39,12 @@
 - Groups
   - [ ] commit/rollback-all shown on edit new group
   - [ ] add: asynchronously update card membership columns
-        - [ ] thead
-        - [ ] tbody
-        - [ ] card records
-        - [ ] onTick
-        - [ ] shuffle by index
+        - [x] thead
+        - [x] tbody
+        - [x] card records
+        - [x] onTick
         - [ ] insert before padding
+        - [ ] fix dependency on display order
   - [ ] delete: asynchronously update card membership columns
   - [ ] doors/permissions
   - [ ] Update ACL to use reworked groups
@@ -83,8 +83,8 @@
       - use uhppoted-lib::healthcheck
 
 - [ ] Fix Firefox layout
+      - [ ] rollback icon size
       - spacing/padding/margins
-      - rollback icon size
 
 - [ ] [TOML](https://toml.io) files
 
@@ -93,6 +93,7 @@
       - Empty list: make first row a 'new' row
       - Commonalise controller and card handling into tabular.js
       - filter columns
+      - 'realise' a tablespec (i.e. page generates a tablespec and tabular renders it to HTML)
 
 - [ ] ACL
       - wrap ACL update in goroutine
