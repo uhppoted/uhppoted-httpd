@@ -332,7 +332,7 @@ export function modified (oid) {
     })
 
     // .. count the 'unique parent' OIDs
-    const f = (p, q) => p.length < q.length
+    const f = (p, q) => p.length > q.length
     const r = (acc, v) => {
       if (!acc.find(e => v.startsWith(e + '.'))) {
         acc.push(v)

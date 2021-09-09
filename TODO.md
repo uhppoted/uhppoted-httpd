@@ -37,7 +37,6 @@
         - or just use tag (?)
 
 - Groups
-  - [ ] commit/rollback-all shown on edit new group
   - [ ] add: asynchronously update card membership columns
         - [x] thead
         - [x] tbody
@@ -48,6 +47,7 @@
   - [ ] delete: asynchronously update card membership columns
   - [ ] doors/permissions
   - [ ] Update ACL to use reworked groups
+  - [x] commit-all/rollback-all shown on single row edit
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
