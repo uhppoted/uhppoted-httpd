@@ -21,7 +21,7 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [ ] Horizontal overflow not scrolling
+  - [x] Horizontal overflow not scrolling
   - [ ] Make `cards.go` look like doors, groups, etc
   - [ ] Sort order occasionally goes wonky
   - [ ] Update unit tests for OID'd implementation
@@ -42,6 +42,7 @@
         - [x] tbody
         - [x] card records
         - [x] onTick
+        - [ ] rollback ticked for new groups not working
         - [ ] insert before padding
         - [ ] fix dependency on display order
   - [ ] delete: asynchronously update card membership columns
