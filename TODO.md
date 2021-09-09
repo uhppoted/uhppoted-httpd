@@ -83,7 +83,10 @@
       - use uhppoted-lib::healthcheck
 
 - [ ] Fix Firefox layout
-      - [ ] rollback icon size
+      - [x] rollback icon size
+            - &#9746; is bigger than &#9745;
+            - https://www.unicodepedia.com/unicode/miscellaneous-symbols/2611/ballot-box-with-check
+            - https://www.unicodepedia.com/unicode/miscellaneous-symbols/2612/ballot-box-with-x
       - spacing/padding/margins
 
 - [ ] [TOML](https://toml.io) files

@@ -87,8 +87,12 @@
                        data-record=""
                        data-original=""
                        data-value="" />
-                <span class="control commit"   onclick="onCommit('card', event)"   data-record="" data-enabled="false">&#9745;</span>
-                <span class="control rollback" onclick="onRollback('card', event)" data-record="" data-enabled="false">&#9746;</span>
+                <span class="control commit"   onclick="onCommit('card', event)"   data-record="" data-enabled="false">
+                  <img src="./images/{{$.context.Theme}}/tick.png" />
+                </span>
+                <span class="control rollback" onclick="onRollback('card', event)" data-record="" data-enabled="false">
+                  <img src="./images/{{$.context.Theme}}/cross.png" />
+                </span>
               </td>
               <td>
                 <img class="flag number" src="images/{{$.context.Theme}}/corner.svg" />
