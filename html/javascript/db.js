@@ -389,7 +389,7 @@ function card (o) {
               const suffix = m[2]
 
               if (!v.groups.has(suboid)) {
-                v.groups.set(suboid, { oid: '', name: '', member: false })
+                v.groups.set(suboid, { group: '', member: false })
               }
 
               const group = v.groups.get(suboid)
@@ -397,7 +397,7 @@ function card (o) {
               if (!suffix) {
                 group.member = o.value === 'true'
               } else if (suffix === '.1') {
-                group.OID = o.value
+                group.group = o.value
               }
             }
           }

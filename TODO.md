@@ -21,6 +21,8 @@
 
 - Migrate cards to OIDs
   - [x] rollback for groups not working
+  - [x] fix dependency on display order
+  - [ ] DB mark/sweep can be called multiple times for the same update
   - [ ] Make `cards.go` look like doors, groups, etc
   - [ ] Sort order occasionally goes wonky
   - [ ] Update unit tests for OID'd implementation
@@ -28,9 +30,9 @@
   - [ ] validate
   - [ ] save
   - [ ] `card` serialize/deserialize
+        - only save membered groups
   - [ ] Unit test for AsObjects
-  - [ ] Cleanup cards.js
-  - [ ] DB mark/sweep can be called multiple times for the same update
+  - [x] Cleanup cards.js
         - make time based (?)
         - make update ID base (?)
         - or just use tag (?)
@@ -38,13 +40,11 @@
 - Groups
   - [ ] delete: asynchronously update card membership columns
         - [x] remove column
-        - [ ] remove from card groups
+        - [x] remove from card groups
   - [ ] add: asynchronously update card membership columns
         - [ ] insert before padding
-        - [ ] fix dependency on display order
   - [ ] doors/permissions
-  - [ ] Update ACL to use reworked groups
-  - [ ] (maybe) use :before or :content for flags???
+  - [ ] Update ACL to use reworked groups + doors
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -85,6 +85,7 @@
 - [ ] [TOML](https://toml.io) files
 
 - [ ] tabular
+      - (experiment) use :before or :content for flags???
       - New table row submitted with error cannot be discarded
       - Empty list: make first row a 'new' row
       - Commonalise controller and card handling into tabular.js

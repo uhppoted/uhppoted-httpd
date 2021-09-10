@@ -34,13 +34,7 @@ export function get () {
 export function refreshed () {
   // ... groups
   const columns = document.querySelectorAll('.colheader.grouph')
-  const groups = []
-
-  DB.groups.forEach(g => {
-    if (g.status && g.status !== '<new>' && g.status !== 'deleted') {
-      groups.push(g)
-    }
-  })
+  const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && g.status !== 'deleted')
 
   groups.sort((p, q) => {
     return p.index - q.index
@@ -155,6 +149,7 @@ function updateFromDB (oid, record) {
   const number = row.querySelector(`[data-oid="${oid}.2"]`)
   const from = row.querySelector(`[data-oid="${oid}.3"]`)
   const to = row.querySelector(`[data-oid="${oid}.4"]`)
+  const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && g.status !== 'deleted')
 
   row.dataset.status = record.status
 
@@ -163,11 +158,14 @@ function updateFromDB (oid, record) {
   update(from, record.from)
   update(to, record.to)
 
-  record.groups.forEach((v, k) => {
-    const group = row.querySelector(`[data-oid="${k}"]`)
+  groups.forEach(g => {
+    const td = row.querySelector(`td[data-group="${g.OID}"]`)
 
-    if (group) {
-      update(group, v.member)
+    if (td) {
+      const e = td.querySelector('.field')
+      const g = record.groups.get(`${e.dataset.oid}`)
+
+      update(e, g.member)
     }
   })
 
@@ -206,18 +204,22 @@ function add (oid, record) {
       { suffix: 'to', oid: `${oid}.4`, selector: 'td input.to', flag: 'td img.to' }
     ]
 
-    record.groups.forEach((v, k) => {
-      const m = v.OID.match(/^0\.4\.([1-9][0-9]*)$/)
-      if (m && m.length > 1) {
-        const gid = m[1]
+    const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && g.status !== 'deleted')
 
-        fields.push({
-          suffix: `g${gid}`,
-          oid: `${k}`,
-          selector: `td input.g${gid}`,
-          flag: `td img.g${gid}`
-        })
-      }
+    groups.forEach(g => {
+      const m = g.OID.match(/^0\.4\.([1-9][0-9]*)$/)
+      const gid = m[1]
+
+      record.groups.forEach((v, k) => {
+        if (v.group === g.OID) {
+          fields.push({
+            suffix: `g${gid}`,
+            oid: `${k}`,
+            selector: `td input.g${gid}`,
+            flag: `td img.g${gid}`
+          })
+        }
+      })
     })
 
     fields.forEach(f => {
