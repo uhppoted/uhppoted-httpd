@@ -1,35 +1,5 @@
-import { unbusy, getAsJSON, warning } from './uhppoted.js'
 import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
-
-export function get () {
-  getAsJSON('/cards')
-    .then(response => {
-      unbusy()
-
-      if (response.redirected) {
-        window.location = response.url
-      } else {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              if (object && object.system && object.system.objects) {
-                DB.updated('objects', object.system.objects)
-              }
-
-              refreshed()
-            })
-            break
-
-          default:
-            response.text().then(message => { warning(message) })
-        }
-      }
-    })
-    .catch(function (err) {
-      console.error(err)
-    })
-}
 
 export function refreshed () {
   // ... groups
@@ -68,17 +38,21 @@ export function refreshed () {
     const thead = table.tHead
     const tbody = table.tBodies[0]
     const template = document.querySelector('#group')
-    const th = thead.rows[0].appendChild(document.createElement('th'))
+    const th = document.querySelector('#cards table').tHead.rows[0].lastElementChild
+    const padding = thead.rows[0].appendChild(document.createElement('th'))
 
-    th.classList.add('colheader')
-    th.classList.add('grouph')
+    padding.classList.add('colheader')
+    padding.classList.add('padding')
+
+    th.classList.replace('padding', 'grouph')
     th.dataset.group = g.OID
     th.innerHTML = g.name
 
     for (const row of tbody.rows) {
       const uuid = row.id
       const oid = row.dataset.oid + '.5.' + gid
-      const cell = row.insertCell(-1)
+      const ix = row.cells.length - 1
+      const cell = row.insertCell(ix)
 
       cell.dataset.group = g.OID
       cell.innerHTML = template.innerHTML

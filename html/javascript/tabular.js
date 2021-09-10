@@ -205,7 +205,7 @@ export function onRefresh (tag, event) {
       break
 
     case 'cards':
-      cards.get()
+      get('/cards', cards.refreshed)
       break
 
     case 'groups':

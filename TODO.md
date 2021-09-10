@@ -22,6 +22,7 @@
 - Migrate cards to OIDs
   - [x] rollback for groups not working
   - [x] fix dependency on display order
+  - [ ] `refresh` is overwriting pending group edits
   - [ ] DB mark/sweep can be called multiple times for the same update
   - [ ] Make `cards.go` look like doors, groups, etc
   - [ ] Sort order occasionally goes wonky
@@ -38,11 +39,11 @@
         - or just use tag (?)
 
 - Groups
+  - [ ] add: asynchronously update card membership columns
+        - [x] insert before padding
   - [ ] delete: asynchronously update card membership columns
         - [x] remove column
         - [x] remove from card groups
-  - [ ] add: asynchronously update card membership columns
-        - [ ] insert before padding
   - [ ] doors/permissions
   - [ ] Update ACL to use reworked groups + doors
 
