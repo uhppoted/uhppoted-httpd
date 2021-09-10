@@ -70,7 +70,7 @@ export function refreshed () {
     column.innerHTML = g.name
 
     for (const row of tbody.rows) {
-      const uuid = row.dataset.record
+      const uuid = row.id
       const oid = row.dataset.oid + '.5.' + gid
       const cell = row.insertCell(-1)
 

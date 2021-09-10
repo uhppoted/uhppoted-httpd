@@ -257,7 +257,12 @@ export function revert (row) {
   const fields = row.querySelectorAll('.field')
 
   fields.forEach((item) => {
-    item.value = item.dataset.original
+    if (item && item.type === 'checkbox') {
+      item.checked = item.dataset.original === 'true'
+    } else {
+      item.value = item.dataset.original
+    }
+
     set(item, item.dataset.original, item.dataset.status)
   })
 
@@ -414,7 +419,6 @@ function get (url, refreshed) {
 
 function rollback (recordset, row, refreshed) {
   if (row && row.classList.contains('new')) {
-    console.log('rollback', recordset)
     db.DB.delete(recordset, row.dataset.oid)
     refreshed()
   } else {

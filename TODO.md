@@ -1,11 +1,12 @@
 ## v0.7.x
 
+- [Firefox: bug #1730211](https://bugzilla.mozilla.org/show_bug.cgi?id=1730211)
+
 ### IN PROGRESS
 
 - OID
   - [ ] Store all values in catalog and 'realize' local copies from cache
   - [ ] Make OID a type
-        - [x] doors
         - [ ] controllers
         - [ ] catalog
         - [ ] cache
@@ -21,7 +22,7 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [x] Horizontal overflow not scrolling
+  - [x] rollback for groups not working
   - [ ] Make `cards.go` look like doors, groups, etc
   - [ ] Sort order occasionally goes wonky
   - [ ] Update unit tests for OID'd implementation
@@ -38,17 +39,12 @@
 
 - Groups
   - [ ] add: asynchronously update card membership columns
-        - [x] thead
-        - [x] tbody
-        - [x] card records
-        - [x] onTick
-        - [ ] rollback ticked for new groups not working
         - [ ] insert before padding
         - [ ] fix dependency on display order
   - [ ] delete: asynchronously update card membership columns
   - [ ] doors/permissions
   - [ ] Update ACL to use reworked groups
-  - [x] commit-all/rollback-all shown on single row edit
+  - [ ] (maybe) use :before or :content for flags???
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -84,10 +80,6 @@
       - use uhppoted-lib::healthcheck
 
 - [ ] Fix Firefox layout
-      - [x] rollback icon size
-            - &#9746; is bigger than &#9745;
-            - https://www.unicodepedia.com/unicode/miscellaneous-symbols/2611/ballot-box-with-check
-            - https://www.unicodepedia.com/unicode/miscellaneous-symbols/2612/ballot-box-with-x
       - spacing/padding/margins
 
 - [ ] [TOML](https://toml.io) files
