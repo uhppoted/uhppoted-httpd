@@ -10,14 +10,12 @@
         - [ ] controllers
         - [ ] catalog
         - [ ] cache
-        - [ ] move all _stringify's_ to OID
+        - [ ] move all _stringify's_ to OID/object
         - [ ] make object.OID an OID
 
-- [ ] Commonalise CSS
-      - migrate shared CSS to 'common'
+- [ ] Migrate shared CSS to 'common'
         - [ ] system
         - [ ] cards
-      - (???) merge 'common' and 'tabular'
 - [ ] <sigh> double click for login seems to be back - after 'idle signout'
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
@@ -38,10 +36,12 @@
         - or just use tag (?)
 
 - Groups
+  - [ ] delete: asynchronously update card membership columns
+        - [x] remove column
+        - [ ] remove from card groups
   - [ ] add: asynchronously update card membership columns
         - [ ] insert before padding
         - [ ] fix dependency on display order
-  - [ ] delete: asynchronously update card membership columns
   - [ ] doors/permissions
   - [ ] Update ACL to use reworked groups
   - [ ] (maybe) use :before or :content for flags???

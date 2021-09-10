@@ -46,9 +46,21 @@ export function refreshed () {
     return p.index - q.index
   })
 
+  // FIXME O(N²)
   const missing = groups.filter(g => {
     for (const v of columns) {
-      if (v.dataset.oid === g.OID) {
+      if (v.dataset.group === g.OID) {
+        return false
+      }
+    }
+
+    return true
+  })
+
+  // FIXME O(N²)
+  const surplus = [...columns].filter(c => {
+    for (const g of groups) {
+      if (c.dataset.group === g.OID) {
         return false
       }
     }
@@ -62,18 +74,19 @@ export function refreshed () {
     const thead = table.tHead
     const tbody = table.tBodies[0]
     const template = document.querySelector('#group')
-    const column = thead.rows[0].appendChild(document.createElement('th'))
+    const th = thead.rows[0].appendChild(document.createElement('th'))
 
-    column.classList.add('colheader')
-    column.classList.add('grouph')
-    column.dataset.oid = g.OID
-    column.innerHTML = g.name
+    th.classList.add('colheader')
+    th.classList.add('grouph')
+    th.dataset.group = g.OID
+    th.innerHTML = g.name
 
     for (const row of tbody.rows) {
       const uuid = row.id
       const oid = row.dataset.oid + '.5.' + gid
       const cell = row.insertCell(-1)
 
+      cell.dataset.group = g.OID
       cell.innerHTML = template.innerHTML
 
       const flag = cell.querySelector('.flag')
@@ -91,6 +104,14 @@ export function refreshed () {
       field.dataset.value = ''
       field.checked = false
     }
+  })
+
+  surplus.forEach(col => {
+    const group = col.dataset.group
+    const cells = document.querySelectorAll(`td[data-group="${group}"]`)
+
+    col.remove()
+    cells.forEach(cell => cell.remove())
   })
 
   // ... cards

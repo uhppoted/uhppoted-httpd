@@ -69,7 +69,7 @@
                   <th class="number  colheader">Card Number</th>
                   <th class="from    colheader">From</th>
                   <th class="to      colheader">To</th>{{range .groups}}
-                  <th class="grouph  colheader" data-OID="{{ .OID }}">{{.Name}}</th>{{else}}</th>{{end}}
+                  <th class="grouph  colheader" data-group="{{ .OID }}">{{.Name}}</th>{{else}}</th>{{end}}
                   <th class="padding colheader"></th>
                 </tr>
               </thead>
@@ -126,7 +126,7 @@
                        required />
               </td>
               {{range .groups}}
-              <td>
+              <td data-group="{{ .OID }}">
                 <img class="flag g{{ suffix .OID }}" src="images/{{$.context.Theme}}/corner.svg" />
                 <label class="group">
                   <input class="field g{{ suffix .OID }}"
