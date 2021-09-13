@@ -20,8 +20,6 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [x] rollback for groups not working
-  - [x] fix dependency on display order
   - [ ] `refresh` is overwriting pending group edits
   - [ ] DB mark/sweep can be called multiple times for the same update
   - [ ] Make `cards.go` look like doors, groups, etc
@@ -34,16 +32,12 @@
         - only save membered groups
   - [ ] Unit test for AsObjects
   - [x] Cleanup cards.js
-        - make time based (?)
+  - [ ] Rethink mark/sweep to not use a counter
+        - time based (?)
         - make update ID base (?)
-        - or just use tag (?)
+        - use tag (?)
 
 - Groups
-  - [ ] add: asynchronously update card membership columns
-        - [x] insert before padding
-  - [ ] delete: asynchronously update card membership columns
-        - [x] remove column
-        - [x] remove from card groups
   - [ ] doors/permissions
   - [ ] Update ACL to use reworked groups + doors
 

@@ -26,10 +26,6 @@ type fdb struct {
 }
 
 type data struct {
-	Tables tables `json:"tables"`
-}
-
-type tables struct {
 	CardHolders cards.CardHolders `json:"cardholders"`
 }
 
@@ -46,13 +42,11 @@ var trail audit.Trail
 
 func (d *data) copy() *data {
 	shadow := data{
-		Tables: tables{
-			CardHolders: cards.CardHolders{},
-		},
+		CardHolders: cards.CardHolders{},
 	}
 
-	for cid, v := range d.Tables.CardHolders {
-		shadow.Tables.CardHolders[cid] = v.Clone()
+	for cid, v := range d.CardHolders {
+		shadow.CardHolders[cid] = v.Clone()
 	}
 
 	return &shadow
@@ -66,10 +60,7 @@ func NewDB(file string, rules cards.IRules) (*fdb, error) {
 	f := fdb{
 		file: file,
 		data: data{
-			Tables: tables{
-				//Groups:      types.Groups{},
-				CardHolders: cards.CardHolders{},
-			},
+			CardHolders: cards.CardHolders{},
 		},
 		rules: rules,
 	}
@@ -80,12 +71,12 @@ func NewDB(file string, rules cards.IRules) (*fdb, error) {
 
 	created := time.Time{}
 
-	for _, c := range f.data.Tables.CardHolders {
+	for _, c := range f.data.CardHolders {
 		created = created.Add(1 * time.Minute)
 		c.Created = created
 	}
 
-	for _, c := range f.data.Tables.CardHolders {
+	for _, c := range f.data.CardHolders {
 		catalog.PutCard(c.OID)
 	}
 
@@ -94,13 +85,11 @@ func NewDB(file string, rules cards.IRules) (*fdb, error) {
 
 func (d *fdb) Clone() cards.Cards {
 	shadow := data{
-		Tables: tables{
-			CardHolders: cards.CardHolders{},
-		},
+		CardHolders: cards.CardHolders{},
 	}
 
-	for cid, v := range d.data.Tables.CardHolders {
-		shadow.Tables.CardHolders[cid] = v.Clone()
+	for cid, v := range d.data.CardHolders {
+		shadow.CardHolders[cid] = v.Clone()
 	}
 
 	return &fdb{
@@ -115,11 +104,11 @@ func (cc *fdb) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interf
 		return nil, nil
 	}
 
-	for k, c := range cc.data.Tables.CardHolders {
+	for k, c := range cc.data.CardHolders {
 		if c.OID.Contains(oid) {
 			objects, err := c.Set(auth, oid, value)
 			if err == nil {
-				cc.data.Tables.CardHolders[k] = c
+				cc.data.CardHolders[k] = c
 			}
 
 			return objects, err
@@ -135,7 +124,7 @@ func (cc *fdb) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interf
 			return nil, fmt.Errorf("Failed to add 'new' card")
 		} else {
 			c.Log(auth, "add", c.OID, "card", "", "")
-			cc.data.Tables.CardHolders[c.OID] = c
+			cc.data.CardHolders[c.OID] = c
 			objects = append(objects, object{
 				OID:   fmt.Sprintf("%v", c.OID),
 				Value: "new",
@@ -153,7 +142,7 @@ func (d *fdb) CardHolders() cards.CardHolders {
 
 	list := cards.CardHolders{}
 
-	for cid, record := range d.data.Tables.CardHolders {
+	for cid, record := range d.data.CardHolders {
 		list[cid] = record.Clone()
 	}
 
@@ -161,7 +150,7 @@ func (d *fdb) CardHolders() cards.CardHolders {
 }
 
 func (d *fdb) Print() {
-	if b, err := json.MarshalIndent(d.data.Tables.CardHolders, "", "  "); err == nil {
+	if b, err := json.MarshalIndent(d.data.CardHolders, "", "  "); err == nil {
 		fmt.Printf("----------------- CARDS\n%s\n", string(b))
 	}
 }
@@ -173,7 +162,7 @@ func (d *fdb) AsObjects() []interface{} {
 
 	defer d.RUnlock()
 
-	for _, record := range d.data.Tables.CardHolders {
+	for _, record := range d.data.CardHolders {
 		if record.IsValid() || record.IsDeleted() {
 			if l := record.AsObjects(); l != nil {
 				objects = append(objects, l...)
@@ -191,7 +180,7 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 
 	list := []types.Permissions{}
 
-	for _, c := range d.data.Tables.CardHolders {
+	for _, c := range d.data.CardHolders {
 		if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
 			var doors = []string{}
 			var err error
@@ -217,72 +206,6 @@ func (d *fdb) ACL() ([]types.Permissions, error) {
 	return list, nil
 }
 
-// func (d *fdb) Post(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
-// 	d.Lock()
-//
-// 	defer d.Unlock()
-//
-// 	// add/update ?
-//
-// 	cardholders, err := unpack(m)
-// 	if err != nil {
-// 		return nil, &types.HttpdError{
-// 			Status: http.StatusBadRequest,
-// 			Err:    fmt.Errorf("Invalid request"),
-// 			Detail: fmt.Errorf("Error unpacking 'post' request (%w)", err),
-// 		}
-// 	}
-//
-// 	list := result{}
-// 	shadow := d.data.copy()
-//
-// loop:
-// 	for _, c := range cardholders {
-// 		if c.OID == "" {
-// 			return nil, &types.HttpdError{
-// 				Status: http.StatusBadRequest,
-// 				Err:    fmt.Errorf("Invalid cardholder ID"),
-// 				Detail: fmt.Errorf("Invalid 'post' request (%w)", fmt.Errorf("Invalid cardholder ID '%v'", c.OID)),
-// 			}
-// 		}
-//
-// 		for _, record := range d.data.Tables.CardHolders {
-// 			if record.OID == c.OID {
-// 				if c.Name != nil && *c.Name == "" && c.Card != nil && *c.Card == 0 {
-// 					if r, err := d.delete(shadow, c, auth); err != nil {
-// 						return nil, err
-// 					} else if r != nil {
-// 						list.Deleted = append(list.Deleted, r)
-// 						continue loop
-// 					}
-// 				}
-//
-// 				if r, err := d.update(shadow, c, auth); err != nil {
-// 					return nil, err
-// 				} else if r != nil {
-// 					list.Updated = append(list.Updated, r)
-// 				}
-//
-// 				continue loop
-// 			}
-// 		}
-//
-// 		if r, err := d.add(shadow, c, auth); err != nil {
-// 			return nil, err
-// 		} else if r != nil {
-// 			list.Updated = append(list.Updated, r)
-// 		}
-// 	}
-//
-// 	if err := save(shadow, d.file); err != nil {
-// 		return nil, err
-// 	}
-//
-// 	d.data = *shadow
-//
-// 	return list, nil
-// }
-//
 func (cc *fdb) add(auth auth.OpAuth, c cards.CardHolder) (*cards.CardHolder, error) {
 	oid := catalog.NewCard()
 
@@ -355,7 +278,7 @@ func load(data interface{}, file string) error {
 func validate(d *data) error {
 	cards := map[uint32]string{}
 
-	for _, r := range d.Tables.CardHolders {
+	for _, r := range d.CardHolders {
 		if !r.Name.IsValid() && !r.Card.IsValid() {
 			return &types.HttpdError{
 				Status: http.StatusBadRequest,
