@@ -15,7 +15,7 @@
 
 - [ ] Migrate shared CSS to 'common'
         - [ ] system
-        - [ ] cards
+        - [x] cards
 - [ ] <sigh> double click for login seems to be back - after 'idle signout'
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
