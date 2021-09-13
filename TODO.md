@@ -3,6 +3,8 @@
 ### IN PROGRESS
 
 - [ ] Make audit trail a shared system global a la log et al
+- [ ] Server events in addition to/rather than refresh
+- [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 
 - OID
   - [ ] Store all values in catalog and 'realize' local copies from cache
@@ -17,7 +19,14 @@
         - [ ] system
         - [x] cards
 - [ ] <sigh> double click for login seems to be back - after 'idle signout'
-- [ ] 'reload' crashes with 'site can't be reached' if no response from server
+- [x] 'reload' crashes with 'site can't be reached' if no response from server
+      - [ ] on restarting httpd
+      ```
+      tabular.js:416 TypeError: Cannot read properties of null (reading 'dataset')
+          at unbusy (uhppoted.js:176)
+          at tabular.js:394
+      ```
+      - [ ] alert 'undefined' message on restarting httpd
 
 - Migrate cards to OIDs
   - [x] validate
@@ -40,6 +49,8 @@
 
 - Groups
   - [ ] doors/permissions
+  - [ ] validate
+  - [ ] save
   - [ ] Update ACL to use reworked groups + doors
 
 - Doors

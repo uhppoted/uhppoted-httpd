@@ -112,7 +112,7 @@
   <!-- SCRIPTS -->
 
   <script type="module">
-    import { retheme, dismiss, resetIdle, onMenu, onSignOut } from "./javascript/uhppoted.js"
+    import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload } from "./javascript/uhppoted.js"
     import { onEdited, 
              onEnter, 
              onChoose, 
@@ -128,6 +128,8 @@
     window.dismiss = dismiss
     window.onMenu = onMenu
     window.onSignOut = onSignOut
+    window.onReload = onReload
+
     window.onEdited = onEdited
     window.onEnter = onEnter
     window.onChoose = onChoose

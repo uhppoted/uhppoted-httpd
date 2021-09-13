@@ -172,7 +172,7 @@
   <!-- SCRIPTS -->
  
   <script type="module">
-    import { retheme, dismiss, resetIdle, onSignOut } from "./javascript/uhppoted.js"
+    import { retheme, dismiss, resetIdle, onSignOut, onReload } from "./javascript/uhppoted.js"
     import { onEdited, 
              onEnter,
              onTick, 
@@ -186,6 +186,8 @@
     window.retheme = retheme
     window.dismiss = dismiss
     window.onSignOut = onSignOut
+    window.onReload = onReload
+
     window.onEdited = onEdited
     window.onEnter = onEnter
     window.onTick = onTick

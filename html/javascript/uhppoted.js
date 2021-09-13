@@ -160,7 +160,8 @@ export function resetIdle () {
     clearTimeout(idleTimer)
   }
 
-  idleTimer = setTimeout(onIdle, 15 * 60 * 1000)
+  // idleTimer = setTimeout(onIdle, 15 * 60 * 1000)
+  idleTimer = setTimeout(onIdle, 30 * 1000)
 }
 
 export function busy () {
@@ -181,6 +182,26 @@ export function unbusy () {
   }
 }
 
+export function onReload () {
+  const message = document.querySelector('#offline + div > p')
+
+  message.innerHTML = '.... trying ....'
+
+  fetch('/index.html', {
+    method: 'HEAD',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer'
+  }).then(response => {
+    window.location = '/index.html'
+  }).catch(function (err) {
+    console.log(err)
+    message.innerHTML = '(still offline)'
+  })
+}
+
 function offline () {
   const cookies = document.cookie.split(';')
 
@@ -194,5 +215,5 @@ function offline () {
     }
   }
 
-  document.body.innerHTML = '<div id="offline"><div><div><p>SYSTEM OFFLINE</p></div><div><a href="index.html">RELOAD</a><div></div></div>'
+  document.body.innerHTML = '<div id="offline"><div><div><p>SYSTEM OFFLINE</p></div><div><a onclick="onReload()">RELOAD</a></div></div></div><div><p/></div>'
 }

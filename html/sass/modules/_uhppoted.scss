@@ -266,6 +266,15 @@ footer {
   color: $link-colour;
 }
 
+#offline + div > p {
+  font-family: Sans-Serif;
+  font-size: 0.75em;
+  font-weight: normal;
+  text-align: center;
+  color: $offline-colour;
+  margin-top: 4px;
+}
+
 .message {  
   background-color: $content-message-background;
   display: block;
