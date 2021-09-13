@@ -135,6 +135,14 @@ func (cc *fdb) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interf
 	return objects, nil
 }
 
+func (cc *fdb) Validate() error {
+	if cc != nil {
+		return validate(cc.data)
+	}
+
+	return nil
+}
+
 func (d *fdb) CardHolders() cards.CardHolders {
 	d.RLock()
 
@@ -222,12 +230,12 @@ func (cc *fdb) add(auth auth.OpAuth, c cards.CardHolder) (*cards.CardHolder, err
 	return record, nil
 }
 
-func save(d *data, file string) error {
+func save(d data, file string) error {
 	if err := validate(d); err != nil {
 		return err
 	}
 
-	if err := scrub(d); err != nil {
+	if err := scrub(&d); err != nil {
 		return err
 	}
 
@@ -275,29 +283,29 @@ func load(data interface{}, file string) error {
 	return json.Unmarshal(b, data)
 }
 
-func validate(d *data) error {
+func validate(d data) error {
 	cards := map[uint32]string{}
 
-	for _, r := range d.CardHolders {
-		if !r.Name.IsValid() && !r.Card.IsValid() {
-			return &types.HttpdError{
-				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Name and card number cannot both be empty"),
-				Detail: fmt.Errorf("record %v: Card holder and card number cannot both be blank", r.OID),
-			}
+	for _, c := range d.CardHolders {
+		if c.IsDeleted() {
+			continue
 		}
 
-		if r.Card != nil {
-			card := uint32(*r.Card)
+		if c.OID == "" {
+			return fmt.Errorf("Invalid card OID (%v)", c.OID)
+		}
+
+		if c.Card != nil {
+			card := uint32(*c.Card)
 			if id, ok := cards[card]; ok {
 				return &types.HttpdError{
 					Status: http.StatusBadRequest,
 					Err:    fmt.Errorf("Duplicate card number (%v)", card),
-					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", card, id, r.OID),
+					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", card, id, c.OID),
 				}
 			}
 
-			cards[card] = string(r.OID)
+			cards[card] = string(c.OID)
 		}
 	}
 

@@ -139,7 +139,7 @@ function updateFromDB (oid, record) {
       const e = td.querySelector('.field')
       const g = record.groups.get(`${e.dataset.oid}`)
 
-      update(e, g.member)
+      update(e, g && g.member)
     }
   })
 

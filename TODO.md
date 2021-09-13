@@ -20,19 +20,18 @@
 - [ ] 'reload' crashes with 'site can't be reached' if no response from server
 
 - Migrate cards to OIDs
-  - [ ] `refresh` is overwriting pending group edits
-  - [ ] DB mark/sweep can be called multiple times for the same update
+  - [x] validate
   - [ ] Make `cards.go` look like doors, groups, etc
-  - [ ] Sort order occasionally goes wonky
-  - [ ] Update unit tests for OID'd implementation
-  - [ ] Replace dataset.original with value from DB
-  - [ ] validate
   - [ ] save
   - [ ] `card` serialize/deserialize
         - only save membered groups
+  - [ ] `refresh` is overwriting pending group edits
+  - [ ] Sort order occasionally goes wonky
+  - [ ] Update unit tests for OID'd implementation
+  - [ ] Replace dataset.original with value from DB
   - [ ] Unit test for AsObjects
-  - [x] Cleanup cards.js
   - [ ] Rethink mark/sweep to not use a counter
+        - mark/sweep can be called multiple times for the same update
         - time based (?)
         - make update ID base (?)
         - use tag (?)

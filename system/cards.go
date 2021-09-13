@@ -2,6 +2,7 @@ package system
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
@@ -28,30 +29,11 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		}
 	}
 
-	//	// ... validate
-	//	if err := shadow.Validate(); err != nil {
-	//		return nil, types.BadRequest(err, err)
-	//	}
-	//
-	//	for _, c := range sys.controllers.Controllers {
-	//		for k, v := range c.Doors {
-	//			if v != "" {
-	//				if door, ok := shadow.Doors[v]; !ok {
-	//					return nil, types.BadRequest(fmt.Errorf("Door %v not defined for controller %v", k, c), fmt.Errorf("controller %v: invalid door (%v)", c, k))
-	//
-	//				} else if door.IsDeleted() {
-	//					name := fmt.Sprintf("%v", door)
-	//
-	//					if name == "" {
-	//						return nil, types.BadRequest(fmt.Errorf("Deleting door in use by controller %v", c), fmt.Errorf("door %v: deleting door in use by controller %v", v, c))
-	//					} else {
-	//						return nil, types.BadRequest(fmt.Errorf("Deleting door %v in use by controller %v", door, c), fmt.Errorf("door %v: deleting door in use by controller %v", v, c))
-	//					}
-	//				}
-	//			}
-	//		}
-	//	}
-	//
+	// ... validate
+	if err := shadow.Validate(); err != nil {
+		return nil, types.BadRequest(err, err)
+	}
+
 	//	// ... save
 	//	if err := shadow.Save(); err != nil {
 	//		return nil, err
