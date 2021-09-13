@@ -1,6 +1,7 @@
 package cards
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -35,6 +36,7 @@ const CardFrom = catalog.CardFrom
 const CardTo = catalog.CardTo
 const CardGroups = catalog.CardGroups
 
+var created = time.Now()
 var trail audit.Trail
 
 func SetAuditTrail(t audit.Trail) {
@@ -184,6 +186,88 @@ func (c *CardHolder) AsRuleEntity() interface{} {
 	}
 
 	return &entity{}
+}
+
+// FIXME make unexported after moving memdb implementation to this package
+func (c CardHolder) Serialize() ([]byte, error) {
+	record := struct {
+		OID     catalog.OID   `json:"OID"`
+		Name    string        `json:"name,omitempty"`
+		Card    uint32        `json:"card,omitempty"`
+		From    *types.Date   `json:"from,omitempty"`
+		To      *types.Date   `json:"to,omitempty"`
+		Groups  []catalog.OID `json:"groups"`
+		Created string        `json:"created"`
+	}{
+		OID:     c.OID,
+		From:    c.From,
+		To:      c.To,
+		Groups:  []catalog.OID{},
+		Created: c.Created.Format("2006-01-02 15:04:05"),
+	}
+
+	if c.Name != nil {
+		record.Name = fmt.Sprintf("%v", c.Name)
+	}
+
+	if c.Card != nil {
+		record.Card = uint32(*c.Card)
+	}
+
+	groups := catalog.Groups()
+
+	for _, g := range groups {
+		if c.Groups[string(g)] {
+			record.Groups = append(record.Groups, catalog.OID(g))
+		}
+	}
+
+	return json.Marshal(record)
+}
+
+// FIXME make unexported after moving memdb implementation to this package
+func (c *CardHolder) Deserialize(bytes []byte) error {
+	created = created.Add(1 * time.Minute)
+
+	record := struct {
+		OID     catalog.OID   `json:"OID"`
+		Name    string        `json:"name,omitempty"`
+		Card    uint32        `json:"card,omitempty"`
+		From    *types.Date   `json:"from,omitempty"`
+		To      *types.Date   `json:"to,omitempty"`
+		Groups  []catalog.OID `json:"groups"`
+		Created string        `json:"created"`
+	}{
+		Groups:  []catalog.OID{},
+		Created: created.Format("2006-01-02 15:04:05"),
+	}
+
+	if err := json.Unmarshal(bytes, &record); err != nil {
+		return err
+	}
+
+	c.OID = record.OID
+	c.From = record.From
+	c.To = record.To
+	c.Groups = map[string]bool{}
+
+	if record.Name != "" {
+		c.Name = (*types.Name)(&record.Name)
+	}
+
+	if record.Card != 0 {
+		c.Card = (*types.Card)(&record.Card)
+	}
+
+	for _, g := range record.Groups {
+		c.Groups[string(g)] = true
+	}
+
+	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {
+		c.Created = t
+	}
+
+	return nil
 }
 
 // TODO make unexported after rationalising 'Cards' implementation

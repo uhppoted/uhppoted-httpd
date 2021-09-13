@@ -1,8 +1,8 @@
 ## v0.7.x
 
-- [Firefox: bug #1730211](https://bugzilla.mozilla.org/show_bug.cgi?id=1730211)
-
 ### IN PROGRESS
+
+- [ ] Make audit trail a shared system global a la log et al
 
 - OID
   - [ ] Store all values in catalog and 'realize' local copies from cache
@@ -21,10 +21,12 @@
 
 - Migrate cards to OIDs
   - [x] validate
+  - [x] save
+        - [x] `card` serialize/deserialize
+        - [x] Only save membered groups
   - [ ] Make `cards.go` look like doors, groups, etc
-  - [ ] save
-  - [ ] `card` serialize/deserialize
-        - only save membered groups
+        - [ ] Commonalise load/save implementation
+  - [ ] Style placeholder for from/to
   - [ ] `refresh` is overwriting pending group edits
   - [ ] Sort order occasionally goes wonky
   - [ ] Update unit tests for OID'd implementation
@@ -206,4 +208,5 @@
 - [ZUI](https://zircleui.github.io/docs/examples/home.html)
 - [plurid](https://github.com/plurid/plurid)
 - [git/content-addressable filesystem](https://jvns.ca/blog/confusing-explanations)
+- [Firefox: bug #1730211](https://bugzilla.mozilla.org/show_bug.cgi?id=1730211)
 

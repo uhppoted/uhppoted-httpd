@@ -3,7 +3,6 @@ package memdb
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -65,15 +64,8 @@ func NewDB(file string, rules cards.IRules) (*fdb, error) {
 		rules: rules,
 	}
 
-	if err := load(&f.data, f.file); err != nil {
+	if err := f.Load(f.file); err != nil {
 		return nil, err
-	}
-
-	created := time.Time{}
-
-	for _, c := range f.data.CardHolders {
-		created = created.Add(1 * time.Minute)
-		c.Created = created
 	}
 
 	for _, c := range f.data.CardHolders {
@@ -81,6 +73,97 @@ func NewDB(file string, rules cards.IRules) (*fdb, error) {
 	}
 
 	return &f, nil
+}
+
+func (cc *fdb) Load(file string) error {
+	blob := struct {
+		Cards []json.RawMessage `json:"cards"`
+	}{
+		Cards: []json.RawMessage{},
+	}
+
+	bytes, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(bytes, &blob)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range blob.Cards {
+		var c cards.CardHolder
+		if err := c.Deserialize(v); err == nil {
+			if _, ok := cc.data.CardHolders[c.OID]; ok {
+				return fmt.Errorf("card '%v': duplicate OID (%v)", c.Card, c.OID)
+			}
+
+			cc.data.CardHolders[c.OID] = &c
+		}
+	}
+
+	for _, v := range cc.data.CardHolders {
+		catalog.PutCard(v.OID)
+	}
+
+	cc.file = file
+
+	return nil
+}
+
+func (cc *fdb) Save() error {
+	if err := validate(cc.data); err != nil {
+		return err
+	}
+
+	if err := scrub(&cc.data); err != nil {
+		return err
+	}
+
+	if cc.file == "" {
+		return nil
+	}
+
+	serializable := struct {
+		Cards []json.RawMessage `json:"cards"`
+	}{
+		Cards: []json.RawMessage{},
+	}
+
+	for _, c := range cc.data.CardHolders {
+		if c.IsValid() && !c.IsDeleted() {
+			if record, err := c.Serialize(); err == nil && record != nil {
+				serializable.Cards = append(serializable.Cards, record)
+			}
+		}
+	}
+
+	b, err := json.MarshalIndent(serializable, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	tmp, err := os.CreateTemp("", "uhppoted-cards.*")
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(b); err != nil {
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(cc.file), 0770); err != nil {
+		return err
+	}
+
+	return os.Rename(tmp.Name(), cc.file)
 }
 
 func (d *fdb) Clone() cards.Cards {
@@ -228,59 +311,6 @@ func (cc *fdb) add(auth auth.OpAuth, c cards.CardHolder) (*cards.CardHolder, err
 	}
 
 	return record, nil
-}
-
-func save(d data, file string) error {
-	if err := validate(d); err != nil {
-		return err
-	}
-
-	if err := scrub(&d); err != nil {
-		return err
-	}
-
-	if file == "" {
-		return nil
-	}
-
-	b, err := json.MarshalIndent(d, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-*.db")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), file)
-}
-
-func load(data interface{}, file string) error {
-	b, err := ioutil.ReadFile(file)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil
-		}
-
-		return err
-	}
-
-	return json.Unmarshal(b, data)
 }
 
 func validate(d data) error {

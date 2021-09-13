@@ -34,13 +34,13 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, types.BadRequest(err, err)
 	}
 
-	//	// ... save
-	//	if err := shadow.Save(); err != nil {
-	//		return nil, err
-	//	}
+	// ... save
+	if err := shadow.Save(); err != nil {
+		return nil, err
+	}
 
 	sys.cards = shadow
-	//	sys.updated()
+	sys.updated()
 
 	return list, nil
 }
