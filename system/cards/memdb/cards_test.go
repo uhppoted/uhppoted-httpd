@@ -82,15 +82,13 @@ func date(s string) *types.Date {
 func dbx(cardholders ...cards.CardHolder) *fdb {
 	p := fdb{
 		data: data{
-			Tables: tables{
-				CardHolders: cards.CardHolders{},
-			},
+			CardHolders: cards.CardHolders{},
 		},
 	}
 
 	for i, _ := range cardholders {
 		c := cardholders[i].Clone()
-		p.data.Tables.CardHolders[c.OID] = c
+		p.data.CardHolders[c.OID] = c
 	}
 
 	return &p
@@ -133,5 +131,5 @@ func compare(got, expected interface{}, t *testing.T) {
 }
 
 func compareDB(db, expected *fdb, t *testing.T) {
-	compare(db.data.Tables, expected.data.Tables, t)
+	compare(db.data.CardHolders, expected.data.CardHolders, t)
 }
