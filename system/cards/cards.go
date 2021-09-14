@@ -13,6 +13,5 @@ type Cards interface {
 	Validate() error
 	Save() error
 
-	CardHolders() CardHolders
 	ACL() ([]types.Permissions, error)
 }

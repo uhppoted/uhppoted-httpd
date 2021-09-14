@@ -79,16 +79,13 @@ func date(s string) *types.Date {
 	return &d
 }
 
-func dbx(cardholders ...cards.CardHolder) *fdb {
+func dbx(list ...cards.CardHolder) *fdb {
 	p := fdb{
-		data: data{
-			CardHolders: cards.CardHolders{},
-		},
+		Cards: map[catalog.OID]*cards.CardHolder{},
 	}
 
-	for i, _ := range cardholders {
-		c := cardholders[i].Clone()
-		p.data.CardHolders[c.OID] = c
+	for _, c := range list {
+		p.Cards[c.OID] = c.Clone()
 	}
 
 	return &p
@@ -131,5 +128,5 @@ func compare(got, expected interface{}, t *testing.T) {
 }
 
 func compareDB(db, expected *fdb, t *testing.T) {
-	compare(db.data.CardHolders, expected.data.CardHolders, t)
+	compare(db.Cards, expected.Cards, t)
 }

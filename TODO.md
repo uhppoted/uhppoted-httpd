@@ -3,7 +3,7 @@
 ### IN PROGRESS
 
 - [ ] Make audit trail a shared system global a la log et al
-- [ ] Server events in addition to/rather than refresh
+- [ ] Server events in addition to/rather-than refresh
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 
 - OID
@@ -17,7 +17,7 @@
 
 - [ ] Migrate shared CSS to 'common'
         - [ ] system
-        - [x] cards
+
 - [ ] <sigh> double click for login seems to be back - after 'idle signout'
 - [x] 'reload' crashes with 'site can't be reached' if no response from server
       - [ ] on restarting httpd
@@ -29,12 +29,9 @@
       - [ ] alert 'undefined' message on restarting httpd
 
 - Migrate cards to OIDs
-  - [x] validate
-  - [x] save
-        - [x] `card` serialize/deserialize
-        - [x] Only save membered groups
   - [ ] Make `cards.go` look like doors, groups, etc
-        - [ ] Commonalise load/save implementation
+  - [ ] Commonalise load/save implementation
+  - [ ] Replace templated groups with DB
   - [ ] Style placeholder for from/to
   - [ ] `refresh` is overwriting pending group edits
   - [ ] Sort order occasionally goes wonky

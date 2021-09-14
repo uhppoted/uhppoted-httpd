@@ -24,7 +24,6 @@ type Doors struct {
 type object catalog.Object
 
 var guard sync.Mutex
-
 var trail audit.Trail
 
 func SetAuditTrail(t audit.Trail) {

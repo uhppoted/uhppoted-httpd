@@ -56,7 +56,7 @@ func Init(cfg config.Config, conf string, permissions cards.IRules, trail audit.
 		return err
 	}
 
-	cc, err := memdb.NewDB(cfg.HTTPD.System.Cards, permissions)
+	cc, err := memdb.NewCards(cfg.HTTPD.System.Cards, permissions)
 	if err != nil {
 		return err
 	}
@@ -111,10 +111,6 @@ func System() interface{} {
 	}{
 		Objects: objects,
 	}
-}
-
-func Cards() interface{} {
-	return sys.cards.CardHolders()
 }
 
 func Groups() interface{} {

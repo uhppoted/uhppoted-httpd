@@ -18,14 +18,9 @@ import (
 )
 
 type fdb struct {
-	sync.RWMutex
-	file  string
-	data  data
+	Cards map[catalog.OID]*cards.CardHolder `json:"cardholders"`
 	rules cards.IRules
-}
-
-type data struct {
-	CardHolders cards.CardHolders `json:"cardholders"`
+	file  string
 }
 
 type result struct {
@@ -37,38 +32,25 @@ type object catalog.Object
 
 const GroupName = catalog.GroupName
 
+var guard sync.RWMutex
 var trail audit.Trail
-
-func (d *data) copy() *data {
-	shadow := data{
-		CardHolders: cards.CardHolders{},
-	}
-
-	for cid, v := range d.CardHolders {
-		shadow.CardHolders[cid] = v.Clone()
-	}
-
-	return &shadow
-}
 
 func SetAuditTrail(t audit.Trail) {
 	trail = t
 }
 
-func NewDB(file string, rules cards.IRules) (*fdb, error) {
+func NewCards(file string, rules cards.IRules) (*fdb, error) {
 	f := fdb{
-		file: file,
-		data: data{
-			CardHolders: cards.CardHolders{},
-		},
+		Cards: map[catalog.OID]*cards.CardHolder{},
 		rules: rules,
+		file:  file,
 	}
 
 	if err := f.Load(f.file); err != nil {
 		return nil, err
 	}
 
-	for _, c := range f.data.CardHolders {
+	for _, c := range f.Cards {
 		catalog.PutCard(c.OID)
 	}
 
@@ -95,15 +77,15 @@ func (cc *fdb) Load(file string) error {
 	for _, v := range blob.Cards {
 		var c cards.CardHolder
 		if err := c.Deserialize(v); err == nil {
-			if _, ok := cc.data.CardHolders[c.OID]; ok {
+			if _, ok := cc.Cards[c.OID]; ok {
 				return fmt.Errorf("card '%v': duplicate OID (%v)", c.Card, c.OID)
 			}
 
-			cc.data.CardHolders[c.OID] = &c
+			cc.Cards[c.OID] = &c
 		}
 	}
 
-	for _, v := range cc.data.CardHolders {
+	for _, v := range cc.Cards {
 		catalog.PutCard(v.OID)
 	}
 
@@ -113,11 +95,11 @@ func (cc *fdb) Load(file string) error {
 }
 
 func (cc *fdb) Save() error {
-	if err := validate(cc.data); err != nil {
+	if err := validate(*cc); err != nil {
 		return err
 	}
 
-	if err := scrub(&cc.data); err != nil {
+	if err := cc.scrub(); err != nil {
 		return err
 	}
 
@@ -131,7 +113,7 @@ func (cc *fdb) Save() error {
 		Cards: []json.RawMessage{},
 	}
 
-	for _, c := range cc.data.CardHolders {
+	for _, c := range cc.Cards {
 		if c.IsValid() && !c.IsDeleted() {
 			if record, err := c.Serialize(); err == nil && record != nil {
 				serializable.Cards = append(serializable.Cards, record)
@@ -167,19 +149,17 @@ func (cc *fdb) Save() error {
 }
 
 func (d *fdb) Clone() cards.Cards {
-	shadow := data{
-		CardHolders: cards.CardHolders{},
-	}
-
-	for cid, v := range d.data.CardHolders {
-		shadow.CardHolders[cid] = v.Clone()
-	}
-
-	return &fdb{
-		file:  d.file,
-		data:  shadow,
+	shadow := fdb{
+		Cards: map[catalog.OID]*cards.CardHolder{},
 		rules: d.rules,
+		file:  d.file,
 	}
+
+	for cid, v := range d.Cards {
+		shadow.Cards[cid] = v.Clone()
+	}
+
+	return &shadow
 }
 
 func (cc *fdb) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
@@ -187,11 +167,11 @@ func (cc *fdb) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interf
 		return nil, nil
 	}
 
-	for k, c := range cc.data.CardHolders {
+	for k, c := range cc.Cards {
 		if c.OID.Contains(oid) {
 			objects, err := c.Set(auth, oid, value)
 			if err == nil {
-				cc.data.CardHolders[k] = c
+				cc.Cards[k] = c
 			}
 
 			return objects, err
@@ -207,7 +187,7 @@ func (cc *fdb) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interf
 			return nil, fmt.Errorf("Failed to add 'new' card")
 		} else {
 			c.Log(auth, "add", c.OID, "card", "", "")
-			cc.data.CardHolders[c.OID] = c
+			cc.Cards[c.OID] = c
 			objects = append(objects, object{
 				OID:   fmt.Sprintf("%v", c.OID),
 				Value: "new",
@@ -220,40 +200,26 @@ func (cc *fdb) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interf
 
 func (cc *fdb) Validate() error {
 	if cc != nil {
-		return validate(cc.data)
+		return validate(*cc)
 	}
 
 	return nil
 }
 
-func (d *fdb) CardHolders() cards.CardHolders {
-	d.RLock()
-
-	defer d.RUnlock()
-
-	list := cards.CardHolders{}
-
-	for cid, record := range d.data.CardHolders {
-		list[cid] = record.Clone()
-	}
-
-	return list
-}
-
-func (d *fdb) Print() {
-	if b, err := json.MarshalIndent(d.data.CardHolders, "", "  "); err == nil {
+func (cc *fdb) Print() {
+	if b, err := json.MarshalIndent(cc.Cards, "", "  "); err == nil {
 		fmt.Printf("----------------- CARDS\n%s\n", string(b))
 	}
 }
 
-func (d *fdb) AsObjects() []interface{} {
+func (cc *fdb) AsObjects() []interface{} {
 	objects := []interface{}{}
 
-	d.RLock()
+	guard.RLock()
 
-	defer d.RUnlock()
+	defer guard.RUnlock()
 
-	for _, record := range d.data.CardHolders {
+	for _, record := range cc.Cards {
 		if record.IsValid() || record.IsDeleted() {
 			if l := record.AsObjects(); l != nil {
 				objects = append(objects, l...)
@@ -264,20 +230,20 @@ func (d *fdb) AsObjects() []interface{} {
 	return objects
 }
 
-func (d *fdb) ACL() ([]types.Permissions, error) {
-	d.RLock()
+func (cc *fdb) ACL() ([]types.Permissions, error) {
+	guard.RLock()
 
-	defer d.RUnlock()
+	defer guard.RUnlock()
 
 	list := []types.Permissions{}
 
-	for _, c := range d.data.CardHolders {
+	for _, c := range cc.Cards {
 		if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
 			var doors = []string{}
 			var err error
 
-			if d.rules != nil {
-				doors, err = d.rules.Eval(*c)
+			if cc.rules != nil {
+				doors, err = cc.rules.Eval(*c)
 				if err != nil {
 					return nil, err
 				}
@@ -313,10 +279,10 @@ func (cc *fdb) add(auth auth.OpAuth, c cards.CardHolder) (*cards.CardHolder, err
 	return record, nil
 }
 
-func validate(d data) error {
+func validate(cc fdb) error {
 	cards := map[uint32]string{}
 
-	for _, c := range d.CardHolders {
+	for _, c := range cc.Cards {
 		if c.IsDeleted() {
 			continue
 		}
@@ -342,7 +308,7 @@ func validate(d data) error {
 	return nil
 }
 
-func scrub(d *data) error {
+func (cc *fdb) scrub() error {
 	return nil
 }
 

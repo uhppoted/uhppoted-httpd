@@ -35,19 +35,6 @@ func CompareACL() {
 	}
 }
 
-// func UpdateCardHolders(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
-// 	response, err := sys.cards.Post(m, auth)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-//
-// 	sys.taskQ.Add(Task{
-// 		f: UpdateACL,
-// 	})
-//
-// 	return response, nil
-// }
-
 func consolidate(list []types.Permissions) (*acl.ACL, error) {
 	// initialise empty ACL
 	acl := make(acl.ACL)

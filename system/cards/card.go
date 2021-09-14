@@ -13,8 +13,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type CardHolders map[catalog.OID]*CardHolder
-
 type CardHolder struct {
 	OID    catalog.OID
 	Name   *types.Name
