@@ -5,6 +5,7 @@
 - [ ] Make audit trail a shared system global a la log et al
 - [ ] Server events in addition to/rather-than refresh
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
+- [ ] Double click for login after 'idle signout'
 
 - OID
   - [ ] Store all values in catalog and 'realize' local copies from cache
@@ -18,7 +19,6 @@
 - [ ] Migrate shared CSS to 'common'
         - [ ] system
 
-- [ ] <sigh> double click for login seems to be back - after 'idle signout'
 - [x] 'reload' crashes with 'site can't be reached' if no response from server
       - [ ] on restarting httpd
       ```
@@ -29,6 +29,7 @@
       - [ ] alert 'undefined' message on restarting httpd
 
 - Migrate cards to OIDs
+  - [ ] Replace .grouph with th.group and td.group
   - [ ] Make `cards.go` look like doors, groups, etc
   - [ ] Commonalise load/save implementation
   - [ ] Replace templated groups with DB
@@ -45,11 +46,16 @@
         - use tag (?)
 
 - Groups
-  - [ ] doors/permissions
+  - [ ] doors
         - [x] realize
+        - Replace .doorh with th.door and td.door
+        - rollback
+        - commit
         - onTick
         - add door asynchronously
         - remove door asynchronously
+        - include doors in rule entity
+        - include doors in serialization
 
   - [ ] validate
   - [ ] save

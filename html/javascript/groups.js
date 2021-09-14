@@ -30,10 +30,22 @@ function updateFromDB (oid, record) {
   }
 
   const name = row.querySelector(`[data-oid="${oid}.1"]`)
+  const doors = [...DB.doors.values()].filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
 
   row.dataset.status = record.status
 
   update(name, record.name)
+
+  doors.forEach(o => {
+    const td = row.querySelector(`td[data-door="${o.OID}"]`)
+
+    if (td) {
+      const e = td.querySelector('.field')
+      const d = record.doors.get(`${e.dataset.oid}`)
+
+      update(e, d && d.allowed)
+    }
+  })
 
   return row
 }
@@ -66,24 +78,6 @@ function add (oid, record) {
     const fields = [
       { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' }
     ]
-
-    // const doors = [...DB.doors.values()].filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
-    //
-    // doors.forEach(o => {
-    // const m = o.OID.match(/^0\.4\.([1-9][0-9]*)$/)
-    // const did = m[1]
-
-    // record.doors.forEach((v, k) => {
-    // if (v.group === g.OID) {
-    //     fields.push({
-    //       suffix: `g${gid}`,
-    //       oid: `${k}`,
-    //       selector: `td input.g${gid}`,
-    //       flag: `td img.g${gid}`
-    //     })
-    //   }
-    // })
-    // })
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
@@ -162,7 +156,7 @@ function realize (groups) {
 
     for (const row of tbody.rows) {
       const uuid = row.id
-      const oid = row.dataset.oid + '.X.' + door
+      const oid = row.dataset.oid + '.2.' + door
       const ix = row.cells.length - 1
       const cell = row.insertCell(ix)
 

@@ -35,7 +35,8 @@ const CardGroups Suffix = ".5"
 
 const GroupCreated Suffix = ".0.1"
 const GroupName Suffix = ".1"
-const GroupIndex Suffix = ".2"
+const GroupDoors Suffix = ".2"
+const GroupIndex Suffix = ".3"
 
 const DoorCreated = ".0.1"
 const DoorControllerOID = ".0.2"

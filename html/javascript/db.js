@@ -450,9 +450,30 @@ function group (o) {
           v.name = o.value
           break
 
-        case k + '.2':
+        case k + '.3':
           v.index = parseInt(o.value, 10)
           break
+
+        default:
+          if (oid.startsWith(k + '.2.')) {
+            const m = oid.match(/^(0\.4\.[1-9][0-9]*\.2\.[1-9][0-9]*)(\.[1-3])?$/)
+            if (m && m.length > 2) {
+              const suboid = m[1]
+              const suffix = m[2]
+
+              if (!v.doors.has(suboid)) {
+                v.doors.set(suboid, { door: '', allowed: false })
+              }
+
+              const door = v.doors.get(suboid)
+
+              if (!suffix) {
+                door.allowed = o.value === 'true'
+              } else if (suffix === '.1') {
+                door.door = o.value
+              }
+            }
+          }
       }
     }
   })

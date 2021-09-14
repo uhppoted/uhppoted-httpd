@@ -3,6 +3,7 @@ package groups
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -13,9 +14,10 @@ import (
 )
 
 type Group struct {
-	OID   catalog.OID `json:"OID"`
-	Name  string      `json:"name"`
-	Index uint32      `json:"index"`
+	OID   catalog.OID          `json:"OID"`
+	Name  string               `json:"name"`
+	Doors map[catalog.OID]bool `json:"doors"`
+	Index uint32               `json:"index"`
 
 	created time.Time
 	deleted *time.Time
@@ -24,6 +26,7 @@ type Group struct {
 const Null = catalog.Null
 const GroupName = catalog.GroupName
 const GroupCreated = catalog.GroupCreated
+const GroupDoors = catalog.GroupDoors
 const GroupIndex = catalog.GroupIndex
 
 var created = time.Now()
@@ -45,13 +48,20 @@ func (g Group) IsDeleted() bool {
 }
 
 func (g Group) clone() Group {
-	return Group{
+	group := Group{
 		OID:     g.OID,
 		Name:    g.Name,
+		Doors:   map[catalog.OID]bool{},
 		Index:   g.Index,
 		created: g.created,
 		deleted: g.deleted,
 	}
+
+	for k, v := range g.Doors {
+		group.Doors[k] = v
+	}
+
+	return group
 }
 
 func (g *Group) AsObjects() []interface{} {
@@ -69,6 +79,21 @@ func (g *Group) AsObjects() []interface{} {
 		catalog.NewObject(g.OID, GroupCreated, created),
 		catalog.NewObject(g.OID, GroupName, name),
 		catalog.NewObject(g.OID, GroupIndex, index),
+	}
+
+	doors := catalog.Doors()
+	re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
+
+	for _, door := range doors {
+		d := fmt.Sprintf("%v", door)
+
+		if m := re.FindStringSubmatch(d); m != nil && len(m) > 2 {
+			did := m[2]
+			allowed := g.Doors[door]
+
+			objects = append(objects, catalog.NewObject(g.OID, GroupDoors.Append(did), allowed))
+			objects = append(objects, catalog.NewObject(g.OID, GroupDoors.Append(did+".1"), door))
+		}
 	}
 
 	return objects
@@ -164,6 +189,7 @@ func (g *Group) deserialize(bytes []byte) error {
 
 	g.OID = catalog.OID(record.OID)
 	g.Name = record.Name
+	g.Doors = map[catalog.OID]bool{}
 	g.Index = record.Index
 	g.created = created
 
