@@ -46,6 +46,11 @@
 
 - Groups
   - [ ] doors/permissions
+        - [x] realize
+        - onTick
+        - add door asynchronously
+        - remove door asynchronously
+
   - [ ] validate
   - [ ] save
   - [ ] Update ACL to use reworked groups + doors

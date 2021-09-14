@@ -38,7 +38,7 @@ export function refreshed () {
     const thead = table.tHead
     const tbody = table.tBodies[0]
     const template = document.querySelector('#group')
-    const th = document.querySelector('#cards table').tHead.rows[0].lastElementChild
+    const th = thead.rows[0].lastElementChild
     const padding = thead.rows[0].appendChild(document.createElement('th'))
 
     padding.classList.add('colheader')

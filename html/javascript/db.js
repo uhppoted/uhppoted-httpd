@@ -421,6 +421,7 @@ function group (o) {
       OID: oid,
       created: '',
       name: '',
+      doors: new Map(),
       index: 0,
       status: o.value,
       mark: 0

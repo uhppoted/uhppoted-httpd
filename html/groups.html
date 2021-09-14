@@ -98,6 +98,20 @@
                 <td class="padding"></td>
             </template>
 
+            <template id="door">
+                <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                <label class="door">
+                  <input class="field"
+                         type="checkbox" 
+                         onclick="onTick('group', event)"
+                         data-record="" 
+                         data-original="" 
+                         data-value="" />
+                  <img class="no"  src="images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
+                  <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
+                </label>
+            </template>
+
           </div>
         </div>
       </main>
