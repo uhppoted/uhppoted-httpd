@@ -23,7 +23,6 @@ type Group struct {
 	deleted *time.Time
 }
 
-const Null = catalog.Null
 const GroupName = catalog.GroupName
 const GroupCreated = catalog.GroupCreated
 const GroupDoors = catalog.GroupDoors
@@ -75,10 +74,10 @@ func (g *Group) AsObjects() []interface{} {
 	}
 
 	objects := []interface{}{
-		catalog.NewObject(g.OID, Null, status),
-		catalog.NewObject(g.OID, GroupCreated, created),
-		catalog.NewObject(g.OID, GroupName, name),
-		catalog.NewObject(g.OID, GroupIndex, index),
+		catalog.NewObject(g.OID, status),
+		catalog.NewObject2(g.OID, GroupCreated, created),
+		catalog.NewObject2(g.OID, GroupName, name),
+		catalog.NewObject2(g.OID, GroupIndex, index),
 	}
 
 	doors := catalog.Doors()
@@ -91,8 +90,8 @@ func (g *Group) AsObjects() []interface{} {
 			did := m[2]
 			allowed := g.Doors[door]
 
-			objects = append(objects, catalog.NewObject(g.OID, GroupDoors.Append(did), allowed))
-			objects = append(objects, catalog.NewObject(g.OID, GroupDoors.Append(did+".1"), door))
+			objects = append(objects, catalog.NewObject2(g.OID, GroupDoors.Append(did), allowed))
+			objects = append(objects, catalog.NewObject2(g.OID, GroupDoors.Append(did+".1"), door))
 		}
 	}
 
@@ -134,7 +133,7 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 			} else {
 				g.log(auth, "update", g.OID, "name", stringify(g.Name), value)
 				g.Name = value
-				objects = append(objects, catalog.NewObject(g.OID, GroupName, g.Name))
+				objects = append(objects, catalog.NewObject2(g.OID, GroupName, g.Name))
 			}
 
 		case catalog.OID(g.OID.Append(GroupDoors)).Contains(oid):
@@ -147,7 +146,7 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 				} else {
 					g.log(auth, "update", g.OID, "door", string(k), value)
 					g.Doors[k] = value == "true"
-					objects = append(objects, catalog.NewObject(g.OID, GroupDoors.Append(did), g.Doors[k]))
+					objects = append(objects, catalog.NewObject2(g.OID, GroupDoors.Append(did), g.Doors[k]))
 				}
 			}
 		}
@@ -162,7 +161,7 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 			g.log(auth, "delete", g.OID, "name", name, "")
 			now := time.Now()
 			g.deleted = &now
-			objects = append(objects, catalog.NewObject(g.OID, Null, "deleted"))
+			objects = append(objects, catalog.NewObject(g.OID, "deleted"))
 
 			catalog.Delete(stringify(g.OID))
 		}

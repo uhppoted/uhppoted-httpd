@@ -115,8 +115,8 @@ function realize (groups) {
   const columns = table.querySelectorAll('.colheader.doorh')
   const cols = new Map([...columns].map(c => [c.dataset.door, c]))
   const missing = [...doors.values()].filter(o => o.OID === '' || !cols.has(o.OID))
-  const surplus = [...cols].filter(([k,]) => !doors.has(k))
-  
+  const surplus = [...cols].filter(([k]) => !doors.has(k))
+
   missing.forEach(o => {
     const th = thead.rows[0].lastElementChild
     const padding = thead.rows[0].appendChild(document.createElement('th'))
@@ -129,7 +129,7 @@ function realize (groups) {
     th.innerHTML = o.name
   })
 
-  surplus.forEach(([,v]) => {
+  surplus.forEach(([, v]) => {
     v.remove()
   })
 
@@ -150,7 +150,7 @@ function realize (groups) {
     const columns = row.querySelectorAll('td.door')
     const cols = new Map([...columns].map(c => [c.dataset.door, c]))
     const missing = [...doors.values()].filter(o => o.OID === '' || !cols.has(o.OID))
-    const surplus = [...cols].filter(([k,]) => !doors.has(k))
+    const surplus = [...cols].filter(([k]) => !doors.has(k))
 
     missing.forEach(o => {
       const door = o.OID.match(/^0\.2\.([1-9][0-9]*)$/)[1]
@@ -181,7 +181,7 @@ function realize (groups) {
       field.checked = false
     })
 
-    surplus.forEach(([,v]) => {
+    surplus.forEach(([, v]) => {
       v.remove()
     })
   })

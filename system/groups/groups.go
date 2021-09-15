@@ -211,7 +211,7 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]int
 			}
 
 			gg.Groups[g.OID] = *g
-			objects = append(objects, catalog.NewObject(g.OID, Null, "new"))
+			objects = append(objects, catalog.NewObject(g.OID, "new"))
 		}
 	}
 

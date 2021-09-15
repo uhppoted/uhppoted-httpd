@@ -9,14 +9,14 @@ type Object struct {
 	Value string `json:"value"`
 }
 
-func NewObject(oid OID, suffix Suffix, value interface{}) Object {
-	if suffix == Null {
-		return Object{
-			OID:   fmt.Sprintf("%v", oid),
-			Value: stringify(value),
-		}
+func NewObject(oid OID, value interface{}) Object {
+	return Object{
+		OID:   fmt.Sprintf("%v", oid),
+		Value: stringify(value),
 	}
+}
 
+func NewObject2(oid OID, suffix Suffix, value interface{}) Object {
 	return Object{
 		OID:   oid.Append(suffix),
 		Value: stringify(value),
