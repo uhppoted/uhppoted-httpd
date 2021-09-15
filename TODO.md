@@ -16,22 +16,21 @@
         - [ ] move all _stringify's_ to OID/object
         - [ ] make object.OID an OID
 
-- [ ] Migrate shared CSS to 'common'
-        - [ ] system
+- [x] Migrate shared CSS to 'common'
+        - [x] system
 
-- [x] 'reload' crashes with 'site can't be reached' if no response from server
-      - [ ] on restarting httpd
+- [] 'reload' crashes with after restarting httpd
       ```
       tabular.js:416 TypeError: Cannot read properties of null (reading 'dataset')
           at unbusy (uhppoted.js:176)
           at tabular.js:394
       ```
-      - [ ] alert 'undefined' message on restarting httpd
+- [] 'reload' alert 'undefined' message on restarting httpd
 
 - Migrate cards to OIDs
-  - [ ] Replace .grouph with th.group and td.group
   - [ ] Make `cards.go` look like doors, groups, etc
   - [ ] Commonalise load/save implementation
+  - [ ] Replace .grouph with th.group and td.group
   - [ ] Replace templated groups with DB
   - [ ] Style placeholder for from/to
   - [ ] `refresh` is overwriting pending group edits
@@ -47,15 +46,14 @@
 
 - Groups
   - [ ] doors
-        - [x] realize
-        - Replace .doorh with th.door and td.door
-        - rollback
-        - commit
-        - onTick
-        - add door asynchronously
-        - remove door asynchronously
-        - include doors in rule entity
-        - include doors in serialization
+        - [ ] Replace .doorh with th.door and td.door
+        - [ ] rollback
+        - [ ] commit
+        - [ ] onTick
+        - [ ] add door asynchronously
+        - [ ] remove door asynchronously
+        - [ ] include doors in rule entity
+        - [ ] include doors in serialization
 
   - [ ] validate
   - [ ] save
