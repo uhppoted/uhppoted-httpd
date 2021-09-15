@@ -2,6 +2,11 @@ package catalog
 
 const Null Suffix = ""
 
+// const System OID = "0.1"
+// const Doors OID = "0.2"
+// const Cards OID = "0.3"
+// const Groups OID = "0.4"
+
 const InterfaceType Suffix = ".0"
 const InterfaceName Suffix = ".1"
 const LANBindAddress Suffix = ".2"

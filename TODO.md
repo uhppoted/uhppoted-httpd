@@ -30,7 +30,7 @@
 - Migrate cards to OIDs
   - [x] Make `cards.go` look like doors, groups, etc
   - [ ] Move `cards` implementation into system/cards
-  - [ ] Commonalise load/save implementation
+  - [ ] Commonalise load/save/print implementation
   - [ ] Replace .grouph with th.group and td.group
   - [ ] Replace templated groups with DB
   - [ ] Style placeholder for from/to
@@ -47,12 +47,15 @@
 
 - Groups
   - [ ] doors
-        - [ ] Replace .doorh with th.door and td.door
-        - [ ] rollback
-        - [ ] commit
-        - [ ] onTick
+        - [x] onTick
+        - [x] rollback
+        - [x] commit
+        - [x] tick-commit-untick doesn't work
+        - [ ] Create doors in 'add' 
         - [ ] add door asynchronously
         - [ ] remove door asynchronously
+        - [ ] Replace .doorh with th.door and td.door
+        - [ ] <th> style
         - [ ] include doors in rule entity
         - [ ] include doors in serialization
 

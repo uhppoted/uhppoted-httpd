@@ -78,6 +78,10 @@ export function onTick (tag, event) {
     case 'card':
       set(event.target, event.target.checked ? 'true' : '')
       break
+
+    case 'group':
+      set(event.target, event.target.checked ? 'true' : '')
+      break
   }
 }
 
@@ -270,7 +274,7 @@ export function revert (row) {
 }
 
 export function update (element, value, status) {
-  if (element && value) {
+  if (element && value !== undefined) {
     const v = value.toString()
     const oid = element.dataset.oid
     const flag = document.getElementById(`F${oid}`)

@@ -103,7 +103,7 @@ function add (oid, record) {
 
 function realize (groups) {
   groups.forEach(o => {
-    const row = document.querySelector("div#groups tr[data-oid='" + o.oid + "']")
+    const row = document.querySelector("div#groups tr[data-oid='" + o.OID + "']")
 
     if (o.status === 'deleted') {
       deleted('groups', row)

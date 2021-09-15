@@ -127,14 +127,28 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 	if g != nil {
 		name := stringify(g.Name)
 
-		switch oid {
-		case g.OID.Append(GroupName):
+		switch {
+		case oid == g.OID.Append(GroupName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
 				g.log(auth, "update", g.OID, "name", stringify(g.Name), value)
 				g.Name = value
 				objects = append(objects, catalog.NewObject(g.OID, GroupName, g.Name))
+			}
+
+		case catalog.OID(g.OID.Append(GroupDoors)).Contains(oid):
+			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(oid); m != nil && len(m) > 1 {
+				did := m[1]
+				k := catalog.OID("0.2." + did)
+
+				if err := f("door", value); err != nil {
+					return nil, err
+				} else {
+					g.log(auth, "update", g.OID, "door", string(k), value)
+					g.Doors[k] = value == "true"
+					objects = append(objects, catalog.NewObject(g.OID, GroupDoors.Append(did), g.Doors[k]))
+				}
 			}
 		}
 
