@@ -105,26 +105,17 @@ function realize (groups) {
   const table = document.querySelector('#groups table')
   const thead = table.tHead
 
-  const doors = [...DB.doors.values()]
+  const doors = new Map([...DB.doors.values()]
     .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
     .sort((p, q) => p.created.localeCompare(q.created))
+    .map(o => [o.OID, o]))
 
   // ... columns
 
   const columns = table.querySelectorAll('.colheader.doorh')
   const cols = new Map([...columns].map(c => [c.dataset.door, c]))
-  const missing = doors.filter(o => o.OID === '' || !cols.has(o.OID))
-
-  // FIXME O(N²)
-  const surplus = [...cols].filter(([k,]) => {
-    for (const d of doors) {
-      if (k === d.OID) {
-        return false
-      }
-    }
-  
-    return true
-  })
+  const missing = [...doors.values()].filter(o => o.OID === '' || !cols.has(o.OID))
+  const surplus = [...cols].filter(([k,]) => !doors.has(k))
   
   missing.forEach(o => {
     const th = thead.rows[0].lastElementChild
@@ -158,17 +149,8 @@ function realize (groups) {
 
     const columns = row.querySelectorAll('td.door')
     const cols = new Map([...columns].map(c => [c.dataset.door, c]))
-    const missing = doors.filter(o => o.OID === '' || !cols.has(o.OID))
-
-    const surplus = [...cols].filter(([k,]) => {
-      for (const d of doors) {
-        if (k === d.OID) {
-          return false
-        }
-      }
-  
-      return true
-    })
+    const missing = [...doors.values()].filter(o => o.OID === '' || !cols.has(o.OID))
+    const surplus = [...cols].filter(([k,]) => !doors.has(k))
 
     missing.forEach(o => {
       const door = o.OID.match(/^0\.2\.([1-9][0-9]*)$/)[1]

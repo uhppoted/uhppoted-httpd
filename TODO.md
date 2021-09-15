@@ -28,6 +28,7 @@
 - [] 'reload' alert 'undefined' message on restarting httpd
 
 - Migrate cards to OIDs
+  - [ ] Fix O(N²) stuff
   - [x] Make `cards.go` look like doors, groups, etc
   - [ ] Move `cards` implementation into system/cards
   - [ ] Commonalise load/save/print implementation
@@ -53,7 +54,9 @@
         - [x] tick-commit-untick doesn't work
         - [x] Create doors in 'add' 
         - [x] add door asynchronously
-        - [ ] remove door asynchronously
+        - [x] remove door asynchronously
+        - [x] Fix O(N²) stuff
+        - [ ] Insert door in display order
         - [ ] Replace .doorh with th.door and td.door
         - [ ] <th> style
         - [ ] include doors in rule entity
