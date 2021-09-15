@@ -115,19 +115,17 @@ function realize (groups) {
   const cols = new Map([...columns].map(c => [c.dataset.door, c]))
   const missing = doors.filter(o => o.OID === '' || !cols.has(o.OID))
 
-  // // FIXME O(N²)
-  // const surplus = [...columns].filter(c => {
-  //   for (const d of doors) {
-  //     if (cols.has(d.OID)) {
-  //       return false
-  //     }
-  //   }
-  //
-  //   return true
-  // })
-  //
-  // console.log('SURPLUS', surplus)
-
+  // FIXME O(N²)
+  const surplus = [...cols].filter(([k,]) => {
+    for (const d of doors) {
+      if (k === d.OID) {
+        return false
+      }
+    }
+  
+    return true
+  })
+  
   missing.forEach(o => {
     const th = thead.rows[0].lastElementChild
     const padding = thead.rows[0].appendChild(document.createElement('th'))
@@ -138,6 +136,10 @@ function realize (groups) {
     th.classList.replace('padding', 'doorh')
     th.dataset.door = o.OID
     th.innerHTML = o.name
+  })
+
+  surplus.forEach(([,v]) => {
+    v.remove()
   })
 
   // ... rows
@@ -157,6 +159,16 @@ function realize (groups) {
     const columns = row.querySelectorAll('td.door')
     const cols = new Map([...columns].map(c => [c.dataset.door, c]))
     const missing = doors.filter(o => o.OID === '' || !cols.has(o.OID))
+
+    const surplus = [...cols].filter(([k,]) => {
+      for (const d of doors) {
+        if (k === d.OID) {
+          return false
+        }
+      }
+  
+      return true
+    })
 
     missing.forEach(o => {
       const door = o.OID.match(/^0\.2\.([1-9][0-9]*)$/)[1]
@@ -185,6 +197,10 @@ function realize (groups) {
       field.dataset.original = ''
       field.dataset.value = ''
       field.checked = false
+    })
+
+    surplus.forEach(([,v]) => {
+      v.remove()
     })
   })
 }
