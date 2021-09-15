@@ -38,21 +38,10 @@ func SetAuditTrail(t audit.Trail) {
 	trail = t
 }
 
-func NewCards(file string) (*fdb, error) {
-	f := fdb{
+func NewCards() *fdb {
+	return &fdb{
 		Cards: map[catalog.OID]*cards.CardHolder{},
-		file:  file,
 	}
-
-	if err := f.Load(f.file); err != nil {
-		return nil, err
-	}
-
-	for _, c := range f.Cards {
-		catalog.PutCard(c.OID)
-	}
-
-	return &f, nil
 }
 
 func (cc *fdb) Load(file string) error {

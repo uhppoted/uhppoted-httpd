@@ -28,7 +28,8 @@
 - [] 'reload' alert 'undefined' message on restarting httpd
 
 - Migrate cards to OIDs
-  - [ ] Make `cards.go` look like doors, groups, etc
+  - [x] Make `cards.go` look like doors, groups, etc
+  - [ ] Move `cards` implementation into system/cards
   - [ ] Commonalise load/save implementation
   - [ ] Replace .grouph with th.group and td.group
   - [ ] Replace templated groups with DB

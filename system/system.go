@@ -24,6 +24,7 @@ import (
 var sys = system{
 	controllers: controllers.NewControllerSet(),
 	doors:       doors.NewDoors(),
+	cards:       memdb.NewCards(),
 	groups:      groups.NewGroups(),
 	taskQ:       NewTaskQ(),
 	retention:   6 * time.Hour,
@@ -57,13 +58,11 @@ func Init(cfg config.Config, conf string, permissions cards.IRules, trail audit.
 		return err
 	}
 
-	cc, err := memdb.NewCards(cfg.HTTPD.System.Cards)
-	if err != nil {
+	if err := sys.cards.Load(cfg.HTTPD.System.Cards); err != nil {
 		return err
 	}
 
 	sys.conf = conf
-	sys.cards = cc
 	sys.rules = permissions
 	sys.audit = trail
 	sys.retention = cfg.HTTPD.Retention

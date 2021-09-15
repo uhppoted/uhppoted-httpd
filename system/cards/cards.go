@@ -6,12 +6,14 @@ import (
 )
 
 type Cards interface {
-	AsObjects() []interface{}
-	Clone() Cards
-	UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error)
-	Print()
-	Validate() error
+	Load(file string) error
 	Save() error
+	Print()
+	Clone() Cards
+
+	AsObjects() []interface{}
+	UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error)
+	Validate() error
 
 	ACL(rules IRules) ([]types.Permissions, error)
 }
