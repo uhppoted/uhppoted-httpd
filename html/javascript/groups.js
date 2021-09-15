@@ -102,27 +102,18 @@ function add (oid, record) {
 }
 
 function realize (groups) {
-  groups.forEach(o => {
-    const row = document.querySelector("div#groups tr[data-oid='" + o.OID + "']")
-
-    if (o.status === 'deleted') {
-      deleted('groups', row)
-    } else if (!row) {
-      add(o.OID, o)
-    }
-  })
-
-  // ... doors
-  const columns = document.querySelectorAll('.colheader.doorh')
-  const cols = new Map([...columns].map(c => [c.dataset.door, c]))
+  const table = document.querySelector('#groups table')
+  const thead = table.tHead
 
   const doors = [...DB.doors.values()]
     .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
     .sort((p, q) => p.created.localeCompare(q.created))
 
-  const missing = doors.filter(o => {
-    return o.OID === '' || !cols.has(o.OID)
-  })
+  // ... columns
+
+  const columns = table.querySelectorAll('.colheader.doorh')
+  const cols = new Map([...columns].map(c => [c.dataset.door, c]))
+  const missing = doors.filter(o => o.OID === '' || !cols.has(o.OID))
 
   // // FIXME O(N²)
   // const surplus = [...columns].filter(c => {
@@ -137,13 +128,7 @@ function realize (groups) {
   //
   // console.log('SURPLUS', surplus)
 
-  const table = document.querySelector('#groups table')
-  const thead = table.tHead
-  const tbody = table.tBodies[0]
-
   missing.forEach(o => {
-    const door = o.OID.match(/^0\.2\.([1-9][0-9]*)$/)[1]
-    const template = document.querySelector('#door')
     const th = thead.rows[0].lastElementChild
     const padding = thead.rows[0].appendChild(document.createElement('th'))
 
@@ -153,13 +138,36 @@ function realize (groups) {
     th.classList.replace('padding', 'doorh')
     th.dataset.door = o.OID
     th.innerHTML = o.name
+  })
 
-    for (const row of tbody.rows) {
+  // ... rows
+
+  groups.forEach(o => {
+    let row = document.querySelector("div#groups tr[data-oid='" + o.OID + "']")
+
+    if (o.status === 'deleted') {
+      deleted('groups', row)
+      return
+    }
+
+    if (!row) {
+      row = add(o.OID, o)
+    }
+
+    const columns = row.querySelectorAll('td.door')
+    const cols = new Map([...columns].map(c => [c.dataset.door, c]))
+    const missing = doors.filter(o => o.OID === '' || !cols.has(o.OID))
+
+    missing.forEach(o => {
+      const door = o.OID.match(/^0\.2\.([1-9][0-9]*)$/)[1]
+      const template = document.querySelector('#door')
+
       const uuid = row.id
       const oid = row.dataset.oid + '.2.' + door
       const ix = row.cells.length - 1
       const cell = row.insertCell(ix)
 
+      cell.classList.add('door')
       cell.dataset.door = o.OID
       cell.innerHTML = template.innerHTML
 
@@ -177,6 +185,6 @@ function realize (groups) {
       field.dataset.original = ''
       field.dataset.value = ''
       field.checked = false
-    }
+    })
   })
 }

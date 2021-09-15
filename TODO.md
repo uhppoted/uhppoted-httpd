@@ -51,8 +51,8 @@
         - [x] rollback
         - [x] commit
         - [x] tick-commit-untick doesn't work
-        - [ ] Create doors in 'add' 
-        - [ ] add door asynchronously
+        - [x] Create doors in 'add' 
+        - [x] add door asynchronously
         - [ ] remove door asynchronously
         - [ ] Replace .doorh with th.door and td.door
         - [ ] <th> style
