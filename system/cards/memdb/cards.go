@@ -19,7 +19,6 @@ import (
 
 type fdb struct {
 	Cards map[catalog.OID]*cards.CardHolder `json:"cardholders"`
-	rules cards.IRules
 	file  string
 }
 
@@ -39,10 +38,9 @@ func SetAuditTrail(t audit.Trail) {
 	trail = t
 }
 
-func NewCards(file string, rules cards.IRules) (*fdb, error) {
+func NewCards(file string) (*fdb, error) {
 	f := fdb{
 		Cards: map[catalog.OID]*cards.CardHolder{},
-		rules: rules,
 		file:  file,
 	}
 
@@ -151,7 +149,6 @@ func (cc *fdb) Save() error {
 func (d *fdb) Clone() cards.Cards {
 	shadow := fdb{
 		Cards: map[catalog.OID]*cards.CardHolder{},
-		rules: d.rules,
 		file:  d.file,
 	}
 
@@ -230,7 +227,7 @@ func (cc *fdb) AsObjects() []interface{} {
 	return objects
 }
 
-func (cc *fdb) ACL() ([]types.Permissions, error) {
+func (cc *fdb) ACL(rules cards.IRules) ([]types.Permissions, error) {
 	guard.RLock()
 
 	defer guard.RUnlock()
@@ -242,8 +239,8 @@ func (cc *fdb) ACL() ([]types.Permissions, error) {
 			var doors = []string{}
 			var err error
 
-			if cc.rules != nil {
-				doors, err = cc.rules.Eval(*c)
+			if rules != nil {
+				doors, err = rules.Eval(*c)
 				if err != nil {
 					return nil, err
 				}

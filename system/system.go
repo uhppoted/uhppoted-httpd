@@ -36,6 +36,7 @@ type system struct {
 	doors       doors.Doors
 	cards       cards.Cards
 	groups      groups.Groups
+	rules       cards.IRules
 	audit       audit.Trail
 	taskQ       TaskQ
 	retention   time.Duration // time after which 'deleted' items are permanently removed
@@ -56,13 +57,14 @@ func Init(cfg config.Config, conf string, permissions cards.IRules, trail audit.
 		return err
 	}
 
-	cc, err := memdb.NewCards(cfg.HTTPD.System.Cards, permissions)
+	cc, err := memdb.NewCards(cfg.HTTPD.System.Cards)
 	if err != nil {
 		return err
 	}
 
 	sys.conf = conf
 	sys.cards = cc
+	sys.rules = permissions
 	sys.audit = trail
 	sys.retention = cfg.HTTPD.Retention
 
@@ -150,7 +152,9 @@ func (s *system) refresh() {
 	})
 
 	sys.taskQ.Add(Task{
-		f: CompareACL,
+		f: func() {
+			CompareACL(s.rules)
+		},
 	})
 }
 
@@ -167,7 +171,7 @@ func (s *system) updated() {
 		f: func() {
 			info("Updating controllers from configuration")
 			sys.controllers.Sync()
-			UpdateACL()
+			UpdateACL(s.rules)
 		},
 	})
 }

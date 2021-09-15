@@ -6,13 +6,14 @@ import (
 	"log"
 
 	core "github.com/uhppoted/uhppote-core/types"
+	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
-func UpdateACL() {
-	if permissions, err := sys.cards.ACL(); err != nil {
+func UpdateACL(rules cards.IRules) {
+	if permissions, err := sys.cards.ACL(rules); err != nil {
 		warn(err)
 	} else if acl, err := consolidate(permissions); err != nil {
 		warn(err)
@@ -23,8 +24,8 @@ func UpdateACL() {
 	}
 }
 
-func CompareACL() {
-	if permissions, err := sys.cards.ACL(); err != nil {
+func CompareACL(rules cards.IRules) {
+	if permissions, err := sys.cards.ACL(rules); err != nil {
 		warn(err)
 	} else if acl, err := consolidate(permissions); err != nil {
 		warn(err)

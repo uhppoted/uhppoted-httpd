@@ -13,5 +13,5 @@ type Cards interface {
 	Validate() error
 	Save() error
 
-	ACL() ([]types.Permissions, error)
+	ACL(rules IRules) ([]types.Permissions, error)
 }
