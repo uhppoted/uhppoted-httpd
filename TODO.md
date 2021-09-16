@@ -26,7 +26,7 @@
 
 - Migrate cards to OIDs
   - [x] Move `cards` implementation into system/cards
-  - [ ] tick+commit is not updating locally
+  - [x] tick+commit is not updating locally
   - [ ] Remove Cards interface
   - [ ] Fix O(N²) stuff
   - [ ] Commonalise load/save/print implementation

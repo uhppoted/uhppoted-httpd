@@ -359,10 +359,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				} else {
 					c.log(auth, "update", c.OID, "group", k, value)
 					c.Groups[k] = value == "true"
-					objects = append(objects, object{
-						OID:   catalog.Join(c.OID, CardGroups.Append(gid)),
-						Value: stringify(c.Groups[gid]),
-					})
+					objects = append(objects, catalog.NewObject2(c.OID, CardGroups.Append(gid), c.Groups[k]))
 				}
 			}
 		}
