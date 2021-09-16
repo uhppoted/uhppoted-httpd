@@ -12,7 +12,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
-	"github.com/uhppoted/uhppoted-httpd/system/cards/memdb"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
@@ -24,7 +23,7 @@ import (
 var sys = system{
 	controllers: controllers.NewControllerSet(),
 	doors:       doors.NewDoors(),
-	cards:       memdb.NewCards(),
+	cards:       cards.NewCards(),
 	groups:      groups.NewGroups(),
 	taskQ:       NewTaskQ(),
 	retention:   6 * time.Hour,
@@ -69,7 +68,7 @@ func Init(cfg config.Config, conf string, permissions cards.IRules, trail audit.
 
 	controllers.SetAuditTrail(trail)
 	doors.SetAuditTrail(trail)
-	memdb.SetAuditTrail(trail)
+	cards.SetAuditTrail(trail)
 	cards.SetAuditTrail(trail)
 	groups.SetAuditTrail(trail)
 

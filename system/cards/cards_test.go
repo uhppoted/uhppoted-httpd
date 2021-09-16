@@ -1,4 +1,4 @@
-package memdb
+package cards
 
 import (
 	"encoding/json"
@@ -8,7 +8,6 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -79,13 +78,13 @@ func date(s string) *types.Date {
 	return &d
 }
 
-func dbx(list ...cards.CardHolder) *fdb {
+func dbx(list ...CardHolder) *fdb {
 	p := fdb{
-		Cards: map[catalog.OID]*cards.CardHolder{},
+		Cards: map[catalog.OID]*CardHolder{},
 	}
 
 	for _, c := range list {
-		p.Cards[c.OID] = c.Clone()
+		p.Cards[c.OID] = c.clone()
 	}
 
 	return &p
@@ -98,11 +97,11 @@ func group(id string) types.Group {
 	}
 }
 
-func cardholder(id, name string, card uint32, groups ...string) cards.CardHolder {
+func cardholder(id, name string, card uint32, groups ...string) CardHolder {
 	n := types.Name(name)
 	c := types.Card(card)
 
-	cardholder := cards.CardHolder{
+	cardholder := CardHolder{
 		OID:    catalog.OID(id),
 		Name:   &n,
 		Card:   &c,

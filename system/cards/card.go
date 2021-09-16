@@ -35,11 +35,6 @@ const CardTo = catalog.CardTo
 const CardGroups = catalog.CardGroups
 
 var created = time.Now()
-var trail audit.Trail
-
-func SetAuditTrail(t audit.Trail) {
-	trail = t
-}
 
 func (c CardHolder) String() string {
 	name := "-"
@@ -54,30 +49,6 @@ func (c CardHolder) String() string {
 	}
 
 	return fmt.Sprintf("%v (%v)", number, name)
-}
-
-func (c *CardHolder) Clone() *CardHolder {
-	name := c.Name.Copy()
-	card := c.Card.Copy()
-	var groups = map[string]bool{}
-
-	for gid, g := range c.Groups {
-		groups[gid] = g
-	}
-
-	replicant := &CardHolder{
-		OID:    c.OID,
-		Name:   name,
-		Card:   card,
-		From:   c.From,
-		To:     c.To,
-		Groups: groups,
-
-		Created: c.Created,
-		deleted: c.deleted,
-	}
-
-	return replicant
 }
 
 func (c *CardHolder) IsValid() bool {
@@ -186,8 +157,31 @@ func (c *CardHolder) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-// FIXME make unexported after moving memdb implementation to this package
-func (c CardHolder) Serialize() ([]byte, error) {
+func (c *CardHolder) clone() *CardHolder {
+	name := c.Name.Copy()
+	card := c.Card.Copy()
+	var groups = map[string]bool{}
+
+	for gid, g := range c.Groups {
+		groups[gid] = g
+	}
+
+	replicant := &CardHolder{
+		OID:    c.OID,
+		Name:   name,
+		Card:   card,
+		From:   c.From,
+		To:     c.To,
+		Groups: groups,
+
+		Created: c.Created,
+		deleted: c.deleted,
+	}
+
+	return replicant
+}
+
+func (c CardHolder) serialize() ([]byte, error) {
 	record := struct {
 		OID     catalog.OID   `json:"OID"`
 		Name    string        `json:"name,omitempty"`
@@ -223,8 +217,7 @@ func (c CardHolder) Serialize() ([]byte, error) {
 	return json.Marshal(record)
 }
 
-// FIXME make unexported after moving memdb implementation to this package
-func (c *CardHolder) Deserialize(bytes []byte) error {
+func (c *CardHolder) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
@@ -268,8 +261,7 @@ func (c *CardHolder) Deserialize(bytes []byte) error {
 	return nil
 }
 
-// TODO make unexported after rationalising 'Cards' implementation
-func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -281,7 +273,7 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 	}
 
 	if c != nil {
-		clone := c.Clone()
+		clone := c.clone()
 
 		switch {
 		case oid == catalog.Join(c.OID, CardName):
@@ -397,11 +389,6 @@ func (c *CardHolder) Set(auth auth.OpAuth, oid string, value string) ([]interfac
 	}
 
 	return objects, nil
-}
-
-// TODO remove - temporary implementation pending memdb move to 'cards' package
-func (c *CardHolder) Log(auth auth.OpAuth, operation string, oid catalog.OID, field, current, value string) {
-	c.log(auth, operation, oid, field, current, value)
 }
 
 func (c *CardHolder) log(auth auth.OpAuth, operation string, oid catalog.OID, field, current, value string) {
