@@ -172,15 +172,25 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 
 func (g Group) serialize() ([]byte, error) {
 	record := struct {
-		OID  catalog.OID `json:"OID"`
-		Name string      `json:"name,omitempty"`
-		//		Index   uint32      `json:"index,omitempty"`
-		Created string `json:"created"`
+		OID     catalog.OID   `json:"OID"`
+		Name    string        `json:"name,omitempty"`
+		Doors   []catalog.OID `json:"doors"`
+		Index   uint32        `json:"index,omitempty"`
+		Created string        `json:"created"`
 	}{
-		OID:  g.OID,
-		Name: g.Name,
-		//		Index:   g.Index,
+		OID:     g.OID,
+		Name:    g.Name,
+		Doors:   []catalog.OID{},
+		Index:   g.Index,
 		Created: g.created.Format("2006-01-02 15:04:05"),
+	}
+
+	doors := catalog.Doors()
+
+	for _, d := range doors {
+		if g.Doors[d] {
+			record.Doors = append(record.Doors, d)
+		}
 	}
 
 	return json.Marshal(record)
@@ -190,10 +200,11 @@ func (g *Group) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     string `json:"OID"`
-		Name    string `json:"name,omitempty"`
-		Index   uint32 `json:"index,omitempty"`
-		Created string `json:"created"`
+		OID     string        `json:"OID"`
+		Name    string        `json:"name,omitempty"`
+		Doors   []catalog.OID `json:"doors"`
+		Index   uint32        `json:"index,omitempty"`
+		Created string        `json:"created"`
 	}{}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -205,6 +216,10 @@ func (g *Group) deserialize(bytes []byte) error {
 	g.Doors = map[catalog.OID]bool{}
 	g.Index = record.Index
 	g.created = created
+
+	for _, d := range record.Doors {
+		g.Doors[catalog.OID(d)] = true
+	}
 
 	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {
 		g.created = t

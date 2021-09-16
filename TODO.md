@@ -29,13 +29,11 @@
   - [x] tick+commit is not updating locally
   - [x] Fix O(N²) stuff
   - [x] Migrate JS to use 'realize'
+  - [ ] Replace .grouph with th.group and td.group
   - [ ] Remove Cards interface
   - [ ] Commonalise load/save/print implementation
-  - [ ] Replace .grouph with th.group and td.group
-  - [ ] Replace templated groups with DB
   - [ ] Style placeholder for from/to
   - [ ] `refresh` is overwriting pending group edits
-  - [ ] Sort order occasionally goes wonky
   - [ ] Update unit tests for OID'd implementation
   - [ ] Replace dataset.original with value from DB
   - [ ] Unit test for AsObjects
@@ -47,14 +45,14 @@
 
 - Groups
   - [ ] doors
-        - [ ] include doors in serialization
+        - [x] Include doors in serialization
+        - [ ] Include doors in rule entity
         - [ ] Insert door in display order
         - [ ] Replace .doorh with th.door and td.door
         - [ ] <th> style
-        - [ ] include doors in rule entity
 
-  - [ ] validate
-  - [ ] save
+  - [x] validate
+  - [x] save
   - [ ] Update ACL to use reworked groups + doors
 
 - Doors
