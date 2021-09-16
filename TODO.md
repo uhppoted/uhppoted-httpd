@@ -27,8 +27,9 @@
 - Migrate cards to OIDs
   - [x] Move `cards` implementation into system/cards
   - [x] tick+commit is not updating locally
+  - [x] Fix O(N²) stuff
+  - [x] Migrate JS to use 'realize'
   - [ ] Remove Cards interface
-  - [ ] Fix O(N²) stuff
   - [ ] Commonalise load/save/print implementation
   - [ ] Replace .grouph with th.group and td.group
   - [ ] Replace templated groups with DB

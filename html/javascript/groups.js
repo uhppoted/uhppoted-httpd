@@ -104,6 +104,7 @@ function add (oid, record) {
 function realize (groups) {
   const table = document.querySelector('#groups table')
   const thead = table.tHead
+  const tbody = table.tBodies[0]
 
   const doors = new Map([...DB.doors.values()]
     .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
@@ -136,7 +137,7 @@ function realize (groups) {
   // ... rows
 
   groups.forEach(o => {
-    let row = document.querySelector("div#groups tr[data-oid='" + o.OID + "']")
+    let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
 
     if (o.status === 'deleted') {
       deleted('groups', row)

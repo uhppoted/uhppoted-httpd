@@ -2,98 +2,11 @@ import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
 
 export function refreshed () {
-  // ... groups
-  const columns = document.querySelectorAll('.colheader.grouph')
-  const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && g.status !== 'deleted')
+  const cards = [...DB.cards.values()].sort((p, q) => p.created.localeCompare(q.created))
 
-  groups.sort((p, q) => {
-    return p.index - q.index
-  })
+  realize(cards)
 
-  // FIXME O(N²)
-  const missing = groups.filter(g => {
-    for (const v of columns) {
-      if (v.dataset.group === g.OID) {
-        return false
-      }
-    }
-
-    return true
-  })
-
-  // FIXME O(N²)
-  const surplus = [...columns].filter(c => {
-    for (const g of groups) {
-      if (c.dataset.group === g.OID) {
-        return false
-      }
-    }
-
-    return true
-  })
-
-  missing.forEach(g => {
-    const gid = g.OID.match(/^0\.4\.([1-9][0-9]*)$/)[1]
-    const table = document.querySelector('#cards table')
-    const thead = table.tHead
-    const tbody = table.tBodies[0]
-    const template = document.querySelector('#group')
-    const th = thead.rows[0].lastElementChild
-    const padding = thead.rows[0].appendChild(document.createElement('th'))
-
-    padding.classList.add('colheader')
-    padding.classList.add('padding')
-
-    th.classList.replace('padding', 'grouph')
-    th.dataset.group = g.OID
-    th.innerHTML = g.name
-
-    for (const row of tbody.rows) {
-      const uuid = row.id
-      const oid = row.dataset.oid + '.5.' + gid
-      const ix = row.cells.length - 1
-      const cell = row.insertCell(ix)
-
-      cell.dataset.group = g.OID
-      cell.innerHTML = template.innerHTML
-
-      const flag = cell.querySelector('.flag')
-      const field = cell.querySelector('.field')
-
-      flag.classList.add(`g${gid}`)
-      field.classList.add(`g${gid}`)
-
-      flag.id = 'F' + oid
-
-      field.id = uuid + '-' + `g${gid}`
-      field.dataset.oid = oid
-      field.dataset.record = uuid
-      field.dataset.original = ''
-      field.dataset.value = ''
-      field.checked = false
-    }
-  })
-
-  surplus.forEach(col => {
-    const group = col.dataset.group
-    const cells = document.querySelectorAll(`td[data-group="${group}"]`)
-
-    col.remove()
-    cells.forEach(cell => cell.remove())
-  })
-
-  // ... cards
-  const list = []
-
-  DB.cards.forEach(c => {
-    list.push(c)
-  })
-
-  list.sort((p, q) => {
-    return p.created.localeCompare(q.created)
-  })
-
-  list.forEach(d => {
+  cards.forEach(d => {
     const row = updateFromDB(d.OID, d)
     if (row) {
       if (d.status === 'new') {
@@ -108,15 +21,10 @@ export function refreshed () {
 }
 
 function updateFromDB (oid, record) {
-  let row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
+  const row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
 
-  if (record.status === 'deleted') {
-    deleted('cards', row)
+  if (record.status === 'deleted' || !row) {
     return
-  }
-
-  if (!row) {
-    row = add(oid, record)
   }
 
   const name = row.querySelector(`[data-oid="${oid}.1"]`)
@@ -178,24 +86,6 @@ function add (oid, record) {
       { suffix: 'to', oid: `${oid}.4`, selector: 'td input.to', flag: 'td img.to' }
     ]
 
-    const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && g.status !== 'deleted')
-
-    groups.forEach(g => {
-      const m = g.OID.match(/^0\.4\.([1-9][0-9]*)$/)
-      const gid = m[1]
-
-      record.groups.forEach((v, k) => {
-        if (v.group === g.OID) {
-          fields.push({
-            suffix: `g${gid}`,
-            oid: `${k}`,
-            selector: `td input.g${gid}`,
-            flag: `td img.g${gid}`
-          })
-        }
-      })
-    })
-
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
       const flag = row.querySelector(f.flag)
@@ -216,4 +106,91 @@ function add (oid, record) {
 
     return row
   }
+}
+
+function realize (cards) {
+  const table = document.querySelector('#cards table')
+  const thead = table.tHead
+  const tbody = table.tBodies[0]
+
+  const groups = new Map([...DB.groups.values()]
+    .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
+    .sort((p, q) => p.index - q.index)
+    .map(o => [o.OID, o]))
+
+  // ... columns
+
+  const columns = table.querySelectorAll('.colheader.grouph')
+  const cols = new Map([...columns].map(c => [c.dataset.group, c]))
+  const missing = [...groups.values()].filter(o => o.OID === '' || !cols.has(o.OID))
+  const surplus = [...cols].filter(([k]) => !groups.has(k))
+
+  missing.forEach(o => {
+    const th = thead.rows[0].lastElementChild
+    const padding = thead.rows[0].appendChild(document.createElement('th'))
+
+    padding.classList.add('colheader')
+    padding.classList.add('padding')
+
+    th.classList.replace('padding', 'grouph')
+    th.dataset.door = o.OID
+    th.innerHTML = o.name
+  })
+
+  surplus.forEach(([, v]) => {
+    v.remove()
+  })
+
+  // ... rows
+
+  cards.forEach(o => {
+    let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
+
+    if (o.status === 'deleted') {
+      deleted('cards', row)
+      return
+    }
+
+    if (!row) {
+      row = add(o.OID, o)
+    }
+
+    const columns = row.querySelectorAll('td.group')
+    const cols = new Map([...columns].map(c => [c.dataset.group, c]))
+    const missing = [...groups.values()].filter(o => o.OID === '' || !cols.has(o.OID))
+    const surplus = [...cols].filter(([k]) => !groups.has(k))
+
+    missing.forEach(o => {
+      const group = o.OID.match(/^0\.4\.([1-9][0-9]*)$/)[1]
+      const template = document.querySelector('#group')
+
+      const uuid = row.id
+      const oid = row.dataset.oid + '.5.' + group
+      const ix = row.cells.length - 1
+      const cell = row.insertCell(ix)
+
+      cell.classList.add('group')
+      cell.dataset.group = o.OID
+      cell.innerHTML = template.innerHTML
+
+      const flag = cell.querySelector('.flag')
+      const field = cell.querySelector('.field')
+
+      flag.classList.add(`g${group}`)
+      field.classList.add(`g${group}`)
+
+      flag.id = 'F' + oid
+
+      field.id = uuid + '-' + `g${group}`
+      field.dataset.oid = oid
+      field.dataset.record = uuid
+      field.dataset.original = ''
+      field.dataset.value = ''
+      field.checked = false
+    })
+
+    surplus.forEach(([, v]) => {
+      v.remove()
+    })
+  })
 }

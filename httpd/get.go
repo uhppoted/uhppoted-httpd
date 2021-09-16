@@ -104,8 +104,6 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 
 	page["context"] = context
 	page["system"] = system.System()
-	//page["cards"] = system.Cards()
-	page["groups"] = system.Groups()
 
 	info, err := os.Stat(translation)
 	if err != nil && !os.IsNotExist(err) {

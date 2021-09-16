@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -111,29 +110,6 @@ func System() interface{} {
 	}{
 		Objects: objects,
 	}
-}
-
-func Groups() interface{} {
-	type group struct {
-		OID   string
-		Name  string
-		Index uint32
-	}
-
-	list := []group{}
-	for k, v := range sys.groups.Groups {
-		if v.IsValid() && !v.IsDeleted() {
-			list = append(list, group{
-				OID:   fmt.Sprintf("%v", k),
-				Name:  sys.groups.Groups[k].Name,
-				Index: sys.groups.Groups[k].Index,
-			})
-		}
-	}
-
-	sort.SliceStable(list, func(i, j int) bool { return list[i].Index < list[j].Index })
-
-	return list
 }
 
 func (s *system) refresh() {
