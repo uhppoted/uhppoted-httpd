@@ -7,8 +7,19 @@
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [ ] Double click for login after 'idle signout'
 
+- auth
+  - [ ] Reload grules file if changed
+  - [ ] Pass UID/role to grule
+
 - OID
   - [ ] Store all values in catalog and 'realize' local copies from cache
+
+  - [ ] Only update catalog values after validate i.e. not in set(...)
+        - [ ] controllers
+        - [ ] doors
+        - [ ] cards
+        - [ ] groups
+
   - [ ] Make OID a type
         - [ ] controllers
         - [ ] catalog
@@ -16,13 +27,14 @@
         - [ ] move all _stringify's_ to OID/object
         - [ ] make object.OID an OID
 
-- [] 'reload' crashes with after restarting httpd
+- [ ] 'reload' crashes with after restarting httpd
       ```
       tabular.js:416 TypeError: Cannot read properties of null (reading 'dataset')
           at unbusy (uhppoted.js:176)
           at tabular.js:394
       ```
-- [] 'reload' alert 'undefined' message on restarting httpd
+- [ ] 'reload' alert 'undefined' message on restarting httpd
+- [ ] 'reload' automatically if httpd comes alive again
 
 - Migrate cards to OIDs
   - [x] Move `cards` implementation into system/cards
@@ -31,6 +43,7 @@
   - [x] Migrate JS to use 'realize'
   - [ ] Replace .grouph with th.group and td.group
   - [ ] Remove Cards interface
+  - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
   - [ ] Style placeholder for from/to
   - [ ] `refresh` is overwriting pending group edits
@@ -44,16 +57,16 @@
         - use tag (?)
 
 - Groups
+  - [ ] Update ACL to use reworked groups + doors
   - [ ] doors
         - [x] Include doors in serialization
-        - [ ] Include doors in rule entity
+        - [x] Include doors in rule entity
         - [ ] Insert door in display order
         - [ ] Replace .doorh with th.door and td.door
         - [ ] <th> style
 
   - [x] validate
   - [x] save
-  - [ ] Update ACL to use reworked groups + doors
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

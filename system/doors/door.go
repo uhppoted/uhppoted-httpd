@@ -266,6 +266,9 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 			} else {
 				d.log(auth, "update", d.OID, "name", stringify(d.Name), value)
 				d.Name = value
+
+				catalog.PutV(d.OID.Append(DoorName), d.Name, false)
+
 				objects = append(objects, object{
 					OID:   d.OID.Append(DoorName),
 					Value: stringify(d.Name),

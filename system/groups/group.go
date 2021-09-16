@@ -23,12 +23,17 @@ type Group struct {
 	deleted *time.Time
 }
 
+const DoorName = catalog.DoorName
 const GroupName = catalog.GroupName
 const GroupCreated = catalog.GroupCreated
 const GroupDoors = catalog.GroupDoors
 const GroupIndex = catalog.GroupIndex
 
 var created = time.Now()
+
+func (g Group) String() string {
+	return fmt.Sprintf("%v", g.Name)
+}
 
 func (g Group) IsValid() bool {
 	if strings.TrimSpace(g.Name) != "" {
@@ -99,17 +104,29 @@ func (g *Group) AsObjects() []interface{} {
 }
 
 func (g *Group) AsRuleEntity() interface{} {
-	type entity struct {
-		Name string
+	entity := struct {
+		Name  string
+		Doors map[string]bool
+	}{
+		Name:  "",
+		Doors: map[string]bool{},
 	}
 
 	if g != nil {
-		return &entity{
-			Name: fmt.Sprintf("%v", g.Name),
+		entity.Name = stringify(g.Name)
+
+		doors := catalog.Doors()
+		for _, d := range doors {
+			allowed := g.Doors[d]
+			door, _ := catalog.GetV(catalog.Join(d, DoorName))
+
+			if v := stringify(door); v != "" {
+				entity.Doors[v] = allowed
+			}
 		}
 	}
 
-	return &entity{}
+	return &entity
 }
 
 func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
@@ -140,8 +157,9 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(oid); m != nil && len(m) > 1 {
 				did := m[1]
 				k := catalog.OID("0.2." + did)
+				door, _ := catalog.GetV(k.Append(DoorName))
 
-				if err := f("door", value); err != nil {
+				if err := f(stringify(door), value); err != nil {
 					return nil, err
 				} else {
 					g.log(auth, "update", g.OID, "door", string(k), value)
