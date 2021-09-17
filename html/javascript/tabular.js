@@ -172,7 +172,7 @@ export function onRollbackAll (tag, event) {
       break
 
     case 'cards':
-      f('cards', 'cards', doors.refreshed)
+      f('cards', 'cards', cards.refreshed)
       break
 
     case 'groups':

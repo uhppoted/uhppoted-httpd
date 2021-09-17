@@ -38,7 +38,7 @@
 
 - Migrate cards to OIDs
   - [x] Remove Cards interface
-  - [ ] Replace .grouph with th.group and td.group
+  - [x] Replace .grouph with th.group and td.group
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
   - [ ] Style placeholder for from/to
@@ -53,7 +53,8 @@
         - use tag (?)
 
 - Groups
-  - [ ] Can't rollback 'new' row
+  - [x] Can't rollback 'new' group
+  - [ ] Vertical scrollbar not showing
   - [ ] doors
         - [x] Replace .doorh with th.door and td.door
         - [x] <th> style

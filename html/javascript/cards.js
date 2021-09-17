@@ -120,7 +120,7 @@ function realize (cards) {
 
   // ... columns
 
-  const columns = table.querySelectorAll('.colheader.grouph')
+  const columns = table.querySelectorAll('.colheader.group')
   const cols = new Map([...columns].map(c => [c.dataset.group, c]))
   const missing = [...groups.values()].filter(o => o.OID === '' || !cols.has(o.OID))
   const surplus = [...cols].filter(([k]) => !groups.has(k))
@@ -132,8 +132,8 @@ function realize (cards) {
     padding.classList.add('colheader')
     padding.classList.add('padding')
 
-    th.classList.replace('padding', 'grouph')
-    th.dataset.door = o.OID
+    th.classList.replace('padding', 'group')
+    th.dataset.group = o.OID
     th.innerHTML = o.name
   })
 

@@ -43,6 +43,15 @@ export const DB = {
           record.status = 'deleted'
         }
         break
+
+      case 'groups':
+        if (oid && this.groups.has(oid)) {
+          const record = this.groups.get(oid)
+
+          record.mark = 0
+          record.status = 'deleted'
+        }
+        break
     }
   },
 

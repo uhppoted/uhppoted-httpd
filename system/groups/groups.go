@@ -168,8 +168,10 @@ func (gg *Groups) AsObjects() []interface{} {
 
 	for _, k := range keys {
 		if g, ok := gg.Groups[k]; ok {
-			if l := g.AsObjects(); l != nil {
-				objects = append(objects, l...)
+			if g.IsValid() || g.IsDeleted() {
+				if l := g.AsObjects(); l != nil {
+					objects = append(objects, l...)
+				}
 			}
 		}
 	}

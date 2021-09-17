@@ -4,7 +4,7 @@ th.name {
 }
 
 th.number {
-  min-width: 72px;
+  white-space: nowrap;
 }
 
 th.from {
@@ -15,7 +15,8 @@ th.to {
   min-width: 72px;
 }
 
-th.grouph {
+th.group {
+  white-space: nowrap;
 }
 
 td input.name {
