@@ -53,9 +53,10 @@
         - use tag (?)
 
 - Groups
+  - [ ] Can't rollback 'new' row
   - [ ] doors
-        - [ ] Replace .doorh with th.door and td.door
-        - [ ] <th> style
+        - [x] Replace .doorh with th.door and td.door
+        - [x] <th> style
         - [ ] Insert door in display order
   - [ ] Update ACL to use reworked groups + doors
 

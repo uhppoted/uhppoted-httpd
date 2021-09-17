@@ -3,6 +3,10 @@ th.name {
   border-bottom: 1px;
 }
 
+th.door {
+  white-space: nowrap;
+}
+
 tr.group td input.name {
   width: 90px;
 }

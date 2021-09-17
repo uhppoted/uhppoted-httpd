@@ -113,7 +113,7 @@ function realize (groups) {
 
   // ... columns
 
-  const columns = table.querySelectorAll('.colheader.doorh')
+  const columns = table.querySelectorAll('.colheader.door')
   const cols = new Map([...columns].map(c => [c.dataset.door, c]))
   const missing = [...doors.values()].filter(o => o.OID === '' || !cols.has(o.OID))
   const surplus = [...cols].filter(([k]) => !doors.has(k))
@@ -125,7 +125,7 @@ function realize (groups) {
     padding.classList.add('colheader')
     padding.classList.add('padding')
 
-    th.classList.replace('padding', 'doorh')
+    th.classList.replace('padding', 'door')
     th.dataset.door = o.OID
     th.innerHTML = o.name
   })
