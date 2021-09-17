@@ -37,12 +37,8 @@
 - [ ] 'reload' automatically if httpd comes alive again
 
 - Migrate cards to OIDs
-  - [x] Move `cards` implementation into system/cards
-  - [x] tick+commit is not updating locally
-  - [x] Fix O(N²) stuff
-  - [x] Migrate JS to use 'realize'
+  - [x] Remove Cards interface
   - [ ] Replace .grouph with th.group and td.group
-  - [ ] Remove Cards interface
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
   - [ ] Style placeholder for from/to
@@ -57,16 +53,11 @@
         - use tag (?)
 
 - Groups
-  - [ ] Update ACL to use reworked groups + doors
   - [ ] doors
-        - [x] Include doors in serialization
-        - [x] Include doors in rule entity
-        - [ ] Insert door in display order
         - [ ] Replace .doorh with th.door and td.door
         - [ ] <th> style
-
-  - [x] validate
-  - [x] save
+        - [ ] Insert door in display order
+  - [ ] Update ACL to use reworked groups + doors
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

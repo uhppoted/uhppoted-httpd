@@ -29,12 +29,10 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		}
 	}
 
-	// ... validate
 	if err := shadow.Validate(); err != nil {
 		return nil, types.BadRequest(err, err)
 	}
 
-	// ... save
 	if err := shadow.Save(); err != nil {
 		return nil, err
 	}

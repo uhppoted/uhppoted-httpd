@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
@@ -16,7 +15,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type fdb struct {
+type Cards struct {
 	Cards map[catalog.OID]*CardHolder `json:"cardholders"`
 	file  string
 }
@@ -35,13 +34,13 @@ func SetAuditTrail(t audit.Trail) {
 	trail = t
 }
 
-func NewCards() *fdb {
-	return &fdb{
+func NewCards() Cards {
+	return Cards{
 		Cards: map[catalog.OID]*CardHolder{},
 	}
 }
 
-func (cc *fdb) Load(file string) error {
+func (cc *Cards) Load(file string) error {
 	blob := struct {
 		Cards []json.RawMessage `json:"cards"`
 	}{
@@ -78,7 +77,7 @@ func (cc *fdb) Load(file string) error {
 	return nil
 }
 
-func (cc *fdb) Save() error {
+func (cc *Cards) Save() error {
 	if err := validate(*cc); err != nil {
 		return err
 	}
@@ -132,20 +131,20 @@ func (cc *fdb) Save() error {
 	return os.Rename(tmp.Name(), cc.file)
 }
 
-func (d *fdb) Clone() Cards {
-	shadow := fdb{
+func (cc *Cards) Clone() Cards {
+	shadow := Cards{
 		Cards: map[catalog.OID]*CardHolder{},
-		file:  d.file,
+		file:  cc.file,
 	}
 
-	for cid, v := range d.Cards {
+	for cid, v := range cc.Cards {
 		shadow.Cards[cid] = v.clone()
 	}
 
-	return &shadow
+	return shadow
 }
 
-func (cc *fdb) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
 	if cc == nil {
 		return nil, nil
 	}
@@ -181,7 +180,7 @@ func (cc *fdb) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interf
 	return objects, nil
 }
 
-func (cc *fdb) Validate() error {
+func (cc *Cards) Validate() error {
 	if cc != nil {
 		return validate(*cc)
 	}
@@ -189,13 +188,13 @@ func (cc *fdb) Validate() error {
 	return nil
 }
 
-func (cc *fdb) Print() {
+func (cc *Cards) Print() {
 	if b, err := json.MarshalIndent(cc.Cards, "", "  "); err == nil {
 		fmt.Printf("----------------- CARDS\n%s\n", string(b))
 	}
 }
 
-func (cc *fdb) AsObjects() []interface{} {
+func (cc *Cards) AsObjects() []interface{} {
 	objects := []interface{}{}
 
 	guard.RLock()
@@ -213,7 +212,7 @@ func (cc *fdb) AsObjects() []interface{} {
 	return objects
 }
 
-func (cc *fdb) ACL(rules IRules) ([]types.Permissions, error) {
+func (cc *Cards) ACL(rules IRules) ([]types.Permissions, error) {
 	guard.RLock()
 
 	defer guard.RUnlock()
@@ -246,7 +245,7 @@ func (cc *fdb) ACL(rules IRules) ([]types.Permissions, error) {
 	return list, nil
 }
 
-func (cc *fdb) add(auth auth.OpAuth, c CardHolder) (*CardHolder, error) {
+func (cc *Cards) add(auth auth.OpAuth, c CardHolder) (*CardHolder, error) {
 	oid := catalog.NewCard()
 
 	record := c.clone()
@@ -262,7 +261,7 @@ func (cc *fdb) add(auth auth.OpAuth, c CardHolder) (*CardHolder, error) {
 	return record, nil
 }
 
-func validate(cc fdb) error {
+func validate(cc Cards) error {
 	cards := map[uint32]string{}
 
 	for _, c := range cc.Cards {
@@ -291,55 +290,11 @@ func validate(cc fdb) error {
 	return nil
 }
 
-func (cc *fdb) scrub() error {
+func (cc *Cards) scrub() error {
 	return nil
 }
 
-func unpack(m map[string]interface{}) ([]CardHolder, error) {
-	o := struct {
-		CardHolders []struct {
-			ID     string
-			Name   *types.Name
-			Card   *types.Card
-			From   *types.Date
-			To     *types.Date
-			Groups map[string]bool
-		}
-	}{}
-
-	blob, err := json.Marshal(m)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := json.Unmarshal(blob, &o); err != nil {
-		return nil, err
-	}
-
-	cardholders := []CardHolder{}
-
-	for _, r := range o.CardHolders {
-		record := CardHolder{
-			OID:    catalog.OID(strings.TrimSpace(r.ID)),
-			Groups: map[string]bool{},
-		}
-
-		record.Name = r.Name.Copy()
-		record.Card = r.Card.Copy()
-		record.From = r.From.Copy()
-		record.To = r.To.Copy()
-
-		for gid, v := range r.Groups {
-			record.Groups[gid] = v
-		}
-
-		cardholders = append(cardholders, record)
-	}
-
-	return cardholders, nil
-}
-
-func (d *fdb) log(op string, info interface{}, auth auth.OpAuth) {
+func (cc *Cards) log(op string, info interface{}, auth auth.OpAuth) {
 	if trail != nil {
 		uid := ""
 		if auth != nil {
