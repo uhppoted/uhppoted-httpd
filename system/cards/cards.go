@@ -196,7 +196,6 @@ func (cc *Cards) Print() {
 
 func (cc *Cards) AsObjects() []interface{} {
 	objects := []interface{}{}
-
 	guard.RLock()
 
 	defer guard.RUnlock()
@@ -212,38 +211,51 @@ func (cc *Cards) AsObjects() []interface{} {
 	return objects
 }
 
-func (cc *Cards) ACL(rules IRules) ([]types.Permissions, error) {
+func (cc *Cards) List() []CardHolder {
 	guard.RLock()
-
 	defer guard.RUnlock()
 
-	list := []types.Permissions{}
-
+	list := []CardHolder{}
 	for _, c := range cc.Cards {
-		if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
-			var doors = []string{}
-			var err error
-
-			if rules != nil {
-				doors, err = rules.Eval(*c)
-				if err != nil {
-					return nil, err
-				}
-			}
-
-			permission := types.Permissions{
-				CardNumber: uint32(*c.Card),
-				From:       *c.From,
-				To:         *c.To,
-				Doors:      doors,
-			}
-
-			list = append(list, permission)
-		}
+		list = append(list, *c)
 	}
 
-	return list, nil
+	return list
 }
+
+//func (cc *Cards) ACL(rules IRules) ([]types.Permissions, error) {
+//	guard.RLock()
+//
+//	defer guard.RUnlock()
+//
+//	list := []types.Permissions{}
+//
+//	for _, c := range cc.Cards {
+//		if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
+//			var doors = []string{}
+//
+//			//			var err error
+//			//
+//			//			if rules != nil {
+//			//				doors, err = rules.Eval(*c)
+//			//				if err != nil {
+//			//					return nil, err
+//			//				}
+//			//			}
+//
+//			permission := types.Permissions{
+//				CardNumber: uint32(*c.Card),
+//				From:       *c.From,
+//				To:         *c.To,
+//				Doors:      doors,
+//			}
+//
+//			list = append(list, permission)
+//		}
+//	}
+//
+//	return list, nil
+//}
 
 func (cc *Cards) add(auth auth.OpAuth, c CardHolder) (*CardHolder, error) {
 	oid := catalog.NewCard()

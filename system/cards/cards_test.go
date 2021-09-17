@@ -78,8 +78,8 @@ func date(s string) *types.Date {
 	return &d
 }
 
-func dbx(list ...CardHolder) *fdb {
-	p := fdb{
+func dbx(list ...CardHolder) *Cards {
+	p := Cards{
 		Cards: map[catalog.OID]*CardHolder{},
 	}
 
@@ -126,6 +126,6 @@ func compare(got, expected interface{}, t *testing.T) {
 	}
 }
 
-func compareDB(db, expected *fdb, t *testing.T) {
+func compareDB(db, expected *Cards, t *testing.T) {
 	compare(db.Cards, expected.Cards, t)
 }

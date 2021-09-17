@@ -60,6 +60,11 @@
         - [x] <th> style
         - [ ] Insert door in display order
   - [ ] Update ACL to use reworked groups + doors
+        - [x] Replace cards.ACL with controllers + cards + groups + doors
+        - [ ] Clean up deeply nested O(N^N) logic
+        - [ ] Defer to Group and Door for controller+door associations
+        - [ ] Remove `consolidate` and other no longer used logic
+        - [ ] Invoke rules for additional processing
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

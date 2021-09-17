@@ -23,7 +23,7 @@ type Doors struct {
 
 type object catalog.Object
 
-var guard sync.Mutex
+var guard sync.RWMutex
 var trail audit.Trail
 
 func SetAuditTrail(t audit.Trail) {
@@ -250,6 +250,18 @@ func (dd *Doors) Validate() error {
 	}
 
 	return nil
+}
+
+func (dd *Doors) List() []Door {
+	guard.RLock()
+	defer guard.RUnlock()
+
+	list := []Door{}
+	for _, d := range dd.Doors {
+		list = append(list, d)
+	}
+
+	return list
 }
 
 func validate(dd Doors) error {

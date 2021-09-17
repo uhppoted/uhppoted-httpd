@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
@@ -20,6 +21,7 @@ type Groups struct {
 	file string `json:"-"`
 }
 
+var guard sync.RWMutex
 var trail audit.Trail
 
 func SetAuditTrail(t audit.Trail) {
@@ -157,6 +159,9 @@ func (gg *Groups) Clone() *Groups {
 }
 
 func (gg *Groups) AsObjects() []interface{} {
+	guard.RLock()
+	defer guard.RUnlock()
+
 	objects := []interface{}{}
 
 	keys := []catalog.OID{}
@@ -226,6 +231,18 @@ func (gg *Groups) Validate() error {
 	}
 
 	return nil
+}
+
+func (gg *Groups) List() []Group {
+	guard.RLock()
+	defer guard.RUnlock()
+
+	list := []Group{}
+	for _, g := range gg.Groups {
+		list = append(list, g)
+	}
+
+	return list
 }
 
 func (gg *Groups) add(auth auth.OpAuth, g Group) (*Group, error) {
