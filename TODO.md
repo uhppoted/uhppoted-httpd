@@ -32,10 +32,10 @@
 
   - [ ] Make OID a type
         - [x] controllers
+        - [ ] make object.OID an OID
         - [ ] catalog
         - [ ] cache
         - [ ] move all _stringify's_ to OID/object
-        - [ ] make object.OID an OID
 
 - Migrate cards to OIDs
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
@@ -52,14 +52,15 @@
         - use tag (?)
 
 - Groups
-  - [ ] Vertical scrollbar not showing
-  - [ ] doors
-        - [ ] Insert door in display order
   - [ ] Update ACL to use reworked groups + doors
-        - [ ] Remove `consolidate` and other no longer used logic
+        - [x] Remove `consolidate` and other no longer used logic
         - [ ] Clean up deeply nested O(N^N) logic
         - [ ] Defer to Group and Door for controller+door associations
         - [ ] Invoke rules for additional processing
+
+  - [ ] Vertical scrollbar not showing
+  - [ ] doors
+        - [ ] Insert door in display order
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

@@ -127,7 +127,7 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			CompareACL(s.rules)
+			CompareACL()
 		},
 	})
 }
@@ -145,7 +145,7 @@ func (s *system) updated() {
 		f: func() {
 			info("Updating controllers from configuration")
 			sys.controllers.Sync()
-			UpdateACL(s.rules)
+			UpdateACL()
 		},
 	})
 }
