@@ -58,9 +58,12 @@
         - [ ] Defer to Group and Door for controller+door associations
         - [ ] Invoke rules for additional processing
 
-  - [ ] Vertical scrollbar not showing
-  - [ ] doors
-        - [ ] Insert door in display order
+  - [x] Vertical scrollbar not showing
+  - [ ] Scrollbar colour
+  - [ ] Fix div height hack
+  - [ ] Fix checkbox flags
+  - [ ] Use 'th' instead of .colheader in JS selectors
+  - [ ] Insert door in display order
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

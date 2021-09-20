@@ -1,3 +1,11 @@
+div#groups {
+  max-width: 100%; 
+  height: min-content; 
+  max-height: 92%;
+  overflow: auto;
+  border: 1px solid $content-table-border;
+}  
+
 th.name {
   min-width: 90px;
   border-bottom: 1px;

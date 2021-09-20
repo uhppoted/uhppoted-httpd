@@ -60,9 +60,6 @@
   z-index: 1;
 }
 
-.tabular tbody tr td input {
-}
-
 .tabular tbody tr:nth-child(odd) {
   background: $content-table-background-odd;
 }
@@ -121,6 +118,9 @@
 .tabular td.conflict img.flag {
    filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
    visibility: visible;
+}
+
+.tabular tbody tr td input {
 }
 
 .tabular td.conflict input {
