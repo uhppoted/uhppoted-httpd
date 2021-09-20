@@ -9,7 +9,6 @@ import (
 	"net"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
@@ -137,7 +136,7 @@ func (cc *ControllerSet) Load(file string) error {
 	catalog.PutInterface(cc.LAN.OID)
 	for _, c := range cc.Controllers {
 		if c.DeviceID != nil && *c.DeviceID != 0 {
-			catalog.PutController(*c.DeviceID, c.OID)
+			catalog.PutController(*c.DeviceID, string(c.OID))
 		}
 
 		for _, d := range []uint8{1, 2, 3, 4} {
@@ -243,7 +242,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid string, value string)
 
 	// ... controllers
 	for _, c := range cc.Controllers {
-		if c != nil && strings.HasPrefix(oid, c.OID+".") {
+		if c != nil && c.OID.Contains(oid) {
 			return c.set(auth, oid, value)
 		}
 	}
@@ -257,10 +256,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid string, value string)
 			return nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
 			c.log(auth, "add", c.OID, "controller", "", "")
-			objects = append(objects, object{
-				OID:   c.OID,
-				Value: "new",
-			})
+			objects = append(objects, catalog.NewObject(c.OID, "new"))
 		}
 	}
 
@@ -274,7 +270,7 @@ func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error
 	}
 
 	record := c.clone()
-	record.OID = catalog.GetController(id)
+	record.OID = catalog.OID(catalog.GetController(id))
 	record.created = time.Now()
 
 	if auth != nil {
@@ -304,7 +300,7 @@ loop:
 		oid := catalog.GetController(k)
 
 		cc.Controllers = append(cc.Controllers, &Controller{
-			OID:          oid,
+			OID:          catalog.OID(oid),
 			DeviceID:     &id,
 			created:      time.Now(),
 			unconfigured: true,
@@ -448,7 +444,7 @@ func validate(cc ControllerSet) error {
 				return fmt.Errorf("Duplicate controller ID (%v)", id)
 			}
 
-			devices[id] = c.OID
+			devices[id] = string(c.OID)
 		}
 	}
 

@@ -70,7 +70,7 @@ func validate(c *controllers.ControllerSet) error {
 				return types.BadRequest(fmt.Errorf("%v door assigned to more than one controller", sys.doors.Doors[catalog.OID(v)].Name), fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID))
 			}
 
-			doors[v] = r.OID
+			doors[v] = string(r.OID)
 		}
 	}
 

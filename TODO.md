@@ -6,27 +6,6 @@
 - [ ] Server events in addition to/rather-than refresh
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [ ] Double click for login after 'idle signout'
-
-- auth
-  - [ ] Reload grules file if changed
-  - [ ] Pass UID/role to grule
-
-- OID
-  - [ ] Store all values in catalog and 'realize' local copies from cache
-
-  - [ ] Only update catalog values after validate i.e. not in set(...)
-        - [ ] controllers
-        - [ ] doors
-        - [ ] cards
-        - [ ] groups
-
-  - [ ] Make OID a type
-        - [ ] controllers
-        - [ ] catalog
-        - [ ] cache
-        - [ ] move all _stringify's_ to OID/object
-        - [ ] make object.OID an OID
-
 - [ ] 'reload' crashes with after restarting httpd
       ```
       tabular.js:416 TypeError: Cannot read properties of null (reading 'dataset')
@@ -36,9 +15,29 @@
 - [ ] 'reload' alert 'undefined' message on restarting httpd
 - [ ] 'reload' automatically if httpd comes alive again
 
+- auth
+  - [ ] Reload grules file if changed
+  - [ ] Pass UID/role to grule
+
+- OID
+  - [ ] Store all values in catalog and 'realize' local copies from cache
+        - Hmmm, may cause issues with shadow logic
+        - Unless use shadow cache ??
+
+  - [ ] Only update catalog values after validate i.e. not in set(...)
+        - [ ] controllers
+        - [ ] doors
+        - [ ] cards
+        - [ ] groups
+
+  - [ ] Make OID a type
+        - [x] controllers
+        - [ ] catalog
+        - [ ] cache
+        - [ ] move all _stringify's_ to OID/object
+        - [ ] make object.OID an OID
+
 - Migrate cards to OIDs
-  - [x] Remove Cards interface
-  - [x] Replace .grouph with th.group and td.group
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
   - [ ] Style placeholder for from/to
@@ -53,17 +52,13 @@
         - use tag (?)
 
 - Groups
-  - [x] Can't rollback 'new' group
   - [ ] Vertical scrollbar not showing
   - [ ] doors
-        - [x] Replace .doorh with th.door and td.door
-        - [x] <th> style
         - [ ] Insert door in display order
   - [ ] Update ACL to use reworked groups + doors
-        - [x] Replace cards.ACL with controllers + cards + groups + doors
+        - [ ] Remove `consolidate` and other no longer used logic
         - [ ] Clean up deeply nested O(N^N) logic
         - [ ] Defer to Group and Door for controller+door associations
-        - [ ] Remove `consolidate` and other no longer used logic
         - [ ] Invoke rules for additional processing
 
 - Doors

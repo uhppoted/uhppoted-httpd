@@ -17,7 +17,7 @@ import (
 )
 
 type Controller struct {
-	OID      string           `json:"OID"`
+	OID      catalog.OID      `json:"OID"`
 	Name     *types.Name      `json:"name,omitempty"`
 	DeviceID *uint32          `json:"device-id,omitempty"`
 	IP       *core.Address    `json:"address,omitempty"`
@@ -30,7 +30,7 @@ type Controller struct {
 }
 
 type controller struct {
-	OID      string
+	OID      catalog.OID
 	Name     string
 	DeviceID string
 	IP       ip
@@ -65,7 +65,7 @@ const ControllerDoor4 = catalog.ControllerDoor4
 
 func (c *Controller) deserialize(bytes []byte) error {
 	record := struct {
-		OID      string           `json:"OID"`
+		OID      catalog.OID      `json:"OID"`
 		Name     *types.Name      `json:"name,omitempty"`
 		DeviceID *uint32          `json:"device-id,omitempty"`
 		Address  *core.Address    `json:"address,omitempty"`
@@ -103,7 +103,7 @@ func (c *Controller) serialize() ([]byte, error) {
 	}
 
 	record := struct {
-		OID      string           `json:"OID"`
+		OID      catalog.OID      `json:"OID"`
 		Name     *types.Name      `json:"name,omitempty"`
 		DeviceID *uint32          `json:"device-id,omitempty"`
 		Address  *core.Address    `json:"address,omitempty"`
@@ -250,24 +250,24 @@ func (c *Controller) AsObjects() []interface{} {
 	}
 
 	objects := []interface{}{
-		object{OID: c.OID, Value: fmt.Sprintf("%v", status)},
-		object{OID: c.OID + ControllerCreated, Value: created},
-		object{OID: c.OID + ControllerName, Value: name},
-		object{OID: c.OID + ControllerDeviceID, Value: deviceID},
-		object{OID: c.OID + ControllerAddress, Value: address.address},
-		object{OID: c.OID + ControllerAddressConfigured, Value: address.configured},
-		object{OID: c.OID + ControllerAddressStatus, Value: stringify(address.status)},
-		object{OID: c.OID + ControllerDateTime, Value: datetime.datetime},
-		object{OID: c.OID + ControllerDateTimeSystem, Value: datetime.system},
-		object{OID: c.OID + ControllerDateTimeStatus, Value: fmt.Sprintf("%v", datetime.status)},
-		object{OID: c.OID + ControllerCards, Value: cards.cards},
-		object{OID: c.OID + ControllerCardsStatus, Value: fmt.Sprintf("%v", cards.status)},
-		object{OID: c.OID + ControllerEvents, Value: events.events},
-		object{OID: c.OID + ControllerEventsStatus, Value: fmt.Sprintf("%v", events.status)},
-		object{OID: c.OID + ControllerDoor1, Value: doors[1]},
-		object{OID: c.OID + ControllerDoor2, Value: doors[2]},
-		object{OID: c.OID + ControllerDoor3, Value: doors[3]},
-		object{OID: c.OID + ControllerDoor4, Value: doors[4]},
+		catalog.NewObject(c.OID, status),
+		catalog.NewObject2(c.OID, ControllerCreated, created),
+		catalog.NewObject2(c.OID, ControllerName, name),
+		catalog.NewObject2(c.OID, ControllerDeviceID, deviceID),
+		catalog.NewObject2(c.OID, ControllerAddress, address.address),
+		catalog.NewObject2(c.OID, ControllerAddressConfigured, address.configured),
+		catalog.NewObject2(c.OID, ControllerAddressStatus, address.status),
+		catalog.NewObject2(c.OID, ControllerDateTime, datetime.datetime),
+		catalog.NewObject2(c.OID, ControllerDateTimeSystem, datetime.system),
+		catalog.NewObject2(c.OID, ControllerDateTimeStatus, datetime.status),
+		catalog.NewObject2(c.OID, ControllerCards, cards.cards),
+		catalog.NewObject2(c.OID, ControllerCardsStatus, cards.status),
+		catalog.NewObject2(c.OID, ControllerEvents, events.events),
+		catalog.NewObject2(c.OID, ControllerEventsStatus, events.status),
+		catalog.NewObject2(c.OID, ControllerDoor1, doors[1]),
+		catalog.NewObject2(c.OID, ControllerDoor2, doors[2]),
+		catalog.NewObject2(c.OID, ControllerDoor3, doors[3]),
+		catalog.NewObject2(c.OID, ControllerDoor4, doors[4]),
 	}
 
 	return objects
@@ -357,7 +357,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 
 	if c != nil {
 		switch oid {
-		case c.OID + ControllerName:
+		case c.OID.Append(ControllerName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
@@ -365,13 +365,10 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				name := types.Name(value)
 				c.Name = &name
 				c.unconfigured = false
-				objects = append(objects, object{
-					OID:   c.OID + ".1",
-					Value: stringify(c.Name),
-				})
+				objects = append(objects, catalog.NewObject2(c.OID, ".1", c.Name))
 			}
 
-		case c.OID + ControllerDeviceID:
+		case c.OID.Append(ControllerDeviceID):
 			if err := f("deviceID", value); err != nil {
 				return nil, err
 			} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
@@ -380,22 +377,16 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 					cid := uint32(id)
 					c.DeviceID = &cid
 					c.unconfigured = false
-					objects = append(objects, object{
-						OID:   c.OID + ".2",
-						Value: stringify(cid),
-					})
+					objects = append(objects, catalog.NewObject2(c.OID, ".2", cid))
 				}
 			} else if value == "" {
 				c.log(auth, "update", c.OID, "device-id", stringify(c.DeviceID), value)
 				c.DeviceID = nil
 				c.unconfigured = false
-				objects = append(objects, object{
-					OID:   c.OID + ".2",
-					Value: "",
-				})
+				objects = append(objects, catalog.NewObject2(c.OID, ".2", ""))
 			}
 
-		case c.OID + ControllerAddress:
+		case c.OID.Append(ControllerAddress):
 			if addr, err := core.ResolveAddr(value); err != nil {
 				return nil, err
 			} else if err := f("address", addr); err != nil {
@@ -404,13 +395,10 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				c.log(auth, "update", c.OID, "address", stringify(c.IP), value)
 				c.IP = addr
 				c.unconfigured = false
-				objects = append(objects, object{
-					OID:   c.OID + ".3",
-					Value: fmt.Sprintf("%v", c.IP),
-				})
+				objects = append(objects, catalog.NewObject2(c.OID, ".3", c.IP))
 			}
 
-		case c.OID + ControllerDateTime:
+		case c.OID.Append(ControllerDateTime):
 			if tz, err := types.Timezone(value); err != nil {
 				return nil, err
 			} else if err := f("timezone", tz); err != nil {
@@ -435,66 +423,50 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 
 							t := time.Time(*cached.datetime)
 							dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-
-							objects = append(objects, object{
-								OID:   c.OID + ".4",
-								Value: dt.Format("2006-01-02 15:04 MST"),
-							})
+							objects = append(objects, catalog.NewObject2(c.OID, ".4", dt.Format("2006-01-02 15:04 MST")))
 						}
 					}
 				}
 			}
 
-		case c.OID + ControllerDoor1:
+		case c.OID.Append(ControllerDoor1):
 			if err := f("door[1]", value); err != nil {
 				return nil, err
 			} else {
 				c.log(auth, "update", c.OID, "door[1]", stringify(c.Doors[1]), value)
 				c.Doors[1] = value
 				c.unconfigured = false
-				objects = append(objects, object{
-					OID:   c.OID + ".7",
-					Value: fmt.Sprintf("%v", c.Doors[1]),
-				})
+				objects = append(objects, catalog.NewObject2(c.OID, ".7", c.Doors[1]))
 			}
 
-		case c.OID + ControllerDoor2:
+		case c.OID.Append(ControllerDoor2):
 			if err := f("door[2]", value); err != nil {
 				return nil, err
 			} else {
 				c.log(auth, "update", c.OID, "door[2]", stringify(c.Doors[2]), value)
 				c.Doors[2] = value
 				c.unconfigured = false
-				objects = append(objects, object{
-					OID:   c.OID + ".8",
-					Value: fmt.Sprintf("%v", c.Doors[2]),
-				})
+				objects = append(objects, catalog.NewObject2(c.OID, ".8", c.Doors[2]))
 			}
 
-		case c.OID + ControllerDoor3:
+		case c.OID.Append(ControllerDoor3):
 			if err := f("door[3]", value); err != nil {
 				return nil, err
 			} else {
 				c.log(auth, "update", c.OID, "door[3]", stringify(c.Doors[3]), value)
 				c.Doors[3] = value
 				c.unconfigured = false
-				objects = append(objects, object{
-					OID:   c.OID + ".9",
-					Value: fmt.Sprintf("%v", c.Doors[3]),
-				})
+				objects = append(objects, catalog.NewObject2(c.OID, ".9", c.Doors[3]))
 			}
 
-		case c.OID + ControllerDoor4:
+		case c.OID.Append(ControllerDoor4):
 			if err := f("door[4]", value); err != nil {
 				return nil, err
 			} else {
 				c.log(auth, "update", c.OID, "door[4]", stringify(c.Doors[4]), value)
 				c.Doors[4] = value
 				c.unconfigured = false
-				objects = append(objects, object{
-					OID:   c.OID + ".10",
-					Value: fmt.Sprintf("%v", c.Doors[4]),
-				})
+				objects = append(objects, catalog.NewObject2(c.OID, ".10", c.Doors[4]))
 			}
 		}
 
@@ -508,13 +480,9 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			c.log(auth, "delete", c.OID, "device-id", "", "")
 			now := time.Now()
 			c.deleted = &now
+			objects = append(objects, catalog.NewObject(c.OID, "deleted"))
 
-			objects = append(objects, object{
-				OID:   c.OID,
-				Value: "deleted",
-			})
-
-			catalog.Delete(c.OID)
+			catalog.Delete(string(c.OID))
 		}
 	}
 
@@ -546,7 +514,7 @@ func (c *Controller) clone() *Controller {
 	return nil
 }
 
-func (c *Controller) log(auth auth.OpAuth, operation, OID, field, current, value string) {
+func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, field, current, value string) {
 	type info struct {
 		OID        string `json:"OID"`
 		Controller string `json:"controller"`
@@ -560,13 +528,15 @@ func (c *Controller) log(auth auth.OpAuth, operation, OID, field, current, value
 		uid = auth.UID()
 	}
 
+	oid := fmt.Sprintf("%v", OID)
+
 	if trail != nil {
 		record := audit.LogEntry{
 			UID:       uid,
-			Module:    OID,
+			Module:    oid,
 			Operation: operation,
 			Info: info{
-				OID:        OID,
+				OID:        oid,
 				Controller: stringify(c.DeviceID),
 				Field:      field,
 				Current:    current,
