@@ -31,7 +31,8 @@
         - [ ] groups
 
   - [ ] Make OID a type
-        - [ ] make object.OID an OID
+        - [x] make object.OID an OID
+        - [ ] UpdateByOID
         - [ ] catalog
         - [ ] cache
         - [ ] move all _stringify's_ to OID/object

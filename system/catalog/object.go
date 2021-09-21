@@ -5,13 +5,13 @@ import (
 )
 
 type Object struct {
-	OID   string `json:"OID"`
+	OID   OID    `json:"OID"`
 	Value string `json:"value"`
 }
 
 func NewObject(oid OID, value interface{}) Object {
 	return Object{
-		OID:   fmt.Sprintf("%v", oid),
+		OID:   oid,
 		Value: stringify(value),
 	}
 }

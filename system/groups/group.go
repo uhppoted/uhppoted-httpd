@@ -118,7 +118,7 @@ func (g *Group) AsRuleEntity() interface{} {
 		doors := catalog.Doors()
 		for _, d := range doors {
 			allowed := g.Doors[d]
-			door, _ := catalog.GetV(catalog.Join(d, DoorName))
+			door, _ := catalog.GetV(d.Append(DoorName))
 
 			if v := stringify(door); v != "" {
 				entity.Doors[v] = allowed
@@ -144,7 +144,7 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 		name := stringify(g.Name)
 
 		switch {
-		case oid == g.OID.Append(GroupName):
+		case oid == string(g.OID.Append(GroupName)):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {

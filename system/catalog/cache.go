@@ -9,8 +9,8 @@ type value struct {
 
 var cache = map[string]value{}
 
-func GetV(oid string) (interface{}, bool) {
-	v, ok := cache[oid]
+func GetV(oid OID) (interface{}, bool) {
+	v, ok := cache[string(oid)]
 	if ok {
 		return v.value, v.dirty
 	}
@@ -18,8 +18,8 @@ func GetV(oid string) (interface{}, bool) {
 	return nil, false
 }
 
-func PutV(oid string, v interface{}, dirty bool) {
-	cache[oid] = value{
+func PutV(oid OID, v interface{}, dirty bool) {
+	cache[string(oid)] = value{
 		value: v,
 		dirty: dirty,
 	}

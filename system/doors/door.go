@@ -175,7 +175,7 @@ func (d *Door) AsObjects() []interface{} {
 	}
 
 	objects := []interface{}{
-		object{OID: stringify(d.OID), Value: status},
+		object{OID: d.OID, Value: status},
 		object{OID: d.OID.Append(DoorCreated), Value: created},
 		object{OID: d.OID.Append(DoorControllerOID), Value: controller.OID},
 		object{OID: d.OID.Append(DoorControllerCreated), Value: controller.created},
@@ -285,7 +285,7 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 		name := stringify(d.Name)
 
 		switch oid {
-		case d.OID.Append(DoorName):
+		case string(d.OID.Append(DoorName)):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
@@ -300,7 +300,7 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 				})
 			}
 
-		case d.OID.Append(DoorDelay):
+		case string(d.OID.Append(DoorDelay)):
 			delay := d.delay
 
 			if err := f("delay", value); err != nil {
@@ -335,7 +335,7 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 				d.log(auth, "update", d.OID, "delay", stringify(delay), value)
 			}
 
-		case d.OID.Append(DoorControl):
+		case string(d.OID.Append(DoorControl)):
 			if err := f("mode", value); err != nil {
 				return nil, err
 			} else {
@@ -388,10 +388,7 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 			now := time.Now()
 			d.deleted = &now
 
-			objects = append(objects, object{
-				OID:   stringify(d.OID),
-				Value: "deleted",
-			})
+			objects = append(objects, catalog.NewObject(d.OID, "deleted"))
 
 			catalog.Delete(stringify(d.OID))
 		}

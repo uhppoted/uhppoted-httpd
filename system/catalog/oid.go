@@ -14,8 +14,8 @@ func Join(oid OID, suffix Suffix) string {
 	return regexp.MustCompile(`\.+`).ReplaceAllString(fmt.Sprintf("%v.%v", oid, suffix), ".")
 }
 
-func (oid OID) Append(suffix Suffix) string {
-	return regexp.MustCompile(`\.+`).ReplaceAllString(fmt.Sprintf("%v.%v", oid, suffix), ".")
+func (oid OID) Append(suffix Suffix) OID {
+	return OID(regexp.MustCompile(`\.+`).ReplaceAllString(fmt.Sprintf("%v.%v", oid, suffix), "."))
 }
 
 func (oid OID) Contains(o string) bool {

@@ -25,8 +25,6 @@ type CardHolder struct {
 	deleted *time.Time
 }
 
-type object catalog.Object
-
 const CardCreated = catalog.CardCreated
 const CardName = catalog.CardName
 const CardNumber = catalog.CardNumber
@@ -86,12 +84,12 @@ func (c *CardHolder) AsObjects() []interface{} {
 	}
 
 	objects := []interface{}{
-		object{OID: string(c.OID), Value: status},
-		object{OID: catalog.Join(c.OID, CardCreated), Value: created},
-		object{OID: catalog.Join(c.OID, CardName), Value: name},
-		object{OID: catalog.Join(c.OID, CardNumber), Value: number},
-		object{OID: catalog.Join(c.OID, CardFrom), Value: from},
-		object{OID: catalog.Join(c.OID, CardTo), Value: to},
+		catalog.NewObject(c.OID, status),
+		catalog.NewObject2(c.OID, CardCreated, created),
+		catalog.NewObject2(c.OID, CardName, name),
+		catalog.NewObject2(c.OID, CardNumber, number),
+		catalog.NewObject2(c.OID, CardFrom, from),
+		catalog.NewObject2(c.OID, CardTo, to),
 	}
 
 	groups := catalog.Groups()
@@ -104,15 +102,8 @@ func (c *CardHolder) AsObjects() []interface{} {
 			gid := m[2]
 			member := c.Groups[g]
 
-			objects = append(objects, object{
-				OID:   catalog.Join(c.OID, CardGroups.Append(gid)),
-				Value: stringify(member),
-			})
-
-			objects = append(objects, object{
-				OID:   catalog.Join(c.OID, CardGroups.Append(gid+".1")),
-				Value: stringify(group),
-			})
+			objects = append(objects, catalog.NewObject2(c.OID, CardGroups.Append(gid), member))
+			objects = append(objects, catalog.NewObject2(c.OID, CardGroups.Append(gid+".1"), group))
 		}
 	}
 
@@ -283,10 +274,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				c.log(auth, "update", c.OID, "name", stringify(c.Name), value)
 				v := types.Name(value)
 				c.Name = &v
-				objects = append(objects, object{
-					OID:   c.OID.Append(CardName),
-					Value: stringify(c.Name),
-				})
+				objects = append(objects, catalog.NewObject2(c.OID, CardName, c.Name))
 			}
 
 		case oid == catalog.Join(c.OID, CardNumber):
@@ -299,10 +287,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 					c.log(auth, "update", c.OID, "number", stringify(c.Card), value)
 					v := types.Card(n)
 					c.Card = &v
-					objects = append(objects, object{
-						OID:   c.OID.Append(CardNumber),
-						Value: stringify(c.Card),
-					})
+					objects = append(objects, catalog.NewObject2(c.OID, CardNumber, c.Card))
 				}
 			} else if value == "" {
 				if err := f("number", 0); err != nil {
@@ -310,10 +295,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				} else {
 					c.log(auth, "update", c.OID, "number", stringify(c.Card), value)
 					c.Card = nil
-					objects = append(objects, object{
-						OID:   c.OID.Append(CardNumber),
-						Value: "",
-					})
+					objects = append(objects, catalog.NewObject2(c.OID, CardNumber, ""))
 				}
 			}
 
@@ -327,10 +309,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			} else {
 				c.log(auth, "update", c.OID, "from", stringify(c.From), value)
 				c.From = from
-				objects = append(objects, object{
-					OID:   c.OID.Append(CardFrom),
-					Value: stringify(c.From),
-				})
+				objects = append(objects, catalog.NewObject2(c.OID, CardFrom, c.From))
 			}
 
 		case oid == catalog.Join(c.OID, CardTo):
@@ -343,10 +322,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			} else {
 				c.log(auth, "update", c.OID, "to", stringify(c.To), value)
 				c.To = to
-				objects = append(objects, object{
-					OID:   c.OID.Append(CardTo),
-					Value: stringify(c.To),
-				})
+				objects = append(objects, catalog.NewObject2(c.OID, CardTo, c.To))
 			}
 
 		case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
@@ -375,10 +351,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			now := time.Now()
 			c.deleted = &now
 
-			objects = append(objects, object{
-				OID:   stringify(c.OID),
-				Value: "deleted",
-			})
+			objects = append(objects, catalog.NewObject(c.OID, "deleted"))
 
 			catalog.Delete(stringify(c.OID))
 		}
@@ -418,14 +391,6 @@ func (c *CardHolder) log(auth auth.OpAuth, operation string, oid catalog.OID, fi
 
 		trail.Write(record)
 	}
-}
-
-func lookup(oid string) interface{} {
-	if v, _ := catalog.GetV(oid); v != nil {
-		return v
-	}
-
-	return nil
 }
 
 func stringify(i interface{}) string {

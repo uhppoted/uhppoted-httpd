@@ -28,8 +28,6 @@ type ControllerSet struct {
 	LAN         *LAN          `json:"LAN"`
 }
 
-type object catalog.Object
-
 var guard sync.Mutex
 var trail audit.Trail
 
@@ -141,11 +139,11 @@ func (cc *ControllerSet) Load(file string) error {
 
 		for _, d := range []uint8{1, 2, 3, 4} {
 			if oid, ok := c.Doors[d]; ok && oid != "" {
-				catalog.PutV(oid+catalog.DoorControllerOID, c.OID, false)
-				catalog.PutV(oid+catalog.DoorControllerCreated, c.created, false)
-				catalog.PutV(oid+catalog.DoorControllerName, c.Name, false)
-				catalog.PutV(oid+catalog.DoorControllerID, c.DeviceID, false)
-				catalog.PutV(oid+catalog.DoorControllerDoor, d, false)
+				catalog.PutV(catalog.OID(oid).Append(catalog.DoorControllerOID), c.OID, false)
+				catalog.PutV(catalog.OID(oid).Append(catalog.DoorControllerCreated), c.created, false)
+				catalog.PutV(catalog.OID(oid).Append(catalog.DoorControllerName), c.Name, false)
+				catalog.PutV(catalog.OID(oid).Append(catalog.DoorControllerID), c.DeviceID, false)
+				catalog.PutV(catalog.OID(oid).Append(catalog.DoorControllerDoor), d, false)
 			}
 		}
 	}

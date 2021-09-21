@@ -205,10 +205,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]inte
 		} else {
 			d.log(auth, "add", d.OID, "door", "", "")
 			dd.Doors[d.OID] = *d
-			objects = append(objects, object{
-				OID:   stringify(d.OID),
-				Value: "new",
-			})
+			objects = append(objects, catalog.NewObject(d.OID, "new"))
 		}
 	}
 

@@ -170,10 +170,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]inte
 		} else {
 			c.log(auth, "add", c.OID, "card", "", "")
 			cc.Cards[c.OID] = c
-			objects = append(objects, object{
-				OID:   fmt.Sprintf("%v", c.OID),
-				Value: "new",
-			})
+			objects = append(objects, catalog.NewObject(c.OID, "new"))
 		}
 	}
 

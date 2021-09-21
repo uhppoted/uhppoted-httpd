@@ -61,12 +61,12 @@ func (l *LAN) String() string {
 
 func (l *LAN) AsObjects() []interface{} {
 	objects := []interface{}{
-		object{OID: stringify(l.OID), Value: fmt.Sprintf("%v", l.status)},
-		object{OID: l.OID.Append(LANType), Value: "LAN"},
-		object{OID: l.OID.Append(LANName), Value: l.Name},
-		object{OID: l.OID.Append(LANBindAddress), Value: fmt.Sprintf("%v", l.BindAddress)},
-		object{OID: l.OID.Append(LANBroadcastAddress), Value: fmt.Sprintf("%v", l.BroadcastAddress)},
-		object{OID: l.OID.Append(LANListenAddress), Value: fmt.Sprintf("%v", l.ListenAddress)},
+		catalog.NewObject(l.OID, l.status),
+		catalog.NewObject2(l.OID, LANType, "LAN"),
+		catalog.NewObject2(l.OID, LANName, l.Name),
+		catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress),
+		catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress),
+		catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress),
 	}
 
 	return objects
@@ -120,19 +120,16 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 
 	if l != nil {
 		switch oid {
-		case l.OID.Append(LANName):
+		case string(l.OID.Append(LANName)):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
 				l.log(auth, "update", l.OID, "name", stringify(l.Name), value)
 				l.Name = value
-				objects = append(objects, object{
-					OID:   l.OID.Append(LANName),
-					Value: l.Name,
-				})
+				objects = append(objects, catalog.NewObject2(l.OID, LANName, l.Name))
 			}
 
-		case l.OID.Append(LANBindAddress):
+		case string(l.OID.Append(LANBindAddress)):
 			if addr, err := core.ResolveBindAddr(value); err != nil {
 				return nil, err
 			} else if err := f("bind", addr); err != nil {
@@ -140,13 +137,10 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 			} else {
 				l.log(auth, "update", l.OID, "bind", stringify(l.BindAddress), value)
 				l.BindAddress = *addr
-				objects = append(objects, object{
-					OID:   l.OID.Append(LANBindAddress),
-					Value: fmt.Sprintf("%v", l.BindAddress),
-				})
+				objects = append(objects, catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress))
 			}
 
-		case l.OID.Append(LANBroadcastAddress):
+		case string(l.OID.Append(LANBroadcastAddress)):
 			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
 				return nil, err
 			} else if err := f("broadcast", addr); err != nil {
@@ -154,13 +148,10 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 			} else {
 				l.log(auth, "update", l.OID, "broadcast", stringify(l.BroadcastAddress), value)
 				l.BroadcastAddress = *addr
-				objects = append(objects, object{
-					OID:   l.OID.Append(LANBroadcastAddress),
-					Value: fmt.Sprintf("%v", l.BroadcastAddress),
-				})
+				objects = append(objects, catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress))
 			}
 
-		case l.OID.Append(LANListenAddress):
+		case string(l.OID.Append(LANListenAddress)):
 			if addr, err := core.ResolveListenAddr(value); err != nil {
 				return nil, err
 			} else if err = f("listen", addr); err != nil {
@@ -168,10 +159,7 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 			} else {
 				l.log(auth, "update", l.OID, "listen", stringify(l.ListenAddress), value)
 				l.ListenAddress = *addr
-				objects = append(objects, object{
-					OID:   l.OID.Append(LANListenAddress),
-					Value: fmt.Sprintf("%v", l.ListenAddress),
-				})
+				objects = append(objects, catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress))
 			}
 		}
 	}
@@ -434,7 +422,7 @@ func (l *LAN) store(id uint32, info interface{}, controller *Controller) {
 	case uhppoted.GetDoorDelayResponse:
 		if controller != nil {
 			if door, ok := controller.Doors[v.Door]; ok {
-				oid := door + ".2"
+				oid := catalog.OID(door + ".2")
 				catalog.PutV(oid, v.Delay, false)
 			}
 		}
@@ -442,7 +430,7 @@ func (l *LAN) store(id uint32, info interface{}, controller *Controller) {
 	case uhppoted.GetDoorControlResponse:
 		if controller != nil {
 			if door, ok := controller.Doors[v.Door]; ok {
-				oid := door + ".3"
+				oid := catalog.OID(door + ".3")
 				catalog.PutV(oid, v.Control, false)
 			}
 		}
@@ -501,8 +489,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			// ... update door delays
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured, modified := catalog.GetV(oid + catalog.DoorDelayConfigured)
-					actual, _ := catalog.GetV(oid + catalog.DoorDelay)
+					configured, modified := catalog.GetV(catalog.OID(oid).Append(catalog.DoorDelayConfigured))
+					actual, _ := catalog.GetV(catalog.OID(oid).Append(catalog.DoorDelay))
 
 					if configured != nil && (actual == nil || actual != configured) && modified {
 						delay := configured.(uint8)
@@ -516,8 +504,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorDelay(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
-							catalog.PutV(oid+catalog.DoorDelayConfigured, delay, false)
-							catalog.PutV(oid+catalog.DoorDelay, delay, true)
+							catalog.PutV(catalog.OID(oid).Append(catalog.DoorDelayConfigured), delay, false)
+							catalog.PutV(catalog.OID(oid).Append(catalog.DoorDelay), delay, true)
 							log.Printf("INFO  %v: synchronized door %v delay (%v)", response.DeviceID, door, delay)
 						}
 					}
@@ -527,8 +515,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			// ... update door control states
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured, modified := catalog.GetV(oid + catalog.DoorControlConfigured)
-					actual, _ := catalog.GetV(oid + catalog.DoorControl)
+					configured, modified := catalog.GetV(catalog.OID(oid).Append(catalog.DoorControlConfigured))
+					actual, _ := catalog.GetV(catalog.OID(oid).Append(catalog.DoorControl))
 
 					if configured != nil && (actual == nil || actual != configured) && modified {
 						mode := configured.(core.ControlState)
@@ -542,8 +530,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorControl(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
-							catalog.PutV(oid+catalog.DoorControlConfigured, mode, false)
-							catalog.PutV(oid+catalog.DoorControl, mode, true)
+							catalog.PutV(catalog.OID(oid).Append(catalog.DoorControlConfigured), mode, false)
+							catalog.PutV(catalog.OID(oid).Append(catalog.DoorControl), mode, true)
 							log.Printf("INFO  %v: synchronized door %v control (%v)", response.DeviceID, door, mode)
 						}
 					}
