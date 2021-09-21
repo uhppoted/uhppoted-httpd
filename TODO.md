@@ -31,7 +31,6 @@
         - [ ] groups
 
   - [ ] Make OID a type
-        - [x] controllers
         - [ ] make object.OID an OID
         - [ ] catalog
         - [ ] cache
@@ -52,18 +51,15 @@
         - use tag (?)
 
 - Groups
+  - [x] Fix div height hack
+  - [x] Fix checkbox flags
+  - [x] Use 'th' instead of .colheader in JS selectors
   - [ ] Update ACL to use reworked groups + doors
-        - [x] Remove `consolidate` and other no longer used logic
         - [ ] Clean up deeply nested O(N^N) logic
         - [ ] Defer to Group and Door for controller+door associations
         - [ ] Invoke rules for additional processing
-
-  - [x] Vertical scrollbar not showing
   - [ ] Scrollbar colour
         - [ ] user settings has gone AWOL
-  - [x] Fix div height hack
-  - [x] Fix checkbox flags
-  - [ ] Use 'th' instead of .colheader in JS selectors
   - [ ] Insert door in display order
 
 - Doors
@@ -73,6 +69,8 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 - [ ] system
+      - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
+            - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
       - [ ] Fix `get-events` log string
       - [ ] Fix `get-status` log string
       - move values to global cache
@@ -95,7 +93,6 @@
       - add controller name to uhppote-core
       - add timezone to uhppote-core
       - validate Local::Device timezone on initialization
-      - make DeviceID a type that handles nil on String() (like maybe Uint32 ???)
       - limit number of pending 'update' requests (e.g. if device is not responding)
       - use uhppoted-lib::healthcheck
 

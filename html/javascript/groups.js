@@ -113,7 +113,7 @@ function realize (groups) {
 
   // ... columns
 
-  const columns = table.querySelectorAll('.colheader.door')
+  const columns = table.querySelectorAll('th.door')
   const cols = new Map([...columns].map(c => [c.dataset.door, c]))
   const missing = [...doors.values()].filter(o => o.OID === '' || !cols.has(o.OID))
   const surplus = [...cols].filter(([k]) => !doors.has(k))

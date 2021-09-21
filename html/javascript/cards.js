@@ -120,7 +120,7 @@ function realize (cards) {
 
   // ... columns
 
-  const columns = table.querySelectorAll('.colheader.group')
+  const columns = table.querySelectorAll('th.group')
   const cols = new Map([...columns].map(c => [c.dataset.group, c]))
   const missing = [...groups.values()].filter(o => o.OID === '' || !cols.has(o.OID))
   const surplus = [...cols].filter(([k]) => !groups.has(k))
