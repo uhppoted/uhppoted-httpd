@@ -70,6 +70,31 @@ func (d *Door) IsDeleted() bool {
 	return false
 }
 
+func (d *Door) DeviceID() uint32 {
+	if d != nil {
+		if deviceID := d.lookup(DoorControllerID); deviceID != nil {
+			if v, ok := deviceID.(*uint32); ok && v != nil {
+				return *v
+			}
+		}
+
+	}
+
+	return 0
+}
+
+func (d *Door) Door() uint8 {
+	if d != nil {
+		if door := d.lookup(DoorControllerDoor); door != nil {
+			if v, ok := door.(uint8); ok {
+				return v
+			}
+		}
+
+	}
+
+	return 0
+}
 func (d Door) String() string {
 	return fmt.Sprintf("%v", d.Name)
 }

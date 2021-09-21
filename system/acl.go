@@ -30,9 +30,9 @@ func CompareACL() {
 }
 
 func permissions() (acl.ACL, error) {
-	cards := sys.cards.List()
-	groups := sys.groups.List()
-	doors := sys.doors.List()
+	cards := sys.cards.Cards
+	groups := sys.groups.Groups
+	doors := sys.doors.Doors
 
 	// initialise empty ACL
 	acl := make(acl.ACL)
@@ -61,31 +61,30 @@ func permissions() (acl.ACL, error) {
 	}
 
 	// ... populate ACL from cards + groups + doors
+
+	grant := func(card uint32, device uint32, door uint8) {
+		if card > 0 && device > 0 && door >= 1 && door <= 4 {
+			if _, ok := acl[device]; ok {
+				if _, ok := acl[device][card]; ok {
+					if _, ok := acl[device][card].Doors[door]; ok {
+						acl[device][card].Doors[door] = 1
+					}
+				}
+			}
+		}
+	}
+
 	for _, c := range cards {
 		if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
 			for g, member := range c.Groups {
-				if member {
-					if group, ok := groups[catalog.OID(g)]; ok {
-						for d, allowed := range group.Doors {
-							if allowed {
-								if door, ok := doors[d]; ok {
-									if v, _ := catalog.GetV(door.OID.Append(DoorControllerID)); v != nil {
-										if w, _ := catalog.GetV(door.OID.Append(DoorControllerDoor)); w != nil {
-											card := uint32(*c.Card)
-											device := *(v.(*uint32))
-											doorID := w.(uint8)
+				if group, ok := groups[catalog.OID(g)]; ok && member {
+					for d, allowed := range group.Doors {
+						if door, ok := doors[d]; ok && allowed {
+							card := uint32(*c.Card)
+							device := door.DeviceID()
+							doorID := door.Door()
 
-											if _, ok := acl[device]; ok {
-												if _, ok := acl[device][card]; ok {
-													if _, ok := acl[device][card].Doors[doorID]; ok {
-														acl[device][card].Doors[doorID] = 1
-													}
-												}
-											}
-										}
-									}
-								}
-							}
+							grant(card, device, doorID)
 						}
 					}
 				}

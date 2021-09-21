@@ -233,18 +233,6 @@ func (gg *Groups) Validate() error {
 	return nil
 }
 
-func (gg *Groups) List() map[catalog.OID]Group {
-	guard.RLock()
-	defer guard.RUnlock()
-
-	list := map[catalog.OID]Group{}
-	for k, g := range gg.Groups {
-		list[k] = g
-	}
-
-	return list
-}
-
 func (gg *Groups) add(auth auth.OpAuth, g Group) (*Group, error) {
 	oid := catalog.NewGroup()
 

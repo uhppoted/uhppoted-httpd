@@ -211,18 +211,6 @@ func (cc *Cards) AsObjects() []interface{} {
 	return objects
 }
 
-func (cc *Cards) List() []CardHolder {
-	guard.RLock()
-	defer guard.RUnlock()
-
-	list := []CardHolder{}
-	for _, c := range cc.Cards {
-		list = append(list, *c)
-	}
-
-	return list
-}
-
 func (cc *Cards) add(auth auth.OpAuth, c CardHolder) (*CardHolder, error) {
 	oid := catalog.NewCard()
 

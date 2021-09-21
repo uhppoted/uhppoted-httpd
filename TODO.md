@@ -57,7 +57,7 @@
   - [x] Scrollbar colour
   - [ ] Update ACL to use reworked groups + doors
         - [x] Clean up deeply nested O(N^N) logic
-        - [ ] Defer to Group and Door for controller+door associations
+        - [x] Defer to Group and Door for controller+door associations
         - [ ] Invoke rules for additional processing
   - [ ] Insert door in display order
 
