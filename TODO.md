@@ -56,7 +56,7 @@
   - [x] Use 'th' instead of .colheader in JS selectors
   - [x] Scrollbar colour
   - [ ] Update ACL to use reworked groups + doors
-        - [ ] Clean up deeply nested O(N^N) logic
+        - [x] Clean up deeply nested O(N^N) logic
         - [ ] Defer to Group and Door for controller+door associations
         - [ ] Invoke rules for additional processing
   - [ ] Insert door in display order

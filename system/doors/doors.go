@@ -252,13 +252,13 @@ func (dd *Doors) Validate() error {
 	return nil
 }
 
-func (dd *Doors) List() []Door {
+func (dd *Doors) List() map[catalog.OID]Door {
 	guard.RLock()
 	defer guard.RUnlock()
 
-	list := []Door{}
-	for _, d := range dd.Doors {
-		list = append(list, d)
+	list := map[catalog.OID]Door{}
+	for k, d := range dd.Doors {
+		list[k] = d
 	}
 
 	return list

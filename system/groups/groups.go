@@ -233,13 +233,13 @@ func (gg *Groups) Validate() error {
 	return nil
 }
 
-func (gg *Groups) List() []Group {
+func (gg *Groups) List() map[catalog.OID]Group {
 	guard.RLock()
 	defer guard.RUnlock()
 
-	list := []Group{}
-	for _, g := range gg.Groups {
-		list = append(list, g)
+	list := map[catalog.OID]Group{}
+	for k, g := range gg.Groups {
+		list[k] = g
 	}
 
 	return list
