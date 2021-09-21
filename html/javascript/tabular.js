@@ -76,11 +76,11 @@ export function onChoose (tag, event) {
 export function onTick (tag, event) {
   switch (tag) {
     case 'card':
-      set(event.target, event.target.checked ? 'true' : '')
+      set(event.target, event.target.checked ? 'true' : 'false')
       break
 
     case 'group':
-      set(event.target, event.target.checked ? 'true' : '')
+      set(event.target, event.target.checked ? 'true' : 'false')
       break
   }
 }

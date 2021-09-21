@@ -60,8 +60,9 @@
 
   - [x] Vertical scrollbar not showing
   - [ ] Scrollbar colour
+        - [ ] user settings has gone AWOL
   - [x] Fix div height hack
-  - [ ] Fix checkbox flags
+  - [x] Fix checkbox flags
   - [ ] Use 'th' instead of .colheader in JS selectors
   - [ ] Insert door in display order
 
