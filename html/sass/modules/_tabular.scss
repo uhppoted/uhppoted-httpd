@@ -1,63 +1,32 @@
-.tabular {
+.tabular  {
   background: $content-table-background;
-  border-collapse: collapse;
-  border: 1px solid $content-table-border;
-  display: block; 
-  height: 90%;
-  margin-bottom: 32px;
-  overflow: auto; 
   color: $content-table-text;
-  scrollbar-color: $content-table-scrollbar-color;
+  border: none;
+  border-collapse: collapse;
 }
 
 .tabular thead {
   position: sticky; 
   top: 0px; 
-  width: 100%;
-}
-
-.tabular td {
-  position: relative;
-  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
-  text-align: left;
-  font-size: 0.9em;
-  font-weight: normal;
-  font-style: normal;
-}
-
-/* Ref. https://css-tricks.com/position-sticky-and-table-headers */
-.tabular th {
-  background: $content-table-background-header;
-  padding: 0.5rem;
-  text-align: center;
-  font-size: 0.9em;
-  font-weight: 500;
-  font-style: normal;
-  color: $content-table-text;
-}
-
-.tabular th.colheader {
-  position: sticky;
-  top: -1px;   // HACK: 0px displays the scrolled information if there is a border
-  z-index: 2;
-}
-
-.tabular th.topleft {
-  background: $content-table-background-header;
-  position: sticky;
-  top: -1px;   
-  left: -1px;
   z-index: 3;
 }
 
-.tabular tbody td.rowheader {
+.tabular thead th.rowheader {
   position: sticky;
-  left: -1px;
-  z-index: 2;
+  left: 0px;
 }
 
-.tabular tbody {
-  z-index: 1;
+.tabular thead tr th {
+  background: $content-table-background-header;
+  color: $content-table-text;  
+  padding: 0.5rem;
+  font-size: 0.9em;
+  font-weight: 500;
+  font-style: normal;
+  text-align: center;
+}
+
+.tabular tbody tr {
 }
 
 .tabular tbody tr:nth-child(odd) {
@@ -68,6 +37,28 @@
   background: $content-table-background-even;
 }
 
+.tabular tbody tr.modified {
+  background: $content-table-row-modified;
+}
+
+.tabular tbody tr.new {
+  background: $content-table-row-new;
+}
+
+.tabular tbody td {
+  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+  text-align: left;
+  font-size: 0.9em;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.tabular tbody td.rowheader {
+  position: sticky;
+  left: 0px;
+  z-index: 2;
+}
+
 .tabular tbody tr:nth-child(odd) td.rowheader {
   background: darken($content-table-background-odd,5%);
 }
@@ -76,20 +67,8 @@
   background: darken($content-table-background-even,5%);
 }
 
-.tabular tbody tr.empty {
-  height: 32px;
-}
-
-.tabular tbody tr.modified {
-  background: $content-table-row-modified;
-}
-
 .tabular tbody tr.modified td.rowheader {
   background: $content-table-row-modified;
-}
-
-.tabular tbody tr.new {
-  background: $content-table-row-new;
 }
 
 .tabular tbody tr.new td.rowheader {
