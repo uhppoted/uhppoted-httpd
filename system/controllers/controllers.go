@@ -134,7 +134,7 @@ func (cc *ControllerSet) Load(file string) error {
 	catalog.PutInterface(cc.LAN.OID)
 	for _, c := range cc.Controllers {
 		if c.DeviceID != nil && *c.DeviceID != 0 {
-			catalog.PutController(*c.DeviceID, string(c.OID))
+			catalog.PutController(*c.DeviceID, c.OID)
 		}
 
 		for _, d := range []uint8{1, 2, 3, 4} {

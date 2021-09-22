@@ -181,7 +181,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 			g.deleted = &now
 			objects = append(objects, catalog.NewObject(g.OID, "deleted"))
 
-			catalog.Delete(stringify(g.OID))
+			catalog.Delete(g.OID)
 		}
 	}
 

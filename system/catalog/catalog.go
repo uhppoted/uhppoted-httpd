@@ -7,13 +7,13 @@ import (
 
 var catalog = struct {
 	interfaces  map[OID]struct{}
-	controllers map[string]controller
+	controllers map[OID]controller
 	doors       map[OID]struct{}
 	cards       map[OID]struct{}
 	groups      map[OID]struct{}
 }{
 	interfaces:  map[OID]struct{}{},
-	controllers: map[string]controller{},
+	controllers: map[OID]controller{},
 	doors:       map[OID]struct{}{},
 	cards:       map[OID]struct{}{},
 	groups:      map[OID]struct{}{},
@@ -33,7 +33,7 @@ func PutInterface(oid OID) {
 	catalog.interfaces[oid] = struct{}{}
 }
 
-func PutController(deviceID uint32, oid string) {
+func PutController(deviceID uint32, oid OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -64,7 +64,7 @@ func PutGroup(oid OID) {
 	catalog.groups[oid] = struct{}{}
 }
 
-func GetController(deviceID uint32) string {
+func GetController(deviceID uint32) OID {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -80,7 +80,7 @@ func GetController(deviceID uint32) string {
 loop:
 	for {
 		item += 1
-		oid := fmt.Sprintf("0.1.1.2.%d", item)
+		oid := OID(fmt.Sprintf("0.1.1.2.%d", item))
 		for v, _ := range catalog.controllers {
 			if v == oid {
 				continue loop
@@ -158,7 +158,7 @@ loop:
 	}
 }
 
-func Delete(oid string) {
+func Delete(oid OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -170,7 +170,7 @@ func Delete(oid string) {
 	}
 }
 
-func Find(deviceID uint32) string {
+func Find(deviceID uint32) OID {
 	guard.Lock()
 	defer guard.Unlock()
 

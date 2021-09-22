@@ -33,7 +33,7 @@
   - [ ] Make OID a type
         - [x] cache
         - [x] UpdateByOID
-        - [ ] catalog
+        - [x] catalog
         - [ ] move all _stringify's_ to OID/object
 
 - Migrate cards to OIDs

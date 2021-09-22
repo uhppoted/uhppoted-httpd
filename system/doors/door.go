@@ -390,7 +390,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 
 			objects = append(objects, catalog.NewObject(d.OID, "deleted"))
 
-			catalog.Delete(stringify(d.OID))
+			catalog.Delete(d.OID)
 		}
 	}
 

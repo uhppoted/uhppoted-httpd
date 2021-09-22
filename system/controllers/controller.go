@@ -482,7 +482,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			c.deleted = &now
 			objects = append(objects, catalog.NewObject(c.OID, "deleted"))
 
-			catalog.Delete(string(c.OID))
+			catalog.Delete(c.OID)
 		}
 	}
 
