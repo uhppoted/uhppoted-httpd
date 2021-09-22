@@ -108,7 +108,7 @@ function realize (groups) {
 
   const doors = new Map([...DB.doors.values()]
     .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
-    .sort((p, q) => p.created.localeCompare(q.created))
+    .sort((p, q) => p.index - q.index)
     .map(o => [o.OID, o]))
 
   // ... columns

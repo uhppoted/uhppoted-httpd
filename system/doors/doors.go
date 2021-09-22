@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -38,6 +39,16 @@ func NewDoors() Doors {
 
 func (dd *Doors) AsObjects() []interface{} {
 	objects := []interface{}{}
+
+	// // TODO: remove - debugging JS 'shuffle'
+	// for k, d := range dd.Doors {
+	// 	if d.OID == catalog.OID("0.2.1") {
+	// 		d.Index = (d.Index + 1) % 16
+	// 		dd.Doors[k] = d
+	// 		break
+	// 	}
+	// }
+	// // END TODO
 
 	for _, d := range dd.Doors {
 		if d.IsValid() || d.IsDeleted() {
@@ -76,6 +87,26 @@ func (dd *Doors) Load(file string) error {
 
 			dd.Doors[d.OID] = d
 		}
+	}
+
+	keys := []catalog.OID{}
+	for k, _ := range dd.Doors {
+		keys = append(keys, k)
+	}
+
+	sort.SliceStable(keys, func(i, j int) bool {
+		p := dd.Doors[keys[i]]
+		q := dd.Doors[keys[j]]
+
+		return p.created.Before(q.created)
+	})
+
+	var index uint32 = 1
+	for _, k := range keys {
+		d := dd.Doors[k]
+		d.Index = index
+		dd.Doors[k] = d
+		index += 2
 	}
 
 	for _, v := range dd.Doors {

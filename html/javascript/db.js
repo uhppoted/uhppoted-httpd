@@ -258,6 +258,7 @@ function door (o) {
       delay: { delay: '', configured: '', status: 'unknown', err: '' },
       mode: { mode: '', configured: '', status: 'unknown', err: '' },
       status: o.value,
+      index: 0,
       mark: 0
     })
 
@@ -327,6 +328,10 @@ function door (o) {
         case k + '.3.3':
           v.mode.err = o.value
           break
+
+        case k + '.4':
+          v.index = o.value
+          break
       }
     }
   })
@@ -387,7 +392,7 @@ function card (o) {
           break
 
         case k + '.4':
-          v.to = o.value
+          v.index = parseInt(o.value, 10)
           break
 
         default:

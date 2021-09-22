@@ -5,22 +5,22 @@ import (
 	"testing"
 )
 
-func TestOIDJoin(t *testing.T) {
+func TestOIDAppend(t *testing.T) {
 	tests := []struct {
 		oid      OID
 		suffix   Suffix
-		expected string
+		expected OID
 	}{
-		{oid: OID("0.1"), suffix: "2.3", expected: "0.1.2.3"},
-		{oid: OID("0.1."), suffix: "2.3", expected: "0.1.2.3"},
-		{oid: OID("0.1"), suffix: ".2.3", expected: "0.1.2.3"},
-		{oid: OID("0.1."), suffix: ".2.3", expected: "0.1.2.3"},
+		{oid: OID("0.1"), suffix: "2.3", expected: OID("0.1.2.3")},
+		{oid: OID("0.1."), suffix: "2.3", expected: OID("0.1.2.3")},
+		{oid: OID("0.1"), suffix: ".2.3", expected: OID("0.1.2.3")},
+		{oid: OID("0.1."), suffix: ".2.3", expected: OID("0.1.2.3")},
 	}
 
 	for _, v := range tests {
-		joined := Join(v.oid, v.suffix)
+		joined := v.oid.Append(v.suffix)
 		if joined != v.expected {
-			t.Errorf("Incorrectly joined OID - expected:%v, got:%v", v.expected, joined)
+			t.Errorf("Incorrectly appended OID - expected:%v, got:%v", v.expected, joined)
 		}
 	}
 
