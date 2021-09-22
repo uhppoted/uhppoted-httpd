@@ -31,10 +31,9 @@
         - [ ] groups
 
   - [ ] Make OID a type
-        - [x] make object.OID an OID
-        - [ ] UpdateByOID
+        - [x] cache
+        - [x] UpdateByOID
         - [ ] catalog
-        - [ ] cache
         - [ ] move all _stringify's_ to OID/object
 
 - Migrate cards to OIDs
@@ -52,15 +51,9 @@
         - use tag (?)
 
 - Groups
-  - [x] Fix div height hack
-  - [x] Fix checkbox flags
-  - [x] Use 'th' instead of .colheader in JS selectors
-  - [x] Scrollbar colour
-  - [ ] Update ACL to use reworked groups + doors
-        - [x] Clean up deeply nested O(N^N) logic
-        - [x] Defer to Group and Door for controller+door associations
-        - [ ] Invoke rules for additional processing
   - [ ] Insert door in display order
+  - [ ] Update ACL to use reworked groups + doors
+        - [ ] Invoke rules for additional processing
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

@@ -22,7 +22,7 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	shadow := sys.cards.Clone()
 
 	for _, object := range objects {
-		if updated, err := shadow.UpdateByOID(auth, string(object.OID), object.Value); err != nil {
+		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value); err != nil {
 			return nil, err
 		} else if updated != nil {
 			list.Objects = append(list.Objects, updated...)

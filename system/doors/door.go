@@ -270,7 +270,7 @@ func (d *Door) clone() Door {
 	}
 }
 
-func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -285,7 +285,7 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 		name := stringify(d.Name)
 
 		switch oid {
-		case string(d.OID.Append(DoorName)):
+		case d.OID.Append(DoorName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
@@ -300,7 +300,7 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 				})
 			}
 
-		case string(d.OID.Append(DoorDelay)):
+		case d.OID.Append(DoorDelay):
 			delay := d.delay
 
 			if err := f("delay", value); err != nil {
@@ -335,7 +335,7 @@ func (d *Door) set(auth auth.OpAuth, oid string, value string) ([]interface{}, e
 				d.log(auth, "update", d.OID, "delay", stringify(delay), value)
 			}
 
-		case string(d.OID.Append(DoorControl)):
+		case d.OID.Append(DoorControl):
 			if err := f("mode", value); err != nil {
 				return nil, err
 			} else {

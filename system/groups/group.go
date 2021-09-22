@@ -129,7 +129,7 @@ func (g *Group) AsRuleEntity() interface{} {
 	return &entity
 }
 
-func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -144,7 +144,7 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 		name := stringify(g.Name)
 
 		switch {
-		case oid == string(g.OID.Append(GroupName)):
+		case oid == g.OID.Append(GroupName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
@@ -154,7 +154,7 @@ func (g *Group) set(auth auth.OpAuth, oid string, value string) ([]interface{}, 
 			}
 
 		case catalog.OID(g.OID.Append(GroupDoors)).Contains(oid):
-			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(oid); m != nil && len(m) > 1 {
+			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
 				did := m[1]
 				k := catalog.OID("0.2." + did)
 				door, _ := catalog.GetV(k.Append(DoorName))

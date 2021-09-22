@@ -7,10 +7,10 @@ type value struct {
 	dirty bool
 }
 
-var cache = map[string]value{}
+var cache = map[OID]value{}
 
 func GetV(oid OID) (interface{}, bool) {
-	v, ok := cache[string(oid)]
+	v, ok := cache[oid]
 	if ok {
 		return v.value, v.dirty
 	}
@@ -19,7 +19,7 @@ func GetV(oid OID) (interface{}, bool) {
 }
 
 func PutV(oid OID, v interface{}, dirty bool) {
-	cache[string(oid)] = value{
+	cache[oid] = value{
 		value: v,
 		dirty: dirty,
 	}

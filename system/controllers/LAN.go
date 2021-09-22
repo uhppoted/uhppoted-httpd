@@ -107,7 +107,7 @@ func (l *LAN) clone() *LAN {
 	return nil
 }
 
-func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -120,7 +120,7 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 
 	if l != nil {
 		switch oid {
-		case string(l.OID.Append(LANName)):
+		case l.OID.Append(LANName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
@@ -129,7 +129,7 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 				objects = append(objects, catalog.NewObject2(l.OID, LANName, l.Name))
 			}
 
-		case string(l.OID.Append(LANBindAddress)):
+		case l.OID.Append(LANBindAddress):
 			if addr, err := core.ResolveBindAddr(value); err != nil {
 				return nil, err
 			} else if err := f("bind", addr); err != nil {
@@ -140,7 +140,7 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 				objects = append(objects, catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress))
 			}
 
-		case string(l.OID.Append(LANBroadcastAddress)):
+		case l.OID.Append(LANBroadcastAddress):
 			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
 				return nil, err
 			} else if err := f("broadcast", addr); err != nil {
@@ -151,7 +151,7 @@ func (l *LAN) set(auth auth.OpAuth, oid string, value string) ([]interface{}, er
 				objects = append(objects, catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress))
 			}
 
-		case string(l.OID.Append(LANListenAddress)):
+		case l.OID.Append(LANListenAddress):
 			if addr, err := core.ResolveListenAddr(value); err != nil {
 				return nil, err
 			} else if err = f("listen", addr); err != nil {

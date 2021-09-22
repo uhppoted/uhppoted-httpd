@@ -184,7 +184,7 @@ func (gg *Groups) AsObjects() []interface{} {
 	return objects
 }
 
-func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	if gg == nil {
 		return nil, nil
 	}

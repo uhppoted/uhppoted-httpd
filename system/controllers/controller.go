@@ -344,7 +344,7 @@ func (c *Controller) IsSaveable() bool {
 	return true
 }
 
-func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -357,7 +357,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 
 	if c != nil {
 		switch oid {
-		case string(c.OID.Append(ControllerName)):
+		case c.OID.Append(ControllerName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
@@ -368,7 +368,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				objects = append(objects, catalog.NewObject2(c.OID, ".1", c.Name))
 			}
 
-		case string(c.OID.Append(ControllerDeviceID)):
+		case c.OID.Append(ControllerDeviceID):
 			if err := f("deviceID", value); err != nil {
 				return nil, err
 			} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
@@ -386,7 +386,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				objects = append(objects, catalog.NewObject2(c.OID, ".2", ""))
 			}
 
-		case string(c.OID.Append(ControllerAddress)):
+		case c.OID.Append(ControllerAddress):
 			if addr, err := core.ResolveAddr(value); err != nil {
 				return nil, err
 			} else if err := f("address", addr); err != nil {
@@ -398,7 +398,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				objects = append(objects, catalog.NewObject2(c.OID, ".3", c.IP))
 			}
 
-		case string(c.OID.Append(ControllerDateTime)):
+		case c.OID.Append(ControllerDateTime):
 			if tz, err := types.Timezone(value); err != nil {
 				return nil, err
 			} else if err := f("timezone", tz); err != nil {
@@ -429,7 +429,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				}
 			}
 
-		case string(c.OID.Append(ControllerDoor1)):
+		case c.OID.Append(ControllerDoor1):
 			if err := f("door[1]", value); err != nil {
 				return nil, err
 			} else {
@@ -439,7 +439,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				objects = append(objects, catalog.NewObject2(c.OID, ".7", c.Doors[1]))
 			}
 
-		case string(c.OID.Append(ControllerDoor2)):
+		case c.OID.Append(ControllerDoor2):
 			if err := f("door[2]", value); err != nil {
 				return nil, err
 			} else {
@@ -449,7 +449,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				objects = append(objects, catalog.NewObject2(c.OID, ".8", c.Doors[2]))
 			}
 
-		case string(c.OID.Append(ControllerDoor3)):
+		case c.OID.Append(ControllerDoor3):
 			if err := f("door[3]", value); err != nil {
 				return nil, err
 			} else {
@@ -459,7 +459,7 @@ func (c *Controller) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				objects = append(objects, catalog.NewObject2(c.OID, ".9", c.Doors[3]))
 			}
 
-		case string(c.OID.Append(ControllerDoor4)):
+		case c.OID.Append(ControllerDoor4):
 			if err := f("door[4]", value); err != nil {
 				return nil, err
 			} else {

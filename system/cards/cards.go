@@ -144,7 +144,7 @@ func (cc *Cards) Clone() Cards {
 	return shadow
 }
 
-func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	if cc == nil {
 		return nil, nil
 	}

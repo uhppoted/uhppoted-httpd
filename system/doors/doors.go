@@ -179,7 +179,7 @@ func (dd Doors) Print() {
 	}
 }
 
-func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	if dd == nil {
 		return nil, nil
 	}

@@ -252,7 +252,7 @@ func (c *CardHolder) deserialize(bytes []byte) error {
 	return nil
 }
 
-func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interface{}, error) {
+func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -267,7 +267,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 		clone := c.clone()
 
 		switch {
-		case oid == catalog.Join(c.OID, CardName):
+		case oid == c.OID.Append(CardName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
@@ -277,7 +277,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				objects = append(objects, catalog.NewObject2(c.OID, CardName, c.Name))
 			}
 
-		case oid == catalog.Join(c.OID, CardNumber):
+		case oid == c.OID.Append(CardNumber):
 			if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 				if n, err := strconv.ParseUint(value, 10, 32); err != nil {
 					return nil, err
@@ -299,7 +299,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				}
 			}
 
-		case oid == catalog.Join(c.OID, CardFrom):
+		case oid == c.OID.Append(CardFrom):
 			if err := f("from", value); err != nil {
 				return nil, err
 			} else if from, err := types.ParseDate(value); err != nil {
@@ -312,7 +312,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 				objects = append(objects, catalog.NewObject2(c.OID, CardFrom, c.From))
 			}
 
-		case oid == catalog.Join(c.OID, CardTo):
+		case oid == c.OID.Append(CardTo):
 			if err := f("to", value); err != nil {
 				return nil, err
 			} else if to, err := types.ParseDate(value); err != nil {
@@ -326,7 +326,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid string, value string) ([]interfac
 			}
 
 		case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
-			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(oid); m != nil && len(m) > 1 {
+			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
 				gid := m[1]
 				k := "0.4." + gid
 
