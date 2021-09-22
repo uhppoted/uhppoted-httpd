@@ -152,7 +152,7 @@ func (c *Controller) AsObjects() []interface{} {
 
 	created := c.created.Format("2006-01-02 15:04:05")
 	status := types.StatusUnknown
-	name := stringify(c.Name)
+	name := c.Name
 	deviceID := ""
 	address := addr{}
 	datetime := tinfo{}
@@ -361,7 +361,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "name", stringify(c.Name), value)
+				c.log(auth, "update", c.OID, "name", c.Name, value)
 				name := types.Name(value)
 				c.Name = &name
 				c.unconfigured = false
@@ -373,14 +373,14 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 				return nil, err
 			} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 				if id, err := strconv.ParseUint(value, 10, 32); err == nil {
-					c.log(auth, "update", c.OID, "device-id", stringify(c.DeviceID), value)
+					c.log(auth, "update", c.OID, "device-id", c.DeviceID, value)
 					cid := uint32(id)
 					c.DeviceID = &cid
 					c.unconfigured = false
 					objects = append(objects, catalog.NewObject2(c.OID, ".2", cid))
 				}
 			} else if value == "" {
-				c.log(auth, "update", c.OID, "device-id", stringify(c.DeviceID), value)
+				c.log(auth, "update", c.OID, "device-id", c.DeviceID, value)
 				c.DeviceID = nil
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".2", ""))
@@ -392,7 +392,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			} else if err := f("address", addr); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "address", stringify(c.IP), value)
+				c.log(auth, "update", c.OID, "address", c.IP, value)
 				c.IP = addr
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".3", c.IP))
@@ -404,7 +404,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			} else if err := f("timezone", tz); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "timezone", stringify(c.TimeZone), tz.String())
+				c.log(auth, "update", c.OID, "timezone", c.TimeZone, tz.String())
 				tzs := tz.String()
 				c.TimeZone = &tzs
 				c.unconfigured = false
@@ -433,7 +433,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			if err := f("door[1]", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "door[1]", stringify(c.Doors[1]), value)
+				c.log(auth, "update", c.OID, "door[1]", c.Doors[1], value)
 				c.Doors[1] = value
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".7", c.Doors[1]))
@@ -443,7 +443,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			if err := f("door[2]", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "door[2]", stringify(c.Doors[2]), value)
+				c.log(auth, "update", c.OID, "door[2]", c.Doors[2], value)
 				c.Doors[2] = value
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".8", c.Doors[2]))
@@ -453,7 +453,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			if err := f("door[3]", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "door[3]", stringify(c.Doors[3]), value)
+				c.log(auth, "update", c.OID, "door[3]", c.Doors[3], value)
 				c.Doors[3] = value
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".9", c.Doors[3]))
@@ -463,7 +463,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			if err := f("door[4]", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "door[4]", stringify(c.Doors[4]), value)
+				c.log(auth, "update", c.OID, "door[4]", c.Doors[4], value)
 				c.Doors[4] = value
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".10", c.Doors[4]))
@@ -514,7 +514,7 @@ func (c *Controller) clone() *Controller {
 	return nil
 }
 
-func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, field, current, value string) {
+func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
 	type info struct {
 		OID        string `json:"OID"`
 		Controller string `json:"controller"`
@@ -539,8 +539,8 @@ func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, fi
 				OID:        oid,
 				Controller: stringify(c.DeviceID),
 				Field:      field,
-				Current:    current,
-				Updated:    value,
+				Current:    stringify(current),
+				Updated:    stringify(value),
 			},
 		}
 

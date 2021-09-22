@@ -70,12 +70,12 @@ func (g Group) clone() Group {
 
 func (g *Group) AsObjects() []interface{} {
 	created := g.created.Format("2006-01-02 15:04:05")
-	status := stringify(types.StatusOk)
-	name := stringify(g.Name)
-	index := stringify(g.Index)
+	status := types.StatusOk
+	name := g.Name
+	index := g.Index
 
 	if g.deleted != nil {
-		status = stringify(types.StatusDeleted)
+		status = types.StatusDeleted
 	}
 
 	objects := []interface{}{
@@ -148,7 +148,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				g.log(auth, "update", g.OID, "name", stringify(g.Name), value)
+				g.log(auth, "update", g.OID, "name", g.Name, value)
 				g.Name = value
 				objects = append(objects, catalog.NewObject2(g.OID, GroupName, g.Name))
 			}
@@ -246,7 +246,7 @@ func (g *Group) deserialize(bytes []byte) error {
 	return nil
 }
 
-func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field, current, value string) {
+func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
 	type info struct {
 		OID     string `json:"OID"`
 		Group   string `json:"group"`
@@ -269,8 +269,8 @@ func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field, 
 				OID:     stringify(OID),
 				Group:   stringify(g.Name),
 				Field:   field,
-				Current: current,
-				Updated: value,
+				Current: stringify(current),
+				Updated: stringify(value),
 			},
 		}
 

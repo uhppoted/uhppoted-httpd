@@ -101,8 +101,8 @@ func (d Door) String() string {
 
 func (d *Door) AsObjects() []interface{} {
 	created := d.created.Format("2006-01-02 15:04:05")
-	status := stringify(types.StatusOk)
-	name := stringify(d.Name)
+	status := types.StatusOk
+	name := d.Name
 
 	controller := struct {
 		OID     string
@@ -119,78 +119,78 @@ func (d *Door) AsObjects() []interface{} {
 	}
 
 	delay := struct {
-		delay      string
-		configured string
-		status     string
+		delay      uint8
+		configured uint8
+		status     types.Status
 		err        string
 	}{
-		configured: stringify(d.delay),
-		status:     stringify(types.StatusUnknown),
+		configured: d.delay,
+		status:     types.StatusUnknown,
 	}
 
 	control := struct {
-		control    string
-		configured string
-		status     string
+		control    core.ControlState
+		configured core.ControlState
+		status     types.Status
 		err        string
 	}{
-		configured: stringify(d.mode),
-		status:     stringify(types.StatusUnknown),
+		configured: d.mode,
+		status:     types.StatusUnknown,
 	}
 
 	if v, dirty := catalog.GetV(d.OID.Append(DoorDelay)); v != nil {
-		delay.delay = stringify(v)
+		delay.delay = v.(uint8)
 
 		switch {
 		case dirty:
-			delay.status = stringify(types.StatusUncertain)
+			delay.status = types.StatusUncertain
 
 		case v == d.delay:
-			delay.status = stringify(types.StatusOk)
+			delay.status = types.StatusOk
 
 		default:
-			delay.status = stringify(types.StatusError)
+			delay.status = types.StatusError
 			delay.err = fmt.Sprintf("Door delay (%vs) does not match configuration (%vs)", v, d.delay)
 		}
 	}
 
 	if v, dirty := catalog.GetV(d.OID.Append(DoorControl)); v != nil {
-		control.control = stringify(v.(core.ControlState))
+		control.control = v.(core.ControlState)
 
 		switch {
 		case dirty:
-			control.status = stringify(types.StatusUncertain)
+			control.status = types.StatusUncertain
 
 		case v == d.mode:
-			control.status = stringify(types.StatusOk)
+			control.status = types.StatusOk
 
 		default:
-			control.status = stringify(types.StatusError)
+			control.status = types.StatusError
 			control.err = fmt.Sprintf("Door control state ('%v') does not match configuration ('%v')", v, d.mode)
 		}
 	}
 
 	if d.deleted != nil {
-		status = stringify(types.StatusDeleted)
+		status = types.StatusDeleted
 	}
 
 	objects := []interface{}{
-		object{OID: d.OID, Value: status},
-		object{OID: d.OID.Append(DoorCreated), Value: created},
-		object{OID: d.OID.Append(DoorControllerOID), Value: controller.OID},
-		object{OID: d.OID.Append(DoorControllerCreated), Value: controller.created},
-		object{OID: d.OID.Append(DoorControllerName), Value: controller.name},
-		object{OID: d.OID.Append(DoorControllerID), Value: controller.ID},
-		object{OID: d.OID.Append(DoorControllerDoor), Value: controller.door},
-		object{OID: d.OID.Append(DoorName), Value: name},
-		object{OID: d.OID.Append(DoorDelay), Value: delay.delay},
-		object{OID: d.OID.Append(DoorDelayStatus), Value: delay.status},
-		object{OID: d.OID.Append(DoorDelayConfigured), Value: delay.configured},
-		object{OID: d.OID.Append(DoorDelayError), Value: delay.err},
-		object{OID: d.OID.Append(DoorControl), Value: control.control},
-		object{OID: d.OID.Append(DoorControlStatus), Value: control.status},
-		object{OID: d.OID.Append(DoorControlConfigured), Value: control.configured},
-		object{OID: d.OID.Append(DoorControlError), Value: control.err},
+		catalog.NewObject(d.OID, status),
+		catalog.NewObject2(d.OID, DoorCreated, created),
+		catalog.NewObject2(d.OID, DoorControllerOID, controller.OID),
+		catalog.NewObject2(d.OID, DoorControllerCreated, controller.created),
+		catalog.NewObject2(d.OID, DoorControllerName, controller.name),
+		catalog.NewObject2(d.OID, DoorControllerID, controller.ID),
+		catalog.NewObject2(d.OID, DoorControllerDoor, controller.door),
+		catalog.NewObject2(d.OID, DoorName, name),
+		catalog.NewObject2(d.OID, DoorDelay, delay.delay),
+		catalog.NewObject2(d.OID, DoorDelayStatus, delay.status),
+		catalog.NewObject2(d.OID, DoorDelayConfigured, delay.configured),
+		catalog.NewObject2(d.OID, DoorDelayError, delay.err),
+		catalog.NewObject2(d.OID, DoorControl, control.control),
+		catalog.NewObject2(d.OID, DoorControlStatus, control.status),
+		catalog.NewObject2(d.OID, DoorControlConfigured, control.configured),
+		catalog.NewObject2(d.OID, DoorControlError, control.err),
 	}
 
 	return objects
@@ -289,15 +289,12 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				d.log(auth, "update", d.OID, "name", stringify(d.Name), value)
+				d.log(auth, "update", d.OID, "name", d.Name, value)
 				d.Name = value
 
 				catalog.PutV(d.OID.Append(DoorName), d.Name, false)
 
-				objects = append(objects, object{
-					OID:   d.OID.Append(DoorName),
-					Value: stringify(d.Name),
-				})
+				objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
 			}
 
 		case d.OID.Append(DoorDelay):
@@ -312,27 +309,12 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 
 				catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, true)
 
-				objects = append(objects, object{
-					OID:   d.OID.Append(DoorDelay),
-					Value: stringify(d.delay),
-				})
+				objects = append(objects, catalog.NewObject2(d.OID, DoorDelay, d.delay))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayStatus, types.StatusUncertain))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayError, ""))
 
-				objects = append(objects, object{
-					OID:   d.OID.Append(DoorDelayStatus),
-					Value: stringify(types.StatusUncertain),
-				})
-
-				objects = append(objects, object{
-					OID:   d.OID.Append(DoorDelayConfigured),
-					Value: stringify(d.delay),
-				})
-
-				objects = append(objects, object{
-					OID:   d.OID.Append(DoorDelayError),
-					Value: "",
-				})
-
-				d.log(auth, "update", d.OID, "delay", stringify(delay), value)
+				d.log(auth, "update", d.OID, "delay", delay, value)
 			}
 
 		case d.OID.Append(DoorControl):
@@ -353,27 +335,12 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 
 				catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, true)
 
-				objects = append(objects, object{
-					OID:   d.OID.Append(DoorControl),
-					Value: stringify(d.mode),
-				})
+				objects = append(objects, catalog.NewObject2(d.OID, DoorControl, d.mode))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorControlStatus, types.StatusUncertain))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorControlConfigured, d.mode))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorControlError, ""))
 
-				objects = append(objects, object{
-					OID:   d.OID.Append(DoorControlStatus),
-					Value: stringify(types.StatusUncertain),
-				})
-
-				objects = append(objects, object{
-					OID:   d.OID.Append(DoorControlConfigured),
-					Value: stringify(d.mode),
-				})
-
-				objects = append(objects, object{
-					OID:   d.OID.Append(DoorControlError),
-					Value: "",
-				})
-
-				d.log(auth, "update", d.OID, "mode", stringify(mode), value)
+				d.log(auth, "update", d.OID, "mode", mode, value)
 			}
 		}
 
@@ -405,7 +372,7 @@ func (d *Door) lookup(suffix catalog.Suffix) interface{} {
 	return nil
 }
 
-func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field, current, value string) {
+func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
 	type info struct {
 		OID     catalog.OID `json:"OID"`
 		Door    string      `json:"door"`
@@ -428,8 +395,8 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field, c
 				OID:     OID,
 				Door:    stringify(d.Name),
 				Field:   field,
-				Current: current,
-				Updated: value,
+				Current: stringify(current),
+				Updated: stringify(value),
 			},
 		}
 

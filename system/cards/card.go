@@ -72,15 +72,15 @@ func (c *CardHolder) IsDeleted() bool {
 }
 
 func (c *CardHolder) AsObjects() []interface{} {
-	status := stringify(types.StatusOk)
+	status := types.StatusOk
 	created := c.Created.Format("2006-01-02 15:04:05")
-	name := stringify(c.Name)
-	number := stringify(c.Card)
-	from := stringify(c.From)
-	to := stringify(c.To)
+	name := c.Name
+	number := c.Card
+	from := c.From
+	to := c.To
 
 	if c.deleted != nil {
-		status = stringify(types.StatusDeleted)
+		status = types.StatusDeleted
 	}
 
 	objects := []interface{}{
@@ -271,7 +271,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "name", stringify(c.Name), value)
+				c.log(auth, "update", c.OID, "name", c.Name, value)
 				v := types.Name(value)
 				c.Name = &v
 				objects = append(objects, catalog.NewObject2(c.OID, CardName, c.Name))
@@ -284,7 +284,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 				} else if err := f("number", n); err != nil {
 					return nil, err
 				} else {
-					c.log(auth, "update", c.OID, "number", stringify(c.Card), value)
+					c.log(auth, "update", c.OID, "number", c.Card, value)
 					v := types.Card(n)
 					c.Card = &v
 					objects = append(objects, catalog.NewObject2(c.OID, CardNumber, c.Card))
@@ -293,7 +293,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 				if err := f("number", 0); err != nil {
 					return nil, err
 				} else {
-					c.log(auth, "update", c.OID, "number", stringify(c.Card), value)
+					c.log(auth, "update", c.OID, "number", c.Card, value)
 					c.Card = nil
 					objects = append(objects, catalog.NewObject2(c.OID, CardNumber, ""))
 				}
@@ -307,7 +307,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			} else if from == nil {
 				return nil, fmt.Errorf("invalid 'from' date (%v)", value)
 			} else {
-				c.log(auth, "update", c.OID, "from", stringify(c.From), value)
+				c.log(auth, "update", c.OID, "from", c.From, value)
 				c.From = from
 				objects = append(objects, catalog.NewObject2(c.OID, CardFrom, c.From))
 			}
@@ -320,7 +320,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			} else if to == nil {
 				return nil, fmt.Errorf("invalid 'to' date (%v)", value)
 			} else {
-				c.log(auth, "update", c.OID, "to", stringify(c.To), value)
+				c.log(auth, "update", c.OID, "to", c.To, value)
 				c.To = to
 				objects = append(objects, catalog.NewObject2(c.OID, CardTo, c.To))
 			}
@@ -361,7 +361,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 	return objects, nil
 }
 
-func (c *CardHolder) log(auth auth.OpAuth, operation string, oid catalog.OID, field, current, value string) {
+func (c *CardHolder) log(auth auth.OpAuth, operation string, oid catalog.OID, field string, current, value interface{}) {
 	type info struct {
 		OID     string `json:"OID"`
 		Card    string `json:"card"`
@@ -384,8 +384,8 @@ func (c *CardHolder) log(auth auth.OpAuth, operation string, oid catalog.OID, fi
 				OID:     stringify(oid),
 				Card:    stringify(c.Card),
 				Field:   field,
-				Current: current,
-				Updated: value,
+				Current: stringify(current),
+				Updated: stringify(value),
 			},
 		}
 

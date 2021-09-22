@@ -34,7 +34,7 @@
         - [x] cache
         - [x] UpdateByOID
         - [x] catalog
-        - [ ] move all _stringify's_ to OID/object
+        - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Migrate cards to OIDs
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
