@@ -34,9 +34,9 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Migrate cards to OIDs
+  - [ ] Style placeholder for from/to
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
-  - [ ] Style placeholder for from/to
   - [ ] `refresh` is overwriting pending group edits
   - [ ] Update unit tests for OID'd implementation
   - [ ] Replace dataset.original with value from DB
@@ -48,9 +48,8 @@
         - use tag (?)
 
 - Groups
-  - [ ] Update ACL to use reworked groups + doors
-        - [ ] Invoke rules for additional processing
-  - [x] 'realize' doors in display order
+  - [x] Update ACL to use reworked groups + doors
+        - [x] Invoke rules for additional processing
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -59,6 +58,7 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 - [ ] system
+      - [ ] Update to use tabular.js
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
       - [ ] Fix `get-events` log string
@@ -94,8 +94,7 @@
 - [ ] tabular
       - (experiment) use :before or :content for flags???
       - New table row submitted with error cannot be discarded
-      - Empty list: make first row a 'new' row
-      - Commonalise controller and card handling into tabular.js
+      - Empty list: make first row a 'new' row (?)
       - filter columns
       - 'realise' a tablespec (i.e. page generates a tablespec and tabular renders it to HTML)
 

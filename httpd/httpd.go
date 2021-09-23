@@ -37,6 +37,7 @@ type HTTPD struct {
 			Cards  string
 			Doors  string
 			Groups string
+			ACL    string
 		}
 	}
 	Audit audit.Trail

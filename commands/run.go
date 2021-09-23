@@ -5,16 +5,11 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/hyperjumptech/grule-rule-engine/ast"
-	"github.com/hyperjumptech/grule-rule-engine/builder"
-	"github.com/hyperjumptech/grule-rule-engine/pkg"
-
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	provider "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 	auth "github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
-	"github.com/uhppoted/uhppoted-httpd/system/cards/grule"
 	"github.com/uhppoted/uhppoted-lib/config"
 )
 
@@ -81,6 +76,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 				Cards  string
 				Doors  string
 				Groups string
+				ACL    string
 			}
 		}{
 			GRules: struct {
@@ -88,28 +84,20 @@ func (cmd *Run) Execute(args ...interface{}) error {
 				Cards  string
 				Doors  string
 				Groups string
+				ACL    string
 			}{
 				System: conf.HTTPD.DB.Rules.System,
 				Cards:  conf.HTTPD.DB.Rules.Cards,
 				Doors:  conf.HTTPD.DB.Rules.Doors,
 				Groups: conf.HTTPD.DB.Rules.Groups,
+				ACL:    conf.HTTPD.DB.Rules.ACL,
 			},
 		},
 
 		Audit: trail,
 	}
 
-	permissions := ast.NewKnowledgeLibrary()
-	if err := builder.NewRuleBuilder(permissions).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(conf.HTTPD.DB.Rules.ACL)); err != nil {
-		log.Fatal(fmt.Errorf("Error loading ACL ruleset (%v)", err))
-	}
-
-	ruleset, err := grule.NewGrule(permissions)
-	if err != nil {
-		log.Fatal(fmt.Errorf("Error initialising ACL ruleset (%v)", err))
-	}
-
-	if err := system.Init(*conf, cmd.configuration, ruleset, trail); err != nil {
+	if err := system.Init(*conf, cmd.configuration, trail); err != nil {
 		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 

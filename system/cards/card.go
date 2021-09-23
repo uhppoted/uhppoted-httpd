@@ -19,7 +19,7 @@ type CardHolder struct {
 	Card   *types.Card
 	From   *types.Date
 	To     *types.Date
-	Groups map[string]bool
+	Groups map[catalog.OID]bool
 
 	Created time.Time `json:"-"`
 	deleted *time.Time
@@ -96,9 +96,9 @@ func (c *CardHolder) AsObjects() []interface{} {
 	re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
 
 	for _, group := range groups {
-		g := fmt.Sprintf("%v", group)
+		g := group
 
-		if m := re.FindStringSubmatch(g); m != nil && len(m) > 2 {
+		if m := re.FindStringSubmatch(string(g)); m != nil && len(m) > 2 {
 			gid := m[2]
 			member := c.Groups[g]
 
@@ -132,7 +132,7 @@ func (c *CardHolder) AsRuleEntity() interface{} {
 		groups := []string{}
 		for k, v := range c.Groups {
 			if v {
-				groups = append(groups, k)
+				groups = append(groups, string(k))
 			}
 		}
 
@@ -151,7 +151,7 @@ func (c *CardHolder) AsRuleEntity() interface{} {
 func (c *CardHolder) clone() *CardHolder {
 	name := c.Name.Copy()
 	card := c.Card.Copy()
-	var groups = map[string]bool{}
+	var groups = map[catalog.OID]bool{}
 
 	for gid, g := range c.Groups {
 		groups[gid] = g
@@ -200,8 +200,8 @@ func (c CardHolder) serialize() ([]byte, error) {
 	groups := catalog.Groups()
 
 	for _, g := range groups {
-		if c.Groups[string(g)] {
-			record.Groups = append(record.Groups, catalog.OID(g))
+		if c.Groups[g] {
+			record.Groups = append(record.Groups, g)
 		}
 	}
 
@@ -231,7 +231,7 @@ func (c *CardHolder) deserialize(bytes []byte) error {
 	c.OID = record.OID
 	c.From = record.From
 	c.To = record.To
-	c.Groups = map[string]bool{}
+	c.Groups = map[catalog.OID]bool{}
 
 	if record.Name != "" {
 		c.Name = (*types.Name)(&record.Name)
@@ -242,7 +242,7 @@ func (c *CardHolder) deserialize(bytes []byte) error {
 	}
 
 	for _, g := range record.Groups {
-		c.Groups[string(g)] = true
+		c.Groups[g] = true
 	}
 
 	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {
@@ -328,7 +328,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 		case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
 			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
 				gid := m[1]
-				k := "0.4." + gid
+				k := catalog.OID("0.4." + gid)
 
 				if err := f("group", value); err != nil {
 					return nil, err

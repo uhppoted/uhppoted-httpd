@@ -8,6 +8,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hyperjumptech/grule-rule-engine/ast"
+	"github.com/hyperjumptech/grule-rule-engine/builder"
+	"github.com/hyperjumptech/grule-rule-engine/pkg"
+
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
@@ -15,6 +19,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/system/groups"
+	"github.com/uhppoted/uhppoted-httpd/system/grule"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/config"
 )
@@ -35,7 +40,7 @@ type system struct {
 	doors       doors.Doors
 	cards       cards.Cards
 	groups      groups.Groups
-	rules       cards.IRules
+	rules       grule.Rules
 	audit       audit.Trail
 	taskQ       TaskQ
 	retention   time.Duration // time after which 'deleted' items are permanently removed
@@ -43,7 +48,7 @@ type system struct {
 
 type object catalog.Object
 
-func Init(cfg config.Config, conf string, permissions cards.IRules, trail audit.Trail) error {
+func Init(cfg config.Config, conf string, trail audit.Trail) error {
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
 		return err
 	}
@@ -60,8 +65,18 @@ func Init(cfg config.Config, conf string, permissions cards.IRules, trail audit.
 		return err
 	}
 
+	kb := ast.NewKnowledgeLibrary()
+	if err := builder.NewRuleBuilder(kb).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(cfg.HTTPD.DB.Rules.ACL)); err != nil {
+		log.Fatal(fmt.Errorf("Error loading ACL ruleset (%v)", err))
+	}
+
+	rules, err := grule.NewGrule(kb)
+	if err != nil {
+		log.Fatal(fmt.Errorf("Error initialising ACL ruleset (%v)", err))
+	}
+
 	sys.conf = conf
-	sys.rules = permissions
+	sys.rules = rules
 	sys.audit = trail
 	sys.retention = cfg.HTTPD.Retention
 

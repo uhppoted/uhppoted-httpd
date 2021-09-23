@@ -107,11 +107,11 @@ func cardholder(id, name string, card uint32, groups ...string) CardHolder {
 		Card:   &c,
 		From:   date("2021-01-02"),
 		To:     date("2021-12-30"),
-		Groups: map[string]bool{},
+		Groups: map[catalog.OID]bool{},
 	}
 
 	for _, g := range groups {
-		cardholder.Groups[g] = true
+		cardholder.Groups[catalog.OID(g)] = true
 	}
 
 	return cardholder

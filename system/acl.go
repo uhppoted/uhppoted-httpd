@@ -35,6 +35,7 @@ func permissions() (acl.ACL, error) {
 	doors := sys.doors.Doors
 
 	// initialise empty ACL
+
 	acl := make(acl.ACL)
 
 	for _, b := range sys.controllers.Controllers {
@@ -74,6 +75,18 @@ func permissions() (acl.ACL, error) {
 		}
 	}
 
+	revoke := func(card uint32, device uint32, door uint8) {
+		if card > 0 && device > 0 && door >= 1 && door <= 4 {
+			if _, ok := acl[device]; ok {
+				if _, ok := acl[device][card]; ok {
+					if _, ok := acl[device][card].Doors[door]; ok {
+						acl[device][card].Doors[door] = 0
+					}
+				}
+			}
+		}
+	}
+
 	for _, c := range cards {
 		if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
 			for g, member := range c.Groups {
@@ -89,27 +102,35 @@ func permissions() (acl.ACL, error) {
 					}
 				}
 			}
-
-			// var doors = []string{}
-			//			var err error
-			//
-			//			if rules != nil {
-			//				doors, err = rules.Eval(*c)
-			//				if err != nil {
-			//					return nil, err
-			//				}
-			//			}
-			//
-			//			permission := types.Permissions{
-			//				CardNumber: uint32(*c.Card),
-			//				From:       *c.From,
-			//				To:         *c.To,
-			//				Doors:      doors,
-			//			}
-			//
-			//			list = append(list, permission)
 		}
 	}
+
+	// ... post-process ACL with rules
+
+	if sys.rules != nil {
+		for _, c := range cards {
+			allowed, forbidden, err := sys.rules.Eval(*c, sys.groups, sys.doors)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, door := range allowed {
+				card := uint32(*c.Card)
+				device := door.DeviceID()
+				doorID := door.Door()
+				grant(card, device, doorID)
+			}
+
+			for _, door := range forbidden {
+				card := uint32(*c.Card)
+				device := door.DeviceID()
+				doorID := door.Door()
+				revoke(card, device, doorID)
+			}
+		}
+	}
+
+	// ... 'k, done
 
 	var b bytes.Buffer
 
