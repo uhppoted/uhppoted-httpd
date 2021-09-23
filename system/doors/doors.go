@@ -40,16 +40,6 @@ func NewDoors() Doors {
 func (dd *Doors) AsObjects() []interface{} {
 	objects := []interface{}{}
 
-	// // TODO: remove - debugging JS 'shuffle'
-	// for k, d := range dd.Doors {
-	// 	if d.OID == catalog.OID("0.2.1") {
-	// 		d.Index = (d.Index + 1) % 16
-	// 		dd.Doors[k] = d
-	// 		break
-	// 	}
-	// }
-	// // END TODO
-
 	for _, d := range dd.Doors {
 		if d.IsValid() || d.IsDeleted() {
 			if l := d.AsObjects(); l != nil {
@@ -106,7 +96,7 @@ func (dd *Doors) Load(file string) error {
 		d := dd.Doors[k]
 		d.Index = index
 		dd.Doors[k] = d
-		index += 2
+		index++
 	}
 
 	for _, v := range dd.Doors {

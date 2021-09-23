@@ -113,14 +113,14 @@ func (g *Group) AsRuleEntity() interface{} {
 	}
 
 	if g != nil {
-		entity.Name = stringify(g.Name)
+		entity.Name = fmt.Sprintf("%v", g.Name)
 
 		doors := catalog.Doors()
 		for _, d := range doors {
 			allowed := g.Doors[d]
 			door, _ := catalog.GetV(d.Append(DoorName))
 
-			if v := stringify(door); v != "" {
+			if v := fmt.Sprintf("%v", door); v != "" {
 				entity.Doors[v] = allowed
 			}
 		}
@@ -141,7 +141,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 	}
 
 	if g != nil {
-		name := stringify(g.Name)
+		name := g.Name
 
 		switch {
 		case oid == g.OID.Append(GroupName):
@@ -159,7 +159,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 				k := catalog.OID("0.2." + did)
 				door, _ := catalog.GetV(k.Append(DoorName))
 
-				if err := f(stringify(door), value); err != nil {
+				if err := f(door.(string), value); err != nil {
 					return nil, err
 				} else {
 					g.log(auth, "update", g.OID, "door", string(k), value)

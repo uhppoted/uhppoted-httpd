@@ -31,9 +31,6 @@
         - [ ] groups
 
   - [ ] Make OID a type
-        - [x] cache
-        - [x] UpdateByOID
-        - [x] catalog
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Migrate cards to OIDs
@@ -53,13 +50,7 @@
 - Groups
   - [ ] Update ACL to use reworked groups + doors
         - [ ] Invoke rules for additional processing
-
   - [x] 'realize' doors in display order
-
-  - [ ] Shuffle doors if display order changes
-        - Rethink this - insanely complex to migrate edits-in-progress
-        - Maybe only reorder if nothing at all is modified
-        - Reorder separately to realize
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

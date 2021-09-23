@@ -321,7 +321,7 @@ func (c *Controller) String() string {
 		return ""
 	}
 
-	return fmt.Sprintf("%v (%v)", stringify(c.Name), stringify(c.DeviceID))
+	return fmt.Sprintf("%v (%v)", c.Name, c.DeviceID)
 }
 
 func (c *Controller) IsValid() bool {

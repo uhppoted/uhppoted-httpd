@@ -48,15 +48,15 @@ func (d *Door) IsValid() bool {
 	if d != nil {
 		controller := ""
 		if v, _ := catalog.GetV(d.OID.Append(DoorControllerOID)); v != nil {
-			controller = stringify(v)
+			controller = fmt.Sprintf("%v", v)
 		}
 
-		door := ""
+		door := uint8(0)
 		if v, _ := catalog.GetV(d.OID.Append(DoorControllerDoor)); v != nil {
-			door = stringify(v)
+			door = v.(uint8)
 		}
 
-		if strings.TrimSpace(d.Name) != "" || (controller != "" && door != "") {
+		if strings.TrimSpace(d.Name) != "" || (controller != "" && door >= 1 && door <= 4) {
 			return true
 		}
 	}
@@ -108,17 +108,17 @@ func (d *Door) AsObjects() []interface{} {
 	index := d.Index
 
 	controller := struct {
-		OID     string
-		created string
-		name    string
-		ID      string
-		door    string
+		OID     catalog.OID
+		created time.Time
+		name    *types.Name
+		ID      *uint32
+		door    uint8
 	}{
-		OID:     stringify(d.lookup(DoorControllerOID)),
-		created: stringify(d.lookup(DoorControllerCreated)),
-		name:    stringify(d.lookup(DoorControllerName)),
-		ID:      stringify(d.lookup(DoorControllerID)),
-		door:    stringify(d.lookup(DoorControllerDoor)),
+		OID:     d.lookup(DoorControllerOID).(catalog.OID),
+		created: d.lookup(DoorControllerCreated).(time.Time),
+		name:    d.lookup(DoorControllerName).(*types.Name),
+		ID:      d.lookup(DoorControllerID).(*uint32),
+		door:    d.lookup(DoorControllerDoor).(uint8),
 	}
 
 	delay := struct {
@@ -291,7 +291,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 	}
 
 	if d != nil {
-		name := stringify(d.Name)
+		name := fmt.Sprintf("%v", d.Name)
 
 		switch oid {
 		case d.OID.Append(DoorName):
