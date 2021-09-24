@@ -51,23 +51,6 @@ func (g Group) IsDeleted() bool {
 	return false
 }
 
-func (g Group) clone() Group {
-	group := Group{
-		OID:     g.OID,
-		Name:    g.Name,
-		Doors:   map[catalog.OID]bool{},
-		Index:   g.Index,
-		created: g.created,
-		deleted: g.deleted,
-	}
-
-	for k, v := range g.Doors {
-		group.Doors[k] = v
-	}
-
-	return group
-}
-
 func (g *Group) AsObjects() []interface{} {
 	created := g.created.Format("2006-01-02 15:04:05")
 	status := types.StatusOk
@@ -244,6 +227,26 @@ func (g *Group) deserialize(bytes []byte) error {
 	}
 
 	return nil
+}
+
+func (g Group) clone() Group {
+	group := Group{
+		OID:     g.OID,
+		Name:    g.Name,
+		Doors:   map[catalog.OID]bool{},
+		Index:   g.Index,
+		created: g.created,
+		deleted: g.deleted,
+	}
+
+	for k, v := range g.Doors {
+		group.Doors[k] = v
+	}
+
+	return group
+}
+
+func (g Group) stash() {
 }
 
 func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {

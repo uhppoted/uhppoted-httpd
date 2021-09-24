@@ -38,6 +38,8 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 	}
 
 	sys.groups = *shadow
+
+	sys.groups.Stash()
 	sys.updated()
 
 	return list, nil

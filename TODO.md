@@ -23,6 +23,7 @@
   - [ ] Store all values in catalog and 'realize' local copies from cache
         - Hmmm, may cause issues with shadow logic
         - Unless use shadow cache ??
+        - .. or global mutex :-(
 
   - [ ] Only update catalog values after validate i.e. not in set(...)
         - [ ] controllers
@@ -63,7 +64,6 @@
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
       - [ ] Fix `get-events` log string
       - [ ] Fix `get-status` log string
-      - move values to global cache
       - Input + datalist for timezone ?????
         - https://demo.agektmr.com/datalist/
       - Export to uhppoted.conf
