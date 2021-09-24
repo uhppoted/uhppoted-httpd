@@ -23,6 +23,9 @@ type Door struct {
 	mode    core.ControlState
 	created time.Time
 	deleted *time.Time
+
+	delayDirty bool
+	modeDirty  bool
 }
 
 var created = time.Now()
@@ -235,9 +238,6 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			} else {
 				d.log(auth, "update", d.OID, "name", d.Name, value)
 				d.Name = value
-
-				//				catalog.PutV(d.OID.Append(DoorName), d.Name, false)
-
 				objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
 			}
 
@@ -250,9 +250,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				return nil, err
 			} else {
 				d.delay = uint8(v)
-
-				//				catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, true)
-
+				d.delayDirty = true
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelay, d.delay))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayStatus, types.StatusUncertain))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
@@ -269,15 +267,16 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				switch value {
 				case "controlled":
 					d.mode = core.Controlled
+					d.modeDirty = true
 				case "normally open":
 					d.mode = core.NormallyOpen
+					d.modeDirty = true
 				case "normally closed":
 					d.mode = core.NormallyClosed
+					d.modeDirty = true
 				default:
 					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
 				}
-
-				//				catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, true)
 
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControl, d.mode))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlStatus, types.StatusUncertain))
@@ -363,20 +362,23 @@ func (d *Door) deserialize(bytes []byte) error {
 
 func (d *Door) clone() Door {
 	return Door{
-		OID:     d.OID,
-		Name:    d.Name,
-		Index:   d.Index,
-		delay:   d.delay,
-		mode:    d.mode,
-		created: d.created,
-		deleted: d.deleted,
+		OID:        d.OID,
+		Name:       d.Name,
+		Index:      d.Index,
+		delay:      d.delay,
+		mode:       d.mode,
+		created:    d.created,
+		deleted:    d.deleted,
+		delayDirty: d.delayDirty,
+		modeDirty:  d.modeDirty,
 	}
 }
 
 func (d Door) stash() {
+	catalog.PutDoor(d.OID)
 	catalog.PutV(d.OID.Append(DoorName), d.Name, false)
-	catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, true)
-	catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, true)
+	catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, d.delayDirty)
+	catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, d.modeDirty)
 }
 
 func (d *Door) lookup(suffix catalog.Suffix) interface{} {

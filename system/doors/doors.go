@@ -93,11 +93,8 @@ func (dd *Doors) Load(file string) error {
 		index++
 	}
 
-	for _, v := range dd.Doors {
-		catalog.PutDoor(v.OID)
-		catalog.PutV(v.OID.Append(DoorName), v.Name, false)
-		catalog.PutV(v.OID.Append(DoorDelayConfigured), v.delay, false)
-		catalog.PutV(v.OID.Append(DoorControlConfigured), v.mode, false)
+	for _, d := range dd.Doors {
+		d.stash()
 	}
 
 	dd.file = file

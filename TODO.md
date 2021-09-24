@@ -26,16 +26,18 @@
         - .. or global mutex :-(
 
   - [ ] Only update catalog values after validate i.e. not in set(...)
+        - [ ] rethink the whole 'dirty' thing
         - [ ] controllers
-        - [ ] doors
+        - [x] doors
         - [ ] cards
-        - [ ] groups
+        - [x] groups
 
   - [ ] Make OID a type
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Events
   - [x] Initial page skeleton
+  - [ ] Get recent events from controllers
 
 - Migrate cards to OIDs
   - [ ] Update unit tests for OID'd implementation

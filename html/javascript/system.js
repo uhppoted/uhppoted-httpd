@@ -53,14 +53,14 @@ export function onTick (tag, event) {
 //       if (tbody) {
 //         const rows = tbody.rows
 //         const list = []
-// 
+//
 //         for (let i = 0; i < rows.length; i++) {
 //           const row = rows[i]
 //           if (row.classList.contains('modified') || row.classList.contains('new')) {
 //             list.push(row)
 //           }
 //         }
-// 
+//
 //         controllers.commit(...list)
 //       }
 //     }
@@ -73,14 +73,14 @@ export function onTick (tag, event) {
 //     case 'interface':
 //       LAN.rollback('interface', event.target)
 //       break
-// 
+//
 //     // case 'controller': {
 //     //   const id = event.target.dataset.record
 //     //   const row = document.getElementById(id)
 //     //   controllers.rollback(row)
 //     //   break
 //     // }
-// 
+//
 //     default:
 //       console.log(`onRollback('${tag}', ...)::NOT IMPLEMENTED`)
 //   }
