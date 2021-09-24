@@ -93,8 +93,8 @@
           </table>
 
           <div id="controls" data-oid="0.1.1.2">
-            <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controller', event)" />
-            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('controller', event)" />
+            <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controllers', event, 'controllers')" />
+            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('controllers', event, 'controllers')" />
             <div id="message" class="message">
               <div>
                 <span class="warning" id="warning"></span>
@@ -289,8 +289,8 @@
 
   <script type="module">
     import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload } from "./javascript/uhppoted.js"
-    import { onEnter, onEdited, onTick, onRollback, onRollbackAll, onNew, onRefresh } from "./javascript/system.js"
-    import { onCommit, onCommitAll } from "./javascript/tabular.js"
+    import { onEnter, onEdited, onTick, onNew, onRefresh } from "./javascript/system.js"
+    import { onCommit, onCommitAll, onRollback, onRollbackAll } from "./javascript/tabular.js"
 
     window.retheme = retheme
     window.dismiss = dismiss

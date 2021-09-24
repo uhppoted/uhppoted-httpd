@@ -53,6 +53,7 @@
 - Groups
 
 - Doors
+  - [ ] Updates all _incorrect_ values if one item is edited
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element

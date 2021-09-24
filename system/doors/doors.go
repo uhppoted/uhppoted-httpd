@@ -159,6 +159,14 @@ func (dd Doors) Save() error {
 	return os.Rename(tmp.Name(), dd.file)
 }
 
+func (dd *Doors) Stash() {
+	if dd != nil {
+		for _, d := range dd.Doors {
+			d.stash()
+		}
+	}
+}
+
 func (dd *Doors) Sweep(retention time.Duration) {
 	if dd != nil {
 		cutoff := time.Now().Add(-retention)

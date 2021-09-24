@@ -214,6 +214,100 @@ func (d *Door) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
+func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+	objects := []interface{}{}
+
+	f := func(field string, value interface{}) error {
+		if auth == nil {
+			return nil
+		}
+
+		return auth.CanUpdateDoor(d, field, value)
+	}
+
+	if d != nil {
+		name := fmt.Sprintf("%v", d.Name)
+
+		switch oid {
+		case d.OID.Append(DoorName):
+			if err := f("name", value); err != nil {
+				return nil, err
+			} else {
+				d.log(auth, "update", d.OID, "name", d.Name, value)
+				d.Name = value
+
+				//				catalog.PutV(d.OID.Append(DoorName), d.Name, false)
+
+				objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
+			}
+
+		case d.OID.Append(DoorDelay):
+			delay := d.delay
+
+			if err := f("delay", value); err != nil {
+				return nil, err
+			} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
+				return nil, err
+			} else {
+				d.delay = uint8(v)
+
+				//				catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, true)
+
+				objects = append(objects, catalog.NewObject2(d.OID, DoorDelay, d.delay))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayStatus, types.StatusUncertain))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayError, ""))
+
+				d.log(auth, "update", d.OID, "delay", delay, value)
+			}
+
+		case d.OID.Append(DoorControl):
+			if err := f("mode", value); err != nil {
+				return nil, err
+			} else {
+				mode := d.mode
+				switch value {
+				case "controlled":
+					d.mode = core.Controlled
+				case "normally open":
+					d.mode = core.NormallyOpen
+				case "normally closed":
+					d.mode = core.NormallyClosed
+				default:
+					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
+				}
+
+				//				catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, true)
+
+				objects = append(objects, catalog.NewObject2(d.OID, DoorControl, d.mode))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorControlStatus, types.StatusUncertain))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorControlConfigured, d.mode))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorControlError, ""))
+
+				d.log(auth, "update", d.OID, "mode", mode, value)
+			}
+		}
+
+		if !d.IsValid() {
+			if auth != nil {
+				if err := auth.CanDeleteDoor(d); err != nil {
+					return nil, err
+				}
+			}
+
+			d.log(auth, "delete", d.OID, "name", name, "")
+			now := time.Now()
+			d.deleted = &now
+
+			objects = append(objects, catalog.NewObject(d.OID, "deleted"))
+
+			catalog.Delete(d.OID)
+		}
+	}
+
+	return objects, nil
+}
+
 func (d Door) serialize() ([]byte, error) {
 	record := struct {
 		OID     catalog.OID       `json:"OID"`
@@ -279,98 +373,10 @@ func (d *Door) clone() Door {
 	}
 }
 
-func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
-	objects := []interface{}{}
-
-	f := func(field string, value interface{}) error {
-		if auth == nil {
-			return nil
-		}
-
-		return auth.CanUpdateDoor(d, field, value)
-	}
-
-	if d != nil {
-		name := fmt.Sprintf("%v", d.Name)
-
-		switch oid {
-		case d.OID.Append(DoorName):
-			if err := f("name", value); err != nil {
-				return nil, err
-			} else {
-				d.log(auth, "update", d.OID, "name", d.Name, value)
-				d.Name = value
-
-				catalog.PutV(d.OID.Append(DoorName), d.Name, false)
-
-				objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
-			}
-
-		case d.OID.Append(DoorDelay):
-			delay := d.delay
-
-			if err := f("delay", value); err != nil {
-				return nil, err
-			} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
-				return nil, err
-			} else {
-				d.delay = uint8(v)
-
-				catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, true)
-
-				objects = append(objects, catalog.NewObject2(d.OID, DoorDelay, d.delay))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayStatus, types.StatusUncertain))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayError, ""))
-
-				d.log(auth, "update", d.OID, "delay", delay, value)
-			}
-
-		case d.OID.Append(DoorControl):
-			if err := f("mode", value); err != nil {
-				return nil, err
-			} else {
-				mode := d.mode
-				switch value {
-				case "controlled":
-					d.mode = core.Controlled
-				case "normally open":
-					d.mode = core.NormallyOpen
-				case "normally closed":
-					d.mode = core.NormallyClosed
-				default:
-					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
-				}
-
-				catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, true)
-
-				objects = append(objects, catalog.NewObject2(d.OID, DoorControl, d.mode))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorControlStatus, types.StatusUncertain))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorControlConfigured, d.mode))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorControlError, ""))
-
-				d.log(auth, "update", d.OID, "mode", mode, value)
-			}
-		}
-
-		if !d.IsValid() {
-			if auth != nil {
-				if err := auth.CanDeleteDoor(d); err != nil {
-					return nil, err
-				}
-			}
-
-			d.log(auth, "delete", d.OID, "name", name, "")
-			now := time.Now()
-			d.deleted = &now
-
-			objects = append(objects, catalog.NewObject(d.OID, "deleted"))
-
-			catalog.Delete(d.OID)
-		}
-	}
-
-	return objects, nil
+func (d Door) stash() {
+	catalog.PutV(d.OID.Append(DoorName), d.Name, false)
+	catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, true)
+	catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, true)
 }
 
 func (d *Door) lookup(suffix catalog.Suffix) interface{} {

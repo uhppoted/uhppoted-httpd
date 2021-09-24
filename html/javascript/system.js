@@ -46,57 +46,57 @@ export function onTick (tag, event) {
   }
 }
 
-export function onCommitAll (tag, event) {
-  switch (tag) {
-    case 'controller': {
-      const tbody = document.getElementById('controllers').querySelector('table tbody')
-      if (tbody) {
-        const rows = tbody.rows
-        const list = []
+// export function onCommitAll (tag, event) {
+//   switch (tag) {
+//     case 'controller': {
+//       const tbody = document.getElementById('controllers').querySelector('table tbody')
+//       if (tbody) {
+//         const rows = tbody.rows
+//         const list = []
+// 
+//         for (let i = 0; i < rows.length; i++) {
+//           const row = rows[i]
+//           if (row.classList.contains('modified') || row.classList.contains('new')) {
+//             list.push(row)
+//           }
+//         }
+// 
+//         controllers.commit(...list)
+//       }
+//     }
+//       break
+//   }
+// }
 
-        for (let i = 0; i < rows.length; i++) {
-          const row = rows[i]
-          if (row.classList.contains('modified') || row.classList.contains('new')) {
-            list.push(row)
-          }
-        }
+// export function onRollback (tag, event) {
+//   switch (tag) {
+//     case 'interface':
+//       LAN.rollback('interface', event.target)
+//       break
+// 
+//     // case 'controller': {
+//     //   const id = event.target.dataset.record
+//     //   const row = document.getElementById(id)
+//     //   controllers.rollback(row)
+//     //   break
+//     // }
+// 
+//     default:
+//       console.log(`onRollback('${tag}', ...)::NOT IMPLEMENTED`)
+//   }
+// }
 
-        controllers.commit(...list)
-      }
-    }
-      break
-  }
-}
-
-export function onRollback (tag, event) {
-  switch (tag) {
-    case 'interface':
-      LAN.rollback('interface', event.target)
-      break
-
-    case 'controller': {
-      const id = event.target.dataset.record
-      const row = document.getElementById(id)
-      controllers.rollback(row)
-      break
-    }
-
-    default:
-      console.log(`onRollback('${tag}', ...)::NOT IMPLEMENTED`)
-  }
-}
-
-export function onRollbackAll (tag, event) {
-  switch (tag) {
-    case 'controller': {
-      const rows = document.getElementById('controllers').querySelector('table tbody').rows
-      for (let i = rows.length; i > 0; i--) {
-        controllers.rollback(rows[i - 1])
-      }
-      break
-    }
-  }
-}
+// export function onRollbackAll (tag, event) {
+//   switch (tag) {
+//     case 'controller': {
+//       const rows = document.getElementById('controllers').querySelector('table tbody').rows
+//       for (let i = rows.length; i > 0; i--) {
+//         controllers.rollback(rows[i - 1])
+//       }
+//       break
+//     }
+//   }
+// }
 
 export function onNew (tag, event) {
   if (tag === 'controller') {

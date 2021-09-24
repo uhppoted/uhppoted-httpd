@@ -1,3 +1,4 @@
+import * as system from './system.js'
 import * as LAN from './interface.js'
 import * as controllers from './controllers.js'
 import * as doors from './doors.js'
@@ -7,6 +8,11 @@ import * as db from './db.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
 const pages = {
+  system: {
+    url: '/system',
+    refreshed: system.refreshed
+  },
+
   doors: {
     url: '/doors',
     refreshed: doors.refreshed
@@ -125,6 +131,10 @@ export function onCommitAll (tag, event, table) {
   }
 
   switch (tag) {
+    case 'controllers':
+      commit(pages.system, ...list)
+      break
+
     case 'doors':
       commit(pages.doors, ...list)
       break
@@ -144,6 +154,14 @@ export function onRollback (tag, event) {
   const row = document.getElementById(id)
 
   switch (tag) {
+    case 'interface':
+      LAN.rollback('interface', event.target)
+      break
+
+    case 'controller':
+      rollback('controller', row, system.refreshed)
+      break
+
     case 'door':
       rollback('doors', row, doors.refreshed)
       break
@@ -167,6 +185,10 @@ export function onRollbackAll (tag, event) {
   }
 
   switch (tag) {
+    case 'controllers':
+      f('controllers', 'controllers', system.refreshed)
+      break
+
     case 'doors':
       f('doors', 'doors', doors.refreshed)
       break

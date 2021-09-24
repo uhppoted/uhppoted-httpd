@@ -62,6 +62,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	sys.doors = *shadow
+	sys.doors.Stash()
 	sys.updated()
 
 	return list, nil
