@@ -541,6 +541,9 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 	}
 }
 
+func (l LAN) stash() {
+}
+
 func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
 	type info struct {
 		OID       string `json:"OID"`

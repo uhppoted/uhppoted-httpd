@@ -21,16 +21,17 @@
 
 - OID
   - [ ] Store all values in catalog and 'realize' local copies from cache
-        - Hmmm, may cause issues with shadow logic
+        - Hmmm, will cause issues with shadow logic
         - Unless use shadow cache ??
         - .. or global mutex :-(
+        - only ever used for doors so maybe just use catalog as a pointer to actual thing?
 
   - [ ] Only update catalog values after validate i.e. not in set(...)
         - [ ] rethink the whole 'dirty' thing
               - maybe use a stash queue (?)
-        - [ ] controllers
+        - [x] controllers
         - [x] doors
-        - [ ] cards
+        - [x] cards
         - [x] groups
         - [ ] RWLock
               - [ ] controllers

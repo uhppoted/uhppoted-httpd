@@ -38,6 +38,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}
 
 	sys.controllers = *shadow
+	sys.controllers.Stash()
 	sys.updated()
 
 	return list, nil

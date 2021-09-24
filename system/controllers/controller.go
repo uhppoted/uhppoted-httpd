@@ -514,6 +514,9 @@ func (c *Controller) clone() *Controller {
 	return nil
 }
 
+func (c Controller) stash() {
+}
+
 func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
 	type info struct {
 		OID        string `json:"OID"`
