@@ -126,6 +126,14 @@ func (cc *Cards) Save() error {
 	return os.Rename(tmp.Name(), cc.file)
 }
 
+func (cc *Cards) Stash() {
+	if cc != nil {
+		for _, c := range cc.Cards {
+			c.stash()
+		}
+	}
+}
+
 func (cc *Cards) Clone() Cards {
 	shadow := Cards{
 		Cards: map[catalog.OID]*CardHolder{},

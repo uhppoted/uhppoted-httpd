@@ -38,6 +38,7 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	sys.cards = shadow
+	sys.cards.Stash()
 	sys.updated()
 
 	return list, nil

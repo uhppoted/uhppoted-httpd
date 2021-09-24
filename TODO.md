@@ -27,10 +27,16 @@
 
   - [ ] Only update catalog values after validate i.e. not in set(...)
         - [ ] rethink the whole 'dirty' thing
+              - maybe use a stash queue (?)
         - [ ] controllers
         - [x] doors
         - [ ] cards
         - [x] groups
+        - [ ] RWLock
+              - [ ] controllers
+              - [ ] doors
+              - [ ] cards
+              - [ ] groups
 
   - [ ] Make OID a type
         - [ ] move all _stringify's_ to OID/object/somesuch
