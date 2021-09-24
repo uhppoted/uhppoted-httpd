@@ -2,10 +2,10 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <title>uhppoted-httpd: GROUPS</title>
+    <title>uhppoted-httpd: EVENTS</title>
     <link rel="manifest"   href="manifest.json">
     <link rel="icon"       href="images/favicon.svg">
-    <link rel="stylesheet" href="css/{{$.context.Theme}}/groups.css" type="text/css">
+    <link rel="stylesheet" href="css/{{$.context.Theme}}/events.css" type="text/css">
     <meta charset="UTF-8">
   </head>
 
@@ -40,32 +40,29 @@
           <li><a href="./system.html" draggable="false">SYSTEM</a></li>
           <li><a href="./doors.html" draggable="false">DOORS</a></li>
           <li><a href="./cards.html" draggable="false">CARDS</a></li>
-          <li class="selected">GROUPS</li>
-          <li><a href="./events.html" draggable="false">EVENTS</a></li>
+          <li><a href="./groups.html" draggable="false">GROUPS</a></li>
+          <li class="selected">EVENTS</li>
         </ul>
       </nav>
 
       <!-- MAIN -->
       <main>
         <div id="container">
-          <div id="controls" data-oid="0.4">
-            <img id="commitall" class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('groups', event, 'groups')" draggable="false" />
-            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('groups', event)"  draggable="false"  />
+          <div id="controls" data-oid="0.5">
             <div id="message" class="message">
               <div>
                 <span class="warning" id="warning"></span>
                 <button class="dismiss" onclick="dismiss()">&#9746;</button>
               </div>
             </div>
-            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('group')" />
-            <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('groups', event)" />
+            <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('events', event)" />
           </div>
 
-          <div id="groups">
+          <div id="events">
             <table class="tabular">
               <thead>
                 <tr>
-                  <th class="name    colheader rowheader">Group</th>
+                  <th class="ID      colheader rowheader">ID</th>
                   <th class="padding colheader"></th>
                 </tr>
               </thead>
@@ -73,42 +70,21 @@
               <tfoot></tfoot>
             </table>
 
-            <template id="group">
+            <template id="event">
                 <td class="rowheader" style="display:flex; flex-direction:row;">
-                  <img class="flag name" src="images/{{$.context.Theme}}/corner.svg" />
-                  <input class="field name" 
+                  <img class="flag ID" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field ID" 
                          type="text" 
                          value="" 
                          placeholder="-" 
-                         onchange="onEdited('group', event)" 
-                         onkeydown="onEnter('group', event)" 
                          data-record="" 
                          data-original="" 
-                         data-value="" />
-                  <span class="control commit"   onclick="onCommit('group', event)"   data-record="" data-enabled="false">
-                    <img src="./images/{{$.context.Theme}}/check-solid.svg" />
-                  </span>
-                  <span class="control rollback" onclick="onRollback('group', event)" data-record="" data-enabled="false">
-                    <img src="./images/{{$.context.Theme}}/times-solid.svg" />
-                  </span>
+                         data-value="" 
+                         readonly />
                 </td>
 
                 <!-- 'padding' column (CSS: tr::last-child) -->
                 <td class="padding"></td>
-            </template>
-
-            <template id="door">
-                <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
-                <label class="door">
-                  <input class="field"
-                         type="checkbox" 
-                         onclick="onTick('group', event)"
-                         data-record="" 
-                         data-original="" 
-                         data-value="" />
-                  <img class="no"  src="images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
-                  <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
-                </label>
             </template>
 
           </div>

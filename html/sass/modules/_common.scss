@@ -13,6 +13,10 @@
    display: block;
 }
 
+tr th:last-child { 
+  width:100% 
+} 
+
 tr {
   overflow: visible;
 }

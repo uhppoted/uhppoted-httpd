@@ -34,6 +34,7 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Events
+  - [x] Initial page skeleton
 
 - Migrate cards to OIDs
   - [ ] Update unit tests for OID'd implementation
