@@ -395,22 +395,20 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 		uid = auth.UID()
 	}
 
-	if trail != nil {
-		record := audit.LogEntry{
-			UID:       uid,
-			Module:    stringify(OID),
-			Operation: operation,
-			Info: info{
-				OID:     OID,
-				Door:    stringify(d.Name),
-				Field:   field,
-				Current: stringify(current),
-				Updated: stringify(value),
-			},
-		}
-
-		trail.Write(record)
+	record := audit.LogEntry{
+		UID:       uid,
+		Module:    stringify(OID),
+		Operation: operation,
+		Info: info{
+			OID:     OID,
+			Door:    stringify(d.Name),
+			Field:   field,
+			Current: stringify(current),
+			Updated: stringify(value),
+		},
 	}
+
+	audit.Write(record)
 }
 
 func stringify(i interface{}) string {

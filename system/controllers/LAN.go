@@ -555,20 +555,18 @@ func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field str
 		uid = auth.UID()
 	}
 
-	if trail != nil {
-		record := audit.LogEntry{
-			UID:       uid,
-			Module:    stringify(OID),
-			Operation: operation,
-			Info: info{
-				OID:       stringify(OID),
-				Interface: "LAN",
-				Field:     field,
-				Current:   stringify(current),
-				Updated:   stringify(value),
-			},
-		}
-
-		trail.Write(record)
+	record := audit.LogEntry{
+		UID:       uid,
+		Module:    stringify(OID),
+		Operation: operation,
+		Info: info{
+			OID:       stringify(OID),
+			Interface: "LAN",
+			Field:     field,
+			Current:   stringify(current),
+			Updated:   stringify(value),
+		},
 	}
+
+	audit.Write(record)
 }

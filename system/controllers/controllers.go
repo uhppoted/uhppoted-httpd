@@ -13,7 +13,6 @@ import (
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
-	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
@@ -29,7 +28,6 @@ type ControllerSet struct {
 }
 
 var guard sync.Mutex
-var trail audit.Trail
 
 var windows = struct {
 	deviceOk        time.Duration
@@ -41,10 +39,6 @@ var windows = struct {
 	deviceUncertain: 300 * time.Second,
 	systime:         300 * time.Second,
 	cacheExpiry:     120 * time.Second,
-}
-
-func SetAuditTrail(t audit.Trail) {
-	trail = t
 }
 
 func SetWindows(ok, uncertain, systime, cacheExpiry time.Duration) {

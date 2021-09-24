@@ -260,22 +260,20 @@ func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field s
 		uid = auth.UID()
 	}
 
-	if trail != nil {
-		record := audit.LogEntry{
-			UID:       uid,
-			Module:    stringify(OID),
-			Operation: operation,
-			Info: info{
-				OID:     stringify(OID),
-				Group:   stringify(g.Name),
-				Field:   field,
-				Current: stringify(current),
-				Updated: stringify(value),
-			},
-		}
-
-		trail.Write(record)
+	record := audit.LogEntry{
+		UID:       uid,
+		Module:    stringify(OID),
+		Operation: operation,
+		Info: info{
+			OID:     stringify(OID),
+			Group:   stringify(g.Name),
+			Field:   field,
+			Current: stringify(current),
+			Updated: stringify(value),
+		},
 	}
+
+	audit.Write(record)
 }
 
 func stringify(i interface{}) string {

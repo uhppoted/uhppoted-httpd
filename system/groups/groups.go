@@ -10,7 +10,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
@@ -22,11 +21,6 @@ type Groups struct {
 }
 
 var guard sync.RWMutex
-var trail audit.Trail
-
-func SetAuditTrail(t audit.Trail) {
-	trail = t
-}
 
 func NewGroups() Groups {
 	return Groups{

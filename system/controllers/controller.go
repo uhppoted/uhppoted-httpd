@@ -530,20 +530,18 @@ func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, fi
 
 	oid := fmt.Sprintf("%v", OID)
 
-	if trail != nil {
-		record := audit.LogEntry{
-			UID:       uid,
-			Module:    oid,
-			Operation: operation,
-			Info: info{
-				OID:        oid,
-				Controller: stringify(c.DeviceID),
-				Field:      field,
-				Current:    stringify(current),
-				Updated:    stringify(value),
-			},
-		}
-
-		trail.Write(record)
+	record := audit.LogEntry{
+		UID:       uid,
+		Module:    oid,
+		Operation: operation,
+		Info: info{
+			OID:        oid,
+			Controller: stringify(c.DeviceID),
+			Field:      field,
+			Current:    stringify(current),
+			Updated:    stringify(value),
+		},
 	}
+
+	audit.Write(record)
 }

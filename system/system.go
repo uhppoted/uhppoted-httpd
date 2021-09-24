@@ -41,14 +41,13 @@ type system struct {
 	cards       cards.Cards
 	groups      groups.Groups
 	rules       grule.Rules
-	audit       audit.Trail
 	taskQ       TaskQ
 	retention   time.Duration // time after which 'deleted' items are permanently removed
 }
 
 type object catalog.Object
 
-func Init(cfg config.Config, conf string, trail audit.Trail) error {
+func Init(cfg config.Config, conf string) error {
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
 		return err
 	}
@@ -77,14 +76,7 @@ func Init(cfg config.Config, conf string, trail audit.Trail) error {
 
 	sys.conf = conf
 	sys.rules = rules
-	sys.audit = trail
 	sys.retention = cfg.HTTPD.Retention
-
-	controllers.SetAuditTrail(trail)
-	doors.SetAuditTrail(trail)
-	cards.SetAuditTrail(trail)
-	cards.SetAuditTrail(trail)
-	groups.SetAuditTrail(trail)
 
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
 		cfg.HTTPD.System.Windows.Uncertain,
@@ -174,19 +166,17 @@ func (s *system) sweep() {
 }
 
 func (s *system) log(op string, info interface{}, auth auth.OpAuth) {
-	if s.audit != nil {
-		uid := ""
-		if auth != nil {
-			uid = auth.UID()
-		}
-
-		s.audit.Write(audit.LogEntry{
-			UID:       uid,
-			Module:    "system",
-			Operation: op,
-			Info:      info,
-		})
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
 	}
+
+	audit.Write(audit.LogEntry{
+		UID:       uid,
+		Module:    "system",
+		Operation: op,
+		Info:      info,
+	})
 }
 
 func unpack(m map[string]interface{}) ([]object, error) {

@@ -2,7 +2,7 @@
 
 ### IN PROGRESS
 
-- [ ] Make audit trail a shared system global a la log et al
+- [x] Make audit trail a shared system global a la log et al
 - [ ] Server events in addition to/rather-than refresh
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [ ] Double click for login after 'idle signout'
@@ -33,12 +33,13 @@
   - [ ] Make OID a type
         - [ ] move all _stringify's_ to OID/object/somesuch
 
+- Events
+
 - Migrate cards to OIDs
-  - [ ] Style placeholder for from/to
+  - [ ] Update unit tests for OID'd implementation
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
   - [ ] `refresh` is overwriting pending group edits
-  - [ ] Update unit tests for OID'd implementation
   - [ ] Replace dataset.original with value from DB
   - [ ] Unit test for AsObjects
   - [ ] Rethink mark/sweep to not use a counter
@@ -48,8 +49,6 @@
         - use tag (?)
 
 - Groups
-  - [x] Update ACL to use reworked groups + doors
-        - [x] Invoke rules for additional processing
 
 - Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

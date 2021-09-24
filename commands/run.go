@@ -58,7 +58,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		authentication = auth.NewBasicAuthenticator(p, conf.HTTPD.Security.CookieMaxAge, conf.HTTPD.Security.StaleTime, []string{"/authenticate"})
 	}
 
-	trail := audit.NewAuditTrail(conf.HTTPD.Audit.File)
+	audit.SetAuditFile(conf.HTTPD.Audit.File)
 
 	h := httpd.HTTPD{
 		Dir:                      "html",
@@ -93,11 +93,9 @@ func (cmd *Run) Execute(args ...interface{}) error {
 				ACL:    conf.HTTPD.DB.Rules.ACL,
 			},
 		},
-
-		Audit: trail,
 	}
 
-	if err := system.Init(*conf, cmd.configuration, trail); err != nil {
+	if err := system.Init(*conf, cmd.configuration); err != nil {
 		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 

@@ -375,22 +375,20 @@ func (c *CardHolder) log(auth auth.OpAuth, operation string, oid catalog.OID, fi
 		uid = auth.UID()
 	}
 
-	if trail != nil {
-		record := audit.LogEntry{
-			UID:       uid,
-			Module:    stringify(oid),
-			Operation: operation,
-			Info: info{
-				OID:     stringify(oid),
-				Card:    stringify(c.Card),
-				Field:   field,
-				Current: stringify(current),
-				Updated: stringify(value),
-			},
-		}
-
-		trail.Write(record)
+	record := audit.LogEntry{
+		UID:       uid,
+		Module:    stringify(oid),
+		Operation: operation,
+		Info: info{
+			OID:     stringify(oid),
+			Card:    stringify(c.Card),
+			Field:   field,
+			Current: stringify(current),
+			Updated: stringify(value),
+		},
 	}
+
+	audit.Write(record)
 }
 
 func stringify(i interface{}) string {

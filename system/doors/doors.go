@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
@@ -25,11 +24,6 @@ type Doors struct {
 type object catalog.Object
 
 var guard sync.RWMutex
-var trail audit.Trail
-
-func SetAuditTrail(t audit.Trail) {
-	trail = t
-}
 
 func NewDoors() Doors {
 	return Doors{

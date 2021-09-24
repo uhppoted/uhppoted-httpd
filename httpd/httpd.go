@@ -17,7 +17,6 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/builder"
 	"github.com/hyperjumptech/grule-rule-engine/pkg"
 
-	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
@@ -40,7 +39,6 @@ type HTTPD struct {
 			ACL    string
 		}
 	}
-	Audit audit.Trail
 }
 
 type dispatcher struct {

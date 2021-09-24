@@ -28,11 +28,6 @@ type result struct {
 const GroupName = catalog.GroupName
 
 var guard sync.RWMutex
-var trail audit.Trail
-
-func SetAuditTrail(t audit.Trail) {
-	trail = t
-}
 
 func NewCards() Cards {
 	return Cards{
@@ -258,17 +253,15 @@ func (cc *Cards) scrub() error {
 }
 
 func (cc *Cards) log(op string, info interface{}, auth auth.OpAuth) {
-	if trail != nil {
-		uid := ""
-		if auth != nil {
-			uid = auth.UID()
-		}
-
-		trail.Write(audit.LogEntry{
-			UID:       uid,
-			Module:    "memdb",
-			Operation: op,
-			Info:      info,
-		})
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
 	}
+
+	audit.Write(audit.LogEntry{
+		UID:       uid,
+		Module:    "memdb",
+		Operation: op,
+		Info:      info,
+	})
 }

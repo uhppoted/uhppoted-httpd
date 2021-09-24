@@ -26,7 +26,9 @@ type LogEntry struct {
 	Info      interface{}
 }
 
-func NewAuditTrail(file string) *trail {
+var auditTrail Trail
+
+func SetAuditFile(file string) {
 	events := eventlog.Ticker{Filename: file, MaxSize: 10}
 	logger := log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
 	rotate := make(chan os.Signal, 1)
@@ -41,8 +43,14 @@ func NewAuditTrail(file string) *trail {
 		}
 	}()
 
-	return &trail{
+	auditTrail = &trail{
 		logger: logger,
+	}
+}
+
+func Write(entry LogEntry) {
+	if auditTrail != nil {
+		auditTrail.Write(entry)
 	}
 }
 
