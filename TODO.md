@@ -2,7 +2,6 @@
 
 ### IN PROGRESS
 
-- [x] Make audit trail a shared system global a la log et al
 - [ ] Server events in addition to/rather-than refresh
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [ ] Double click for login after 'idle signout'
@@ -14,6 +13,8 @@
       ```
 - [ ] 'reload' alert 'undefined' message on restarting httpd
 - [ ] 'reload' automatically if httpd comes alive again
+- [ ] Try outline for table rather than border for div
+      - https://css-examples.wizardzines.com/
 
 - auth
   - [ ] Reload grules file if changed
@@ -21,7 +22,7 @@
 
 - OID
   - [ ] Store all values in catalog and 'realize' local copies from cache
-        - Hmmm, will cause issues with shadow logic
+        - Hmmm, may cause issues with shadow logic
         - Unless use shadow cache ??
         - .. or global mutex :-(
         - only ever used for doors so maybe just use catalog as a pointer to actual thing?
@@ -29,11 +30,7 @@
   - [ ] Only update catalog values after validate i.e. not in set(...)
         - [ ] rethink the whole 'dirty' thing
               - maybe use a stash queue (?)
-        - [x] controllers
-        - [x] doors
-        - [x] cards
-        - [x] groups
-        - [ ] RWLock
+        - [ ] RWLock for clone
               - [ ] controllers
               - [ ] doors
               - [ ] cards
@@ -43,8 +40,10 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Events
-  - [x] Initial page skeleton
-  - [ ] Get recent events from controllers
+  - [x] Get recent events from controllers
+  - [ ] Add card/door info to events
+  - [ ] Render events on page
+  - [ ] (?) Store events to SQLLite DB
 
 - Migrate cards to OIDs
   - [ ] Update unit tests for OID'd implementation

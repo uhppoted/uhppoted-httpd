@@ -31,11 +31,6 @@ type LAN struct {
 	status types.Status
 }
 
-type deviceCache struct {
-	cache map[uint32]device
-	guard sync.RWMutex
-}
-
 type device struct {
 	touched  time.Time
 	address  *core.Address
@@ -45,14 +40,35 @@ type device struct {
 	acl      types.Status
 }
 
+type event struct {
+	device     uint32
+	index      uint32
+	eventType  uint8
+	granted    bool
+	door       uint8
+	direction  uint8
+	cardnumber uint32
+	timestamp  types.DateTime
+	reason     uint8
+}
+
 const LANName = catalog.InterfaceName
 const LANType = catalog.InterfaceType
 const LANBindAddress = catalog.LANBindAddress
 const LANBroadcastAddress = catalog.LANBroadcastAddress
 const LANListenAddress = catalog.LANListenAddress
 
-var cache = deviceCache{
+var cache = struct {
+	cache map[uint32]device
+	guard sync.RWMutex
+}{
 	cache: map[uint32]device{},
+}
+
+var events = struct {
+	cache []event
+}{
+	cache: []event{},
 }
 
 func (l *LAN) String() string {
@@ -381,6 +397,25 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller) 
 			log.Printf("Got %v response to get-door-control request for %v", control, id)
 		} else {
 			l.store(id, *control, controller)
+		}
+	}
+
+	if recent, err := api.GetEvents(uhppoted.GetEventsRequest{DeviceID: uhppoted.DeviceID(id), Max: 5}); err != nil {
+		log.Printf("%v", err)
+	} else {
+		fmt.Printf(">>> FETCHED/X: %v\n", recent)
+		for _, e := range recent.Events {
+			events.cache = append(events.cache, event{
+				device:     id,
+				index:      e.Index,
+				eventType:  e.Type,
+				granted:    e.Granted,
+				door:       e.Door,
+				direction:  e.Direction,
+				cardnumber: e.CardNumber,
+				timestamp:  types.DateTime(e.Timestamp),
+				reason:     e.Reason,
+			})
 		}
 	}
 }
