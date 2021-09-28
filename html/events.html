@@ -62,7 +62,7 @@
             <table class="tabular">
               <thead>
                 <tr>
-                  <th class="ID      colheader rowheader">ID</th>
+                  <th class="timestamp colheader rowheader">timestamp</th>
                   <th class="padding colheader"></th>
                 </tr>
               </thead>
@@ -73,7 +73,7 @@
             <template id="event">
                 <td class="rowheader" style="display:flex; flex-direction:row;">
                   <img class="flag ID" src="images/{{$.context.Theme}}/corner.svg" />
-                  <input class="field ID" 
+                  <input class="field timestamp" 
                          type="text" 
                          value="" 
                          placeholder="-" 
@@ -131,7 +131,7 @@
     window.onRefresh = onRefresh
 
     const refresh = function() {
-      onRefresh('groups')      
+      onRefresh('events')      
     }
 
     resetIdle()

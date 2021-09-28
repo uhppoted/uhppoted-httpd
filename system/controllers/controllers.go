@@ -19,12 +19,17 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/config"
+	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type ControllerSet struct {
 	file        string        `json:"-"`
 	Controllers []*Controller `json:"controllers"`
 	LAN         *LAN          `json:"LAN"`
+}
+
+type Callback interface {
+	Append(deviceID uint32, events []uhppoted.Event)
 }
 
 var guard sync.Mutex
@@ -285,8 +290,8 @@ func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error
 	return record, nil
 }
 
-func (cc *ControllerSet) Refresh() {
-	cc.LAN.refresh(cc.Controllers)
+func (cc *ControllerSet) Refresh(callback Callback) {
+	cc.LAN.refresh(cc.Controllers, callback)
 
 	// ... add 'found' controllers to list
 loop:

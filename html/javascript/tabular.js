@@ -4,6 +4,7 @@ import * as controllers from './controllers.js'
 import * as doors from './doors.js'
 import * as cards from './cards.js'
 import * as groups from './groups.js'
+import * as events from './events.js'
 import * as db from './db.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
@@ -26,6 +27,11 @@ const pages = {
   groups: {
     url: '/groups',
     refreshed: groups.refreshed
+  },
+
+  events: {
+    url: '/events',
+    refreshed: events.refreshed
   }
 }
 
@@ -236,6 +242,10 @@ export function onRefresh (tag, event) {
 
     case 'groups':
       get('/groups', groups.refreshed)
+      break
+
+    case 'events':
+      get('/events', events.refreshed)
       break
   }
 }

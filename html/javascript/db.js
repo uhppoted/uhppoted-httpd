@@ -4,6 +4,7 @@ export const DB = {
   doors: new Map(),
   cards: new Map(),
   groups: new Map(),
+  events: new Map(),
 
   updated: function (tag, recordset) {
     if (recordset) {
@@ -74,6 +75,8 @@ function object (o) {
     card(o)
   } else if (/^0\.4\..*$/.test(oid)) {
     group(o)
+  } else if (/^0\.5\..*$/.test(oid)) {
+    event(o)
   }
 }
 
@@ -488,6 +491,47 @@ function group (o) {
               }
             }
           }
+      }
+    }
+  })
+}
+
+function event (o) {
+  const oid = o.OID
+
+  if (/^0\.5\.[1-9][0-9]*$/.test(oid)) {
+    if (DB.events.has(oid)) {
+      const record = DB.events.get(oid)
+      record.status = o.value
+      record.mark = 0
+      return
+    }
+
+    DB.events.set(oid, {
+      OID: oid,
+      timestamp: '',
+      status: o.value,
+      mark: 0
+    })
+
+    return
+  }
+
+  DB.events.forEach((v, k) => {
+    if (oid.startsWith(k)) {
+      // INTERIM HACK
+      if (v.status === 'new') {
+        v.status = 'unknown'
+      }
+
+      switch (oid) {
+        case k:
+          v.status = o.value
+          break
+
+        case k + '.3':
+          v.timestamp = o.value
+          break
       }
     }
   })

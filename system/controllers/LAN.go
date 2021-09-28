@@ -40,18 +40,6 @@ type device struct {
 	acl      types.Status
 }
 
-type event struct {
-	device     uint32
-	index      uint32
-	eventType  uint8
-	granted    bool
-	door       uint8
-	direction  uint8
-	cardnumber uint32
-	timestamp  types.DateTime
-	reason     uint8
-}
-
 const LANName = catalog.InterfaceName
 const LANType = catalog.InterfaceType
 const LANBindAddress = catalog.LANBindAddress
@@ -63,12 +51,6 @@ var cache = struct {
 	guard sync.RWMutex
 }{
 	cache: map[uint32]device{},
-}
-
-var events = struct {
-	cache []event
-}{
-	cache: []event{},
 }
 
 func (l *LAN) String() string {
@@ -295,7 +277,7 @@ func (l *LAN) compareACL(controllers []*Controller, permissions acl.ACL) error {
 	return nil
 }
 
-func (l *LAN) refresh(controllers []*Controller) {
+func (l *LAN) refresh(controllers []*Controller, callback Callback) {
 	expired := time.Now().Add(-windows.cacheExpiry)
 	for k, v := range cache.cache {
 		if v.touched.Before(expired) {
@@ -339,13 +321,13 @@ func (l *LAN) refresh(controllers []*Controller) {
 					}
 				}
 
-				l.update(api, id, controller)
+				l.update(api, id, controller, callback)
 			}()
 		}
 	}()
 }
 
-func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller) {
+func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, callback Callback) {
 	log.Printf("%v: refreshing LAN controller status", id)
 
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
@@ -402,21 +384,8 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller) 
 
 	if recent, err := api.GetEvents(uhppoted.GetEventsRequest{DeviceID: uhppoted.DeviceID(id), Max: 5}); err != nil {
 		log.Printf("%v", err)
-	} else {
-		fmt.Printf(">>> FETCHED/X: %v\n", recent)
-		for _, e := range recent.Events {
-			events.cache = append(events.cache, event{
-				device:     id,
-				index:      e.Index,
-				eventType:  e.Type,
-				granted:    e.Granted,
-				door:       e.Door,
-				direction:  e.Direction,
-				cardnumber: e.CardNumber,
-				timestamp:  types.DateTime(e.Timestamp),
-				reason:     e.Reason,
-			})
-		}
+	} else if callback != nil {
+		callback.Append(id, recent.Events)
 	}
 }
 

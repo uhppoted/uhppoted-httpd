@@ -40,9 +40,10 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Events
-  - [x] Get recent events from controllers
+  - [ ] GetEvents is repeatedly returning the most recent event
+  - [x] Events page GET handler
+  - [x] Include events in response
   - [ ] Add card/door info to events
-  - [ ] Render events on page
   - [ ] (?) Store events to SQLLite DB
 
 - Migrate cards to OIDs

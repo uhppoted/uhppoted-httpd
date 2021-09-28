@@ -2,6 +2,8 @@ package catalog
 
 import (
 	"fmt"
+
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Object struct {
@@ -34,6 +36,10 @@ func stringify(i interface{}) string {
 		if v != nil {
 			return fmt.Sprintf("%v", *v)
 		}
+
+	case types.DateTime:
+		w := i.(types.DateTime)
+		return fmt.Sprintf("%v", &w)
 
 	default:
 		if i != nil {

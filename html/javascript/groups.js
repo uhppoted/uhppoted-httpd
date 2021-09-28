@@ -1,5 +1,3 @@
-/* global */
-
 import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
 

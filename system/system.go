@@ -18,10 +18,12 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
+	"github.com/uhppoted/uhppoted-httpd/system/events"
 	"github.com/uhppoted/uhppoted-httpd/system/groups"
 	"github.com/uhppoted/uhppoted-httpd/system/grule"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/config"
+	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 var sys = system{
@@ -29,6 +31,7 @@ var sys = system{
 	doors:       doors.NewDoors(),
 	cards:       cards.NewCards(),
 	groups:      groups.NewGroups(),
+	events:      events.NewEvents(),
 	taskQ:       NewTaskQ(),
 	retention:   6 * time.Hour,
 }
@@ -40,12 +43,15 @@ type system struct {
 	doors       doors.Doors
 	cards       cards.Cards
 	groups      groups.Groups
+	events      events.Events
 	rules       grule.Rules
 	taskQ       TaskQ
 	retention   time.Duration // time after which 'deleted' items are permanently removed
+	callback    callback
 }
 
-type object catalog.Object
+type callback struct {
+}
 
 func Init(cfg config.Config, conf string) error {
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
@@ -61,6 +67,10 @@ func Init(cfg config.Config, conf string) error {
 	}
 
 	if err := sys.cards.Load(cfg.HTTPD.System.Cards); err != nil {
+		return err
+	}
+
+	if err := sys.events.Load(cfg.HTTPD.System.Events); err != nil {
 		return err
 	}
 
@@ -87,6 +97,7 @@ func Init(cfg config.Config, conf string) error {
 	sys.doors.Print()
 	sys.groups.Print()
 	sys.cards.Print()
+	sys.events.Print()
 
 	go func() {
 		time.Sleep(2500 * time.Millisecond)
@@ -111,6 +122,7 @@ func System() interface{} {
 	objects = append(objects, sys.doors.AsObjects()...)
 	objects = append(objects, sys.cards.AsObjects()...)
 	objects = append(objects, sys.groups.AsObjects()...)
+	objects = append(objects, sys.events.AsObjects()...)
 
 	return struct {
 		Objects []interface{} `json:"objects"`
@@ -125,7 +137,9 @@ func (s *system) refresh() {
 	}
 
 	sys.taskQ.Add(Task{
-		f: s.controllers.Refresh,
+		f: func() {
+			s.controllers.Refresh(&s.callback)
+		},
 	})
 
 	sys.taskQ.Add(Task{
@@ -179,13 +193,13 @@ func (s *system) log(op string, info interface{}, auth auth.OpAuth) {
 	})
 }
 
-func unpack(m map[string]interface{}) ([]object, error) {
+func unpack(m map[string]interface{}) ([]catalog.Object, error) {
 	f := func(err error) error {
 		return types.BadRequest(fmt.Errorf("Invalid request (%v)", err), fmt.Errorf("Error unpacking 'post' request (%w)", err))
 	}
 
 	o := struct {
-		Objects []object `json:"objects"`
+		Objects []catalog.Object `json:"objects"`
 	}{}
 
 	blob, err := json.Marshal(m)
@@ -212,4 +226,8 @@ func info(msg string) {
 
 func warn(err error) {
 	log.Printf("ERROR %v", err)
+}
+
+func (f *callback) Append(deviceID uint32, recent []uhppoted.Event) {
+	sys.events.Received(deviceID, recent)
 }

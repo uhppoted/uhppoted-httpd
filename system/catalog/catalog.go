@@ -11,12 +11,14 @@ var catalog = struct {
 	doors       map[OID]struct{}
 	cards       map[OID]struct{}
 	groups      map[OID]struct{}
+	events      map[OID]struct{}
 }{
 	interfaces:  map[OID]struct{}{},
 	controllers: map[OID]controller{},
 	doors:       map[OID]struct{}{},
 	cards:       map[OID]struct{}{},
 	groups:      map[OID]struct{}{},
+	events:      map[OID]struct{}{},
 }
 
 var guard sync.Mutex
@@ -153,6 +155,27 @@ loop:
 		}
 
 		catalog.groups[oid] = struct{}{}
+
+		return oid
+	}
+}
+
+func NewEvent() OID {
+	guard.Lock()
+	defer guard.Unlock()
+
+	item := 0
+loop:
+	for {
+		item += 1
+		oid := OID(fmt.Sprintf("0.5.%d", item))
+		for v, _ := range catalog.events {
+			if v == oid {
+				continue loop
+			}
+		}
+
+		catalog.events[oid] = struct{}{}
 
 		return oid
 	}
