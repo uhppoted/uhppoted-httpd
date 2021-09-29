@@ -510,6 +510,14 @@ function event (o) {
     DB.events.set(oid, {
       OID: oid,
       timestamp: '',
+      deviceID: '',
+      index: 0,
+      eventType: '',
+      door: '',
+      direction: '',
+      card: '',
+      granted: '',
+      reason: '',
       status: o.value,
       mark: 0
     })
@@ -529,8 +537,40 @@ function event (o) {
           v.status = o.value
           break
 
+        case k + '.1':
+          v.deviceID = o.value
+          break
+
+        case k + '.2':
+          v.index = parseInt(o.value)
+          break
+
         case k + '.3':
           v.timestamp = o.value
+          break
+
+        case k + '.4':
+          v.eventType = o.value
+          break
+
+        case k + '.5':
+          v.door = o.value
+          break
+
+        case k + '.6':
+          v.direction = o.value
+          break
+
+        case k + '.7':
+          v.card = o.value
+          break
+
+        case k + '.8':
+          v.granted = o.value
+          break
+
+        case k + '.9':
+          v.reason = o.value
           break
       }
     }

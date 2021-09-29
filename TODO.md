@@ -30,7 +30,7 @@
   - [ ] Only update catalog values after validate i.e. not in set(...)
         - [ ] rethink the whole 'dirty' thing
               - maybe use a stash queue (?)
-        - [ ] RWLock for clone
+        - [ ] Check RWLock for clone
               - [ ] controllers
               - [ ] doors
               - [ ] cards
@@ -41,10 +41,11 @@
 
 - Events
   - [ ] GetEvents is repeatedly returning the most recent event
-  - [x] Events page GET handler
-  - [x] Include events in response
-  - [ ] Add card/door info to events
-  - [ ] (?) Store events to SQLLite DB
+  - [ ] Simulator doesn't seem to be sending the event card number
+  - [x] Render events
+  - [ ] Associate card/door info to events on retrieval
+        - How to handle card/door reassignments ?????
+        - Store events/logs to SQLite DB ????
 
 - Migrate cards to OIDs
   - [ ] Update unit tests for OID'd implementation

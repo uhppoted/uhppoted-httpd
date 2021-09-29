@@ -11,7 +11,49 @@ div#events {
 }  
 
 th.timestamp {
-  min-width: 90px;
   border-bottom: 1px;
   white-space: nowrap;
+}
+
+th.deviceID {
+  white-space: nowrap;
+}
+
+td input.deviceID {
+  width: 80px;
+}
+
+td input.eventType {
+  width: 60px;
+  text-align: center;
+  font-size: 1.1em;
+  font-variant: small-caps;
+}
+
+td input.door {
+  width: 60px;
+  text-align: center;
+}
+
+td input.direction {
+  width: 60px;
+  text-align: center;
+  font-size: 1.1em;
+  font-variant: small-caps;
+}
+
+td input.card {
+  width: 80px;
+}
+
+td input.access {
+  width: 60px;
+  text-align: center;
+  font-size: 1.1em;
+  font-variant: small-caps;
+}
+
+td input.reason {
+  font-size: 1.1em;
+  font-variant: small-caps;
 }

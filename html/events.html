@@ -62,8 +62,15 @@
             <table class="tabular">
               <thead>
                 <tr>
-                  <th class="timestamp colheader rowheader">timestamp</th>
-                  <th class="padding colheader"></th>
+                  <th class="colheader rowheader timestamp">Timestamp</th>
+                  <th class="colheader deviceID">Device ID</th>
+                  <th class="colheader">Event</th>
+                  <th class="colheader">Door</th>
+                  <th class="colheader">Direction</th>
+                  <th class="colheader">Card</th>
+                  <th class="colheader">Access</th>
+                  <th class="colheader">Reason</th>
+                  <th class="colheader padding"></th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -72,8 +79,98 @@
 
             <template id="event">
                 <td class="rowheader" style="display:flex; flex-direction:row;">
-                  <img class="flag ID" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag timestamp" src="images/{{$.context.Theme}}/corner.svg" />
                   <input class="field timestamp" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                  <span class="control commit"   onclick="onCommit('group', event)"   data-record="" data-enabled="false">
+                    <img src="./images/{{$.context.Theme}}/check-solid.svg" />
+                  </span>
+                  <span class="control rollback" onclick="onRollback('group', event)" data-record="" data-enabled="false">
+                    <img src="./images/{{$.context.Theme}}/times-solid.svg" />
+                  </span>
+                </td>
+
+                <td>
+                  <img class="flag deviceID" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field deviceID" 
+                         type="number" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag eventType" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field eventType" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag door" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field door" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag direction" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field direction" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag card" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field card" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag access" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field access" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag reason" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field reason" 
                          type="text" 
                          value="" 
                          placeholder="-" 

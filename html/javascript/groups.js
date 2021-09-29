@@ -48,57 +48,6 @@ function updateFromDB (oid, record) {
   return row
 }
 
-function add (oid, record) {
-  const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
-  const tbody = document.getElementById('groups').querySelector('table tbody')
-
-  if (tbody) {
-    const template = document.querySelector('#group')
-    const row = tbody.insertRow()
-
-    row.id = uuid
-    row.classList.add('group')
-    row.classList.add('new')
-    row.dataset.oid = oid
-    row.dataset.status = 'unknown'
-    row.innerHTML = template.innerHTML
-
-    const commit = row.querySelector('td span.commit')
-    commit.id = uuid + '_commit'
-    commit.dataset.record = uuid
-    commit.dataset.enabled = 'false'
-
-    const rollback = row.querySelector('td span.rollback')
-    rollback.id = uuid + '_rollback'
-    rollback.dataset.record = uuid
-    rollback.dataset.enabled = 'false'
-
-    const fields = [
-      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' }
-    ]
-
-    fields.forEach(f => {
-      const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
-
-      if (field) {
-        field.id = uuid + '-' + f.suffix
-        field.value = ''
-        field.dataset.oid = f.oid
-        field.dataset.record = uuid
-        field.dataset.original = ''
-        field.dataset.value = ''
-
-        flag.id = 'F' + f.oid
-      } else {
-        console.error(f)
-      }
-    })
-
-    return row
-  }
-}
-
 function realize (groups) {
   const table = document.querySelector('#groups table')
   const thead = table.tHead
@@ -184,4 +133,55 @@ function realize (groups) {
       v.remove()
     })
   })
+}
+
+function add (oid, record) {
+  const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
+  const tbody = document.getElementById('groups').querySelector('table tbody')
+
+  if (tbody) {
+    const template = document.querySelector('#group')
+    const row = tbody.insertRow()
+
+    row.id = uuid
+    row.classList.add('group')
+    row.classList.add('new')
+    row.dataset.oid = oid
+    row.dataset.status = 'unknown'
+    row.innerHTML = template.innerHTML
+
+    const commit = row.querySelector('td span.commit')
+    commit.id = uuid + '_commit'
+    commit.dataset.record = uuid
+    commit.dataset.enabled = 'false'
+
+    const rollback = row.querySelector('td span.rollback')
+    rollback.id = uuid + '_rollback'
+    rollback.dataset.record = uuid
+    rollback.dataset.enabled = 'false'
+
+    const fields = [
+      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' }
+    ]
+
+    fields.forEach(f => {
+      const field = row.querySelector(f.selector)
+      const flag = row.querySelector(f.flag)
+
+      if (field) {
+        field.id = uuid + '-' + f.suffix
+        field.value = ''
+        field.dataset.oid = f.oid
+        field.dataset.record = uuid
+        field.dataset.original = ''
+        field.dataset.value = ''
+
+        flag.id = 'F' + f.oid
+      } else {
+        console.error(f)
+      }
+    })
+
+    return row
+  }
 }
