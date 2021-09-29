@@ -13,7 +13,7 @@
       ```
 - [ ] 'reload' alert 'undefined' message on restarting httpd
 - [ ] 'reload' automatically if httpd comes alive again
-- [ ] Try outline for table rather than border for div
+- [x] Try outline for table rather than border for div
       - https://css-examples.wizardzines.com/
 
 - auth
@@ -70,7 +70,7 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 - [ ] system
-      - [ ] Update to use tabular.js
+      - [ ] Update controllers to use tabular.js
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
       - [ ] Fix `get-events` log string

@@ -211,6 +211,10 @@ export function onRollbackAll (tag, event) {
 
 export function onNew (tag, event) {
   switch (tag) {
+    case 'controller':
+      create(pages.system)
+      break
+
     case 'door':
       create(pages.doors)
       break

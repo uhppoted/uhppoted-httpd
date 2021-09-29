@@ -89,14 +89,6 @@ export function updateFromDB (oid, record) {
   return row
 }
 
-export function onNew () {
-  const records = [{ oid: '<new>', value: '' }]
-  const reset = function () {}
-  const cleanup = function () {}
-
-  system.post('objects', records, reset, cleanup)
-}
-
 export function set (element, value, status) {
   const oid = element.dataset.oid
   const original = element.dataset.original
