@@ -256,6 +256,15 @@ func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 
 	return objects, nil
 }
+
+func (c CardHolder) GetName() string {
+	if c.Name != nil {
+		return string(*c.Name)
+	}
+
+	return ""
+}
+
 func (c CardHolder) serialize() ([]byte, error) {
 	record := struct {
 		OID     catalog.OID   `json:"OID"`

@@ -41,11 +41,12 @@
 
 - Events
   - [ ] GetEvents is repeatedly returning the most recent event
-  - [ ] Simulator doesn't seem to be sending the event card number
+  - [x] Associate card/door info to events on retrieval
+  - [ ] Lookup historical card/door assignments
+  - [ ] load
+  - [ ] save
+  - [x] Simulator doesn't seem to be sending the event card number
   - [x] Render events
-  - [ ] Associate card/door info to events on retrieval
-        - How to handle card/door reassignments ?????
-        - Store events/logs to SQLite DB ????
 
 - Migrate cards to OIDs
   - [ ] Update unit tests for OID'd implementation

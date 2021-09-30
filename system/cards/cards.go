@@ -211,6 +211,18 @@ func (cc *Cards) AsObjects() []interface{} {
 	return objects
 }
 
+func (cc *Cards) Lookup(card uint32) *CardHolder {
+	if card != 0 {
+		for _, c := range cc.Cards {
+			if c.Card != nil && uint32(*c.Card) == card {
+				return c
+			}
+		}
+	}
+
+	return nil
+}
+
 func (cc *Cards) add(auth auth.OpAuth, c CardHolder) (*CardHolder, error) {
 	oid := catalog.NewCard()
 

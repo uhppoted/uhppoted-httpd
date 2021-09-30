@@ -69,9 +69,11 @@ function add (oid, record) {
       { suffix: 'timestamp', oid: `${oid}.3`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
       { suffix: 'deviceID', oid: `${oid}.1`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
       { suffix: 'eventType', oid: `${oid}.4`, selector: 'td input.eventType', flag: 'td img.eventType' },
-      { suffix: 'door', oid: `${oid}.5`, selector: 'td input.door', flag: 'td img.door' },
+      { suffix: 'doorid', oid: `${oid}.5`, selector: 'td input.doorid', flag: 'td img.doorid' },
+      { suffix: 'door', oid: `${oid}.10`, selector: 'td input.door', flag: 'td img.door' },
       { suffix: 'direction', oid: `${oid}.6`, selector: 'td input.direction', flag: 'td img.direction' },
-      { suffix: 'card', oid: `${oid}.7`, selector: 'td input.card', flag: 'td img.card' },
+      { suffix: 'cardno', oid: `${oid}.7`, selector: 'td input.cardno', flag: 'td img.cardno' },
+      { suffix: 'card', oid: `${oid}.11`, selector: 'td input.card', flag: 'td img.card' },
       { suffix: 'access', oid: `${oid}.8`, selector: 'td input.access', flag: 'td img.access' },
       { suffix: 'reason', oid: `${oid}.9`, selector: 'td input.reason', flag: 'td img.reason' }
     ]
@@ -108,9 +110,11 @@ function updateFromDB (oid, record) {
   const timestamp = row.querySelector(`[data-oid="${oid}.3"]`)
   const deviceID = row.querySelector(`[data-oid="${oid}.1"]`)
   const eventType = row.querySelector(`[data-oid="${oid}.4"]`)
-  const door = row.querySelector(`[data-oid="${oid}.5"]`)
+  const doorid = row.querySelector(`[data-oid="${oid}.5"]`)
+  const door = row.querySelector(`[data-oid="${oid}.10"]`)
   const direction = row.querySelector(`[data-oid="${oid}.6"]`)
-  const card = row.querySelector(`[data-oid="${oid}.7"]`)
+  const cardno = row.querySelector(`[data-oid="${oid}.7"]`)
+  const card = row.querySelector(`[data-oid="${oid}.11"]`)
   const access = row.querySelector(`[data-oid="${oid}.8"]`)
   const reason = row.querySelector(`[data-oid="${oid}.9"]`)
 
@@ -119,9 +123,11 @@ function updateFromDB (oid, record) {
   update(timestamp, record.timestamp)
   update(deviceID, record.deviceID)
   update(eventType, record.eventType)
-  update(door, record.door)
+  update(doorid, record.door)
+  update(door, record.doorName)
   update(direction, record.direction)
-  update(card, record.card)
+  update(cardno, record.card)
+  update(card, record.cardName)
   update(access, record.granted === 'true' ? 'granted' : (record.granted === 'false' ? 'denied' : ''))
   update(reason, record.reason)
 

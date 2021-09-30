@@ -518,6 +518,8 @@ function event (o) {
       card: '',
       granted: '',
       reason: '',
+      doorName: '',
+      cardName: '',
       status: o.value,
       mark: 0
     })
@@ -571,6 +573,14 @@ function event (o) {
 
         case k + '.9':
           v.reason = o.value
+          break
+
+        case k + '.10':
+          v.doorName = o.value
+          break
+
+        case k + '.11':
+          v.cardName = o.value
           break
       }
     }

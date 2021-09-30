@@ -65,9 +65,8 @@
                   <th class="colheader rowheader timestamp">Timestamp</th>
                   <th class="colheader deviceID">Device ID</th>
                   <th class="colheader">Event</th>
-                  <th class="colheader">Door</th>
-                  <th class="colheader">Direction</th>
-                  <th class="colheader">Card</th>
+                  <th class="colheader" colspan="3">Door</th>
+                  <th class="colheader" colspan="2">Card</th>
                   <th class="colheader">Access</th>
                   <th class="colheader">Reason</th>
                   <th class="colheader padding"></th>
@@ -121,6 +120,30 @@
                 </td>
 
                 <td>
+                  <img class="flag direction" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field direction" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag doorid" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field doorid" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
                   <img class="flag door" src="images/{{$.context.Theme}}/corner.svg" />
                   <input class="field door" 
                          type="text" 
@@ -133,8 +156,8 @@
                 </td>
 
                 <td>
-                  <img class="flag direction" src="images/{{$.context.Theme}}/corner.svg" />
-                  <input class="field direction" 
+                  <img class="flag cardno" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field cardno" 
                          type="text" 
                          value="" 
                          placeholder="-" 

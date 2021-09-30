@@ -489,6 +489,17 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 	return objects, nil
 }
 
+func (c *Controller) Door(did uint8) (string, bool) {
+	if oid, ok := c.Doors[did]; ok {
+		v, _ := catalog.GetV(catalog.OID(oid).Append(catalog.DoorName))
+		if _, ok := v.(string); ok {
+			return v.(string), true
+		}
+	}
+
+	return "", false
+}
+
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{

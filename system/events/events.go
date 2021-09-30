@@ -101,7 +101,7 @@ func (ee *Events) Validate() error {
 	return nil
 }
 
-func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event) {
+func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string)) {
 	list, ok := ee.Events[deviceID]
 	if !ok {
 		list = map[uint32]Event{}
@@ -116,7 +116,7 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event) {
 			oid = catalog.NewEvent()
 		}
 
-		list[e.Index] = NewEvent(oid, e)
+		list[e.Index] = NewEvent(oid, e, lookup)
 	}
 
 	guard.Lock()

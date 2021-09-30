@@ -20,6 +20,8 @@ type Event struct {
 	Card      uint32         `json:"card"`
 	Granted   bool           `json:"granted"`
 	Reason    reason         `json:"reason"`
+	DoorName  string         `json:"door-name"`
+	CardName  string         `json:"card-name"`
 }
 
 type eventType uint8
@@ -130,8 +132,12 @@ const EventDirection = catalog.EventDirection
 const EventCard = catalog.EventCard
 const EventGranted = catalog.EventGranted
 const EventReason = catalog.EventReason
+const EventDoorName = catalog.EventDoorName
+const EventCardName = catalog.EventCardName
 
-func NewEvent(oid catalog.OID, e uhppoted.Event) Event {
+func NewEvent(oid catalog.OID, e uhppoted.Event, lookup func(uhppoted.Event) (string, string)) Event {
+	door, card := lookup(e)
+
 	return Event{
 		OID:       oid,
 		DeviceID:  e.DeviceID,
@@ -143,6 +149,8 @@ func NewEvent(oid catalog.OID, e uhppoted.Event) Event {
 		Card:      e.CardNumber,
 		Granted:   e.Granted,
 		Reason:    reason(e.Reason),
+		DoorName:  door,
+		CardName:  card,
 	}
 }
 
@@ -165,6 +173,8 @@ func (e *Event) AsObjects() []interface{} {
 		catalog.NewObject2(e.OID, EventCard, e.Card),
 		catalog.NewObject2(e.OID, EventReason, e.Reason),
 		catalog.NewObject2(e.OID, EventGranted, e.Granted),
+		catalog.NewObject2(e.OID, EventDoorName, e.DoorName),
+		catalog.NewObject2(e.OID, EventCardName, e.CardName),
 	}
 
 	return objects

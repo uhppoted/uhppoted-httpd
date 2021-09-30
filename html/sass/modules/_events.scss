@@ -25,30 +25,35 @@ td input.deviceID {
 
 td input.eventType {
   width: 60px;
-  text-align: center;
   font-size: 1.1em;
   font-variant: small-caps;
-}
-
-td input.door {
-  width: 60px;
-  text-align: center;
 }
 
 td input.direction {
-  width: 60px;
-  text-align: center;
+  width: 16px;
   font-size: 1.1em;
   font-variant: small-caps;
 }
 
+td input.doorid {
+  width: 8px;
+  text-align: center;
+}
+
+td input.door {
+  width: 96px;
+}
+
+td input.cardno {
+  width: 56px;
+}
+
 td input.card {
-  width: 80px;
+  width: 120px;
 }
 
 td input.access {
   width: 60px;
-  text-align: center;
   font-size: 1.1em;
   font-variant: small-caps;
 }

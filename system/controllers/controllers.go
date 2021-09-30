@@ -269,6 +269,18 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 	return objects, nil
 }
 
+func (cc *ControllerSet) Lookup(deviceID uint32) *Controller {
+	if deviceID != 0 {
+		for _, c := range cc.Controllers {
+			if c.DeviceID != nil && *c.DeviceID == deviceID {
+				return c
+			}
+		}
+	}
+
+	return nil
+}
+
 func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error) {
 	id := uint32(0)
 	if c.DeviceID != nil {
