@@ -13,8 +13,6 @@
       ```
 - [ ] 'reload' alert 'undefined' message on restarting httpd
 - [ ] 'reload' automatically if httpd comes alive again
-- [x] Try outline for table rather than border for div
-      - https://css-examples.wizardzines.com/
 
 - auth
   - [ ] Reload grules file if changed
@@ -40,13 +38,11 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Events
-  - [ ] GetEvents is repeatedly returning the most recent event
-  - [x] Associate card/door info to events on retrieval
-  - [ ] Lookup historical card/door assignments
-  - [ ] load
+  - [x] GetEvents is repeatedly returning the most recent event
+  - [ ] Associate controller name
   - [ ] save
-  - [x] Simulator doesn't seem to be sending the event card number
-  - [x] Render events
+  - [ ] load
+  - [ ] Lookup historical card/door/controller assignments
 
 - Migrate cards to OIDs
   - [ ] Update unit tests for OID'd implementation

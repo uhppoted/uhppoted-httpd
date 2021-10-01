@@ -1,7 +1,7 @@
 /* global */
 
 import * as system from './system.js'
-import { deleted } from './tabular.js'
+import { set, deleted, percolate } from './tabular.js'
 import { DB } from './db.js'
 
 export function updateFromDB (oid, record) {
@@ -87,29 +87,6 @@ export function updateFromDB (oid, record) {
   datetime.dataset.original = record.datetime.expected
 
   return row
-}
-
-export function set (element, value, status) {
-  const oid = element.dataset.oid
-  const original = element.dataset.original
-  const v = value.toString()
-  const flag = document.getElementById(`F${oid}`)
-
-  element.dataset.value = v
-
-  if (status) {
-    element.dataset.status = status
-  } else {
-    element.dataset.status = ''
-  }
-
-  if (v !== original) {
-    mark('modified', element, flag)
-  } else {
-    unmark('modified', element, flag)
-  }
-
-  percolate(oid, modified)
 }
 
 function update (element, value, status) {
@@ -317,16 +294,4 @@ function unmark (clazz, ...elements) {
       e.classList.remove(clazz)
     }
   })
-}
-
-function percolate (oid, f) {
-  let oidx = oid
-
-  while (oidx) {
-    const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
-    oidx = match ? match[1] : null
-    if (oidx) {
-      f(oidx)
-    }
-  }
 }
