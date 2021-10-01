@@ -229,11 +229,16 @@ func warn(err error) {
 }
 
 func (f *callback) Append(deviceID uint32, recent []uhppoted.Event) {
-	lookup := func(e uhppoted.Event) (string, string) {
+	lookup := func(e uhppoted.Event) (string, string, string) {
+		device := ""
 		door := ""
 		card := ""
 
 		if c := sys.controllers.Lookup(e.DeviceID); c != nil {
+			if c.Name != nil {
+				device = string(*c.Name)
+			}
+
 			if d, ok := c.Door(e.Door); ok {
 				door = d
 			}
@@ -245,7 +250,7 @@ func (f *callback) Append(deviceID uint32, recent []uhppoted.Event) {
 			}
 		}
 
-		return door, card
+		return device, door, card
 	}
 
 	sys.events.Received(deviceID, recent, lookup)

@@ -39,7 +39,7 @@
 
 - Events
   - [x] GetEvents is repeatedly returning the most recent event
-  - [ ] Associate controller name
+  - [x] Associate controller name
   - [ ] save
   - [ ] load
   - [ ] Lookup historical card/door/controller assignments

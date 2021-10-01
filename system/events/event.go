@@ -10,18 +10,19 @@ import (
 )
 
 type Event struct {
-	OID       catalog.OID    `json:"OID"`
-	DeviceID  uint32         `json:"device-id"`
-	Index     uint32         `json:"index"`
-	Timestamp types.DateTime `json:"timestamp"`
-	Type      eventType      `json:"event-type"`
-	Door      uint8          `json:"door"`
-	Direction direction      `json:"direction"`
-	Card      uint32         `json:"card"`
-	Granted   bool           `json:"granted"`
-	Reason    reason         `json:"reason"`
-	DoorName  string         `json:"door-name"`
-	CardName  string         `json:"card-name"`
+	OID        catalog.OID    `json:"OID"`
+	DeviceID   uint32         `json:"device-id"`
+	Index      uint32         `json:"index"`
+	Timestamp  types.DateTime `json:"timestamp"`
+	Type       eventType      `json:"event-type"`
+	Door       uint8          `json:"door"`
+	Direction  direction      `json:"direction"`
+	Card       uint32         `json:"card"`
+	Granted    bool           `json:"granted"`
+	Reason     reason         `json:"reason"`
+	DeviceName string         `json:"device-name"`
+	DoorName   string         `json:"door-name"`
+	CardName   string         `json:"card-name"`
 }
 
 type eventType uint8
@@ -132,25 +133,27 @@ const EventDirection = catalog.EventDirection
 const EventCard = catalog.EventCard
 const EventGranted = catalog.EventGranted
 const EventReason = catalog.EventReason
+const EventDeviceName = catalog.EventDeviceName
 const EventDoorName = catalog.EventDoorName
 const EventCardName = catalog.EventCardName
 
-func NewEvent(oid catalog.OID, e uhppoted.Event, lookup func(uhppoted.Event) (string, string)) Event {
-	door, card := lookup(e)
+func NewEvent(oid catalog.OID, e uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) Event {
+	device, door, card := lookup(e)
 
 	return Event{
-		OID:       oid,
-		DeviceID:  e.DeviceID,
-		Index:     e.Index,
-		Timestamp: types.DateTime(e.Timestamp),
-		Type:      eventType(e.Type),
-		Door:      e.Door,
-		Direction: direction(e.Direction),
-		Card:      e.CardNumber,
-		Granted:   e.Granted,
-		Reason:    reason(e.Reason),
-		DoorName:  door,
-		CardName:  card,
+		OID:        oid,
+		DeviceID:   e.DeviceID,
+		Index:      e.Index,
+		Timestamp:  types.DateTime(e.Timestamp),
+		Type:       eventType(e.Type),
+		Door:       e.Door,
+		Direction:  direction(e.Direction),
+		Card:       e.CardNumber,
+		Granted:    e.Granted,
+		Reason:     reason(e.Reason),
+		DeviceName: device,
+		DoorName:   door,
+		CardName:   card,
 	}
 }
 
@@ -173,6 +176,7 @@ func (e *Event) AsObjects() []interface{} {
 		catalog.NewObject2(e.OID, EventCard, e.Card),
 		catalog.NewObject2(e.OID, EventReason, e.Reason),
 		catalog.NewObject2(e.OID, EventGranted, e.Granted),
+		catalog.NewObject2(e.OID, EventDeviceName, e.DeviceName),
 		catalog.NewObject2(e.OID, EventDoorName, e.DoorName),
 		catalog.NewObject2(e.OID, EventCardName, e.CardName),
 	}

@@ -63,7 +63,7 @@
               <thead>
                 <tr>
                   <th class="colheader rowheader timestamp">Timestamp</th>
-                  <th class="colheader deviceID">Device ID</th>
+                  <th class="colheader deviceID" colspan="2">Device</th>
                   <th class="colheader">Event</th>
                   <th class="colheader" colspan="3">Door</th>
                   <th class="colheader" colspan="2">Card</th>
@@ -99,6 +99,18 @@
                   <img class="flag deviceID" src="images/{{$.context.Theme}}/corner.svg" />
                   <input class="field deviceID" 
                          type="number" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag device" src="images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field device" 
+                         type="text" 
                          value="" 
                          placeholder="-" 
                          data-record="" 

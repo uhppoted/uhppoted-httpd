@@ -101,7 +101,7 @@ func (ee *Events) Validate() error {
 	return nil
 }
 
-func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string)) {
+func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {
 	list, ok := ee.Events[deviceID]
 	if !ok {
 		list = map[uint32]Event{}

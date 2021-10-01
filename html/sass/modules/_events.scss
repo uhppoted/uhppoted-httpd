@@ -19,12 +19,20 @@ th.deviceID {
   white-space: nowrap;
 }
 
+td input.timestamp {
+  width: 128px;
+}
+
 td input.deviceID {
   width: 80px;
 }
 
+td input.device {
+  width: 72px;
+}
+
 td input.eventType {
-  width: 60px;
+  width: 56px;
   font-size: 1.1em;
   font-variant: small-caps;
 }

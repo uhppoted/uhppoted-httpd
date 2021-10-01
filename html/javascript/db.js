@@ -497,6 +497,7 @@ function group (o) {
 }
 
 function event (o) {
+  console.log(o)
   const oid = o.OID
 
   if (/^0\.5\.[1-9][0-9]*$/.test(oid)) {
@@ -518,6 +519,7 @@ function event (o) {
       card: '',
       granted: '',
       reason: '',
+      deviceName: '',
       doorName: '',
       cardName: '',
       status: o.value,
@@ -576,10 +578,14 @@ function event (o) {
           break
 
         case k + '.10':
-          v.doorName = o.value
+          v.deviceName = o.value
           break
 
         case k + '.11':
+          v.doorName = o.value
+          break
+
+        case k + '.12':
           v.cardName = o.value
           break
       }
