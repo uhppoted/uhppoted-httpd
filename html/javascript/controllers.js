@@ -1,10 +1,27 @@
-/* global */
-
 import * as system from './system.js'
-import { set, deleted, percolate } from './tabular.js'
+import { set, deleted, update } from './tabular.js'
 import { DB } from './db.js'
 
-export function updateFromDB (oid, record) {
+export function refreshed () {
+  const list = [...DB.controllers.values()].sort((p, q) => p.created.localeCompare(q.created))
+
+  // TODO realize(list)
+
+  list.forEach(o => {
+    const row = updateFromDB(o.OID, o)
+    if (row) {
+      if (o.status === 'new') {
+        row.classList.add('new')
+      } else {
+        row.classList.remove('new')
+      }
+    }
+  })
+
+  DB.refreshed('controllers')
+}
+
+function updateFromDB (oid, record) {
   let row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
 
   if (record.status === 'deleted') {
@@ -87,77 +104,6 @@ export function updateFromDB (oid, record) {
   datetime.dataset.original = record.datetime.expected
 
   return row
-}
-
-function update (element, value, status) {
-  if (element && value) {
-    const v = value.toString()
-    const oid = element.dataset.oid
-    const flag = document.getElementById(`F${oid}`)
-    const previous = element.dataset.original
-
-    element.dataset.original = v
-
-    // check for conflicts with concurrently edited fields
-    if (element.classList.contains('modified')) {
-      if (previous !== v && element.dataset.value !== v) {
-        mark('conflict', element, flag)
-      } else if (element.dataset.value !== v) {
-        unmark('conflict', element, flag)
-      } else {
-        unmark('conflict', element, flag)
-        unmark('modified', element, flag)
-      }
-
-      percolate(oid, modified)
-      return
-    }
-
-    // check for conflicts with concurrently submitted fields
-    if (element.classList.contains('pending')) {
-      if (previous !== v && element.dataset.value !== v) {
-        mark('conflict', element, flag)
-      } else {
-        unmark('conflict', element, flag)
-      }
-
-      return
-    }
-
-    // update fields not pending, modified or editing
-    if (element !== document.activeElement) {
-      element.value = v
-    }
-
-    set(element, value, status)
-  }
-}
-
-function modified (oid) {
-  const element = document.querySelector(`[data-oid="${oid}"]`)
-
-  if (element) {
-    const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
-    const re = /^\.[0-9]+$/
-    let count = 0
-
-    list.forEach(e => {
-      if (e.classList.contains('modified')) {
-        const oidx = e.dataset.oid
-        if (oidx.startsWith(oid) && re.test(oidx.substring(oid.length))) {
-          count = count + 1
-        }
-      }
-    })
-
-    if (count > 0) {
-      element.dataset.modified = count > 1 ? 'multiple' : 'single'
-      element.classList.add('modified')
-    } else {
-      element.dataset.modified = null
-      element.classList.remove('modified')
-    }
-  }
 }
 
 export function rollback (row) {

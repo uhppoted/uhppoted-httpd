@@ -1,5 +1,5 @@
 import * as system from './system.js'
-import * as LAN from './interface.js'
+import * as LAN from './interfaces.js'
 import * as controllers from './controllers.js'
 import * as doors from './doors.js'
 import * as cards from './cards.js'

@@ -497,7 +497,6 @@ function group (o) {
 }
 
 function event (o) {
-  console.log(o)
   const oid = o.OID
 
   if (/^0\.5\.[1-9][0-9]*$/.test(oid)) {

@@ -38,10 +38,9 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Events
-  - [x] GetEvents is repeatedly returning the most recent event
-  - [x] Associate controller name
   - [ ] save
   - [ ] load
+  - [ ] sort by timestamp
   - [ ] Lookup historical card/door/controller assignments
 
 - Migrate cards to OIDs

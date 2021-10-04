@@ -1,8 +1,13 @@
-/* global */
-
 import * as system from './system.js'
+import { DB } from './db.js'
 
-export function updateFromDB (oid, record) {
+export function refreshed () {
+  DB.interfaces.forEach(c => {
+    updateFromDB(c.OID, c)
+  })
+}
+
+function updateFromDB (oid, record) {
   const section = document.querySelector(`[data-oid="${oid}"]`)
 
   if (section) {

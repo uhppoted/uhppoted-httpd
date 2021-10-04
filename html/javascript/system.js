@@ -1,9 +1,13 @@
-/* global */
-
 import { busy, unbusy, dismiss, warning, getAsJSON, postAsJSON } from './uhppoted.js'
+import * as common from './tabular.js'
 import * as controllers from './controllers.js'
-import * as LAN from './interface.js'
+import * as LAN from './interfaces.js'
 import { DB } from './db.js'
+
+export function refreshed () {
+  LAN.refreshed()
+  controllers.refreshed()
+}
 
 export function onEdited (tag, event) {
   switch (tag) {
@@ -12,7 +16,7 @@ export function onEdited (tag, event) {
       break
 
     case 'controller': {
-      controllers.set(event.target, event.target.value)
+      common.set(event.target, event.target.value)
       break
     }
   }
@@ -26,7 +30,7 @@ export function onEnter (tag, event) {
         break
 
       case 'controller': {
-        controllers.set(event.target, event.target.value)
+        common.set(event.target, event.target.value)
         break
       }
     }
@@ -40,63 +44,11 @@ export function onTick (tag, event) {
       break
 
     case 'controller': {
-      controllers.set(event.target, event.target.checked)
+      common.set(event.target, event.target.checked)
       break
     }
   }
 }
-
-// export function onCommitAll (tag, event) {
-//   switch (tag) {
-//     case 'controller': {
-//       const tbody = document.getElementById('controllers').querySelector('table tbody')
-//       if (tbody) {
-//         const rows = tbody.rows
-//         const list = []
-//
-//         for (let i = 0; i < rows.length; i++) {
-//           const row = rows[i]
-//           if (row.classList.contains('modified') || row.classList.contains('new')) {
-//             list.push(row)
-//           }
-//         }
-//
-//         controllers.commit(...list)
-//       }
-//     }
-//       break
-//   }
-// }
-
-// export function onRollback (tag, event) {
-//   switch (tag) {
-//     case 'interface':
-//       LAN.rollback('interface', event.target)
-//       break
-//
-//     // case 'controller': {
-//     //   const id = event.target.dataset.record
-//     //   const row = document.getElementById(id)
-//     //   controllers.rollback(row)
-//     //   break
-//     // }
-//
-//     default:
-//       console.log(`onRollback('${tag}', ...)::NOT IMPLEMENTED`)
-//   }
-// }
-
-// export function onRollbackAll (tag, event) {
-//   switch (tag) {
-//     case 'controller': {
-//       const rows = document.getElementById('controllers').querySelector('table tbody').rows
-//       for (let i = rows.length; i > 0; i--) {
-//         controllers.rollback(rows[i - 1])
-//       }
-//       break
-//     }
-//   }
-// }
 
 export function onNew (tag, event) {
   if (tag === 'controller') {
@@ -175,41 +127,6 @@ export function post (tag, records, reset, cleanup) {
       cleanup()
       unbusy()
     })
-}
-
-export function refreshed () {
-  // ... update interface section
-  DB.interfaces.forEach(c => {
-    LAN.updateFromDB(c.OID, c)
-  })
-
-  // ... update controllers
-  const list = []
-
-  DB.controllers.forEach(c => {
-    list.push(c)
-  })
-
-  list.sort((p, q) => {
-    return p.created.localeCompare(q.created)
-  })
-
-  list.forEach(c => {
-    const row = controllers.updateFromDB(c.OID, c)
-    if (row) {
-      switch (c.status) {
-        case 'new':
-          row.classList.add('new')
-          break
-
-        default:
-          row.classList.remove('new')
-      }
-    }
-  })
-
-  // ... mark and sweep the DB
-  DB.refreshed('controllers')
 }
 
 // Ref. https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
