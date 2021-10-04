@@ -608,6 +608,10 @@ function mark (tag) {
   DB.groups.forEach(v => {
     v.mark += 1
   })
+
+  DB.events.forEach(v => {
+    v.mark += 1
+  })
 }
 
 function sweep (tag) {
@@ -632,6 +636,12 @@ function sweep (tag) {
   DB.groups.forEach((v, k) => {
     if (v.mark >= 25 && v.status === 'deleted') {
       DB.groups.delete(k)
+    }
+  })
+
+  DB.events.forEach((v, k) => {
+    if (v.mark >= 25 && v.status === 'deleted') {
+      DB.events.delete(k)
     }
   })
 }

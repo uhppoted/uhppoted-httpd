@@ -3,6 +3,8 @@ package events
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
@@ -25,11 +27,104 @@ func NewEvents() Events {
 }
 
 func (ee *Events) Load(file string) error {
+	blob := struct {
+		Events []json.RawMessage `json:"events"`
+	}{
+		Events: []json.RawMessage{},
+	}
+
+	bytes, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(bytes, &blob)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range blob.Events {
+		var e Event
+		if err := e.deserialize(v); err == nil {
+			l, ok := ee.Events[e.DeviceID]
+			if !ok {
+				l = map[uint32]Event{}
+				ee.Events[e.DeviceID] = l
+			}
+
+			if _, ok := l[e.Index]; ok {
+				return fmt.Errorf("event '%v:%v:%v': duplicate OID (%v)", e.DeviceID, e.Index, e.Timestamp, e.OID)
+			}
+
+			l[e.Index] = e
+		}
+	}
+
+	for _, l := range ee.Events {
+		for _, e := range l {
+			catalog.PutEvent(e.OID)
+		}
+	}
+
+	ee.file = file
+
 	return nil
 }
 
 func (ee Events) Save() error {
-	return nil
+	if err := validate(ee); err != nil {
+		return err
+	}
+
+	if err := scrub(ee); err != nil {
+		return err
+	}
+
+	if ee.file == "" {
+		return nil
+	}
+
+	serializable := struct {
+		Events []json.RawMessage `json:"events"`
+	}{
+		Events: []json.RawMessage{},
+	}
+
+	for _, l := range ee.Events {
+		for _, e := range l {
+			if e.IsValid() && !e.IsDeleted() {
+				if record, err := e.serialize(); err == nil && record != nil {
+					serializable.Events = append(serializable.Events, record)
+				}
+			}
+		}
+	}
+
+	b, err := json.MarshalIndent(serializable, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	tmp, err := os.CreateTemp("", "uhppoted-events.*")
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(b); err != nil {
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(ee.file), 0770); err != nil {
+		return err
+	}
+
+	return os.Rename(tmp.Name(), ee.file)
 }
 
 func (ee *Events) Stash() {
@@ -123,4 +218,12 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 	defer guard.Unlock()
 
 	ee.Events[deviceID] = list
+}
+
+func validate(ee Events) error {
+	return nil
+}
+
+func scrub(ee Events) error {
+	return nil
 }

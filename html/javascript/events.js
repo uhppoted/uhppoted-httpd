@@ -17,7 +17,7 @@ export function refreshed () {
     }
   })
 
-  // DB.refreshed('groups')
+  DB.refreshed('events')
 }
 
 function realize (events) {
@@ -123,13 +123,13 @@ function updateFromDB (oid, record) {
 
   update(timestamp, record.timestamp)
   update(deviceID, record.deviceID)
-  update(device, record.deviceName)
+  update(device, record.deviceName.toLowerCase())
   update(eventType, record.eventType)
   update(doorid, record.door)
-  update(door, record.doorName)
+  update(door, record.doorName.toLowerCase())
   update(direction, record.direction)
   update(cardno, record.card)
-  update(card, record.cardName)
+  update(card, record.cardName.toLowerCase())
   update(access, record.granted === 'true' ? 'granted' : (record.granted === 'false' ? 'denied' : ''))
   update(reason, record.reason)
 

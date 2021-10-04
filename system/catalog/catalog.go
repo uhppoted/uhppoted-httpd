@@ -66,6 +66,13 @@ func PutGroup(oid OID) {
 	catalog.groups[oid] = struct{}{}
 }
 
+func PutEvent(oid OID) {
+	guard.Lock()
+	defer guard.Unlock()
+
+	catalog.events[oid] = struct{}{}
+}
+
 func GetController(deviceID uint32) OID {
 	guard.Lock()
 	defer guard.Unlock()

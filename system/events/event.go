@@ -1,6 +1,7 @@
 package events
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
@@ -184,6 +185,84 @@ func (e *Event) AsObjects() []interface{} {
 	return objects
 }
 
+func (e *Event) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+	objects := []interface{}{}
+
+	return objects, nil
+}
+
+func (e Event) serialize() ([]byte, error) {
+	record := struct {
+		OID        catalog.OID    `json:"OID"`
+		DeviceID   uint32         `json:"device-id,omitempty"`
+		Index      uint32         `json:"index"`
+		Timestamp  types.DateTime `json:"timestamp"`
+		Type       eventType      `json:"event-type"`
+		Door       uint8          `json:"door"`
+		Direction  direction      `json:"direction"`
+		Card       uint32         `json:"card"`
+		Granted    bool           `json:"granted"`
+		Reason     reason         `json:"reason"`
+		DeviceName string         `json:"device-name,omitempty"`
+		DoorName   string         `json:"door-name,omitempty"`
+		CardName   string         `json:"card-name,omitempty"`
+	}{
+		OID:        e.OID,
+		DeviceID:   e.DeviceID,
+		Index:      e.Index,
+		Timestamp:  e.Timestamp,
+		Type:       e.Type,
+		Door:       e.Door,
+		Direction:  e.Direction,
+		Card:       e.Card,
+		Granted:    e.Granted,
+		Reason:     e.Reason,
+		DeviceName: e.DeviceName,
+		DoorName:   e.DoorName,
+		CardName:   e.CardName,
+	}
+
+	return json.Marshal(record)
+}
+
+func (e *Event) deserialize(bytes []byte) error {
+	record := struct {
+		OID        catalog.OID    `json:"OID"`
+		DeviceID   uint32         `json:"device-id"`
+		Index      uint32         `json:"index"`
+		Timestamp  types.DateTime `json:"timestamp"`
+		Type       eventType      `json:"event-type"`
+		Door       uint8          `json:"door"`
+		Direction  direction      `json:"direction"`
+		Card       uint32         `json:"card"`
+		Granted    bool           `json:"granted"`
+		Reason     reason         `json:"reason"`
+		DeviceName string         `json:"device-name"`
+		DoorName   string         `json:"door-name"`
+		CardName   string         `json:"card-name"`
+	}{}
+
+	if err := json.Unmarshal(bytes, &record); err != nil {
+		return err
+	}
+
+	e.OID = record.OID
+	e.DeviceID = record.DeviceID
+	e.Index = record.Index
+	e.Timestamp = record.Timestamp
+	e.Type = record.Type
+	e.Door = record.Door
+	e.Direction = record.Direction
+	e.Card = record.Card
+	e.Granted = record.Granted
+	e.Reason = record.Reason
+	e.DeviceName = record.DeviceName
+	e.DoorName = record.DoorName
+	e.CardName = record.CardName
+
+	return nil
+}
+
 func (e Event) clone() Event {
 	event := Event{
 		OID:       e.OID,
@@ -191,10 +270,4 @@ func (e Event) clone() Event {
 	}
 
 	return event
-}
-
-func (e *Event) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
-	objects := []interface{}{}
-
-	return objects, nil
 }

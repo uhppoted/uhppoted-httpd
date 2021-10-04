@@ -19,16 +19,33 @@ th.deviceID {
   white-space: nowrap;
 }
 
+td.rowheader {
+  background: red;
+}
+
+td span.commit {
+  display: none;  
+}
+
+td span.rollback {
+  display: none;  
+}
+
 td input.timestamp {
-  width: 128px;
+  width: 140px;
+  height: 18px;
+  font-size: 0.88em;
 }
 
 td input.deviceID {
   width: 80px;
+  font-size: 0.88em;
 }
 
 td input.device {
   width: 72px;
+  font-size: 1.1em;
+  font-variant: small-caps;
 }
 
 td input.eventType {
@@ -46,18 +63,24 @@ td input.direction {
 td input.doorid {
   width: 8px;
   text-align: center;
+  font-size: 0.88em;
 }
 
 td input.door {
   width: 96px;
+  font-size: 1.1em;
+  font-variant: small-caps;
 }
 
 td input.cardno {
   width: 56px;
+  font-size: 0.88em;
 }
 
 td input.card {
   width: 120px;
+  font-size: 1.1em;
+  font-variant: small-caps;
 }
 
 td input.access {
