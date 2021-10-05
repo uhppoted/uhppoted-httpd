@@ -13,7 +13,7 @@ import (
 )
 
 type Events struct {
-	Events map[uint32]map[uint32]Event `json:"events"`
+	Events map[string]Event `json:"events"`
 
 	file string `json:"-"`
 }
@@ -22,7 +22,7 @@ var guard sync.RWMutex
 
 func NewEvents() Events {
 	return Events{
-		Events: map[uint32]map[uint32]Event{},
+		Events: map[string]Event{},
 	}
 }
 
@@ -46,24 +46,17 @@ func (ee *Events) Load(file string) error {
 	for _, v := range blob.Events {
 		var e Event
 		if err := e.deserialize(v); err == nil {
-			l, ok := ee.Events[e.DeviceID]
-			if !ok {
-				l = map[uint32]Event{}
-				ee.Events[e.DeviceID] = l
+			k := fmt.Sprintf("%v:%v:%v", e.DeviceID, e.Index, e.Timestamp)
+			if _, ok := ee.Events[k]; ok {
+				return fmt.Errorf("event '%v:%v:%v': duplicate OID (%v)", k, e.OID)
 			}
 
-			if _, ok := l[e.Index]; ok {
-				return fmt.Errorf("event '%v:%v:%v': duplicate OID (%v)", e.DeviceID, e.Index, e.Timestamp, e.OID)
-			}
-
-			l[e.Index] = e
+			ee.Events[k] = e
 		}
 	}
 
-	for _, l := range ee.Events {
-		for _, e := range l {
-			catalog.PutEvent(e.OID)
-		}
+	for _, e := range ee.Events {
+		catalog.PutEvent(e.OID)
 	}
 
 	ee.file = file
@@ -90,12 +83,10 @@ func (ee Events) Save() error {
 		Events: []json.RawMessage{},
 	}
 
-	for _, l := range ee.Events {
-		for _, e := range l {
-			if e.IsValid() && !e.IsDeleted() {
-				if record, err := e.serialize(); err == nil && record != nil {
-					serializable.Events = append(serializable.Events, record)
-				}
+	for _, e := range ee.Events {
+		if e.IsValid() && !e.IsDeleted() {
+			if record, err := e.serialize(); err == nil && record != nil {
+				serializable.Events = append(serializable.Events, record)
 			}
 		}
 	}
@@ -138,15 +129,12 @@ func (ee Events) Print() {
 
 func (ee *Events) Clone() *Events {
 	shadow := Events{
-		Events: map[uint32]map[uint32]Event{},
+		Events: map[string]Event{},
 		file:   ee.file,
 	}
 
-	for k, v := range ee.Events {
-		shadow.Events[k] = map[uint32]Event{}
-		for id, e := range v {
-			shadow.Events[k][id] = e.clone()
-		}
+	for k, e := range ee.Events {
+		shadow.Events[k] = e.clone()
 	}
 
 	return &shadow
@@ -158,12 +146,10 @@ func (ee *Events) AsObjects() []interface{} {
 
 	objects := []interface{}{}
 
-	for _, v := range ee.Events {
-		for _, e := range v {
-			if e.IsValid() || e.IsDeleted() {
-				if l := e.AsObjects(); l != nil {
-					objects = append(objects, l...)
-				}
+	for _, e := range ee.Events {
+		if e.IsValid() || e.IsDeleted() {
+			if l := e.AsObjects(); l != nil {
+				objects = append(objects, l...)
 			}
 		}
 	}
@@ -176,16 +162,14 @@ func (ee *Events) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) (
 		return nil, nil
 	}
 
-	for k, v := range ee.Events {
-		for id, e := range v {
-			if e.OID.Contains(oid) {
-				objects, err := e.set(auth, oid, value)
-				if err == nil {
-					ee.Events[k][id] = e
-				}
-
-				return objects, err
+	for k, e := range ee.Events {
+		if e.OID.Contains(oid) {
+			objects, err := e.set(auth, oid, value)
+			if err == nil {
+				ee.Events[k] = e
 			}
+
+			return objects, err
 		}
 	}
 
@@ -197,27 +181,21 @@ func (ee *Events) Validate() error {
 }
 
 func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {
-	list, ok := ee.Events[deviceID]
-	if !ok {
-		list = map[uint32]Event{}
-	}
+	guard.Lock()
+	defer guard.Unlock()
 
 	for _, e := range recent {
+		k := fmt.Sprintf("%v:%v:%v", e.DeviceID, e.Index, e.Timestamp)
 		var oid catalog.OID
 
-		if v, ok := list[e.Index]; ok {
+		if v, ok := ee.Events[k]; ok {
 			oid = v.OID
 		} else {
 			oid = catalog.NewEvent()
 		}
 
-		list[e.Index] = NewEvent(oid, e, lookup)
+		ee.Events[k] = NewEvent(oid, e, lookup)
 	}
-
-	guard.Lock()
-	defer guard.Unlock()
-
-	ee.Events[deviceID] = list
 }
 
 func validate(ee Events) error {

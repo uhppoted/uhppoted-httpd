@@ -38,13 +38,12 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Events
-  - [x] save
-  - [x] load
-  - [ ] (?) Genericize load/save for migration to MemDB
-  - [ ] key on device + index + timestamp
-        - i.e. can have duplicate device + index after rollover
+  - [x] key on device + index + timestamp
   - [ ] sort by timestamp
         - display order needs to be updated
+  - [ ] Paging/faster rendering
+  - [ ] (?) Genericize load/save for migration to MemDB
+        - i.e. can have duplicate device + index after rollover
   - [ ] Lookup historical card/door/controller assignments
 
 - Migrate cards to OIDs
