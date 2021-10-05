@@ -28,6 +28,7 @@
   - [ ] Only update catalog values after validate i.e. not in set(...)
         - [ ] rethink the whole 'dirty' thing
               - maybe use a stash queue (?)
+              - or callbacks a la events
         - [ ] Check RWLock for clone
               - [ ] controllers
               - [ ] doors
@@ -40,11 +41,11 @@
 - Events
   - [x] key on device + index + timestamp
   - [x] sort by timestamp
-  - [ ] Rework get-events to start at current event index
-        - or 'first' if event index is not in range
-  - [ ] Paging/faster rendering/server side caching/something
+  - [x] Fix simulator to allow 0 for event index
+  - [x] EventRange: implement Stringer() interface
   - [ ] (?) Genericize load/save for migration to MemDB
         - i.e. can have duplicate device + index after rollover
+  - [ ] Paging/faster rendering/server side caching/something
   - [ ] Lookup historical card/door/controller assignments
 
 - Migrate cards to OIDs
