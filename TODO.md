@@ -39,9 +39,10 @@
 
 - Events
   - [x] key on device + index + timestamp
-  - [ ] sort by timestamp
-        - display order needs to be updated
-  - [ ] Paging/faster rendering
+  - [x] sort by timestamp
+  - [ ] Rework get-events to start at current event index
+        - or 'first' if event index is not in range
+  - [ ] Paging/faster rendering/server side caching/something
   - [ ] (?) Genericize load/save for migration to MemDB
         - i.e. can have duplicate device + index after rollover
   - [ ] Lookup historical card/door/controller assignments

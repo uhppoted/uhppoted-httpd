@@ -1,8 +1,17 @@
 import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
 
+HTMLTableSectionElement.prototype.sort = function (cb) {
+  Array
+    .prototype
+    .slice
+    .call(this.rows)
+    .sort(cb)
+    .forEach((e, i, a) => { this.appendChild(this.removeChild(e)) }, this)
+}
+
 export function refreshed () {
-  const events = [...DB.events.values()] // .sort((p, q) => p.index - q.index)
+  const events = [...DB.events.values()]
 
   realize(events)
 
@@ -17,14 +26,22 @@ export function refreshed () {
     }
   })
 
+  const table = document.querySelector('#events table')
+  const tbody = table.tBodies[0]
+
+  tbody.sort((p, q) => {
+    const u = DB.events.get(p.dataset.oid)
+    const v = DB.events.get(q.dataset.oid)
+
+    return v.timestamp.localeCompare(u.timestamp)
+  })
+
   DB.refreshed('events')
 }
 
 function realize (events) {
   const table = document.querySelector('#events table')
   const tbody = table.tBodies[0]
-
-  // ... rows
 
   events.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")

@@ -31,7 +31,7 @@ func (f *callback) Append(deviceID uint32, recent []uhppoted.Event) {
 
 	sys.events.Received(deviceID, recent, lookup)
 
-	if len(recent) > 0 {
-		sys.events.Save()
-	}
+		if len(recent) > 0 {
+			sys.events.Save()
+		}
 }
