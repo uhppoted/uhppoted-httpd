@@ -48,7 +48,7 @@ func (ee *Events) Load(file string) error {
 		if err := e.deserialize(v); err == nil {
 			k := fmt.Sprintf("%v:%v:%v", e.DeviceID, e.Index, e.Timestamp)
 			if _, ok := ee.Events[k]; ok {
-				return fmt.Errorf("event '%v:%v:%v': duplicate OID (%v)", k, e.OID)
+				return fmt.Errorf("%v  duplicate event OID (%v)", k, e.OID)
 			}
 
 			ee.Events[k] = e
