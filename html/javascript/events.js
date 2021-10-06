@@ -1,4 +1,4 @@
-import { update, deleted } from './tabular.js'
+import { deleted } from './tabular.js'
 import { DB } from './db.js'
 
 HTMLTableSectionElement.prototype.sort = function (cb) {
@@ -71,15 +71,15 @@ function add (oid, record) {
     row.dataset.status = 'unknown'
     row.innerHTML = template.innerHTML
 
-    const commit = row.querySelector('td span.commit')
-    commit.id = uuid + '_commit'
-    commit.dataset.record = uuid
-    commit.dataset.enabled = 'false'
+    // const commit = row.querySelector('td span.commit')
+    // commit.id = uuid + '_commit'
+    // commit.dataset.record = uuid
+    // commit.dataset.enabled = 'false'
 
-    const rollback = row.querySelector('td span.rollback')
-    rollback.id = uuid + '_rollback'
-    rollback.dataset.record = uuid
-    rollback.dataset.enabled = 'false'
+    // const rollback = row.querySelector('td span.rollback')
+    // rollback.id = uuid + '_rollback'
+    // rollback.dataset.record = uuid
+    // rollback.dataset.enabled = 'false'
 
     const fields = [
       { suffix: 'timestamp', oid: `${oid}.3`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
@@ -97,7 +97,7 @@ function add (oid, record) {
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
+      // const flag = row.querySelector(f.flag)
 
       if (field) {
         field.id = uuid + '-' + f.suffix
@@ -107,7 +107,7 @@ function add (oid, record) {
         field.dataset.original = ''
         field.dataset.value = ''
 
-        flag.id = 'F' + f.oid
+        // flag.id = 'F' + f.oid
       } else {
         console.error(f)
       }
@@ -151,4 +151,10 @@ function updateFromDB (oid, record) {
   update(reason, record.reason)
 
   return row
+}
+
+function update (element, value, status) {
+  if (element && value !== undefined) {
+    element.value = value.toString()
+  }
 }

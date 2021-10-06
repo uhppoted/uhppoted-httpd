@@ -39,16 +39,21 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Events
-  - [x] key on device + index + timestamp
-  - [x] sort by timestamp
-  - [x] Fix simulator to allow 0 for event index
-  - [x] EventRange: implement Stringer() interface
   - [ ] (?) Genericize load/save for migration to MemDB
-        - i.e. can have duplicate device + index after rollover
-  - [ ] Paging/faster rendering/server side caching/something
+  - [ ] Optimize page display
+        - [x] Optimize `realize`
+        - [x] Optimize `refresh`
+        - [x] Optimize `updateFromDB`
+        - [ ] Render incrementally
+        - [ ] Render in Promise
+        - [ ] Render only if updated
+        - [ ] GET: page size
+        - [ ] GET: return latest first
+        - [ ] Keep DB in local storage
   - [ ] Lookup historical card/door/controller assignments
 
 - Migrate cards to OIDs
+  - [ ] Rework sort a la events
   - [ ] Update unit tests for OID'd implementation
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
