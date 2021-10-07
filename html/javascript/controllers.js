@@ -4,7 +4,7 @@ import { DB } from './db.js'
 export function refreshed () {
   const list = [...DB.controllers.values()].sort((p, q) => p.created.localeCompare(q.created))
 
-  // TODO realize(list)
+  realize(list)
 
   list.forEach(o => {
     const row = updateFromDB(o.OID, o)
@@ -21,15 +21,10 @@ export function refreshed () {
 }
 
 function updateFromDB (oid, record) {
-  let row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
+  const row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
 
   if (record.status === 'deleted') {
-    deleted('controllers', row)
     return
-  }
-
-  if (!row) {
-    row = add(oid)
   }
 
   const name = row.querySelector(`[data-oid="${oid}.1"]`)
@@ -105,7 +100,25 @@ function updateFromDB (oid, record) {
   return row
 }
 
-function add (oid) {
+function realize (controllers) {
+  const table = document.querySelector('#controllers table')
+  const tbody = table.tBodies[0]
+
+  controllers.forEach(o => {
+    let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
+
+    if (o.status === 'deleted') {
+      deleted('controllers', row)
+      return
+    }
+
+    if (!row) {
+      row = add(o.OID, o)
+    }
+  })
+}
+
+function add (oid, record) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('controllers').querySelector('table tbody')
 
@@ -160,4 +173,3 @@ function add (oid) {
     return row
   }
 }
-

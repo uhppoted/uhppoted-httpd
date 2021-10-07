@@ -82,6 +82,7 @@
 - [ ] system
       - [x] Update controllers to use tabular.js
       - [ ] Update system.js to defer to tabular.js
+      - [x] Rework controllers.js to use `realize`
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
       - [ ] Fix `get-events` log string
