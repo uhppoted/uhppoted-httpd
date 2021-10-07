@@ -14,6 +14,11 @@ const pages = {
     refreshed: system.refreshed
   },
 
+  controllers: {
+    url: '/system',
+    refreshed: system.refreshed
+  },
+
   doors: {
     url: '/doors',
     refreshed: doors.refreshed
@@ -107,7 +112,7 @@ export function onCommit (tag, event) {
       break
 
     case 'controller':
-      controllers.commit(row)
+      commit(pages.controllers, row)
       break
 
     case 'door':
@@ -165,7 +170,7 @@ export function onRollback (tag, event) {
       break
 
     case 'controller':
-      rollback('controller', row, system.refreshed)
+      rollback('controllers', row, controllers.refreshed)
       break
 
     case 'door':
@@ -212,7 +217,7 @@ export function onRollbackAll (tag, event) {
 export function onNew (tag, event) {
   switch (tag) {
     case 'controller':
-      create(pages.system)
+      create(pages.controllers)
       break
 
     case 'door':

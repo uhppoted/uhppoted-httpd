@@ -1,5 +1,4 @@
-import * as system from './system.js'
-import { set, deleted, update } from './tabular.js'
+import { deleted, update } from './tabular.js'
 import { DB } from './db.js'
 
 export function refreshed () {
@@ -106,60 +105,7 @@ function updateFromDB (oid, record) {
   return row
 }
 
-export function rollback (row) {
-  if (row && row.classList.contains('new')) {
-    DB.delete('controllers', row.dataset.oid)
-    system.refreshed()
-  } else {
-    revert(row)
-  }
-}
-
-export function commit (...rows) {
-  const list = []
-
-  rows.forEach(row => {
-    const oid = row.dataset.oid
-    const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
-    children.forEach(e => {
-      if (e.dataset.value !== e.dataset.original) {
-        list.push(e)
-      }
-    })
-  })
-
-  const records = []
-  list.forEach(e => {
-    const oid = e.dataset.oid
-    const value = e.dataset.value
-    records.push({ oid: oid, value: value })
-  })
-
-  const reset = function () {
-    list.forEach(e => {
-      const flag = document.getElementById(`F${e.dataset.oid}`)
-      unmark('pending', e, flag)
-      mark('modified', e, flag)
-    })
-  }
-
-  const cleanup = function () {
-    list.forEach(e => {
-      const flag = document.getElementById(`F${e.dataset.oid}`)
-      unmark('pending', e, flag)
-    })
-  }
-
-  list.forEach(e => {
-    const flag = document.getElementById(`F${e.dataset.oid}`)
-    mark('pending', e, flag)
-    unmark('modified', e, flag)
-  })
-
-  system.post('objects', records, reset, cleanup)
-}
-
-export function add (oid) {
+function add (oid) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('controllers').querySelector('table tbody')
 
@@ -215,29 +161,3 @@ export function add (oid) {
   }
 }
 
-function revert (row) {
-  const fields = row.querySelectorAll('.field')
-
-  fields.forEach((item) => {
-    item.value = item.dataset.original
-    set(item, item.dataset.original)
-  })
-
-  row.classList.remove('modified')
-}
-
-function mark (clazz, ...elements) {
-  elements.forEach(e => {
-    if (e) {
-      e.classList.add(clazz)
-    }
-  })
-}
-
-function unmark (clazz, ...elements) {
-  elements.forEach(e => {
-    if (e) {
-      e.classList.remove(clazz)
-    }
-  })
-}

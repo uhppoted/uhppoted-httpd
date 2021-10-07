@@ -50,12 +50,6 @@ export function onTick (tag, event) {
   }
 }
 
-export function onNew (tag, event) {
-  if (tag === 'controller') {
-    controllers.onNew()
-  }
-}
-
 export function onRefresh (event) {
   if (event && event.target && event.target.id === 'refresh') {
     busy()
