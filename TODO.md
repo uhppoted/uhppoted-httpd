@@ -1,5 +1,9 @@
 ## v0.7.x
 
+- [ ] Fix encoding/conf bugs
+      - [ ] unmarshalling embedded structs with invalid tags
+      - [ ] marshalling embedded structs with invalid tags
+
 ### IN PROGRESS
 
 - [ ] Server events in addition to/rather-than refresh
@@ -39,17 +43,16 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Events
+  - [x] Fix duplicate events
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
-        - [x] Optimize `realize`
-        - [x] Optimize `refresh`
-        - [x] Optimize `updateFromDB`
-        - [ ] Render incrementally
-        - [ ] Render in Promise
-        - [ ] Render only if updated
+        - [ ] Realize incrementally
+        - [ ] Render/realize only if updated
         - [ ] GET: page size
         - [ ] GET: return latest first
+        - [ ] GET: return page at a time
         - [ ] Keep DB in local storage
+        - [ ] Infinitely scrolling table
   - [ ] Lookup historical card/door/controller assignments
 
 - Migrate cards to OIDs

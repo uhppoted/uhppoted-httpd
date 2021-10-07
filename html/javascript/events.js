@@ -7,36 +7,68 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
     .slice
     .call(this.rows)
     .sort(cb)
-    .forEach((e, i, a) => { this.appendChild(this.removeChild(e)) }, this)
+    .forEach((e) => { this.appendChild(this.removeChild(e)) }, this)
 }
 
 export function refreshed () {
-  const events = [...DB.events.values()]
+  const events = [...DB.events.values()].sort((p, q) => q.timestamp.localeCompare(p.timestamp))
+  const pagesize = 5
 
   realize(events)
 
-  events.forEach(o => {
-    const row = updateFromDB(o.OID, o)
-    if (row) {
-      if (o.status === 'new') {
-        row.classList.add('new')
-      } else {
-        row.classList.remove('new')
+  // renders a 'page size' of events
+  const f = function (offset) {
+    let ix = offset
+    let count = 0
+    while (count < pagesize && ix < events.length) {
+      const o = events[ix]
+      const row = updateFromDB(o.OID, o)
+      if (row) {
+        if (o.status === 'new') {
+          row.classList.add('new')
+        } else {
+          row.classList.remove('new')
+        }
       }
+
+      count++
+      ix++
     }
+  }
+
+  // sorts the table rows by timestamp
+  const g = function () {
+    const table = document.querySelector('#events table')
+    const tbody = table.tBodies[0]
+
+    tbody.sort((p, q) => {
+      const u = DB.events.get(p.dataset.oid)
+      const v = DB.events.get(q.dataset.oid)
+
+      return v.timestamp.localeCompare(u.timestamp)
+    })
+  }
+
+  // Ref. https://stackoverflow.com/questions/40328932/javascript-es6-promise-for-loop
+  const chunk = offset => new Promise(resolve => {
+    f(offset)
+    resolve(true)
   })
 
-  const table = document.querySelector('#events table')
-  const tbody = table.tBodies[0]
+  async function * render () {
+    for (let ix = 0; ix < events.length; ix += pagesize) {
+      yield chunk(ix).then(() => ix)
+    }
+  }
 
-  tbody.sort((p, q) => {
-    const u = DB.events.get(p.dataset.oid)
-    const v = DB.events.get(q.dataset.oid)
-
-    return v.timestamp.localeCompare(u.timestamp)
-  })
-
-  DB.refreshed('events')
+  (async function loop () {
+    for await (const _ of render()) {
+      // empty
+    }
+  })()
+    .then(() => g())
+    .then(() => DB.refreshed('events'))
+    .catch(err => console.error(err))
 }
 
 function realize (events) {
@@ -57,7 +89,7 @@ function realize (events) {
   })
 }
 
-function add (oid, record) {
+function add (oid) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('events').querySelector('table tbody')
 
@@ -153,7 +185,7 @@ function updateFromDB (oid, record) {
   return row
 }
 
-function update (element, value, status) {
+function update (element, value) {
   if (element && value !== undefined) {
     element.value = value.toString()
   }

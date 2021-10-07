@@ -3,9 +3,11 @@ package events
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -46,12 +48,12 @@ func (ee *Events) Load(file string) error {
 	for _, v := range blob.Events {
 		var e Event
 		if err := e.deserialize(v); err == nil {
-			k := fmt.Sprintf("%v:%v:%v", e.DeviceID, e.Index, e.Timestamp)
-			if _, ok := ee.Events[k]; ok {
-				return fmt.Errorf("%v  duplicate event OID (%v)", k, e.OID)
+			k := key(e.DeviceID, e.Index, time.Time(e.Timestamp))
+			if x, ok := ee.Events[k]; ok {
+				return fmt.Errorf("%v  duplicate events (%v and %v)", k, e.OID, x.OID)
+			} else {
+				ee.Events[k] = e
 			}
-
-			ee.Events[k] = e
 		}
 	}
 
@@ -185,7 +187,7 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 	defer guard.Unlock()
 
 	for _, e := range recent {
-		k := fmt.Sprintf("%v:%v:%v", e.DeviceID, e.Index, e.Timestamp)
+		k := key(e.DeviceID, e.Index, time.Time(e.Timestamp))
 		var oid catalog.OID
 
 		if v, ok := ee.Events[k]; ok {
@@ -204,4 +206,12 @@ func validate(ee Events) error {
 
 func scrub(ee Events) error {
 	return nil
+}
+
+func warn(err error) {
+	log.Printf("ERROR %v", err)
+}
+
+func key(deviceID uint32, index uint32, timestamp time.Time) string {
+	return fmt.Sprintf("%v:%v:%v", deviceID, index, timestamp.Format("2006-01-02 15:04:05 MST"))
 }

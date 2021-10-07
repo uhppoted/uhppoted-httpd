@@ -92,11 +92,11 @@ func Init(cfg config.Config, conf string) error {
 		cfg.HTTPD.System.Windows.Systime,
 		cfg.HTTPD.System.Windows.CacheExpiry)
 
-	sys.controllers.Print()
-	sys.doors.Print()
-	sys.groups.Print()
-	sys.cards.Print()
-	sys.events.Print()
+	//	sys.controllers.Print()
+	//	sys.doors.Print()
+	//	sys.groups.Print()
+	//	sys.cards.Print()
+	//	sys.events.Print()
 
 	go func() {
 		time.Sleep(2500 * time.Millisecond)
