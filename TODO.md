@@ -1,8 +1,6 @@
 ## v0.7.x
 
-- [ ] Fix encoding/conf bugs
-      - [ ] unmarshalling embedded structs with invalid tags
-      - [ ] marshalling embedded structs with invalid tags
+- [x] Fix encoding/conf bugs
 
 ### IN PROGRESS
 
@@ -56,7 +54,8 @@
   - [ ] Lookup historical card/door/controller assignments
 
 - Migrate cards to OIDs
-  - [ ] Rework sort a la events
+  - [ ] Rework `sort` a la events
+  - [ ] Rework `refreshed` a la events
   - [ ] Update unit tests for OID'd implementation
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
@@ -70,6 +69,8 @@
         - use tag (?)
 
 - Groups
+
+- Logs
 
 - Doors
   - [ ] Updates all _incorrect_ values if one item is edited
