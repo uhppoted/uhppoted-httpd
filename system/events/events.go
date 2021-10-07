@@ -188,15 +188,11 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 
 	for _, e := range recent {
 		k := key(e.DeviceID, e.Index, time.Time(e.Timestamp))
-		var oid catalog.OID
 
-		if v, ok := ee.Events[k]; ok {
-			oid = v.OID
-		} else {
-			oid = catalog.NewEvent()
+		if _, ok := ee.Events[k]; !ok {
+			oid := catalog.NewEvent()
+			ee.Events[k] = NewEvent(oid, e, lookup)
 		}
-
-		ee.Events[k] = NewEvent(oid, e, lookup)
 	}
 }
 
