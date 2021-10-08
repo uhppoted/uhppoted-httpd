@@ -8,6 +8,15 @@ import * as events from './events.js'
 import * as db from './db.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
+HTMLTableSectionElement.prototype.sort = function (cb) {
+  Array
+    .prototype
+    .slice
+    .call(this.rows)
+    .sort(cb)
+    .forEach((e) => { this.appendChild(this.removeChild(e)) }, this)
+}
+
 const pages = {
   system: {
     url: '/system',

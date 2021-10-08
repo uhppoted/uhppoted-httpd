@@ -1,7 +1,5 @@
 ## v0.7.x
 
-- [x] Fix encoding/conf bugs
-
 ### IN PROGRESS
 
 - [ ] Server events in addition to/rather-than refresh
@@ -41,12 +39,11 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 - Events
-  - [x] Fix duplicate events
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
+        - [ ] GET: start,count
         - [ ] Realize incrementally
         - [ ] Render/realize only if updated
-        - [ ] GET: page size
         - [ ] GET: return latest first
         - [ ] GET: return page at a time
         - [ ] Keep DB in local storage
@@ -54,7 +51,7 @@
   - [ ] Lookup historical card/door/controller assignments
 
 - Migrate cards to OIDs
-  - [ ] Rework `sort` a la events
+  - [x] Rework `sort` a la events
   - [ ] Rework `refreshed` a la events
   - [ ] Update unit tests for OID'd implementation
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
@@ -80,9 +77,7 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 - [ ] system
-      - [x] Update controllers to use tabular.js
       - [ ] Update system.js to defer to tabular.js
-      - [x] Rework controllers.js to use `realize`
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
       - [ ] Fix `get-events` log string

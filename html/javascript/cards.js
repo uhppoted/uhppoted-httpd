@@ -2,7 +2,8 @@ import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
 
 export function refreshed () {
-  const cards = [...DB.cards.values()].sort((p, q) => p.created.localeCompare(q.created))
+  // const cards = [...DB.cards.values()].sort((p, q) => p.created.localeCompare(q.created))
+  const cards = [...DB.cards.values()]
 
   realize(cards)
 
@@ -16,6 +17,17 @@ export function refreshed () {
       }
     }
   })
+
+  // sorts the table rows by 'created'
+    const table = document.querySelector('#cards table')
+    const tbody = table.tBodies[0]
+
+    tbody.sort((p, q) => {
+      const u = DB.cards.get(p.dataset.oid)
+      const v = DB.cards.get(q.dataset.oid)
+
+      return u.created.localeCompare(v.created)
+    })
 
   DB.refreshed('cards')
 }

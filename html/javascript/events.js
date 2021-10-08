@@ -1,15 +1,6 @@
 import { deleted } from './tabular.js'
 import { DB } from './db.js'
 
-HTMLTableSectionElement.prototype.sort = function (cb) {
-  Array
-    .prototype
-    .slice
-    .call(this.rows)
-    .sort(cb)
-    .forEach((e) => { this.appendChild(this.removeChild(e)) }, this)
-}
-
 export function refreshed () {
   const events = [...DB.events.values()].sort((p, q) => q.timestamp.localeCompare(p.timestamp))
   const pagesize = 5
@@ -36,7 +27,7 @@ export function refreshed () {
     }
   }
 
-  // sorts the table rows by timestamp
+  // sorts the table rows by 'timestamp'
   const g = function () {
     const table = document.querySelector('#events table')
     const tbody = table.tBodies[0]
