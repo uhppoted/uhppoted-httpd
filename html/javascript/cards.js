@@ -4,21 +4,32 @@ import { DB } from './db.js'
 export function refreshed () {
   // const cards = [...DB.cards.values()].sort((p, q) => p.created.localeCompare(q.created))
   const cards = [...DB.cards.values()]
+  const pagesize = 1
 
   realize(cards)
 
-  cards.forEach(d => {
-    const row = updateFromDB(d.OID, d)
-    if (row) {
-      if (d.status === 'new') {
-        row.classList.add('new')
-      } else {
-        row.classList.remove('new')
+  // renders a 'page size' chunk of cards
+  const f = function (offset) {
+    let ix = offset
+    let count = 0
+    while (count < pagesize && ix < cards.length) {
+      const o = cards[ix]
+      const row = updateFromDB(o.OID, o)
+      if (row) {
+        if (o.status === 'new') {
+          row.classList.add('new')
+        } else {
+          row.classList.remove('new')
+        }
       }
+
+      count++
+      ix++
     }
-  })
+  }
 
   // sorts the table rows by 'created'
+  const g = function () {
     const table = document.querySelector('#cards table')
     const tbody = table.tBodies[0]
 
@@ -28,8 +39,27 @@ export function refreshed () {
 
       return u.created.localeCompare(v.created)
     })
+  }
 
-  DB.refreshed('cards')
+  const chunk = offset => new Promise(resolve => {
+    f(offset)
+    resolve(true)
+  })
+
+  async function * render () {
+    for (let ix = 0; ix < cards.length; ix += pagesize) {
+      yield chunk(ix).then(() => ix)
+    }
+  }
+
+  (async function loop () {
+    for await (const _ of render()) {
+      // empty
+    }
+  })()
+    .then(() => g())
+    .then(() => DB.refreshed('cards'))
+    .catch(err => console.error(err))
 }
 
 function updateFromDB (oid, record) {
@@ -163,7 +193,6 @@ function add (oid, record) {
 
     row.id = uuid
     row.classList.add('card')
-    row.classList.add('new')
     row.dataset.oid = oid
     row.dataset.status = 'unknown'
     row.innerHTML = template.innerHTML

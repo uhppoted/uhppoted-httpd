@@ -40,7 +40,6 @@ export function refreshed () {
     })
   }
 
-  // Ref. https://stackoverflow.com/questions/40328932/javascript-es6-promise-for-loop
   const chunk = offset => new Promise(resolve => {
     f(offset)
     resolve(true)

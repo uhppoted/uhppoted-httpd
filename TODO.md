@@ -3,6 +3,7 @@
 ### IN PROGRESS
 
 - [ ] Server events in addition to/rather-than refresh
+      - https://jvns.ca/blog/2021/01/12/day-36--server-sent-events-are-cool--and-a-fun-bug/
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [ ] Double click for login after 'idle signout'
 - [ ] 'reload' crashes with after restarting httpd
@@ -52,7 +53,7 @@
 
 - Migrate cards to OIDs
   - [x] Rework `sort` a la events
-  - [ ] Rework `refreshed` a la events
+  - [x] Rework `refreshed` a la events
   - [ ] Update unit tests for OID'd implementation
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
@@ -110,11 +111,12 @@
 - [ ] [TOML](https://toml.io) files
 
 - [ ] tabular
+      - [x] 'realise' a tablespec (i.e. page generates a tablespec and tabular renders it to HTML)
       - (experiment) use :before or :content for flags???
       - New table row submitted with error cannot be discarded
       - Empty list: make first row a 'new' row (?)
       - filter columns
-      - 'realise' a tablespec (i.e. page generates a tablespec and tabular renders it to HTML)
+      - genericize JS:refresh
 
 - [ ] ACL
       - wrap ACL update in goroutine
@@ -132,28 +134,22 @@
       - default row order should be by 'created'
       - unit tests for ACL rules
 
-- [ ] Card holders
-      - Marshal cards.Records as "" if StatusUnknown
-      - highlight current row (?)
+- [ ] Cards
       - unit tests for auth rules
       - card type should probably be a string (because otherwise 0 is a reserved number)
         -- 'nil' it if it's 0 ?
         -- think it through anyway
       - add
-        - use cloneNode rather (https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript)
         - shadow DOM ???
       - wrap templating in a decent error handler
         - redirect to error page
 
       - custom webelement (https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
-      - replace dataset.value with get()
       - draw out (TLA+ ?) local record FSM
         -- e.g. add -> delete on rollback deletes
         -- e.g. add -> commit only enabled after modified
-      - genericize JS:refresh
 
       - pin selected rows
-      - undo/revert (?)
       - virtual DOM
       - search & pin
       - labels from translations
@@ -165,9 +161,6 @@
 - [ ] Security
       - GET /system, /doors , /cards, etc all return everything. Need finer grained access 
       - Templates have access to everything - need finer grained access 
-
-- [ ] Events
-      - https://jvns.ca/blog/2021/01/12/day-36--server-sent-events-are-cool--and-a-fun-bug/
 
 - [ ] Login
       - restyle avatar to have a border and be a bit floaty (i.e. not be glued to top-right)
@@ -237,4 +230,9 @@
 - [plurid](https://github.com/plurid/plurid)
 - [git/content-addressable filesystem](https://jvns.ca/blog/confusing-explanations)
 - [Firefox: bug #1730211](https://bugzilla.mozilla.org/show_bug.cgi?id=1730211)
+- https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript
+
+# REFERENCES
+
+- https://stackoverflow.com/questions/40328932/javascript-es6-promise-for-loop
 
