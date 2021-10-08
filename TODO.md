@@ -41,14 +41,12 @@
 
 #### Events
   - [ ] (?) Genericize load/save for migration to MemDB
-  - [ ] Replace string map key with struct
-        - https://go.dev/blog/maps
+  - [x] Replace string map key with struct
   - [ ] Optimize page display
         - [x] GET: return latest first
         - [ ] GET: start,count
         - [ ] Realize incrementally
         - [ ] Render/realize only if updated
-        - [ ] GET: return page at a time
         - [ ] Keep DB in local storage
         - [ ] Infinitely scrolling table
   - [ ] Lookup historical card/door/controller assignments

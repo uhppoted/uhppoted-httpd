@@ -40,6 +40,7 @@ export function refreshed () {
     })
   }
 
+  // initialises the rows asynchronously in small'ish chunks
   const chunk = offset => new Promise(resolve => {
     f(offset)
     resolve(true)
@@ -53,7 +54,6 @@ export function refreshed () {
 
   (async function loop () {
     for await (const _ of render()) {
-      // await new Promise(resolve => setTimeout(resolve, 5000))
       // empty
     }
   })()
@@ -94,15 +94,19 @@ function add (oid) {
     row.dataset.status = 'unknown'
     row.innerHTML = template.innerHTML
 
-    // const commit = row.querySelector('td span.commit')
-    // commit.id = uuid + '_commit'
-    // commit.dataset.record = uuid
-    // commit.dataset.enabled = 'false'
+    const commit = row.querySelector('td span.commit')
+    if (commit) {
+    commit.id = uuid + '_commit'
+    commit.dataset.record = uuid
+    commit.dataset.enabled = 'false'      
+    }
 
-    // const rollback = row.querySelector('td span.rollback')
-    // rollback.id = uuid + '_rollback'
-    // rollback.dataset.record = uuid
-    // rollback.dataset.enabled = 'false'
+    const rollback = row.querySelector('td span.rollback')
+    if (rollback) {
+    rollback.id = uuid + '_rollback'
+    rollback.dataset.record = uuid
+    rollback.dataset.enabled = 'false'      
+    }
 
     const fields = [
       { suffix: 'timestamp', oid: `${oid}.3`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
@@ -120,7 +124,7 @@ function add (oid) {
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      // const flag = row.querySelector(f.flag)
+      const flag = row.querySelector(f.flag)
 
       if (field) {
         field.id = uuid + '-' + f.suffix
@@ -130,7 +134,9 @@ function add (oid) {
         field.dataset.original = ''
         field.dataset.value = ''
 
-        // flag.id = 'F' + f.oid
+        if (flag) {
+        flag.id = 'F' + f.oid          
+        }
       } else {
         console.error(f)
       }

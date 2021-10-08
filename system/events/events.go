@@ -16,16 +16,37 @@ import (
 )
 
 type Events struct {
-	Events map[string]Event `json:"events"`
+	Events map[key]Event `json:"events"`
 
 	file string `json:"-"`
 }
 
+type key struct {
+	deviceID  uint32
+	index     uint32
+	timestamp time.Time
+}
+
 var guard sync.RWMutex
+
+func newKey(deviceID uint32, index uint32, timestamp time.Time) key {
+	year, month, day := timestamp.Date()
+	hour := timestamp.Hour()
+	minute := timestamp.Minute()
+	second := timestamp.Second()
+	location := timestamp.Location()
+	t := time.Date(year, month, day, hour, minute, second, 0, location)
+
+	return key{
+		deviceID:  deviceID,
+		index:     index,
+		timestamp: t,
+	}
+}
 
 func NewEvents() Events {
 	return Events{
-		Events: map[string]Event{},
+		Events: map[key]Event{},
 	}
 }
 
@@ -49,7 +70,7 @@ func (ee *Events) Load(file string) error {
 	for _, v := range blob.Events {
 		var e Event
 		if err := e.deserialize(v); err == nil {
-			k := key(e.DeviceID, e.Index, time.Time(e.Timestamp))
+			k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
 			if x, ok := ee.Events[k]; ok {
 				return fmt.Errorf("%v  duplicate events (%v and %v)", k, e.OID, x.OID)
 			} else {
@@ -132,7 +153,7 @@ func (ee Events) Print() {
 
 func (ee *Events) Clone() *Events {
 	shadow := Events{
-		Events: map[string]Event{},
+		Events: map[key]Event{},
 		file:   ee.file,
 	}
 
@@ -148,16 +169,16 @@ func (ee *Events) AsObjects() []interface{} {
 	defer guard.RUnlock()
 
 	objects := []interface{}{}
-	keys := []string{}
+	keys := []key{}
 
 	for k := range ee.Events {
 		keys = append(keys, k)
 	}
 
 	sort.SliceStable(keys, func(i, j int) bool {
-		p := ee.Events[keys[i]]
-		q := ee.Events[keys[j]]
-		return q.Timestamp.Before(p.Timestamp)
+		p := keys[i]
+		q := keys[j]
+		return q.timestamp.Before(p.timestamp)
 	})
 
 	for _, k := range keys {
@@ -201,8 +222,7 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 	defer guard.Unlock()
 
 	for _, e := range recent {
-		k := key(e.DeviceID, e.Index, time.Time(e.Timestamp))
-
+		k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
 		if _, ok := ee.Events[k]; !ok {
 			oid := catalog.NewEvent()
 			ee.Events[k] = NewEvent(oid, e, lookup)
@@ -220,8 +240,4 @@ func scrub(ee Events) error {
 
 func warn(err error) {
 	log.Printf("ERROR %v", err)
-}
-
-func key(deviceID uint32, index uint32, timestamp time.Time) string {
-	return fmt.Sprintf("%v:%v:%v", deviceID, index, timestamp.Format("2006-01-02 15:04:05 MST"))
 }
