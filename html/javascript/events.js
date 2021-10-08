@@ -96,16 +96,16 @@ function add (oid) {
 
     const commit = row.querySelector('td span.commit')
     if (commit) {
-    commit.id = uuid + '_commit'
-    commit.dataset.record = uuid
-    commit.dataset.enabled = 'false'      
+      commit.id = uuid + '_commit'
+      commit.dataset.record = uuid
+      commit.dataset.enabled = 'false'
     }
 
     const rollback = row.querySelector('td span.rollback')
     if (rollback) {
-    rollback.id = uuid + '_rollback'
-    rollback.dataset.record = uuid
-    rollback.dataset.enabled = 'false'      
+      rollback.id = uuid + '_rollback'
+      rollback.dataset.record = uuid
+      rollback.dataset.enabled = 'false'
     }
 
     const fields = [
@@ -135,7 +135,7 @@ function add (oid) {
         field.dataset.value = ''
 
         if (flag) {
-        flag.id = 'F' + f.oid          
+          flag.id = 'F' + f.oid
         }
       } else {
         console.error(f)

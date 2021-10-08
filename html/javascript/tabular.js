@@ -263,7 +263,7 @@ export function onRefresh (tag, event) {
       break
 
     case 'events':
-      get('/events', events.refreshed)
+      get('/events?range=' + encodeURIComponent('7,20'), events.refreshed)
       break
   }
 }

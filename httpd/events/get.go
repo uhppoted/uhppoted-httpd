@@ -4,21 +4,54 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"math"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
-func Fetch(w http.ResponseWriter, r *http.Request, timeout time.Duration) {
+func Fetch(w http.ResponseWriter, rq *http.Request, timeout time.Duration) {
+	start := 0
+	count := math.MaxInt32
+
+	if get := rq.FormValue("range"); get != "" {
+		re := regexp.MustCompile(`([0-9]+)(?:,(\*|[0-9]+|\+[0-9]+))?`)
+
+		if match := re.FindStringSubmatch(get); match != nil && len(match) > 1 {
+			if v, err := strconv.ParseUint(match[1], 10, 32); err == nil {
+				start = int(v)
+			}
+
+			if len(match) > 2 {
+				switch {
+				case strings.TrimSpace(match[2]) == "*":
+					count = math.MaxInt32
+
+				case strings.HasPrefix(strings.TrimSpace(match[2]), "+"):
+					if v, err := strconv.ParseUint(match[2][1:], 10, 32); err == nil {
+						count = int(v)
+					}
+
+				default:
+					if v, err := strconv.ParseUint(match[2], 10, 32); err == nil {
+						count = int(v) - start
+					}
+				}
+			}
+		}
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 
 	defer cancel()
 
 	acceptsGzip := false
 
-	for k, h := range r.Header {
+	for k, h := range rq.Header {
 		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
 			for _, v := range h {
 				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
@@ -31,12 +64,18 @@ func Fetch(w http.ResponseWriter, r *http.Request, timeout time.Duration) {
 	var response interface{}
 
 	go func() {
-		object := system.System()
+		events := system.Events(start, count)
 
 		response = struct {
-			System interface{} `json:"system"`
+			System struct {
+				Objects []interface{} `json:"objects"`
+			} `json:"system"`
 		}{
-			System: object,
+			System: struct {
+				Objects []interface{} `json:"objects"`
+			}{
+				Objects: events,
+			},
 		}
 
 		cancel()

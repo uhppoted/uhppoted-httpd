@@ -164,7 +164,7 @@ func (ee *Events) Clone() *Events {
 	return &shadow
 }
 
-func (ee *Events) AsObjects() []interface{} {
+func (ee *Events) AsObjects(start, max int) []interface{} {
 	guard.RLock()
 	defer guard.RUnlock()
 
@@ -181,14 +181,20 @@ func (ee *Events) AsObjects() []interface{} {
 		return q.timestamp.Before(p.timestamp)
 	})
 
-	for _, k := range keys {
+	ix := start
+	count := 0
+	for ix < len(keys) && count < max {
+		k := keys[ix]
 		if e, ok := ee.Events[k]; ok {
 			if e.IsValid() || e.IsDeleted() {
 				if l := e.AsObjects(); l != nil {
 					objects = append(objects, l...)
+					count++
 				}
 			}
 		}
+
+		ix++
 	}
 
 	return objects

@@ -121,13 +121,20 @@ func System() interface{} {
 	objects = append(objects, sys.doors.AsObjects()...)
 	objects = append(objects, sys.cards.AsObjects()...)
 	objects = append(objects, sys.groups.AsObjects()...)
-	objects = append(objects, sys.events.AsObjects()...)
+	//	objects = append(objects, sys.events.AsObjects(0, math.MaxUint32)...)
 
 	return struct {
 		Objects []interface{} `json:"objects"`
 	}{
 		Objects: objects,
 	}
+}
+
+func Events(start, count int) []interface{} {
+	sys.RLock()
+	defer sys.RUnlock()
+
+	return sys.events.AsObjects(start, count)
 }
 
 func (s *system) refresh() {

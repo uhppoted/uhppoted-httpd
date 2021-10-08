@@ -44,11 +44,11 @@
   - [x] Replace string map key with struct
   - [ ] Optimize page display
         - [x] GET: return latest first
-        - [ ] GET: start,count
+        - [x] GET: start,count
+        - [ ] Infinitely scrolling table
         - [ ] Realize incrementally
         - [ ] Render/realize only if updated
         - [ ] Keep DB in local storage
-        - [ ] Infinitely scrolling table
   - [ ] Lookup historical card/door/controller assignments
 
 #### Cards
