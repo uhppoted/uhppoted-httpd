@@ -53,6 +53,7 @@ export function refreshed () {
 
   (async function loop () {
     for await (const _ of render()) {
+      // await new Promise(resolve => setTimeout(resolve, 5000))
       // empty
     }
   })()

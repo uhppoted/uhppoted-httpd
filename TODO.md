@@ -15,11 +15,11 @@
 - [ ] 'reload' alert 'undefined' message on restarting httpd
 - [ ] 'reload' automatically if httpd comes alive again
 
-- auth
+#### auth
   - [ ] Reload grules file if changed
   - [ ] Pass UID/role to grule
 
-- OID
+#### OID
   - [ ] Store all values in catalog and 'realize' local copies from cache
         - Hmmm, may cause issues with shadow logic
         - Unless use shadow cache ??
@@ -39,19 +39,22 @@
   - [ ] Make OID a type
         - [ ] move all _stringify's_ to OID/object/somesuch
 
-- Events
+#### Events
   - [ ] (?) Genericize load/save for migration to MemDB
+  - [ ] Replace string map key with struct
+        - https://go.dev/blog/maps
   - [ ] Optimize page display
+        - [x] GET: return latest first
         - [ ] GET: start,count
         - [ ] Realize incrementally
         - [ ] Render/realize only if updated
-        - [ ] GET: return latest first
         - [ ] GET: return page at a time
         - [ ] Keep DB in local storage
         - [ ] Infinitely scrolling table
   - [ ] Lookup historical card/door/controller assignments
 
-- Migrate cards to OIDs
+#### Cards
+  - Migrate cards to OIDs
   - [x] Rework `sort` a la events
   - [x] Rework `refreshed` a la events
   - [ ] Update unit tests for OID'd implementation
@@ -66,18 +69,18 @@
         - make update ID base (?)
         - use tag (?)
 
-- Groups
+#### Groups
 
-- Logs
+#### Logs
 
-- Doors
+#### Doors
   - [ ] Updates all _incorrect_ values if one item is edited
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
   - [ ] 'door' select chooses first item if list changes while select is open
 
-- [ ] system
+#### System
       - [ ] Update system.js to defer to tabular.js
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
@@ -105,6 +108,7 @@
       - limit number of pending 'update' requests (e.g. if device is not responding)
       - use uhppoted-lib::healthcheck
 
+#### Other
 - [ ] Fix Firefox layout
       - spacing/padding/margins
 

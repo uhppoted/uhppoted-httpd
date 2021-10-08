@@ -27,6 +27,13 @@ func (d *DateTime) IsValid() bool {
 	return false
 }
 
+func (d DateTime) Before(dd DateTime) bool {
+	p := time.Time(d)
+	q := time.Time(dd)
+
+	return p.Before(q)
+}
+
 func (d DateTime) MarshalJSON() ([]byte, error) {
 	return json.Marshal(d.Format("2006-01-02 15:04:05 MST"))
 }

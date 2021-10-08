@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"sync"
 	"time"
 
@@ -147,11 +148,24 @@ func (ee *Events) AsObjects() []interface{} {
 	defer guard.RUnlock()
 
 	objects := []interface{}{}
+	keys := []string{}
 
-	for _, e := range ee.Events {
-		if e.IsValid() || e.IsDeleted() {
-			if l := e.AsObjects(); l != nil {
-				objects = append(objects, l...)
+	for k := range ee.Events {
+		keys = append(keys, k)
+	}
+
+	sort.SliceStable(keys, func(i, j int) bool {
+		p := ee.Events[keys[i]]
+		q := ee.Events[keys[j]]
+		return q.Timestamp.Before(p.Timestamp)
+	})
+
+	for _, k := range keys {
+		if e, ok := ee.Events[k]; ok {
+			if e.IsValid() || e.IsDeleted() {
+				if l := e.AsObjects(); l != nil {
+					objects = append(objects, l...)
+				}
 			}
 		}
 	}
