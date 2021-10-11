@@ -73,7 +73,14 @@
                 </tr>
               </thead>
               <tbody></tbody>
-              <tfoot></tfoot>
+              <tfoot>
+                <tr>
+                  <td class="ellipsis" colspan="11">
+                    <img src="images/{{$.context.Theme}}/ellipsis-h-solid.svg" onclick="onMore('events', event)" />
+                  </td>
+                  <td class="padding"></td>
+                </tr>
+              </tfoot>
             </table>
 
             <template id="event">
@@ -238,8 +245,8 @@
     import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload } from "./javascript/uhppoted.js"
     import { onEdited, 
              onEnter, 
-             onChoose, 
              onTick, 
+             onMore,
              onCommit, 
              onCommitAll, 
              onRollback, 
@@ -255,8 +262,8 @@
 
     window.onEdited = onEdited
     window.onEnter = onEnter
-    window.onChoose = onChoose
     window.onTick = onTick
+    window.onMore = onMore
     window.onCommit = onCommit
     window.onCommitAll = onCommitAll
     window.onRollback = onRollback

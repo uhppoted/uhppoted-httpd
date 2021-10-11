@@ -30,6 +30,7 @@
         - [ ] rethink the whole 'dirty' thing
               - maybe use a stash queue (?)
               - or callbacks a la events
+              - not callbacks -> channels!!!
         - [ ] Check RWLock for clone
               - [ ] controllers
               - [ ] doors
@@ -41,20 +42,24 @@
 
 #### Events
   - [ ] (?) Genericize load/save for migration to MemDB
-  - [x] Replace string map key with struct
   - [ ] Optimize page display
-        - [x] GET: return latest first
-        - [x] GET: start,count
         - [ ] Infinitely scrolling table
-        - [ ] Realize incrementally
+              - [x] ... at bottom of table
+              - [ ] 'events' object with 'extent'
+              - [ ] `onMore`
+              - https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+              - https://stackoverflow.com/questions/11688279/jquery-infinite-scroll-on-a-table
+              - https://uxdesign.cc/build-an-infinite-scroll-table-without-scroll-event-listener-5949ce8e9a32
+              - https://www.dusanstam.com/posts/material-ui-table-with-infinite-scroll
+              - http://scrollmagic.io/examples/advanced/infinite_scrolling.html
+              - https://github.com/janpaepke/ScrollMagic
+        - [ ] Realize say two pages and repopulate OIDs
         - [ ] Render/realize only if updated
         - [ ] Keep DB in local storage
   - [ ] Lookup historical card/door/controller assignments
 
 #### Cards
   - Migrate cards to OIDs
-  - [x] Rework `sort` a la events
-  - [x] Rework `refreshed` a la events
   - [ ] Update unit tests for OID'd implementation
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
@@ -119,6 +124,7 @@
       - Empty list: make first row a 'new' row (?)
       - filter columns
       - genericize JS:refresh
+      - 'faceted' filtering (https://ux.stackexchange.com/questions/48992/sorting-filtering-on-infinite-scrolling-data-table)
 
 - [ ] ACL
       - wrap ACL update in goroutine
@@ -214,6 +220,7 @@
       - https://thenounproject.com
       - [retool](https://retool.com)
       - [plurid](https://github.com/plurid/plurid)
+      - []
 
 
 ## NOTES

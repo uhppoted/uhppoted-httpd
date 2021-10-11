@@ -94,9 +94,8 @@ export function onEnter (tag, event) {
   }
 }
 
-// ???
-export function onChoose (tag, event) {
-  event.target.selectedIndex = -1
+export function onMore (tag, event) {
+  console.log('onMore', tag)
 }
 
 export function onTick (tag, event) {

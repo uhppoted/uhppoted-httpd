@@ -10,6 +10,21 @@ div#events {
   border: 1px solid $content-table-border;
 }  
 
+td.ellipsis {
+  text-align: center;
+}
+
+td.ellipsis img {
+  height: 16px;
+  vertical-align: middle;
+  background: $content-table-ellipsis;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 32px;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
 th.timestamp {
   border-bottom: 1px;
   white-space: nowrap;
