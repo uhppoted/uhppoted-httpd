@@ -46,12 +46,13 @@
         - [x] `onMore`
         - [x] hide 'more' after last event
         - [ ] Realize e.g. two pages and repopulate OIDs
+              - https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
         - [ ] Render/realize only if updated
         - [ ] (?) Keep DB in local storage
   - [ ] Lookup historical card/door/controller assignments
 
 #### Cards
-  - Migrate cards to OIDs
+  - [x] Migrate cards to OIDs
   - [ ] Update unit tests for OID'd implementation
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
@@ -77,7 +78,15 @@
 
 #### System
       - [ ] Update system.js to defer to tabular.js
-            - [ ] onRefresh
+            - [x] onRefresh
+            - [x] onEnter
+            - [x] onEdited
+            - [x] onTick
+            - [x] get
+
+      - [ ] Update interfaces.js to defer to tabular.js
+            - [ ] post
+
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
       - [ ] Fix `get-events` log string

@@ -102,7 +102,7 @@
               </div>
             </div>
             <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('controller')" />
-            <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh(event)" />
+            <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('system', event)" />
           </div>
 
           <div id="controllers">
@@ -289,8 +289,15 @@
 
   <script type="module">
     import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload } from "./javascript/uhppoted.js"
-    import { onEnter, onEdited, onTick, onRefresh } from "./javascript/system.js"
-    import { onCommit, onCommitAll, onRollback, onRollbackAll, onNew } from "./javascript/tabular.js"
+    import { onEdited, 
+             onEnter, 
+             onTick, 
+             onCommit, 
+             onCommitAll, 
+             onRollback, 
+             onRollbackAll, 
+             onNew, 
+             onRefresh } from "./javascript/tabular.js"
 
     window.retheme = retheme
     window.dismiss = dismiss
@@ -308,9 +315,13 @@
     window.onNew = onNew
     window.onRefresh = onRefresh
 
+    const refresh = function() {
+      onRefresh('system')      
+    }
+
     resetIdle()
-    onRefresh()
-    setInterval(onRefresh, 15000)
+    refresh()
+    setInterval(refresh, 15000)
   </script>
 
   <!-- global information initialised by Go template -->

@@ -52,6 +52,14 @@ const pages = {
 
 export function onEdited (tag, event) {
   switch (tag) {
+    case 'interface':
+      LAN.set(event.target, event.target.value)
+      break
+
+    case 'controller':
+      set(event.target, event.target.value)
+      break
+
     case 'door':
       set(event.target, event.target.value)
       break
@@ -69,6 +77,14 @@ export function onEdited (tag, event) {
 export function onEnter (tag, event) {
   if (event.key === 'Enter') {
     switch (tag) {
+      case 'interface':
+        LAN.set(event.target, event.target.value)
+        break
+
+      case 'controller':
+        set(event.target, event.target.value)
+        break
+
       case 'door':
         set(event.target, event.target.value, event.target.dataset.status)
 
@@ -254,6 +270,10 @@ export function onRefresh (tag, event) {
   }
 
   switch (tag) {
+    case 'system':
+      get('/system', system.refreshed)
+      break
+
     case 'doors':
       doors.get()
       break
