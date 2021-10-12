@@ -10,18 +10,22 @@ div#events {
   border: 1px solid $content-table-border;
 }  
 
+div#events table tfoot.hidden {  
+  display: none;
+}  
+
 td.ellipsis {
   text-align: center;
 }
 
-td.ellipsis img {
+td.ellipsis img.button {
   height: 16px;
   vertical-align: middle;
-  background: $content-table-ellipsis;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 32px;
-  padding-right: 32px;
+  padding: 4px 32px 4px 32px;
+  border: solid 1px #268bd2;
+  border-radius: 4px;
+  margin-top: 4px;
+  margin-bottom: 4px;
   cursor: pointer;
 }
 

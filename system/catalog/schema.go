@@ -4,7 +4,7 @@ package catalog
 // const Doors OID = "0.2"
 // const Cards OID = "0.3"
 // const Groups OID = "0.4"
-// const Events OID = "0.5"
+const EventsOID OID = "0.5"
 
 const InterfaceType Suffix = ".0"
 const InterfaceName Suffix = ".1"
@@ -57,6 +57,9 @@ const GroupCreated Suffix = ".0.1"
 const GroupName Suffix = ".1"
 const GroupDoors Suffix = ".2"
 const GroupIndex Suffix = ".3"
+
+const EventsFirst = ".0.1"
+const EventsLast = ".0.2"
 
 const EventDeviceID Suffix = ".1"
 const EventIndex Suffix = ".2"

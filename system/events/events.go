@@ -27,6 +27,10 @@ type key struct {
 	timestamp time.Time
 }
 
+const EventsOID = catalog.EventsOID
+const EventsFirst = catalog.EventsFirst
+const EventsLast = catalog.EventsLast
+
 var guard sync.RWMutex
 
 func newKey(deviceID uint32, index uint32, timestamp time.Time) key {
@@ -195,6 +199,14 @@ func (ee *Events) AsObjects(start, max int) []interface{} {
 		}
 
 		ix++
+	}
+
+	if len(keys) > 0 {
+		first := ee.Events[keys[0]]
+		last := ee.Events[keys[len(keys)-1]]
+		objects = append(objects, catalog.NewObject2(EventsOID, EventsFirst, first.OID))
+		objects = append(objects, catalog.NewObject2(EventsOID, EventsLast, last.OID))
+
 	}
 
 	return objects

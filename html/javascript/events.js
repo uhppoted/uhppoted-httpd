@@ -2,7 +2,7 @@ import { deleted } from './tabular.js'
 import { DB } from './db.js'
 
 export function refreshed () {
-  const events = [...DB.events.values()].sort((p, q) => q.timestamp.localeCompare(p.timestamp))
+  const events = [...DB.events().values()].sort((p, q) => q.timestamp.localeCompare(p.timestamp))
   const pagesize = 5
 
   realize(events)
@@ -33,11 +33,24 @@ export function refreshed () {
     const tbody = table.tBodies[0]
 
     tbody.sort((p, q) => {
-      const u = DB.events.get(p.dataset.oid)
-      const v = DB.events.get(q.dataset.oid)
+      const u = DB.events().get(p.dataset.oid)
+      const v = DB.events().get(q.dataset.oid)
 
       return v.timestamp.localeCompare(u.timestamp)
     })
+  }
+
+  // hides/shows the 'more' button
+  const h = function () {
+    const table = document.querySelector('#events table')
+    const tfoot = table.tFoot
+    const last = DB.lastEvent()
+
+    if (last && DB.events().has(last)) {
+      tfoot.classList.add('hidden')
+    } else {
+      tfoot.classList.remove('hidden')
+    }
   }
 
   // initialises the rows asynchronously in small'ish chunks
@@ -58,6 +71,7 @@ export function refreshed () {
     }
   })()
     .then(() => g())
+    .then(() => h())
     .then(() => DB.refreshed('events'))
     .catch(err => console.error(err))
 }

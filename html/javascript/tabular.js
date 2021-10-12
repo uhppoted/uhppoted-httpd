@@ -45,6 +45,7 @@ const pages = {
 
   events: {
     url: '/events',
+    recordset: db.DB.events(),
     refreshed: events.refreshed
   }
 }
@@ -95,7 +96,11 @@ export function onEnter (tag, event) {
 }
 
 export function onMore (tag, event) {
-  console.log('onMore', tag)
+  switch (tag) {
+    case 'events':
+      more(pages.events)
+      break
+  }
 }
 
 export function onTick (tag, event) {
@@ -262,7 +267,7 @@ export function onRefresh (tag, event) {
       break
 
     case 'events':
-      get('/events?range=' + encodeURIComponent('7,20'), events.refreshed)
+      get('/events?range=' + encodeURIComponent('0,15'), events.refreshed)
       break
   }
 }
@@ -529,6 +534,15 @@ function create (page) {
   const cleanup = function () {}
 
   post(page, records, reset, cleanup, page.refreshed)
+}
+
+function more (page) {
+  if (page.recordset) {
+    const N = page.recordset.size
+    const url = page.url + '?range=' + encodeURIComponent(`${N},+15`)
+
+    get(url, page.refreshed)
+  }
 }
 
 function post (page, records, reset, cleanup, refreshed) {

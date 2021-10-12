@@ -43,19 +43,11 @@
 #### Events
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
-        - [ ] Infinitely scrolling table
-              - [x] ... at bottom of table
-              - [ ] 'events' object with 'extent'
-              - [ ] `onMore`
-              - https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
-              - https://stackoverflow.com/questions/11688279/jquery-infinite-scroll-on-a-table
-              - https://uxdesign.cc/build-an-infinite-scroll-table-without-scroll-event-listener-5949ce8e9a32
-              - https://www.dusanstam.com/posts/material-ui-table-with-infinite-scroll
-              - http://scrollmagic.io/examples/advanced/infinite_scrolling.html
-              - https://github.com/janpaepke/ScrollMagic
-        - [ ] Realize say two pages and repopulate OIDs
+        - [x] `onMore`
+        - [x] hide 'more' after last event
+        - [ ] Realize e.g. two pages and repopulate OIDs
         - [ ] Render/realize only if updated
-        - [ ] Keep DB in local storage
+        - [ ] (?) Keep DB in local storage
   - [ ] Lookup historical card/door/controller assignments
 
 #### Cards
@@ -85,6 +77,7 @@
 
 #### System
       - [ ] Update system.js to defer to tabular.js
+            - [ ] onRefresh
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
       - [ ] Fix `get-events` log string
@@ -118,7 +111,6 @@
 - [ ] [TOML](https://toml.io) files
 
 - [ ] tabular
-      - [x] 'realise' a tablespec (i.e. page generates a tablespec and tabular renders it to HTML)
       - (experiment) use :before or :content for flags???
       - New table row submitted with error cannot be discarded
       - Empty list: make first row a 'new' row (?)
@@ -240,6 +232,12 @@
 - [git/content-addressable filesystem](https://jvns.ca/blog/confusing-explanations)
 - [Firefox: bug #1730211](https://bugzilla.mozilla.org/show_bug.cgi?id=1730211)
 - https://stackoverflow.com/questions/1728284/create-clone-of-table-row-and-append-to-table-in-javascript
+- https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+- https://stackoverflow.com/questions/11688279/jquery-infinite-scroll-on-a-table
+- https://uxdesign.cc/build-an-infinite-scroll-table-without-scroll-event-listener-5949ce8e9a32
+- https://www.dusanstam.com/posts/material-ui-table-with-infinite-scroll
+- http://scrollmagic.io/examples/advanced/infinite_scrolling.html
+- https://github.com/janpaepke/ScrollMagic
 
 # REFERENCES
 

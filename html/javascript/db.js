@@ -4,7 +4,14 @@ export const DB = {
   doors: new Map(),
   cards: new Map(),
   groups: new Map(),
-  events: new Map(),
+
+  tables: {
+    events: {
+      first: null,
+      last: null,
+      events: new Map()
+    }
+  },
 
   updated: function (tag, recordset) {
     if (recordset) {
@@ -59,6 +66,18 @@ export const DB = {
   refreshed: function (tag) {
     mark(tag)
     sweep(tag)
+  },
+
+  events: function () {
+    return this.tables.events.events
+  },
+
+  firstEvent: function () {
+    return this.tables.events.first
+  },
+
+  lastEvent: function () {
+    return this.tables.events.last
   }
 }
 
@@ -499,15 +518,25 @@ function group (o) {
 function event (o) {
   const oid = o.OID
 
+  if (oid === '0.5.0.1') {
+    DB.tables.events.first = o.value
+    return
+  }
+
+  if (oid === '0.5.0.2') {
+    DB.tables.events.last = o.value
+    return
+  }
+
   if (/^0\.5\.[1-9][0-9]*$/.test(oid)) {
-    if (DB.events.has(oid)) {
-      const record = DB.events.get(oid)
+    if (DB.events().has(oid)) {
+      const record = DB.events().get(oid)
       record.status = o.value
       record.mark = 0
       return
     }
 
-    DB.events.set(oid, {
+    DB.events().set(oid, {
       OID: oid,
       timestamp: '',
       deviceID: '',
@@ -528,7 +557,7 @@ function event (o) {
     return
   }
 
-  DB.events.forEach((v, k) => {
+  DB.events().forEach((v, k) => {
     if (oid.startsWith(k)) {
       // INTERIM HACK
       if (v.status === 'new') {
@@ -609,7 +638,7 @@ function mark (tag) {
     v.mark += 1
   })
 
-  DB.events.forEach(v => {
+  DB.events().forEach(v => {
     v.mark += 1
   })
 }
@@ -639,9 +668,9 @@ function sweep (tag) {
     }
   })
 
-  DB.events.forEach((v, k) => {
+  DB.events().forEach((v, k) => {
     if (v.mark >= 25 && v.status === 'deleted') {
-      DB.events.delete(k)
+      DB.events().delete(k)
     }
   })
 }
