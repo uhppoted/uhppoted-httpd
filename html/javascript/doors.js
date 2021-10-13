@@ -1,37 +1,5 @@
-/* global */
-
-import { unbusy, warning, getAsJSON } from './uhppoted.js'
 import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
-
-export function get () {
-  getAsJSON('/doors')
-    .then(response => {
-      unbusy()
-
-      if (response.redirected) {
-        window.location = response.url
-      } else {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              if (object && object.system && object.system.objects) {
-                DB.updated('objects', object.system.objects)
-              }
-
-              refreshed()
-            })
-            break
-
-          default:
-            response.text().then(message => { warning(message) })
-        }
-      }
-    })
-    .catch(function (err) {
-      console.error(err)
-    })
-}
 
 export function refreshed () {
   const list = []

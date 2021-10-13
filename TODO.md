@@ -43,8 +43,6 @@
 #### Events
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
-        - [x] `onMore`
-        - [x] hide 'more' after last event
         - [ ] Realize e.g. two pages and repopulate OIDs
               - https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
         - [ ] Render/realize only if updated
@@ -52,7 +50,6 @@
   - [ ] Lookup historical card/door/controller assignments
 
 #### Cards
-  - [x] Migrate cards to OIDs
   - [ ] Update unit tests for OID'd implementation
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
@@ -68,6 +65,8 @@
 #### Groups
 
 #### Logs
+  - [x] 'logs' page skeleton
+  - [ ] system.logs
 
 #### Doors
   - [ ] Updates all _incorrect_ values if one item is edited
@@ -77,13 +76,6 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 #### System
-      - [ ] Update system.js to defer to tabular.js
-            - [x] onRefresh
-            - [x] onEnter
-            - [x] onEdited
-            - [x] onTick
-            - [x] get
-
       - [ ] Update interfaces.js to defer to tabular.js
             - [ ] post
 

@@ -5,6 +5,7 @@ import * as doors from './doors.js'
 import * as cards from './cards.js'
 import * as groups from './groups.js'
 import * as events from './events.js'
+import * as logs from './logs.js'
 import * as db from './db.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
@@ -19,6 +20,7 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
 
 const pages = {
   system: {
+    get: '/system',
     url: '/system',
     refreshed: system.refreshed
   },
@@ -29,24 +31,35 @@ const pages = {
   },
 
   doors: {
+    get: '/doors',
     url: '/doors',
     refreshed: doors.refreshed
   },
 
   cards: {
+    get: '/cards',
     url: '/cards',
     refreshed: cards.refreshed
   },
 
   groups: {
+    get: '/groups',
     url: '/groups',
     refreshed: groups.refreshed
   },
 
   events: {
+    get: '/events?range=' + encodeURIComponent('0,15'),
     url: '/events',
     recordset: db.DB.events(),
     refreshed: events.refreshed
+  },
+
+  logs: {
+    get: '/logs?range=' + encodeURIComponent('0,15'),
+    url: '/logs',
+    recordset: db.DB.logs(),
+    refreshed: logs.refreshed
   }
 }
 
@@ -264,31 +277,15 @@ export function onNew (tag, event) {
 }
 
 export function onRefresh (tag, event) {
-  if (event && event.target && event.target.id === 'refresh') {
-    busy()
-    dismiss()
-  }
+  const page = getPage(tag)
 
-  switch (tag) {
-    case 'system':
-      get('/system', system.refreshed)
-      break
+  if (page) {
+    if (event && event.target && event.target.id === 'refresh') {
+      busy()
+      dismiss()
+    }
 
-    case 'doors':
-      doors.get()
-      break
-
-    case 'cards':
-      get('/cards', cards.refreshed)
-      break
-
-    case 'groups':
-      get('/groups', groups.refreshed)
-      break
-
-    case 'events':
-      get('/events?range=' + encodeURIComponent('0,15'), events.refreshed)
-      break
+    get(page.get, page.refreshed)
   }
 }
 
@@ -598,4 +595,28 @@ function post (page, records, reset, cleanup, refreshed) {
       cleanup()
       unbusy()
     })
+}
+
+function getPage (tag) {
+  switch (tag) {
+    case 'system':
+      return pages.system
+
+    case 'doors':
+      return pages.doors
+
+    case 'cards':
+      return pages.cards
+
+    case 'groups':
+      return pages.groups
+
+    case 'events':
+      return pages.events
+
+    case 'logs':
+      return pages.logs
+  }
+
+  return null
 }

@@ -10,6 +10,12 @@ export const DB = {
       first: null,
       last: null,
       events: new Map()
+    },
+
+    logs: {
+      first: null,
+      last: null,
+      logs: new Map()
     }
   },
 
@@ -78,6 +84,10 @@ export const DB = {
 
   lastEvent: function () {
     return this.tables.events.last
+  },
+
+  logs: function () {
+    return this.tables.logs.logs
   }
 }
 
