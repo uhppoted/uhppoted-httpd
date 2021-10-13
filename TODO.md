@@ -78,8 +78,7 @@
 
 #### System
       - [ ] Update interfaces.js to defer to tabular.js
-            - [x] commit
-            - [ ] update
+            - [ ] post
 
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
