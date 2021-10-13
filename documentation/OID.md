@@ -36,15 +36,13 @@ Groups namespace
 
 ### 0.5.x.x
 
-Schedules namespace
+Events namespace
 
 ### 0.6.x.x
 
-Events namespace
+Logs namespace
 
 ### 0.7.x.x
-
-Logs namespace
 
 # OID tree
 
@@ -140,9 +138,9 @@ Logs namespace
 |    |      |- 0.5.0.2                                                       # last event OID
 |    |
 |    |- 0.5.1                                                                # event #1
-|    |      |- 0.5.1.1: <deviceID>                                           #       device ID
-|    |      |- 0.5.1.2: <index>                                              #       event index
-|    |      |- 0.5.1.3: <timestamp>                                          #       event timestamp
+|    |      |- 0.5.1.1: <timestamp>                                          #       event timestamp
+|    |      |- 0.5.1.2: <deviceID>                                           #       device ID
+|    |      |- 0.5.1.3: <index>                                              #       event index
 |    |      |- 0.5.1.4: <type>                                               #       event type
 |    |      |- 0.5.1.5: <door>                                               #       event door ID
 |    |      |- 0.5.1.6: <direction>                                          #       event direction
@@ -152,5 +150,14 @@ Logs namespace
 |    |      |- 0.5.1.10: <deviceName>                                        #       (associated) controller name
 |    |      |- 0.5.1.11: <doorName>                                          #       (associated) door name
 |    |      |- 0.5.1.12: <cardName>                                          #       (associated) card holder
+|
+|- 0.6                                                                       # logs
+|    |- 0.6.0                                                                # 
+|    |      |- 0.6.0.1                                                       # first log entry OID
+|    |      |- 0.6.0.2                                                       # last log entry OID
+|    |
+|    |- 0.6.1                                                                # entry #1
+|    |      |- 0.6.1.1: <timestamp>                                          #       entry timestamp
+
 
 

@@ -18,6 +18,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd/doors"
 	"github.com/uhppoted/uhppoted-httpd/httpd/events"
 	"github.com/uhppoted/uhppoted-httpd/httpd/groups"
+	"github.com/uhppoted/uhppoted-httpd/httpd/logs"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
@@ -85,6 +86,10 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 
 	case "/events":
 		events.Fetch(w, r, d.timeout)
+		return
+
+	case "/logs":
+		logs.Fetch(w, r, d.timeout)
 		return
 	}
 

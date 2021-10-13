@@ -1,10 +1,11 @@
 package catalog
 
-// const System OID = "0.1"
-// const Doors OID = "0.2"
-// const Cards OID = "0.3"
-// const Groups OID = "0.4"
+const SystemOID OID = "0.1"
+const DoorsOID OID = "0.2"
+const CardsOID OID = "0.3"
+const GroupsOID OID = "0.4"
 const EventsOID OID = "0.5"
+const LogsOID OID = "0.6"
 
 const InterfaceType Suffix = ".0"
 const InterfaceName Suffix = ".1"
@@ -61,9 +62,9 @@ const GroupIndex Suffix = ".3"
 const EventsFirst = ".0.1"
 const EventsLast = ".0.2"
 
-const EventDeviceID Suffix = ".1"
-const EventIndex Suffix = ".2"
-const EventTimestamp Suffix = ".3"
+const EventTimestamp Suffix = ".1"
+const EventDeviceID Suffix = ".2"
+const EventIndex Suffix = ".3"
 const EventType Suffix = ".4"
 const EventDoor Suffix = ".5"
 const EventDirection Suffix = ".6"
@@ -73,3 +74,8 @@ const EventReason Suffix = ".9"
 const EventDeviceName Suffix = ".10"
 const EventDoorName Suffix = ".11"
 const EventCardName Suffix = ".12"
+
+const LogsFirst = ".0.1"
+const LogsLast = ".0.2"
+
+const LogTimestamp Suffix = ".1"

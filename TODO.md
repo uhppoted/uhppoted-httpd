@@ -66,7 +66,8 @@
 
 #### Logs
   - [x] 'logs' page skeleton
-  - [ ] system.logs
+  - [x] system.logs skeleton
+  - [ ] Record audit events to 'logs'
 
 #### Doors
   - [ ] Updates all _incorrect_ values if one item is edited

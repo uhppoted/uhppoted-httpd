@@ -580,15 +580,15 @@ function event (o) {
           break
 
         case k + '.1':
-          v.deviceID = o.value
+          v.timestamp = o.value
           break
 
         case k + '.2':
-          v.index = parseInt(o.value)
+          v.deviceID = o.value
           break
 
         case k + '.3':
-          v.timestamp = o.value
+          v.index = parseInt(o.value)
           break
 
         case k + '.4':

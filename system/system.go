@@ -21,6 +21,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/events"
 	"github.com/uhppoted/uhppoted-httpd/system/groups"
 	"github.com/uhppoted/uhppoted-httpd/system/grule"
+	"github.com/uhppoted/uhppoted-httpd/system/logs"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/config"
 )
@@ -31,6 +32,7 @@ var sys = system{
 	cards:       cards.NewCards(),
 	groups:      groups.NewGroups(),
 	events:      events.NewEvents(),
+	logs:        logs.NewLogs(),
 	taskQ:       NewTaskQ(),
 	retention:   6 * time.Hour,
 }
@@ -43,6 +45,7 @@ type system struct {
 	cards       cards.Cards
 	groups      groups.Groups
 	events      events.Events
+	logs        logs.Logs
 	rules       grule.Rules
 	taskQ       TaskQ
 	retention   time.Duration // time after which 'deleted' items are permanently removed
@@ -135,6 +138,14 @@ func Events(start, count int) []interface{} {
 	defer sys.RUnlock()
 
 	return sys.events.AsObjects(start, count)
+}
+
+func Logs(start, count int) []interface{} {
+	sys.RLock()
+	defer sys.RUnlock()
+
+	//	return sys.logs.AsObjects(start, count)
+	return []interface{}{}
 }
 
 func (s *system) refresh() {
