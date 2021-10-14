@@ -101,6 +101,16 @@ func Init(cfg config.Config, conf string) error {
 	//	sys.cards.Print()
 	//	sys.events.Print()
 
+	listener := make(chan audit.LogEntry)
+	audit.AddListener(listener)
+
+	go func() {
+		for {
+			entry := <-listener
+			sys.logs.Received(entry)
+		}
+	}()
+
 	go func() {
 		time.Sleep(2500 * time.Millisecond)
 		sys.refresh()
@@ -124,7 +134,6 @@ func System() interface{} {
 	objects = append(objects, sys.doors.AsObjects()...)
 	objects = append(objects, sys.cards.AsObjects()...)
 	objects = append(objects, sys.groups.AsObjects()...)
-	//	objects = append(objects, sys.events.AsObjects(0, math.MaxUint32)...)
 
 	return struct {
 		Objects []interface{} `json:"objects"`
@@ -144,8 +153,7 @@ func Logs(start, count int) []interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	//	return sys.logs.AsObjects(start, count)
-	return []interface{}{}
+	return sys.logs.AsObjects(start, count)
 }
 
 func (s *system) refresh() {

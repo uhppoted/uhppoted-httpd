@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
@@ -37,9 +38,11 @@ func newKey(timestamp time.Time) key {
 }
 
 func NewLogs() Logs {
-	return Logs{
+	logs := Logs{
 		Logs: map[key]LogEntry{},
 	}
+
+	return logs
 }
 
 func (ll *Logs) Load(file string) error {
@@ -72,7 +75,7 @@ func (ll *Logs) Load(file string) error {
 	}
 
 	for _, l := range ll.Logs {
-		catalog.PutEvent(l.OID)
+		catalog.PutLogEntry(l.OID)
 	}
 
 	ll.file = file
@@ -223,13 +226,19 @@ func (ll *Logs) Validate() error {
 	return nil
 }
 
-func (ll *Logs) Received(timestamp time.Time) {
+func (ll *Logs) Received(entry audit.LogEntry) {
+	unknown := time.Time{}
+	timestamp := entry.Timestamp
+	if entry.Timestamp == unknown {
+		timestamp = time.Now()
+	}
+
 	guard.Lock()
 	defer guard.Unlock()
 
 	k := newKey(timestamp)
 	if _, ok := ll.Logs[k]; !ok {
-		oid := catalog.NewEvent()
+		oid := catalog.NewLogEntry()
 		ll.Logs[k] = NewLogEntry(oid, timestamp)
 	}
 }

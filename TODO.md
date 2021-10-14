@@ -65,9 +65,10 @@
 #### Groups
 
 #### Logs
-  - [x] 'logs' page skeleton
-  - [x] system.logs skeleton
-  - [ ] Record audit events to 'logs'
+  - [x] Copy audit events to 'logs'
+  - [ ] Add 'item' to log entry
+  - [ ] Save
+  - [ ] Load
 
 #### Doors
   - [ ] Updates all _incorrect_ values if one item is edited
@@ -77,8 +78,10 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 #### System
-      - [ ] Update interfaces.js to defer to tabular.js
-            - [ ] post
+      - [ ] (?) Update interfaces.js to defer to tabular.js
+            - [ ] rollback
+            - [ ] commit
+            - [ ] set
 
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()

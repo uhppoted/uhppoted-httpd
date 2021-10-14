@@ -6,29 +6,36 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
+	"time"
 
 	"github.com/uhppoted/uhppoted-lib/eventlog"
 )
 
-type Trail interface {
-	Write(LogEntry)
-}
-
 type trail struct {
-	logger *log.Logger
+	logger    *log.Logger
+	listeners []chan<- LogEntry
 }
 
 type LogEntry struct {
+	Timestamp time.Time
 	UID       string
 	Module    string
 	Operation string
 	Info      interface{}
 }
 
-var auditTrail Trail
+var auditTrail = trail{
+	listeners: []chan<- LogEntry{},
+}
+
+var guard sync.Mutex
 
 func SetAuditFile(file string) {
+	guard.Lock()
+	defer guard.Unlock()
+
 	events := eventlog.Ticker{Filename: file, MaxSize: 10}
 	logger := log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
 	rotate := make(chan os.Signal, 1)
@@ -43,18 +50,29 @@ func SetAuditFile(file string) {
 		}
 	}()
 
-	auditTrail = &trail{
-		logger: logger,
+	auditTrail.logger = logger
+}
+
+func AddListener(listener chan<- LogEntry) {
+	guard.Lock()
+	defer guard.Unlock()
+
+	if listener != nil {
+		for _, l := range auditTrail.listeners {
+			if l == listener {
+				return
+			}
+		}
+
+		auditTrail.listeners = append(auditTrail.listeners, listener)
 	}
 }
 
 func Write(entry LogEntry) {
-	if auditTrail != nil {
-		auditTrail.Write(entry)
-	}
+	auditTrail.Write(entry)
 }
 
-func (l *trail) Write(entry LogEntry) {
+func (t *trail) Write(entry LogEntry) {
 	var logmsg string
 	if info, err := json.Marshal(entry.Info); err == nil {
 		logmsg = fmt.Sprintf("%-10v %-10v %-10v %s", entry.UID, entry.Module, entry.Operation, info)
@@ -62,9 +80,13 @@ func (l *trail) Write(entry LogEntry) {
 		logmsg = fmt.Sprintf("%-10v %-10v %-10v %v", entry.UID, entry.Module, entry.Operation, entry.Info)
 	}
 
-	if l.logger != nil {
-		l.logger.Printf("%s", logmsg)
+	if t.logger == nil {
+		t.logger.Printf("%s", logmsg)
 	} else {
 		log.Printf("%s", logmsg)
+	}
+
+	for _, l := range t.listeners {
+		l <- entry
 	}
 }

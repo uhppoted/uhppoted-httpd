@@ -106,6 +106,8 @@ function object (o) {
     group(o)
   } else if (/^0\.5\..*$/.test(oid)) {
     event(o)
+  } else if (/^0\.6\..*$/.test(oid)) {
+    logs(o)
   }
 }
 
@@ -631,6 +633,57 @@ function event (o) {
   })
 }
 
+function logs (o) {
+  const oid = o.OID
+
+  if (oid === '0.6.0.1') {
+    DB.tables.logs.first = o.value
+    return
+  }
+
+  if (oid === '0.6.0.2') {
+    DB.tables.logs.last = o.value
+    return
+  }
+
+  if (/^0\.6\.[1-9][0-9]*$/.test(oid)) {
+    if (DB.logs().has(oid)) {
+      const record = DB.logs().get(oid)
+      record.status = o.value
+      record.mark = 0
+      return
+    }
+
+    DB.logs().set(oid, {
+      OID: oid,
+      timestamp: '',
+      status: o.value,
+      mark: 0
+    })
+
+    return
+  }
+
+  DB.logs().forEach((v, k) => {
+    if (oid.startsWith(k)) {
+      // INTERIM HACK
+      if (v.status === 'new') {
+        v.status = 'unknown'
+      }
+
+      switch (oid) {
+        case k:
+          v.status = o.value
+          break
+
+        case k + '.1':
+          v.timestamp = o.value
+          break
+      }
+    }
+  })
+}
+
 function mark (tag) {
   DB.controllers.forEach(v => {
     v.mark += 1
@@ -649,6 +702,10 @@ function mark (tag) {
   })
 
   DB.events().forEach(v => {
+    v.mark += 1
+  })
+
+  DB.logs().forEach(v => {
     v.mark += 1
   })
 }
@@ -681,6 +738,12 @@ function sweep (tag) {
   DB.events().forEach((v, k) => {
     if (v.mark >= 25 && v.status === 'deleted') {
       DB.events().delete(k)
+    }
+  })
+
+  DB.logs().forEach((v, k) => {
+    if (v.mark >= 25 && v.status === 'deleted') {
+      DB.logs().delete(k)
     }
   })
 }

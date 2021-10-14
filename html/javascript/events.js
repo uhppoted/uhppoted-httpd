@@ -123,8 +123,8 @@ function add (oid) {
     }
 
     const fields = [
-      { suffix: 'timestamp', oid: `${oid}.3`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
-      { suffix: 'deviceID', oid: `${oid}.1`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
+      { suffix: 'timestamp', oid: `${oid}.1`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
+      { suffix: 'deviceID', oid: `${oid}.2`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
       { suffix: 'device', oid: `${oid}.10`, selector: 'td input.device', flag: 'td img.device' },
       { suffix: 'eventType', oid: `${oid}.4`, selector: 'td input.eventType', flag: 'td img.eventType' },
       { suffix: 'doorid', oid: `${oid}.5`, selector: 'td input.doorid', flag: 'td img.doorid' },
@@ -167,8 +167,8 @@ function updateFromDB (oid, record) {
     return
   }
 
-  const timestamp = row.querySelector(`[data-oid="${oid}.3"]`)
-  const deviceID = row.querySelector(`[data-oid="${oid}.1"]`)
+  const timestamp = row.querySelector(`[data-oid="${oid}.1"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}.2"]`)
   const device = row.querySelector(`[data-oid="${oid}.10"]`)
   const eventType = row.querySelector(`[data-oid="${oid}.4"]`)
   const doorid = row.querySelector(`[data-oid="${oid}.5"]`)

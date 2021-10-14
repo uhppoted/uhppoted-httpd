@@ -32,9 +32,11 @@ func (l LogEntry) IsDeleted() bool {
 }
 
 func (l *LogEntry) AsObjects() []interface{} {
+	timestamp := l.Timestamp.Format(time.RFC3339)
+
 	objects := []interface{}{
 		catalog.NewObject(l.OID, types.StatusOk),
-		catalog.NewObject2(l.OID, LogTimestamp, l.Timestamp),
+		catalog.NewObject2(l.OID, LogTimestamp, timestamp),
 	}
 
 	return objects
