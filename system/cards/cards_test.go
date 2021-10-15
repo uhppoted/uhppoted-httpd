@@ -12,8 +12,8 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-var hagrid = cardholder("C01", "Hagrid", 6514231)
-var dobby = cardholder("C02", "Dobby", 1234567, "G05")
+var hagrid = makeCard("0.3.1", "Hagrid", 6514231)
+var dobby = makeCard("0.3.2", "Dobby", 1234567, "G05")
 
 type stub struct {
 	write func(e audit.LogEntry)
@@ -78,7 +78,7 @@ func date(s string) *types.Date {
 	return &d
 }
 
-func dbx(list ...Card) *Cards {
+func makeCards(list ...Card) *Cards {
 	p := Cards{
 		Cards: map[catalog.OID]*Card{},
 	}
@@ -97,7 +97,7 @@ func group(id string) types.Group {
 	}
 }
 
-func cardholder(id, name string, card uint32, groups ...string) Card {
+func makeCard(id, name string, card uint32, groups ...string) Card {
 	n := types.Name(name)
 	c := types.Card(card)
 

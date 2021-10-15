@@ -1,13 +1,12 @@
 package cards
 
 import (
-//	"encoding/json"
-//	"testing"
-
-//	"github.com/uhppoted/uhppoted-httpd/audit"
+	//	"encoding/json"
+	"testing"
+	//	"github.com/uhppoted/uhppoted-httpd/audit"
 )
 
-// func TestCardHolderAdd(t *testing.T) {
+// func TestCardAdd(t *testing.T) {
 // 	dbt := dbx(hagrid)
 // 	final := dbx(hagrid, dobby)
 //
@@ -28,7 +27,7 @@ import (
 //
 // 	expected := result{
 // 		Updated: []interface{}{
-// 			cardholder("C02", "Dobby", 1234567, "G05"),
+// 			makeCard("C02", "Dobby", 1234567, "G05"),
 // 		},
 // 	}
 //
@@ -270,65 +269,37 @@ import (
 //	}
 //}
 
-//func TestDuplicateCardNumberUpdate(t *testing.T) {
-//	dbt := dbx(hagrid, dobby)
-//	final := dbx(hagrid, dobby)
-//
-//	rq := map[string]interface{}{
-//		"cardholders": []map[string]interface{}{
-//			map[string]interface{}{
-//				"id":   "C01",
-//				"card": 1234567,
-//			},
-//		},
-//	}
-//
-//	r, err := dbt.Post(rq, nil)
-//	if err == nil {
-//		t.Errorf("Expected error updating DB, got %v", err)
-//	}
-//
-//	if r != nil {
-//		t.Errorf("Incorrect return value: expected:%#v, got:%#v", nil, r)
-//	}
-//
-//	compareDB(dbt, final, t)
-//}
+func TestDuplicateCardNumberUpdate(t *testing.T) {
+	cards := makeCards(hagrid, dobby)
 
-// func TestCardHolderNumberSwap(t *testing.T) {
-// 	dbt := dbx(hagrid, dobby)
-// 	final := dbx(cardholder("C01", "Hagrid", 1234567), cardholder("C02", "Dobby", 6514231, "G05"))
-//
-// 	rq := map[string]interface{}{
-// 		"cardholders": []map[string]interface{}{
-// 			map[string]interface{}{
-// 				"id":   "C01",
-// 				"name": "Hagrid",
-// 				"card": 1234567,
-// 			},
-// 			map[string]interface{}{
-// 				"id":   "C02",
-// 				"name": "Dobby",
-// 				"card": 6514231,
-// 			},
-// 		},
-// 	}
-//
-// 	expected := result{
-// 		Updated: []interface{}{
-// 			cardholder("C01", "Hagrid", 1234567),
-// 			cardholder("C02", "Dobby", 6514231, "G05"),
-// 		},
-// 	}
-//
-// 	r, err := dbt.Post(rq, nil)
-// 	if err != nil {
-// 		t.Fatalf("Unexpected error updating DB: %v", err)
-// 	}
-//
-// 	compare(r, expected, t)
-// 	compareDB(dbt, final, t)
-// }
+	_, err := cards.UpdateByOID(nil, "0.3.1.2", "1234567")
+	if err != nil {
+		t.Errorf("Unexpected error updating cards (%v)", err)
+	}
+
+	if err := cards.Validate(); err == nil {
+		t.Errorf("Expected error updating cards, got %v", err)
+	}
+}
+
+func TestCardHolderNumberSwap(t *testing.T) {
+	cards := makeCards(hagrid, dobby)
+	final := makeCards(makeCard("0.3.1", "Hagrid", 1234567), makeCard("0.3.2", "Dobby", 6514231, "G05"))
+
+	if _, err := cards.UpdateByOID(nil, "0.3.1.2", "1234567"); err != nil {
+		t.Errorf("Unexpected error updating cards (%v)", err)
+	}
+
+	if _, err := cards.UpdateByOID(nil, "0.3.2.2", "6514231"); err != nil {
+		t.Errorf("Unexpected error updating cards (%v)", err)
+	}
+
+	if err := cards.Validate(); err != nil {
+		t.Errorf("Unexpected error updating cards (%v)", err)
+	}
+
+	compareDB(cards, final, t)
+}
 
 // func TestCardHolderDelete(t *testing.T) {
 // 	dbt := dbx(hagrid, dobby)

@@ -80,7 +80,7 @@ func (t *trail) Write(entry LogEntry) {
 		logmsg = fmt.Sprintf("%-10v %-10v %-10v %v", entry.UID, entry.Module, entry.Operation, entry.Info)
 	}
 
-	if t.logger == nil {
+	if t.logger != nil {
 		t.logger.Printf("%s", logmsg)
 	} else {
 		log.Printf("%s", logmsg)
