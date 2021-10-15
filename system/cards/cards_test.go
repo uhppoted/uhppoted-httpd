@@ -78,9 +78,9 @@ func date(s string) *types.Date {
 	return &d
 }
 
-func dbx(list ...CardHolder) *Cards {
+func dbx(list ...Card) *Cards {
 	p := Cards{
-		Cards: map[catalog.OID]*CardHolder{},
+		Cards: map[catalog.OID]*Card{},
 	}
 
 	for _, c := range list {
@@ -97,11 +97,11 @@ func group(id string) types.Group {
 	}
 }
 
-func cardholder(id, name string, card uint32, groups ...string) CardHolder {
+func cardholder(id, name string, card uint32, groups ...string) Card {
 	n := types.Name(name)
 	c := types.Card(card)
 
-	cardholder := CardHolder{
+	cardholder := Card{
 		OID:    catalog.OID(id),
 		Name:   &n,
 		Card:   &c,

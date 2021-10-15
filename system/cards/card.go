@@ -13,7 +13,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type CardHolder struct {
+type Card struct {
 	OID    catalog.OID
 	Name   *types.Name
 	Card   *types.Card
@@ -34,7 +34,7 @@ const CardGroups = catalog.CardGroups
 
 var created = time.Now()
 
-func (c CardHolder) String() string {
+func (c Card) String() string {
 	name := "-"
 	number := "-"
 
@@ -49,7 +49,7 @@ func (c CardHolder) String() string {
 	return fmt.Sprintf("%v (%v)", number, name)
 }
 
-func (c *CardHolder) IsValid() bool {
+func (c *Card) IsValid() bool {
 	if c != nil {
 		if c.Name != nil && *c.Name != "" {
 			return true
@@ -63,7 +63,7 @@ func (c *CardHolder) IsValid() bool {
 	return false
 }
 
-func (c *CardHolder) IsDeleted() bool {
+func (c *Card) IsDeleted() bool {
 	if c != nil && c.deleted != nil {
 		return true
 	}
@@ -71,7 +71,7 @@ func (c *CardHolder) IsDeleted() bool {
 	return false
 }
 
-func (c *CardHolder) AsObjects() []interface{} {
+func (c *Card) AsObjects() []interface{} {
 	status := types.StatusOk
 	created := c.Created.Format("2006-01-02 15:04:05")
 	name := c.Name
@@ -110,7 +110,7 @@ func (c *CardHolder) AsObjects() []interface{} {
 	return objects
 }
 
-func (c *CardHolder) AsRuleEntity() interface{} {
+func (c *Card) AsRuleEntity() interface{} {
 	type entity struct {
 		Name   string
 		Number uint32
@@ -148,7 +148,7 @@ func (c *CardHolder) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -257,7 +257,7 @@ func (c *CardHolder) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 	return objects, nil
 }
 
-func (c CardHolder) GetName() string {
+func (c Card) GetName() string {
 	if c.Name != nil {
 		return string(*c.Name)
 	}
@@ -265,7 +265,7 @@ func (c CardHolder) GetName() string {
 	return ""
 }
 
-func (c CardHolder) serialize() ([]byte, error) {
+func (c Card) serialize() ([]byte, error) {
 	record := struct {
 		OID     catalog.OID   `json:"OID"`
 		Name    string        `json:"name,omitempty"`
@@ -301,7 +301,7 @@ func (c CardHolder) serialize() ([]byte, error) {
 	return json.Marshal(record)
 }
 
-func (c *CardHolder) deserialize(bytes []byte) error {
+func (c *Card) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
@@ -345,7 +345,7 @@ func (c *CardHolder) deserialize(bytes []byte) error {
 	return nil
 }
 
-func (c *CardHolder) clone() *CardHolder {
+func (c *Card) clone() *Card {
 	name := c.Name.Copy()
 	card := c.Card.Copy()
 	var groups = map[catalog.OID]bool{}
@@ -354,7 +354,7 @@ func (c *CardHolder) clone() *CardHolder {
 		groups[gid] = g
 	}
 
-	replicant := &CardHolder{
+	replicant := &Card{
 		OID:    c.OID,
 		Name:   name,
 		Card:   card,
@@ -369,10 +369,10 @@ func (c *CardHolder) clone() *CardHolder {
 	return replicant
 }
 
-func (c CardHolder) stash() {
+func (c Card) stash() {
 }
 
-func (c *CardHolder) log(auth auth.OpAuth, operation string, oid catalog.OID, field string, current, value interface{}) {
+func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field string, current, value interface{}) {
 	type info struct {
 		OID     string `json:"OID"`
 		Card    string `json:"card"`

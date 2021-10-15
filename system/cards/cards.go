@@ -16,7 +16,7 @@ import (
 )
 
 type Cards struct {
-	Cards map[catalog.OID]*CardHolder `json:"cardholders"`
+	Cards map[catalog.OID]*Card `json:"cardholders"`
 	file  string
 }
 
@@ -31,7 +31,7 @@ var guard sync.RWMutex
 
 func NewCards() Cards {
 	return Cards{
-		Cards: map[catalog.OID]*CardHolder{},
+		Cards: map[catalog.OID]*Card{},
 	}
 }
 
@@ -53,7 +53,7 @@ func (cc *Cards) Load(file string) error {
 	}
 
 	for _, v := range blob.Cards {
-		var c CardHolder
+		var c Card
 		if err := c.deserialize(v); err == nil {
 			if _, ok := cc.Cards[c.OID]; ok {
 				return fmt.Errorf("card '%v': duplicate OID (%v)", c.Card, c.OID)
@@ -136,7 +136,7 @@ func (cc *Cards) Stash() {
 
 func (cc *Cards) Clone() Cards {
 	shadow := Cards{
-		Cards: map[catalog.OID]*CardHolder{},
+		Cards: map[catalog.OID]*Card{},
 		file:  cc.file,
 	}
 
@@ -166,7 +166,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([
 	objects := []interface{}{}
 
 	if oid == "<new>" {
-		if c, err := cc.add(auth, CardHolder{}); err != nil {
+		if c, err := cc.add(auth, Card{}); err != nil {
 			return nil, err
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' card")
@@ -211,7 +211,7 @@ func (cc *Cards) AsObjects() []interface{} {
 	return objects
 }
 
-func (cc *Cards) Lookup(card uint32) *CardHolder {
+func (cc *Cards) Lookup(card uint32) *Card {
 	if card != 0 {
 		for _, c := range cc.Cards {
 			if c.Card != nil && uint32(*c.Card) == card {
@@ -223,7 +223,7 @@ func (cc *Cards) Lookup(card uint32) *CardHolder {
 	return nil
 }
 
-func (cc *Cards) add(auth auth.OpAuth, c CardHolder) (*CardHolder, error) {
+func (cc *Cards) add(auth auth.OpAuth, c Card) (*Card, error) {
 	oid := catalog.NewCard()
 
 	record := c.clone()

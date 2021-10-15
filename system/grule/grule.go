@@ -15,7 +15,7 @@ import (
 )
 
 type Rules interface {
-	Eval(cards.CardHolder, groups.Groups, doors.Doors) ([]doors.Door, []doors.Door, error)
+	Eval(cards.Card, groups.Groups, doors.Doors) ([]doors.Door, []doors.Door, error)
 }
 
 type rules struct {
@@ -76,7 +76,7 @@ func NewGrule(library *ast.KnowledgeLibrary) (*rules, error) {
 	}, nil
 }
 
-func (r *rules) Eval(ch cards.CardHolder, gg groups.Groups, dd doors.Doors) ([]doors.Door, []doors.Door, error) {
+func (r *rules) Eval(ch cards.Card, gg groups.Groups, dd doors.Doors) ([]doors.Door, []doors.Door, error) {
 	if r != nil {
 		p := permissions{
 			allowed:   []string{},
@@ -137,7 +137,7 @@ func (r *rules) Eval(ch cards.CardHolder, gg groups.Groups, dd doors.Doors) ([]d
 	return nil, nil, nil
 }
 
-func makeCard(ch cards.CardHolder, groups groups.Groups) *card {
+func makeCard(ch cards.Card, groups groups.Groups) *card {
 	cardNumber := uint32(0)
 	if ch.Card != nil {
 		cardNumber = uint32(*ch.Card)
