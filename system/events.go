@@ -10,7 +10,7 @@ func (f *callback) Append(deviceID uint32, recent []uhppoted.Event) {
 		door := ""
 		card := ""
 
-		if c := sys.controllers.Lookup(e.DeviceID); c != nil {
+		if c := sys.controllers.Find(e.DeviceID); c != nil {
 			if c.Name != nil {
 				device = string(*c.Name)
 			}

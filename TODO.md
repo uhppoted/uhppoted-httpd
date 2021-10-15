@@ -41,6 +41,7 @@
         - [ ] move all _stringify's_ to OID/object/somesuch
 
 #### Events
+  - [ ] (?) Rework to use channels
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
         - [ ] Realize e.g. two pages and repopulate OIDs
@@ -65,8 +66,10 @@
 #### Groups
 
 #### Logs
-  - [x] Copy audit events to 'logs'
-  - [ ] Add 'item' to log entry
+  - [x] Add 'uid' to log entry
+  - [x] Add 'module' to log entry
+  - [ ] Add 'field' to log entry
+  - [ ] Add 'details' to log entry
   - [ ] Save
   - [ ] Load
 

@@ -4,22 +4,42 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type LogEntry struct {
-	OID       catalog.OID `json:"OID"`
-	Timestamp time.Time   `json:"timestamp"`
+	OID        catalog.OID `json:"OID"`
+	Timestamp  time.Time   `json:"timestamp"`
+	UID        string      `json:"uid"`
+	Module     interface{} `json:"module"`
+	ModuleID   interface{} `json:"module-id"`
+	ModuleName interface{} `json:"module-name"`
 }
 
 const LogTimestamp = catalog.LogTimestamp
+const LogUID = catalog.LogUID
+const LogModule = catalog.LogModule
+const LogModuleID = catalog.LogModuleID
+const LogModuleName = catalog.LogModuleName
 
-func NewLogEntry(oid catalog.OID, timestamp time.Time) LogEntry {
+const ControllerName = catalog.ControllerName
+const ControllerDeviceID = catalog.ControllerDeviceID
+
+func NewLogEntry(oid catalog.OID, timestamp time.Time, entry audit.LogEntry, lookup func(catalog.OID) interface{}) LogEntry {
+	module := "controller"
+	id := lookup(catalog.OID(entry.Module).Append(ControllerDeviceID))
+	name := lookup(catalog.OID(entry.Module).Append(ControllerName))
+
 	return LogEntry{
-		OID:       oid,
-		Timestamp: timestamp,
+		OID:        oid,
+		Timestamp:  timestamp,
+		UID:        entry.UID,
+		Module:     module,
+		ModuleID:   id,
+		ModuleName: name,
 	}
 }
 
@@ -32,11 +52,14 @@ func (l LogEntry) IsDeleted() bool {
 }
 
 func (l *LogEntry) AsObjects() []interface{} {
-	timestamp := l.Timestamp.Format(time.RFC3339)
 
 	objects := []interface{}{
 		catalog.NewObject(l.OID, types.StatusOk),
-		catalog.NewObject2(l.OID, LogTimestamp, timestamp),
+		catalog.NewObject2(l.OID, LogTimestamp, l.Timestamp.Format(time.RFC3339)),
+		catalog.NewObject2(l.OID, LogUID, l.UID),
+		catalog.NewObject2(l.OID, LogModule, l.Module),
+		catalog.NewObject2(l.OID, LogModuleID, l.ModuleID),
+		catalog.NewObject2(l.OID, LogModuleName, l.ModuleName),
 	}
 
 	return objects

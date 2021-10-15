@@ -1,6 +1,7 @@
 package catalog
 
 const SystemOID OID = "0.1"
+const ControllersOID OID = "0.1.1.2"
 const DoorsOID OID = "0.2"
 const CardsOID OID = "0.3"
 const GroupsOID OID = "0.4"
@@ -79,3 +80,7 @@ const LogsFirst = ".0.1"
 const LogsLast = ".0.2"
 
 const LogTimestamp Suffix = ".1"
+const LogUID Suffix = ".2"
+const LogModule Suffix = ".3"
+const LogModuleID Suffix = ".4"
+const LogModuleName Suffix = ".5"

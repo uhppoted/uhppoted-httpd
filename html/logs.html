@@ -64,6 +64,8 @@
               <thead>
                 <tr>
                   <th class="colheader rowheader timestamp">Timestamp</th>
+                  <th class="colheader uid">User ID</th>
+                  <th class="colheader module" colspan="3">Module</th>
                   <th class="colheader padding"></th>
                 </tr>
               </thead>
@@ -79,7 +81,7 @@
             </table>
 
             <template id="entry">
-                <td class="rowheader" style="display:flex; flex-direction:row;">
+                <td class="rowheader">
                   <input class="field timestamp" 
                          type="text" 
                          value="" 
@@ -90,6 +92,48 @@
                          readonly />
                 </td>
 
+                <td>
+                  <input class="field uid" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field module" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+
+                <td>
+                  <input class="field moduleID" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field moduleName" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
                 <!-- 'padding' column (CSS: tr::last-child) -->
                 <td class="padding"></td>
             </template>

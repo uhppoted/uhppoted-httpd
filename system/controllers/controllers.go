@@ -269,12 +269,22 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 	return objects, nil
 }
 
-func (cc *ControllerSet) Lookup(deviceID uint32) *Controller {
+func (cc *ControllerSet) Find(deviceID uint32) *Controller {
 	if deviceID != 0 {
 		for _, c := range cc.Controllers {
 			if c.DeviceID != nil && *c.DeviceID == deviceID {
 				return c
 			}
+		}
+	}
+
+	return nil
+}
+
+func (cc *ControllerSet) Lookup(oid catalog.OID) interface{} {
+	for _, c := range cc.Controllers {
+		if oid.HasPrefix(c.OID) {
+			return c.Lookup(oid)
 		}
 	}
 

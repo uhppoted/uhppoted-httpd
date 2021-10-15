@@ -123,12 +123,16 @@ function add (oid) {
     }
 
     const fields = [
-      { suffix: 'timestamp', oid: `${oid}.1`, selector: 'td input.timestamp', flag: 'td img.timestamp' }
+      { suffix: 'timestamp', oid: `${oid}.1`, selector: 'td input.timestamp' },
+      { suffix: 'uid', oid: `${oid}.2`, selector: 'td input.uid' },
+      { suffix: 'module', oid: `${oid}.3`, selector: 'td input.module' },
+      { suffix: 'moduleID', oid: `${oid}.4`, selector: 'td input.moduleID' },
+      { suffix: 'moduleName', oid: `${oid}.5`, selector: 'td input.moduleName' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
+      const flag = row.querySelector(`td img.${f.suffix}`)
 
       if (field) {
         field.id = uuid + '-' + f.suffix
@@ -158,10 +162,18 @@ function updateFromDB (oid, record) {
   }
 
   const timestamp = row.querySelector(`[data-oid="${oid}.1"]`)
+  const uid = row.querySelector(`[data-oid="${oid}.2"]`)
+  const module = row.querySelector(`[data-oid="${oid}.3"]`)
+  const moduleID = row.querySelector(`[data-oid="${oid}.4"]`)
+  const moduleName = row.querySelector(`[data-oid="${oid}.5"]`)
 
   row.dataset.status = record.status
 
   update(timestamp, format(record.timestamp))
+  update(uid, record.uid)
+  update(module, record.module.type)
+  update(moduleID, record.module.ID)
+  update(moduleName, record.module.name.toLowerCase())
 
   return row
 }

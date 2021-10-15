@@ -40,3 +40,23 @@ td input.timestamp {
   font-size: 0.88em;
 }
 
+td input.uid {
+  width: 80px;
+}
+
+td input.module {
+  width: 80px;
+  font-variant: small-caps;
+  font-size: 1.1em;
+}
+
+td input.moduleID {
+  width: 72px;
+  font-size: 0.8em;
+}
+
+td input.moduleName {
+  width: 72px;
+  font-variant: small-caps;
+  font-size: 1.1em;
+}

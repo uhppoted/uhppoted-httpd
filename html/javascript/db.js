@@ -657,6 +657,12 @@ function logs (o) {
     DB.logs().set(oid, {
       OID: oid,
       timestamp: '',
+      uid: '',
+      module: {
+        type: '',
+        ID: '',
+        name: ''
+      },
       status: o.value,
       mark: 0
     })
@@ -678,6 +684,22 @@ function logs (o) {
 
         case k + '.1':
           v.timestamp = o.value
+          break
+
+        case k + '.2':
+          v.uid = o.value
+          break
+
+        case k + '.3':
+          v.module.type = o.value
+          break
+
+        case k + '.4':
+          v.module.ID = o.value
+          break
+
+        case k + '.5':
+          v.module.name = o.value
           break
       }
     }

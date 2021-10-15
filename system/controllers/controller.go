@@ -63,68 +63,61 @@ const ControllerDoor2 = catalog.ControllerDoor2
 const ControllerDoor3 = catalog.ControllerDoor3
 const ControllerDoor4 = catalog.ControllerDoor4
 
-func (c *Controller) deserialize(bytes []byte) error {
-	record := struct {
-		OID      catalog.OID      `json:"OID"`
-		Name     *types.Name      `json:"name,omitempty"`
-		DeviceID *uint32          `json:"device-id,omitempty"`
-		Address  *core.Address    `json:"address,omitempty"`
-		Doors    map[uint8]string `json:"doors"`
-		TimeZone *string          `json:"timezone,omitempty"`
-		Created  time.Time        `json:"created"`
-	}{}
+func (c *Controller) Lookup(oid catalog.OID) interface{} {
+	switch oid {
+	case c.OID.Append(ControllerCreated):
+		return c.created
 
-	if err := json.Unmarshal(bytes, &record); err != nil {
-		return err
-	}
+	case c.OID.Append(ControllerName):
+		return c.Name
 
-	c.OID = record.OID
-	c.Name = record.Name
-	c.DeviceID = record.DeviceID
-	c.IP = record.Address
-	c.Doors = map[uint8]string{1: "", 2: "", 3: "", 4: ""}
-	c.TimeZone = record.TimeZone
-	c.created = record.Created
+	case c.OID.Append(ControllerDeviceID):
+		return c.DeviceID
 
-	for k, v := range record.Doors {
-		c.Doors[k] = v
+		//	case c.OID.Append(ControllerAddress):
+		//		return
+		//
+		//	case c.OID.Append(ControllerAddressConfigured):
+		//		return
+		//
+		//	case c.OID.Append(ControllerAddressStatus):
+		//		return
+		//
+		//	case c.OID.Append(ControllerDateTime):
+		//		return
+		//
+		//	case c.OID.Append(ControllerDateTimeSystem):
+		//		return
+		//
+		//	case c.OID.Append(ControllerDateTimeStatus):
+		//		return
+		//
+		//	case c.OID.Append(ControllerCards):
+		//		return
+		//
+		//	case c.OID.Append(ControllerCardsStatus):
+		//		return
+		//
+		//	case c.OID.Append(ControllerEvents):
+		//		return
+		//
+		//	case c.OID.Append(ControllerEventsStatus):
+		//		return
+		//
+		//	case c.OID.Append(ControllerDoor1):
+		//		return
+		//
+		//	case c.OID.Append(ControllerDoor2):
+		//		return
+		//
+		//	case c.OID.Append(ControllerDoor3):
+		//		return
+		//
+		//	case c.OID.Append(ControllerDoor4):
+		//		return
 	}
 
 	return nil
-}
-
-func (c *Controller) serialize() ([]byte, error) {
-	if c == nil || c.deleted != nil || c.unconfigured {
-		return nil, nil
-	}
-
-	if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
-		return nil, nil
-	}
-
-	record := struct {
-		OID      catalog.OID      `json:"OID"`
-		Name     *types.Name      `json:"name,omitempty"`
-		DeviceID *uint32          `json:"device-id,omitempty"`
-		Address  *core.Address    `json:"address,omitempty"`
-		Doors    map[uint8]string `json:"doors"`
-		TimeZone *string          `json:"timezone,omitempty"`
-		Created  time.Time        `json:"created"`
-	}{
-		OID:      c.OID,
-		Name:     c.Name,
-		DeviceID: c.DeviceID,
-		Address:  c.IP,
-		Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
-		TimeZone: c.TimeZone,
-		Created:  c.created,
-	}
-
-	for k, v := range c.Doors {
-		record.Doors[k] = v
-	}
-
-	return json.MarshalIndent(record, "", "  ")
 }
 
 func (c *Controller) AsObjects() []interface{} {
@@ -498,6 +491,70 @@ func (c *Controller) Door(did uint8) (string, bool) {
 	}
 
 	return "", false
+}
+
+func (c *Controller) deserialize(bytes []byte) error {
+	record := struct {
+		OID      catalog.OID      `json:"OID"`
+		Name     *types.Name      `json:"name,omitempty"`
+		DeviceID *uint32          `json:"device-id,omitempty"`
+		Address  *core.Address    `json:"address,omitempty"`
+		Doors    map[uint8]string `json:"doors"`
+		TimeZone *string          `json:"timezone,omitempty"`
+		Created  time.Time        `json:"created"`
+	}{}
+
+	if err := json.Unmarshal(bytes, &record); err != nil {
+		return err
+	}
+
+	c.OID = record.OID
+	c.Name = record.Name
+	c.DeviceID = record.DeviceID
+	c.IP = record.Address
+	c.Doors = map[uint8]string{1: "", 2: "", 3: "", 4: ""}
+	c.TimeZone = record.TimeZone
+	c.created = record.Created
+
+	for k, v := range record.Doors {
+		c.Doors[k] = v
+	}
+
+	return nil
+}
+
+func (c *Controller) serialize() ([]byte, error) {
+	if c == nil || c.deleted != nil || c.unconfigured {
+		return nil, nil
+	}
+
+	if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+		return nil, nil
+	}
+
+	record := struct {
+		OID      catalog.OID      `json:"OID"`
+		Name     *types.Name      `json:"name,omitempty"`
+		DeviceID *uint32          `json:"device-id,omitempty"`
+		Address  *core.Address    `json:"address,omitempty"`
+		Doors    map[uint8]string `json:"doors"`
+		TimeZone *string          `json:"timezone,omitempty"`
+		Created  time.Time        `json:"created"`
+	}{
+		OID:      c.OID,
+		Name:     c.Name,
+		DeviceID: c.DeviceID,
+		Address:  c.IP,
+		Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
+		TimeZone: c.TimeZone,
+		Created:  c.created,
+	}
+
+	for k, v := range c.Doors {
+		record.Doors[k] = v
+	}
+
+	return json.MarshalIndent(record, "", "  ")
 }
 
 func (c *Controller) clone() *Controller {

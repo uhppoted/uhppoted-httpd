@@ -107,7 +107,7 @@ func Init(cfg config.Config, conf string) error {
 	go func() {
 		for {
 			entry := <-listener
-			sys.logs.Received(entry)
+			sys.logs.Received(entry, lookup)
 		}
 	}()
 
@@ -251,4 +251,12 @@ func info(msg string) {
 
 func warn(err error) {
 	log.Printf("ERROR %v", err)
+}
+
+func lookup(oid catalog.OID) interface{} {
+	if oid.HasPrefix(catalog.ControllersOID) {
+		return sys.controllers.Lookup(oid)
+	}
+
+	return "?????"
 }
