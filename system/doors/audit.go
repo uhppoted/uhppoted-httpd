@@ -1,6 +1,8 @@
 package doors
 
 import (
+	"fmt"
+
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
@@ -14,4 +16,8 @@ type info struct {
 
 func (i info) Field() string {
 	return i.FieldName
+}
+
+func (i info) Details() string {
+	return fmt.Sprintf("from '%v' to '%v'", i.Current, i.Updated)
 }

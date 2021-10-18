@@ -1,6 +1,8 @@
 package groups
 
-import ()
+import (
+	"fmt"
+)
 
 type info struct {
 	OID       string `json:"OID"`
@@ -12,4 +14,8 @@ type info struct {
 
 func (i info) Field() string {
 	return i.FieldName
+}
+
+func (i info) Details() string {
+	return fmt.Sprintf("from '%v' to '%v'", i.Current, i.Updated)
 }

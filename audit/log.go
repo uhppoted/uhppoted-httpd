@@ -20,6 +20,7 @@ type trail struct {
 
 type Info interface {
 	Field() string
+	Details() string
 }
 
 type LogEntry struct {

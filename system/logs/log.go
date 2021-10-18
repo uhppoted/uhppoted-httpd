@@ -19,6 +19,7 @@ type LogEntry struct {
 	ModuleID    interface{} `json:"module-id"`
 	ModuleName  interface{} `json:"module-name"`
 	ModuleField interface{} `json:"module-field"`
+	Details     interface{} `json:"details"`
 }
 
 const LogTimestamp = catalog.LogTimestamp
@@ -27,6 +28,7 @@ const LogModule = catalog.LogModule
 const LogModuleID = catalog.LogModuleID
 const LogModuleName = catalog.LogModuleName
 const LogModuleField = catalog.LogModuleField
+const LogDetails = catalog.LogDetails
 
 const ControllerName = catalog.ControllerName
 const ControllerDeviceID = catalog.ControllerDeviceID
@@ -36,6 +38,7 @@ func NewLogEntry(oid catalog.OID, timestamp time.Time, entry audit.LogEntry, loo
 	id := lookup(catalog.OID(entry.Module).Append(ControllerDeviceID))
 	name := lookup(catalog.OID(entry.Module).Append(ControllerName))
 	field := entry.Info.Field()
+	details := entry.Info.Details()
 
 	return LogEntry{
 		OID:         oid,
@@ -45,6 +48,7 @@ func NewLogEntry(oid catalog.OID, timestamp time.Time, entry audit.LogEntry, loo
 		ModuleID:    id,
 		ModuleName:  name,
 		ModuleField: field,
+		Details:     details,
 	}
 }
 
@@ -66,6 +70,7 @@ func (l *LogEntry) AsObjects() []interface{} {
 		catalog.NewObject2(l.OID, LogModuleID, l.ModuleID),
 		catalog.NewObject2(l.OID, LogModuleName, l.ModuleName),
 		catalog.NewObject2(l.OID, LogModuleField, l.ModuleField),
+		catalog.NewObject2(l.OID, LogDetails, l.Details),
 	}
 
 	return objects

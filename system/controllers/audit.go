@@ -1,6 +1,8 @@
 package controllers
 
-import ()
+import (
+	"fmt"
+)
 
 type lanInfo struct {
 	OID       string `json:"OID"`
@@ -14,6 +16,10 @@ func (i lanInfo) Field() string {
 	return i.FieldName
 }
 
+func (i lanInfo) Details() string {
+	return fmt.Sprintf("from '%v' to '%v'", i.Current, i.Updated)
+}
+
 type controllerInfo struct {
 	OID        string `json:"OID"`
 	Controller string `json:"interface"`
@@ -24,4 +30,8 @@ type controllerInfo struct {
 
 func (i controllerInfo) Field() string {
 	return i.FieldName
+}
+
+func (i controllerInfo) Details() string {
+	return fmt.Sprintf("updated %v from %v to %v", i.FieldName, i.Current, i.Updated)
 }

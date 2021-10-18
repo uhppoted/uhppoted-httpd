@@ -128,7 +128,8 @@ function add (oid) {
       { suffix: 'module', oid: `${oid}.3`, selector: 'td input.module' },
       { suffix: 'module-id', oid: `${oid}.4`, selector: 'td input.module-id' },
       { suffix: 'module-name', oid: `${oid}.5`, selector: 'td input.module-name' },
-      { suffix: 'module-field', oid: `${oid}.6`, selector: 'td input.module-field' }
+      { suffix: 'module-field', oid: `${oid}.6`, selector: 'td input.module-field' },
+      { suffix: 'details', oid: `${oid}.7`, selector: 'td input.details' }
     ]
 
     fields.forEach(f => {
@@ -168,6 +169,7 @@ function updateFromDB (oid, record) {
   const moduleID = row.querySelector(`[data-oid="${oid}.4"]`)
   const moduleName = row.querySelector(`[data-oid="${oid}.5"]`)
   const moduleField = row.querySelector(`[data-oid="${oid}.6"]`)
+  const details = row.querySelector(`[data-oid="${oid}.7"]`)
 
   row.dataset.status = record.status
 
@@ -177,6 +179,7 @@ function updateFromDB (oid, record) {
   update(moduleID, record.module.ID)
   update(moduleName, record.module.name.toLowerCase())
   update(moduleField, record.module.field.toLowerCase())
+  update(details, record.module.details)
 
   return row
 }

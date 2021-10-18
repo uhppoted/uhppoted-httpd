@@ -70,7 +70,7 @@
 
 #### Logs
   - [x] Add 'field' to log entry
-  - [ ] Add 'details' to log entry
+  - [x] Add 'details' to log entry
   - [ ] Commit audit trail after validate + save
   - [ ] Save
   - [ ] Load

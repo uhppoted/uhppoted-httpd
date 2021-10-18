@@ -114,9 +114,8 @@
 |    |      |- 0.6.1.1: <timestamp>                                          #       entry timestamp
 |    |      |- 0.6.1.2: <uid>                                                #       entry user ID
 |    |      |- 0.6.1.3: <module>                                             #       entry module type
-|    |      |- 0.6.1.4: <module-id>                                          #             module ID
-|    |      |- 0.6.1.5: <module-name>                                        #             module name
-|    |      |- 0.6.1.6: <module-field>                                       #             module field
-
-
+|    |      |- 0.6.1.4: <module-id>                                          #                    ID
+|    |      |- 0.6.1.5: <module-name>                                        #                    name
+|    |      |- 0.6.1.6: <module-field>                                       #                    field
+|    |      |- 0.6.1.7: <details>                                            #             details
 

@@ -65,8 +65,8 @@
                 <tr>
                   <th class="colheader rowheader timestamp">Timestamp</th>
                   <th class="colheader uid">User ID</th>
-                  <th class="colheader module" colspan="3">Module</th>
-                  <th class="colheader padding"></th>
+                  <th class="colheader module" colspan="4">Item</th>
+                  <th class="colheader details">Details</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -145,8 +145,17 @@
                          data-value="" 
                          readonly />
                 </td>
-                <!-- 'padding' column (CSS: tr::last-child) -->
-                <td class="padding"></td>
+
+                <td>
+                  <input class="field details" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
             </template>
 
           </div>
