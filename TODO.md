@@ -69,8 +69,16 @@
 #### Groups
 
 #### Logs
+  - [ ] Use OID from Info
+  - [ ] Update 'module' field everywhere
   - [x] Add 'field' to log entry
   - [x] Add 'details' to log entry
+  - [ ] Check log record for doors
+  - [ ] Check log record for groups
+  - [ ] Check log record for cards
+  - [ ] Check log record for LAN
+  - [ ] Check log records for 'add'
+  - [ ] Check log records for 'delete'
   - [ ] Commit audit trail after validate + save
   - [ ] Save
   - [ ] Load

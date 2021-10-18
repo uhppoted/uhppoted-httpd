@@ -33,5 +33,5 @@ func (i controllerInfo) Field() string {
 }
 
 func (i controllerInfo) Details() string {
-	return fmt.Sprintf("updated %v from %v to %v", i.FieldName, i.Current, i.Updated)
+	return fmt.Sprintf("Updated %v from %v to %v", i.FieldName, i.Current, i.Updated)
 }

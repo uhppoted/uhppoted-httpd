@@ -225,6 +225,9 @@ func (cc *Cards) Lookup(card uint32) *Card {
 
 func (cc *Cards) add(auth auth.OpAuth, c Card) (*Card, error) {
 	oid := catalog.NewCard()
+	if _, ok := cc.Cards[oid]; ok {
+		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
+	}
 
 	record := c.clone()
 	record.OID = oid
