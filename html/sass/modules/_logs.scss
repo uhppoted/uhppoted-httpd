@@ -14,6 +14,10 @@ div#logss table tfoot.hidden {
   display: none;
 }  
 
+th.uid {
+  white-space: nowrap;
+}
+
 td.ellipsis {
   text-align: center;
 }
@@ -42,6 +46,7 @@ td input.timestamp {
 
 td input.uid {
   width: 80px;
+  white-space: nowrap;
 }
 
 td input.module {
@@ -50,12 +55,18 @@ td input.module {
   font-size: 1.1em;
 }
 
-td input.moduleID {
+td input.module-id {
   width: 72px;
   font-size: 0.8em;
 }
 
-td input.moduleName {
+td input.module-name {
+  width: 72px;
+  font-variant: small-caps;
+  font-size: 1.1em;
+}
+
+td input.module-field {
   width: 72px;
   font-variant: small-caps;
   font-size: 1.1em;

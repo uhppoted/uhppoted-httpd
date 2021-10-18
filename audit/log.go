@@ -18,12 +18,16 @@ type trail struct {
 	listeners []chan<- LogEntry
 }
 
+type Info interface {
+	Field() string
+}
+
 type LogEntry struct {
 	Timestamp time.Time
 	UID       string
 	Module    string
 	Operation string
-	Info      interface{}
+	Info      Info
 }
 
 var auditTrail = trail{

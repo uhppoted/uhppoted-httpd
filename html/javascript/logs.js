@@ -126,8 +126,9 @@ function add (oid) {
       { suffix: 'timestamp', oid: `${oid}.1`, selector: 'td input.timestamp' },
       { suffix: 'uid', oid: `${oid}.2`, selector: 'td input.uid' },
       { suffix: 'module', oid: `${oid}.3`, selector: 'td input.module' },
-      { suffix: 'moduleID', oid: `${oid}.4`, selector: 'td input.moduleID' },
-      { suffix: 'moduleName', oid: `${oid}.5`, selector: 'td input.moduleName' }
+      { suffix: 'module-id', oid: `${oid}.4`, selector: 'td input.module-id' },
+      { suffix: 'module-name', oid: `${oid}.5`, selector: 'td input.module-name' },
+      { suffix: 'module-field', oid: `${oid}.6`, selector: 'td input.module-field' }
     ]
 
     fields.forEach(f => {
@@ -166,6 +167,7 @@ function updateFromDB (oid, record) {
   const module = row.querySelector(`[data-oid="${oid}.3"]`)
   const moduleID = row.querySelector(`[data-oid="${oid}.4"]`)
   const moduleName = row.querySelector(`[data-oid="${oid}.5"]`)
+  const moduleField = row.querySelector(`[data-oid="${oid}.6"]`)
 
   row.dataset.status = record.status
 
@@ -174,6 +176,7 @@ function updateFromDB (oid, record) {
   update(module, record.module.type)
   update(moduleID, record.module.ID)
   update(moduleName, record.module.name.toLowerCase())
+  update(moduleField, record.module.field.toLowerCase())
 
   return row
 }

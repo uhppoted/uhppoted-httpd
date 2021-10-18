@@ -661,7 +661,8 @@ function logs (o) {
       module: {
         type: '',
         ID: '',
-        name: ''
+        name: '',
+        field: ''
       },
       status: o.value,
       mark: 0
@@ -700,6 +701,10 @@ function logs (o) {
 
         case k + '.5':
           v.module.name = o.value
+          break
+
+        case k + '.6':
+          v.module.field = o.value
           break
       }
     }

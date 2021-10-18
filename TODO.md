@@ -1,5 +1,8 @@
 ## v0.7.x
 
+- [ ] Rename 'address' to 'endpoint'
+      - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
+
 ### IN PROGRESS
 
 - [ ] Server events in addition to/rather-than refresh
@@ -66,9 +69,7 @@
 #### Groups
 
 #### Logs
-  - [x] Add 'uid' to log entry
-  - [x] Add 'module' to log entry
-  - [ ] Add 'field' to log entry
+  - [x] Add 'field' to log entry
   - [ ] Add 'details' to log entry
   - [ ] Commit audit trail after validate + save
   - [ ] Save
@@ -82,6 +83,7 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 #### System
+      - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name
       - [ ] (?) Update interfaces.js to defer to tabular.js
             - [ ] rollback
             - [ ] commit

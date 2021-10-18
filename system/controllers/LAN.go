@@ -549,14 +549,6 @@ func (l LAN) stash() {
 }
 
 func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
-	type info struct {
-		OID       string `json:"OID"`
-		Interface string `json:"interface"`
-		Field     string `json:"field"`
-		Current   string `json:"current"`
-		Updated   string `json:"new"`
-	}
-
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -566,10 +558,10 @@ func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field str
 		UID:       uid,
 		Module:    stringify(OID),
 		Operation: operation,
-		Info: info{
+		Info: lanInfo{
 			OID:       stringify(OID),
 			Interface: "LAN",
-			Field:     field,
+			FieldName: field,
 			Current:   stringify(current),
 			Updated:   stringify(value),
 		},

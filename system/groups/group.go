@@ -250,14 +250,6 @@ func (g Group) stash() {
 }
 
 func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
-	type info struct {
-		OID     string `json:"OID"`
-		Group   string `json:"group"`
-		Field   string `json:"field"`
-		Current string `json:"current"`
-		Updated string `json:"new"`
-	}
-
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -268,11 +260,11 @@ func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field s
 		Module:    stringify(OID),
 		Operation: operation,
 		Info: info{
-			OID:     stringify(OID),
-			Group:   stringify(g.Name),
-			Field:   field,
-			Current: stringify(current),
-			Updated: stringify(value),
+			OID:       stringify(OID),
+			Group:     stringify(g.Name),
+			FieldName: field,
+			Current:   stringify(current),
+			Updated:   stringify(value),
 		},
 	}
 

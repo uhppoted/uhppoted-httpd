@@ -204,7 +204,7 @@ func (s *system) sweep() {
 	s.doors.Sweep(s.retention)
 }
 
-func (s *system) log(op string, info interface{}, auth auth.OpAuth) {
+func (s *system) log(op string, info audit.Info, auth auth.OpAuth) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()

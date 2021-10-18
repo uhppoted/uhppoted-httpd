@@ -1,7 +1,8 @@
 package logs
 
 import (
-	"encoding/json"
+	//	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
@@ -11,12 +12,13 @@ import (
 )
 
 type LogEntry struct {
-	OID        catalog.OID `json:"OID"`
-	Timestamp  time.Time   `json:"timestamp"`
-	UID        string      `json:"uid"`
-	Module     interface{} `json:"module"`
-	ModuleID   interface{} `json:"module-id"`
-	ModuleName interface{} `json:"module-name"`
+	OID         catalog.OID `json:"OID"`
+	Timestamp   time.Time   `json:"timestamp"`
+	UID         string      `json:"uid"`
+	Module      interface{} `json:"module"`
+	ModuleID    interface{} `json:"module-id"`
+	ModuleName  interface{} `json:"module-name"`
+	ModuleField interface{} `json:"module-field"`
 }
 
 const LogTimestamp = catalog.LogTimestamp
@@ -24,6 +26,7 @@ const LogUID = catalog.LogUID
 const LogModule = catalog.LogModule
 const LogModuleID = catalog.LogModuleID
 const LogModuleName = catalog.LogModuleName
+const LogModuleField = catalog.LogModuleField
 
 const ControllerName = catalog.ControllerName
 const ControllerDeviceID = catalog.ControllerDeviceID
@@ -32,14 +35,16 @@ func NewLogEntry(oid catalog.OID, timestamp time.Time, entry audit.LogEntry, loo
 	module := "controller"
 	id := lookup(catalog.OID(entry.Module).Append(ControllerDeviceID))
 	name := lookup(catalog.OID(entry.Module).Append(ControllerName))
+	field := entry.Info.Field()
 
 	return LogEntry{
-		OID:        oid,
-		Timestamp:  timestamp,
-		UID:        entry.UID,
-		Module:     module,
-		ModuleID:   id,
-		ModuleName: name,
+		OID:         oid,
+		Timestamp:   timestamp,
+		UID:         entry.UID,
+		Module:      module,
+		ModuleID:    id,
+		ModuleName:  name,
+		ModuleField: field,
 	}
 }
 
@@ -60,6 +65,7 @@ func (l *LogEntry) AsObjects() []interface{} {
 		catalog.NewObject2(l.OID, LogModule, l.Module),
 		catalog.NewObject2(l.OID, LogModuleID, l.ModuleID),
 		catalog.NewObject2(l.OID, LogModuleName, l.ModuleName),
+		catalog.NewObject2(l.OID, LogModuleField, l.ModuleField),
 	}
 
 	return objects
@@ -72,31 +78,33 @@ func (l *LogEntry) set(auth auth.OpAuth, oid catalog.OID, value string) ([]inter
 }
 
 func (l LogEntry) serialize() ([]byte, error) {
-	record := struct {
-		OID       catalog.OID `json:"OID"`
-		Timestamp time.Time   `json:"timestamp"`
-	}{
-		OID:       l.OID,
-		Timestamp: l.Timestamp,
-	}
-
-	return json.Marshal(record)
+	return nil, fmt.Errorf("NOT IMPLEMENTED")
+	//	record := struct {
+	//		OID       catalog.OID `json:"OID"`
+	//		Timestamp time.Time   `json:"timestamp"`
+	//	}{
+	//		OID:       l.OID,
+	//		Timestamp: l.Timestamp,
+	//	}
+	//
+	//	return json.Marshal(record)
 }
 
 func (l *LogEntry) deserialize(bytes []byte) error {
-	record := struct {
-		OID       catalog.OID `json:"OID"`
-		Timestamp time.Time   `json:"timestamp"`
-	}{}
-
-	if err := json.Unmarshal(bytes, &record); err != nil {
-		return err
-	}
-
-	l.OID = record.OID
-	l.Timestamp = record.Timestamp
-
-	return nil
+	return fmt.Errorf("NOT IMPLEMENTED")
+	//	record := struct {
+	//		OID       catalog.OID `json:"OID"`
+	//		Timestamp time.Time   `json:"timestamp"`
+	//	}{}
+	//
+	//	if err := json.Unmarshal(bytes, &record); err != nil {
+	//		return err
+	//	}
+	//
+	//	l.OID = record.OID
+	//	l.Timestamp = record.Timestamp
+	//
+	//	return nil
 }
 
 func (l LogEntry) clone() LogEntry {

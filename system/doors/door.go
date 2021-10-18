@@ -390,14 +390,6 @@ func (d *Door) lookup(suffix catalog.Suffix) interface{} {
 }
 
 func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
-	type info struct {
-		OID     catalog.OID `json:"OID"`
-		Door    string      `json:"door"`
-		Field   string      `json:"field"`
-		Current string      `json:"current"`
-		Updated string      `json:"new"`
-	}
-
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -408,11 +400,11 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 		Module:    stringify(OID),
 		Operation: operation,
 		Info: info{
-			OID:     OID,
-			Door:    stringify(d.Name),
-			Field:   field,
-			Current: stringify(current),
-			Updated: stringify(value),
+			OID:       OID,
+			Door:      stringify(d.Name),
+			FieldName: field,
+			Current:   stringify(current),
+			Updated:   stringify(value),
 		},
 	}
 

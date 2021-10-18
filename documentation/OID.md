@@ -116,6 +116,7 @@
 |    |      |- 0.6.1.3: <module>                                             #       entry module type
 |    |      |- 0.6.1.4: <module-id>                                          #             module ID
 |    |      |- 0.6.1.5: <module-name>                                        #             module name
+|    |      |- 0.6.1.6: <module-field>                                       #             module field
 
 
 

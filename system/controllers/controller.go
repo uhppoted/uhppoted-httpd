@@ -586,14 +586,6 @@ func (c Controller) stash() {
 }
 
 func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
-	type info struct {
-		OID        string `json:"OID"`
-		Controller string `json:"controller"`
-		Field      string `json:"field"`
-		Current    string `json:"current"`
-		Updated    string `json:"new"`
-	}
-
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -605,10 +597,10 @@ func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, fi
 		UID:       uid,
 		Module:    oid,
 		Operation: operation,
-		Info: info{
+		Info: controllerInfo{
 			OID:        oid,
 			Controller: stringify(c.DeviceID),
-			Field:      field,
+			FieldName:  field,
 			Current:    stringify(current),
 			Updated:    stringify(value),
 		},

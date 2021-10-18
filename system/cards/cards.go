@@ -272,7 +272,7 @@ func (cc *Cards) scrub() error {
 	return nil
 }
 
-func (cc *Cards) log(op string, info interface{}, auth auth.OpAuth) {
+func (cc *Cards) log(op string, info audit.Info, auth auth.OpAuth) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()

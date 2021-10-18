@@ -373,14 +373,6 @@ func (c Card) stash() {
 }
 
 func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field string, current, value interface{}) {
-	type info struct {
-		OID     string `json:"OID"`
-		Card    string `json:"card"`
-		Field   string `json:"field"`
-		Current string `json:"current"`
-		Updated string `json:"new"`
-	}
-
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -391,11 +383,11 @@ func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field st
 		Module:    stringify(oid),
 		Operation: operation,
 		Info: info{
-			OID:     stringify(oid),
-			Card:    stringify(c.Card),
-			Field:   field,
-			Current: stringify(current),
-			Updated: stringify(value),
+			OID:       stringify(oid),
+			Card:      stringify(c.Card),
+			FieldName: field,
+			Current:   stringify(current),
+			Updated:   stringify(value),
 		},
 	}
 
