@@ -124,14 +124,12 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 	}
 
 	if g != nil {
-		name := g.Name
-
 		switch {
 		case oid == g.OID.Append(GroupName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				g.log(auth, "update", g.OID, "name", g.Name, value)
+				g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", g.Name, value))
 				g.Name = value
 				objects = append(objects, catalog.NewObject2(g.OID, GroupName, g.Name))
 			}
@@ -145,7 +143,12 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 				if err := f(door.(string), value); err != nil {
 					return nil, err
 				} else {
-					g.log(auth, "update", g.OID, "door", string(k), value)
+					if value == "true" {
+						g.log(auth, "update", g.OID, "door", fmt.Sprintf("Granted access to %v", door))
+					} else {
+						g.log(auth, "update", g.OID, "door", fmt.Sprintf("Revoked access to %v", door))
+					}
+
 					g.Doors[k] = value == "true"
 					objects = append(objects, catalog.NewObject2(g.OID, GroupDoors.Append(did), g.Doors[k]))
 				}
@@ -159,7 +162,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 				}
 			}
 
-			g.log(auth, "delete", g.OID, "name", name, "")
+			g.log(auth, "delete", g.OID, "grou", fmt.Sprintf("Deleted"))
 			now := time.Now()
 			g.deleted = &now
 			objects = append(objects, catalog.NewObject(g.OID, "deleted"))
@@ -249,7 +252,7 @@ func (g Group) clone() Group {
 func (g Group) stash() {
 }
 
-func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
+func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -261,11 +264,9 @@ func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field s
 		Component: "group",
 		Operation: operation,
 		Info: info{
-			OID:       stringify(OID),
-			Group:     stringify(g.Name),
-			FieldName: field,
-			Current:   stringify(current),
-			Updated:   stringify(value),
+			Group:       stringify(g.Name),
+			FieldName:   field,
+			Description: description,
 		},
 	}
 

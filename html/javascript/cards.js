@@ -2,8 +2,7 @@ import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
 
 export function refreshed () {
-  // const cards = [...DB.cards.values()].sort((p, q) => p.created.localeCompare(q.created))
-  const cards = [...DB.cards.values()]
+  const cards = [...DB.cards.values()].sort((p, q) => p.created.localeCompare(q.created))
   const pagesize = 1
 
   realize(cards)
@@ -103,7 +102,7 @@ function realize (cards) {
 
   const groups = new Map([...DB.groups.values()]
     .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
-    .sort((p, q) => p.index - q.index)
+    .sort((p, q) => p.created.localeCompare(q.created))
     .map(o => [o.OID, o]))
 
   // ... columns

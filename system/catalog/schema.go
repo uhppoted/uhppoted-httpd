@@ -48,6 +48,7 @@ const DoorControlStatus = ".3.1"
 const DoorControlConfigured = ".3.2"
 const DoorControlError = ".3.3"
 const DoorIndex Suffix = ".4"
+
 const CardCreated Suffix = ".0.1"
 const CardName Suffix = ".1"
 const CardNumber Suffix = ".2"

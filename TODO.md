@@ -70,13 +70,12 @@
 #### Groups
 
 #### Logs
-  - [ ] Use OID from Info
-  - [ ] Update 'module' field everywhere (puts OID which is no use to man or beast)
+  - [x] Update 'module' field everywhere (puts OID which is no use to man or beast)
   - [x] Format log record for controller
   - [x] Format log record for door
   - [x] Format log record for LAN
-  - [ ] Format log record for group
-  - [ ] Format log record for card
+  - [x] Format log record for group
+  - [x] Format log record for card
   - [ ] Format log records for 'add'
   - [ ] Format log records for 'delete'
   - [ ] Commit audit trail after validate + save

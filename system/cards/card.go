@@ -31,6 +31,7 @@ const CardNumber = catalog.CardNumber
 const CardFrom = catalog.CardFrom
 const CardTo = catalog.CardTo
 const CardGroups = catalog.CardGroups
+const GroupName = catalog.GroupName
 
 var created = time.Now()
 
@@ -167,7 +168,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "name", c.Name, value)
+				c.log(auth, "update", c.OID, "name", fmt.Sprintf("Updated name from %v to %v", c.Name, value))
 				v := types.Name(value)
 				c.Name = &v
 				objects = append(objects, catalog.NewObject2(c.OID, CardName, c.Name))
@@ -180,7 +181,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				} else if err := f("number", n); err != nil {
 					return nil, err
 				} else {
-					c.log(auth, "update", c.OID, "number", c.Card, value)
+					c.log(auth, "update", c.OID, "card", fmt.Sprintf("Updated card number from %v to %v", c.Card, value))
 					v := types.Card(n)
 					c.Card = &v
 					objects = append(objects, catalog.NewObject2(c.OID, CardNumber, c.Card))
@@ -189,7 +190,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				if err := f("number", 0); err != nil {
 					return nil, err
 				} else {
-					c.log(auth, "update", c.OID, "number", c.Card, value)
+					c.log(auth, "update", c.OID, "number", fmt.Sprintf("Cleared card number %v for %v", c.Card, c.Name))
 					c.Card = nil
 					objects = append(objects, catalog.NewObject2(c.OID, CardNumber, ""))
 				}
@@ -203,7 +204,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			} else if from == nil {
 				return nil, fmt.Errorf("invalid 'from' date (%v)", value)
 			} else {
-				c.log(auth, "update", c.OID, "from", c.From, value)
+				c.log(auth, "update", c.OID, "from", fmt.Sprintf("Updated VALID FROM date from %v to %v", c.From, value))
 				c.From = from
 				objects = append(objects, catalog.NewObject2(c.OID, CardFrom, c.From))
 			}
@@ -216,7 +217,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			} else if to == nil {
 				return nil, fmt.Errorf("invalid 'to' date (%v)", value)
 			} else {
-				c.log(auth, "update", c.OID, "to", c.To, value)
+				c.log(auth, "update", c.OID, "to", fmt.Sprintf("Updated VALID UNTIL date from %v to %v", c.From, value))
 				c.To = to
 				objects = append(objects, catalog.NewObject2(c.OID, CardTo, c.To))
 			}
@@ -229,7 +230,14 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				if err := f("group", value); err != nil {
 					return nil, err
 				} else {
-					c.log(auth, "update", c.OID, "group", k, value)
+					group, _ := catalog.GetV(catalog.OID(k).Append(GroupName))
+
+					if value == "true" {
+						c.log(auth, "update", c.OID, "group", fmt.Sprintf("Granted access to %v", group))
+					} else {
+						c.log(auth, "update", c.OID, "group", fmt.Sprintf("Revoked access to %v", group))
+					}
+
 					c.Groups[k] = value == "true"
 					objects = append(objects, catalog.NewObject2(c.OID, CardGroups.Append(gid), c.Groups[k]))
 				}
@@ -243,7 +251,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				}
 			}
 
-			c.log(auth, "delete", c.OID, "card", "", "")
+			c.log(auth, "delete", c.OID, "card", "Deleted")
 			now := time.Now()
 			c.deleted = &now
 
@@ -372,7 +380,7 @@ func (c *Card) clone() *Card {
 func (c Card) stash() {
 }
 
-func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field string, current, value interface{}) {
+func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field string, description string) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -384,11 +392,10 @@ func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field st
 		Component: "card",
 		Operation: operation,
 		Info: info{
-			Card:      stringify(c.Card),
-			CardName:  stringify(c.Name),
-			FieldName: field,
-			Current:   stringify(current),
-			Updated:   stringify(value),
+			Card:        stringify(c.Card),
+			CardName:    stringify(c.Name),
+			FieldName:   field,
+			Description: description,
 		},
 	}
 

@@ -24,8 +24,6 @@ type result struct {
 	Deleted []interface{} `json:"deleted"`
 }
 
-const GroupName = catalog.GroupName
-
 var guard sync.RWMutex
 
 func NewCards() Cards {
@@ -170,7 +168,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' card")
 		} else {
-			c.log(auth, "add", c.OID, "card", "", "")
+			c.log(auth, "add", c.OID, "card", "Added new card")
 			cc.Cards[c.OID] = c
 			objects = append(objects, catalog.NewObject(c.OID, "new"))
 		}

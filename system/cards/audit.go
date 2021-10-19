@@ -1,15 +1,12 @@
 package cards
 
-import (
-	"fmt"
-)
+import ()
 
 type info struct {
-	Card      string `json:"card"`
-	CardName  string `json:"name"`
-	FieldName string `json:"field"`
-	Current   string `json:"current"`
-	Updated   string `json:"new"`
+	Card        string `json:"card"`
+	CardName    string `json:"name"`
+	FieldName   string `json:"field"`
+	Description string `json:"description"`
 }
 
 func (i info) ID() string {
@@ -25,5 +22,5 @@ func (i info) Field() string {
 }
 
 func (i info) Details() string {
-	return fmt.Sprintf("from '%v' to '%v'", i.Current, i.Updated)
+	return i.Description
 }

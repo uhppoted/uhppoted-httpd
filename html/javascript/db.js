@@ -426,7 +426,7 @@ function card (o) {
           break
 
         case k + '.4':
-          v.index = parseInt(o.value, 10)
+          v.to = o.value
           break
 
         default:

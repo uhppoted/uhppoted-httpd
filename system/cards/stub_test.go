@@ -16,7 +16,8 @@ var hagrid = makeCard("0.3.1", "Hagrid", 6514231)
 var dobby = makeCard("0.3.2", "Dobby", 1234567, "G05")
 
 type stub struct {
-	write func(e audit.LogEntry)
+	canUpdateCard func(auth.Operant, string, interface{}) error
+	write         func(e audit.LogEntry)
 }
 
 func (x *stub) UID() string {
@@ -44,6 +45,10 @@ func (x *stub) CanAddCard(card auth.Operant) error {
 }
 
 func (x *stub) CanUpdateCard(card auth.Operant, field string, value interface{}) error {
+	if x.canUpdateCard != nil {
+		return x.canUpdateCard(card, field, value)
+	}
+
 	return fmt.Errorf("not authorised")
 }
 

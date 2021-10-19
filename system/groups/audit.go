@@ -1,15 +1,11 @@
 package groups
 
-import (
-	"fmt"
-)
+import ()
 
 type info struct {
-	OID       string `json:"OID"`
-	Group     string `json:"group"`
-	FieldName string `json:"field"`
-	Current   string `json:"current"`
-	Updated   string `json:"new"`
+	Group       string `json:"group"`
+	FieldName   string `json:"field"`
+	Description string `json:"description"`
 }
 
 func (i info) ID() string {
@@ -25,5 +21,5 @@ func (i info) Field() string {
 }
 
 func (i info) Details() string {
-	return fmt.Sprintf("from '%v' to '%v'", i.Current, i.Updated)
+	return i.Description
 }
