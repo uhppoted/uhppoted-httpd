@@ -380,11 +380,12 @@ func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field st
 
 	record := audit.LogEntry{
 		UID:       uid,
-		Module:    stringify(oid),
+		OID:       oid,
+		Component: "card",
 		Operation: operation,
 		Info: info{
-			OID:       stringify(oid),
 			Card:      stringify(c.Card),
+			CardName:  stringify(c.Name),
 			FieldName: field,
 			Current:   stringify(current),
 			Updated:   stringify(value),

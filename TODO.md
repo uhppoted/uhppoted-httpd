@@ -55,6 +55,7 @@
 
 #### Cards
   - [ ] Update unit tests for OID'd implementation
+        - Make audit trail usable for unit tests
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
   - [ ] `refresh` is overwriting pending group edits
@@ -70,10 +71,8 @@
 
 #### Logs
   - [ ] Use OID from Info
-  - [ ] Update 'module' field everywhere
-  - [x] Add 'field' to log entry
-  - [x] Add 'details' to log entry
-  - [ ] Check log record for doors
+  - [ ] Update 'module' field everywhere (puts OID which is no use to man or beast)
+  - [x] Format log record for doors
   - [ ] Check log record for groups
   - [ ] Check log record for cards
   - [ ] Check log record for LAN

@@ -12,6 +12,14 @@ type lanInfo struct {
 	Updated   string `json:"new"`
 }
 
+func (i lanInfo) ID() string {
+	return ""
+}
+
+func (i lanInfo) Name() string {
+	return i.Interface
+}
+
 func (i lanInfo) Field() string {
 	return i.FieldName
 }
@@ -22,10 +30,19 @@ func (i lanInfo) Details() string {
 
 type controllerInfo struct {
 	OID        string `json:"OID"`
-	Controller string `json:"interface"`
+	DeviceID   string `json:"device-id"`
+	DeviceName string `json:"device-name"`
 	FieldName  string `json:"field"`
 	Current    string `json:"current"`
 	Updated    string `json:"new"`
+}
+
+func (i controllerInfo) ID() string {
+	return i.DeviceID
+}
+
+func (i controllerInfo) Name() string {
+	return i.DeviceName
 }
 
 func (i controllerInfo) Field() string {

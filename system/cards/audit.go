@@ -5,11 +5,19 @@ import (
 )
 
 type info struct {
-	OID       string `json:"OID"`
 	Card      string `json:"card"`
+	CardName  string `json:"name"`
 	FieldName string `json:"field"`
 	Current   string `json:"current"`
 	Updated   string `json:"new"`
+}
+
+func (i info) ID() string {
+	return i.Card
+}
+
+func (i info) Name() string {
+	return i.CardName
 }
 
 func (i info) Field() string {

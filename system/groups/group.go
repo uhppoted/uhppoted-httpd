@@ -257,7 +257,8 @@ func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field s
 
 	record := audit.LogEntry{
 		UID:       uid,
-		Module:    stringify(OID),
+		OID:       OID,
+		Component: "group",
 		Operation: operation,
 		Info: info{
 			OID:       stringify(OID),

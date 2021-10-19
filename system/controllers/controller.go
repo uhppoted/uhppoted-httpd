@@ -591,15 +591,15 @@ func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, fi
 		uid = auth.UID()
 	}
 
-	oid := fmt.Sprintf("%v", OID)
-
 	record := audit.LogEntry{
 		UID:       uid,
-		Module:    oid,
+		OID:       OID,
+		Component: "controller",
 		Operation: operation,
 		Info: controllerInfo{
-			OID:        oid,
-			Controller: stringify(c.DeviceID),
+			OID:        stringify(OID),
+			DeviceID:   stringify(c.DeviceID),
+			DeviceName: stringify(c.Name),
 			FieldName:  field,
 			Current:    stringify(current),
 			Updated:    stringify(value),

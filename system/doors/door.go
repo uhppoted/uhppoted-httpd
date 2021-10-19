@@ -397,10 +397,13 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 
 	record := audit.LogEntry{
 		UID:       uid,
-		Module:    stringify(OID),
+		OID:       OID,
+		Component: "door",
 		Operation: operation,
 		Info: info{
 			OID:       OID,
+			DeviceID:  stringify(d.DeviceID()),
+			DoorID:    stringify(d.Door()),
 			Door:      stringify(d.Name),
 			FieldName: field,
 			Current:   stringify(current),

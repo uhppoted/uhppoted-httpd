@@ -226,7 +226,7 @@ func (ll *Logs) Validate() error {
 	return nil
 }
 
-func (ll *Logs) Received(entry audit.LogEntry, lookup func(catalog.OID) interface{}) {
+func (ll *Logs) Received(entry audit.LogEntry) {
 	unknown := time.Time{}
 	timestamp := entry.Timestamp
 	if entry.Timestamp == unknown {
@@ -239,7 +239,7 @@ func (ll *Logs) Received(entry audit.LogEntry, lookup func(catalog.OID) interfac
 	k := newKey(timestamp)
 	if _, ok := ll.Logs[k]; !ok {
 		oid := catalog.NewLogEntry()
-		ll.Logs[k] = NewLogEntry(oid, timestamp, entry, lookup)
+		ll.Logs[k] = NewLogEntry(oid, timestamp, entry)
 	}
 }
 

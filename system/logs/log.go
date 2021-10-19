@@ -12,43 +12,43 @@ import (
 )
 
 type LogEntry struct {
-	OID         catalog.OID `json:"OID"`
-	Timestamp   time.Time   `json:"timestamp"`
-	UID         string      `json:"uid"`
-	Module      interface{} `json:"module"`
-	ModuleID    interface{} `json:"module-id"`
-	ModuleName  interface{} `json:"module-name"`
-	ModuleField interface{} `json:"module-field"`
-	Details     interface{} `json:"details"`
+	OID           catalog.OID `json:"OID"`
+	Timestamp     time.Time   `json:"timestamp"`
+	UID           string      `json:"uid"`
+	Component     interface{} `json:"component"`
+	ComponentID   interface{} `json:"component-id"`
+	ComponentName interface{} `json:"component-name"`
+	ModuleField   interface{} `json:"module-field"`
+	Details       interface{} `json:"details"`
 }
 
 const LogTimestamp = catalog.LogTimestamp
 const LogUID = catalog.LogUID
-const LogModule = catalog.LogModule
-const LogModuleID = catalog.LogModuleID
-const LogModuleName = catalog.LogModuleName
+const LogComponent = catalog.LogComponent
+const LogComponentID = catalog.LogComponentID
+const LogComponentName = catalog.LogComponentName
 const LogModuleField = catalog.LogModuleField
 const LogDetails = catalog.LogDetails
 
 const ControllerName = catalog.ControllerName
 const ControllerDeviceID = catalog.ControllerDeviceID
 
-func NewLogEntry(oid catalog.OID, timestamp time.Time, entry audit.LogEntry, lookup func(catalog.OID) interface{}) LogEntry {
-	module := "controller"
-	id := lookup(catalog.OID(entry.Module).Append(ControllerDeviceID))
-	name := lookup(catalog.OID(entry.Module).Append(ControllerName))
+func NewLogEntry(oid catalog.OID, timestamp time.Time, entry audit.LogEntry) LogEntry {
+	component := entry.Component
+	id := entry.Info.ID()
+	name := entry.Info.Name()
 	field := entry.Info.Field()
 	details := entry.Info.Details()
 
 	return LogEntry{
-		OID:         oid,
-		Timestamp:   timestamp,
-		UID:         entry.UID,
-		Module:      module,
-		ModuleID:    id,
-		ModuleName:  name,
-		ModuleField: field,
-		Details:     details,
+		OID:           oid,
+		Timestamp:     timestamp,
+		UID:           entry.UID,
+		Component:     component,
+		ComponentID:   id,
+		ComponentName: name,
+		ModuleField:   field,
+		Details:       details,
 	}
 }
 
@@ -66,9 +66,9 @@ func (l *LogEntry) AsObjects() []interface{} {
 		catalog.NewObject(l.OID, types.StatusOk),
 		catalog.NewObject2(l.OID, LogTimestamp, l.Timestamp.Format(time.RFC3339)),
 		catalog.NewObject2(l.OID, LogUID, l.UID),
-		catalog.NewObject2(l.OID, LogModule, l.Module),
-		catalog.NewObject2(l.OID, LogModuleID, l.ModuleID),
-		catalog.NewObject2(l.OID, LogModuleName, l.ModuleName),
+		catalog.NewObject2(l.OID, LogComponent, l.Component),
+		catalog.NewObject2(l.OID, LogComponentID, l.ComponentID),
+		catalog.NewObject2(l.OID, LogComponentName, l.ComponentName),
 		catalog.NewObject2(l.OID, LogModuleField, l.ModuleField),
 		catalog.NewObject2(l.OID, LogDetails, l.Details),
 	}

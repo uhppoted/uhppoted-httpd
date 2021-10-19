@@ -12,6 +12,14 @@ type info struct {
 	Updated   string `json:"new"`
 }
 
+func (i info) ID() string {
+	return ""
+}
+
+func (i info) Name() string {
+	return i.Group
+}
+
 func (i info) Field() string {
 	return i.FieldName
 }

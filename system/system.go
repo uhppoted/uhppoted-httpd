@@ -13,7 +13,6 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/pkg"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
-	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
@@ -107,7 +106,7 @@ func Init(cfg config.Config, conf string) error {
 	go func() {
 		for {
 			entry := <-listener
-			sys.logs.Received(entry, lookup)
+			sys.logs.Received(entry)
 		}
 	}()
 
@@ -204,20 +203,6 @@ func (s *system) sweep() {
 	s.doors.Sweep(s.retention)
 }
 
-func (s *system) log(op string, info audit.Info, auth auth.OpAuth) {
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
-
-	audit.Write(audit.LogEntry{
-		UID:       uid,
-		Module:    "system",
-		Operation: op,
-		Info:      info,
-	})
-}
-
 func unpack(m map[string]interface{}) ([]catalog.Object, error) {
 	f := func(err error) error {
 		return types.BadRequest(fmt.Errorf("Invalid request (%v)", err), fmt.Errorf("Error unpacking 'post' request (%w)", err))
@@ -251,12 +236,4 @@ func info(msg string) {
 
 func warn(err error) {
 	log.Printf("ERROR %v", err)
-}
-
-func lookup(oid catalog.OID) interface{} {
-	if oid.HasPrefix(catalog.ControllersOID) {
-		return sys.controllers.Lookup(oid)
-	}
-
-	return "?????"
 }

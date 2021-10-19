@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-lib/eventlog"
 )
 
@@ -19,6 +20,8 @@ type trail struct {
 }
 
 type Info interface {
+	ID() string
+	Name() string
 	Field() string
 	Details() string
 }
@@ -26,7 +29,8 @@ type Info interface {
 type LogEntry struct {
 	Timestamp time.Time
 	UID       string
-	Module    string
+	OID       catalog.OID
+	Component string
 	Operation string
 	Info      Info
 }
@@ -80,9 +84,9 @@ func Write(entry LogEntry) {
 func (t *trail) Write(entry LogEntry) {
 	var logmsg string
 	if info, err := json.Marshal(entry.Info); err == nil {
-		logmsg = fmt.Sprintf("%-10v %-10v %-10v %s", entry.UID, entry.Module, entry.Operation, info)
+		logmsg = fmt.Sprintf("%-10v %-10v %-10v %s", entry.UID, entry.Component, entry.Operation, info)
 	} else {
-		logmsg = fmt.Sprintf("%-10v %-10v %-10v %v", entry.UID, entry.Module, entry.Operation, entry.Info)
+		logmsg = fmt.Sprintf("%-10v %-10v %-10v %v", entry.UID, entry.Component, entry.Operation, entry.Info)
 	}
 
 	if t.logger != nil {

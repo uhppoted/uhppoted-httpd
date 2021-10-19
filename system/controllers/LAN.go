@@ -556,7 +556,8 @@ func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field str
 
 	record := audit.LogEntry{
 		UID:       uid,
-		Module:    stringify(OID),
+		OID:       OID,
+		Component: "LAN",
 		Operation: operation,
 		Info: lanInfo{
 			OID:       stringify(OID),

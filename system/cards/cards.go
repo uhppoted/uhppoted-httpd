@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -273,18 +272,4 @@ func validate(cc Cards) error {
 
 func (cc *Cards) scrub() error {
 	return nil
-}
-
-func (cc *Cards) log(op string, info audit.Info, auth auth.OpAuth) {
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
-
-	audit.Write(audit.LogEntry{
-		UID:       uid,
-		Module:    "memdb",
-		Operation: op,
-		Info:      info,
-	})
 }
