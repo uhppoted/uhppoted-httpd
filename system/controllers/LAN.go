@@ -557,14 +557,14 @@ func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field str
 	record := audit.LogEntry{
 		UID:       uid,
 		OID:       OID,
-		Component: "LAN",
+		Component: "interface",
 		Operation: operation,
 		Info: lanInfo{
-			OID:       stringify(OID),
-			Interface: "LAN",
-			FieldName: field,
-			Current:   stringify(current),
-			Updated:   stringify(value),
+			Interface:     "LAN",
+			InterfaceName: l.Name,
+			FieldName:     field,
+			Current:       stringify(current),
+			Updated:       stringify(value),
 		},
 	}
 

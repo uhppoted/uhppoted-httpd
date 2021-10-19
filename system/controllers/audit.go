@@ -2,22 +2,23 @@ package controllers
 
 import (
 	"fmt"
+	"strings"
 )
 
 type lanInfo struct {
-	OID       string `json:"OID"`
-	Interface string `json:"interface"`
-	FieldName string `json:"field"`
-	Current   string `json:"current"`
-	Updated   string `json:"new"`
+	Interface     string `json:"interface"`
+	InterfaceName string `json:"name"`
+	FieldName     string `json:"field"`
+	Current       string `json:"current"`
+	Updated       string `json:"new"`
 }
 
 func (i lanInfo) ID() string {
-	return ""
+	return i.Interface
 }
 
 func (i lanInfo) Name() string {
-	return i.Interface
+	return i.InterfaceName
 }
 
 func (i lanInfo) Field() string {
@@ -25,7 +26,22 @@ func (i lanInfo) Field() string {
 }
 
 func (i lanInfo) Details() string {
-	return fmt.Sprintf("from '%v' to '%v'", i.Current, i.Updated)
+	switch strings.ToLower(i.FieldName) {
+	case "name":
+		return fmt.Sprintf("Updated name from %v to %v", i.Current, i.Updated)
+
+	case "bind":
+		return fmt.Sprintf("Updated bind address from %v to %v", i.Current, i.Updated)
+
+	case "broadcast":
+		return fmt.Sprintf("Updated broadcast address from %v to %v", i.Current, i.Updated)
+
+	case "listen":
+		return fmt.Sprintf("Updated listen address from %v to %v", i.Current, i.Updated)
+
+	default:
+		return fmt.Sprintf("Updated %v from %v to %v", i.FieldName, i.Current, i.Updated)
+	}
 }
 
 type controllerInfo struct {
