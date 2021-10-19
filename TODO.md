@@ -72,12 +72,13 @@
 #### Logs
   - [ ] Use OID from Info
   - [ ] Update 'module' field everywhere (puts OID which is no use to man or beast)
-  - [x] Format log record for doors
-  - [ ] Check log record for groups
-  - [ ] Check log record for cards
-  - [ ] Check log record for LAN
-  - [ ] Check log records for 'add'
-  - [ ] Check log records for 'delete'
+  - [x] Format log record for door
+  - [ ] Format log record for group
+  - [ ] Format log record for card
+  - [ ] Format log record for LAN
+  - [x] Format log record for controller
+  - [ ] Format log records for 'add'
+  - [ ] Format log records for 'delete'
   - [ ] Commit audit trail after validate + save
   - [ ] Save
   - [ ] Load

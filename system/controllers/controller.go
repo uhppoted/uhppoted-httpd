@@ -426,7 +426,10 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			if err := f("door[1]", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "door[1]", c.Doors[1], value)
+				p, _ := catalog.GetV(catalog.OID(c.Doors[1]).Append(catalog.DoorName))
+				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
+				c.log(auth, "update", c.OID, "door:1", p, q)
+
 				c.Doors[1] = value
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".7", c.Doors[1]))
@@ -436,7 +439,10 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			if err := f("door[2]", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "door[2]", c.Doors[2], value)
+				p, _ := catalog.GetV(catalog.OID(c.Doors[2]).Append(catalog.DoorName))
+				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
+				c.log(auth, "update", c.OID, "door:2", p, q)
+
 				c.Doors[2] = value
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".8", c.Doors[2]))
@@ -446,7 +452,10 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			if err := f("door[3]", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "door[3]", c.Doors[3], value)
+				p, _ := catalog.GetV(catalog.OID(c.Doors[3]).Append(catalog.DoorName))
+				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
+				c.log(auth, "update", c.OID, "door:3", p, q)
+
 				c.Doors[3] = value
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".9", c.Doors[3]))
@@ -456,7 +465,10 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			if err := f("door[4]", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "door[4]", c.Doors[4], value)
+				p, _ := catalog.GetV(catalog.OID(c.Doors[4]).Append(catalog.DoorName))
+				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
+				c.log(auth, "update", c.OID, "door:4", p, q)
+
 				c.Doors[4] = value
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".10", c.Doors[4]))
