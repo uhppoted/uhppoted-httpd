@@ -35,7 +35,7 @@ func TestCardAdd(t *testing.T) {
 	compareDB(cards, final, t)
 }
 
-func TestCardHolderAddWithAuth(t *testing.T) {
+func TestCardAddWithAuth(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid)
 	auth := stub{}
@@ -118,62 +118,38 @@ func TestCardHolderAddWithAuth(t *testing.T) {
 // 	compareDB(dbt, final, t)
 // }
 
-// func TestCardHolderUpdate(t *testing.T) {
-// 	dbt := dbx(hagrid)
-// 	final := dbx(cardholder("C01", "Hagrid", 1234567))
-//
-// 	rq := map[string]interface{}{
-// 		"cardholders": []map[string]interface{}{
-// 			map[string]interface{}{
-// 				"id":   "C01",
-// 				"name": "Hagrid",
-// 				"card": 1234567,
-// 			},
-// 		},
-// 	}
-//
-// 	expected := result{
-// 		Updated: []interface{}{
-// 			cardholder("C01", "Hagrid", 1234567),
-// 		},
-// 	}
-//
-// 	r, err := dbt.Post(rq, nil)
-// 	if err != nil {
-// 		t.Fatalf("Unexpected error updating DB: %v", err)
-// 	}
-//
-// 	compare(r, expected, t)
-// 	compareDB(dbt, final, t)
-// }
+func TestCardUpdate(t *testing.T) {
+	cards := makeCards(hagrid)
+	final := makeCards(makeCard(hagrid.OID, "Hagrid", 1234567))
 
-// func TestCardHolderUpdateWithAuth(t *testing.T) {
-// 	dbt := dbx(hagrid)
-// 	final := dbx(hagrid)
-// 	auth := stub{}
-//
-// 	rq := map[string]interface{}{
-// 		"cardholders": []map[string]interface{}{
-// 			map[string]interface{}{
-// 				"id":   "C01",
-// 				"name": "Hagrid",
-// 				"card": 1234567,
-// 			},
-// 		},
-// 	}
-//
-// 	r, err := dbt.Post(rq, &auth)
-//
-// 	if err == nil {
-// 		t.Errorf("Expected 'not authorised' error updating card holder in DB, got:%v", err)
-// 	}
-//
-// 	if r != nil {
-// 		t.Errorf("Unexpected return updating record without authorisation - expected:%v, got: %v", nil, err)
-// 	}
-//
-// 	compareDB(dbt, final, t)
-// }
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.3.1.2", Value: "1234567"},
+	}
+
+	objects, err := cards.UpdateByOID(nil, hagrid.OID.Append(CardNumber), "1234567")
+	if err != nil {
+		t.Errorf("Unexpected error updating card (%v)", err)
+	}
+
+	if err := cards.Validate(); err != nil {
+		t.Errorf("Expected error updating card, got %v", err)
+	}
+
+	compare(objects, expected, t)
+	compareDB(cards, final, t)
+}
+
+func TestCardUpdateWithAuth(t *testing.T) {
+	cards := makeCards(hagrid)
+	final := makeCards(hagrid)
+	auth := stub{}
+
+	if _, err := cards.UpdateByOID(&auth, hagrid.OID.Append(CardNumber), "1234567"); err == nil {
+		t.Errorf("Expected 'not authorised' error updating card, got:%v", err)
+	}
+
+	compareDB(cards, final, t)
+}
 
 //func TestCardHolderUpdateWithAuditTrail(t *testing.T) {
 //	var logentry []byte

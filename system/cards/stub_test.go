@@ -17,7 +17,7 @@ var dobby = makeCard("0.3.2", "Dobby", 1234567, "G05")
 
 type stub struct {
 	canUpdateCard func(auth.Operant, string, interface{}) error
-	write         func(e audit.LogEntry)
+	write         func(e audit.AuditRecord)
 }
 
 func (x *stub) UID() string {
@@ -80,7 +80,7 @@ func (x *stub) CanDeleteGroup(group auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 
-func (x *stub) Write(e audit.LogEntry) {
+func (x *stub) Write(e audit.AuditRecord) {
 	x.write(e)
 }
 
@@ -110,12 +110,12 @@ func group(id string) types.Group {
 	}
 }
 
-func makeCard(id, name string, card uint32, groups ...string) Card {
+func makeCard(oid catalog.OID, name string, card uint32, groups ...string) Card {
 	n := types.Name(name)
 	c := types.Card(card)
 
 	cardholder := Card{
-		OID:    catalog.OID(id),
+		OID:    oid,
 		Name:   &n,
 		Card:   &c,
 		From:   date("2021-01-02"),
