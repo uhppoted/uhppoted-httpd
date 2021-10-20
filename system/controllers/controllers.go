@@ -261,7 +261,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
-			c.log(auth, "add", c.OID, "controller", "", "")
+			c.log(auth, "add", c.OID, "controller", fmt.Sprintf("Added <new> controller"))
 			objects = append(objects, catalog.NewObject(c.OID, "new"))
 		}
 	}
@@ -487,21 +487,26 @@ func warn(err error) {
 	log.Printf("ERROR %v", err)
 }
 
-func stringify(i interface{}) string {
+func stringify(i interface{}, defval string) string {
+	s := ""
 	switch v := i.(type) {
 	case *uint32:
 		if v != nil {
-			return fmt.Sprintf("%v", *v)
+			s = fmt.Sprintf("%v", *v)
 		}
 
 	case *string:
 		if v != nil {
-			return fmt.Sprintf("%v", *v)
+			s = fmt.Sprintf("%v", *v)
 		}
 
 	default:
-		return fmt.Sprintf("%v", i)
+		s = fmt.Sprintf("%v", i)
 	}
 
-	return ""
+	if s != "" {
+		return s
+	}
+
+	return defval
 }

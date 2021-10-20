@@ -73,11 +73,13 @@
 #### Groups
 
 #### Logs
-  - [ ] Format log records for 'add'
+  - [x] Format log records for 'add'
+        - [x] controllers
         - [x] doors
         - [x] groups
         - [x] cards
-  - [ ] Format log records for 'delete'
+  - [x] Format log records for 'delete'
+        - [x] controllers
         - [x] doors
         - [x] groups
         - [x] cards

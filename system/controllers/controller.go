@@ -349,12 +349,13 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 	}
 
 	if c != nil {
+		clone := c.clone()
 		switch oid {
 		case c.OID.Append(ControllerName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "name", c.Name, value)
+				c.log(auth, "update", c.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, "<blank>"), stringify(value, "<blank>")))
 				name := types.Name(value)
 				c.Name = &name
 				c.unconfigured = false
@@ -366,14 +367,21 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 				return nil, err
 			} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 				if id, err := strconv.ParseUint(value, 10, 32); err == nil {
-					c.log(auth, "update", c.OID, "device-id", c.DeviceID, value)
+					c.log(auth, "update", c.OID, "device-id", fmt.Sprintf("Updated device ID from %v to %v", stringify(c.DeviceID, "<blank>"), stringify(value, "<blank>")))
 					cid := uint32(id)
 					c.DeviceID = &cid
 					c.unconfigured = false
 					objects = append(objects, catalog.NewObject2(c.OID, ".2", cid))
 				}
 			} else if value == "" {
-				c.log(auth, "update", c.OID, "device-id", c.DeviceID, value)
+				if p := stringify(c.DeviceID, ""); p != "" {
+					c.log(auth, "update", c.OID, "device-id", fmt.Sprintf("Cleared device ID %v", p))
+				} else if p = stringify(c.Name, ""); p != "" {
+					c.log(auth, "update", c.OID, "device-id", fmt.Sprintf("Cleared device ID for %v", p))
+				} else {
+					c.log(auth, "update", c.OID, "device-id", fmt.Sprintf("Cleared device ID"))
+				}
+
 				c.DeviceID = nil
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".2", ""))
@@ -385,7 +393,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			} else if err := f("address", addr); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "address", c.IP, value)
+				c.log(auth, "update", c.OID, "address", fmt.Sprintf("Updated endpoint from %v to %v", stringify(c.IP, "<blank>"), stringify(value, "<blank>")))
 				c.IP = addr
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".3", c.IP))
@@ -397,7 +405,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			} else if err := f("timezone", tz); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "timezone", c.TimeZone, tz.String())
+				c.log(auth, "update", c.OID, "timezone", fmt.Sprintf("Updated timezone from %v to %v", stringify(c.TimeZone, "<blank>"), stringify(tz.String(), "<blank>")))
 				tzs := tz.String()
 				c.TimeZone = &tzs
 				c.unconfigured = false
@@ -428,7 +436,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			} else {
 				p, _ := catalog.GetV(catalog.OID(c.Doors[1]).Append(catalog.DoorName))
 				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
-				c.log(auth, "update", c.OID, "door:1", p, q)
+				c.log(auth, "update", c.OID, "door:1", fmt.Sprintf("Updated door:1 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")))
 
 				c.Doors[1] = value
 				c.unconfigured = false
@@ -441,7 +449,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			} else {
 				p, _ := catalog.GetV(catalog.OID(c.Doors[2]).Append(catalog.DoorName))
 				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
-				c.log(auth, "update", c.OID, "door:2", p, q)
+				c.log(auth, "update", c.OID, "door:2", fmt.Sprintf("Updated door:2 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")))
 
 				c.Doors[2] = value
 				c.unconfigured = false
@@ -454,7 +462,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			} else {
 				p, _ := catalog.GetV(catalog.OID(c.Doors[3]).Append(catalog.DoorName))
 				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
-				c.log(auth, "update", c.OID, "door:3", p, q)
+				c.log(auth, "update", c.OID, "door:3", fmt.Sprintf("Updated door:3 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")))
 
 				c.Doors[3] = value
 				c.unconfigured = false
@@ -467,7 +475,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 			} else {
 				p, _ := catalog.GetV(catalog.OID(c.Doors[4]).Append(catalog.DoorName))
 				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
-				c.log(auth, "update", c.OID, "door:4", p, q)
+				c.log(auth, "update", c.OID, "door:4", fmt.Sprintf("Updated door:4 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")))
 
 				c.Doors[4] = value
 				c.unconfigured = false
@@ -482,7 +490,14 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string) ([]int
 				}
 			}
 
-			c.log(auth, "delete", c.OID, "device-id", "", "")
+			if p := stringify(clone.Name, ""); p != "" {
+				clone.log(auth, "delete", c.OID, "device-id", fmt.Sprintf("Deleted controller %v", p))
+			} else if p = stringify(clone.DeviceID, ""); p != "" {
+				clone.log(auth, "delete", c.OID, "device-id", fmt.Sprintf("Deleted controller %v", p))
+			} else {
+				clone.log(auth, "delete", c.OID, "device-id", fmt.Sprintf("Deleted controller"))
+			}
+
 			now := time.Now()
 			c.deleted = &now
 			objects = append(objects, catalog.NewObject(c.OID, "deleted"))
@@ -597,7 +612,7 @@ func (c *Controller) clone() *Controller {
 func (c Controller) stash() {
 }
 
-func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
+func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -609,12 +624,10 @@ func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, fi
 		Component: "controller",
 		Operation: operation,
 		Info: controllerInfo{
-			OID:        stringify(OID),
-			DeviceID:   stringify(c.DeviceID),
-			DeviceName: stringify(c.Name),
-			FieldName:  field,
-			Current:    stringify(current),
-			Updated:    stringify(value),
+			DeviceID:    stringify(c.DeviceID, ""),
+			DeviceName:  stringify(c.Name, ""),
+			FieldName:   field,
+			Description: description,
 		},
 	}
 

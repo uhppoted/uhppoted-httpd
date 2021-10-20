@@ -1,16 +1,12 @@
 package controllers
 
-import (
-	"fmt"
-	"strings"
-)
+import ()
 
 type lanInfo struct {
 	Interface     string `json:"interface"`
 	InterfaceName string `json:"name"`
 	FieldName     string `json:"field"`
-	Current       string `json:"current"`
-	Updated       string `json:"new"`
+	Description   string `json:"description"`
 }
 
 func (i lanInfo) ID() string {
@@ -26,31 +22,14 @@ func (i lanInfo) Field() string {
 }
 
 func (i lanInfo) Details() string {
-	switch strings.ToLower(i.FieldName) {
-	case "name":
-		return fmt.Sprintf("Updated name from %v to %v", i.Current, i.Updated)
-
-	case "bind":
-		return fmt.Sprintf("Updated bind address from %v to %v", i.Current, i.Updated)
-
-	case "broadcast":
-		return fmt.Sprintf("Updated broadcast address from %v to %v", i.Current, i.Updated)
-
-	case "listen":
-		return fmt.Sprintf("Updated listen address from %v to %v", i.Current, i.Updated)
-
-	default:
-		return fmt.Sprintf("Updated %v from %v to %v", i.FieldName, i.Current, i.Updated)
-	}
+	return i.Description
 }
 
 type controllerInfo struct {
-	OID        string `json:"OID"`
-	DeviceID   string `json:"device-id"`
-	DeviceName string `json:"device-name"`
-	FieldName  string `json:"field"`
-	Current    string `json:"current"`
-	Updated    string `json:"new"`
+	DeviceID    string `json:"device-id"`
+	DeviceName  string `json:"device-name"`
+	FieldName   string `json:"field"`
+	Description string `json:"description"`
 }
 
 func (i controllerInfo) ID() string {
@@ -66,5 +45,5 @@ func (i controllerInfo) Field() string {
 }
 
 func (i controllerInfo) Details() string {
-	return fmt.Sprintf("Updated %v from %v to %v", i.FieldName, i.Current, i.Updated)
+	return i.Description
 }
