@@ -124,12 +124,21 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 	}
 
 	if g != nil {
+		name := g.Name
 		switch {
 		case oid == g.OID.Append(GroupName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", g.Name, value))
+				p := g.Name
+				q := value
+				if p == "" {
+					p = "<blank>"
+				}
+				if q == "" {
+					q = "<blank>"
+				}
+				g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", p, q))
 				g.Name = value
 				objects = append(objects, catalog.NewObject2(g.OID, GroupName, g.Name))
 			}
@@ -162,7 +171,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 				}
 			}
 
-			g.log(auth, "delete", g.OID, "grou", fmt.Sprintf("Deleted"))
+			g.log(auth, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name))
 			now := time.Now()
 			g.deleted = &now
 			objects = append(objects, catalog.NewObject(g.OID, "deleted"))

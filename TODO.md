@@ -71,9 +71,11 @@
 
 #### Logs
   - [ ] Format log records for 'add'
-        - [x] door
+        - [x] doors
+        - [x] groups
   - [ ] Format log records for 'delete'
-        - [x] door
+        - [x] doors
+        - [x] groups
 
   - [ ] Replace audit log record `Info` with details field
   - [ ] Commit audit trail after validate + save
