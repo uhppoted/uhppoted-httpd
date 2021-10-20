@@ -111,17 +111,17 @@ func (d *Door) AsObjects() []interface{} {
 	index := d.Index
 
 	controller := struct {
-		OID     catalog.OID
-		created time.Time
-		name    *types.Name
-		ID      *uint32
-		door    uint8
+		OID     string
+		created string
+		name    string
+		ID      string
+		door    string
 	}{
-		OID:     d.lookup(DoorControllerOID).(catalog.OID),
-		created: d.lookup(DoorControllerCreated).(time.Time),
-		name:    d.lookup(DoorControllerName).(*types.Name),
-		ID:      d.lookup(DoorControllerID).(*uint32),
-		door:    d.lookup(DoorControllerDoor).(uint8),
+		OID:     stringify(d.lookup(DoorControllerOID)),
+		created: stringify(d.lookup(DoorControllerCreated)),
+		name:    stringify(d.lookup(DoorControllerName)),
+		ID:      stringify(d.lookup(DoorControllerID)),
+		door:    stringify(d.lookup(DoorControllerDoor)),
 	}
 
 	delay := struct {
@@ -236,7 +236,19 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				d.log(auth, "update", d.OID, "name", d.Name, value)
+				p := d.Name
+				q := value
+
+				if p == "" {
+					p = "<blank>"
+				}
+
+				if q == "" {
+					q = "<blank>"
+				}
+
+				d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", p, q))
+
 				d.Name = value
 				objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
 			}
@@ -256,7 +268,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayError, ""))
 
-				d.log(auth, "update", d.OID, "delay", delay, value)
+				d.log(auth, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value))
 			}
 
 		case d.OID.Append(DoorControl):
@@ -283,7 +295,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlConfigured, d.mode))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlError, ""))
 
-				d.log(auth, "update", d.OID, "mode", mode, value)
+				d.log(auth, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value))
 			}
 		}
 
@@ -294,7 +306,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				}
 			}
 
-			d.log(auth, "delete", d.OID, "name", name, "")
+			d.log(auth, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name))
 			now := time.Now()
 			d.deleted = &now
 
@@ -389,7 +401,7 @@ func (d *Door) lookup(suffix catalog.Suffix) interface{} {
 	return nil
 }
 
-func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, current, value interface{}) {
+func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -401,13 +413,11 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 		Component: "door",
 		Operation: operation,
 		Info: info{
-			OID:       OID,
-			DeviceID:  stringify(d.DeviceID()),
-			DoorID:    stringify(d.Door()),
-			Door:      stringify(d.Name),
-			FieldName: field,
-			Current:   stringify(current),
-			Updated:   stringify(value),
+			DeviceID:    stringify(d.DeviceID()),
+			DoorID:      stringify(d.Door()),
+			Door:        stringify(d.Name),
+			FieldName:   field,
+			Description: description,
 		},
 	}
 
