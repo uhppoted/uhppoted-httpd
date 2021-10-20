@@ -1,7 +1,6 @@
 package logs
 
 import (
-	//	"encoding/json"
 	"fmt"
 	"time"
 
@@ -33,22 +32,22 @@ const LogDetails = catalog.LogDetails
 const ControllerName = catalog.ControllerName
 const ControllerDeviceID = catalog.ControllerDeviceID
 
-func NewLogEntry(oid catalog.OID, timestamp time.Time, entry audit.LogEntry) LogEntry {
-	component := entry.Component
-	id := entry.Info.ID()
-	name := entry.Info.Name()
-	field := entry.Info.Field()
-	details := entry.Info.Details()
+func NewLogEntry(oid catalog.OID, timestamp time.Time, record audit.AuditRecord) LogEntry {
+	component := record.Component
+	id := record.Details.ID
+	name := record.Details.Name
+	field := record.Details.Field
+	description := record.Details.Description
 
 	return LogEntry{
 		OID:           oid,
 		Timestamp:     timestamp,
-		UID:           entry.UID,
+		UID:           record.UID,
 		Component:     component,
 		ComponentID:   id,
 		ComponentName: name,
 		ModuleField:   field,
-		Details:       details,
+		Details:       description,
 	}
 }
 

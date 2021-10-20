@@ -226,10 +226,10 @@ func (ll *Logs) Validate() error {
 	return nil
 }
 
-func (ll *Logs) Received(entry audit.LogEntry) {
+func (ll *Logs) Received(record audit.AuditRecord) {
 	unknown := time.Time{}
-	timestamp := entry.Timestamp
-	if entry.Timestamp == unknown {
+	timestamp := record.Timestamp
+	if record.Timestamp == unknown {
 		timestamp = time.Now()
 	}
 
@@ -239,7 +239,7 @@ func (ll *Logs) Received(entry audit.LogEntry) {
 	k := newKey(timestamp)
 	if _, ok := ll.Logs[k]; !ok {
 		oid := catalog.NewLogEntry()
-		ll.Logs[k] = NewLogEntry(oid, timestamp, entry)
+		ll.Logs[k] = NewLogEntry(oid, timestamp, record)
 	}
 }
 

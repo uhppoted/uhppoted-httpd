@@ -100,7 +100,7 @@ func Init(cfg config.Config, conf string) error {
 	//	sys.cards.Print()
 	//	sys.events.Print()
 
-	listener := make(chan audit.LogEntry)
+	listener := make(chan audit.AuditRecord)
 	audit.AddListener(listener)
 
 	go func() {

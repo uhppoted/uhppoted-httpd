@@ -16,27 +16,27 @@ import (
 
 type trail struct {
 	logger    *log.Logger
-	listeners []chan<- LogEntry
+	listeners []chan<- AuditRecord
 }
 
-type Info interface {
-	ID() string
-	Name() string
-	Field() string
-	Details() string
+type Details struct {
+	ID          string
+	Name        string
+	Field       string
+	Description string
 }
 
-type LogEntry struct {
+type AuditRecord struct {
 	Timestamp time.Time
 	UID       string
 	OID       catalog.OID
 	Component string
 	Operation string
-	Info      Info
+	Details   Details
 }
 
 var auditTrail = trail{
-	listeners: []chan<- LogEntry{},
+	listeners: []chan<- AuditRecord{},
 }
 
 var guard sync.Mutex
@@ -62,7 +62,7 @@ func SetAuditFile(file string) {
 	auditTrail.logger = logger
 }
 
-func AddListener(listener chan<- LogEntry) {
+func AddListener(listener chan<- AuditRecord) {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -77,16 +77,16 @@ func AddListener(listener chan<- LogEntry) {
 	}
 }
 
-func Write(entry LogEntry) {
-	auditTrail.Write(entry)
+func Write(record AuditRecord) {
+	auditTrail.Write(record)
 }
 
-func (t *trail) Write(entry LogEntry) {
+func (t *trail) Write(record AuditRecord) {
 	var logmsg string
-	if info, err := json.Marshal(entry.Info); err == nil {
-		logmsg = fmt.Sprintf("%-10v %-10v %-10v %s", entry.UID, entry.Component, entry.Operation, info)
+	if info, err := json.Marshal(record.Details); err == nil {
+		logmsg = fmt.Sprintf("%-10v %-10v %-10v %s", record.UID, record.Component, record.Operation, info)
 	} else {
-		logmsg = fmt.Sprintf("%-10v %-10v %-10v %v", entry.UID, entry.Component, entry.Operation, entry.Info)
+		logmsg = fmt.Sprintf("%-10v %-10v %-10v %v", record.UID, record.Component, record.Operation, record.Details)
 	}
 
 	if t.logger != nil {
@@ -96,6 +96,6 @@ func (t *trail) Write(entry LogEntry) {
 	}
 
 	for _, l := range t.listeners {
-		l <- entry
+		l <- record
 	}
 }

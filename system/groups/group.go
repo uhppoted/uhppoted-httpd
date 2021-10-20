@@ -130,15 +130,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				p := g.Name
-				q := value
-				if p == "" {
-					p = "<blank>"
-				}
-				if q == "" {
-					q = "<blank>"
-				}
-				g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", p, q))
+				g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, "<blank>"), stringify(value, "<blank>")))
 				g.Name = value
 				objects = append(objects, catalog.NewObject2(g.OID, GroupName, g.Name))
 			}
@@ -267,14 +259,15 @@ func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field s
 		uid = auth.UID()
 	}
 
-	record := audit.LogEntry{
+	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       OID,
 		Component: "group",
 		Operation: operation,
-		Info: info{
-			Group:       stringify(g.Name),
-			FieldName:   field,
+		Details: audit.Details{
+			ID:          "",
+			Name:        stringify(g.Name, ""),
+			Field:       field,
 			Description: description,
 		},
 	}
@@ -282,23 +275,29 @@ func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field s
 	audit.Write(record)
 }
 
-func stringify(i interface{}) string {
+func stringify(i interface{}, defval string) string {
+	s := ""
+
 	switch v := i.(type) {
 	case *uint32:
 		if v != nil {
-			return fmt.Sprintf("%v", *v)
+			s = fmt.Sprintf("%v", *v)
 		}
 
 	case *string:
 		if v != nil {
-			return fmt.Sprintf("%v", *v)
+			s = fmt.Sprintf("%v", *v)
 		}
 
 	default:
 		if i != nil {
-			return fmt.Sprintf("%v", i)
+			s = fmt.Sprintf("%v", i)
 		}
 	}
 
-	return ""
+	if s != "" {
+		return s
+	}
+
+	return defval
 }

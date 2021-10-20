@@ -618,15 +618,15 @@ func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, fi
 		uid = auth.UID()
 	}
 
-	record := audit.LogEntry{
+	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       OID,
 		Component: "controller",
 		Operation: operation,
-		Info: controllerInfo{
-			DeviceID:    stringify(c.DeviceID, ""),
-			DeviceName:  stringify(c.Name, ""),
-			FieldName:   field,
+		Details: audit.Details{
+			ID:          stringify(c.DeviceID, ""),
+			Name:        stringify(c.Name, ""),
+			Field:       field,
 			Description: description,
 		},
 	}

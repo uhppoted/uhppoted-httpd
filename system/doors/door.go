@@ -117,11 +117,11 @@ func (d *Door) AsObjects() []interface{} {
 		ID      string
 		door    string
 	}{
-		OID:     stringify(d.lookup(DoorControllerOID)),
-		created: stringify(d.lookup(DoorControllerCreated)),
-		name:    stringify(d.lookup(DoorControllerName)),
-		ID:      stringify(d.lookup(DoorControllerID)),
-		door:    stringify(d.lookup(DoorControllerDoor)),
+		OID:     stringify(d.lookup(DoorControllerOID), ""),
+		created: stringify(d.lookup(DoorControllerCreated), ""),
+		name:    stringify(d.lookup(DoorControllerName), ""),
+		ID:      stringify(d.lookup(DoorControllerID), ""),
+		door:    stringify(d.lookup(DoorControllerDoor), ""),
 	}
 
 	delay := struct {
@@ -236,19 +236,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				p := d.Name
-				q := value
-
-				if p == "" {
-					p = "<blank>"
-				}
-
-				if q == "" {
-					q = "<blank>"
-				}
-
-				d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", p, q))
-
+				d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, "<blank>"), stringify(value, "<blank>")))
 				d.Name = value
 				objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
 			}
@@ -407,16 +395,15 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 		uid = auth.UID()
 	}
 
-	record := audit.LogEntry{
+	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       OID,
 		Component: "door",
 		Operation: operation,
-		Info: info{
-			DeviceID:    stringify(d.DeviceID()),
-			DoorID:      stringify(d.Door()),
-			Door:        stringify(d.Name),
-			FieldName:   field,
+		Details: audit.Details{
+			ID:          fmt.Sprintf("%v:%v", d.DeviceID(), d.Door()),
+			Name:        stringify(d.Name, ""),
+			Field:       field,
 			Description: description,
 		},
 	}
@@ -424,23 +411,29 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 	audit.Write(record)
 }
 
-func stringify(i interface{}) string {
+func stringify(i interface{}, defval string) string {
+	s := ""
+
 	switch v := i.(type) {
 	case *uint32:
 		if v != nil {
-			return fmt.Sprintf("%v", *v)
+			s = fmt.Sprintf("%v", *v)
 		}
 
 	case *string:
 		if v != nil {
-			return fmt.Sprintf("%v", *v)
+			s = fmt.Sprintf("%v", *v)
 		}
 
 	default:
 		if i != nil {
-			return fmt.Sprintf("%v", i)
+			s = fmt.Sprintf("%v", i)
 		}
 	}
 
-	return ""
+	if s != "" {
+		return s
+	}
+
+	return defval
 }

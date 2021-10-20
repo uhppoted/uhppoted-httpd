@@ -84,7 +84,7 @@
         - [x] groups
         - [x] cards
 
-  - [ ] Replace audit log record `Info` with details field
+  - [x] Replace audit log record `Info` with details field
   - [ ] Commit audit trail after validate + save
   - [ ] Save
   - [ ] Load

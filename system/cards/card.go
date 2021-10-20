@@ -168,15 +168,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				p := stringify(c.Name)
-				q := stringify(value)
-				if p == "" {
-					p = "<blank>"
-				}
-				if q == "" {
-					q = "<blank>"
-				}
-				c.log(auth, "update", c.OID, "name", fmt.Sprintf("Updated name from %v to %v", p, q))
+				c.log(auth, "update", c.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, "<blank>"), stringify(value, "<blank>")))
 
 				v := types.Name(value)
 				c.Name = &v
@@ -199,7 +191,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				if err := f("number", 0); err != nil {
 					return nil, err
 				} else {
-					if p := stringify(c.Name); p != "" {
+					if p := stringify(c.Name, ""); p != "" {
 						c.log(auth, "update", c.OID, "number", fmt.Sprintf("Cleared card number %v for %v", c.Card, p))
 					} else {
 						c.log(auth, "update", c.OID, "number", fmt.Sprintf("Cleared card number %v", c.Card))
@@ -265,9 +257,9 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				}
 			}
 
-			if p := stringify(clone.Card); p != "" {
+			if p := stringify(clone.Card, ""); p != "" {
 				c.log(auth, "delete", c.OID, "card", fmt.Sprintf("Deleted card %v", p))
-			} else if p = stringify(clone.Name); p != "" {
+			} else if p = stringify(clone.Name, ""); p != "" {
 				c.log(auth, "delete", c.OID, "card", fmt.Sprintf("Deleted card for %v", p))
 			} else {
 				c.log(auth, "delete", c.OID, "card", "Deleted card")
@@ -407,15 +399,15 @@ func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field st
 		uid = auth.UID()
 	}
 
-	record := audit.LogEntry{
+	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       oid,
 		Component: "card",
 		Operation: operation,
-		Info: info{
-			Card:        stringify(c.Card),
-			CardName:    stringify(c.Name),
-			FieldName:   field,
+		Details: audit.Details{
+			ID:          stringify(c.Card, ""),
+			Name:        stringify(c.Name, ""),
+			Field:       field,
 			Description: description,
 		},
 	}
@@ -423,23 +415,29 @@ func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field st
 	audit.Write(record)
 }
 
-func stringify(i interface{}) string {
+func stringify(i interface{}, defval string) string {
+	s := ""
+
 	switch v := i.(type) {
 	case *uint32:
 		if v != nil {
-			return fmt.Sprintf("%v", *v)
+			s = fmt.Sprintf("%v", *v)
 		}
 
 	case *string:
 		if v != nil {
-			return fmt.Sprintf("%v", *v)
+			s = fmt.Sprintf("%v", *v)
 		}
 
 	default:
 		if i != nil {
-			return fmt.Sprintf("%v", i)
+			s = fmt.Sprintf("%v", i)
 		}
 	}
 
-	return ""
+	if s != "" {
+		return s
+	}
+
+	return defval
 }
