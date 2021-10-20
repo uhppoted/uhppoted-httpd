@@ -168,7 +168,16 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "name", fmt.Sprintf("Updated name from %v to %v", c.Name, value))
+				p := stringify(c.Name)
+				q := stringify(value)
+				if p == "" {
+					p = "<blank>"
+				}
+				if q == "" {
+					q = "<blank>"
+				}
+				c.log(auth, "update", c.OID, "name", fmt.Sprintf("Updated name from %v to %v", p, q))
+
 				v := types.Name(value)
 				c.Name = &v
 				objects = append(objects, catalog.NewObject2(c.OID, CardName, c.Name))
@@ -190,7 +199,12 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				if err := f("number", 0); err != nil {
 					return nil, err
 				} else {
-					c.log(auth, "update", c.OID, "number", fmt.Sprintf("Cleared card number %v for %v", c.Card, c.Name))
+					if p := stringify(c.Name); p != "" {
+						c.log(auth, "update", c.OID, "number", fmt.Sprintf("Cleared card number %v for %v", c.Card, p))
+					} else {
+						c.log(auth, "update", c.OID, "number", fmt.Sprintf("Cleared card number %v", c.Card))
+					}
+
 					c.Card = nil
 					objects = append(objects, catalog.NewObject2(c.OID, CardNumber, ""))
 				}
@@ -251,7 +265,14 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				}
 			}
 
-			c.log(auth, "delete", c.OID, "card", "Deleted")
+			if p := stringify(clone.Card); p != "" {
+				c.log(auth, "delete", c.OID, "card", fmt.Sprintf("Deleted card %v", p))
+			} else if p = stringify(clone.Name); p != "" {
+				c.log(auth, "delete", c.OID, "card", fmt.Sprintf("Deleted card for %v", p))
+			} else {
+				c.log(auth, "delete", c.OID, "card", "Deleted card")
+			}
+
 			now := time.Now()
 			c.deleted = &now
 

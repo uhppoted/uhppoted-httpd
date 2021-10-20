@@ -56,6 +56,9 @@
 #### Cards
   - [ ] Update unit tests for OID'd implementation
         - Make audit trail usable for unit tests
+  - [ ] Weirdness around adding card
+        - At top of list until updated
+        - Can't delete card with name but no number
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
   - [ ] `refresh` is overwriting pending group edits
@@ -73,9 +76,11 @@
   - [ ] Format log records for 'add'
         - [x] doors
         - [x] groups
+        - [x] cards
   - [ ] Format log records for 'delete'
         - [x] doors
         - [x] groups
+        - [x] cards
 
   - [ ] Replace audit log record `Info` with details field
   - [ ] Commit audit trail after validate + save
