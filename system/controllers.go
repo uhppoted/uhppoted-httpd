@@ -6,6 +6,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -23,21 +24,23 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 		Objects []interface{} `json:"objects,omitempty"`
 	}{}
 
+	dbc := db.NewDBC(sys.trail)
 	shadow := sys.controllers.Clone()
 
 	for _, object := range objects {
-		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value); err != nil {
+		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value, dbc); err != nil {
 			return nil, err
 		} else if updated != nil {
 			list.Objects = append(list.Objects, updated...)
 		}
 	}
 
-	if err := save(shadow); err != nil {
+	if err := save(&shadow); err != nil {
 		return nil, err
 	}
 
-	sys.controllers = *shadow
+	dbc.Commit()
+	sys.controllers = shadow
 	sys.controllers.Stash()
 	sys.updated()
 

@@ -15,6 +15,7 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
@@ -236,7 +237,7 @@ func (cc *ControllerSet) Print() {
 	}
 }
 
-func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
 	if cc == nil {
 		return nil, nil
 	}
@@ -249,7 +250,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 	// ... controllers
 	for _, c := range cc.Controllers {
 		if c != nil && c.OID.Contains(oid) {
-			return c.set(auth, oid, value)
+			return c.set(auth, oid, value, dbc)
 		}
 	}
 
@@ -261,7 +262,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
-			c.log(auth, "add", c.OID, "controller", fmt.Sprintf("Added <new> controller"))
+			c.log(auth, "add", c.OID, "controller", fmt.Sprintf("Added <new> controller"), dbc)
 			objects = append(objects, catalog.NewObject(c.OID, "new"))
 		}
 	}
@@ -336,7 +337,7 @@ loop:
 	}
 }
 
-func (cc *ControllerSet) Clone() *ControllerSet {
+func (cc *ControllerSet) Clone() ControllerSet {
 	shadow := ControllerSet{
 		file:        cc.file,
 		Controllers: make([]*Controller, len(cc.Controllers)),
@@ -349,7 +350,7 @@ func (cc *ControllerSet) Clone() *ControllerSet {
 
 	shadow.LAN = cc.LAN.clone()
 
-	return &shadow
+	return shadow
 }
 
 func Export(file string, controllers []*Controller, doors map[string]doors.Door) error {
