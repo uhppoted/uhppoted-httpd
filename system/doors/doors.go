@@ -13,6 +13,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 )
 
 type Doors struct {
@@ -199,14 +200,14 @@ func (dd Doors) Print() {
 	}
 }
 
-func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
 	if dd == nil {
 		return nil, nil
 	}
 
 	for k, d := range dd.Doors {
 		if d.OID.Contains(oid) {
-			objects, err := d.set(auth, oid, value)
+			objects, err := d.set(auth, oid, value, dbc)
 			if err == nil {
 				dd.Doors[k] = d
 			}
@@ -223,7 +224,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([
 		} else if d == nil {
 			return nil, fmt.Errorf("Failed to add 'new' door")
 		} else {
-			d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added <new> door"))
+			d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added <new> door"), dbc)
 			dd.Doors[d.OID] = *d
 			objects = append(objects, catalog.NewObject(d.OID, "new"))
 		}
@@ -248,7 +249,7 @@ func (dd *Doors) add(auth auth.OpAuth, d Door) (*Door, error) {
 	return &record, nil
 }
 
-func (dd *Doors) Clone() *Doors {
+func (dd *Doors) Clone() Doors {
 	shadow := Doors{
 		Doors: map[catalog.OID]Door{},
 		file:  dd.file,
@@ -258,7 +259,7 @@ func (dd *Doors) Clone() *Doors {
 		shadow.Doors[k] = v.clone()
 	}
 
-	return &shadow
+	return shadow
 }
 
 func (dd *Doors) Validate() error {

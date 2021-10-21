@@ -11,6 +11,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -217,7 +218,7 @@ func (d *Door) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -236,7 +237,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, "<blank>"), stringify(value, "<blank>")))
+				d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, "<blank>"), stringify(value, "<blank>")), dbc)
 				d.Name = value
 				objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
 			}
@@ -256,7 +257,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayError, ""))
 
-				d.log(auth, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value))
+				d.log(auth, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
 			}
 
 		case d.OID.Append(DoorControl):
@@ -283,7 +284,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlConfigured, d.mode))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlError, ""))
 
-				d.log(auth, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value))
+				d.log(auth, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
 			}
 		}
 
@@ -294,7 +295,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				}
 			}
 
-			d.log(auth, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name))
+			d.log(auth, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
 			now := time.Now()
 			d.deleted = &now
 
@@ -389,7 +390,7 @@ func (d *Door) lookup(suffix catalog.Suffix) interface{} {
 	return nil
 }
 
-func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string) {
+func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -408,7 +409,7 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 		},
 	}
 
-	audit.Write(record)
+	dbc.Write(record)
 }
 
 func stringify(i interface{}, defval string) string {

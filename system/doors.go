@@ -5,6 +5,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -22,10 +23,11 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		Objects []interface{} `json:"objects,omitempty"`
 	}{}
 
+	dbc := db.NewDBC(sys.trail)
 	shadow := sys.doors.Clone()
 
 	for _, object := range objects {
-		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value); err != nil {
+		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value, dbc); err != nil {
 			return nil, err
 		} else if updated != nil {
 			list.Objects = append(list.Objects, updated...)
@@ -61,7 +63,8 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, err
 	}
 
-	sys.doors = *shadow
+	sys.doors = shadow
+	dbc.Commit()
 	sys.doors.Stash()
 	sys.updated()
 
