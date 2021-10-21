@@ -244,7 +244,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 
 	// ... interface
 	if cc.LAN != nil && cc.LAN.OID.Contains(oid) {
-		return cc.LAN.set(auth, oid, value)
+		return cc.LAN.set(auth, oid, value, dbc)
 	}
 
 	// ... controllers

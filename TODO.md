@@ -75,8 +75,8 @@
 #### Logs
   - [ ] Commit audit trail after validate + save
         - [ ] LAN
-        - [ ] controllers
-        - [ ] doors
+        - [x] controllers
+        - [x] doors
         - [x] cards
         - [x] groups
   - [ ] Save

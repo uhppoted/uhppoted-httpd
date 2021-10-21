@@ -15,6 +15,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
@@ -105,7 +106,7 @@ func (l *LAN) clone() *LAN {
 	return nil
 }
 
-func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -122,7 +123,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				l.log(auth, "update", l.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(l.Name, "<blank>"), stringify(value, "<blank>")))
+				l.log(auth, "update", l.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(l.Name, "<blank>"), stringify(value, "<blank>")), dbc)
 				l.Name = value
 				objects = append(objects, catalog.NewObject2(l.OID, LANName, l.Name))
 			}
@@ -133,7 +134,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{
 			} else if err := f("bind", addr); err != nil {
 				return nil, err
 			} else {
-				l.log(auth, "update", l.OID, "bind", fmt.Sprintf("Updated bind address from %v to %v", stringify(l.BindAddress, "<blank>"), stringify(value, "<blank>")))
+				l.log(auth, "update", l.OID, "bind", fmt.Sprintf("Updated bind address from %v to %v", stringify(l.BindAddress, "<blank>"), stringify(value, "<blank>")), dbc)
 				l.BindAddress = *addr
 				objects = append(objects, catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress))
 			}
@@ -144,7 +145,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{
 			} else if err := f("broadcast", addr); err != nil {
 				return nil, err
 			} else {
-				l.log(auth, "update", l.OID, "broadcast", fmt.Sprintf("Updated broadcast address from %v to %v", stringify(l.BroadcastAddress, "<blank>"), stringify(value, "<blank>")))
+				l.log(auth, "update", l.OID, "broadcast", fmt.Sprintf("Updated broadcast address from %v to %v", stringify(l.BroadcastAddress, "<blank>"), stringify(value, "<blank>")), dbc)
 				l.BroadcastAddress = *addr
 				objects = append(objects, catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress))
 			}
@@ -155,7 +156,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{
 			} else if err = f("listen", addr); err != nil {
 				return nil, err
 			} else {
-				l.log(auth, "update", l.OID, "listen", fmt.Sprintf("Updated listen address from %v to %v", stringify(l.ListenAddress, "<blank>"), stringify(value, "<blank>")))
+				l.log(auth, "update", l.OID, "listen", fmt.Sprintf("Updated listen address from %v to %v", stringify(l.ListenAddress, "<blank>"), stringify(value, "<blank>")), dbc)
 				l.ListenAddress = *addr
 				objects = append(objects, catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress))
 			}
@@ -548,7 +549,7 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 func (l LAN) stash() {
 }
 
-func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string) {
+func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -567,5 +568,5 @@ func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field str
 		},
 	}
 
-	audit.Write(record)
+	dbc.Write(record)
 }
