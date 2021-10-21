@@ -73,19 +73,12 @@
 #### Groups
 
 #### Logs
-  - [x] Format log records for 'add'
-        - [x] controllers
-        - [x] doors
-        - [x] groups
-        - [x] cards
-  - [x] Format log records for 'delete'
-        - [x] controllers
-        - [x] doors
-        - [x] groups
-        - [x] cards
-
-  - [x] Replace audit log record `Info` with details field
   - [ ] Commit audit trail after validate + save
+        - [ ] LAN
+        - [ ] controllers
+        - [ ] doors
+        - [ ] cards
+        - [x] groups
   - [ ] Save
   - [ ] Load
 

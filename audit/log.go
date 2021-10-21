@@ -14,6 +14,10 @@ import (
 	"github.com/uhppoted/uhppoted-lib/eventlog"
 )
 
+type AuditTrail interface {
+	Write(record AuditRecord)
+}
+
 type trail struct {
 	logger    *log.Logger
 	listeners []chan<- AuditRecord
@@ -40,6 +44,10 @@ var auditTrail = trail{
 }
 
 var guard sync.Mutex
+
+func MakeTrail() AuditTrail {
+	return &auditTrail
+}
 
 func SetAuditFile(file string) {
 	guard.Lock()

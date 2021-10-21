@@ -12,6 +12,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 )
 
 type Groups struct {
@@ -186,14 +187,14 @@ func (gg *Groups) AsObjects() []interface{} {
 	return objects
 }
 
-func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
 	if gg == nil {
 		return nil, nil
 	}
 
 	for k, g := range gg.Groups {
 		if g.OID.Contains(oid) {
-			objects, err := g.set(auth, oid, value)
+			objects, err := g.set(auth, oid, value, dbc)
 			if err == nil {
 				gg.Groups[k] = g
 			}
@@ -210,7 +211,7 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) (
 		} else if g == nil {
 			return nil, fmt.Errorf("Failed to add 'new' group")
 		} else {
-			g.log(auth, "add", g.OID, "group", "Added <new> group")
+			g.log(auth, "add", g.OID, "group", "Added <new> group", dbc)
 
 			g.Index = uint32(len(gg.Groups) + 1)
 			for _, p := range gg.Groups {

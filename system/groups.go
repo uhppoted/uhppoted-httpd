@@ -2,12 +2,12 @@ package system
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()
-
 	defer sys.Unlock()
 
 	objects, err := unpack(m)
@@ -19,10 +19,11 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 		Objects []interface{} `json:"objects,omitempty"`
 	}{}
 
+	dbc := db.NewDBC(sys.trail)
 	shadow := sys.groups.Clone()
 
 	for _, object := range objects {
-		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value); err != nil {
+		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value, dbc); err != nil {
 			return nil, err
 		} else if updated != nil {
 			list.Objects = append(list.Objects, updated...)
@@ -37,6 +38,7 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 		return nil, err
 	}
 
+	dbc.Commit()
 	sys.groups = *shadow
 	sys.groups.Stash()
 	sys.updated()

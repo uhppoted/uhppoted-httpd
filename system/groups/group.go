@@ -10,6 +10,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -112,7 +113,7 @@ func (g *Group) AsRuleEntity() interface{} {
 	return &entity
 }
 
-func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -130,7 +131,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, "<blank>"), stringify(value, "<blank>")))
+				g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, "<blank>"), stringify(value, "<blank>")), dbc)
 				g.Name = value
 				objects = append(objects, catalog.NewObject2(g.OID, GroupName, g.Name))
 			}
@@ -145,9 +146,9 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 					return nil, err
 				} else {
 					if value == "true" {
-						g.log(auth, "update", g.OID, "door", fmt.Sprintf("Granted access to %v", door))
+						g.log(auth, "update", g.OID, "door", fmt.Sprintf("Granted access to %v", door), dbc)
 					} else {
-						g.log(auth, "update", g.OID, "door", fmt.Sprintf("Revoked access to %v", door))
+						g.log(auth, "update", g.OID, "door", fmt.Sprintf("Revoked access to %v", door), dbc)
 					}
 
 					g.Doors[k] = value == "true"
@@ -163,7 +164,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 				}
 			}
 
-			g.log(auth, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name))
+			g.log(auth, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
 			now := time.Now()
 			g.deleted = &now
 			objects = append(objects, catalog.NewObject(g.OID, "deleted"))
@@ -253,7 +254,7 @@ func (g Group) clone() Group {
 func (g Group) stash() {
 }
 
-func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string) {
+func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -272,7 +273,7 @@ func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field s
 		},
 	}
 
-	audit.Write(record)
+	dbc.Write(record)
 }
 
 func stringify(i interface{}, defval string) string {

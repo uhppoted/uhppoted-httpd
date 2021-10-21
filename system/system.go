@@ -49,6 +49,7 @@ type system struct {
 	taskQ       TaskQ
 	retention   time.Duration // time after which 'deleted' items are permanently removed
 	callback    callback
+	trail       audit.AuditTrail
 }
 
 type callback struct {
@@ -88,6 +89,7 @@ func Init(cfg config.Config, conf string) error {
 	sys.conf = conf
 	sys.rules = rules
 	sys.retention = cfg.HTTPD.Retention
+	sys.trail = audit.MakeTrail()
 
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
 		cfg.HTTPD.System.Windows.Uncertain,
