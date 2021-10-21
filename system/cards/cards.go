@@ -11,6 +11,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -144,14 +145,14 @@ func (cc *Cards) Clone() Cards {
 	return shadow
 }
 
-func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
 	if cc == nil {
 		return nil, nil
 	}
 
 	for k, c := range cc.Cards {
 		if c.OID.Contains(oid) {
-			objects, err := c.set(auth, oid, value)
+			objects, err := c.set(auth, oid, value, dbc)
 			if err == nil {
 				cc.Cards[k] = c
 			}
@@ -168,7 +169,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' card")
 		} else {
-			c.log(auth, "add", c.OID, "card", "Added <new> card")
+			c.log(auth, "add", c.OID, "card", "Added <new> card", dbc)
 			cc.Cards[c.OID] = c
 			objects = append(objects, catalog.NewObject(c.OID, "new"))
 		}

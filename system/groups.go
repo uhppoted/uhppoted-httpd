@@ -39,7 +39,7 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 	}
 
 	dbc.Commit()
-	sys.groups = *shadow
+	sys.groups = shadow
 	sys.groups.Stash()
 	sys.updated()
 

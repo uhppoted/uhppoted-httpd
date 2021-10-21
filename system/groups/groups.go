@@ -148,7 +148,7 @@ func (gg Groups) Print() {
 	}
 }
 
-func (gg *Groups) Clone() *Groups {
+func (gg *Groups) Clone() Groups {
 	shadow := Groups{
 		Groups: map[catalog.OID]Group{},
 		file:   gg.file,
@@ -158,7 +158,7 @@ func (gg *Groups) Clone() *Groups {
 		shadow.Groups[k] = v.clone()
 	}
 
-	return &shadow
+	return shadow
 }
 
 func (gg *Groups) AsObjects() []interface{} {

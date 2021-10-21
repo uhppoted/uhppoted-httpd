@@ -77,7 +77,7 @@
         - [ ] LAN
         - [ ] controllers
         - [ ] doors
-        - [ ] cards
+        - [x] cards
         - [x] groups
   - [ ] Save
   - [ ] Load

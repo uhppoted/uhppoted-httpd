@@ -10,6 +10,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -149,7 +150,7 @@ func (c *Card) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	f := func(field string, value interface{}) error {
@@ -168,7 +169,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				c.log(auth, "update", c.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, "<blank>"), stringify(value, "<blank>")))
+				c.log(auth, "update", c.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, "<blank>"), stringify(value, "<blank>")), dbc)
 
 				v := types.Name(value)
 				c.Name = &v
@@ -182,7 +183,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 				} else if err := f("number", n); err != nil {
 					return nil, err
 				} else {
-					c.log(auth, "update", c.OID, "card", fmt.Sprintf("Updated card number from %v to %v", c.Card, value))
+					c.log(auth, "update", c.OID, "card", fmt.Sprintf("Updated card number from %v to %v", c.Card, value), dbc)
 					v := types.Card(n)
 					c.Card = &v
 					objects = append(objects, catalog.NewObject2(c.OID, CardNumber, c.Card))
@@ -192,9 +193,9 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 					return nil, err
 				} else {
 					if p := stringify(c.Name, ""); p != "" {
-						c.log(auth, "update", c.OID, "number", fmt.Sprintf("Cleared card number %v for %v", c.Card, p))
+						c.log(auth, "update", c.OID, "number", fmt.Sprintf("Cleared card number %v for %v", c.Card, p), dbc)
 					} else {
-						c.log(auth, "update", c.OID, "number", fmt.Sprintf("Cleared card number %v", c.Card))
+						c.log(auth, "update", c.OID, "number", fmt.Sprintf("Cleared card number %v", c.Card), dbc)
 					}
 
 					c.Card = nil
@@ -210,7 +211,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			} else if from == nil {
 				return nil, fmt.Errorf("invalid 'from' date (%v)", value)
 			} else {
-				c.log(auth, "update", c.OID, "from", fmt.Sprintf("Updated VALID FROM date from %v to %v", c.From, value))
+				c.log(auth, "update", c.OID, "from", fmt.Sprintf("Updated VALID FROM date from %v to %v", c.From, value), dbc)
 				c.From = from
 				objects = append(objects, catalog.NewObject2(c.OID, CardFrom, c.From))
 			}
@@ -223,7 +224,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			} else if to == nil {
 				return nil, fmt.Errorf("invalid 'to' date (%v)", value)
 			} else {
-				c.log(auth, "update", c.OID, "to", fmt.Sprintf("Updated VALID UNTIL date from %v to %v", c.From, value))
+				c.log(auth, "update", c.OID, "to", fmt.Sprintf("Updated VALID UNTIL date from %v to %v", c.From, value), dbc)
 				c.To = to
 				objects = append(objects, catalog.NewObject2(c.OID, CardTo, c.To))
 			}
@@ -239,9 +240,9 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 					group, _ := catalog.GetV(catalog.OID(k).Append(GroupName))
 
 					if value == "true" {
-						c.log(auth, "update", c.OID, "group", fmt.Sprintf("Granted access to %v", group))
+						c.log(auth, "update", c.OID, "group", fmt.Sprintf("Granted access to %v", group), dbc)
 					} else {
-						c.log(auth, "update", c.OID, "group", fmt.Sprintf("Revoked access to %v", group))
+						c.log(auth, "update", c.OID, "group", fmt.Sprintf("Revoked access to %v", group), dbc)
 					}
 
 					c.Groups[k] = value == "true"
@@ -258,11 +259,11 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface
 			}
 
 			if p := stringify(clone.Card, ""); p != "" {
-				c.log(auth, "delete", c.OID, "card", fmt.Sprintf("Deleted card %v", p))
+				c.log(auth, "delete", c.OID, "card", fmt.Sprintf("Deleted card %v", p), dbc)
 			} else if p = stringify(clone.Name, ""); p != "" {
-				c.log(auth, "delete", c.OID, "card", fmt.Sprintf("Deleted card for %v", p))
+				c.log(auth, "delete", c.OID, "card", fmt.Sprintf("Deleted card for %v", p), dbc)
 			} else {
-				c.log(auth, "delete", c.OID, "card", "Deleted card")
+				c.log(auth, "delete", c.OID, "card", "Deleted card", dbc)
 			}
 
 			now := time.Now()
@@ -393,7 +394,7 @@ func (c *Card) clone() *Card {
 func (c Card) stash() {
 }
 
-func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field string, description string) {
+func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field string, description string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -412,7 +413,7 @@ func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field st
 		},
 	}
 
-	audit.Write(record)
+	dbc.Write(record)
 }
 
 func stringify(i interface{}, defval string) string {
