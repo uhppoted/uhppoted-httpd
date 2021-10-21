@@ -22,7 +22,7 @@ func TestCardAdd(t *testing.T) {
 
 	catalog.PutCard(hagrid.OID)
 
-	r, err := cards.UpdateByOID(nil, "<new>", "")
+	r, err := cards.UpdateByOID(nil, "<new>", "", nil)
 	if err != nil {
 		t.Fatalf("Unexpected error adding new card (%v)", err)
 	}
@@ -42,7 +42,7 @@ func TestCardAddWithAuth(t *testing.T) {
 
 	catalog.PutCard(hagrid.OID)
 
-	r, err := cards.UpdateByOID(&auth, "<new>", "")
+	r, err := cards.UpdateByOID(&auth, "<new>", "", nil)
 	if err == nil {
 		t.Errorf("Expected 'not authorised' error adding card, got:%v", err)
 	}
@@ -126,7 +126,7 @@ func TestCardUpdate(t *testing.T) {
 		catalog.Object{OID: "0.3.1.2", Value: "1234567"},
 	}
 
-	objects, err := cards.UpdateByOID(nil, hagrid.OID.Append(CardNumber), "1234567")
+	objects, err := cards.UpdateByOID(nil, hagrid.OID.Append(CardNumber), "1234567", nil)
 	if err != nil {
 		t.Errorf("Unexpected error updating card (%v)", err)
 	}
@@ -144,7 +144,7 @@ func TestCardUpdateWithAuth(t *testing.T) {
 	final := makeCards(hagrid)
 	auth := stub{}
 
-	if _, err := cards.UpdateByOID(&auth, hagrid.OID.Append(CardNumber), "1234567"); err == nil {
+	if _, err := cards.UpdateByOID(&auth, hagrid.OID.Append(CardNumber), "1234567", nil); err == nil {
 		t.Errorf("Expected 'not authorised' error updating card, got:%v", err)
 	}
 
@@ -189,7 +189,7 @@ func TestCardUpdateWithAuth(t *testing.T) {
 func TestDuplicateCardNumberUpdate(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 
-	_, err := cards.UpdateByOID(nil, "0.3.1.2", "1234567")
+	_, err := cards.UpdateByOID(nil, "0.3.1.2", "1234567", nil)
 	if err != nil {
 		t.Errorf("Unexpected error updating cards (%v)", err)
 	}
@@ -203,11 +203,11 @@ func TestCardNumberSwap(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 	final := makeCards(makeCard("0.3.1", "Hagrid", 1234567), makeCard("0.3.2", "Dobby", 6514231, "G05"))
 
-	if _, err := cards.UpdateByOID(nil, "0.3.1.2", "1234567"); err != nil {
+	if _, err := cards.UpdateByOID(nil, "0.3.1.2", "1234567", nil); err != nil {
 		t.Fatalf("Unexpected error updating cards (%v)", err)
 	}
 
-	if _, err := cards.UpdateByOID(nil, "0.3.2.2", "6514231"); err != nil {
+	if _, err := cards.UpdateByOID(nil, "0.3.2.2", "6514231", nil); err != nil {
 		t.Fatalf("Unexpected error updating cards (%v)", err)
 	}
 
@@ -223,11 +223,11 @@ func TestCardDelete(t *testing.T) {
 
 	catalog.PutCard(hagrid.OID)
 
-	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(catalog.CardName), ""); err != nil {
+	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(catalog.CardName), "", nil); err != nil {
 		t.Fatalf("Unexpected error deleting card (%v)", err)
 	}
 
-	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(catalog.CardNumber), ""); err != nil {
+	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(catalog.CardNumber), "", nil); err != nil {
 		t.Fatalf("Unexpected error deleting card (%v)", err)
 	}
 
@@ -248,11 +248,11 @@ func TestCardHolderDeleteWithAuth(t *testing.T) {
 		},
 	}
 
-	if _, err := cards.UpdateByOID(&authx, dobby.OID.Append(catalog.CardName), ""); err != nil {
+	if _, err := cards.UpdateByOID(&authx, dobby.OID.Append(catalog.CardName), "", nil); err != nil {
 		t.Fatalf("Unexpected error deleting card (%v)", err)
 	}
 
-	if _, err := cards.UpdateByOID(&authx, dobby.OID.Append(catalog.CardNumber), ""); err == nil {
+	if _, err := cards.UpdateByOID(&authx, dobby.OID.Append(catalog.CardNumber), "", nil); err == nil {
 		t.Fatalf("Expected 'not authorised' error deleting card, got:%v", err)
 	}
 }

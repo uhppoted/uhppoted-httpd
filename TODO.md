@@ -73,8 +73,8 @@
 #### Groups
 
 #### Logs
-  - [ ] Commit audit trail after validate + save
-        - [ ] LAN
+  - [x] Commit audit trail after validate + save
+        - [x] LAN
         - [x] controllers
         - [x] doors
         - [x] cards

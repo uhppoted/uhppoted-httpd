@@ -19,8 +19,7 @@ type AuditTrail interface {
 }
 
 type trail struct {
-	logger    *log.Logger
-	listeners []chan<- AuditRecord
+	logger *log.Logger
 }
 
 type Details struct {
@@ -39,9 +38,7 @@ type AuditRecord struct {
 	Details   Details
 }
 
-var auditTrail = trail{
-	listeners: []chan<- AuditRecord{},
-}
+var auditTrail = trail{}
 
 var guard sync.Mutex
 
@@ -70,25 +67,6 @@ func SetAuditFile(file string) {
 	auditTrail.logger = logger
 }
 
-func AddListener(listener chan<- AuditRecord) {
-	guard.Lock()
-	defer guard.Unlock()
-
-	if listener != nil {
-		for _, l := range auditTrail.listeners {
-			if l == listener {
-				return
-			}
-		}
-
-		auditTrail.listeners = append(auditTrail.listeners, listener)
-	}
-}
-
-func Write(record AuditRecord) {
-	auditTrail.Write(record)
-}
-
 func (t *trail) Write(record AuditRecord) {
 	var logmsg string
 	if info, err := json.Marshal(record.Details); err == nil {
@@ -101,9 +79,5 @@ func (t *trail) Write(record AuditRecord) {
 		t.logger.Printf("%s", logmsg)
 	} else {
 		log.Printf("%s", logmsg)
-	}
-
-	for _, l := range t.listeners {
-		l <- record
 	}
 }

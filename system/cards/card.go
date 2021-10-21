@@ -413,7 +413,9 @@ func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field st
 		},
 	}
 
-	dbc.Write(record)
+	if dbc != nil {
+		dbc.Write(record)
+	}
 }
 
 func stringify(i interface{}, defval string) string {

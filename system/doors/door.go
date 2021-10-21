@@ -409,7 +409,9 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 		},
 	}
 
-	dbc.Write(record)
+	if dbc != nil {
+		dbc.Write(record)
+	}
 }
 
 func stringify(i interface{}, defval string) string {

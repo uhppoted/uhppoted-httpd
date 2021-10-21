@@ -49,7 +49,16 @@ type system struct {
 	taskQ       TaskQ
 	retention   time.Duration // time after which 'deleted' items are permanently removed
 	callback    callback
-	trail       audit.AuditTrail
+	trail       trail
+}
+
+type trail struct {
+	trail audit.AuditTrail
+}
+
+func (t trail) Write(record audit.AuditRecord) {
+	t.trail.Write(record)
+	sys.logs.Received(record)
 }
 
 type callback struct {
@@ -89,7 +98,9 @@ func Init(cfg config.Config, conf string) error {
 	sys.conf = conf
 	sys.rules = rules
 	sys.retention = cfg.HTTPD.Retention
-	sys.trail = audit.MakeTrail()
+	sys.trail = trail{
+		trail: audit.MakeTrail(),
+	}
 
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
 		cfg.HTTPD.System.Windows.Uncertain,
@@ -102,15 +113,15 @@ func Init(cfg config.Config, conf string) error {
 	//	sys.cards.Print()
 	//	sys.events.Print()
 
-	listener := make(chan audit.AuditRecord)
-	audit.AddListener(listener)
-
-	go func() {
-		for {
-			entry := <-listener
-			sys.logs.Received(entry)
-		}
-	}()
+	//	listener := make(chan audit.AuditRecord)
+	//	audit.AddListener(listener)
+	//
+	//	go func() {
+	//		for {
+	//			entry := <-listener
+	//			sys.logs.Received(entry)
+	//		}
+	//	}()
 
 	go func() {
 		time.Sleep(2500 * time.Millisecond)

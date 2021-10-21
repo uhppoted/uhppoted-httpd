@@ -273,7 +273,9 @@ func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field s
 		},
 	}
 
-	dbc.Write(record)
+	if dbc != nil {
+		dbc.Write(record)
+	}
 }
 
 func stringify(i interface{}, defval string) string {

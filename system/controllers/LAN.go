@@ -568,5 +568,7 @@ func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field str
 		},
 	}
 
-	dbc.Write(record)
+	if dbc != nil {
+		dbc.Write(record)
+	}
 }

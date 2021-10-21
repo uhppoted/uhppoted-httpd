@@ -632,5 +632,7 @@ func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, fi
 		},
 	}
 
-	dbc.Write(record)
+	if dbc != nil {
+		dbc.Write(record)
+	}
 }
