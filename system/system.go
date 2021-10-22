@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -66,29 +67,51 @@ type callback struct {
 
 func Init(cfg config.Config, conf string) error {
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
-		return err
+		if os.IsNotExist(err) {
+			warn(err)
+		} else {
+			return err
+		}
 	}
 
 	if err := sys.controllers.Load(cfg.HTTPD.System.Controllers); err != nil {
-		return err
+		if os.IsNotExist(err) {
+			warn(err)
+		} else {
+			return err
+		}
 	}
 
 	if err := sys.groups.Load(cfg.HTTPD.System.Groups); err != nil {
-		return err
+		if os.IsNotExist(err) {
+			warn(err)
+		} else {
+			return err
+		}
 	}
 
 	if err := sys.cards.Load(cfg.HTTPD.System.Cards); err != nil {
-		return err
+		if os.IsNotExist(err) {
+			warn(err)
+		} else {
+			return err
+		}
 	}
 
 	if err := sys.events.Load(cfg.HTTPD.System.Events); err != nil {
-		return err
+		if os.IsNotExist(err) {
+			warn(err)
+		} else {
+			return err
+		}
 	}
 
-	if warning, err := sys.logs.Load(cfg.HTTPD.System.Logs); err != nil {
-		return err
-	} else if warning != nil {
-		warn(warning)
+	if err := sys.logs.Load(cfg.HTTPD.System.Logs); err != nil {
+		if os.IsNotExist(err) {
+			warn(err)
+		} else {
+			return err
+		}
 	}
 
 	kb := ast.NewKnowledgeLibrary()

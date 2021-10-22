@@ -63,7 +63,7 @@ func NewLogs() Logs {
 	return logs
 }
 
-func (ll *Logs) Load(file string) (error, error) {
+func (ll *Logs) Load(file string) error {
 	ll.file = file
 
 	blob := struct {
@@ -74,12 +74,11 @@ func (ll *Logs) Load(file string) (error, error) {
 
 	bytes, err := os.ReadFile(file)
 	if err != nil {
-		return err, nil
+		return err
 	}
 
-	err = json.Unmarshal(bytes, &blob)
-	if err != nil {
-		return nil, err
+	if err = json.Unmarshal(bytes, &blob); err != nil {
+		return err
 	}
 
 	for _, v := range blob.Logs {
@@ -87,7 +86,7 @@ func (ll *Logs) Load(file string) (error, error) {
 		if err := l.deserialize(v); err == nil {
 			k := newKey(l.Timestamp, l.UID, l.Item, l.ItemID, l.ItemName, l.Field, l.Details)
 			if x, ok := ll.Logs[k]; ok {
-				return nil, fmt.Errorf("duplicate log record (%#v and %#v)", l, x)
+				return fmt.Errorf("duplicate log record (%#v and %#v)", l, x)
 			} else {
 				ll.Logs[k] = l
 			}
@@ -98,7 +97,7 @@ func (ll *Logs) Load(file string) (error, error) {
 		catalog.PutLogEntry(l.OID)
 	}
 
-	return nil, nil
+	return nil
 }
 
 func (ll Logs) Save() error {

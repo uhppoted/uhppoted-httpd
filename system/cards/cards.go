@@ -45,8 +45,7 @@ func (cc *Cards) Load(file string) error {
 		return err
 	}
 
-	err = json.Unmarshal(bytes, &blob)
-	if err != nil {
+	if err := json.Unmarshal(bytes, &blob); err != nil {
 		return err
 	}
 
