@@ -15,7 +15,7 @@ import (
 )
 
 type AuditTrail interface {
-	Write(record AuditRecord)
+	Write(record ...AuditRecord)
 }
 
 type trail struct {
@@ -67,17 +67,19 @@ func SetAuditFile(file string) {
 	auditTrail.logger = logger
 }
 
-func (t *trail) Write(record AuditRecord) {
-	var logmsg string
-	if info, err := json.Marshal(record.Details); err == nil {
-		logmsg = fmt.Sprintf("%-10v %-10v %-10v %s", record.UID, record.Component, record.Operation, info)
-	} else {
-		logmsg = fmt.Sprintf("%-10v %-10v %-10v %v", record.UID, record.Component, record.Operation, record.Details)
-	}
+func (t *trail) Write(records ...AuditRecord) {
+	for _, record := range records {
+		var logmsg string
+		if info, err := json.Marshal(record.Details); err == nil {
+			logmsg = fmt.Sprintf("%-10v %-10v %-10v %s", record.UID, record.Component, record.Operation, info)
+		} else {
+			logmsg = fmt.Sprintf("%-10v %-10v %-10v %v", record.UID, record.Component, record.Operation, record.Details)
+		}
 
-	if t.logger != nil {
-		t.logger.Printf("%s", logmsg)
-	} else {
-		log.Printf("%s", logmsg)
+		if t.logger != nil {
+			t.logger.Printf("%s", logmsg)
+		} else {
+			log.Printf("%s", logmsg)
+		}
 	}
 }

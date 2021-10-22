@@ -1,6 +1,7 @@
 package logs
 
 import (
+	"crypto/sha1"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -21,9 +22,7 @@ type Logs struct {
 	file string `json:"-"`
 }
 
-type key struct {
-	timestamp time.Time
-}
+type key [20]byte
 
 const LogsOID = catalog.LogsOID
 const LogsFirst = catalog.LogsFirst
@@ -31,10 +30,29 @@ const LogsLast = catalog.LogsLast
 
 var guard sync.RWMutex
 
-func newKey(timestamp time.Time) key {
-	return key{
-		timestamp: timestamp,
+func newKey(timestamp time.Time, uid, item, id, name, field, details string) key {
+	r := struct {
+		Timestamp time.Time `json:"timestamp"`
+		UID       string    `json:"uid"`
+		Item      string    `json:"item"`
+		ID        string    `json:"id"`
+		Name      string    `json:"name"`
+		Field     string    `json:"field"`
+		Details   string    `json:"details"`
+	}{
+		Timestamp: timestamp,
+		UID:       uid,
+		Item:      item,
+		ID:        id,
+		Name:      name,
+		Field:     field,
+		Details:   details,
 	}
+
+	b, _ := json.Marshal(r)
+	hash := sha1.Sum(b)
+
+	return key(hash)
 }
 
 func NewLogs() Logs {
@@ -45,7 +63,9 @@ func NewLogs() Logs {
 	return logs
 }
 
-func (ll *Logs) Load(file string) error {
+func (ll *Logs) Load(file string) (error, error) {
+	ll.file = file
+
 	blob := struct {
 		Logs []json.RawMessage `json:"logs"`
 	}{
@@ -54,20 +74,20 @@ func (ll *Logs) Load(file string) error {
 
 	bytes, err := os.ReadFile(file)
 	if err != nil {
-		return err
+		return err, nil
 	}
 
 	err = json.Unmarshal(bytes, &blob)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	for _, v := range blob.Logs {
 		var l LogEntry
 		if err := l.deserialize(v); err == nil {
-			k := newKey(l.Timestamp)
+			k := newKey(l.Timestamp, l.UID, l.Item, l.ItemID, l.ItemName, l.Field, l.Details)
 			if x, ok := ll.Logs[k]; ok {
-				return fmt.Errorf("%v  duplicate log record (%v and %v)", k, l.OID, x.OID)
+				return nil, fmt.Errorf("duplicate log record (%#v and %#v)", l, x)
 			} else {
 				ll.Logs[k] = l
 			}
@@ -78,9 +98,7 @@ func (ll *Logs) Load(file string) error {
 		catalog.PutLogEntry(l.OID)
 	}
 
-	ll.file = file
-
-	return nil
+	return nil, nil
 }
 
 func (ll Logs) Save() error {
@@ -171,9 +189,10 @@ func (ll *Logs) AsObjects(start, max int) []interface{} {
 	}
 
 	sort.SliceStable(keys, func(i, j int) bool {
-		p := keys[i]
-		q := keys[j]
-		return q.timestamp.Before(p.timestamp)
+		p := ll.Logs[keys[i]].Timestamp
+		q := ll.Logs[keys[j]].Timestamp
+
+		return q.Before(p)
 	})
 
 	ix := start
@@ -226,21 +245,25 @@ func (ll *Logs) Validate() error {
 	return nil
 }
 
-func (ll *Logs) Received(record audit.AuditRecord) {
-	unknown := time.Time{}
-	timestamp := record.Timestamp
-	if record.Timestamp == unknown {
-		timestamp = time.Now()
+func (ll *Logs) Received(records ...audit.AuditRecord) {
+	for _, record := range records {
+		unknown := time.Time{}
+		timestamp := record.Timestamp
+		if record.Timestamp == unknown {
+			timestamp = time.Now()
+		}
+
+		guard.Lock()
+		defer guard.Unlock()
+
+		k := newKey(record.Timestamp, record.UID, record.Component, record.Details.ID, record.Details.Name, record.Details.Field, record.Details.Description)
+		if _, ok := ll.Logs[k]; !ok {
+			oid := catalog.NewLogEntry()
+			ll.Logs[k] = NewLogEntry(oid, timestamp, record)
+		}
 	}
 
-	guard.Lock()
-	defer guard.Unlock()
-
-	k := newKey(timestamp)
-	if _, ok := ll.Logs[k]; !ok {
-		oid := catalog.NewLogEntry()
-		ll.Logs[k] = NewLogEntry(oid, timestamp, record)
-	}
+	ll.Save()
 }
 
 func validate(ll Logs) error {

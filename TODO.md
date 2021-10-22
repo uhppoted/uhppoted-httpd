@@ -73,14 +73,9 @@
 #### Groups
 
 #### Logs
-  - [x] Commit audit trail after validate + save
-        - [x] LAN
-        - [x] controllers
-        - [x] doors
-        - [x] cards
-        - [x] groups
-  - [ ] Save
-  - [ ] Load
+  - [ ] ...More
+  - [x] Save
+  - [x] Load
 
 #### Doors
   - [ ] Updates all _incorrect_ values if one item is edited

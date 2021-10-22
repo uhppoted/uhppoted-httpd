@@ -56,9 +56,9 @@ type trail struct {
 	trail audit.AuditTrail
 }
 
-func (t trail) Write(record audit.AuditRecord) {
-	t.trail.Write(record)
-	sys.logs.Received(record)
+func (t trail) Write(records ...audit.AuditRecord) {
+	t.trail.Write(records...)
+	sys.logs.Received(records...)
 }
 
 type callback struct {
@@ -83,6 +83,12 @@ func Init(cfg config.Config, conf string) error {
 
 	if err := sys.events.Load(cfg.HTTPD.System.Events); err != nil {
 		return err
+	}
+
+	if warning, err := sys.logs.Load(cfg.HTTPD.System.Logs); err != nil {
+		return err
+	} else if warning != nil {
+		warn(warning)
 	}
 
 	kb := ast.NewKnowledgeLibrary()
@@ -112,16 +118,6 @@ func Init(cfg config.Config, conf string) error {
 	//	sys.groups.Print()
 	//	sys.cards.Print()
 	//	sys.events.Print()
-
-	//	listener := make(chan audit.AuditRecord)
-	//	audit.AddListener(listener)
-	//
-	//	go func() {
-	//		for {
-	//			entry := <-listener
-	//			sys.logs.Received(entry)
-	//		}
-	//	}()
 
 	go func() {
 		time.Sleep(2500 * time.Millisecond)
