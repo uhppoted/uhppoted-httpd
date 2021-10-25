@@ -236,6 +236,8 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 
 				if err := f("group", value); err != nil {
 					return nil, err
+				} else if !catalog.HasGroup(catalog.OID(k)) {
+					return nil, fmt.Errorf("invalid group OID (%v)", k)
 				} else {
 					group, _ := catalog.GetV(catalog.OID(k).Append(GroupName))
 

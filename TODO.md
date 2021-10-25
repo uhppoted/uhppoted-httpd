@@ -2,11 +2,10 @@
 
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
+- [ ] Replace 'is dirty' logic with something sane
 
 ### IN PROGRESS
 
-- [ ] Server events in addition to/rather-than refresh
-      - https://jvns.ca/blog/2021/01/12/day-36--server-sent-events-are-cool--and-a-fun-bug/
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [ ] Double click for login after 'idle signout'
 - [ ] 'reload' crashes with after restarting httpd
@@ -53,11 +52,10 @@
         - [ ] (?) Keep DB in local storage
 
 #### Cards
-  - [ ] Update unit tests for OID'd implementation
-        - Make audit trail usable for unit tests
   - [ ] Weirdness around adding card
         - At top of list until updated
         - Can't delete card with name but no number
+  - [ ] Update unit tests for OID'd implementation
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
   - [ ] `refresh` is overwriting pending group edits
@@ -193,6 +191,9 @@
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
 ## TODO
+
+- [ ] Server events in addition to/rather-than refresh
+      - https://jvns.ca/blog/2021/01/12/day-36--server-sent-events-are-cool--and-a-fun-bug/
 
 - [ ] [CRDT](https://concordant.io/software)
        - https://josephg.com/blog/crdts-go-brrr

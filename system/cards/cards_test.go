@@ -83,41 +83,6 @@ func TestCardAddWithAuth(t *testing.T) {
 // 	}
 // }
 
-// FIXME pending reworked implementation of 'add'
-// func TestCardHolderAddWithInvalidGroup(t *testing.T) {
-// 	dbt := dbx(hagrid)
-// 	final := dbx(hagrid, cardholder("C02", "Dobby", 1234567))
-//
-// 	rq := map[string]interface{}{
-// 		"cardholders": []map[string]interface{}{
-// 			map[string]interface{}{
-// 				"id":   "C02",
-// 				"name": "Dobby",
-// 				"card": 1234567,
-// 				"from": "2021-01-02",
-// 				"to":   "2021-12-30",
-// 				"groups": map[string]bool{
-// 					"G16": true,
-// 				},
-// 			},
-// 		},
-// 	}
-//
-// 	expected := result{
-// 		Updated: []interface{}{
-// 			cardholder("C02", "Dobby", 1234567),
-// 		},
-// 	}
-//
-// 	r, err := dbt.Post(rq, nil)
-// 	if err != nil {
-// 		t.Fatalf("Unexpected error adding card holder to DB: %v", err)
-// 	}
-//
-// 	compare(r, expected, t)
-// 	compareDB(dbt, final, t)
-// }
-
 func TestCardUpdate(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(makeCard(hagrid.OID, "Hagrid", 1234567))
@@ -215,6 +180,65 @@ func TestCardNumberSwap(t *testing.T) {
 		t.Fatalf("Unexpected error updating cards (%v)", err)
 	}
 
+	compareDB(cards, final, t)
+}
+
+func TestCardUpdateAddGroup(t *testing.T) {
+	catalog.PutGroup(catalog.OID("0.4.10"))
+
+	cards := makeCards(hagrid)
+	final := makeCards(makeCard(hagrid.OID, "Hagrid", 6514231, "0.4.10"))
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.3.1.5.10", Value: "true"},
+	}
+
+	objects, err := cards.UpdateByOID(nil, catalog.OID("0.3.1.5.10"), "true", nil)
+	if err != nil {
+		t.Errorf("Unexpected error updating card [%v]", err)
+	}
+
+	if err := cards.Validate(); err != nil {
+		t.Errorf("Expected error updating card, got %v", err)
+	}
+
+	compare(objects, expected, t)
+	compareDB(cards, final, t)
+}
+
+func TestCardUpdateRemoveGroup(t *testing.T) {
+	catalog.PutGroup(catalog.OID("0.4.10"))
+
+	hagrid2 := makeCard(hagrid.OID, "Hagrid", 6514231)
+	hagrid2.Groups["0.4.10"] = false
+	cards := makeCards(hagrid)
+	final := makeCards(hagrid2)
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.3.1.5.10", Value: "false"},
+	}
+
+	objects, err := cards.UpdateByOID(nil, catalog.OID("0.3.1.5.10"), "false", nil)
+	if err != nil {
+		t.Errorf("Unexpected error updating card (%v)", err)
+	}
+
+	if err := cards.Validate(); err != nil {
+		t.Errorf("Expected error updating card, got %v", err)
+	}
+
+	compare(objects, expected, t)
+	compareDB(cards, final, t)
+}
+
+func TestCardUpdateWithInvalidGroup(t *testing.T) {
+	cards := makeCards(hagrid)
+	final := makeCards(hagrid)
+
+	objects, err := cards.UpdateByOID(nil, catalog.OID("0.3.1.5.99"), "true", nil)
+	if err == nil {
+		t.Errorf("Expected error updating card, got:%v", err)
+	}
+
+	compare(objects, nil, t)
 	compareDB(cards, final, t)
 }
 

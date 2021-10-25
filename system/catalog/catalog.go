@@ -68,6 +68,15 @@ func PutGroup(oid OID) {
 	catalog.groups[oid] = struct{}{}
 }
 
+func HasGroup(oid OID) bool {
+	guard.Lock()
+	defer guard.Unlock()
+
+	_, ok := catalog.groups[oid]
+
+	return ok
+}
+
 func PutEvent(oid OID) {
 	guard.Lock()
 	defer guard.Unlock()
