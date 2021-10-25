@@ -129,6 +129,10 @@ export function onMore (tag, event) {
     case 'events':
       more(pages.events)
       break
+
+    case 'logs':
+      more(pages.logs)
+      break
   }
 }
 

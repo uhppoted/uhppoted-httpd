@@ -88,6 +88,14 @@ export const DB = {
 
   logs: function () {
     return this.tables.logs.logs
+  },
+
+  firstLog: function () {
+    return this.tables.logs.first
+  },
+
+  lastLog: function () {
+    return this.tables.logs.last
   }
 }
 

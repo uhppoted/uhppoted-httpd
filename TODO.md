@@ -40,10 +40,10 @@
               - [ ] cards
               - [ ] groups
 
-  - [ ] Make OID a type
-        - [ ] move all _stringify's_ to OID/object/somesuch
+  - [x] Make OID a type
 
 #### Events
+  - [ ] Lookup historical card/door/controller assignments
   - [ ] (?) Rework to use channels
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
@@ -51,7 +51,6 @@
               - https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
         - [ ] Render/realize only if updated
         - [ ] (?) Keep DB in local storage
-  - [ ] Lookup historical card/door/controller assignments
 
 #### Cards
   - [ ] Update unit tests for OID'd implementation
@@ -73,9 +72,7 @@
 #### Groups
 
 #### Logs
-  - [ ] ...More
-  - [x] Save
-  - [x] Load
+  - [x] ...More
 
 #### Doors
   - [ ] Updates all _incorrect_ values if one item is edited

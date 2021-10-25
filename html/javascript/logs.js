@@ -44,9 +44,9 @@ export function refreshed () {
   const h = function () {
     const table = document.querySelector('#logs table')
     const tfoot = table.tFoot
-    const last = DB.lastEvent()
+    const last = DB.lastLog()
 
-    if (last && DB.events().has(last)) {
+    if (last && DB.logs().has(last)) {
       tfoot.classList.add('hidden')
     } else {
       tfoot.classList.remove('hidden')
