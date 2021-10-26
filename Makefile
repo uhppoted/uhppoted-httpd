@@ -93,5 +93,3 @@ undaemonize: build
 run: build
 	$(CMD) --console
 
-reset:
-	cp /usr/local/var/com.github.uhppoted/httpd/memdb/db.orig /usr/local/var/com.github.uhppoted/httpd/memdb/db.json

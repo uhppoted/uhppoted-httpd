@@ -3,6 +3,10 @@
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 - [ ] Replace 'is dirty' logic with something sane
+- [x] ```Error loading ACL ruleset (open /var/uhppoted/httpd/acl.grl: no such file or directory)```
+- [ ] ```2021/10/25 20:42:37 ERROR open /var/uhppoted/httpd/system/controlers.json: no such file or directory```
+- [ ] ```2021/10/25 20:50:49 ERROR Error creating UDP socket (listen udp 192.168.1.100:0: bind: cannot assign requested address)```
+- [ ] Remove `stash`
 
 ### IN PROGRESS
 
@@ -39,8 +43,6 @@
               - [ ] cards
               - [ ] groups
 
-  - [x] Make OID a type
-
 #### Events
   - [ ] Lookup historical card/door/controller assignments
   - [ ] (?) Rework to use channels
@@ -70,7 +72,6 @@
 #### Groups
 
 #### Logs
-  - [x] ...More
 
 #### Doors
   - [ ] Updates all _incorrect_ values if one item is edited
@@ -249,6 +250,8 @@
 - https://www.dusanstam.com/posts/material-ui-table-with-infinite-scroll
 - http://scrollmagic.io/examples/advanced/infinite_scrolling.html
 - https://github.com/janpaepke/ScrollMagic
+- [JSON-LS](https://json-ld.org)
+- [Microdata](https://html.spec.whatwg.org/multipage/microdata.html#microdata)
 
 # REFERENCES
 
