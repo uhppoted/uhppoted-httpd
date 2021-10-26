@@ -45,6 +45,11 @@
 
 #### Events
   - [ ] Lookup historical card/door/controller assignments
+        - [x] Controller device name
+        - [ ] Door name
+        - [ ] Card name
+        - [ ] Unit tests
+
   - [ ] (?) Rework to use channels
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display

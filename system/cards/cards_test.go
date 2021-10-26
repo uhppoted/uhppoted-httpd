@@ -104,6 +104,24 @@ func TestCardUpdate(t *testing.T) {
 	compareDB(cards, final, t)
 }
 
+func TestCardUpdateWithInvalidOID(t *testing.T) {
+	cards := makeCards(hagrid)
+	final := makeCards(hagrid)
+	expected := []catalog.Object{}
+
+	objects, err := cards.UpdateByOID(nil, "0.3.5.2", "1234567", nil)
+	if err != nil {
+		t.Errorf("Unexpected error updating card (%v)", err)
+	}
+
+	if err := cards.Validate(); err != nil {
+		t.Errorf("Expected error updating card, got %v", err)
+	}
+
+	compare(objects, expected, t)
+	compareDB(cards, final, t)
+}
+
 func TestCardUpdateWithAuth(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid)
@@ -312,30 +330,4 @@ func TestCardHolderDeleteWithAuth(t *testing.T) {
 // 	if string(logentry) != expected {
 // 		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected, string(logentry))
 // 	}
-// }
-
-// func TestCardHolderDeleteWithInvalidID(t *testing.T) {
-// 	dbt := dbx(hagrid, dobby)
-// 	final := dbx(hagrid, dobby)
-//
-// 	rq := map[string]interface{}{
-// 		"cardholders": []map[string]interface{}{
-// 			map[string]interface{}{
-// 				"id":   "CXX",
-// 				"name": "",
-// 				"card": 0,
-// 			},
-// 		},
-// 	}
-//
-// 	r, err := dbt.Post(rq, nil)
-// 	if err == nil {
-// 		t.Errorf("Expected error deleting non-existent record from DB - got: %v", err)
-// 	}
-//
-// 	if r != nil {
-// 		t.Errorf("Unexpected return deleting non-existent record from DB - expected:%v, got: %v", nil, err)
-// 	}
-//
-// 	compareDB(dbt, final, t)
 // }
