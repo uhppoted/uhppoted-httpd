@@ -92,6 +92,9 @@ func (ee *Events) Load(file string) error {
 }
 
 func (ee Events) Save() error {
+	guard.Lock()
+	defer guard.Unlock()
+
 	if err := validate(ee); err != nil {
 		return err
 	}
@@ -212,6 +215,9 @@ func (ee *Events) AsObjects(start, max int) []interface{} {
 }
 
 func (ee *Events) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+	guard.Lock()
+	defer guard.Unlock()
+
 	if ee == nil {
 		return nil, nil
 	}
