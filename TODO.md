@@ -4,7 +4,7 @@
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 - [ ] Replace 'is dirty' logic with something sane
 - [x] ```Error loading ACL ruleset (open /var/uhppoted/httpd/acl.grl: no such file or directory)```
-- [ ] ```2021/10/25 20:42:37 ERROR open /var/uhppoted/httpd/system/controlers.json: no such file or directory```
+- [x] ```2021/10/25 20:42:37 ERROR open /var/uhppoted/httpd/system/controlers.json: no such file or directory```
 - [ ] ```2021/10/25 20:50:49 ERROR Error creating UDP socket (listen udp 192.168.1.100:0: bind: cannot assign requested address)```
 - [ ] Remove `stash`
 
