@@ -265,6 +265,18 @@ func (ll *Logs) Received(records ...audit.AuditRecord) {
 	ll.Save()
 }
 
+func (ll *Logs) Query(item, id, field string) []LogEntry {
+	records := []LogEntry{}
+
+	for _, v := range ll.Logs {
+		if v.Item == item && v.ItemID == id && v.Field == field {
+			records = append(records, v)
+		}
+	}
+
+	return records
+}
+
 func validate(ll Logs) error {
 	return nil
 }

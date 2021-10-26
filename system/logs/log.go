@@ -19,6 +19,8 @@ type LogEntry struct {
 	ItemName  string      `json:"item-name"`
 	Field     string      `json:"field"`
 	Details   string      `json:"details"`
+	Before    string      `json:"before,omitempty"`
+	After     string      `json:"after,omitempty"`
 }
 
 const LogTimestamp = catalog.LogTimestamp
@@ -42,6 +44,8 @@ func NewLogEntry(oid catalog.OID, timestamp time.Time, record audit.AuditRecord)
 		ItemName:  record.Details.Name,
 		Field:     record.Details.Field,
 		Details:   record.Details.Description,
+		Before:    record.Details.Before,
+		After:     record.Details.After,
 	}
 }
 
@@ -85,6 +89,8 @@ func (l LogEntry) serialize() ([]byte, error) {
 		ItemName  string      `json:"name"`
 		Field     string      `json:"field"`
 		Details   string      `json:"details"`
+		Before    string      `json:"before,omitempty"`
+		After     string      `json:"after,omitempty"`
 	}{
 		Timestamp: l.Timestamp,
 		UID:       l.UID,
@@ -94,6 +100,8 @@ func (l LogEntry) serialize() ([]byte, error) {
 		ItemName:  l.ItemName,
 		Field:     l.Field,
 		Details:   l.Details,
+		Before:    l.Before,
+		After:     l.After,
 	}
 
 	return json.Marshal(record)
@@ -109,6 +117,8 @@ func (l *LogEntry) deserialize(bytes []byte) error {
 		ItemName  string      `json:"name"`
 		Field     string      `json:"field"`
 		Details   string      `json:"details"`
+		Before    string      `json:"before"`
+		After     string      `json:"after"`
 	}{
 		Timestamp: l.Timestamp,
 		UID:       l.UID,
@@ -118,6 +128,8 @@ func (l *LogEntry) deserialize(bytes []byte) error {
 		ItemName:  l.ItemName,
 		Field:     l.Field,
 		Details:   l.Details,
+		Before:    l.Before,
+		After:     l.After,
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -132,6 +144,8 @@ func (l *LogEntry) deserialize(bytes []byte) error {
 	l.ItemName = record.ItemName
 	l.Field = record.Field
 	l.Details = record.Details
+	l.Before = record.Before
+	l.After = record.After
 
 	return nil
 }

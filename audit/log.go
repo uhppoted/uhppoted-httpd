@@ -27,6 +27,8 @@ type Details struct {
 	Name        string
 	Field       string
 	Description string
+	Before      string
+	After       string
 }
 
 type AuditRecord struct {
