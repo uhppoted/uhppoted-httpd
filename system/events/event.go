@@ -138,9 +138,7 @@ const EventDeviceName = catalog.EventDeviceName
 const EventDoorName = catalog.EventDoorName
 const EventCardName = catalog.EventCardName
 
-func NewEvent(oid catalog.OID, e uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) Event {
-	device, door, card := lookup(e)
-
+func NewEvent(oid catalog.OID, e uhppoted.Event, device, door, card string) Event {
 	return Event{
 		OID:        oid,
 		DeviceID:   e.DeviceID,

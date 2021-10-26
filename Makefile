@@ -68,8 +68,8 @@ bump:
 	go get -u github.com/google/uuid
 	go get -u golang.org/x/sys
 
-debug: build
-	go test -v ./... -run "TestCardAdd"
+debug: format
+	go test -v -run TestLookup* ./system
 
 # NOTE: sass --watch doesn't seem to consistently pick up changes in themed partials
 sass:

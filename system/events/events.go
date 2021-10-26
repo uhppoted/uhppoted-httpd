@@ -242,7 +242,8 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 		k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
 		if _, ok := ee.Events[k]; !ok {
 			oid := catalog.NewEvent()
-			ee.Events[k] = NewEvent(oid, e, lookup)
+			device, door, card := lookup(e)
+			ee.Events[k] = NewEvent(oid, e, device, door, card)
 		}
 	}
 }

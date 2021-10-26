@@ -64,7 +64,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	sys.doors = shadow
-	dbc.Commit()
+	dbc.Commit(nil)
 	sys.doors.Stash()
 	sys.updated()
 

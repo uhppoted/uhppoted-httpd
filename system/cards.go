@@ -39,7 +39,7 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, err
 	}
 
-	dbc.Commit()
+	dbc.Commit(nil)
 	sys.cards = shadow
 	sys.cards.Stash()
 	sys.updated()

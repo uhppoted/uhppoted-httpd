@@ -91,7 +91,7 @@ func PutLogEntry(oid OID) {
 	catalog.logs[oid] = struct{}{}
 }
 
-func GetController(deviceID uint32) OID {
+func NewController(deviceID uint32) OID {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -239,7 +239,7 @@ func Delete(oid OID) {
 	}
 }
 
-func Find(deviceID uint32) OID {
+func FindController(deviceID uint32) OID {
 	guard.Lock()
 	defer guard.Unlock()
 

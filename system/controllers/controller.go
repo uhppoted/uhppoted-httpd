@@ -64,63 +64,6 @@ const ControllerDoor2 = catalog.ControllerDoor2
 const ControllerDoor3 = catalog.ControllerDoor3
 const ControllerDoor4 = catalog.ControllerDoor4
 
-func (c *Controller) Lookup(oid catalog.OID) interface{} {
-	switch oid {
-	case c.OID.Append(ControllerCreated):
-		return c.created
-
-	case c.OID.Append(ControllerName):
-		return c.Name
-
-	case c.OID.Append(ControllerDeviceID):
-		return c.DeviceID
-
-		//	case c.OID.Append(ControllerAddress):
-		//		return
-		//
-		//	case c.OID.Append(ControllerAddressConfigured):
-		//		return
-		//
-		//	case c.OID.Append(ControllerAddressStatus):
-		//		return
-		//
-		//	case c.OID.Append(ControllerDateTime):
-		//		return
-		//
-		//	case c.OID.Append(ControllerDateTimeSystem):
-		//		return
-		//
-		//	case c.OID.Append(ControllerDateTimeStatus):
-		//		return
-		//
-		//	case c.OID.Append(ControllerCards):
-		//		return
-		//
-		//	case c.OID.Append(ControllerCardsStatus):
-		//		return
-		//
-		//	case c.OID.Append(ControllerEvents):
-		//		return
-		//
-		//	case c.OID.Append(ControllerEventsStatus):
-		//		return
-		//
-		//	case c.OID.Append(ControllerDoor1):
-		//		return
-		//
-		//	case c.OID.Append(ControllerDoor2):
-		//		return
-		//
-		//	case c.OID.Append(ControllerDoor3):
-		//		return
-		//
-		//	case c.OID.Append(ControllerDoor4):
-		//		return
-	}
-
-	return nil
-}
-
 func (c *Controller) AsObjects() []interface{} {
 	type addr struct {
 		address    string
@@ -338,8 +281,8 @@ func (c *Controller) IsSaveable() bool {
 	return true
 }
 
-func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
-	objects := []interface{}{}
+func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	objects := []catalog.Object{}
 
 	f := func(field string, value interface{}) error {
 		if auth == nil {
@@ -360,7 +303,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				name := types.Name(value)
 				c.Name = &name
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ".1", c.Name))
+				objects = append(objects, catalog.NewObject2(c.OID, ControllerName, c.Name))
 			}
 
 		case c.OID.Append(ControllerDeviceID):

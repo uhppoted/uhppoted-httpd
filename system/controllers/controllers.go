@@ -134,6 +134,7 @@ func (cc *ControllerSet) Load(file string) error {
 	for _, c := range cc.Controllers {
 		if c.DeviceID != nil && *c.DeviceID != 0 {
 			catalog.PutController(*c.DeviceID, c.OID)
+			catalog.PutV(c.OID.Append(ControllerName), c.Name, false)
 		}
 
 		for _, d := range []uint8{1, 2, 3, 4} {
@@ -236,7 +237,7 @@ func (cc *ControllerSet) Print() {
 	}
 }
 
-func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
+func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	if cc == nil {
 		return nil, nil
 	}
@@ -253,7 +254,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 		}
 	}
 
-	objects := []interface{}{}
+	objects := []catalog.Object{}
 
 	if oid == "<new>" {
 		if c, err := cc.add(auth, Controller{}); err != nil {
@@ -281,16 +282,6 @@ func (cc *ControllerSet) Find(deviceID uint32) *Controller {
 	return nil
 }
 
-func (cc *ControllerSet) Lookup(oid catalog.OID) interface{} {
-	for _, c := range cc.Controllers {
-		if oid.HasPrefix(c.OID) {
-			return c.Lookup(oid)
-		}
-	}
-
-	return nil
-}
-
 func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error) {
 	id := uint32(0)
 	if c.DeviceID != nil {
@@ -298,7 +289,7 @@ func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error
 	}
 
 	record := c.clone()
-	record.OID = catalog.OID(catalog.GetController(id))
+	record.OID = catalog.OID(catalog.NewController(id))
 	record.created = time.Now()
 
 	if auth != nil {
@@ -325,7 +316,7 @@ loop:
 		}
 
 		id := k
-		oid := catalog.GetController(k)
+		oid := catalog.NewController(k)
 
 		cc.Controllers = append(cc.Controllers, &Controller{
 			OID:          catalog.OID(oid),
