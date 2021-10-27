@@ -1,6 +1,9 @@
 package catalog
 
-import ()
+import (
+	"fmt"
+	"strings"
+)
 
 type value struct {
 	value interface{}
@@ -23,4 +26,18 @@ func PutV(oid OID, v interface{}, dirty bool) {
 		value: v,
 		dirty: dirty,
 	}
+}
+
+func Find(prefix OID, suffix Suffix, value interface{}) (OID, bool) {
+	s := fmt.Sprintf("%v", value)
+
+	for k, v := range cache {
+		prefixed := strings.HasPrefix(string(k), string(prefix))
+		suffixed := strings.HasSuffix(string(k), string(suffix))
+		if prefixed && suffixed && s == fmt.Sprintf("%v", v.value) {
+			return k, true
+		}
+	}
+
+	return OID(""), false
 }

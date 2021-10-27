@@ -14,6 +14,10 @@ func (oid OID) Append(suffix Suffix) OID {
 	return OID(regexp.MustCompile(`\.+`).ReplaceAllString(fmt.Sprintf("%v.%v", oid, suffix), "."))
 }
 
+func (oid OID) Trim(suffix Suffix) OID {
+	return OID(strings.TrimSuffix(string(oid), string(suffix)))
+}
+
 func (oid OID) HasPrefix(o OID) bool {
 	p := fmt.Sprintf("%v", oid)
 	q := fmt.Sprintf("%v", o)

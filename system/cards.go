@@ -2,6 +2,7 @@ package system
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -16,18 +17,15 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, err
 	}
 
-	list := struct {
-		Objects []interface{} `json:"objects,omitempty"`
-	}{}
-
+	updated := []catalog.Object{}
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.cards.Clone()
 
 	for _, object := range objects {
-		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value, dbc); err != nil {
+		if l, err := shadow.UpdateByOID(auth, object.OID, object.Value, dbc); err != nil {
 			return nil, err
-		} else if updated != nil {
-			list.Objects = append(list.Objects, updated...)
+		} else if l != nil {
+			updated = append(updated, l...)
 		}
 	}
 
@@ -39,10 +37,15 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, err
 	}
 
-	dbc.Commit(nil)
+	dbc.Commit(updated)
 	sys.cards = shadow
 	sys.cards.Stash()
 	sys.updated()
 
-	return list, nil
+	return struct {
+		Objects []catalog.Object `json:"objects,omitempty"`
+	}{
+		Objects: updated,
+	}, nil
+
 }

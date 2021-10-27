@@ -62,6 +62,7 @@ func (cc *Cards) Load(file string) error {
 
 	for _, v := range cc.Cards {
 		catalog.PutCard(v.OID)
+		catalog.PutV(v.OID.Append(catalog.CardNumber), v.Card, false)
 	}
 
 	cc.file = file
@@ -144,7 +145,7 @@ func (cc *Cards) Clone() Cards {
 	return shadow
 }
 
-func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
+func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	if cc == nil {
 		return nil, nil
 	}
@@ -160,7 +161,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 		}
 	}
 
-	objects := []interface{}{}
+	objects := []catalog.Object{}
 
 	if oid == "<new>" {
 		if c, err := cc.add(auth, Card{}); err != nil {
@@ -168,7 +169,15 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' card")
 		} else {
-			c.log(auth, "add", c.OID, "card", "Added <new> card", dbc)
+			c.log(auth,
+				"add",
+				c.OID,
+				"card",
+				"Added <new> card",
+				"",
+				"",
+				dbc)
+
 			cc.Cards[c.OID] = c
 			objects = append(objects, catalog.NewObject(c.OID, "new"))
 		}

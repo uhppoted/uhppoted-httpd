@@ -1,39 +1,11 @@
 ## v0.7.x
 
+### IN PROGRESS
+
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 - [ ] Replace 'is dirty' logic with something sane
-- [x] ```Error loading ACL ruleset (open /var/uhppoted/httpd/acl.grl: no such file or directory)```
-- [x] ```2021/10/25 20:42:37 ERROR open /var/uhppoted/httpd/system/controlers.json: no such file or directory```
-- [x] ```2021/10/25 20:50:49 ERROR Error creating UDP socket (listen udp 192.168.1.100:0: bind: cannot assign requested address)```
-- [x] concurrent map write
-```
-2021/10/26 21:01:44 DEBUG get-events   response {DeviceID:405419896 Events:[{DeviceID:405419896 Index:24 Type:2 Granted:true Door:1 Direction:1 CardNumber:8165533 Timestamp:2019-07-24 20:31:24 Reason:0} {DeviceID:405419896 Index:25 Type:2 Granted:true Door:4 Direction:1 CardNumber:8165534 Timestamp:2019-07-31 20:04:00 Reason:0} {DeviceID:405419896 Index:26 Type:1 Granted:false Door:4 Direction:0 CardNumber:8165535 Timestamp:2019-07-31 20:04:32 Reason:0} {DeviceID:405419896 Index:27 Type:2 Granted:true Door:4 Direction:1 CardNumber:8165536 Timestamp:2019-07-31 20:07:27 Reason:0} {DeviceID:405419896 Index:28 Type:2 Granted:true Door:4 Direction:1 CardNumber:8165537 Timestamp:2019-07-31 20:07:35 Reason:0}]}
-2021/10/26 21:01:44 DEBUG get-events   response {DeviceID:201020304 Events:[{DeviceID:201020304 Index:2 Type:1 Granted:false Door:4 Direction:0 CardNumber:65538 Timestamp:2020-02-14 19:18:47 Reason:6} {DeviceID:201020304 Index:3 Type:1 Granted:false Door:4 Direction:0 CardNumber:65538 Timestamp:2020-02-14 19:21:37 Reason:6} {DeviceID:201020304 Index:4 Type:1 Granted:false Door:4 Direction:0 CardNumber:65538 Timestamp:2020-02-14 19:27:15 Reason:6} {DeviceID:201020304 Index:5 Type:1 Granted:false Door:4 Direction:0 CardNumber:65538 Timestamp:2020-02-14 19:28:24 Reason:6} {DeviceID:201020304 Index:6 Type:1 Granted:false Door:4 Direction:0 CardNumber:65538 Timestamp:2020-02-14 19:28:44 Reason:6}]}
-fatal error: concurrent map iteration and map write
-
-goroutine 36 [running]:
-runtime.throw({0xaf24e2, 0x0})
-  /usr/local/go/src/runtime/panic.go:1198 +0x71 fp=0xc000219b00 sp=0xc000219ad0 pc=0x433631
-runtime.mapiternext(0xc0002c5208)
-  /usr/local/go/src/runtime/map.go:858 +0x4eb fp=0xc000219b70 sp=0xc000219b00 pc=0x40f68b
-github.com/uhppoted/uhppoted-httpd/system/events.Events.Save({0xc00018c6c0, {0xaf2094, 0xc000130300}})
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/system/events/events.go:113 +0xf6 fp=0xc000219d70 sp=0xc000219b70 pc=0x977d16
-github.com/uhppoted/uhppoted-httpd/system.(*callback).Append(0xc0003b37a0, 0x4ea5b0, {0xc000130300, 0xc000219e08, 0xc0001c7a40})
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/system/events.go:36 +0x55 fp=0xc000219db8 sp=0xc000219d70 pc=0x986675
-github.com/uhppoted/uhppoted-httpd/system/controllers.(*LAN).update(0x0, 0x0, 0x0, 0x0, {0xb9f6a0, 0x104e438})
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/system/controllers/LAN.go:389 +0x7c3 fp=0xc000219fa0 sp=0xc000219db8 pc=0x8aab43
-github.com/uhppoted/uhppoted-httpd/system/controllers.(*LAN).refresh.func1.1()
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/system/controllers/LAN.go:325 +0x5b fp=0xc000219fe0 sp=0xc000219fa0 pc=0x8aa35b
-runtime.goexit()
-  /usr/local/go/src/runtime/asm_amd64.s:1581 +0x1 fp=0xc000219fe8 sp=0xc000219fe0 pc=0x4635c1
-created by github.com/uhppoted/uhppoted-httpd/system/controllers.(*LAN).refresh.func1
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/system/controllers/LAN.go:316 +0x178
-
-```
 - [ ] Remove `stash`
-
-### IN PROGRESS
 
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [ ] Double click for login after 'idle signout'
@@ -70,9 +42,8 @@ created by github.com/uhppoted/uhppoted-httpd/system/controllers.(*LAN).refresh.
 
 #### Events
   - [ ] Lookup historical card/door/controller assignments
-        - [x] Controller device name
         - [ ] Door name
-        - [ ] Card name
+        - [x] Card name
         - [ ] Unit tests
 
   - [ ] (?) Fix `concurrent map write` without locking
@@ -101,6 +72,8 @@ github.com/uhppoted/uhppoted-httpd/system/events.Events.Save({0xc00018c6c0, {0xa
         - [ ] (?) Keep DB in local storage
 
 #### Cards
+  - [ ] Fix logs format:
+        ```"details": "Added \u003cnew\u003e card"```
   - [ ] Weirdness around adding card
         - At top of list until updated
         - Can't delete card with name but no number
