@@ -30,6 +30,18 @@ type controller struct {
 	deleted bool
 }
 
+func Clear() {
+	catalog.interfaces = map[OID]struct{}{}
+	catalog.controllers = map[OID]controller{}
+	catalog.doors = map[OID]struct{}{}
+	catalog.cards = map[OID]struct{}{}
+	catalog.groups = map[OID]struct{}{}
+	catalog.events = map[OID]struct{}{}
+	catalog.logs = map[OID]struct{}{}
+
+	cache = map[OID]value{}
+}
+
 func PutInterface(oid OID) {
 	guard.Lock()
 	defer guard.Unlock()

@@ -1,11 +1,24 @@
 package cards
 
 import (
+	"reflect"
 	"testing"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
+
+type dbc struct {
+	logs []audit.AuditRecord
+}
+
+func (d *dbc) Write(record audit.AuditRecord) {
+	d.logs = append(d.logs, record)
+}
+
+func (d *dbc) Commit(objects []catalog.Object) {
+}
 
 func TestCardAdd(t *testing.T) {
 	placeholder := Card{
@@ -20,6 +33,7 @@ func TestCardAdd(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid, placeholder)
 
+	catalog.Clear()
 	catalog.PutCard(hagrid.OID)
 
 	r, err := cards.UpdateByOID(nil, "<new>", "", nil)
@@ -40,6 +54,7 @@ func TestCardAddWithAuth(t *testing.T) {
 	final := makeCards(hagrid)
 	auth := stub{}
 
+	catalog.Clear()
 	catalog.PutCard(hagrid.OID)
 
 	r, err := cards.UpdateByOID(&auth, "<new>", "", nil)
@@ -54,34 +69,62 @@ func TestCardAddWithAuth(t *testing.T) {
 	compareDB(cards, final, t)
 }
 
-// func TestAddCardWithAuditTrail(t *testing.T) {
-//
-// 	var logentry []byte
-//
-// 	expected := `{"UID":"","Module":"memdb","Operation":"add","Info":{"OID":"C02","Name":"Dobby","Card":1234567,"From":"2021-01-02","To":"2021-12-30","Groups":{"G05":true}}}`
-// 	cards := makeCards(hagrid)
-//
-// 	trail = &stub{
-// 		write: func(e audit.LogEntry) {
-// 			logentry, _ = json.Marshal(e)
-// 		},
-// 	}
-//
-// 	catalog.PutCard(hagrid.OID)
-//
-// 	_, err := cards.UpdateByOID(nil, "<new>", "")
-// 	if err != nil {
-// 		t.Fatalf("Unexpected error adding new card (%v)", err)
-// 	}
-//
-// 	if logentry == nil {
-// 		t.Fatalf("Missing audit trail entry")
-// 	}
-//
-// 	if string(logentry) != expected {
-// 		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected, string(logentry))
-// 	}
-// }
+func TestCardAddWithAuditTrail(t *testing.T) {
+	trail := dbc{}
+
+	expected := struct {
+		returned []catalog.Object
+		logs     []audit.AuditRecord
+		db       *Cards
+	}{
+		returned: []catalog.Object{catalog.Object{OID: "0.3.2", Value: "new"}},
+
+		logs: []audit.AuditRecord{
+			audit.AuditRecord{
+				UID:       "",
+				OID:       "0.3.2",
+				Component: "card",
+				Operation: "add",
+				Details: audit.Details{
+					ID:          "",
+					Name:        "",
+					Field:       "card",
+					Description: "Added <new> card",
+					Before:      "",
+					After:       "",
+				},
+			},
+		},
+
+		db: makeCards(hagrid, Card{
+			OID:    catalog.OID("0.3.2"),
+			Groups: map[catalog.OID]bool{},
+		}),
+	}
+
+	cards := makeCards(hagrid)
+
+	catalog.Clear()
+	catalog.PutCard(hagrid.OID)
+
+	r, err := cards.UpdateByOID(nil, "<new>", "", &trail)
+	if err != nil {
+		t.Fatalf("Unexpected error adding new card (%v)", err)
+	}
+
+	if err := cards.Validate(); err != nil {
+		t.Fatalf("Unexpected error validating cards with new card (%v)", err)
+	}
+
+	compare(r, expected.returned, t)
+	compareDB(cards, expected.db, t)
+
+	if trail.logs == nil || len(trail.logs) != 1 {
+		t.Error("Invalid audit trail")
+	} else if !reflect.DeepEqual(trail.logs, expected.logs) {
+		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected.logs, trail.logs)
+	}
+}
 
 func TestCardUpdate(t *testing.T) {
 	cards := makeCards(hagrid)
