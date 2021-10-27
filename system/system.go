@@ -31,7 +31,7 @@ var sys = system{
 	doors:       doors.NewDoors(),
 	cards:       cards.NewCards(),
 	groups:      groups.NewGroups(),
-	events:      events.NewEvents(),
+	events:      *events.NewEvents(),
 	logs:        logs.NewLogs(),
 	taskQ:       NewTaskQ(),
 	retention:   6 * time.Hour,

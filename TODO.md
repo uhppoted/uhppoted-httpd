@@ -46,7 +46,8 @@
         - [x] Card name
         - [ ] Unit tests
 
-  - [ ] (?) Fix `concurrent map write` without locking
+  - [x] Replace events map with a sync.Map or RWMutex
+        -  `concurrent map write` for Received/Save
 ```
 2021/10/26 21:01:44 DEBUG get-events   response {DeviceID:201020304 Events:[{DeviceID:201020304 Index:2 Type:1 Granted:false Door:4 .
 .
