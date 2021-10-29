@@ -43,26 +43,7 @@
 #### Events
   - [ ] Lookup historical card/door/controller assignments
         - [ ] Door name
-        - [x] Card name
         - [ ] Unit tests
-
-  - [x] Replace events map with a sync.Map or RWMutex
-        -  `concurrent map write` for Received/Save
-```
-2021/10/26 21:01:44 DEBUG get-events   response {DeviceID:201020304 Events:[{DeviceID:201020304 Index:2 Type:1 Granted:false Door:4 .
-.
-.
-.
-fatal error: concurrent map iteration and map write
-
-goroutine 36 [running]:
-runtime.throw({0xaf24e2, 0x0})
-  /usr/local/go/src/runtime/panic.go:1198 +0x71 fp=0xc000219b00 sp=0xc000219ad0 pc=0x433631
-runtime.mapiternext(0xc0002c5208)
-  /usr/local/go/src/runtime/map.go:858 +0x4eb fp=0xc000219b70 sp=0xc000219b00 pc=0x40f68b
-github.com/uhppoted/uhppoted-httpd/system/events.Events.Save({0xc00018c6c0, {0xaf2094, 0xc000130300}})
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/system/events/events.go:113 +0xf6 fp=0xc000219d70 sp=0xc000219b70 pc=0x977d16
-```
 
   - [ ] (?) Rework to use channels
   - [ ] (?) Genericize load/save for migration to MemDB

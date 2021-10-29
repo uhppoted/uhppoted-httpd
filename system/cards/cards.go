@@ -63,6 +63,7 @@ func (cc *Cards) Load(file string) error {
 	for _, v := range cc.Cards {
 		catalog.PutCard(v.OID)
 		catalog.PutV(v.OID.Append(catalog.CardNumber), v.Card, false)
+		catalog.PutV(v.OID.Append(catalog.CardName), v.Name, false)
 	}
 
 	cc.file = file
