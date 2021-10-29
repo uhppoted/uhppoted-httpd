@@ -18,12 +18,12 @@ import (
 )
 
 type Controller struct {
-	OID      catalog.OID      `json:"OID"`
-	Name     *types.Name      `json:"name,omitempty"`
-	DeviceID *uint32          `json:"device-id,omitempty"`
-	IP       *core.Address    `json:"address,omitempty"`
-	Doors    map[uint8]string `json:"doors"`
-	TimeZone *string          `json:"timezone,omitempty"`
+	OID      catalog.OID           `json:"OID"`
+	Name     *types.Name           `json:"name,omitempty"`
+	DeviceID *uint32               `json:"device-id,omitempty"`
+	IP       *core.Address         `json:"address,omitempty"`
+	Doors    map[uint8]catalog.OID `json:"doors"`
+	TimeZone *string               `json:"timezone,omitempty"`
 
 	created      time.Time
 	deleted      *time.Time
@@ -96,7 +96,7 @@ func (c *Controller) AsObjects() []interface{} {
 	cards := cinfo{}
 	events := einfo{}
 
-	doors := map[uint8]string{1: "", 2: "", 3: "", 4: ""}
+	doors := map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
 
 	if c.DeviceID != nil && *c.DeviceID != 0 {
 		deviceID = fmt.Sprintf("%v", *c.DeviceID)
@@ -440,7 +440,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					stringify(q, ""),
 					dbc)
 
-				c.Doors[1] = value
+				c.Doors[1] = catalog.OID(value)
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".7", c.Doors[1]))
 			}
@@ -460,7 +460,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					stringify(q, ""),
 					dbc)
 
-				c.Doors[2] = value
+				c.Doors[2] = catalog.OID(value)
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".8", c.Doors[2]))
 			}
@@ -480,7 +480,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					stringify(q, ""),
 					dbc)
 
-				c.Doors[3] = value
+				c.Doors[3] = catalog.OID(value)
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".9", c.Doors[3]))
 			}
@@ -500,7 +500,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					stringify(q, ""),
 					dbc)
 
-				c.Doors[4] = value
+				c.Doors[4] = catalog.OID(value)
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".10", c.Doors[4]))
 			}
@@ -553,17 +553,6 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 	return objects, nil
 }
 
-func (c *Controller) Door(did uint8) (string, bool) {
-	if oid, ok := c.Doors[did]; ok {
-		v, _ := catalog.GetV(catalog.OID(oid).Append(catalog.DoorName))
-		if _, ok := v.(string); ok {
-			return v.(string), true
-		}
-	}
-
-	return "", false
-}
-
 func (c *Controller) deserialize(bytes []byte) error {
 	record := struct {
 		OID      catalog.OID      `json:"OID"`
@@ -583,12 +572,12 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.Name = record.Name
 	c.DeviceID = record.DeviceID
 	c.IP = record.Address
-	c.Doors = map[uint8]string{1: "", 2: "", 3: "", 4: ""}
+	c.Doors = map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
 	c.TimeZone = record.TimeZone
 	c.created = record.Created
 
 	for k, v := range record.Doors {
-		c.Doors[k] = v
+		c.Doors[k] = catalog.OID(v)
 	}
 
 	return nil
@@ -604,19 +593,19 @@ func (c *Controller) serialize() ([]byte, error) {
 	}
 
 	record := struct {
-		OID      catalog.OID      `json:"OID"`
-		Name     *types.Name      `json:"name,omitempty"`
-		DeviceID *uint32          `json:"device-id,omitempty"`
-		Address  *core.Address    `json:"address,omitempty"`
-		Doors    map[uint8]string `json:"doors"`
-		TimeZone *string          `json:"timezone,omitempty"`
-		Created  time.Time        `json:"created"`
+		OID      catalog.OID           `json:"OID"`
+		Name     *types.Name           `json:"name,omitempty"`
+		DeviceID *uint32               `json:"device-id,omitempty"`
+		Address  *core.Address         `json:"address,omitempty"`
+		Doors    map[uint8]catalog.OID `json:"doors"`
+		TimeZone *string               `json:"timezone,omitempty"`
+		Created  time.Time             `json:"created"`
 	}{
 		OID:      c.OID,
 		Name:     c.Name,
 		DeviceID: c.DeviceID,
 		Address:  c.IP,
-		Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
+		Doors:    map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""},
 		TimeZone: c.TimeZone,
 		Created:  c.created,
 	}
@@ -636,7 +625,7 @@ func (c *Controller) clone() *Controller {
 			DeviceID: c.DeviceID,
 			IP:       c.IP,
 			TimeZone: c.TimeZone,
-			Doors:    map[uint8]string{1: "", 2: "", 3: "", 4: ""},
+			Doors:    map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""},
 
 			created:      c.created,
 			deleted:      c.deleted,

@@ -62,7 +62,7 @@ func validate(c *controllers.ControllerSet) error {
 		return types.BadRequest(err, err)
 	}
 
-	doors := map[string]string{}
+	doors := map[catalog.OID]string{}
 
 	for _, r := range c.Controllers {
 		for _, v := range r.Doors {

@@ -42,7 +42,8 @@
 
 #### Events
   - [ ] Lookup historical card/door/controller assignments
-        - [ ] Door name
+        - [x] Door name
+        - [ ] Handle device+OID changes in lookup
         - [ ] Unit tests
 
   - [ ] (?) Rework to use channels

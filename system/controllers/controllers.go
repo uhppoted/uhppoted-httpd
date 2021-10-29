@@ -135,6 +135,10 @@ func (cc *ControllerSet) Load(file string) error {
 		if c.DeviceID != nil && *c.DeviceID != 0 {
 			catalog.PutController(*c.DeviceID, c.OID)
 			catalog.PutV(c.OID.Append(ControllerName), c.Name, false)
+			catalog.PutV(c.OID.Append(ControllerDoor1), c.Doors[1], false)
+			catalog.PutV(c.OID.Append(ControllerDoor2), c.Doors[2], false)
+			catalog.PutV(c.OID.Append(ControllerDoor3), c.Doors[3], false)
+			catalog.PutV(c.OID.Append(ControllerDoor4), c.Doors[4], false)
 		}
 
 		for _, d := range []uint8{1, 2, 3, 4} {
@@ -343,7 +347,7 @@ func (cc *ControllerSet) Clone() ControllerSet {
 	return shadow
 }
 
-func Export(file string, controllers []*Controller, doors map[string]doors.Door) error {
+func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.Door) error {
 	guard.Lock()
 
 	defer guard.Unlock()
