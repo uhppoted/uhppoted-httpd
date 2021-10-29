@@ -69,8 +69,7 @@ bump:
 	go get -u golang.org/x/sys
 
 debug: format
-	# go test -v -run TestLookupCardName ./system
-	go test -v -run TestCardAddWithAuditTrail ./system/cards
+	go test -v -run TestCardHolderDeleteWithAuditTrail ./system/cards
 
 # NOTE: sass --watch doesn't seem to consistently pick up changes in themed partials
 sass:

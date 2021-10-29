@@ -177,40 +177,54 @@ func TestCardUpdateWithAuth(t *testing.T) {
 	compareDB(cards, final, t)
 }
 
-//func TestCardHolderUpdateWithAuditTrail(t *testing.T) {
-//	var logentry []byte
-//
-//	dbt := dbx(hagrid)
-//	trail = &stub{
-//		write: func(e audit.LogEntry) {
-//			logentry, _ = json.Marshal(e)
-//		},
-//	}
-//
-//	rq := map[string]interface{}{
-//		"cardholders": []map[string]interface{}{
-//			map[string]interface{}{
-//				"id":   "C01",
-//				"name": "Hagrid",
-//				"card": 1234567,
-//			},
-//		},
-//	}
-//
-//	dbt.Post(rq, nil)
-//
-//	expected := `{"UID":"","Module":"memdb","Operation":"update","Info":` +
-//		`{"original":{"OID":"C01","Name":"Hagrid","Card":6514231,"From":"2021-01-02","To":"2021-12-30","Groups":{}},` +
-//		`"updated":{"OID":"C01","Name":"Hagrid","Card":1234567,"From":"2021-01-02","To":"2021-12-30","Groups":{}}}}`
-//
-//	if logentry == nil {
-//		t.Fatalf("Missing audit trail entry")
-//	}
-//
-//	if string(logentry) != expected {
-//		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected, string(logentry))
-//	}
-//}
+func TestCardUpdateWithAuditTrail(t *testing.T) {
+	trail := dbc{}
+	cards := makeCards(hagrid)
+	expected := struct {
+		returned []catalog.Object
+		logs     []audit.AuditRecord
+		db       *Cards
+	}{
+		returned: []catalog.Object{catalog.Object{OID: "0.3.1.2", Value: "1234567"}},
+
+		logs: []audit.AuditRecord{
+			audit.AuditRecord{
+				UID:       "",
+				OID:       "0.3.1",
+				Component: "card",
+				Operation: "update",
+				Details: audit.Details{
+					ID:          "6514231",
+					Name:        "Hagrid",
+					Field:       "card",
+					Description: "Updated card number from 6514231 to 1234567",
+					Before:      "6514231",
+					After:       "1234567",
+				},
+			},
+		},
+
+		db: makeCards(makeCard(hagrid.OID, "Hagrid", 1234567)),
+	}
+
+	objects, err := cards.UpdateByOID(nil, hagrid.OID.Append(CardNumber), "1234567", &trail)
+	if err != nil {
+		t.Errorf("Unexpected error updating card (%v)", err)
+	}
+
+	if err := cards.Validate(); err != nil {
+		t.Errorf("Expected error updating card, got %v", err)
+	}
+
+	compare(objects, expected.returned, t)
+	compareDB(cards, expected.db, t)
+
+	if trail.logs == nil || len(trail.logs) != 1 {
+		t.Error("Invalid audit trail")
+	} else if !reflect.DeepEqual(trail.logs, expected.logs) {
+		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected.logs, trail.logs)
+	}
+}
 
 func TestDuplicateCardNumberUpdate(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
@@ -342,35 +356,75 @@ func TestCardHolderDeleteWithAuth(t *testing.T) {
 	}
 }
 
-// func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
-// 	var logentry []byte
-//
-// 	dbt := dbx(hagrid)
-// 	trail = &stub{
-// 		write: func(e audit.LogEntry) {
-// 			logentry, _ = json.Marshal(e)
-// 		},
-// 	}
-//
-// 	rq := map[string]interface{}{
-// 		"cardholders": []map[string]interface{}{
-// 			map[string]interface{}{
-// 				"id":   "C01",
-// 				"name": "",
-// 				"card": 0,
-// 			},
-// 		},
-// 	}
-//
-// 	dbt.Post(rq, nil)
-//
-// 	expected := `{"UID":"","Module":"memdb","Operation":"delete","Info":{"OID":"C01","Name":"Hagrid","Card":6514231,"From":"2021-01-02","To":"2021-12-30","Groups":{}}}`
-//
-// 	if logentry == nil {
-// 		t.Fatalf("Missing audit trail entry")
-// 	}
-//
-// 	if string(logentry) != expected {
-// 		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected, string(logentry))
-// 	}
-// }
+func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
+	trail := dbc{}
+
+	expected := struct {
+		logs []audit.AuditRecord
+		db   *Cards
+	}{
+		logs: []audit.AuditRecord{
+			audit.AuditRecord{
+				UID:       "",
+				OID:       "0.3.2",
+				Component: "card",
+				Operation: "update",
+				Details: audit.Details{
+					ID:          "1234567",
+					Name:        "Dobby",
+					Field:       "name",
+					Description: "Updated name from Dobby to <blank>",
+					Before:      "Dobby",
+					After:       "",
+				},
+			},
+			audit.AuditRecord{
+				UID:       "",
+				OID:       "0.3.2",
+				Component: "card",
+				Operation: "update",
+				Details: audit.Details{
+					ID:          "1234567",
+					Name:        "",
+					Field:       "number",
+					Description: "Cleared card number 1234567",
+					Before:      "1234567",
+					After:       "",
+				},
+			},
+			audit.AuditRecord{
+				UID:       "",
+				OID:       "0.3.2",
+				Component: "card",
+				Operation: "delete",
+				Details: audit.Details{
+					ID:          "",
+					Name:        "",
+					Field:       "card",
+					Description: "Deleted card 1234567",
+					Before:      "",
+					After:       "",
+				},
+			},
+		},
+
+		db: makeCards(hagrid, makeCard(dobby.OID, "", 0, "G05")),
+	}
+
+	cards := makeCards(hagrid, dobby)
+
+	catalog.Clear()
+	catalog.PutCard(hagrid.OID)
+	catalog.PutCard(dobby.OID)
+
+	cards.UpdateByOID(nil, dobby.OID.Append(catalog.CardName), "", &trail)
+	cards.UpdateByOID(nil, dobby.OID.Append(catalog.CardNumber), "", &trail)
+
+	compareDB(cards, expected.db, t)
+
+	if trail.logs == nil {
+		t.Error("Invalid audit trail")
+	} else if !reflect.DeepEqual(trail.logs, expected.logs) {
+		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected.logs, trail.logs)
+	}
+}

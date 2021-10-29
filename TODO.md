@@ -2,11 +2,11 @@
 
 ### IN PROGRESS
 
-- [ ] Rename 'address' to 'endpoint'
-      - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 - [ ] Replace 'is dirty' logic with something sane
 - [ ] Remove `stash`
 
+- [ ] Rename 'address' to 'endpoint'
+      - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [ ] Double click for login after 'idle signout'
 - [ ] 'reload' crashes with after restarting httpd
@@ -20,7 +20,7 @@
 
 #### auth
   - [ ] Reload grules file if changed
-  - [ ] Pass UID/role to grule
+  - [ ] Pass UID+role to grule
 
 #### OID
   - [ ] Store all values in catalog and 'realize' local copies from cache
@@ -33,7 +33,7 @@
         - [ ] rethink the whole 'dirty' thing
               - maybe use a stash queue (?)
               - or callbacks a la events
-              - not callbacks -> channels!!!
+              - or channels rather than callbacks
         - [ ] Check RWLock for clone
               - [ ] controllers
               - [ ] doors
@@ -60,7 +60,8 @@
   - [ ] Weirdness around adding card
         - At top of list until updated
         - Can't delete card with name but no number
-  - [ ] Update unit tests for OID'd implementation
+  - [x] Update unit tests for OID'd implementation
+  - [ ] Unit test: verify logs aren't updated on error
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
   - [ ] `refresh` is overwriting pending group edits
@@ -96,6 +97,7 @@
       - [ ] Fix `get-status` log string
       - Input + datalist for timezone ?????
         - https://demo.agektmr.com/datalist/
+
       - Export to uhppoted.conf
         - 'export' command line argument 
         - 'export' admin menu option
