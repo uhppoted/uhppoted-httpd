@@ -42,8 +42,6 @@
 
 #### Events
   - [ ] Lookup historical card/door/controller assignments
-        - [x] Door name
-        - [ ] Handle device+OID changes in lookup
         - [ ] Unit tests
 
   - [ ] (?) Rework to use channels
@@ -60,7 +58,6 @@
   - [ ] Weirdness around adding card
         - At top of list until updated
         - Can't delete card with name but no number
-  - [x] Update unit tests for OID'd implementation
   - [ ] Unit test: verify logs aren't updated on error
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
@@ -72,6 +69,7 @@
         - time based (?)
         - make update ID base (?)
         - use tag (?)
+  - [ ] Make bottom right corner of table rounded
 
 #### Groups
 

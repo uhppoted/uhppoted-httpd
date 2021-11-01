@@ -47,13 +47,13 @@ func eventController(e uhppoted.Event) string {
 
 		timestamp := time.Time(e.Timestamp)
 		for _, v := range edits {
-			if v.Timestamp.Before(timestamp) {
+			if v.Timestamp.After(timestamp) {
 				switch {
-				case v.After != "":
-					name = v.After
-					break
 				case v.Before != "":
 					name = v.Before
+					break
+				case v.After != "":
+					name = v.After
 					break
 				}
 			}
@@ -85,13 +85,13 @@ func eventCard(e uhppoted.Event) string {
 
 		timestamp := time.Time(e.Timestamp)
 		for _, v := range edits {
-			if v.Timestamp.Before(timestamp) {
+			if v.Timestamp.After(timestamp) {
 				switch {
-				case v.After != "":
-					name = v.After
-					break
 				case v.Before != "":
 					name = v.Before
+					break
+				case v.After != "":
+					name = v.After
 					break
 				}
 			}
@@ -136,13 +136,13 @@ func eventDoor(e uhppoted.Event) string {
 
 		timestamp := time.Time(e.Timestamp)
 		for _, v := range edits {
-			if v.Timestamp.Before(timestamp) {
+			if v.Timestamp.After(timestamp) {
 				switch {
-				case v.After != "":
-					name = v.After
-					break
 				case v.Before != "":
 					name = v.Before
+					break
+				case v.After != "":
+					name = v.After
 					break
 				}
 			}
