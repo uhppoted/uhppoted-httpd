@@ -16,36 +16,39 @@
 - [ ] 'reload' alert 'undefined' message on restarting httpd
 - [ ] 'reload' automatically if httpd comes alive again
 
+#### Doors
+  - [x] Replace 'is dirty' logic with something sane
+  - [ ] Show configured value in JS when status is uncertain
+  - [ ] (?) Possible race condition if door is being updated and being edited simultaneously
+  - [x] Updates all _incorrect_ values if one item is edited
+  - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
+        - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
+        - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
+  - [ ] 'door' select chooses first item if list changes while select is open
+
 #### auth
   - [ ] Reload grules file if changed
   - [ ] Pass UID+role to grule
 
 #### OID
+  - [ ] (?) Marshal value to JSON as string (for JS)
   - [ ] Move 'updated' list to DBC
   - [ ] Rework unpack to return list of OID + string
   - [ ] GetV => GetBool, GetInt, etc
   - [ ] Store all values in catalog and 'realize' local copies from cache
-        - Hmmm, may cause issues with shadow logic
-        - Unless use shadow cache ??
-        - .. or global mutex :-(
-        - only ever used for doors so maybe just use catalog as a pointer to actual thing?
-
   - [ ] Only update catalog values after validate i.e. not in set(...)
-        - [ ] rethink the whole 'dirty' thing
-              - maybe use a stash queue (?)
-              - or callbacks a la events
-              - or channels rather than callbacks
-        - [ ] Check RWLock for clone
-              - [ ] controllers
-              - [ ] doors
-              - [ ] cards
-              - [ ] groups
+        - [x] rethink the whole 'dirty' thing
+        - [ ] groups
+  - [ ] Check RWLock for clone to make shadow
+        - [ ] controllers
+        - [ ] doors
+        - [ ] cards
+        - [ ] groups
 
 #### Events
   - [ ] Lookup historical card/door/controller assignments
         - [ ] Unit tests
 
-  - [ ] (?) Rework to use channels
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
         - [ ] Realize e.g. two pages and repopulate OIDs
@@ -75,16 +78,6 @@
 #### Groups
 
 #### Logs
-
-#### Doors
-  - [x] Replace 'is dirty' logic with something sane
-  - [ ] Show configured value in JS when status is uncertain
-  - [ ] (?) Possible race condition if door is being updated and being edited simultaneously
-  - [ ] Updates all _incorrect_ values if one item is edited
-  - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
-        - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
-        - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
-  - [ ] 'door' select chooses first item if list changes while select is open
 
 #### System
       - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name
