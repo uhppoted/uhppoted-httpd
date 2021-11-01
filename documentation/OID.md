@@ -56,14 +56,16 @@
 |    |      |                   |- 0.2.1.0.2.4: <door>                       #               controller door number
 |    |      |                                                                #
 |    |      |- 0.2.1.1: <name>                                               #    name
-|    |      |- 0.2.1.2: <delay>                                              #    door open delay
-|    |               |- 0.2.1.2.1: <status>                                  #    door open delay status
-|    |               |- 0.2.1.2.2: <configured>                              #    configured door open delay
-|    |               |- 0.2.1.2.3: <error>                                   #    door delay error info
-|    |      |- 0.2.1.3: <control>                                            #    door control state
+|    |      |- 0.2.1.2: <delay>                                              #    door open delay value
+|    |               |- 0.2.1.2.1: <status>                                  #                    status
+|    |               |- 0.2.1.2.2: <configured>                              #                    configured value
+|    |               |- 0.2.1.2.3: <error>                                   #                    error info
+|    |               |- 0.2.1.2.4: <modified>                                #                    has been modified
+|    |      |- 0.2.1.3: <control>                                            #    door control state value
 |    |               |- 0.2.1.2.1: <status>                                  #    door control state status
-|    |               |- 0.2.1.2.2: <configured>                              #    configured door control state
-|    |               |- 0.2.1.2.3: <error>                                   #    door control state error info
+|    |               |- 0.2.1.2.2: <configured>                              #                       configured value
+|    |               |- 0.2.1.2.3: <error>                                   #                       error info
+|    |               |- 0.2.1.2.4: <modified>                                #                       has been modified
 |
 |- 0.3                                                                       # cards
 |    |- 0.3.1: <status>                                                      # card #1

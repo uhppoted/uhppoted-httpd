@@ -24,9 +24,6 @@ type Door struct {
 	mode    core.ControlState
 	created time.Time
 	deleted *time.Time
-
-	delayDirty bool
-	modeDirty  bool
 }
 
 var created = time.Now()
@@ -42,10 +39,12 @@ const DoorDelay = catalog.DoorDelay
 const DoorDelayStatus = catalog.DoorDelayStatus
 const DoorDelayConfigured = catalog.DoorDelayConfigured
 const DoorDelayError = catalog.DoorDelayError
+const DoorDelayModified = catalog.DoorDelayModified
 const DoorControl = catalog.DoorControl
 const DoorControlStatus = catalog.DoorControlStatus
 const DoorControlConfigured = catalog.DoorControlConfigured
 const DoorControlError = catalog.DoorControlError
+const DoorControlModified = catalog.DoorControlModified
 const DoorIndex = catalog.DoorIndex
 
 func (d *Door) IsValid() bool {
@@ -145,11 +144,18 @@ func (d *Door) AsObjects() []interface{} {
 		status:     types.StatusUnknown,
 	}
 
-	if v, dirty := catalog.GetV(d.OID.Append(DoorDelay)); v != nil {
+	if v, _ := catalog.GetV(d.OID.Append(DoorDelay)); v != nil {
 		delay.delay = v.(uint8)
+		modified := false
+
+		if v, _ := catalog.GetV(d.OID.Append(DoorDelayModified)); v != nil {
+			if b, ok := v.(bool); ok {
+				modified = b
+			}
+		}
 
 		switch {
-		case dirty:
+		case modified:
 			delay.status = types.StatusUncertain
 
 		case v == d.delay:
@@ -161,11 +167,18 @@ func (d *Door) AsObjects() []interface{} {
 		}
 	}
 
-	if v, dirty := catalog.GetV(d.OID.Append(DoorControl)); v != nil {
+	if v, _ := catalog.GetV(d.OID.Append(DoorControl)); v != nil {
 		control.control = v.(core.ControlState)
+		modified := false
+
+		if v, _ := catalog.GetV(d.OID.Append(DoorControlModified)); v != nil {
+			if b, ok := v.(bool); ok {
+				modified = b
+			}
+		}
 
 		switch {
-		case dirty:
+		case modified:
 			control.status = types.StatusUncertain
 
 		case v == d.mode:
@@ -218,8 +231,8 @@ func (d *Door) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
-	objects := []interface{}{}
+func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	objects := []catalog.Object{}
 
 	f := func(field string, value interface{}) error {
 		if auth == nil {
@@ -251,11 +264,11 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				return nil, err
 			} else {
 				d.delay = uint8(v)
-				d.delayDirty = true
-				objects = append(objects, catalog.NewObject2(d.OID, DoorDelay, d.delay))
+				// objects = append(objects, catalog.NewObject2(d.OID, DoorDelay, d.delay)) // TODO incorrect: fix this in JS
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayStatus, types.StatusUncertain))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayError, ""))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayModified, true))
 
 				d.log(auth, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
 			}
@@ -268,21 +281,19 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				switch value {
 				case "controlled":
 					d.mode = core.Controlled
-					d.modeDirty = true
 				case "normally open":
 					d.mode = core.NormallyOpen
-					d.modeDirty = true
 				case "normally closed":
 					d.mode = core.NormallyClosed
-					d.modeDirty = true
 				default:
 					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
 				}
 
-				objects = append(objects, catalog.NewObject2(d.OID, DoorControl, d.mode))
+				// objects = append(objects, catalog.NewObject2(d.OID, DoorControl, d.mode)) // TODO incorrect: fix this in JS
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlStatus, types.StatusUncertain))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlConfigured, d.mode))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlError, ""))
+				objects = append(objects, catalog.NewObject2(d.OID, DoorControlModified, true))
 
 				d.log(auth, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
 			}
@@ -363,23 +374,14 @@ func (d *Door) deserialize(bytes []byte) error {
 
 func (d *Door) clone() Door {
 	return Door{
-		OID:        d.OID,
-		Name:       d.Name,
-		Index:      d.Index,
-		delay:      d.delay,
-		mode:       d.mode,
-		created:    d.created,
-		deleted:    d.deleted,
-		delayDirty: d.delayDirty,
-		modeDirty:  d.modeDirty,
+		OID:     d.OID,
+		Name:    d.Name,
+		Index:   d.Index,
+		delay:   d.delay,
+		mode:    d.mode,
+		created: d.created,
+		deleted: d.deleted,
 	}
-}
-
-func (d Door) stash() {
-	catalog.PutDoor(d.OID)
-	catalog.PutV(d.OID.Append(DoorName), d.Name, false)
-	catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, d.delayDirty)
-	catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, d.modeDirty)
 }
 
 func (d *Door) lookup(suffix catalog.Suffix) interface{} {

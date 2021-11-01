@@ -94,7 +94,12 @@ func (dd *Doors) Load(file string) error {
 	}
 
 	for _, d := range dd.Doors {
-		d.stash()
+		catalog.PutDoor(d.OID)
+		catalog.PutV(d.OID.Append(DoorName), d.Name, false)
+		catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, false)
+		catalog.PutV(d.OID.Append(DoorDelayModified), false, false)
+		catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, false)
+		catalog.PutV(d.OID.Append(DoorControlModified), false, false)
 	}
 
 	dd.file = file
@@ -156,14 +161,6 @@ func (dd Doors) Save() error {
 	return os.Rename(tmp.Name(), dd.file)
 }
 
-func (dd *Doors) Stash() {
-	if dd != nil {
-		for _, d := range dd.Doors {
-			d.stash()
-		}
-	}
-}
-
 func (dd *Doors) Sweep(retention time.Duration) {
 	if dd != nil {
 		cutoff := time.Now().Add(-retention)
@@ -199,7 +196,7 @@ func (dd Doors) Print() {
 	}
 }
 
-func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
+func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	if dd == nil {
 		return nil, nil
 	}
@@ -215,7 +212,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 		}
 	}
 
-	objects := []interface{}{}
+	objects := []catalog.Object{}
 
 	if oid == "<new>" {
 		if d, err := dd.add(auth, Door{}); err != nil {

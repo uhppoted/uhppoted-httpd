@@ -3,6 +3,8 @@
 ### IN PROGRESS
 
 - [ ] Replace 'is dirty' logic with something sane
+      - [ ] show configured value in JS when status is uncertain
+      - [ ] possible race condition if door is being updated and being edited simultaneously (?)
 - [ ] Remove `stash`
 
 - [ ] Rename 'address' to 'endpoint'
@@ -23,6 +25,9 @@
   - [ ] Pass UID+role to grule
 
 #### OID
+  - [ ] Move 'updated' list to DBC
+  - [ ] Rework unpack to return list of OID + string
+  - [ ] GetV => GetBool, GetInt, etc
   - [ ] Store all values in catalog and 'realize' local copies from cache
         - Hmmm, may cause issues with shadow logic
         - Unless use shadow cache ??

@@ -23,7 +23,7 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 	shadow := sys.groups.Clone()
 
 	for _, object := range objects {
-		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value, dbc); err != nil {
+		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value.(string), dbc); err != nil {
 			return nil, err
 		} else if updated != nil {
 			list.Objects = append(list.Objects, updated...)

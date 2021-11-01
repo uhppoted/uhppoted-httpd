@@ -494,8 +494,15 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			// ... update door delays
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured, modified := catalog.GetV(catalog.OID(oid).Append(catalog.DoorDelayConfigured))
-					actual, _ := catalog.GetV(catalog.OID(oid).Append(catalog.DoorDelay))
+					configured, _ := catalog.GetV(oid.Append(catalog.DoorDelayConfigured))
+					actual, _ := catalog.GetV(oid.Append(catalog.DoorDelay))
+					modified := false
+
+					if v, _ := catalog.GetV(oid.Append(catalog.DoorDelayModified)); v != nil {
+						if b, ok := v.(bool); ok {
+							modified = b
+						}
+					}
 
 					if configured != nil && (actual == nil || actual != configured) && modified {
 						delay := configured.(uint8)
@@ -509,8 +516,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorDelay(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
-							catalog.PutV(catalog.OID(oid).Append(catalog.DoorDelayConfigured), delay, false)
-							catalog.PutV(catalog.OID(oid).Append(catalog.DoorDelay), delay, true)
+							catalog.PutV(oid.Append(catalog.DoorDelay), delay, false)
+							catalog.PutV(oid.Append(catalog.DoorDelayModified), false, false)
 							log.Printf("INFO  %v: synchronized door %v delay (%v)", response.DeviceID, door, delay)
 						}
 					}
@@ -520,8 +527,15 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			// ... update door control states
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured, modified := catalog.GetV(catalog.OID(oid).Append(catalog.DoorControlConfigured))
-					actual, _ := catalog.GetV(catalog.OID(oid).Append(catalog.DoorControl))
+					configured, _ := catalog.GetV(oid.Append(catalog.DoorControlConfigured))
+					actual, _ := catalog.GetV(oid.Append(catalog.DoorControl))
+					modified := false
+
+					if v, _ := catalog.GetV(oid.Append(catalog.DoorControlModified)); v != nil {
+						if b, ok := v.(bool); ok {
+							modified = b
+						}
+					}
 
 					if configured != nil && (actual == nil || actual != configured) && modified {
 						mode := configured.(core.ControlState)
@@ -535,8 +549,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorControl(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
-							catalog.PutV(catalog.OID(oid).Append(catalog.DoorControlConfigured), mode, false)
-							catalog.PutV(catalog.OID(oid).Append(catalog.DoorControl), mode, true)
+							catalog.PutV(oid.Append(catalog.DoorControl), mode, true)
+							catalog.PutV(oid.Append(catalog.DoorControlModified), false, false)
 							log.Printf("INFO  %v: synchronized door %v control (%v)", response.DeviceID, door, mode)
 						}
 					}

@@ -25,7 +25,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	shadow := sys.controllers.Clone()
 
 	for _, object := range objects {
-		if l, err := shadow.UpdateByOID(auth, object.OID, object.Value, dbc); err != nil {
+		if l, err := shadow.UpdateByOID(auth, object.OID, object.Value.(string), dbc); err != nil {
 			return nil, err
 		} else if l != nil {
 			updated = append(updated, l...)
