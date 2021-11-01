@@ -38,7 +38,6 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 	dbc.Commit(updated)
 	sys.controllers = shadow
-	sys.controllers.Stash()
 	sys.updated()
 
 	return struct {

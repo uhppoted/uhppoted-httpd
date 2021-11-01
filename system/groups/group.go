@@ -251,9 +251,6 @@ func (g Group) clone() Group {
 	return group
 }
 
-func (g Group) stash() {
-}
-
 func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {

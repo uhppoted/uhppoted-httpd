@@ -560,9 +560,6 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 	}
 }
 
-func (l LAN) stash() {
-}
-
 func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {

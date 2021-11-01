@@ -473,9 +473,6 @@ func (c *Card) clone() *Card {
 	return replicant
 }
 
-func (c Card) stash() {
-}
-
 func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field, description, before, after string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {

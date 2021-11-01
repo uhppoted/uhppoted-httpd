@@ -133,14 +133,6 @@ func (gg Groups) Save() error {
 	return os.Rename(tmp.Name(), gg.file)
 }
 
-func (gg *Groups) Stash() {
-	if gg != nil {
-		for _, g := range gg.Groups {
-			g.stash()
-		}
-	}
-}
-
 func (gg Groups) Print() {
 	if b, err := json.MarshalIndent(gg.Groups, "", "  "); err == nil {
 		fmt.Printf("----------------- GROUPS\n%s\n", string(b))

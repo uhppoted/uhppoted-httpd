@@ -2,11 +2,7 @@
 
 ### IN PROGRESS
 
-- [ ] Replace 'is dirty' logic with something sane
-      - [ ] show configured value in JS when status is uncertain
-      - [ ] possible race condition if door is being updated and being edited simultaneously (?)
-- [ ] Remove `stash`
-
+- [x] Remove `stash`
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
@@ -81,6 +77,9 @@
 #### Logs
 
 #### Doors
+  - [x] Replace 'is dirty' logic with something sane
+  - [ ] Show configured value in JS when status is uncertain
+  - [ ] (?) Possible race condition if door is being updated and being edited simultaneously
   - [ ] Updates all _incorrect_ values if one item is edited
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html

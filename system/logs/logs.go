@@ -154,9 +154,6 @@ func (ll Logs) Save() error {
 	return os.Rename(tmp.Name(), ll.file)
 }
 
-func (ll *Logs) Stash() {
-}
-
 func (ll Logs) Print() {
 	if b, err := json.MarshalIndent(ll.Logs, "", "  "); err == nil {
 		fmt.Printf("----------------- LOGS\n%s\n", string(b))

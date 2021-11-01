@@ -39,7 +39,6 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 
 	dbc.Commit(updated)
 	sys.cards = shadow
-	sys.cards.Stash()
 	sys.updated()
 
 	return struct {

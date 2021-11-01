@@ -40,7 +40,6 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 
 	dbc.Commit(nil)
 	sys.groups = shadow
-	sys.groups.Stash()
 	sys.updated()
 
 	return list, nil

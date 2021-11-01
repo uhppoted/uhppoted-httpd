@@ -145,9 +145,6 @@ func (ee *Events) Save() error {
 	return os.Rename(tmp.Name(), ee.file)
 }
 
-func (ee *Events) Stash() {
-}
-
 func (ee *Events) Print() {
 	if b, err := json.MarshalIndent(&ee.Events, "", "  "); err == nil {
 		fmt.Printf("----------------- EVENTS\n%s\n", string(b))

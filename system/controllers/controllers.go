@@ -213,15 +213,6 @@ func (cc *ControllerSet) Save() error {
 	return os.Rename(tmp.Name(), cc.file)
 }
 
-func (cc *ControllerSet) Stash() {
-	if cc != nil {
-		cc.LAN.stash()
-		for _, c := range cc.Controllers {
-			c.stash()
-		}
-	}
-}
-
 func (cc *ControllerSet) Sweep(retention time.Duration) {
 	if cc == nil {
 		return
