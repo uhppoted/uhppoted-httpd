@@ -17,7 +17,14 @@ func (d *dbc) Write(record audit.AuditRecord) {
 	d.logs = append(d.logs, record)
 }
 
-func (d *dbc) Commit(objects []catalog.Object) {
+func (d *dbc) Stash(objects []catalog.Object) {
+}
+
+func (d *dbc) Objects() []catalog.Object {
+	return []catalog.Object{}
+}
+
+func (d *dbc) Commit() {
 }
 
 func TestCardAdd(t *testing.T) {
