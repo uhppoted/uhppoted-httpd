@@ -51,6 +51,7 @@ type system struct {
 	retention   time.Duration // time after which 'deleted' items are permanently removed
 	callback    callback
 	trail       trail
+	debug       bool
 }
 
 type trail struct {
@@ -65,7 +66,12 @@ func (t trail) Write(records ...audit.AuditRecord) {
 type callback struct {
 }
 
-func Init(cfg config.Config, conf string) error {
+type object struct {
+	OID   catalog.OID `json:"OID"`
+	Value string      `json:"value"`
+}
+
+func Init(cfg config.Config, conf string, debug bool) error {
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
 		if os.IsNotExist(err) {
 			warn(err)
@@ -130,6 +136,7 @@ func Init(cfg config.Config, conf string) error {
 	sys.trail = trail{
 		trail: audit.MakeTrail(),
 	}
+	sys.debug = debug
 
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
 		cfg.HTTPD.System.Windows.Uncertain,
@@ -235,13 +242,13 @@ func (s *system) sweep() {
 	s.doors.Sweep(s.retention)
 }
 
-func unpack(m map[string]interface{}) ([]catalog.Object, error) {
+func unpack(m map[string]interface{}) ([]object, error) {
 	f := func(err error) error {
 		return types.BadRequest(fmt.Errorf("Invalid request (%v)", err), fmt.Errorf("Error unpacking 'post' request (%w)", err))
 	}
 
 	o := struct {
-		Objects []catalog.Object `json:"objects"`
+		Objects []object `json:"objects"`
 	}{}
 
 	blob, err := json.Marshal(m)
@@ -249,7 +256,9 @@ func unpack(m map[string]interface{}) ([]catalog.Object, error) {
 		return nil, f(err)
 	}
 
-	log.Printf("DEBUG %v", fmt.Sprintf("UNPACK %s\n", string(blob)))
+	if sys.debug {
+		log.Printf("DEBUG %v", fmt.Sprintf("UNPACK %s\n", string(blob)))
+	}
 
 	if err := json.Unmarshal(blob, &o); err != nil {
 		return nil, f(err)

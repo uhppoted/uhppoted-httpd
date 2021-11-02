@@ -91,5 +91,5 @@ undaemonize: build
 	sudo $(CMD) undaemonize
 
 run: build
-	$(CMD) --console
+	$(CMD) --debug --console
 

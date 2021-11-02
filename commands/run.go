@@ -13,6 +13,22 @@ import (
 	"github.com/uhppoted/uhppoted-lib/config"
 )
 
+type Run struct {
+	console       bool
+	configuration string
+	debug         bool
+}
+
+func (r *Run) FlagSet() *flag.FlagSet {
+	flagset := flag.NewFlagSet("", flag.ExitOnError)
+
+	flagset.BoolVar(&r.console, "console", r.console, "Runs as a console application rather than a service")
+	flagset.StringVar(&r.configuration, "config", r.configuration, "Sets the configuration file path")
+	flagset.BoolVar(&r.debug, "debug", r.debug, "Enables detailed debugging logs")
+
+	return flagset
+}
+
 func (cmd *Run) Name() string {
 	return "run"
 }
@@ -95,7 +111,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		},
 	}
 
-	if err := system.Init(*conf, cmd.configuration); err != nil {
+	if err := system.Init(*conf, cmd.configuration, cmd.debug); err != nil {
 		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 

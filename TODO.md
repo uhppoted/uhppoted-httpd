@@ -31,7 +31,7 @@
   - [x] Marshal value to JSON as string
   - [x] Only update catalog values after validate i.e. not in set(...)
         - [x] groups
-  - [ ] Rework unpack to return list of OID + string
+  - [x] Rework unpack to return list of OID + string
   - [ ] Move 'updated' list to DBC
   - [ ] Move interfaces to their own OID base
   - [ ] GetV => GetBool, GetInt, etc
