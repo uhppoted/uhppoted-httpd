@@ -284,7 +284,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				} else if !catalog.HasGroup(catalog.OID(k)) {
 					return nil, fmt.Errorf("invalid group OID (%v)", k)
 				} else {
-					group, _ := catalog.GetV(catalog.OID(k).Append(GroupName))
+					group := catalog.GetV(catalog.OID(k).Append(GroupName))
 
 					if value == "true" {
 						c.log(auth,

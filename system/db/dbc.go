@@ -38,7 +38,7 @@ func (d *dbc) Commit(objects []catalog.Object) {
 
 	if objects != nil {
 		for _, o := range objects {
-			catalog.PutV(o.OID, o.Value, false)
+			catalog.PutV(o.OID, o.Value)
 		}
 	}
 

@@ -50,12 +50,12 @@ const DoorIndex = catalog.DoorIndex
 func (d *Door) IsValid() bool {
 	if d != nil {
 		controller := ""
-		if v, _ := catalog.GetV(d.OID.Append(DoorControllerOID)); v != nil {
+		if v := catalog.GetV(d.OID.Append(DoorControllerOID)); v != nil {
 			controller = fmt.Sprintf("%v", v)
 		}
 
 		door := uint8(0)
-		if v, _ := catalog.GetV(d.OID.Append(DoorControllerDoor)); v != nil {
+		if v := catalog.GetV(d.OID.Append(DoorControllerDoor)); v != nil {
 			door = v.(uint8)
 		}
 
@@ -144,11 +144,11 @@ func (d *Door) AsObjects() []interface{} {
 		status:     types.StatusUnknown,
 	}
 
-	if v, _ := catalog.GetV(d.OID.Append(DoorDelay)); v != nil {
+	if v := catalog.GetV(d.OID.Append(DoorDelay)); v != nil {
 		delay.delay = v.(uint8)
 		modified := false
 
-		if v, _ := catalog.GetV(d.OID.Append(DoorDelayModified)); v != nil {
+		if v := catalog.GetV(d.OID.Append(DoorDelayModified)); v != nil {
 			if b, ok := v.(bool); ok {
 				modified = b
 			}
@@ -167,11 +167,11 @@ func (d *Door) AsObjects() []interface{} {
 		}
 	}
 
-	if v, _ := catalog.GetV(d.OID.Append(DoorControl)); v != nil {
+	if v := catalog.GetV(d.OID.Append(DoorControl)); v != nil {
 		control.control = v.(core.ControlState)
 		modified := false
 
-		if v, _ := catalog.GetV(d.OID.Append(DoorControlModified)); v != nil {
+		if v := catalog.GetV(d.OID.Append(DoorControlModified)); v != nil {
 			if b, ok := v.(bool); ok {
 				modified = b
 			}
@@ -385,11 +385,7 @@ func (d *Door) clone() Door {
 }
 
 func (d *Door) lookup(suffix catalog.Suffix) interface{} {
-	if v, _ := catalog.GetV(d.OID.Append(suffix)); v != nil {
-		return v
-	}
-
-	return nil
+	return catalog.GetV(d.OID.Append(suffix))
 }
 
 func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {

@@ -5,27 +5,20 @@ import (
 	"strings"
 )
 
-type value struct {
-	value interface{}
-	dirty bool
-}
+type value interface{}
 
 var cache = map[OID]value{}
 
-func GetV(oid OID) (interface{}, bool) {
-	v, ok := cache[oid]
-	if ok {
-		return v.value, v.dirty
+func GetV(oid OID) interface{} {
+	if v, ok := cache[oid]; ok {
+		return v
 	}
 
-	return nil, false
+	return nil
 }
 
-func PutV(oid OID, v interface{}, dirty bool) {
-	cache[oid] = value{
-		value: v,
-		dirty: dirty,
-	}
+func PutV(oid OID, v interface{}) {
+	cache[oid] = v
 }
 
 func Find(prefix OID, suffix Suffix, value interface{}) (OID, bool) {
@@ -34,7 +27,7 @@ func Find(prefix OID, suffix Suffix, value interface{}) (OID, bool) {
 	for k, v := range cache {
 		prefixed := strings.HasPrefix(string(k), string(prefix))
 		suffixed := strings.HasSuffix(string(k), string(suffix))
-		if prefixed && suffixed && s == fmt.Sprintf("%v", v.value) {
+		if prefixed && suffixed && s == fmt.Sprintf("%v", v) {
 			return k, true
 		}
 	}

@@ -429,8 +429,8 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			if err := f("door[1]", value); err != nil {
 				return nil, err
 			} else {
-				p, _ := catalog.GetV(catalog.OID(c.Doors[1]).Append(catalog.DoorName))
-				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
+				p := catalog.GetV(catalog.OID(c.Doors[1]).Append(catalog.DoorName))
+				q := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
 				c.log(auth,
 					"update",
 					c.OID,
@@ -449,8 +449,8 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			if err := f("door[2]", value); err != nil {
 				return nil, err
 			} else {
-				p, _ := catalog.GetV(catalog.OID(c.Doors[2]).Append(catalog.DoorName))
-				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
+				p := catalog.GetV(catalog.OID(c.Doors[2]).Append(catalog.DoorName))
+				q := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
 				c.log(auth,
 					"update",
 					c.OID,
@@ -469,8 +469,8 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			if err := f("door[3]", value); err != nil {
 				return nil, err
 			} else {
-				p, _ := catalog.GetV(catalog.OID(c.Doors[3]).Append(catalog.DoorName))
-				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
+				p := catalog.GetV(catalog.OID(c.Doors[3]).Append(catalog.DoorName))
+				q := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
 				c.log(auth,
 					"update",
 					c.OID,
@@ -489,8 +489,8 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			if err := f("door[4]", value); err != nil {
 				return nil, err
 			} else {
-				p, _ := catalog.GetV(catalog.OID(c.Doors[4]).Append(catalog.DoorName))
-				q, _ := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
+				p := catalog.GetV(catalog.OID(c.Doors[4]).Append(catalog.DoorName))
+				q := catalog.GetV(catalog.OID(value).Append(catalog.DoorName))
 				c.log(auth,
 					"update",
 					c.OID,

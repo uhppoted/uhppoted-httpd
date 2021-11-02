@@ -102,7 +102,7 @@ func (g *Group) AsRuleEntity() interface{} {
 		doors := catalog.Doors()
 		for _, d := range doors {
 			allowed := g.Doors[d]
-			door, _ := catalog.GetV(d.Append(DoorName))
+			door := catalog.GetV(d.Append(DoorName))
 
 			if v := fmt.Sprintf("%v", door); v != "" {
 				entity.Doors[v] = allowed
@@ -140,7 +140,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
 				did := m[1]
 				k := catalog.OID("0.2." + did)
-				door, _ := catalog.GetV(k.Append(DoorName))
+				door := catalog.GetV(k.Append(DoorName))
 
 				if err := f(door.(string), value); err != nil {
 					return nil, err

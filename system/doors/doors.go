@@ -95,11 +95,11 @@ func (dd *Doors) Load(file string) error {
 
 	for _, d := range dd.Doors {
 		catalog.PutDoor(d.OID)
-		catalog.PutV(d.OID.Append(DoorName), d.Name, false)
-		catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay, false)
-		catalog.PutV(d.OID.Append(DoorDelayModified), false, false)
-		catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode, false)
-		catalog.PutV(d.OID.Append(DoorControlModified), false, false)
+		catalog.PutV(d.OID.Append(DoorName), d.Name)
+		catalog.PutV(d.OID.Append(DoorDelayConfigured), d.delay)
+		catalog.PutV(d.OID.Append(DoorDelayModified), false)
+		catalog.PutV(d.OID.Append(DoorControlConfigured), d.mode)
+		catalog.PutV(d.OID.Append(DoorControlModified), false)
 	}
 
 	dd.file = file
