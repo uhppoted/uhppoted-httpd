@@ -2,25 +2,22 @@
 
 ### IN PROGRESS
 
-- [x] Remove `stash`
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [ ] Double click for login after 'idle signout'
-- [ ] 'reload' crashes with after restarting httpd
+- [ ] `reload` crashes after restarting httpd
       ```
       tabular.js:416 TypeError: Cannot read properties of null (reading 'dataset')
           at unbusy (uhppoted.js:176)
           at tabular.js:394
       ```
-- [ ] 'reload' alert 'undefined' message on restarting httpd
-- [ ] 'reload' automatically if httpd comes alive again
+- [ ] `reload` alert 'undefined' message on restarting httpd
+- [ ] `reload` automatically if httpd comes alive again
 
 #### Doors
-  - [x] Replace 'is dirty' logic with something sane
-  - [ ] Show configured value in JS when status is uncertain
+  - [x] Show configured value in JS when status is uncertain
   - [ ] (?) Possible race condition if door is being updated and being edited simultaneously
-  - [x] Updates all _incorrect_ values if one item is edited
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
@@ -31,13 +28,13 @@
   - [ ] Pass UID+role to grule
 
 #### OID
-  - [ ] (?) Marshal value to JSON as string (for JS)
+  - [x] Marshal value to JSON as string
   - [ ] Move 'updated' list to DBC
+  - [ ] Move interfaces to their own OID base
   - [ ] Rework unpack to return list of OID + string
   - [ ] GetV => GetBool, GetInt, etc
   - [ ] Store all values in catalog and 'realize' local copies from cache
   - [ ] Only update catalog values after validate i.e. not in set(...)
-        - [x] rethink the whole 'dirty' thing
         - [ ] groups
   - [ ] Check RWLock for clone to make shadow
         - [ ] controllers

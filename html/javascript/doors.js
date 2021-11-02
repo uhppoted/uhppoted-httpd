@@ -47,12 +47,15 @@ function updateFromDB (oid, record) {
 
   row.dataset.status = record.status
 
+  const d = record.delay.status === 'uncertain' ? record.delay.configured : record.delay.delay
+  const m = record.mode.status === 'uncertain' ? record.mode.configured : record.mode.mode
+
   update(name, record.name)
   update(controller, record.controller)
   update(deviceID, record.deviceID)
   update(door, record.door)
-  update(delay, record.delay.delay, record.delay.status)
-  update(mode, record.mode.mode, record.mode.status)
+  update(delay, d, record.delay.status)
+  update(mode, m, record.mode.status)
 
   // ... set placeholders for blank names
   name.placeholder = record.name !== '' ? '-' : `<D${oid}>`.replaceAll('.', '')
