@@ -178,7 +178,7 @@ func (gg *Groups) AsObjects() []interface{} {
 	return objects
 }
 
-func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
+func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	if gg == nil {
 		return nil, nil
 	}
@@ -194,7 +194,7 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, d
 		}
 	}
 
-	objects := []interface{}{}
+	objects := []catalog.Object{}
 
 	if oid == "<new>" {
 		if g, err := gg.add(auth, Group{}); err != nil {

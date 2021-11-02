@@ -29,13 +29,13 @@
 
 #### OID
   - [x] Marshal value to JSON as string
+  - [x] Only update catalog values after validate i.e. not in set(...)
+        - [x] groups
+  - [ ] Rework unpack to return list of OID + string
   - [ ] Move 'updated' list to DBC
   - [ ] Move interfaces to their own OID base
-  - [ ] Rework unpack to return list of OID + string
   - [ ] GetV => GetBool, GetInt, etc
   - [ ] Store all values in catalog and 'realize' local copies from cache
-  - [ ] Only update catalog values after validate i.e. not in set(...)
-        - [ ] groups
   - [ ] Check RWLock for clone to make shadow
         - [ ] controllers
         - [ ] doors

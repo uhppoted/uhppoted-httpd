@@ -20,15 +20,15 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 		return nil, err
 	}
 
-	updated := []catalog.Object{}
+	list := []catalog.Object{}
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.controllers.Clone()
 
 	for _, object := range objects {
-		if l, err := shadow.UpdateByOID(auth, object.OID, object.Value.(string), dbc); err != nil {
+		if updated, err := shadow.UpdateByOID(auth, object.OID, object.Value.(string), dbc); err != nil {
 			return nil, err
-		} else if l != nil {
-			updated = append(updated, l...)
+		} else if updated != nil {
+			list = append(list, updated...)
 		}
 	}
 
@@ -36,14 +36,14 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 		return nil, err
 	}
 
-	dbc.Commit(updated)
+	dbc.Commit(list)
 	sys.controllers = shadow
 	sys.updated()
 
 	return struct {
 		Objects []catalog.Object `json:"objects,omitempty"`
 	}{
-		Objects: updated,
+		Objects: list,
 	}, nil
 
 }

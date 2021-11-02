@@ -36,7 +36,7 @@ func TestLookupDeviceName(t *testing.T) {
 	expected := "Alpha"
 
 	catalog.PutController(405419896, oid)
-	catalog.PutV(oid.Append(catalog.ControllerName), "Alpha", false)
+	catalog.PutV(oid.Append(catalog.ControllerName), "Alpha")
 
 	name := eventController(event)
 	if name != expected {
@@ -58,8 +58,8 @@ func TestLookupCardName(t *testing.T) {
 	expected := "FredF"
 
 	catalog.PutCard(oid)
-	catalog.PutV(oid.Append(catalog.CardNumber), uint32(8165538), false)
-	catalog.PutV(oid.Append(catalog.CardName), "FredF", false)
+	catalog.PutV(oid.Append(catalog.CardNumber), uint32(8165538))
+	catalog.PutV(oid.Append(catalog.CardName), "FredF")
 
 	name := eventCard(event)
 	if name != expected {

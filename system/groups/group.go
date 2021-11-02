@@ -113,8 +113,8 @@ func (g *Group) AsRuleEntity() interface{} {
 	return &entity
 }
 
-func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]interface{}, error) {
-	objects := []interface{}{}
+func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	objects := []catalog.Object{}
 
 	f := func(field string, value interface{}) error {
 		if auth != nil {
