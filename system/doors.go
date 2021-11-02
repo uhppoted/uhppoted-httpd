@@ -19,15 +19,14 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, err
 	}
 
-	list := []catalog.Object{}
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.doors.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
 			return nil, err
-		} else if updated != nil {
-			list = append(list, updated...)
+		} else {
+			dbc.Stash(updated)
 		}
 	}
 
@@ -61,13 +60,13 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	sys.doors = shadow
-	dbc.Commit(list)
+	dbc.Commit()
 	sys.updated()
 
 	return struct {
 		Objects []catalog.Object `json:"objects,omitempty"`
 	}{
-		Objects: list,
+		Objects: dbc.Objects(),
 	}, nil
 
 }

@@ -8,36 +8,46 @@ import (
 )
 
 type DBC interface {
+	Stash([]catalog.Object)
+	Objects() []catalog.Object
+	Commit()
 	Write(audit.AuditRecord)
-	Commit([]catalog.Object)
 }
 
 type dbc struct {
-	trail audit.AuditTrail
-	logs  []audit.AuditRecord
-	guard sync.Mutex
+	objects []catalog.Object
+	trail   audit.AuditTrail
+	logs    []audit.AuditRecord
+	guard   sync.Mutex
 }
 
 func NewDBC(trail audit.AuditTrail) DBC {
 	return &dbc{
-		trail: trail,
-		logs:  []audit.AuditRecord{},
+		objects: []catalog.Object{},
+		trail:   trail,
+		logs:    []audit.AuditRecord{},
 	}
 }
 
-func (d *dbc) Write(record audit.AuditRecord) {
+func (d *dbc) Stash(list []catalog.Object) {
 	d.guard.Lock()
 	defer d.guard.Unlock()
 
-	d.logs = append(d.logs, record)
+	if list != nil {
+		d.objects = append(d.objects, list...)
+	}
 }
 
-func (d *dbc) Commit(objects []catalog.Object) {
+func (d *dbc) Objects() []catalog.Object {
+	return d.objects
+}
+
+func (d *dbc) Commit() {
 	d.guard.Lock()
 	defer d.guard.Unlock()
 
-	if objects != nil {
-		for _, o := range objects {
+	if d.objects != nil {
+		for _, o := range d.objects {
 			catalog.PutV(o.OID, o.Value)
 		}
 	}
@@ -49,4 +59,11 @@ func (d *dbc) Commit(objects []catalog.Object) {
 	}
 
 	d.logs = []audit.AuditRecord{}
+}
+
+func (d *dbc) Write(record audit.AuditRecord) {
+	d.guard.Lock()
+	defer d.guard.Unlock()
+
+	d.logs = append(d.logs, record)
 }

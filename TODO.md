@@ -6,6 +6,8 @@
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 - [ ] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [ ] Double click for login after 'idle signout'
+- [ ] `reload` should be displayed if fetch fails for _too long_
+      (at the moment only seems to display if left alone for too long)
 - [ ] `reload` crashes after restarting httpd
       ```
       tabular.js:416 TypeError: Cannot read properties of null (reading 'dataset')
@@ -32,7 +34,7 @@
   - [x] Only update catalog values after validate i.e. not in set(...)
         - [x] groups
   - [x] Rework unpack to return list of OID + string
-  - [ ] Move 'updated' list to DBC
+  - [x] Move 'updated' list to DBC
   - [ ] Move interfaces to their own OID base
   - [ ] GetV => GetBool, GetInt, etc
   - [ ] Store all values in catalog and 'realize' local copies from cache

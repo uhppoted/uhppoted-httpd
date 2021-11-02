@@ -16,15 +16,14 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 		return nil, err
 	}
 
-	list := []catalog.Object{}
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.groups.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
 			return nil, err
-		} else if updated != nil {
-			list = append(list, updated...)
+		} else {
+			dbc.Stash(updated)
 		}
 	}
 
@@ -36,13 +35,13 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 		return nil, err
 	}
 
-	dbc.Commit(list)
+	dbc.Commit()
 	sys.groups = shadow
 	sys.updated()
 
 	return struct {
 		Objects []catalog.Object `json:"objects,omitempty"`
 	}{
-		Objects: list,
+		Objects: dbc.Objects(),
 	}, nil
 }
