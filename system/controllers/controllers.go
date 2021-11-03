@@ -277,29 +277,12 @@ func (cc *ControllerSet) Find(deviceID uint32) *Controller {
 	return nil
 }
 
-func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error) {
-	id := uint32(0)
-	if c.DeviceID != nil {
-		id = *c.DeviceID
+func (cc *ControllerSet) Refresh(callback Callback) []catalog.Object {
+	objects := []catalog.Object{}
+
+	if list := cc.LAN.refresh(cc.Controllers, callback); list != nil {
+		objects = append(objects, list...)
 	}
-
-	record := c.clone()
-	record.OID = catalog.OID(catalog.NewController(id))
-	record.created = time.Now()
-
-	if auth != nil {
-		if err := auth.CanAddController(record); err != nil {
-			return nil, err
-		}
-	}
-
-	cc.Controllers = append(cc.Controllers, record)
-
-	return record, nil
-}
-
-func (cc *ControllerSet) Refresh(callback Callback) {
-	cc.LAN.refresh(cc.Controllers, callback)
 
 	// ... add 'found' controllers to list
 loop:
@@ -320,6 +303,8 @@ loop:
 			unconfigured: true,
 		})
 	}
+
+	return objects
 }
 
 func (cc *ControllerSet) Clone() ControllerSet {
@@ -437,6 +422,27 @@ func (cc *ControllerSet) Validate() error {
 	}
 
 	return nil
+}
+
+func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error) {
+	id := uint32(0)
+	if c.DeviceID != nil {
+		id = *c.DeviceID
+	}
+
+	record := c.clone()
+	record.OID = catalog.OID(catalog.NewController(id))
+	record.created = time.Now()
+
+	if auth != nil {
+		if err := auth.CanAddController(record); err != nil {
+			return nil, err
+		}
+	}
+
+	cc.Controllers = append(cc.Controllers, record)
+
+	return record, nil
 }
 
 func validate(cc ControllerSet) error {

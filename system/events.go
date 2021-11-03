@@ -2,7 +2,6 @@ package system
 
 import (
 	"fmt"
-	"os/exec"
 	"sort"
 	"time"
 
@@ -151,8 +150,4 @@ func eventDoor(e uhppoted.Event) string {
 	}
 
 	return name
-}
-
-func beep() {
-	exec.Command("say", "beep").Run()
 }

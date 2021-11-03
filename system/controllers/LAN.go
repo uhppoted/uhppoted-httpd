@@ -46,6 +46,8 @@ const LANType = catalog.InterfaceType
 const LANBindAddress = catalog.LANBindAddress
 const LANBroadcastAddress = catalog.LANBroadcastAddress
 const LANListenAddress = catalog.LANListenAddress
+const DoorDelay = catalog.DoorDelay
+const DoorControl = catalog.DoorControl
 
 var cache = struct {
 	cache map[uint32]device
@@ -278,7 +280,11 @@ func (l *LAN) compareACL(controllers []*Controller, permissions acl.ACL) error {
 	return nil
 }
 
-func (l *LAN) refresh(controllers []*Controller, callback Callback) {
+// Possibly a long-running function - expects to be invoked from an external goroutine
+func (l *LAN) refresh(controllers []*Controller, callback Callback) []catalog.Object {
+	var lock sync.Mutex
+	var objects = []catalog.Object{}
+
 	expired := time.Now().Add(-windows.cacheExpiry)
 	for k, v := range cache.cache {
 		if v.touched.Before(expired) {
@@ -295,72 +301,86 @@ func (l *LAN) refresh(controllers []*Controller, callback Callback) {
 	}
 
 	api := l.api(controllers)
-	go func() {
-		if devices, err := api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
-			log.Printf("%v", err)
-		} else if devices == nil {
-			log.Printf("Got %v response to get-devices request", devices)
-		} else {
-			for k, v := range devices.Devices {
-				if d, ok := api.UHPPOTE.DeviceList()[k]; ok {
-					d.Address.IP = v.Address
-					d.Address.Port = v.Port
-				}
-
-				list[k] = struct{}{}
+	if devices, err := api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
+		log.Printf("%v", err)
+	} else if devices == nil {
+		log.Printf("Got %v response to get-devices request", devices)
+	} else {
+		for k, v := range devices.Devices {
+			if d, ok := api.UHPPOTE.DeviceList()[k]; ok {
+				d.Address.IP = v.Address
+				d.Address.Port = v.Port
 			}
-		}
 
-		for k, _ := range list {
-			id := k
-			go func() {
-				var controller *Controller
-				for _, c := range controllers {
-					if c.DeviceID != nil && *c.DeviceID == id {
-						controller = c
-						break
-					}
+			list[k] = struct{}{}
+		}
+	}
+
+	var wg sync.WaitGroup
+
+	for k, _ := range list {
+		wg.Add(1)
+
+		id := k
+		go func() {
+			defer wg.Done()
+
+			var controller *Controller
+			for _, c := range controllers {
+				if c.DeviceID != nil && *c.DeviceID == id {
+					controller = c
+					break
 				}
+			}
 
-				l.update(api, id, controller, callback)
-			}()
-		}
-	}()
+			if list := l.update(api, id, controller, callback); list != nil {
+				lock.Lock()
+				defer lock.Unlock()
+				objects = append(objects, list...)
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	return objects
 }
 
-func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, callback Callback) {
+func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, callback Callback) []catalog.Object {
+	objects := []catalog.Object{}
+
 	log.Printf("%v: refreshing LAN controller status", id)
 
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if info == nil {
 		log.Printf("Got %v response to get-device request for %v", info, id)
-	} else {
-		l.store(id, *info, controller)
+	} else if list := l.store(id, *info, controller); list != nil {
+		objects = append(objects, list...)
 	}
 
 	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if status == nil {
 		log.Printf("Got %v response to get-status request for %v", status, id)
-	} else {
-		l.store(id, *status, controller)
+	} else if list := l.store(id, *status, controller); list != nil {
+		objects = append(objects, list...)
 	}
 
 	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if cards == nil {
 		log.Printf("Got %v response to get-card-records request for %v", cards, id)
-	} else {
-		l.store(id, *cards, controller)
+	} else if list := l.store(id, *cards, controller); list != nil {
+		objects = append(objects, list...)
 	}
 
 	if events, err := api.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if events == nil {
 		log.Printf("Got %v response to get-event-range request for %v", events, id)
-	} else {
-		l.store(id, *events, controller)
+	} else if list := l.store(id, *events, controller); list != nil {
+		objects = append(objects, list...)
 	}
 
 	for _, d := range []uint8{1, 2, 3, 4} {
@@ -368,8 +388,8 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 			log.Printf("%v", err)
 		} else if delay == nil {
 			log.Printf("Got %v response to get-door-delay request for %v", delay, id)
-		} else {
-			l.store(id, *delay, controller)
+		} else if list := l.store(id, *delay, controller); list != nil {
+			objects = append(objects, list...)
 		}
 	}
 
@@ -378,8 +398,8 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 			log.Printf("%v", err)
 		} else if control == nil {
 			log.Printf("Got %v response to get-door-control request for %v", control, id)
-		} else {
-			l.store(id, *control, controller)
+		} else if list := l.store(id, *control, controller); list != nil {
+			objects = append(objects, list...)
 		}
 	}
 
@@ -388,12 +408,15 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 	} else if callback != nil {
 		callback.Append(id, recent.Events)
 	}
+
+	return objects
 }
 
-func (l *LAN) store(id uint32, info interface{}, controller *Controller) {
+func (l *LAN) store(id uint32, info interface{}, controller *Controller) []catalog.Object {
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
 
+	objects := []catalog.Object{}
 	cached, ok := cache.cache[id]
 	if !ok {
 		cached = device{}
@@ -427,16 +450,14 @@ func (l *LAN) store(id uint32, info interface{}, controller *Controller) {
 	case uhppoted.GetDoorDelayResponse:
 		if controller != nil {
 			if door, ok := controller.Doors[v.Door]; ok {
-				oid := catalog.OID(door + ".2")
-				catalog.PutV(oid, v.Delay)
+				objects = append(objects, catalog.NewObject2(door, DoorDelay, v.Delay))
 			}
 		}
 
 	case uhppoted.GetDoorControlResponse:
 		if controller != nil {
 			if door, ok := controller.Doors[v.Door]; ok {
-				oid := catalog.OID(door + ".3")
-				catalog.PutV(oid, v.Control)
+				objects = append(objects, catalog.NewObject2(door, DoorControl, v.Control))
 			}
 		}
 
@@ -451,6 +472,8 @@ func (l *LAN) store(id uint32, info interface{}, controller *Controller) {
 			cache.cache[id] = cached
 		}
 	}
+
+	return objects
 }
 
 func (l *LAN) synchTime(controllers []*Controller) {

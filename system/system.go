@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"strings"
 	"sync"
 	"time"
@@ -201,7 +202,10 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			s.controllers.Refresh(&s.callback)
+			beep()
+			if objects := s.controllers.Refresh(&s.callback); objects != nil && len(objects) > 0 {
+				stash(objects)
+			}
 		},
 	})
 
@@ -214,6 +218,17 @@ func (s *system) refresh() {
 			CompareACL()
 		},
 	})
+}
+
+func stash(objects []catalog.Object) {
+	sys.Lock()
+	defer sys.Unlock()
+
+	for _, o := range objects {
+		catalog.PutV(o.OID, o.Value)
+	}
+
+	beep2()
 }
 
 func (s *system) updated() {
@@ -277,4 +292,12 @@ func info(msg string) {
 
 func warn(err error) {
 	log.Printf("ERROR %v", err)
+}
+
+func beep() {
+	exec.Command("say", "beep").Run()
+}
+
+func beep2() {
+	exec.Command("say", "beep beep").Run()
 }
