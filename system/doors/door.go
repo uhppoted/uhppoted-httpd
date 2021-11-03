@@ -203,7 +203,7 @@ func (d *Door) AsObjects() []interface{} {
 		catalog.NewObject2(d.OID, DoorControllerID, controller.ID),
 		catalog.NewObject2(d.OID, DoorControllerDoor, controller.door),
 		catalog.NewObject2(d.OID, DoorName, name),
-		catalog.NewObject2(d.OID, DoorDelay, delay.delay),
+		catalog.NewObject2(d.OID, DoorDelay, types.Uint8(delay.delay)),
 		catalog.NewObject2(d.OID, DoorDelayStatus, delay.status),
 		catalog.NewObject2(d.OID, DoorDelayConfigured, delay.configured),
 		catalog.NewObject2(d.OID, DoorDelayError, delay.err),

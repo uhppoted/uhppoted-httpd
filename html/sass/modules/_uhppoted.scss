@@ -87,9 +87,19 @@ footer {
 }
 
 #logo {
-  width: 96px;
-  height: 96px;
-  padding: 12px;
+  width: 88px;
+  height: 88px;
+  padding-left: 12px;
+  padding-top: 12px;
+  padding-right: 12px;
+}
+
+#connected {
+  display: none;
+  text-align: center;
+  color: $warning-colour;
+  font-size: 0.9em;
+  font-variant: small-caps;
 }
 
 #dashboard {

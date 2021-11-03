@@ -14,7 +14,10 @@
 
       <!-- HEADER -->
       <header>
-        <img id="logo" src="images/{{$.context.Theme}}/logo.png"  />
+        <div style="display:flex; flex-direction:column;">
+          <img id="logo" src="images/{{$.context.Theme}}/logo.png" />
+          <div id="connected">offline</div>
+        </div>
           
         <div id="dashboard">
           <span id="windmill"></span>
