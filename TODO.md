@@ -18,15 +18,8 @@
 - [ ] `reload` automatically if httpd comes alive again
 
 #### Doors
-  - [ ] Possible race condition if door is being updated and being edited simultaneously
-        - Because no guard around updates from LAN
-        - Mutex ?
-        - Queue ?
-        - Channel ?
-
-  - [ ] Door delay 0 should display as ''
-        - simulate by not updating catalog in LAN.store
-
+  - [x] Possible race condition if door is being updated and being edited simultaneously
+  - [ ] Door delay 0 should display as '' (simulate by not updating catalog in LAN.store)
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
@@ -47,6 +40,7 @@
         - [ ] groups
 
 #### Events
+  - [ ] Replace LAN callback with something more idiomatic
   - [ ] Lookup historical card/door/controller assignments
         - [ ] Unit tests
 

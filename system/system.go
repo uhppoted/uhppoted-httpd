@@ -202,9 +202,8 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			beep()
-			if objects := s.controllers.Refresh(&s.callback); objects != nil && len(objects) > 0 {
-				stash(objects)
+			if objects := s.controllers.Refresh(&s.callback); objects != nil {
+				catalog.PutL(objects)
 			}
 		},
 	})
@@ -220,17 +219,6 @@ func (s *system) refresh() {
 	})
 }
 
-func stash(objects []catalog.Object) {
-	sys.Lock()
-	defer sys.Unlock()
-
-	for _, o := range objects {
-		catalog.PutV(o.OID, o.Value)
-	}
-
-	beep2()
-}
-
 func (s *system) updated() {
 	//	s.taskQ.Add(Task{
 	//		f: func() {
@@ -243,7 +231,10 @@ func (s *system) updated() {
 	s.taskQ.Add(Task{
 		f: func() {
 			info("Updating controllers from configuration")
-			sys.controllers.Sync()
+			if objects := sys.controllers.Sync(); objects != nil {
+				catalog.PutL(objects)
+			}
+
 			UpdateACL()
 		},
 	})
@@ -294,10 +285,12 @@ func warn(err error) {
 	log.Printf("ERROR %v", err)
 }
 
+// TODO remove - debugging only
 func beep() {
 	exec.Command("say", "beep").Run()
 }
 
+// TODO remove - debugging only
 func beep2() {
 	exec.Command("say", "beep beep").Run()
 }

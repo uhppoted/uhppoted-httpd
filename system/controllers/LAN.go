@@ -47,7 +47,9 @@ const LANBindAddress = catalog.LANBindAddress
 const LANBroadcastAddress = catalog.LANBroadcastAddress
 const LANListenAddress = catalog.LANListenAddress
 const DoorDelay = catalog.DoorDelay
+const DoorDelayModified = catalog.DoorDelayModified
 const DoorControl = catalog.DoorControl
+const DoorControlModified = catalog.DoorControlModified
 
 var cache = struct {
 	cache map[uint32]device
@@ -476,7 +478,8 @@ func (l *LAN) store(id uint32, info interface{}, controller *Controller) []catal
 	return objects
 }
 
-func (l *LAN) synchTime(controllers []*Controller) {
+func (l *LAN) synchTime(controllers []*Controller) []catalog.Object {
+	objects := []catalog.Object{}
 	api := l.api(controllers)
 	for _, c := range controllers {
 		if c.DeviceID != nil {
@@ -505,9 +508,12 @@ func (l *LAN) synchTime(controllers []*Controller) {
 			}
 		}
 	}
+
+	return objects
 }
 
-func (l *LAN) synchDoors(controllers []*Controller) {
+func (l *LAN) synchDoors(controllers []*Controller) []catalog.Object {
+	objects := []catalog.Object{}
 	api := l.api(controllers)
 
 	for _, c := range controllers {
@@ -539,8 +545,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorDelay(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
-							catalog.PutV(oid.Append(catalog.DoorDelay), delay)
-							catalog.PutV(oid.Append(catalog.DoorDelayModified), false)
+							objects = append(objects, catalog.NewObject2(oid, DoorDelay, delay))
+							objects = append(objects, catalog.NewObject2(oid, DoorDelayModified, false))
 							log.Printf("INFO  %v: synchronized door %v delay (%v)", response.DeviceID, door, delay)
 						}
 					}
@@ -572,8 +578,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 						if response, err := api.SetDoorControl(request); err != nil {
 							log.Printf("ERROR %v", err)
 						} else if response != nil {
-							catalog.PutV(oid.Append(catalog.DoorControl), mode)
-							catalog.PutV(oid.Append(catalog.DoorControlModified), false)
+							objects = append(objects, catalog.NewObject2(oid, DoorControl, mode))
+							objects = append(objects, catalog.NewObject2(oid, DoorControlModified, false))
 							log.Printf("INFO  %v: synchronized door %v control (%v)", response.DeviceID, door, mode)
 						}
 					}
@@ -581,6 +587,8 @@ func (l *LAN) synchDoors(controllers []*Controller) {
 			}
 		}
 	}
+
+	return objects
 }
 
 func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {

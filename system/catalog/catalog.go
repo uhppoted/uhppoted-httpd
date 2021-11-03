@@ -39,7 +39,9 @@ func Clear() {
 	catalog.events = map[OID]struct{}{}
 	catalog.logs = map[OID]struct{}{}
 
-	cache = map[OID]value{}
+	cache.guard.Lock()
+	defer cache.guard.Unlock()
+	cache.cache = map[OID]value{}
 }
 
 func PutInterface(oid OID) {
