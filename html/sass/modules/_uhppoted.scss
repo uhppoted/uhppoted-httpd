@@ -37,7 +37,7 @@ header {
 nav {
   grid-area: left;
   background: $nav-background;
-  margin: 30px 8px 8px 8px;
+  margin: 8px 8px 8px 8px;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
 }
@@ -72,7 +72,7 @@ main {
   grid-area: content;
   justify-content: center;    
   overflow: hidden;
-  margin: 30px 0px 8px 0px;
+  margin: 8px 0px 8px 0px;
 }
 
 footer {
@@ -94,12 +94,18 @@ footer {
   padding-right: 12px;
 }
 
-#connected {
-  display: none;
+#disconnected {
+  display: block;
   text-align: center;
   color: $warning-colour;
-  font-size: 0.9em;
+  font-size: 0.8em;
+  font-family: sans-serif;
   font-variant: small-caps;
+  visibility: hidden;
+}
+
+#disconnected.visible {
+  visibility: visible;
 }
 
 #dashboard {
@@ -227,11 +233,6 @@ footer {
 
 #controls #refresh {  
   margin-left: 6px;
-}
-
-#cardholders {
-  display: block;
-  height: 100%;
 }
 
 #offline {

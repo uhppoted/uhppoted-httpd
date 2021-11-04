@@ -80,12 +80,11 @@ export async function postAsForm (url = '', data = {}) {
   dismiss()
 
   const pairs = []
-
   for (const name in data) {
     pairs.push(encodeURIComponent(name) + '=' + encodeURIComponent(data[name]))
   }
 
-  const response = await fetch(url, {
+  const init = {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -94,28 +93,44 @@ export async function postAsForm (url = '', data = {}) {
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
     body: pairs.join('&').replace(/%20/g, '+')
-  })
+  }
 
-  return response
+  return await fetch(url, init)
+    .then(response => {
+      connected(true)
+      return response
+    })
+    .catch(function (err) {
+      connected(false)
+      throw err
+    })
 }
 
 export async function getAsJSON (url = '') {
-  const response = await fetch(url, {
+  const init = {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'same-origin',
     redirect: 'follow',
     referrerPolicy: 'no-referrer'
-  })
+  }
 
-  return response
+  return await fetch(url, init)
+    .then(response => {
+      connected(true)
+      return response
+    })
+    .catch(function (err) {
+      connected(false)
+      throw err
+    })
 }
 
 export async function postAsJSON (url = '', data = {}) {
   dismiss()
 
-  const response = await fetch(url, {
+  const init = {
     method: 'POST',
     mode: 'cors',
     cache: 'no-cache',
@@ -124,9 +139,17 @@ export async function postAsJSON (url = '', data = {}) {
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
     body: JSON.stringify(data)
-  })
+  }
 
-  return response
+  return await fetch(url, init)
+    .then(response => {
+      connected(true)
+      return response
+    })
+    .catch(function (err) {
+      connected(false)
+      throw err
+    })
 }
 
 export function onSignOut (event) {
@@ -199,6 +222,18 @@ export function onReload () {
     console.log(err)
     message.innerHTML = '(still offline)'
   })
+}
+
+function connected (ok) {
+  const disconnected = document.querySelector('header #disconnected')
+
+  if (disconnected) {
+    if (ok) {
+      disconnected.classList.remove('visible')
+    } else {
+      disconnected.classList.add('visible')
+    }
+  }
 }
 
 function offline () {
