@@ -3,9 +3,7 @@
 ### IN PROGRESS
 
 - [x] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
-- [ ] Double click for login after 'idle signout'
-- [ ] `reload` should be displayed if fetch fails for _too long_
-      (at the moment only seems to display if left alone for too long)
+- [x] `reload` should be displayed if fetch fails for _too long_
 - [ ] `reload` crashes after restarting httpd
       ```
       tabular.js:416 TypeError: Cannot read properties of null (reading 'dataset')
@@ -14,6 +12,7 @@
       ```
 - [ ] `reload` alert 'undefined' message on restarting httpd
 - [ ] `reload` automatically if httpd comes alive again
+- [ ] Double click for login after 'idle signout'
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 

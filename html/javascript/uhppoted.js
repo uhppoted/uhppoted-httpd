@@ -1,4 +1,5 @@
 let idleTimer
+let disconnected
 
 document.addEventListener('mousedown', event => {
   resetIdle(event)
@@ -225,13 +226,27 @@ export function onReload () {
 }
 
 function connected (ok) {
-  const disconnected = document.querySelector('header #disconnected')
+  const element = document.querySelector('header #disconnected')
 
-  if (disconnected) {
+  if (element) {
     if (ok) {
-      disconnected.classList.remove('visible')
+      element.classList.remove('visible')
     } else {
-      disconnected.classList.add('visible')
+      element.classList.add('visible')
+    }
+  }
+
+  if (ok) {
+    disconnected = null
+  } else if (!disconnected) {
+    disconnected = new Date()
+  } else {
+    const duration = (new Date() - disconnected)
+    const seconds = Math.floor(Math.max(0, Math.round(duration / 1000)))
+
+    if (seconds > 60) {
+      console.error(`Disconnected for ${seconds}s`)
+      offline()
     }
   }
 }
