@@ -196,12 +196,15 @@ export function busy () {
 
 export function unbusy () {
   const windmill = document.getElementById('windmill')
-  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
 
-  if (queued > 1) {
-    windmill.dataset.count = (queued - 1).toString()
-  } else {
-    delete (windmill.dataset.count)
+  if (windmill) {
+    const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+
+    if (queued > 1) {
+      windmill.dataset.count = (queued - 1).toString()
+    } else {
+      delete (windmill.dataset.count)
+    }
   }
 }
 

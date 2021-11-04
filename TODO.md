@@ -4,15 +4,16 @@
 
 - [x] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
 - [x] `reload` should be displayed if fetch fails for _too long_
-- [ ] `reload` crashes after restarting httpd
+- [x] `reload` crashes after restarting httpd
       ```
-      tabular.js:416 TypeError: Cannot read properties of null (reading 'dataset')
-          at unbusy (uhppoted.js:176)
-          at tabular.js:394
+      tabular.js:495 TypeError: Cannot read properties of null (reading 'dataset')
+          at unbusy (uhppoted.js:199)
+          at tabular.js:473
       ```
-- [ ] `reload` alert 'undefined' message on restarting httpd
-- [ ] `reload` automatically if httpd comes alive again
+- [x] `reload` alert 'undefined' message on restarting httpd
+- [x] `reload` automatically if httpd comes alive again
 - [ ] Double click for login after 'idle signout'
+- [ ] (?) _heartbeat_ for online/offline
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 
