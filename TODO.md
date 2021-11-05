@@ -31,7 +31,7 @@
 
 #### auth
   - [x] Pass UID+role to grule
-  - [ ] Reload grules file if changed
+  - [x] Reload grules file if changed
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

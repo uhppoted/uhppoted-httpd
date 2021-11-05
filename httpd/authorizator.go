@@ -3,9 +3,14 @@ package httpd
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"os"
+	"time"
 
 	"github.com/hyperjumptech/grule-rule-engine/ast"
+	"github.com/hyperjumptech/grule-rule-engine/builder"
 	"github.com/hyperjumptech/grule-rule-engine/engine"
+	"github.com/hyperjumptech/grule-rule-engine/pkg"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -38,11 +43,44 @@ func (op *card) HasGroup(g string) bool {
 	return false
 }
 
-func NewAuthorizator(uid, role string, grule *ast.KnowledgeLibrary) (*authorizator, error) {
+var grules = map[string]struct {
+	kb      *ast.KnowledgeLibrary
+	touched time.Time
+}{}
+
+func NewAuthorizator(uid, role, tag, rules string) (*authorizator, error) {
+	var kb *ast.KnowledgeLibrary
+	var touched time.Time
+
+	if info, err := os.Stat(rules); err != nil {
+		return nil, fmt.Errorf("Error loading %v auth ruleset (%v)", tag, err)
+	} else {
+		touched = info.ModTime()
+	}
+
+	if v, ok := grules[rules]; ok && v.kb != nil && !v.touched.Before(touched) {
+		kb = v.kb
+	} else {
+		kb = ast.NewKnowledgeLibrary()
+		if err := builder.NewRuleBuilder(kb).BuildRuleFromResource(tag, "0.0.0", pkg.NewFileResource(rules)); err != nil {
+			return nil, fmt.Errorf("Error loading %v auth ruleset (%v)", tag, err)
+		}
+
+		grules[rules] = struct {
+			kb      *ast.KnowledgeLibrary
+			touched time.Time
+		}{
+			kb:      kb,
+			touched: touched,
+		}
+
+		log.Printf("INFO  loaded '%v' grule file from %v", tag, rules)
+	}
+
 	return &authorizator{
 		uid:   uid,
 		role:  role,
-		grule: grule,
+		grule: kb,
 	}, nil
 }
 

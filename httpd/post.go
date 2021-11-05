@@ -29,7 +29,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if match, err := regexp.MatchString(`/system`, path); err == nil && match {
-		auth, err := NewAuthorizator(uid, role, d.grule.system)
+		auth, err := NewAuthorizator(uid, role, "system", d.grule.system)
 		if err != nil {
 			http.Error(w, "Error executing request", http.StatusInternalServerError)
 		}
@@ -39,7 +39,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if match, err := regexp.MatchString(`/doors`, path); err == nil && match {
-		auth, err := NewAuthorizator(uid, role, d.grule.doors)
+		auth, err := NewAuthorizator(uid, role, "doors", d.grule.doors)
 		if err != nil {
 			http.Error(w, "Error executing request", http.StatusInternalServerError)
 		}
@@ -49,7 +49,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if match, err := regexp.MatchString(`/cards`, path); err == nil && match {
-		auth, err := NewAuthorizator(uid, role, d.grule.cards)
+		auth, err := NewAuthorizator(uid, role, "cards", d.grule.cards)
 		if err != nil {
 			http.Error(w, "Error executing request", http.StatusInternalServerError)
 		}
@@ -59,7 +59,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if match, err := regexp.MatchString(`/groups`, path); err == nil && match {
-		auth, err := NewAuthorizator(uid, role, d.grule.groups)
+		auth, err := NewAuthorizator(uid, role, "groups", d.grule.groups)
 		if err != nil {
 			http.Error(w, "Error executing request", http.StatusInternalServerError)
 		}

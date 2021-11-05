@@ -13,10 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hyperjumptech/grule-rule-engine/ast"
-	"github.com/hyperjumptech/grule-rule-engine/builder"
-	"github.com/hyperjumptech/grule-rule-engine/pkg"
-
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
@@ -46,10 +42,10 @@ type dispatcher struct {
 	fs    http.Handler
 	auth  auth.IAuth
 	grule struct {
-		system *ast.KnowledgeLibrary
-		cards  *ast.KnowledgeLibrary
-		doors  *ast.KnowledgeLibrary
-		groups *ast.KnowledgeLibrary
+		system string
+		cards  string
+		doors  string
+		groups string
 	}
 	timeout time.Duration
 }
@@ -63,39 +59,21 @@ func (h *HTTPD) Run() {
 		FileSystem: http.Dir(h.Dir),
 	}
 
-	rules := struct {
-		system *ast.KnowledgeLibrary
-		cards  *ast.KnowledgeLibrary
-		doors  *ast.KnowledgeLibrary
-		groups *ast.KnowledgeLibrary
-	}{
-		system: ast.NewKnowledgeLibrary(),
-		cards:  ast.NewKnowledgeLibrary(),
-		doors:  ast.NewKnowledgeLibrary(),
-		groups: ast.NewKnowledgeLibrary(),
-	}
-
-	if err := builder.NewRuleBuilder(rules.system).BuildRuleFromResource("system", "0.0.0", pkg.NewFileResource(h.DB.GRules.System)); err != nil {
-		log.Fatal(fmt.Errorf("Error loading system auth ruleset (%v)", err))
-	}
-
-	if err := builder.NewRuleBuilder(rules.cards).BuildRuleFromResource("cards", "0.0.0", pkg.NewFileResource(h.DB.GRules.Cards)); err != nil {
-		log.Fatal(fmt.Errorf("Error loading card auth ruleset (%v)", err))
-	}
-
-	if err := builder.NewRuleBuilder(rules.doors).BuildRuleFromResource("doors", "0.0.0", pkg.NewFileResource(h.DB.GRules.Doors)); err != nil {
-		log.Fatal(fmt.Errorf("Error loading doors auth ruleset (%v)", err))
-	}
-
-	if err := builder.NewRuleBuilder(rules.groups).BuildRuleFromResource("groups", "0.0.0", pkg.NewFileResource(h.DB.GRules.Groups)); err != nil {
-		log.Fatal(fmt.Errorf("Error loading groups auth ruleset (%v)", err))
-	}
-
 	d := dispatcher{
-		root:    h.Dir,
-		fs:      http.FileServer(fs),
-		auth:    h.AuthProvider,
-		grule:   rules,
+		root: h.Dir,
+		fs:   http.FileServer(fs),
+		auth: h.AuthProvider,
+		grule: struct {
+			system string
+			cards  string
+			doors  string
+			groups string
+		}{
+			system: h.DB.GRules.System,
+			cards:  h.DB.GRules.Cards,
+			doors:  h.DB.GRules.Doors,
+			groups: h.DB.GRules.Groups,
+		},
 		timeout: h.RequestTimeout,
 	}
 
