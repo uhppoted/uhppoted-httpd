@@ -202,7 +202,7 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, d
 		} else if g == nil {
 			return nil, fmt.Errorf("Failed to add 'new' group")
 		} else {
-			g.log(auth, "add", g.OID, "group", "Added <new> group", dbc)
+			g.log(auth, "add", g.OID, "group", "Added 'new' group", dbc)
 
 			g.Index = uint32(len(gg.Groups) + 1)
 			for _, p := range gg.Groups {

@@ -220,7 +220,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 		} else if d == nil {
 			return nil, fmt.Errorf("Failed to add 'new' door")
 		} else {
-			d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added <new> door"), dbc)
+			d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added 'new' door"), dbc)
 			dd.Doors[d.OID] = *d
 			objects = append(objects, catalog.NewObject(d.OID, "new"))
 		}

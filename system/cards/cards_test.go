@@ -96,7 +96,7 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 					ID:          "",
 					Name:        "",
 					Field:       "card",
-					Description: "Added <new> card",
+					Description: "Added 'new' card",
 					Before:      "",
 					After:       "",
 				},

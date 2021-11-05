@@ -166,7 +166,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 				"add",
 				c.OID,
 				"card",
-				"Added <new> card",
+				"Added 'new' card",
 				"",
 				"",
 				dbc)

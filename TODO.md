@@ -62,7 +62,7 @@
         - [ ] (?) Keep DB in local storage
 
 #### Cards
-  - [ ] Fix logs format:
+  - [x] Fix logs format:
         ```"details": "Added \u003cnew\u003e card"```
   - [ ] Weirdness around adding card
         - At top of list until updated

@@ -257,7 +257,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
-			c.log(auth, "add", c.OID, "controller", fmt.Sprintf("Added <new> controller"), "", "", dbc)
+			c.log(auth, "add", c.OID, "controller", fmt.Sprintf("Added 'new' controller"), "", "", dbc)
 			objects = append(objects, catalog.NewObject(c.OID, "new"))
 		}
 	}
