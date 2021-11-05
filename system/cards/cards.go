@@ -173,6 +173,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 
 			cc.Cards[c.OID] = c
 			objects = append(objects, catalog.NewObject(c.OID, "new"))
+			objects = append(objects, catalog.NewObject2(c.OID, CardCreated, c.Created))
 		}
 	}
 
@@ -230,7 +231,7 @@ func (cc *Cards) add(auth auth.OpAuth, c Card) (*Card, error) {
 
 	record := c.clone()
 	record.OID = oid
-	record.Created = time.Now()
+	record.Created = types.DateTime(time.Now())
 
 	if auth != nil {
 		if err := auth.CanAddCard(record); err != nil {

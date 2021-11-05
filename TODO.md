@@ -41,6 +41,13 @@
 
 #### OID
   - [ ] Move interfaces to their own OID base
+        - [ ] Shuffle logs OID
+        - [ ] Shuffle events OID
+        - [ ] Shuffle groups OID
+        - [ ] Shuffle cards OID
+        - [ ] Shuffle controllers OID
+        - [ ] Shuffle interfaces OID
+
   - [ ] GetV => GetBool, GetInt, etc
   - [ ] Store all values in catalog and 'realize' local copies from cache
   - [ ] Check RWLock for clone to make shadow
@@ -56,7 +63,7 @@
 
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
-        - [ ] Realize e.g. two pages and repopulate OIDs
+        - [ ] Realize e.g. two pages and repopulate OIDs a la Android RecyclerView
               - https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
         - [ ] Render/realize only if updated
         - [ ] (?) Keep DB in local storage
@@ -64,9 +71,9 @@
 #### Cards
   - [x] Fix logs format:
         ```"details": "Added \u003cnew\u003e card"```
-  - [ ] Weirdness around adding card
-        - At top of list until updated
-        - Can't delete card with name but no number
+  - [ ] Weirdness around card add/delete
+        - [x] At top of list until updated
+        - [x] Can't delete card with name but no number
   - [ ] Unit test: verify logs aren't updated on error
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation

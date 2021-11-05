@@ -22,7 +22,7 @@ type Card struct {
 	To     *types.Date
 	Groups map[catalog.OID]bool
 
-	Created time.Time `json:"-"`
+	Created types.DateTime `json:"-"`
 	deleted *time.Time
 }
 
@@ -356,6 +356,9 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			catalog.Delete(c.OID)
 		}
 
+		if c.deleted != nil {
+			objects = append(objects, catalog.NewObject(c.OID, types.StatusOk))
+		}
 	}
 
 	return objects, nil
@@ -443,7 +446,7 @@ func (c *Card) deserialize(bytes []byte) error {
 	}
 
 	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {
-		c.Created = t
+		c.Created = types.DateTime(t)
 	}
 
 	return nil

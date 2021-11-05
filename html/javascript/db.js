@@ -407,10 +407,10 @@ function card (o) {
 
   DB.cards.forEach((v, k) => {
     if (oid.startsWith(k)) {
-      // INTERIM HACK
-      if (v.status === 'new') {
-        v.status = 'unknown'
-      }
+      // // INTERIM HACK
+      // if (v.status === 'new') {
+      //   v.status = 'unknown'
+      // }
 
       switch (oid) {
         case k:
