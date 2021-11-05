@@ -356,7 +356,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			catalog.Delete(c.OID)
 		}
 
-		if c.deleted != nil {
+		if c.deleted == nil {
 			objects = append(objects, catalog.NewObject(c.OID, types.StatusOk))
 		}
 	}

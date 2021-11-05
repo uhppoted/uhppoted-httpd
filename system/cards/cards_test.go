@@ -3,10 +3,12 @@ package cards
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type dbc struct {
@@ -35,6 +37,7 @@ func TestCardAdd(t *testing.T) {
 
 	expected := []catalog.Object{
 		catalog.Object{OID: "0.3.2", Value: "new"},
+		catalog.Object{OID: "0.3.2.0.1", Value: types.DateTime(time.Now())},
 	}
 
 	cards := makeCards(hagrid)
@@ -84,7 +87,10 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 		logs     []audit.AuditRecord
 		db       *Cards
 	}{
-		returned: []catalog.Object{catalog.Object{OID: "0.3.2", Value: "new"}},
+		returned: []catalog.Object{
+			catalog.Object{OID: "0.3.2", Value: "new"},
+			catalog.Object{OID: "0.3.2.0.1", Value: types.DateTime(time.Now())},
+		},
 
 		logs: []audit.AuditRecord{
 			audit.AuditRecord{
@@ -139,6 +145,7 @@ func TestCardUpdate(t *testing.T) {
 
 	expected := []catalog.Object{
 		catalog.Object{OID: "0.3.1.2", Value: 1234567},
+		catalog.Object{OID: "0.3.1", Value: types.StatusOk},
 	}
 
 	objects, err := cards.UpdateByOID(nil, hagrid.OID.Append(CardNumber), "1234567", nil)
@@ -192,7 +199,10 @@ func TestCardUpdateWithAuditTrail(t *testing.T) {
 		logs     []audit.AuditRecord
 		db       *Cards
 	}{
-		returned: []catalog.Object{catalog.Object{OID: "0.3.1.2", Value: 1234567}},
+		returned: []catalog.Object{
+			catalog.Object{OID: "0.3.1.2", Value: 1234567},
+			catalog.Object{OID: "0.3.1", Value: types.StatusOk},
+		},
 
 		logs: []audit.AuditRecord{
 			audit.AuditRecord{
@@ -272,6 +282,7 @@ func TestCardUpdateAddGroup(t *testing.T) {
 	final := makeCards(makeCard(hagrid.OID, "Hagrid", 6514231, "0.4.10"))
 	expected := []catalog.Object{
 		catalog.Object{OID: "0.3.1.5.10", Value: true},
+		catalog.Object{OID: "0.3.1", Value: types.StatusOk},
 	}
 
 	objects, err := cards.UpdateByOID(nil, catalog.OID("0.3.1.5.10"), "true", nil)
@@ -296,6 +307,7 @@ func TestCardUpdateRemoveGroup(t *testing.T) {
 	final := makeCards(hagrid2)
 	expected := []catalog.Object{
 		catalog.Object{OID: "0.3.1.5.10", Value: false},
+		catalog.Object{OID: "0.3.1", Value: types.StatusOk},
 	}
 
 	objects, err := cards.UpdateByOID(nil, catalog.OID("0.3.1.5.10"), "false", nil)

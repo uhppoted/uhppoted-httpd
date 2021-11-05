@@ -74,6 +74,7 @@
   - [ ] Weirdness around card add/delete
         - [x] At top of list until updated
         - [x] Can't delete card with name but no number
+        - [ ] Clean up the card status thing (i.e. figure out the 'INTERIM HACK' in db.js properly)
   - [ ] Unit test: verify logs aren't updated on error
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
