@@ -38,16 +38,6 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if match, err := regexp.MatchString(`/cardholders`, path); err == nil && match {
-	// 	auth, err := NewAuthorizator(uid, role, d.grule.cards)
-	// 	if err != nil {
-	// 		http.Error(w, "Error executing request", http.StatusInternalServerError)
-	// 	}
-
-	// 	cards.Post(w, r, d.timeout, auth)
-	// 	return
-	// }
-
 	if match, err := regexp.MatchString(`/doors`, path); err == nil && match {
 		auth, err := NewAuthorizator(uid, role, d.grule.doors)
 		if err != nil {

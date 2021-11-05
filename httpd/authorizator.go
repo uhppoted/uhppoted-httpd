@@ -408,6 +408,14 @@ func (a *authorizator) evaluate(ruleset, op string, operant auth.Operant, m map[
 func (a *authorizator) eval(ruleset string, op string, r *result, m map[string]interface{}) error {
 	context := ast.NewDataContext()
 
+	if err := context.Add("UID", a.uid); err != nil {
+		return err
+	}
+
+	if err := context.Add("ROLE", a.role); err != nil {
+		return err
+	}
+
 	if err := context.Add("OP", op); err != nil {
 		return err
 	}

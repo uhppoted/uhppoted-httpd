@@ -2,30 +2,42 @@
 
 ### IN PROGRESS
 
-- [x] Show 'offline' status on 'NET:CONNECTION REFUSED/TypeError: failed to fetch' but still logged in
-- [x] `reload` should be displayed if fetch fails for _too long_
-- [x] `reload` crashes after restarting httpd
-      ```
-      tabular.js:495 TypeError: Cannot read properties of null (reading 'dataset')
-          at unbusy (uhppoted.js:199)
-          at tabular.js:473
-      ```
-- [x] `reload` alert 'undefined' message on restarting httpd
-- [x] `reload` automatically if httpd comes alive again
-- [ ] Double click for login after 'idle signout'
+- [ ] Double click for login after 'idle signout' because JWT token expire
+      - clear tokens/cookies for /authenticate (?)
+      - logout is not clearing cookies
+      - refresh timer needs to be cancelled (another request for /system)
+```
+2021/11/05 09:15:10 DEBUG /authenticate
+2021/11/05 09:15:10 WARN  JWT token expired
+2021/11/05 09:15:10 DEBUG /login.html
+2021/11/05 09:15:10 DEBUG /login.html
+2021/11/05 09:15:10 DEBUG /images/default/logo.png
+2021/11/05 09:15:10 DEBUG /css/default/login.css
+2021/11/05 09:15:10 DEBUG /javascript/login.js
+2021/11/05 09:15:10 DEBUG /javascript/uhppoted.js
+2021/11/05 09:15:10 DEBUG /images/default/eye-solid.svg
+2021/11/05 09:15:10 DEBUG /manifest.json
+
+2021/11/05 09:15:27 DEBUG /authenticate
+2021/11/05 09:15:27 DEBUG /index.html
+2021/11/05 09:15:28 DEBUG /css/default/system.css
+2021/11/05 09:15:28 DEBUG /manifest.json
+2021/11/05 09:15:28 DEBUG /system.html
+
+```
 - [ ] (?) _heartbeat_ for online/offline
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
+
+#### auth
+  - [x] Pass UID+role to grule
+  - [ ] Reload grules file if changed
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
   - [ ] 'door' select chooses first item if list changes while select is open
-
-#### auth
-  - [ ] Reload grules file if changed
-  - [ ] Pass UID+role to grule
 
 #### OID
   - [ ] Move interfaces to their own OID base
