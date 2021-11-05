@@ -23,7 +23,6 @@
 2021/11/05 09:15:28 DEBUG /css/default/system.css
 2021/11/05 09:15:28 DEBUG /manifest.json
 2021/11/05 09:15:28 DEBUG /system.html
-
 ```
 - [ ] (?) _heartbeat_ for online/offline
 - [ ] Rename 'address' to 'endpoint'
