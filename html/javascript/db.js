@@ -387,6 +387,7 @@ function door (o) {
 }
 
 function card (o) {
+  console.log(o)
   const oid = o.OID
 
   if (/^0\.3\.[1-9][0-9]*$/.test(oid)) {
@@ -414,11 +415,6 @@ function card (o) {
 
   DB.cards.forEach((v, k) => {
     if (oid.startsWith(k)) {
-      // // INTERIM HACK
-      // if (v.status === 'new') {
-      //   v.status = 'unknown'
-      // }
-
       switch (oid) {
         case k:
           v.status = o.value

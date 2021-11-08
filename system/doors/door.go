@@ -264,7 +264,6 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				return nil, err
 			} else {
 				d.delay = uint8(v)
-				// objects = append(objects, catalog.NewObject2(d.OID, DoorDelay, d.delay)) // TODO incorrect: fix this in JS
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayStatus, types.StatusUncertain))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayError, ""))
@@ -289,7 +288,6 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
 				}
 
-				// objects = append(objects, catalog.NewObject2(d.OID, DoorControl, d.mode)) // TODO incorrect: fix this in JS
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlStatus, types.StatusUncertain))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlConfigured, d.mode))
 				objects = append(objects, catalog.NewObject2(d.OID, DoorControlError, ""))

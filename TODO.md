@@ -64,14 +64,18 @@
         - [ ] (?) Keep DB in local storage
 
 #### Cards
-  - [ ] Weirdness around card add/delete
-        - [ ] Clean up the card status thing (i.e. figure out the 'INTERIM HACK' in db.js properly)
+  - [x] Weirdness around card add/delete
+        - [x] Clean up the card status thing (i.e. figure out the 'INTERIM HACK' in db.js properly)
+        - [ ] Apply fix for hack to:
+              - [ ] controllers
+              - [ ] doors
+              - [ ] groups
 
   - [x] Make bottom right corner of table rounded
   - [x] Commonalise tabular div CSS
   - [ ] Fix bottom right of scrollbar
+        - scrollbar 'goes funny' if -webkit styles are modified
 
-  - [ ] Unit test: verify logs aren't updated on error
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
   - [ ] `refresh` is overwriting pending group edits
