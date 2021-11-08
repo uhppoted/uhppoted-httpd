@@ -2,10 +2,10 @@
 
 ### IN PROGRESS
 
-- [ ] Double click for login after 'idle signout' because JWT token expire
-      - clear tokens/cookies for /authenticate (?)
-      - logout is not clearing cookies
-      - refresh timer needs to be cancelled (another request for /system)
+- [ ] Double click for login after 'idle signout' because uhppoted-httpd-login cookie JWT token has expired
+      - cookie is used to prevent credential replay attacks
+      - refresh cookie if expired?
+      - refresh timer needs to be cancelled (unexpected request for /system)
 ```
 2021/11/05 09:15:10 DEBUG /authenticate
 2021/11/05 09:15:10 WARN  JWT token expired
@@ -28,10 +28,6 @@
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 
-#### auth
-  - [x] Pass UID+role to grule
-  - [x] Reload grules file if changed
-
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
@@ -40,7 +36,7 @@
 
 #### OID
   - [ ] Move interfaces to their own OID base
-        - [ ] Shuffle logs OID
+        - [x] Shuffle logs OID
         - [ ] Shuffle events OID
         - [ ] Shuffle groups OID
         - [ ] Shuffle cards OID
@@ -56,10 +52,10 @@
         - [ ] groups
 
 #### Events
-  - [ ] Replace LAN callback with something more idiomatic
   - [ ] Lookup historical card/door/controller assignments
         - [ ] Unit tests
 
+  - [ ] Replace LAN callback with something more idiomatic
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
         - [ ] Realize e.g. two pages and repopulate OIDs a la Android RecyclerView
@@ -68,12 +64,9 @@
         - [ ] (?) Keep DB in local storage
 
 #### Cards
-  - [x] Fix logs format:
-        ```"details": "Added \u003cnew\u003e card"```
   - [ ] Weirdness around card add/delete
-        - [x] At top of list until updated
-        - [x] Can't delete card with name but no number
         - [ ] Clean up the card status thing (i.e. figure out the 'INTERIM HACK' in db.js properly)
+
   - [ ] Unit test: verify logs aren't updated on error
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation

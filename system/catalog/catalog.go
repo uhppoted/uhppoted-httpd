@@ -228,7 +228,7 @@ func NewLogEntry() OID {
 loop:
 	for {
 		item += 1
-		oid := OID(fmt.Sprintf("0.6.%d", item))
+		oid := OID(fmt.Sprintf("%v.%d", LogsOID, item))
 		for v, _ := range catalog.logs {
 			if v == oid {
 				continue loop

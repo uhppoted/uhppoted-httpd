@@ -1,3 +1,10 @@
+const OIDs = {
+  logs: {
+    base: '0.7',
+    regex: /^0\.7\.[1-9][0-9]*$/
+  }
+}
+
 export const DB = {
   interfaces: new Map(),
   controllers: new Map(),
@@ -114,7 +121,7 @@ function object (o) {
     group(o)
   } else if (/^0\.5\..*$/.test(oid)) {
     event(o)
-  } else if (/^0\.6\..*$/.test(oid)) {
+  } else if (oid.startsWith(OIDs.logs.base)) {
     logs(o)
   }
 }
@@ -644,17 +651,17 @@ function event (o) {
 function logs (o) {
   const oid = o.OID
 
-  if (oid === '0.6.0.1') {
+  if (oid === OIDs.logs.base + '.0.1') {
     DB.tables.logs.first = o.value
     return
   }
 
-  if (oid === '0.6.0.2') {
+  if (oid === OIDs.logs.base + '.0.2') {
     DB.tables.logs.last = o.value
     return
   }
 
-  if (/^0\.6\.[1-9][0-9]*$/.test(oid)) {
+  if (OIDs.logs.regex.test(oid)) {
     if (DB.logs().has(oid)) {
       const record = DB.logs().get(oid)
       record.status = o.value

@@ -195,6 +195,28 @@ func Logs(start, count int) []interface{} {
 	return sys.logs.AsObjects(start, count)
 }
 
+func Schema() interface{} {
+	return struct {
+		System      catalog.OID `json:"system"`
+		Interfaces  catalog.OID `json:"interfaces"`
+		Controllers catalog.OID `json:"controllers"`
+		Doors       catalog.OID `json:"doors"`
+		Cards       catalog.OID `json:"cards"`
+		Groups      catalog.OID `json:"groups"`
+		Events      catalog.OID `json:"events"`
+		Logs        catalog.OID `json:"logs"`
+	}{
+		System: catalog.SystemOID,
+		//		Interfaces :catalog.,
+		Controllers: catalog.ControllersOID,
+		Doors:       catalog.DoorsOID,
+		Cards:       catalog.CardsOID,
+		Groups:      catalog.GroupsOID,
+		Events:      catalog.EventsOID,
+		Logs:        catalog.LogsOID,
+	}
+}
+
 func (s *system) refresh() {
 	if s == nil {
 		return

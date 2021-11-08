@@ -107,17 +107,17 @@
 |    |      |- 0.5.1.11: <doorName>                                          #       (associated) door name
 |    |      |- 0.5.1.12: <cardName>                                          #       (associated) card holder
 |
-|- 0.6                                                                       # logs
-|    |- 0.6.0                                                                # 
-|    |      |- 0.6.0.1                                                       # first log entry OID
-|    |      |- 0.6.0.2                                                       # last log entry OID
+|- 0.7                                                                       # logs
+|    |- 0.7.0                                                                # 
+|    |      |- 0.7.0.1                                                       # first log entry OID
+|    |      |- 0.7.0.2                                                       # last log entry OID
 |    |
-|    |- 0.6.1                                                                # entry #1
-|    |      |- 0.6.1.1: <timestamp>                                          #       entry timestamp
-|    |      |- 0.6.1.2: <uid>                                                #       entry user ID
-|    |      |- 0.6.1.3: <module>                                             #       entry module type
-|    |      |- 0.6.1.4: <module-id>                                          #                    ID
-|    |      |- 0.6.1.5: <module-name>                                        #                    name
-|    |      |- 0.6.1.6: <module-field>                                       #                    field
-|    |      |- 0.6.1.7: <details>                                            #             details
+|    |- 0.7.1                                                                # entry #1
+|    |      |- 0.7.1.1: <timestamp>                                          #       entry timestamp
+|    |      |- 0.7.1.2: <uid>                                                #       entry user ID
+|    |      |- 0.7.1.3: <module>                                             #       entry module type
+|    |      |- 0.7.1.4: <module-id>                                          #                    ID
+|    |      |- 0.7.1.5: <module-name>                                        #                    name
+|    |      |- 0.7.1.6: <module-field>                                       #                    field
+|    |      |- 0.7.1.7: <details>                                            #             details
 
