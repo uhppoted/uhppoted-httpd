@@ -23,14 +23,14 @@ var event = uhppoted.Event{
 	Reason:     1,
 }
 
-var history = logs.NewLogs()
+var history = map[[20]byte]logs.LogEntry{}
 
 func init() {
 	hash := func(s string) [20]byte {
 		return sha1.Sum([]byte(s))
 	}
 
-	history.Logs[hash("CONTROLLER.1")] = logs.LogEntry{
+	history[hash("CONTROLLER.1")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 1, 12, 34, 15, 0, time.Local),
 		Item:      "controller",
 		ItemID:    "405419896",
@@ -39,7 +39,7 @@ func init() {
 		After:     "Alpha2",
 	}
 
-	history.Logs[hash("CONTROLLER.2")] = logs.LogEntry{
+	history[hash("CONTROLLER.2")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 17, 12, 34, 15, 0, time.Local),
 		Item:      "controller",
 		ItemID:    "405419896",
@@ -48,17 +48,64 @@ func init() {
 		After:     "Alpha4",
 	}
 
-	history.Logs[hash("CONTROLLER.3")] = logs.LogEntry{
-		Timestamp: time.Date(2021, time.October, 27, 12, 34, 15, 0, time.Local),
+	history[hash("CONTROLLER.3")] = logs.LogEntry{
+		Timestamp: time.Date(2021, time.October, 25, 12, 34, 15, 0, time.Local),
 		Item:      "controller",
 		ItemID:    "405419896",
 		Field:     "name",
 		Before:    "Alpha5",
 		After:     "Alpha6",
 	}
+
+	history[hash("CONTROLLER.4")] = logs.LogEntry{
+		Timestamp: time.Date(2021, time.October, 27, 12, 34, 15, 0, time.Local),
+		Item:      "controller",
+		ItemID:    "405419896",
+		Field:     "name",
+		Before:    "Alpha7",
+		After:     "Alpha8",
+	}
+
+	history[hash("CARD.1")] = logs.LogEntry{
+		Timestamp: time.Date(2021, time.October, 1, 12, 34, 15, 0, time.Local),
+		Item:      "card",
+		ItemID:    "8165538",
+		Field:     "name",
+		Before:    "Card1",
+		After:     "Card2",
+	}
+
+	history[hash("CARD.2")] = logs.LogEntry{
+		Timestamp: time.Date(2021, time.October, 17, 12, 34, 15, 0, time.Local),
+		Item:      "card",
+		ItemID:    "8165538",
+		Field:     "name",
+		Before:    "Card3",
+		After:     "Card4",
+	}
+
+	history[hash("CARD.3")] = logs.LogEntry{
+		Timestamp: time.Date(2021, time.October, 25, 12, 34, 15, 0, time.Local),
+		Item:      "card",
+		ItemID:    "8165538",
+		Field:     "name",
+		Before:    "Card5",
+		After:     "Card6",
+	}
+
+	history[hash("CARD.4")] = logs.LogEntry{
+		Timestamp: time.Date(2021, time.October, 27, 12, 34, 15, 0, time.Local),
+		Item:      "card",
+		ItemID:    "8165538",
+		Field:     "name",
+		Before:    "Barney",
+		After:     "Card8",
+	}
 }
 
 func TestLookupDefaultDeviceName(t *testing.T) {
+	sys.logs = logs.NewLogs()
+
 	expected := ""
 
 	name := eventController(event)
@@ -67,13 +114,20 @@ func TestLookupDefaultDeviceName(t *testing.T) {
 	}
 }
 
-func TestLookupDeviceName(t *testing.T) {
+func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
+	sys.logs = logs.NewLogs()
+
 	oid := catalog.OID("0.3.1")
 	expected := "Alpha"
 
 	catalog.PutController(405419896, oid)
 	catalog.PutV(oid.Append(catalog.ControllerName), "Alpha")
-	sys.logs = logs.NewLogs()
+
+	for k, v := range history {
+		if v.Timestamp.Before(time.Time(event.Timestamp)) {
+			sys.logs.Logs[k] = v
+		}
+	}
 
 	name := eventController(event)
 	if name != expected {
@@ -82,12 +136,17 @@ func TestLookupDeviceName(t *testing.T) {
 }
 
 func TestLookupHistoricalDeviceName(t *testing.T) {
+	sys.logs = logs.NewLogs()
+
 	oid := catalog.OID("0.3.1")
-	expected := "Alpha5"
+	expected := "Alpha7"
 
 	catalog.PutController(405419896, oid)
 	catalog.PutV(oid.Append(catalog.ControllerName), "Alpha")
-	sys.logs = history
+
+	for k, v := range history {
+		sys.logs.Logs[k] = v
+	}
 
 	name := eventController(event)
 	if name != expected {
@@ -96,6 +155,8 @@ func TestLookupHistoricalDeviceName(t *testing.T) {
 }
 
 func TestLookupDefaultCardName(t *testing.T) {
+	sys.logs = logs.NewLogs()
+
 	expected := ""
 
 	name := eventCard(event)
@@ -105,12 +166,34 @@ func TestLookupDefaultCardName(t *testing.T) {
 }
 
 func TestLookupCardName(t *testing.T) {
+	sys.logs = logs.NewLogs()
+
 	oid := catalog.OID("0.3.1")
 	expected := "FredF"
 
 	catalog.PutCard(oid)
 	catalog.PutV(oid.Append(catalog.CardNumber), uint32(8165538))
 	catalog.PutV(oid.Append(catalog.CardName), "FredF")
+
+	name := eventCard(event)
+	if name != expected {
+		t.Errorf("incorrect card name - expected:%v, got:%v", expected, name)
+	}
+}
+
+func TestLookupHistoricalCardName(t *testing.T) {
+	sys.logs = logs.NewLogs()
+
+	oid := catalog.OID("0.3.1")
+	expected := "Barney"
+
+	catalog.PutCard(oid)
+	catalog.PutV(oid.Append(catalog.CardNumber), uint32(8165538))
+	catalog.PutV(oid.Append(catalog.CardName), "FredF")
+
+	for k, v := range history {
+		sys.logs.Logs[k] = v
+	}
 
 	name := eventCard(event)
 	if name != expected {

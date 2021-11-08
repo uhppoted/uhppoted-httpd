@@ -53,7 +53,8 @@
 
 #### Events
   - [ ] Lookup historical card/door/controller assignments
-        - [ ] Unit tests
+        - [x] Unit tests: card historical name
+        - [ ] Unit tests: doors
 
   - [ ] Replace LAN callback with something more idiomatic
   - [ ] (?) Genericize load/save for migration to MemDB

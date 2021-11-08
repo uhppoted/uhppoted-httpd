@@ -387,7 +387,6 @@ function door (o) {
 }
 
 function card (o) {
-  console.log(o)
   const oid = o.OID
 
   if (/^0\.3\.[1-9][0-9]*$/.test(oid)) {
