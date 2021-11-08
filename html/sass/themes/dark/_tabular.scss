@@ -1,5 +1,6 @@
 // Ref. https://css-tricks.com/custom-scrollbars-in-webkit/
 // Ref. https://superuser.com/questions/852298/how-can-i-change-the-scroll-bar-in-google-chrome-to-have-different-colors
+// Ref. https://css-tricks.com/almanac/properties/s/scrollbar/
 
 ::-webkit-scrollbar {
   background-color: $solarize_base0;
@@ -11,4 +12,8 @@
  
 ::-webkit-scrollbar-thumb {
   background-color: $solarize-base01;
+}
+
+::-webkit-scrollbar-corner {
+  border-bottom-right-radius: 3px;
 }

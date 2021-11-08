@@ -67,6 +67,10 @@
   - [ ] Weirdness around card add/delete
         - [ ] Clean up the card status thing (i.e. figure out the 'INTERIM HACK' in db.js properly)
 
+  - [x] Make bottom right corner of table rounded
+  - [x] Commonalise tabular div CSS
+  - [ ] Fix bottom right of scrollbar
+
   - [ ] Unit test: verify logs aren't updated on error
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation
@@ -78,7 +82,6 @@
         - time based (?)
         - make update ID base (?)
         - use tag (?)
-  - [ ] Make bottom right corner of table rounded
 
 #### Groups
 
