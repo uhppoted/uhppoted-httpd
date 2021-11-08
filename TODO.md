@@ -52,9 +52,9 @@
         - [ ] groups
 
 #### Events
-  - [ ] Lookup historical card/door/controller assignments
+  - [x] Lookup historical card/door/controller assignments
         - [x] Unit tests: card historical name
-        - [ ] Unit tests: doors
+        - [x] Unit tests: doors
 
   - [ ] Replace LAN callback with something more idiomatic
   - [ ] (?) Genericize load/save for migration to MemDB

@@ -69,7 +69,7 @@ bump:
 	go get -u golang.org/x/sys
 
 debug: format
-	go test -v -run TestLookupHistoricalDeviceName* ./system
+	go test -v -run TestLookupHistoricalDoorName ./system
 
 # NOTE: sass --watch doesn't seem to consistently pick up changes in themed partials
 sass:

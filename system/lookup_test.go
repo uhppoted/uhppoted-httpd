@@ -101,6 +101,42 @@ func init() {
 		Before:    "Barney",
 		After:     "Card8",
 	}
+
+	history[hash("DOOR.1")] = logs.LogEntry{
+		Timestamp: time.Date(2021, time.October, 1, 12, 34, 15, 0, time.Local),
+		Item:      "door",
+		ItemID:    "405419896:3",
+		Field:     "name",
+		Before:    "Door1",
+		After:     "Door2",
+	}
+
+	history[hash("DOOR.2")] = logs.LogEntry{
+		Timestamp: time.Date(2021, time.October, 17, 12, 34, 15, 0, time.Local),
+		Item:      "door",
+		ItemID:    "405419896:3",
+		Field:     "name",
+		Before:    "Door3",
+		After:     "Door4",
+	}
+
+	history[hash("DOOR.3")] = logs.LogEntry{
+		Timestamp: time.Date(2021, time.October, 25, 12, 34, 15, 0, time.Local),
+		Item:      "door",
+		ItemID:    "405419896:3",
+		Field:     "name",
+		Before:    "Door5",
+		After:     "Door6",
+	}
+
+	history[hash("DOOR.4")] = logs.LogEntry{
+		Timestamp: time.Date(2021, time.October, 27, 12, 34, 15, 0, time.Local),
+		Item:      "door",
+		ItemID:    "405419896:3",
+		Field:     "name",
+		Before:    "Cupboard",
+		After:     "Door8",
+	}
 }
 
 func TestLookupDefaultDeviceName(t *testing.T) {
@@ -117,7 +153,7 @@ func TestLookupDefaultDeviceName(t *testing.T) {
 func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 	sys.logs = logs.NewLogs()
 
-	oid := catalog.OID("0.3.1")
+	oid := catalog.OID("0.1.1.2.1")
 	expected := "Alpha"
 
 	catalog.PutController(405419896, oid)
@@ -138,7 +174,7 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 func TestLookupHistoricalDeviceName(t *testing.T) {
 	sys.logs = logs.NewLogs()
 
-	oid := catalog.OID("0.3.1")
+	oid := catalog.OID("0.1.1.2.1")
 	expected := "Alpha7"
 
 	catalog.PutController(405419896, oid)
@@ -198,5 +234,66 @@ func TestLookupHistoricalCardName(t *testing.T) {
 	name := eventCard(event)
 	if name != expected {
 		t.Errorf("incorrect card name - expected:%v, got:%v", expected, name)
+	}
+}
+
+func TestLookupDefaultDoorName(t *testing.T) {
+	sys.logs = logs.NewLogs()
+
+	expected := ""
+
+	name := eventDoor(event)
+	if name != expected {
+		t.Errorf("incorrect door name - expected:%v, got:%v", expected, name)
+	}
+}
+
+func TestLookupDoorName(t *testing.T) {
+	sys.logs = logs.NewLogs()
+
+	controller := catalog.OID("0.1.1.2.1")
+	door := catalog.OID("0.2.1")
+
+	catalog.PutController(405419896, controller)
+	catalog.PutV(controller.Append(catalog.ControllerName), "Alpha")
+	catalog.PutV(controller.Append(catalog.ControllerDeviceID), 405419896)
+	catalog.PutV(controller.Append(catalog.ControllerDoor3), door)
+
+	catalog.PutDoor(door)
+	catalog.PutV(door.Append(catalog.DoorControllerOID), controller)
+	catalog.PutV(door.Append(catalog.DoorName), "Gringotts")
+
+	expected := "Gringotts"
+
+	name := eventDoor(event)
+	if name != expected {
+		t.Errorf("incorrect door name - expected:%v, got:%v", expected, name)
+	}
+}
+
+func TestLookupHistoricalDoorName(t *testing.T) {
+	sys.logs = logs.NewLogs()
+
+	controller := catalog.OID("0.1.1.2.1")
+	door := catalog.OID("0.2.1")
+
+	catalog.PutController(405419896, controller)
+	catalog.PutV(controller.Append(catalog.ControllerName), "Alpha")
+	catalog.PutV(controller.Append(catalog.ControllerDeviceID), 405419896)
+	catalog.PutV(controller.Append(catalog.ControllerDoor3), door)
+
+	catalog.PutDoor(door)
+	catalog.PutV(door.Append(catalog.DoorControllerOID), controller)
+	catalog.PutV(door.Append(catalog.DoorName), "Gringotts")
+
+	for k, v := range history {
+		sys.logs.Logs[k] = v
+	}
+
+	expected := "Cupboard"
+
+	name := eventDoor(event)
+	if name != expected {
+		t.Errorf("incorrect door name - expected:%v, got:%v", expected, name)
 	}
 }
