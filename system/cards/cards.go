@@ -173,7 +173,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 
 			cc.Cards[c.OID] = c
 			objects = append(objects, catalog.NewObject(c.OID, "new"))
-			objects = append(objects, catalog.NewObject2(c.OID, CardCreated, c.Created))
+			objects = append(objects, catalog.NewObject2(c.OID, CardCreated, c.created))
 		}
 	}
 
@@ -229,17 +229,17 @@ func (cc *Cards) add(auth auth.OpAuth, c Card) (*Card, error) {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
 	}
 
-	record := c.clone()
-	record.OID = oid
-	record.Created = types.DateTime(time.Now())
+	card := c.clone()
+	card.OID = oid
+	card.created = types.DateTime(time.Now())
 
 	if auth != nil {
-		if err := auth.CanAddCard(record); err != nil {
+		if err := auth.CanAddCard(card); err != nil {
 			return nil, err
 		}
 	}
 
-	return record, nil
+	return card, nil
 }
 
 func validate(cc Cards) error {

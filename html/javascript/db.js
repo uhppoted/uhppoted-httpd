@@ -495,10 +495,10 @@ function group (o) {
 
   DB.groups.forEach((v, k) => {
     if (oid.startsWith(k)) {
-      // INTERIM HACK
-      if (v.status === 'new') {
-        v.status = 'unknown'
-      }
+      // // INTERIM HACK
+      // if (v.status === 'new') {
+      //   v.status = 'unknown'
+      // }
 
       switch (oid) {
         case k:
@@ -586,11 +586,6 @@ function events (o) {
 
   DB.events().forEach((v, k) => {
     if (oid.startsWith(k)) {
-      // INTERIM HACK
-      if (v.status === 'new') {
-        v.status = 'unknown'
-      }
-
       switch (oid) {
         case k:
           v.status = o.value
@@ -689,11 +684,6 @@ function logs (o) {
 
   DB.logs().forEach((v, k) => {
     if (oid.startsWith(k)) {
-      // INTERIM HACK
-      if (v.status === 'new') {
-        v.status = 'unknown'
-      }
-
       switch (oid) {
         case k:
           v.status = o.value

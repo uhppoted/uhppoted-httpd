@@ -213,6 +213,7 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, d
 
 			gg.Groups[g.OID] = *g
 			objects = append(objects, catalog.NewObject(g.OID, "new"))
+			objects = append(objects, catalog.NewObject2(g.OID, GroupCreated, g.created))
 		}
 	}
 

@@ -36,7 +36,7 @@
 
 #### OID
   - [ ] Move interfaces to their own OID base
-        - [ ] Shuffle events OID
+        - [x] Shuffle events OID
         - [ ] Shuffle groups OID
         - [ ] Shuffle cards OID
         - [ ] Shuffle controllers OID
@@ -62,10 +62,12 @@
 #### Cards
   - [ ] Weirdness around card add/delete
         - [ ] Handle edits to 'new' card that don't e.g. update the name or number
+              - Return error (?)
+              - Don't delete card
         - [ ] Apply fix for hack to:
               - [ ] controllers
               - [ ] doors
-              - [ ] groups
+              - [x] groups
 
   - [ ] Fix bottom right of scrollbar
         - [ ] Scrollbar 'goes funny' if -webkit styles are modified

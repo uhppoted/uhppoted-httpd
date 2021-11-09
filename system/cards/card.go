@@ -22,7 +22,7 @@ type Card struct {
 	To     *types.Date
 	Groups map[catalog.OID]bool
 
-	Created types.DateTime `json:"-"`
+	created types.DateTime `json:"-"`
 	deleted *time.Time
 }
 
@@ -75,7 +75,7 @@ func (c *Card) IsDeleted() bool {
 
 func (c *Card) AsObjects() []interface{} {
 	status := types.StatusOk
-	created := c.Created.Format("2006-01-02 15:04:05")
+	created := c.created.Format("2006-01-02 15:04:05")
 	name := c.Name
 	number := c.Card
 	from := c.From
@@ -386,7 +386,7 @@ func (c Card) serialize() ([]byte, error) {
 		From:    c.From,
 		To:      c.To,
 		Groups:  []catalog.OID{},
-		Created: c.Created.Format("2006-01-02 15:04:05"),
+		Created: c.created.Format("2006-01-02 15:04:05"),
 	}
 
 	if c.Name != nil {
@@ -446,7 +446,7 @@ func (c *Card) deserialize(bytes []byte) error {
 	}
 
 	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {
-		c.Created = types.DateTime(t)
+		c.created = types.DateTime(t)
 	}
 
 	return nil
@@ -469,7 +469,7 @@ func (c *Card) clone() *Card {
 		To:     c.To,
 		Groups: groups,
 
-		Created: c.Created,
+		created: c.created,
 		deleted: c.deleted,
 	}
 

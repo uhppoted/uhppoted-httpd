@@ -171,6 +171,10 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 
 			catalog.Delete(g.OID)
 		}
+
+		if g.deleted == nil {
+			objects = append(objects, catalog.NewObject(g.OID, types.StatusOk))
+		}
 	}
 
 	return objects, nil
