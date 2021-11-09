@@ -36,7 +36,6 @@
 
 #### OID
   - [ ] Move interfaces to their own OID base
-        - [x] Shuffle logs OID
         - [ ] Shuffle events OID
         - [ ] Shuffle groups OID
         - [ ] Shuffle cards OID
@@ -52,10 +51,6 @@
         - [ ] groups
 
 #### Events
-  - [x] Lookup historical card/door/controller assignments
-        - [x] Unit tests: card historical name
-        - [x] Unit tests: doors
-
   - [ ] Replace LAN callback with something more idiomatic
   - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
@@ -65,17 +60,15 @@
         - [ ] (?) Keep DB in local storage
 
 #### Cards
-  - [x] Weirdness around card add/delete
-        - [x] Clean up the card status thing (i.e. figure out the 'INTERIM HACK' in db.js properly)
+  - [ ] Weirdness around card add/delete
+        - [ ] Handle edits to 'new' card that don't e.g. update the name or number
         - [ ] Apply fix for hack to:
               - [ ] controllers
               - [ ] doors
               - [ ] groups
 
-  - [x] Make bottom right corner of table rounded
-  - [x] Commonalise tabular div CSS
   - [ ] Fix bottom right of scrollbar
-        - scrollbar 'goes funny' if -webkit styles are modified
+        - [ ] Scrollbar 'goes funny' if -webkit styles are modified
 
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] Commonalise load/save/print implementation

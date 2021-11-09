@@ -88,24 +88,24 @@
 |    |      |- 0.4.1.1: <name>                                               #       Name
 |    |      |- 0.4.1.2: <index>                                              #       Index (display order)
 |
-|- 0.5                                                                       # events
-|    |- 0.5.0                                                                # 
-|    |      |- 0.5.0.1                                                       # first event OID
-|    |      |- 0.5.0.2                                                       # last event OID
+|- 0.6                                                                       # events
+|    |- 0.6.0                                                                # 
+|    |      |- 0.6.0.1                                                       # first event OID
+|    |      |- 0.6.0.2                                                       # last event OID
 |    |
-|    |- 0.5.1                                                                # event #1
-|    |      |- 0.5.1.1: <timestamp>                                          #       event timestamp
-|    |      |- 0.5.1.2: <deviceID>                                           #       device ID
-|    |      |- 0.5.1.3: <index>                                              #       event index
-|    |      |- 0.5.1.4: <type>                                               #       event type
-|    |      |- 0.5.1.5: <door>                                               #       event door ID
-|    |      |- 0.5.1.6: <direction>                                          #       event direction
-|    |      |- 0.5.1.7: <cardNumber>                                         #       event card Number
-|    |      |- 0.5.1.8: <accessGranted>                                      #       event access granted
-|    |      |- 0.5.1.9: <reason>                                             #       event access reason
-|    |      |- 0.5.1.10: <deviceName>                                        #       (associated) controller name
-|    |      |- 0.5.1.11: <doorName>                                          #       (associated) door name
-|    |      |- 0.5.1.12: <cardName>                                          #       (associated) card holder
+|    |- 0.6.1                                                                # event #1
+|    |      |- 0.6.1.1: <timestamp>                                          #       event timestamp
+|    |      |- 0.6.1.2: <deviceID>                                           #       device ID
+|    |      |- 0.6.1.3: <index>                                              #       event index
+|    |      |- 0.6.1.4: <type>                                               #       event type
+|    |      |- 0.6.1.5: <door>                                               #       event door ID
+|    |      |- 0.6.1.6: <direction>                                          #       event direction
+|    |      |- 0.6.1.7: <cardNumber>                                         #       event card Number
+|    |      |- 0.6.1.8: <accessGranted>                                      #       event access granted
+|    |      |- 0.6.1.9: <reason>                                             #       event access reason
+|    |      |- 0.6.1.10: <deviceName>                                        #       (associated) controller name
+|    |      |- 0.6.1.11: <doorName>                                          #       (associated) door name
+|    |      |- 0.6.1.12: <cardName>                                          #       (associated) card holder
 |
 |- 0.7                                                                       # logs
 |    |- 0.7.0                                                                # 

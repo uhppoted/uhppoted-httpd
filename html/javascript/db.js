@@ -1,4 +1,9 @@
 const OIDs = {
+  events: {
+    base: '0.6',
+    regex: /^0\.6\.[1-9][0-9]*$/
+  },
+
   logs: {
     base: '0.7',
     regex: /^0\.7\.[1-9][0-9]*$/
@@ -119,8 +124,8 @@ function object (o) {
     card(o)
   } else if (/^0\.4\..*$/.test(oid)) {
     group(o)
-  } else if (/^0\.5\..*$/.test(oid)) {
-    event(o)
+  } else if (oid.startsWith(OIDs.events.base)) {
+    events(o)
   } else if (oid.startsWith(OIDs.logs.base)) {
     logs(o)
   }
@@ -537,20 +542,20 @@ function group (o) {
   })
 }
 
-function event (o) {
+function events (o) {
   const oid = o.OID
 
-  if (oid === '0.5.0.1') {
+  if (oid === OIDs.events.base + '.0.1') {
     DB.tables.events.first = o.value
     return
   }
 
-  if (oid === '0.5.0.2') {
+  if (oid === OIDs.events.base + '.0.2') {
     DB.tables.events.last = o.value
     return
   }
 
-  if (/^0\.5\.[1-9][0-9]*$/.test(oid)) {
+  if (OIDs.events.regex.test(oid)) {
     if (DB.events().has(oid)) {
       const record = DB.events().get(oid)
       record.status = o.value

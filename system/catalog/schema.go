@@ -5,7 +5,7 @@ const ControllersOID OID = "0.1.1.2"
 const DoorsOID OID = "0.2"
 const CardsOID OID = "0.3"
 const GroupsOID OID = "0.4"
-const EventsOID OID = "0.5"
+const EventsOID OID = "0.6"
 const LogsOID OID = "0.7"
 
 const InterfaceType Suffix = ".0"
