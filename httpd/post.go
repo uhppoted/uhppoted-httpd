@@ -18,6 +18,11 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if path == "/reauthenticate" {
+		d.authenticate(w, r)
+		return
+	}
+
 	if path == "/logout" {
 		d.logout(w, r)
 		return

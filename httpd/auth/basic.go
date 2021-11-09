@@ -39,7 +39,19 @@ func NewBasicAuthenticator(auth auth.IAuth, cookieMaxAge int, stale time.Duratio
 	return &a
 }
 
+// NTS: the uhppoted-httpd-login is a single use cookie that expires quickly with the intention of
+//      mitigating login replay attempts
 func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
+	if _, err := r.Cookie(LoginCookie); err != nil {
+		if err := b.setLoginCookie(w); err != nil {
+			warn(err)
+			return
+		}
+
+		http.Redirect(w, r, "/reauthenticate", http.StatusTemporaryRedirect)
+		return
+	}
+
 	if err := b.validateLoginCookie(r); err != nil {
 		warn(err)
 		b.unauthenticated(w, r)

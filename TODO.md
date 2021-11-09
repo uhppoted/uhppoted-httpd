@@ -3,27 +3,12 @@
 ### IN PROGRESS
 
 - [ ] Double click for login after 'idle signout' because uhppoted-httpd-login cookie JWT token has expired
-      - cookie is used to prevent credential replay attacks
-      - refresh cookie if expired?
-      - refresh timer needs to be cancelled (unexpected request for /system)
-```
-2021/11/05 09:15:10 DEBUG /authenticate
-2021/11/05 09:15:10 WARN  JWT token expired
-2021/11/05 09:15:10 DEBUG /login.html
-2021/11/05 09:15:10 DEBUG /login.html
-2021/11/05 09:15:10 DEBUG /images/default/logo.png
-2021/11/05 09:15:10 DEBUG /css/default/login.css
-2021/11/05 09:15:10 DEBUG /javascript/login.js
-2021/11/05 09:15:10 DEBUG /javascript/uhppoted.js
-2021/11/05 09:15:10 DEBUG /images/default/eye-solid.svg
-2021/11/05 09:15:10 DEBUG /manifest.json
+      - [x] /reauthenticate to refresh cookie
+      - [ ] Figure out a better way to avoid redirection after /reauthenticate
+            ```get.go  if path == "/" || path == "/reauthenticate" {```
+      - [ ] Send password hash
+      - [ ] Refresh timer needs to be cancelled (unexpected request for /system)
 
-2021/11/05 09:15:27 DEBUG /authenticate
-2021/11/05 09:15:27 DEBUG /index.html
-2021/11/05 09:15:28 DEBUG /css/default/system.css
-2021/11/05 09:15:28 DEBUG /manifest.json
-2021/11/05 09:15:28 DEBUG /system.html
-```
 - [ ] (?) _heartbeat_ for online/offline
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
@@ -64,6 +49,8 @@
         - [ ] Handle edits to 'new' card that don't e.g. update the name or number
               - Return error (?)
               - Don't delete card
+              - Fix returns status on every edit - status needs to account for being
+                new/unknown/etc
         - [ ] Apply fix for hack to:
               - [ ] controllers
               - [ ] doors
