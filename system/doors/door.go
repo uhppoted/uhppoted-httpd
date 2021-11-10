@@ -312,6 +312,10 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 
 			catalog.Delete(d.OID)
 		}
+
+		if d.deleted == nil {
+			objects = append(objects, catalog.NewObject(d.OID, types.StatusOk))
+		}
 	}
 
 	return objects, nil

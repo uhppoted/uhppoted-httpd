@@ -327,11 +327,6 @@ function door (o) {
 
   DB.doors.forEach((v, k) => {
     if (oid.startsWith(k)) {
-      // INTERIM HACK
-      if (v.status === 'new') {
-        v.status = 'unknown'
-      }
-
       switch (oid) {
         case k:
           v.status = o.value
@@ -501,11 +496,6 @@ function groups (o) {
 
   DB.groups.forEach((v, k) => {
     if (oid.startsWith(k)) {
-      // // INTERIM HACK
-      // if (v.status === 'new') {
-      //   v.status = 'unknown'
-      // }
-
       switch (oid) {
         case k:
           v.status = o.value

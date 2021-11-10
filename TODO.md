@@ -49,9 +49,10 @@
               - Don't delete card
               - Fix returns status on every edit - status needs to account for being
                 new/unknown/etc
+              - Update will return multiple copies of card (and group, door, etc) (?)
         - [ ] Apply fix for hack to:
               - [ ] controllers
-              - [ ] doors
+              - [x] doors
 
   - [ ] Fix bottom right of scrollbar
         - [ ] Scrollbar 'goes funny' if -webkit styles are modified
