@@ -1,4 +1,10 @@
-const OIDs = {
+const schema = {
+  groups: {
+    base: '0.5',
+    regex: /^0\.5\.[1-9][0-9]*$/,
+    doors: /^(0\.5\.[1-9][0-9]*\.2\.[1-9][0-9]*)(\.[1-3])?$/
+  },
+
   events: {
     base: '0.6',
     regex: /^0\.6\.[1-9][0-9]*$/
@@ -122,11 +128,11 @@ function object (o) {
     door(o)
   } else if (/^0\.3\..*$/.test(oid)) {
     card(o)
-  } else if (/^0\.4\..*$/.test(oid)) {
-    group(o)
-  } else if (oid.startsWith(OIDs.events.base)) {
+  } else if (oid.startsWith(schema.groups.base)) {
+    groups(o)
+  } else if (oid.startsWith(schema.events.base)) {
     events(o)
-  } else if (oid.startsWith(OIDs.logs.base)) {
+  } else if (oid.startsWith(schema.logs.base)) {
     logs(o)
   }
 }
@@ -469,10 +475,10 @@ function card (o) {
   })
 }
 
-function group (o) {
+function groups (o) {
   const oid = o.OID
 
-  if (/^0\.4\.[1-9][0-9]*$/.test(oid)) {
+  if (schema.groups.regex.test(oid)) {
     if (DB.groups.has(oid)) {
       const record = DB.groups.get(oid)
       record.status = o.value
@@ -519,7 +525,7 @@ function group (o) {
 
         default:
           if (oid.startsWith(k + '.2.')) {
-            const m = oid.match(/^(0\.4\.[1-9][0-9]*\.2\.[1-9][0-9]*)(\.[1-3])?$/)
+            const m = oid.match(schema.groups.doors)
             if (m && m.length > 2) {
               const suboid = m[1]
               const suffix = m[2]
@@ -545,17 +551,17 @@ function group (o) {
 function events (o) {
   const oid = o.OID
 
-  if (oid === OIDs.events.base + '.0.1') {
+  if (oid === schema.events.base + '.0.1') {
     DB.tables.events.first = o.value
     return
   }
 
-  if (oid === OIDs.events.base + '.0.2') {
+  if (oid === schema.events.base + '.0.2') {
     DB.tables.events.last = o.value
     return
   }
 
-  if (OIDs.events.regex.test(oid)) {
+  if (schema.events.regex.test(oid)) {
     if (DB.events().has(oid)) {
       const record = DB.events().get(oid)
       record.status = o.value
@@ -646,17 +652,17 @@ function events (o) {
 function logs (o) {
   const oid = o.OID
 
-  if (oid === OIDs.logs.base + '.0.1') {
+  if (oid === schema.logs.base + '.0.1') {
     DB.tables.logs.first = o.value
     return
   }
 
-  if (oid === OIDs.logs.base + '.0.2') {
+  if (oid === schema.logs.base + '.0.2') {
     DB.tables.logs.last = o.value
     return
   }
 
-  if (OIDs.logs.regex.test(oid)) {
+  if (schema.logs.regex.test(oid)) {
     if (DB.logs().has(oid)) {
       const record = DB.logs().get(oid)
       record.status = o.value

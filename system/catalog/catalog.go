@@ -207,7 +207,7 @@ func NewEvent() OID {
 loop:
 	for {
 		item += 1
-		oid := OID(fmt.Sprintf("0.5.%d", item))
+		oid := OID(fmt.Sprintf("%v.%d", GroupsOID, item))
 		for v, _ := range catalog.events {
 			if v == oid {
 				continue loop

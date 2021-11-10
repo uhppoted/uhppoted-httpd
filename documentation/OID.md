@@ -83,10 +83,10 @@
 |    |               |- ...                                                  #      group #2...
 |    |- ...
 |
-|- 0.4                                                                       # groups
-|    |- 0.4.1                                                                # group #1
-|    |      |- 0.4.1.1: <name>                                               #       Name
-|    |      |- 0.4.1.2: <index>                                              #       Index (display order)
+|- 0.5                                                                       # groups
+|    |- 0.5.1                                                                # group #1
+|    |      |- 0.5.1.1: <name>                                               #       Name
+|    |      |- 0.5.1.2: <index>                                              #       Index (display order)
 |
 |- 0.6                                                                       # events
 |    |- 0.6.0                                                                # 

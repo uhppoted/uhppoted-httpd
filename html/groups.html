@@ -52,7 +52,7 @@
       <!-- MAIN -->
       <main>
         <div id="container">
-          <div id="controls" data-oid="0.4">
+          <div id="controls" data-oid="{{ .schema.Groups }}">
             <img id="commitall" class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('groups', event, 'groups')" draggable="false" />
             <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('groups', event)"  draggable="false"  />
             <div id="message" class="message">
