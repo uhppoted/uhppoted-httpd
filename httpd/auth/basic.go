@@ -39,19 +39,20 @@ func NewBasicAuthenticator(auth auth.IAuth, cookieMaxAge int, stale time.Duratio
 	return &a
 }
 
-// NTS: the uhppoted-httpd-login is a single use cookie that expires quickly with the intention of
-//      mitigating login replay attempts
+// NTS: the uhppoted-httpd-login cookie is a single use expiring cookie intended to
+//      (eventually) support opaque login credentials
 func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
-	if _, err := r.Cookie(LoginCookie); err != nil {
+	// HEAD request refreshes uhppoted-httpd-login cookie
+	if strings.ToUpper(r.Method) == http.MethodHead {
 		if err := b.setLoginCookie(w); err != nil {
 			warn(err)
 			return
 		}
 
-		http.Redirect(w, r, "/reauthenticate", http.StatusTemporaryRedirect)
 		return
 	}
 
+	// POST request validates uhppoted-httpd-login cookie and credentials
 	if err := b.validateLoginCookie(r); err != nil {
 		warn(err)
 		b.unauthenticated(w, r)
@@ -108,11 +109,6 @@ func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
 	token, err := b.auth.Authorize(uid, pwd, sessionId)
 	if err != nil {
 		warn(err)
-		if err := b.setLoginCookie(w); err != nil {
-			warn(err)
-			return
-		}
-
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
@@ -237,11 +233,6 @@ func (b *Basic) authorized(r *http.Request, path string) (string, string, bool) 
 }
 
 func (b *Basic) unauthenticated(w http.ResponseWriter, r *http.Request) {
-	if err := b.setLoginCookie(w); err != nil {
-		warn(err)
-		return
-	}
-
 	http.Redirect(w, r, "/login.html", http.StatusFound)
 }
 
@@ -291,7 +282,7 @@ func (b *Basic) setLoginCookie(w http.ResponseWriter) error {
 		Name:     LoginCookie,
 		Value:    token,
 		Path:     "/",
-		MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),
+		MaxAge:   60, // b.cookieMaxAge * int(time.Hour.Seconds()),
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 		//	Secure:   true,

@@ -2,13 +2,14 @@
 
 ### IN PROGRESS
 
-- [ ] Double click for login after 'idle signout' because uhppoted-httpd-login cookie JWT token has expired
-      - [ ] Figure out a better way to avoid redirection after /reauthenticate
-            ```get.go  if path == "/" || path == "/reauthenticate" {```
-      - [ ] Send password hash
+- [x] Double click for login after 'idle signout' because uhppoted-httpd-login cookie JWT token has expired
+      - [x] Replace /reauthenticate with HEAD request to refresh login cookie
 
 - [x] Cancel refresh timer when offline
 - [ ] (?) _heartbeat_ for online/offline
+- [ ] Password hash
+      - https://github.com/dchest/tweetnacl-js#hashing
+      - https://stackoverflow.com/questions/64761119/tweetnacl-js-minimal-public-key-signatures-example
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 
@@ -49,7 +50,8 @@
               - Don't delete card
               - Fix returns status on every edit - status needs to account for being
                 new/unknown/etc
-              - Update will return multiple copies of card (and group, door, etc) (?)
+              - Update now returns multiple copies of card status (and group, door, etc) (?)
+                Should recalculate it properly.
         - [ ] Apply fix for hack to:
               - [ ] controllers
               - [x] doors
@@ -81,8 +83,8 @@
 
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
-      - [ ] Fix `get-events` log string
-      - [ ] Fix `get-status` log string
+      - [x] Fix `get-events` log string
+      - [x] Fix `get-status` log string
       - Input + datalist for timezone ?????
         - https://demo.agektmr.com/datalist/
 

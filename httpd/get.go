@@ -27,7 +27,7 @@ const GZIP_MINIMUM = 16384
 func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 
-	if path == "/" || path == "/reauthenticate" {
+	if path == "/" {
 		path = "/index.html"
 	}
 

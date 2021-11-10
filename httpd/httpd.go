@@ -194,6 +194,8 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	debug(fmt.Sprintf("%v", r.URL))
 
 	switch strings.ToUpper(r.Method) {
+	case http.MethodHead:
+		d.head(w, r)
 	case http.MethodGet:
 		d.get(w, r)
 	case http.MethodPost:
