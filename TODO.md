@@ -3,12 +3,11 @@
 ### IN PROGRESS
 
 - [ ] Double click for login after 'idle signout' because uhppoted-httpd-login cookie JWT token has expired
-      - [x] /reauthenticate to refresh cookie
       - [ ] Figure out a better way to avoid redirection after /reauthenticate
             ```get.go  if path == "/" || path == "/reauthenticate" {```
       - [ ] Send password hash
-      - [ ] Refresh timer needs to be cancelled (unexpected request for /system)
 
+- [x] Cancel refresh timer when offline
 - [ ] (?) _heartbeat_ for online/offline
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
@@ -21,7 +20,6 @@
 
 #### OID
   - [ ] Move interfaces to their own OID base
-        - [x] Shuffle events OID
         - [ ] Shuffle groups OID
         - [ ] Shuffle cards OID
         - [ ] Shuffle controllers OID
@@ -54,7 +52,6 @@
         - [ ] Apply fix for hack to:
               - [ ] controllers
               - [ ] doors
-              - [x] groups
 
   - [ ] Fix bottom right of scrollbar
         - [ ] Scrollbar 'goes funny' if -webkit styles are modified

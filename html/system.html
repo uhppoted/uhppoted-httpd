@@ -292,7 +292,7 @@
   <!-- SCRIPTS -->
 
   <script type="module">
-    import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload } from "./javascript/uhppoted.js"
+    import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload, setRefresh } from "./javascript/uhppoted.js"
     import { onEdited, 
              onEnter, 
              onTick, 
@@ -325,7 +325,7 @@
 
     resetIdle()
     refresh()
-    setInterval(refresh, 15000)
+    setRefresh(refresh)
   </script>
 
   <!-- global information initialised by Go template -->

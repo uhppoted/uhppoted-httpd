@@ -1,3 +1,4 @@
+let refreshTimer
 let idleTimer
 let disconnected
 
@@ -16,6 +17,10 @@ document.addEventListener('scroll', event => {
 document.addEventListener('keypress', event => {
   resetIdle(event)
 })
+
+export function setRefresh (f) {
+  refreshTimer = setInterval(f, 15000)
+}
 
 export function onMenu (event, show) {
   if (show) {
@@ -268,4 +273,6 @@ function offline () {
   }
 
   document.body.innerHTML = '<div id="offline"><div><div><p>SYSTEM OFFLINE</p></div><div><a onclick="onReload()">RELOAD</a></div></div></div><div><p/></div>'
+
+  clearInterval(refreshTimer)
 }
