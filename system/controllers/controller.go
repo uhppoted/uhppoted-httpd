@@ -548,6 +548,24 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 			catalog.Delete(c.OID)
 		}
+
+		if c.deleted == nil {
+			status := types.StatusUnknown
+			if c.DeviceID != nil && *c.DeviceID != 0 {
+				if cached, ok := cache.cache[*c.DeviceID]; ok {
+					dt := time.Now().Sub(cached.touched)
+					switch {
+					case dt < windows.deviceOk:
+						status = types.StatusOk
+
+					case dt < windows.deviceUncertain:
+						status = types.StatusUncertain
+					}
+				}
+			}
+
+			objects = append(objects, catalog.NewObject(c.OID, status))
+		}
 	}
 
 	return objects, nil

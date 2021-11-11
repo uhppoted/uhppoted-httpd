@@ -221,11 +221,6 @@ function controller (o) {
 
   DB.controllers.forEach((v, k) => {
     if (oid.startsWith(k)) {
-      // INTERIM HACK
-      if (v.status === 'new') {
-        v.status = 'unknown'
-      }
-
       switch (oid) {
         case k:
           v.status = o.value

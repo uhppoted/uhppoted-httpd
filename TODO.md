@@ -2,14 +2,25 @@
 
 ### IN PROGRESS
 
-- [ ] (?) _heartbeat_ for online/offline
-- [ ] Password hash
-      - [ ] Change password
-      - [ ] Set initial password
+- [ ] Apply fix for 'interim hack':
+      - [ ] interfaces
+      - [x] controllers
+      - [ ] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
+            - [ ] interfaces
+            - [ ] controllers
+            - [ ] doors
+            - [ ] cards
+            - [ ] groups
+      - [ ] Update now returns multiple copies of status - maybe coalesce into one final status (?)
+
+- [ ] Change password
+- [ ] Set initial password
+- [ ] Hash passwords
       - https://github.com/dchest/tweetnacl-js#hashing
       - https://stackoverflow.com/questions/64761119/tweetnacl-js-minimal-public-key-signatures-example
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
+- [ ] Restyle avatar to have a border and be a bit floaty (i.e. not be glued to top-right)
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -45,12 +56,6 @@
         - [ ] Handle edits to 'new' card that don't e.g. update the name or number
               - Return error (?)
               - Don't delete card
-              - Fix returns status on every edit - status needs to account for being
-                new/unknown/etc
-              - Update now returns multiple copies of card status (and group, door, etc) (?)
-                Should recalculate it properly.
-        - [ ] Apply fix for hack to:
-              - [ ] controllers
 
   - [ ] Fix bottom right of scrollbar
         - [ ] Scrollbar 'goes funny' if -webkit styles are modified
@@ -66,10 +71,6 @@
         - make update ID base (?)
         - use tag (?)
 
-#### Groups
-
-#### Logs
-
 #### System
       - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name
       - [ ] (?) Update interfaces.js to defer to tabular.js
@@ -79,8 +80,6 @@
 
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
-      - [x] Fix `get-events` log string
-      - [x] Fix `get-status` log string
       - Input + datalist for timezone ?????
         - https://demo.agektmr.com/datalist/
 
@@ -89,7 +88,7 @@
         - 'export' admin menu option
         - 'auto-export' option (?)
 
-      - Import from uhppoted.conf
+      - (?) Import from uhppoted.conf
         - 'import' command line argument 
         - 'import' admin menu option
         - 'auto-import' option (?)
@@ -105,6 +104,8 @@
       - use uhppoted-lib::healthcheck
 
 #### Other
+- [ ] (?) _heartbeat_ for online/offline
+
 - [ ] Fix Firefox layout
       - spacing/padding/margins
 
@@ -161,9 +162,6 @@
 - [ ] Security
       - GET /system, /doors , /cards, etc all return everything. Need finer grained access 
       - Templates have access to everything - need finer grained access 
-
-- [ ] Login
-      - restyle avatar to have a border and be a bit floaty (i.e. not be glued to top-right)
 
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
 - [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
