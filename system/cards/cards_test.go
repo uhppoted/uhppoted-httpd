@@ -1,6 +1,7 @@
 package cards
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -276,10 +277,11 @@ func TestCardNumberSwap(t *testing.T) {
 }
 
 func TestCardUpdateAddGroup(t *testing.T) {
-	catalog.PutGroup(catalog.OID("0.4.10"))
+	group := catalog.GroupsOID.Append("10")
+	catalog.PutGroup(group)
 
 	cards := makeCards(hagrid)
-	final := makeCards(makeCard(hagrid.OID, "Hagrid", 6514231, "0.4.10"))
+	final := makeCards(makeCard(hagrid.OID, "Hagrid", 6514231, fmt.Sprintf("%v", group)))
 	expected := []catalog.Object{
 		catalog.Object{OID: "0.3.1.5.10", Value: true},
 		catalog.Object{OID: "0.3.1", Value: types.StatusOk},
@@ -299,10 +301,11 @@ func TestCardUpdateAddGroup(t *testing.T) {
 }
 
 func TestCardUpdateRemoveGroup(t *testing.T) {
-	catalog.PutGroup(catalog.OID("0.4.10"))
+	group := catalog.GroupsOID.Append("10")
+	catalog.PutGroup(group)
 
 	hagrid2 := makeCard(hagrid.OID, "Hagrid", 6514231)
-	hagrid2.Groups["0.4.10"] = false
+	hagrid2.Groups[group] = false
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid2)
 	expected := []catalog.Object{

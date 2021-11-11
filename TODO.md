@@ -2,12 +2,10 @@
 
 ### IN PROGRESS
 
-- [x] Double click for login after 'idle signout' because uhppoted-httpd-login cookie JWT token has expired
-      - [x] Replace /reauthenticate with HEAD request to refresh login cookie
-
-- [x] Cancel refresh timer when offline
 - [ ] (?) _heartbeat_ for online/offline
 - [ ] Password hash
+      - [ ] Change password
+      - [ ] Set initial password
       - https://github.com/dchest/tweetnacl-js#hashing
       - https://stackoverflow.com/questions/64761119/tweetnacl-js-minimal-public-key-signatures-example
 - [ ] Rename 'address' to 'endpoint'
@@ -21,7 +19,6 @@
 
 #### OID
   - [ ] Move interfaces to their own OID base
-        - [x] Shuffle groups OID
         - [ ] Shuffle cards OID
         - [ ] Shuffle controllers OID
         - [ ] Shuffle interfaces OID
@@ -54,7 +51,6 @@
                 Should recalculate it properly.
         - [ ] Apply fix for hack to:
               - [ ] controllers
-              - [x] doors
 
   - [ ] Fix bottom right of scrollbar
         - [ ] Scrollbar 'goes funny' if -webkit styles are modified

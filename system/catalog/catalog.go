@@ -186,7 +186,7 @@ func NewGroup() OID {
 loop:
 	for {
 		item += 1
-		oid := OID(fmt.Sprintf("0.4.%d", item))
+		oid := OID(fmt.Sprintf("%v.%d", GroupsOID, item))
 		for v, _ := range catalog.groups {
 			if v == oid {
 				continue loop
