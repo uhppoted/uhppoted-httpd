@@ -51,7 +51,7 @@
       <!-- MAIN -->
       <main>
         <div id="container">
-          <div id="controls" data-oid="0.3">
+          <div id="controls" data-oid="{{ .schema.Cards }}">
             <img id="commitall" class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('cards', event, 'cards')" draggable="false" />
             <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('cards', event)"  draggable="false"  />
             <div id="message" class="message">

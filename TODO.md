@@ -19,7 +19,7 @@
 
 #### OID
   - [ ] Move interfaces to their own OID base
-        - [ ] Shuffle cards OID
+        - [x] Shuffle cards OID
         - [ ] Shuffle controllers OID
         - [ ] Shuffle interfaces OID
 

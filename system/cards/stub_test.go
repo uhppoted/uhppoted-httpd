@@ -12,8 +12,8 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-var hagrid = makeCard("0.3.1", "Hagrid", 6514231)
-var dobby = makeCard("0.3.2", "Dobby", 1234567, "G05")
+var hagrid = makeCard("0.4.1", "Hagrid", 6514231)
+var dobby = makeCard("0.4.2", "Dobby", 1234567, "G05")
 
 type stub struct {
 	canUpdateCard func(auth.Operant, string, interface{}) error

@@ -1,7 +1,13 @@
-const schema = {
+export const schema = {
+  cards: {
+    base: '0.4',
+    regex: /^0\.4\.[1-9][0-9]*$/,
+    groups: /^(0\.4\.[1-9][0-9]*\.5\.[1-9][0-9]*)(\.[1-3])?$/
+  },
+
   groups: {
     base: '0.5',
-    regex: /^0\.5\.[1-9][0-9]*$/,
+    regex: /^0\.5\.([1-9][0-9]*)$/,
     doors: /^(0\.5\.[1-9][0-9]*\.2\.[1-9][0-9]*)(\.[1-3])?$/
   },
 
@@ -126,7 +132,7 @@ function object (o) {
     controller(o)
   } else if (/^0\.2\..*$/.test(oid)) {
     door(o)
-  } else if (/^0\.3\..*$/.test(oid)) {
+  } else if (oid.startsWith(schema.cards.base)) {
     card(o)
   } else if (oid.startsWith(schema.groups.base)) {
     groups(o)
@@ -395,7 +401,7 @@ function door (o) {
 function card (o) {
   const oid = o.OID
 
-  if (/^0\.3\.[1-9][0-9]*$/.test(oid)) {
+  if (schema.cards.regex.test(oid)) {
     if (DB.cards.has(oid)) {
       const record = DB.cards.get(oid)
       record.status = o.value
@@ -447,7 +453,7 @@ function card (o) {
 
         default:
           if (oid.startsWith(k + '.5.')) {
-            const m = oid.match(/^(0\.3\.[1-9][0-9]*\.5\.[1-9][0-9]*)(\.[1-3])?$/)
+            const m = oid.match(schema.cards.groups)
             if (m && m.length > 2) {
               const suboid = m[1]
               const suffix = m[2]

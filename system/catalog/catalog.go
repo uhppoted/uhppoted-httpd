@@ -165,7 +165,7 @@ func NewCard() OID {
 loop:
 	for {
 		item += 1
-		oid := OID(fmt.Sprintf("0.3.%d", item))
+		oid := OID(fmt.Sprintf("%v.%d", CardsOID, item))
 		for v, _ := range catalog.cards {
 			if v == oid {
 				continue loop

@@ -1,5 +1,5 @@
 import { update, deleted } from './tabular.js'
-import { DB } from './db.js'
+import { DB, schema } from './db.js'
 
 export function refreshed () {
   const cards = [...DB.cards.values()].sort((p, q) => p.created.localeCompare(q.created))
@@ -148,7 +148,7 @@ function realize (cards) {
     const surplus = [...cols].filter(([k]) => !groups.has(k))
 
     missing.forEach(o => {
-      const group = o.OID.match(/^0\.4\.([1-9][0-9]*)$/)[1]
+      const group = o.OID.match(schema.groups.regex)[1]
       const template = document.querySelector('#group')
 
       const uuid = row.id

@@ -200,9 +200,9 @@ func (cc *Cards) AsObjects() []interface{} {
 
 	defer guard.RUnlock()
 
-	for _, record := range cc.Cards {
-		if record.IsValid() || record.IsDeleted() {
-			if l := record.AsObjects(); l != nil {
+	for _, card := range cc.Cards {
+		if card.IsValid() || card.IsDeleted() {
+			if l := card.AsObjects(); l != nil {
 				objects = append(objects, l...)
 			}
 		}

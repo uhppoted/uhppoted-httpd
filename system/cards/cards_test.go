@@ -32,13 +32,13 @@ func (d *dbc) Commit() {
 
 func TestCardAdd(t *testing.T) {
 	placeholder := Card{
-		OID:    catalog.OID("0.3.2"),
+		OID:    catalog.OID("0.4.2"),
 		Groups: map[catalog.OID]bool{},
 	}
 
 	expected := []catalog.Object{
-		catalog.Object{OID: "0.3.2", Value: "new"},
-		catalog.Object{OID: "0.3.2.0.1", Value: types.DateTime(time.Now())},
+		catalog.Object{OID: "0.4.2", Value: "new"},
+		catalog.Object{OID: "0.4.2.0.1", Value: types.DateTime(time.Now())},
 	}
 
 	cards := makeCards(hagrid)
@@ -89,14 +89,14 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 		db       *Cards
 	}{
 		returned: []catalog.Object{
-			catalog.Object{OID: "0.3.2", Value: "new"},
-			catalog.Object{OID: "0.3.2.0.1", Value: types.DateTime(time.Now())},
+			catalog.Object{OID: "0.4.2", Value: "new"},
+			catalog.Object{OID: "0.4.2.0.1", Value: types.DateTime(time.Now())},
 		},
 
 		logs: []audit.AuditRecord{
 			audit.AuditRecord{
 				UID:       "",
-				OID:       "0.3.2",
+				OID:       "0.4.2",
 				Component: "card",
 				Operation: "add",
 				Details: audit.Details{
@@ -111,7 +111,7 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 		},
 
 		db: makeCards(hagrid, Card{
-			OID:    catalog.OID("0.3.2"),
+			OID:    catalog.OID("0.4.2"),
 			Groups: map[catalog.OID]bool{},
 		}),
 	}
@@ -145,8 +145,8 @@ func TestCardUpdate(t *testing.T) {
 	final := makeCards(makeCard(hagrid.OID, "Hagrid", 1234567))
 
 	expected := []catalog.Object{
-		catalog.Object{OID: "0.3.1.2", Value: 1234567},
-		catalog.Object{OID: "0.3.1", Value: types.StatusOk},
+		catalog.Object{OID: "0.4.1.2", Value: 1234567},
+		catalog.Object{OID: "0.4.1", Value: types.StatusOk},
 	}
 
 	objects, err := cards.UpdateByOID(nil, hagrid.OID.Append(CardNumber), "1234567", nil)
@@ -167,7 +167,7 @@ func TestCardUpdateWithInvalidOID(t *testing.T) {
 	final := makeCards(hagrid)
 	expected := []catalog.Object{}
 
-	objects, err := cards.UpdateByOID(nil, "0.3.5.2", "1234567", nil)
+	objects, err := cards.UpdateByOID(nil, "0.4.5.2", "1234567", nil)
 	if err != nil {
 		t.Errorf("Unexpected error updating card (%v)", err)
 	}
@@ -201,14 +201,14 @@ func TestCardUpdateWithAuditTrail(t *testing.T) {
 		db       *Cards
 	}{
 		returned: []catalog.Object{
-			catalog.Object{OID: "0.3.1.2", Value: 1234567},
-			catalog.Object{OID: "0.3.1", Value: types.StatusOk},
+			catalog.Object{OID: "0.4.1.2", Value: 1234567},
+			catalog.Object{OID: "0.4.1", Value: types.StatusOk},
 		},
 
 		logs: []audit.AuditRecord{
 			audit.AuditRecord{
 				UID:       "",
-				OID:       "0.3.1",
+				OID:       "0.4.1",
 				Component: "card",
 				Operation: "update",
 				Details: audit.Details{
@@ -247,7 +247,7 @@ func TestCardUpdateWithAuditTrail(t *testing.T) {
 func TestDuplicateCardNumberUpdate(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 
-	_, err := cards.UpdateByOID(nil, "0.3.1.2", "1234567", nil)
+	_, err := cards.UpdateByOID(nil, "0.4.1.2", "1234567", nil)
 	if err != nil {
 		t.Errorf("Unexpected error updating cards (%v)", err)
 	}
@@ -259,13 +259,13 @@ func TestDuplicateCardNumberUpdate(t *testing.T) {
 
 func TestCardNumberSwap(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
-	final := makeCards(makeCard("0.3.1", "Hagrid", 1234567), makeCard("0.3.2", "Dobby", 6514231, "G05"))
+	final := makeCards(makeCard("0.4.1", "Hagrid", 1234567), makeCard("0.4.2", "Dobby", 6514231, "G05"))
 
-	if _, err := cards.UpdateByOID(nil, "0.3.1.2", "1234567", nil); err != nil {
+	if _, err := cards.UpdateByOID(nil, "0.4.1.2", "1234567", nil); err != nil {
 		t.Fatalf("Unexpected error updating cards (%v)", err)
 	}
 
-	if _, err := cards.UpdateByOID(nil, "0.3.2.2", "6514231", nil); err != nil {
+	if _, err := cards.UpdateByOID(nil, "0.4.2.2", "6514231", nil); err != nil {
 		t.Fatalf("Unexpected error updating cards (%v)", err)
 	}
 
@@ -283,11 +283,11 @@ func TestCardUpdateAddGroup(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(makeCard(hagrid.OID, "Hagrid", 6514231, fmt.Sprintf("%v", group)))
 	expected := []catalog.Object{
-		catalog.Object{OID: "0.3.1.5.10", Value: true},
-		catalog.Object{OID: "0.3.1", Value: types.StatusOk},
+		catalog.Object{OID: "0.4.1.5.10", Value: true},
+		catalog.Object{OID: "0.4.1", Value: types.StatusOk},
 	}
 
-	objects, err := cards.UpdateByOID(nil, catalog.OID("0.3.1.5.10"), "true", nil)
+	objects, err := cards.UpdateByOID(nil, catalog.OID("0.4.1.5.10"), "true", nil)
 	if err != nil {
 		t.Errorf("Unexpected error updating card [%v]", err)
 	}
@@ -309,11 +309,11 @@ func TestCardUpdateRemoveGroup(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid2)
 	expected := []catalog.Object{
-		catalog.Object{OID: "0.3.1.5.10", Value: false},
-		catalog.Object{OID: "0.3.1", Value: types.StatusOk},
+		catalog.Object{OID: "0.4.1.5.10", Value: false},
+		catalog.Object{OID: "0.4.1", Value: types.StatusOk},
 	}
 
-	objects, err := cards.UpdateByOID(nil, catalog.OID("0.3.1.5.10"), "false", nil)
+	objects, err := cards.UpdateByOID(nil, catalog.OID("0.4.1.5.10"), "false", nil)
 	if err != nil {
 		t.Errorf("Unexpected error updating card (%v)", err)
 	}
@@ -330,7 +330,7 @@ func TestCardUpdateWithInvalidGroup(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid)
 
-	objects, err := cards.UpdateByOID(nil, catalog.OID("0.3.1.5.99"), "true", nil)
+	objects, err := cards.UpdateByOID(nil, catalog.OID("0.4.1.5.99"), "true", nil)
 	if err == nil {
 		t.Errorf("Expected error updating card, got:%v", err)
 	}
@@ -388,7 +388,7 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 		logs: []audit.AuditRecord{
 			audit.AuditRecord{
 				UID:       "",
-				OID:       "0.3.2",
+				OID:       "0.4.2",
 				Component: "card",
 				Operation: "update",
 				Details: audit.Details{
@@ -402,7 +402,7 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 			},
 			audit.AuditRecord{
 				UID:       "",
-				OID:       "0.3.2",
+				OID:       "0.4.2",
 				Component: "card",
 				Operation: "update",
 				Details: audit.Details{
@@ -416,7 +416,7 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 			},
 			audit.AuditRecord{
 				UID:       "",
-				OID:       "0.3.2",
+				OID:       "0.4.2",
 				Component: "card",
 				Operation: "delete",
 				Details: audit.Details{

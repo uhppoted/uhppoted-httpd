@@ -204,7 +204,7 @@ func TestLookupDefaultCardName(t *testing.T) {
 func TestLookupCardName(t *testing.T) {
 	sys.logs = logs.NewLogs()
 
-	oid := catalog.OID("0.3.1")
+	oid := catalog.OID("0.4.1")
 	expected := "FredF"
 
 	catalog.PutCard(oid)
@@ -220,7 +220,7 @@ func TestLookupCardName(t *testing.T) {
 func TestLookupHistoricalCardName(t *testing.T) {
 	sys.logs = logs.NewLogs()
 
-	oid := catalog.OID("0.3.1")
+	oid := catalog.OID("0.4.1")
 	expected := "Barney"
 
 	catalog.PutCard(oid)
