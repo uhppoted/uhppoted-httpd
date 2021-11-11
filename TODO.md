@@ -2,6 +2,9 @@
 
 ### IN PROGRESS
 
+- [ ] Logging: pretty print URLs like:
+      ```2021/11/11 12:31:12 DEBUG /logs?range=0%2C15``
+
 - [ ] Apply fix for 'interim hack':
       - [ ] interfaces
       - [x] controllers
@@ -13,6 +16,16 @@
             - [ ] groups
       - [ ] Update now returns multiple copies of status - maybe coalesce into one final status (?)
 
+- [ ] Genericize load
+      - [ ] (?) maybe rather just read file and pass in bytes (??)
+      - [ ] logs
+      - [ ] events
+      - [ ] groups
+      - [ ] cards
+      - [ ] doors
+      - [ ] controllers
+      - [ ] interfaces
+  
 - [ ] Change password
 - [ ] Set initial password
 - [ ] Hash passwords
@@ -44,7 +57,6 @@
 
 #### Events
   - [ ] Replace LAN callback with something more idiomatic
-  - [ ] (?) Genericize load/save for migration to MemDB
   - [ ] Optimize page display
         - [ ] Realize e.g. two pages and repopulate OIDs a la Android RecyclerView
               - https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
@@ -173,7 +185,6 @@
 - [ ] Logo 
       - https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible
       - https://jn3008.tumblr.com/post/618100274778783744
-- [ ] Lighthouse test (Chrome dev tools)
 - [ ] Hamburger menu (?)
 - [ ] Thoroughly rethink the whole timezone thing
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
@@ -184,7 +195,7 @@
 
 - [ ] Server events in addition to/rather-than refresh
       - https://jvns.ca/blog/2021/01/12/day-36--server-sent-events-are-cool--and-a-fun-bug/
-
+- [ ] Lighthouse test (Chrome dev tools)
 - [ ] [CRDT](https://concordant.io/software)
        - https://josephg.com/blog/crdts-go-brrr
        - [Braid](https://braid.org

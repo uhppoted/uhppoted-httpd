@@ -64,37 +64,28 @@ func NewLogs() Logs {
 }
 
 func (ll *Logs) Load(file string) error {
-	ll.file = file
+	f := func(bytes json.RawMessage) (interface{}, key) {
+		var l LogEntry
+		if err := l.deserialize(bytes); err != nil {
+			return nil, key{}
+		}
 
-	blob := struct {
-		Logs []json.RawMessage `json:"logs"`
-	}{
-		Logs: []json.RawMessage{},
+		return &l, newKey(l.Timestamp, l.UID, l.Item, l.ItemID, l.ItemName, l.Field, l.Details)
 	}
 
-	bytes, err := os.ReadFile(file)
+	logs, err := load(file, "logs", f)
 	if err != nil {
 		return err
 	}
 
-	if err = json.Unmarshal(bytes, &blob); err != nil {
-		return err
-	}
+	ll.file = file
+	ll.Logs = map[key]LogEntry{}
 
-	for _, v := range blob.Logs {
-		var l LogEntry
-		if err := l.deserialize(v); err == nil {
-			k := newKey(l.Timestamp, l.UID, l.Item, l.ItemID, l.ItemName, l.Field, l.Details)
-			if x, ok := ll.Logs[k]; ok {
-				return fmt.Errorf("duplicate log record (%#v and %#v)", l, x)
-			} else {
-				ll.Logs[k] = l
-			}
+	for k, v := range logs {
+		if l, ok := v.(*LogEntry); ok && l != nil {
+			ll.Logs[k] = *l
+			catalog.PutLogEntry(l.OID)
 		}
-	}
-
-	for _, l := range ll.Logs {
-		catalog.PutLogEntry(l.OID)
 	}
 
 	return nil
@@ -272,6 +263,32 @@ func (ll *Logs) Query(item, id, field string) []LogEntry {
 	}
 
 	return records
+}
+
+func load(file, tag string, f func(bytes json.RawMessage) (interface{}, key)) (map[key]interface{}, error) {
+	recordset := map[key]interface{}{}
+	blob := map[string][]json.RawMessage{}
+
+	bytes, err := os.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(bytes, &blob); err != nil {
+		return nil, err
+	}
+
+	for _, v := range blob[tag] {
+		if record, k := f(v); record != nil {
+			if x, ok := recordset[k]; ok {
+				return nil, fmt.Errorf("duplicate record (%#v and %#v)", record, x)
+			} else {
+				recordset[k] = record
+			}
+		}
+	}
+
+	return recordset, nil
 }
 
 func validate(ll Logs) error {
