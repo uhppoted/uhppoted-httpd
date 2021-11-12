@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"strings"
@@ -191,7 +192,11 @@ func (d *dispatcher) sweep() {
 }
 
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	debug(fmt.Sprintf("%v", r.URL))
+	if url, err := url.QueryUnescape(fmt.Sprintf("%v", r.URL)); err == nil {
+		debug(fmt.Sprintf("%v", url))
+	} else {
+		debug(fmt.Sprintf("%v", r.URL))
+	}
 
 	switch strings.ToUpper(r.Method) {
 	case http.MethodHead:

@@ -2,12 +2,11 @@
 
 ### IN PROGRESS
 
-- [ ] Logging: pretty print URLs like:
+- [x] Logging: pretty print URLs like:
       ```2021/11/11 12:31:12 DEBUG /logs?range=0%2C15``
 
 - [ ] Apply fix for 'interim hack':
       - [ ] interfaces
-      - [x] controllers
       - [ ] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
             - [ ] interfaces
             - [ ] controllers
@@ -17,6 +16,7 @@
       - [ ] Update now returns multiple copies of status - maybe coalesce into one final status (?)
 
 - [ ] Genericize load
+      - [ ] Define system.Component interface
       - [ ] (?) maybe rather just read file and pass in bytes (??)
       - [ ] logs
       - [ ] events
@@ -43,7 +43,6 @@
 
 #### OID
   - [ ] Move interfaces to their own OID base
-        - [x] Shuffle cards OID
         - [ ] Shuffle controllers OID
         - [ ] Shuffle interfaces OID
 
