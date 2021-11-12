@@ -1,6 +1,6 @@
 package catalog
 
-const SystemOID OID = "0.1"
+const InterfacesOID OID = "0.1"
 const ControllersOID OID = "0.2"
 const DoorsOID OID = "0.3"
 const CardsOID OID = "0.4"

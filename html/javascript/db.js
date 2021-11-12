@@ -1,4 +1,9 @@
 export const schema = {
+  interfaces: {
+    base: '0.1',
+    regex: /^0\.1\.[1-9][0-9]*$/
+  },
+
   controllers: {
     base: '0.2',
     regex: /^0\.2\.[1-9][0-9]*$/
@@ -136,7 +141,7 @@ export const DB = {
 function object (o) {
   const oid = o.OID
 
-  if (/^0\.1\.1\.1\..*$/.test(oid)) {
+  if (oid.startsWith(schema.interfaces.base)) {
     interfaces(o)
   } else if (oid.startsWith(schema.controllers.base)) {
     controllers(o)
@@ -156,7 +161,7 @@ function object (o) {
 function interfaces (o) {
   const oid = o.OID
 
-  if (oid === '0.1.1.1.1') {
+  if (schema.interfaces.regex.test(oid)) {
     if (!DB.interfaces.has(oid)) {
       DB.interfaces.set(oid, {
         OID: oid,

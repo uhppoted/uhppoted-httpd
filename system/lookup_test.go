@@ -157,7 +157,7 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 	expected := "Alpha"
 
 	catalog.PutController(405419896, oid)
-	catalog.PutV(oid.Append(catalog.ControllerName), "Alpha")
+	catalog.PutV(oid, catalog.ControllerName, "Alpha")
 
 	for k, v := range history {
 		if v.Timestamp.Before(time.Time(event.Timestamp)) {
@@ -178,7 +178,7 @@ func TestLookupHistoricalDeviceName(t *testing.T) {
 	expected := "Alpha7"
 
 	catalog.PutController(405419896, oid)
-	catalog.PutV(oid.Append(catalog.ControllerName), "Alpha")
+	catalog.PutV(oid, catalog.ControllerName, "Alpha")
 
 	for k, v := range history {
 		sys.logs.Logs[k] = v
@@ -208,8 +208,8 @@ func TestLookupCardName(t *testing.T) {
 	expected := "FredF"
 
 	catalog.PutCard(oid)
-	catalog.PutV(oid.Append(catalog.CardNumber), uint32(8165538))
-	catalog.PutV(oid.Append(catalog.CardName), "FredF")
+	catalog.PutV(oid, catalog.CardNumber, uint32(8165538))
+	catalog.PutV(oid, catalog.CardName, "FredF")
 
 	name := eventCard(event)
 	if name != expected {
@@ -224,8 +224,8 @@ func TestLookupHistoricalCardName(t *testing.T) {
 	expected := "Barney"
 
 	catalog.PutCard(oid)
-	catalog.PutV(oid.Append(catalog.CardNumber), uint32(8165538))
-	catalog.PutV(oid.Append(catalog.CardName), "FredF")
+	catalog.PutV(oid, catalog.CardNumber, uint32(8165538))
+	catalog.PutV(oid, catalog.CardName, "FredF")
 
 	for k, v := range history {
 		sys.logs.Logs[k] = v
@@ -255,13 +255,13 @@ func TestLookupDoorName(t *testing.T) {
 	door := catalog.OID("0.3.1")
 
 	catalog.PutController(405419896, controller)
-	catalog.PutV(controller.Append(catalog.ControllerName), "Alpha")
-	catalog.PutV(controller.Append(catalog.ControllerDeviceID), 405419896)
-	catalog.PutV(controller.Append(catalog.ControllerDoor3), door)
+	catalog.PutV(controller, catalog.ControllerName, "Alpha")
+	catalog.PutV(controller, catalog.ControllerDeviceID, 405419896)
+	catalog.PutV(controller, catalog.ControllerDoor3, door)
 
 	catalog.PutDoor(door)
-	catalog.PutV(door.Append(catalog.DoorControllerOID), controller)
-	catalog.PutV(door.Append(catalog.DoorName), "Gringotts")
+	catalog.PutV(door, catalog.DoorControllerOID, controller)
+	catalog.PutV(door, catalog.DoorName, "Gringotts")
 
 	expected := "Gringotts"
 
@@ -278,13 +278,13 @@ func TestLookupHistoricalDoorName(t *testing.T) {
 	door := catalog.OID("0.3.1")
 
 	catalog.PutController(405419896, controller)
-	catalog.PutV(controller.Append(catalog.ControllerName), "Alpha")
-	catalog.PutV(controller.Append(catalog.ControllerDeviceID), 405419896)
-	catalog.PutV(controller.Append(catalog.ControllerDoor3), door)
+	catalog.PutV(controller, catalog.ControllerName, "Alpha")
+	catalog.PutV(controller, catalog.ControllerDeviceID, 405419896)
+	catalog.PutV(controller, catalog.ControllerDoor3, door)
 
 	catalog.PutDoor(door)
-	catalog.PutV(door.Append(catalog.DoorControllerOID), controller)
-	catalog.PutV(door.Append(catalog.DoorName), "Gringotts")
+	catalog.PutV(door, catalog.DoorControllerOID, controller)
+	catalog.PutV(door, catalog.DoorName, "Gringotts")
 
 	for k, v := range history {
 		sys.logs.Logs[k] = v

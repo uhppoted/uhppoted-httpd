@@ -41,10 +41,10 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 #### OID
-  - [ ] Move interfaces to their own OID base
+  - [x] Move interfaces to their own OID base
         - [x] Shuffle doors OID
         - [x] Shuffle controllers OID
-        - [ ] Shuffle interfaces OID
+        - [x] Shuffle interfaces OID
 
   - [ ] GetV => GetBool, GetInt, etc
   - [ ] Store all values in catalog and 'realize' local copies from cache

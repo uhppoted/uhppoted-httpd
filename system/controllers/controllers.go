@@ -58,7 +58,7 @@ func NewControllerSet() ControllerSet {
 	return ControllerSet{
 		Controllers: []*Controller{},
 		LAN: &LAN{
-			OID:    "0.1.1.1.1",
+			OID:    catalog.InterfacesOID.AppendS(".1"),
 			status: types.StatusOk,
 		},
 	}

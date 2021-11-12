@@ -197,7 +197,6 @@ func Logs(start, count int) []interface{} {
 
 func Schema() interface{} {
 	return struct {
-		System      catalog.OID `json:"system"`
 		Interfaces  catalog.OID `json:"interfaces"`
 		Controllers catalog.OID `json:"controllers"`
 		Doors       catalog.OID `json:"doors"`
@@ -206,8 +205,7 @@ func Schema() interface{} {
 		Events      catalog.OID `json:"events"`
 		Logs        catalog.OID `json:"logs"`
 	}{
-		System: catalog.SystemOID,
-		//		Interfaces :catalog.,
+		Interfaces:  catalog.InterfacesOID,
 		Controllers: catalog.ControllersOID,
 		Doors:       catalog.DoorsOID,
 		Cards:       catalog.CardsOID,
