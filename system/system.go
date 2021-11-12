@@ -113,12 +113,14 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		}
 	}
 
-	if err := sys.logs.Load(cfg.HTTPD.System.Logs); err != nil {
+	if blob, err := load(cfg.HTTPD.System.Logs); err != nil {
 		if os.IsNotExist(err) {
 			warn(err)
 		} else {
 			return err
 		}
+	} else if err := sys.logs.Load(cfg.HTTPD.System.Logs, blob["logs"]); err != nil {
+		return err
 	}
 
 	kb := ast.NewKnowledgeLibrary()
@@ -291,6 +293,21 @@ func unpack(m map[string]interface{}) ([]object, error) {
 	}
 
 	return o.Objects, nil
+}
+
+func load(file string) (map[string][]json.RawMessage, error) {
+	blob := map[string][]json.RawMessage{}
+
+	bytes, err := os.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(bytes, &blob); err != nil {
+		return nil, err
+	}
+
+	return blob, nil
 }
 
 func clean(s string) string {
