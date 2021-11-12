@@ -1,5 +1,5 @@
 import { update, deleted } from './tabular.js'
-import { DB } from './db.js'
+import { DB, schema } from './db.js'
 
 export function refreshed () {
   const groups = [...DB.groups.values()].sort((p, q) => p.index - q.index)
@@ -101,7 +101,7 @@ function realize (groups) {
     const surplus = [...cols].filter(([k]) => !doors.has(k))
 
     missing.forEach(o => {
-      const door = o.OID.match(/^0\.2\.([1-9][0-9]*)$/)[1]
+      const door = o.OID.match(schema.doors.regex)[1]
       const template = document.querySelector('#door')
 
       const uuid = row.id

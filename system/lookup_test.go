@@ -252,7 +252,7 @@ func TestLookupDoorName(t *testing.T) {
 	sys.logs = logs.NewLogs()
 
 	controller := catalog.OID("0.1.1.2.1")
-	door := catalog.OID("0.2.1")
+	door := catalog.OID("0.3.1")
 
 	catalog.PutController(405419896, controller)
 	catalog.PutV(controller.Append(catalog.ControllerName), "Alpha")
@@ -275,7 +275,7 @@ func TestLookupHistoricalDoorName(t *testing.T) {
 	sys.logs = logs.NewLogs()
 
 	controller := catalog.OID("0.1.1.2.1")
-	door := catalog.OID("0.2.1")
+	door := catalog.OID("0.3.1")
 
 	catalog.PutController(405419896, controller)
 	catalog.PutV(controller.Append(catalog.ControllerName), "Alpha")

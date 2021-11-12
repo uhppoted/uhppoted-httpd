@@ -277,7 +277,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
 			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
 				gid := m[1]
-				k := catalog.GroupsOID.Append(catalog.Suffix(gid))
+				k := catalog.GroupsOID.AppendS(gid)
 
 				if err := f("group", value); err != nil {
 					return nil, err

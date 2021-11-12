@@ -145,7 +145,7 @@ func NewDoor() OID {
 loop:
 	for {
 		item += 1
-		oid := OID(fmt.Sprintf("0.2.%d", item))
+		oid := OID(fmt.Sprintf("%v.%d", DoorsOID, item))
 		for v, _ := range catalog.doors {
 			if v == oid {
 				continue loop

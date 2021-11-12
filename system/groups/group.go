@@ -139,7 +139,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 		case catalog.OID(g.OID.Append(GroupDoors)).Contains(oid):
 			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
 				did := m[1]
-				k := catalog.OID("0.2." + did)
+				k := catalog.DoorsOID.AppendS(did)
 				door := catalog.GetV(k.Append(DoorName))
 
 				if err := f(door.(string), value); err != nil {

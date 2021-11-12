@@ -6,7 +6,6 @@
       ```2021/11/11 12:31:12 DEBUG /logs?range=0%2C15``
 
 - [ ] Apply fix for 'interim hack':
-      - [ ] interfaces
       - [ ] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
             - [ ] interfaces
             - [ ] controllers
@@ -43,6 +42,7 @@
 
 #### OID
   - [ ] Move interfaces to their own OID base
+        - [x] Shuffle doors OID
         - [ ] Shuffle controllers OID
         - [ ] Shuffle interfaces OID
 
