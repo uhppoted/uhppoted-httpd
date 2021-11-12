@@ -121,7 +121,7 @@ func NewController(deviceID uint32) OID {
 loop:
 	for {
 		item += 1
-		oid := OID(fmt.Sprintf("0.1.1.2.%d", item))
+		oid := OID(fmt.Sprintf("%v.%d", ControllersOID, item))
 		for v, _ := range catalog.controllers {
 			if v == oid {
 				continue loop

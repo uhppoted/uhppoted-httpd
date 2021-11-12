@@ -43,7 +43,7 @@
 #### OID
   - [ ] Move interfaces to their own OID base
         - [x] Shuffle doors OID
-        - [ ] Shuffle controllers OID
+        - [x] Shuffle controllers OID
         - [ ] Shuffle interfaces OID
 
   - [ ] GetV => GetBool, GetInt, etc

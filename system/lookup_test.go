@@ -153,7 +153,7 @@ func TestLookupDefaultDeviceName(t *testing.T) {
 func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 	sys.logs = logs.NewLogs()
 
-	oid := catalog.OID("0.1.1.2.1")
+	oid := catalog.OID("0.2.1")
 	expected := "Alpha"
 
 	catalog.PutController(405419896, oid)
@@ -174,7 +174,7 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 func TestLookupHistoricalDeviceName(t *testing.T) {
 	sys.logs = logs.NewLogs()
 
-	oid := catalog.OID("0.1.1.2.1")
+	oid := catalog.OID("0.2.1")
 	expected := "Alpha7"
 
 	catalog.PutController(405419896, oid)
@@ -251,7 +251,7 @@ func TestLookupDefaultDoorName(t *testing.T) {
 func TestLookupDoorName(t *testing.T) {
 	sys.logs = logs.NewLogs()
 
-	controller := catalog.OID("0.1.1.2.1")
+	controller := catalog.OID("0.2.1")
 	door := catalog.OID("0.3.1")
 
 	catalog.PutController(405419896, controller)
@@ -274,7 +274,7 @@ func TestLookupDoorName(t *testing.T) {
 func TestLookupHistoricalDoorName(t *testing.T) {
 	sys.logs = logs.NewLogs()
 
-	controller := catalog.OID("0.1.1.2.1")
+	controller := catalog.OID("0.2.1")
 	door := catalog.OID("0.3.1")
 
 	catalog.PutController(405419896, controller)

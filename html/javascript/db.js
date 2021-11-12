@@ -1,4 +1,9 @@
 export const schema = {
+  controllers: {
+    base: '0.2',
+    regex: /^0\.2\.[1-9][0-9]*$/
+  },
+
   doors: {
     base: '0.3',
     regex: /^0\.3\.([1-9][0-9]*)$/
@@ -133,12 +138,12 @@ function object (o) {
 
   if (/^0\.1\.1\.1\..*$/.test(oid)) {
     interfaces(o)
-  } else if (/^0\.1\.1\.2\..*$/.test(oid)) {
-    controller(o)
+  } else if (oid.startsWith(schema.controllers.base)) {
+    controllers(o)
   } else if (oid.startsWith(schema.doors.base)) {
-    door(o)
+    doors(o)
   } else if (oid.startsWith(schema.cards.base)) {
-    card(o)
+    cards(o)
   } else if (oid.startsWith(schema.groups.base)) {
     groups(o)
   } else if (oid.startsWith(schema.events.base)) {
@@ -196,10 +201,10 @@ function interfaces (o) {
   })
 }
 
-function controller (o) {
+function controllers (o) {
   const oid = o.OID
 
-  if (/^0\.1\.1\.2\.[1-9][0-9]*$/.test(oid)) {
+  if (schema.controllers.regex.test(oid)) {
     if (DB.controllers.has(oid)) {
       const record = DB.controllers.get(oid)
       record.status = o.value
@@ -303,7 +308,7 @@ function controller (o) {
   })
 }
 
-function door (o) {
+function doors (o) {
   const oid = o.OID
 
   if (schema.doors.regex.test(oid)) {
@@ -398,7 +403,7 @@ function door (o) {
   })
 }
 
-function card (o) {
+function cards (o) {
   const oid = o.OID
 
   if (schema.cards.regex.test(oid)) {
