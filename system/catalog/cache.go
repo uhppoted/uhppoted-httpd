@@ -15,7 +15,7 @@ var cache = struct {
 	cache: map[OID]value{},
 }
 
-func GetV(oid OID) interface{} {
+func Get(oid OID) interface{} {
 	cache.guard.RLock()
 	defer cache.guard.RUnlock()
 
@@ -26,11 +26,29 @@ func GetV(oid OID) interface{} {
 	return nil
 }
 
-func PutV(oid OID, v interface{}) {
+func GetV(oid OID, suffix Suffix) interface{} {
+	cache.guard.RLock()
+	defer cache.guard.RUnlock()
+
+	if v, ok := cache.cache[oid.Append(suffix)]; ok {
+		return v
+	}
+
+	return nil
+}
+
+func Put(oid OID, v interface{}) {
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
 
 	cache.cache[oid] = v
+}
+
+func PutV(oid OID, suffix Suffix, v interface{}) {
+	cache.guard.Lock()
+	defer cache.guard.Unlock()
+
+	cache.cache[oid.Append(suffix)] = v
 }
 
 func PutL(objects []Object) {

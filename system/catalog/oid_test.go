@@ -26,6 +26,26 @@ func TestOIDAppend(t *testing.T) {
 
 }
 
+func TestOIDAppendS(t *testing.T) {
+	tests := []struct {
+		oid      OID
+		suffix   string
+		expected OID
+	}{
+		{oid: OID("0.1"), suffix: "2.3", expected: OID("0.1.2.3")},
+		{oid: OID("0.1."), suffix: "2.3", expected: OID("0.1.2.3")},
+		{oid: OID("0.1"), suffix: ".2.3", expected: OID("0.1.2.3")},
+		{oid: OID("0.1."), suffix: ".2.3", expected: OID("0.1.2.3")},
+	}
+
+	for _, v := range tests {
+		joined := v.oid.AppendS(v.suffix)
+		if joined != v.expected {
+			t.Errorf("Incorrectly appended OID - expected:%v, got:%v", v.expected, joined)
+		}
+	}
+}
+
 func TestOIDMarshalJSON(t *testing.T) {
 	oid := OID("0.1.2.3")
 	b, err := json.Marshal(oid)

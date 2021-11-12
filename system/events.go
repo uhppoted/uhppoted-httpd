@@ -30,7 +30,7 @@ func eventController(e uhppoted.Event) string {
 
 	if e.DeviceID != 0 {
 		if oid := catalog.FindController(e.DeviceID); oid != "" {
-			if v := catalog.GetV(oid.Append(catalog.ControllerName)); v != nil {
+			if v := catalog.GetV(oid, catalog.ControllerName); v != nil {
 				name = fmt.Sprintf("%v", v)
 			}
 		}
@@ -68,7 +68,7 @@ func eventCard(e uhppoted.Event) string {
 	if e.CardNumber != 0 {
 		if oid, ok := catalog.Find(catalog.CardsOID, catalog.CardNumber, e.CardNumber); ok && oid != "" {
 			oid = oid.Trim(catalog.CardNumber)
-			if v := catalog.GetV(oid.Append(catalog.CardName)); v != nil {
+			if v := catalog.GetV(oid, catalog.CardName); v != nil {
 				name = fmt.Sprintf("%v", v)
 			}
 		}
@@ -109,17 +109,17 @@ func eventDoor(e uhppoted.Event) string {
 
 			switch e.Door {
 			case 1:
-				door = catalog.GetV(oid.Append(catalog.ControllerDoor1))
+				door = catalog.GetV(oid, catalog.ControllerDoor1)
 			case 2:
-				door = catalog.GetV(oid.Append(catalog.ControllerDoor2))
+				door = catalog.GetV(oid, catalog.ControllerDoor2)
 			case 3:
-				door = catalog.GetV(oid.Append(catalog.ControllerDoor3))
+				door = catalog.GetV(oid, catalog.ControllerDoor3)
 			case 4:
-				door = catalog.GetV(oid.Append(catalog.ControllerDoor4))
+				door = catalog.GetV(oid, catalog.ControllerDoor4)
 			}
 
 			if door != nil {
-				if v := catalog.GetV(door.(catalog.OID).Append(catalog.DoorName)); v != nil {
+				if v := catalog.GetV(door.(catalog.OID), catalog.DoorName); v != nil {
 					name = fmt.Sprintf("%v", v)
 				}
 			}

@@ -523,11 +523,11 @@ func (l *LAN) synchDoors(controllers []*Controller) []catalog.Object {
 			// ... update door delays
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured := catalog.GetV(oid.Append(catalog.DoorDelayConfigured))
-					actual := catalog.GetV(oid.Append(catalog.DoorDelay))
+					configured := catalog.GetV(oid, catalog.DoorDelayConfigured)
+					actual := catalog.GetV(oid, catalog.DoorDelay)
 					modified := false
 
-					if v := catalog.GetV(oid.Append(catalog.DoorDelayModified)); v != nil {
+					if v := catalog.GetV(oid, catalog.DoorDelayModified); v != nil {
 						if b, ok := v.(bool); ok {
 							modified = b
 						}
@@ -556,11 +556,11 @@ func (l *LAN) synchDoors(controllers []*Controller) []catalog.Object {
 			// ... update door control states
 			for _, door := range []uint8{1, 2, 3, 4} {
 				if oid, ok := c.Doors[door]; ok && oid != "" {
-					configured := catalog.GetV(oid.Append(catalog.DoorControlConfigured))
-					actual := catalog.GetV(oid.Append(catalog.DoorControl))
+					configured := catalog.GetV(oid, catalog.DoorControlConfigured)
+					actual := catalog.GetV(oid, catalog.DoorControl)
 					modified := false
 
-					if v := catalog.GetV(oid.Append(catalog.DoorControlModified)); v != nil {
+					if v := catalog.GetV(oid, catalog.DoorControlModified); v != nil {
 						if b, ok := v.(bool); ok {
 							modified = b
 						}

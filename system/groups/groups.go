@@ -63,8 +63,8 @@ func (gg *Groups) Load(file string) error {
 
 	for _, g := range gg.Groups {
 		catalog.PutGroup(g.OID)
-		catalog.PutV(g.OID.Append(GroupName), g.Name)
-		catalog.PutV(g.OID.Append(GroupCreated), g.created)
+		catalog.PutV(g.OID, GroupName, g.Name)
+		catalog.PutV(g.OID, GroupCreated, g.created)
 	}
 
 	gg.file = file

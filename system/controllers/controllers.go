@@ -134,20 +134,20 @@ func (cc *ControllerSet) Load(file string) error {
 	for _, c := range cc.Controllers {
 		if c.DeviceID != nil && *c.DeviceID != 0 {
 			catalog.PutController(*c.DeviceID, c.OID)
-			catalog.PutV(c.OID.Append(ControllerName), c.Name)
-			catalog.PutV(c.OID.Append(ControllerDoor1), c.Doors[1])
-			catalog.PutV(c.OID.Append(ControllerDoor2), c.Doors[2])
-			catalog.PutV(c.OID.Append(ControllerDoor3), c.Doors[3])
-			catalog.PutV(c.OID.Append(ControllerDoor4), c.Doors[4])
+			catalog.PutV(c.OID, ControllerName, c.Name)
+			catalog.PutV(c.OID, ControllerDoor1, c.Doors[1])
+			catalog.PutV(c.OID, ControllerDoor2, c.Doors[2])
+			catalog.PutV(c.OID, ControllerDoor3, c.Doors[3])
+			catalog.PutV(c.OID, ControllerDoor4, c.Doors[4])
 		}
 
 		for _, d := range []uint8{1, 2, 3, 4} {
 			if oid, ok := c.Doors[d]; ok && oid != "" {
-				catalog.PutV(catalog.OID(oid).Append(catalog.DoorControllerOID), c.OID)
-				catalog.PutV(catalog.OID(oid).Append(catalog.DoorControllerCreated), c.created)
-				catalog.PutV(catalog.OID(oid).Append(catalog.DoorControllerName), c.Name)
-				catalog.PutV(catalog.OID(oid).Append(catalog.DoorControllerID), c.DeviceID)
-				catalog.PutV(catalog.OID(oid).Append(catalog.DoorControllerDoor), d)
+				catalog.PutV(catalog.OID(oid), catalog.DoorControllerOID, c.OID)
+				catalog.PutV(catalog.OID(oid), catalog.DoorControllerCreated, c.created)
+				catalog.PutV(catalog.OID(oid), catalog.DoorControllerName, c.Name)
+				catalog.PutV(catalog.OID(oid), catalog.DoorControllerID, c.DeviceID)
+				catalog.PutV(catalog.OID(oid), catalog.DoorControllerDoor, d)
 			}
 		}
 	}
