@@ -23,8 +23,13 @@ $footer-text: $solarize-base03 !default;
 $fieldset-text: $solarize-base03 !default;
 $fieldset-border: 1px solid silver !default;
 $fieldset-button-border: 2px solid $solarize-red !default;
+$fieldset-button-border-cancel: 2px solid $solarize-base1 !default;
 $fieldset-message-background: $solarize-base2 !default;
 $fieldset-warning-text: $solarize-red !default;
+
+$field-border: 1px solid $solarize-base00;
+$field-border-readonly: 1px solid lighten($solarize-base1,10%);
+
 
 $content-table-background:          $solarize-base2                !default;
 $content-table-background-header:   darken($solarize-base2, 5%)    !default;
@@ -59,8 +64,6 @@ $dashboard-windmill: $solarize-blue;
 
 $tab-background: $solarize-base2;
 $tab-background-selected: $solarize-base1;
-
-$field-border: 1px solid $solarize-base00;
 
 $button-border: 2px solid $solarize-red;
 

@@ -226,6 +226,10 @@ func (d *dispatcher) user(r *http.Request) string {
 	return ""
 }
 
+func (d *dispatcher) password(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "NOT IMPLEMENTED", http.StatusInternalServerError)
+}
+
 func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
 	d.auth.Logout(w, r)
 }

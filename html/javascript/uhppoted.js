@@ -30,6 +30,28 @@ export function onMenu (event, show) {
   }
 }
 
+export function onSignOut (event) {
+  if (event != null) {
+    event.preventDefault()
+  }
+
+  postAsJSON('/logout', {})
+    .then(response => {
+      if (response.status === 200 && response.redirected) {
+        window.location = response.url
+      } else {
+        return response.text()
+      }
+    })
+    .then(msg => {
+      warning(msg)
+    })
+    .catch(function (err) {
+      console.error(err)
+      offline()
+    })
+}
+
 export function retheme (theme) {
   const expires = new Date()
   const stylesheets = document.querySelectorAll("link[rel='stylesheet']")
@@ -155,28 +177,6 @@ export async function postAsJSON (url = '', data = {}) {
     .catch(function (err) {
       connected(false)
       throw err
-    })
-}
-
-export function onSignOut (event) {
-  if (event != null) {
-    event.preventDefault()
-  }
-
-  postAsJSON('/logout', {})
-    .then(response => {
-      if (response.status === 200 && response.redirected) {
-        window.location = response.url
-      } else {
-        return response.text()
-      }
-    })
-    .then(msg => {
-      warning(msg)
-    })
-    .catch(function (err) {
-      console.error(err)
-      offline()
     })
 }
 

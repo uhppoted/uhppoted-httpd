@@ -23,6 +23,11 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if path == "/password" {
+		d.password(w, r)
+		return
+	}
+
 	uid, role, ok := d.authorized(w, r, path)
 	if !ok {
 		return

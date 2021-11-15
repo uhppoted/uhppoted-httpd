@@ -2,9 +2,6 @@
 
 ### IN PROGRESS
 
-- [x] Logging: pretty print URLs like:
-      ```2021/11/11 12:31:12 DEBUG /logs?range=0%2C15``
-
 - [ ] Apply fix for 'interim hack':
       - [ ] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
             - [ ] interfaces
@@ -14,9 +11,9 @@
             - [ ] groups
       - [ ] Update now returns multiple copies of status - maybe coalesce into one final status (?)
 
-- [ ] Genericize load
+- [ ] Genericize load/save
       - [ ] Define system.Component interface
-      - [ ] (?) maybe rather just read file and pass in bytes (??)
+      - [ ] (?) maybe rather just read file and pass in bytes/reader/writer (??)
       - [ ] logs
       - [ ] events
       - [ ] groups
@@ -26,6 +23,13 @@
       - [ ] interfaces
   
 - [ ] Change password
+      - [x] HTML page
+      - [x]  onCancel after fail
+      - [ ] 'float' menu (so that it doesn't shift everything down when open)
+      - [ ] Get error message text
+            - [ ] Fix login.js too
+
+- [ ] Reload auth.json if changed
 - [ ] Set initial password
 - [ ] Hash passwords
       - https://github.com/dchest/tweetnacl-js#hashing
@@ -41,11 +45,6 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 #### OID
-  - [x] Move interfaces to their own OID base
-        - [x] Shuffle doors OID
-        - [x] Shuffle controllers OID
-        - [x] Shuffle interfaces OID
-
   - [ ] GetV => GetBool, GetInt, etc
   - [ ] Store all values in catalog and 'realize' local copies from cache
   - [ ] Check RWLock for clone to make shadow
@@ -168,7 +167,6 @@
       - apply to all (pinned ?) columns
       - simultaneous editing (?) 
         -- use hash of DB to identify changes
-        -- CRDT ??
       
 - [ ] Security
       - GET /system, /doors , /cards, etc all return everything. Need finer grained access 
@@ -186,11 +184,12 @@
       - https://jn3008.tumblr.com/post/618100274778783744
 - [ ] Hamburger menu (?)
 - [ ] Thoroughly rethink the whole timezone thing
+
+## TODO
+
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
-
-## TODO
 
 - [ ] Server events in addition to/rather-than refresh
       - https://jvns.ca/blog/2021/01/12/day-36--server-sent-events-are-cool--and-a-fun-bug/
