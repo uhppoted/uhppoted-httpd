@@ -1,0 +1,42 @@
+{{define "user"}}
+      <!-- USER -->
+      <div id="user" onmouseleave="onMenu(event, false)">
+        <div id="avatar" onclick="onMenu(event, true)">
+          <p>admin</p>
+          <img src="images/{{$.context.Theme}}/user-cog-solid.svg" />
+        </div>
+        <div class="menu">
+          <a href="#" onclick="onSignOut(event)">sign out</a>
+          <a href="./password.html">password</a>
+          <a href="#" onclick="retheme('light')">light</a>
+          <a href="#" onclick="retheme('dark')">dark</a>
+        </div>
+      </div>
+{{end}}
+
+{{define "header"}}
+      <!-- HEADER -->
+      <header>
+        <div style="display:flex; flex-direction:column;">
+          <img id="logo" src="images/{{$.context.Theme}}/logo.png" />
+          <div id="disconnected">offline</div>
+        </div>
+        <div id="dashboard">
+          <span id="windmill"></span>
+        </div>
+      </header>
+{{end}}
+
+{{define "nav"}}
+      <!-- NAV -->
+      <nav>
+        <ul>
+          {{if eq . "system"}}<li class="selected">SYSTEM</li>{{else}}<li><a href="./system.html">SYSTEM</a></li>{{end}}
+          {{if eq . "doors" }}<li class="selected">DOORS</li> {{else}}<li><a href="./doors.html">DOORS</a></li>{{end}}
+          {{if eq . "cards" }}<li class="selected">CARDS</li> {{else}}<li><a href="./cards.html">CARDS</a></li>{{end}}
+          {{if eq . "groups"}}<li class="selected">GROUPS</li>{{else}}<li><a href="./groups.html">GROUPS</a></li>{{end}}
+          {{if eq . "events"}}<li class="selected">EVENTS</li>{{else}}<li><a href="./events.html">EVENTS</a></li>{{end}}
+          {{if eq . "logs"  }}<li class="selected">LOGS</li>  {{else}}<li><a href="./logs.html">LOGS</a></li>{{end}}
+        </ul>
+      </nav>
+{{end}}
