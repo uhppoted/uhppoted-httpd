@@ -63,10 +63,10 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	dbc.Commit()
 	sys.updated()
 
+	list := squoosh(dbc.Objects())
 	return struct {
 		Objects []catalog.Object `json:"objects,omitempty"`
 	}{
-		Objects: dbc.Objects(),
+		Objects: list,
 	}, nil
-
 }

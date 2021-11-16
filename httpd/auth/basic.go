@@ -282,7 +282,7 @@ func (b *Basic) setLoginCookie(w http.ResponseWriter) error {
 		Name:     LoginCookie,
 		Value:    token,
 		Path:     "/",
-		MaxAge:   60, // b.cookieMaxAge * int(time.Hour.Seconds()),
+		MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 		//	Secure:   true,

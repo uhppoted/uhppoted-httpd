@@ -39,12 +39,12 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	sys.controllers = shadow
 	sys.updated()
 
+	list := squoosh(dbc.Objects())
 	return struct {
 		Objects []catalog.Object `json:"objects,omitempty"`
 	}{
-		Objects: dbc.Objects(),
+		Objects: list,
 	}, nil
-
 }
 
 func save(c *controllers.ControllerSet) error {

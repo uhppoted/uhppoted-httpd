@@ -1,6 +1,6 @@
 ## v0.7.x
 
-- [ ] 'squoosh' update lists
+- [x] 'squoosh' update lists
 - [ ] OIDs:
       - .0.0 status
       - .0.1 created
@@ -18,7 +18,7 @@
             - [ ] doors
             - [ ] cards
             - [ ] groups
-      - [ ] Update now returns multiple copies of status - maybe coalesce into one final status (?)
+      - [x] Update now returns multiple copies of status - maybe coalesce into one final status (?)
 
 - [ ] Genericize load/save
       - [ ] Define system.Component interface
@@ -38,6 +38,8 @@
             - [ ] Fix login.js too
 
 - [ ] Reload auth.json if changed
+- [ ] Make login cookie expire in 60s
+      - Don't check login cookie except for login and
 - [ ] Set initial password
 - [ ] Hash passwords
       - https://github.com/dchest/tweetnacl-js#hashing

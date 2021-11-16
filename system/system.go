@@ -310,6 +310,25 @@ func load(file string) (map[string][]json.RawMessage, error) {
 	return blob, nil
 }
 
+// Returns a deduplicated list of objects, retaining only the the last (i.e. latest) value.
+// NOTE: this implementation is horribly inefficient but the list is expected to almost always
+//       be tiny since it is the result of a manual edit.
+func squoosh(objects []catalog.Object) []catalog.Object {
+	keys := map[catalog.OID]struct{}{}
+	list := []catalog.Object{}
+
+	for i := len(objects); i > 0; i-- {
+		object := objects[i-1]
+		oid := object.OID
+		if _, ok := keys[oid]; !ok {
+			keys[oid] = struct{}{}
+			list = append([]catalog.Object{object}, list...)
+		}
+	}
+
+	return list
+}
+
 func clean(s string) string {
 	return strings.ReplaceAll(strings.ToLower(s), " ", "")
 }
