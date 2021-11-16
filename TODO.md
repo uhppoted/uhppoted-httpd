@@ -1,8 +1,17 @@
 ## v0.7.x
 
+- [ ] 'squoosh' update lists
+- [ ] OIDs:
+      - .0.0 status
+      - .0.1 created
+      - .0.2 deleted
+
 ### IN PROGRESS
 
 - [ ] Apply fix for 'interim hack':
+      - [ ] (?) Return status if IsValid && !IsDeleted
+      - [ ] (?) Seperate deleted value
+            
       - [ ] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
             - [ ] interfaces
             - [ ] controllers
@@ -23,9 +32,8 @@
       - [ ] interfaces
   
 - [ ] Change password
-      - [x] HTML page
-      - [x]  onCancel after fail
-      - [ ] 'float' menu (so that it doesn't shift everything down when open)
+      - [x] 'float' menu
+      - [x] Restyle avatar to be a bit floaty
       - [ ] Get error message text
             - [ ] Fix login.js too
 
@@ -36,7 +44,6 @@
       - https://stackoverflow.com/questions/64761119/tweetnacl-js-minimal-public-key-signatures-example
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
-- [ ] Restyle avatar to have a border and be a bit floaty (i.e. not be glued to top-right)
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

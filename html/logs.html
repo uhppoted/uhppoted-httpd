@@ -12,6 +12,20 @@
   <body> 
     <div id="content">
 
+      <!-- USER -->
+      <div id="user" onmouseleave="onMenu(event, false)">
+        <div id="avatar" onclick="onMenu(event, true)">
+          <p>admin</p>
+          <img src="images/{{$.context.Theme}}/user-cog-solid.svg" />
+        </div>
+        <div class="menu">
+          <a href="#" onclick="onSignOut(event)">sign out</a>
+          <a href="./password.html">password</a>
+          <a href="#" onclick="retheme('light')">light</a>
+          <a href="#" onclick="retheme('dark')">dark</a>
+        </div>
+      </div>
+
       <!-- HEADER -->
       <header>
         <div style="display:flex; flex-direction:column;">
@@ -21,18 +35,6 @@
           
         <div id="dashboard">
           <span id="windmill"></span>
-        </div>
-
-        <div id="user" onmouseleave="onMenu(event, false)">
-          <div id="avatar" onclick="onMenu(event, true)">
-            <p>admin</p>
-            <img src="images/{{$.context.Theme}}/user-cog-solid.svg" />
-          </div>
-          <div class="menu">
-            <a href="#" onclick="onSignOut(event)">Sign out</a>
-            <a href="#" onclick="retheme('light')">light</a>
-            <a href="#" onclick="retheme('dark')">dark</a>
-          </div>
         </div>
       </header>
 
