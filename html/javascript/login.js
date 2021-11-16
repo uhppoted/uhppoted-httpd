@@ -70,20 +70,25 @@ function auth () {
       switch (response.status) {
         case 200:
           if (response.redirected) {
-            return response.url
+            window.location = response.url
           } else {
-            return '/index.html'
+            window.location = '/index.html'
           }
+          return
 
         case 401:
           throw new Error(messages.unauthorized)
 
         default:
-          throw new Error(response.text())
+          return response.text()
       }
     })
-    .then(url => {
-      window.location = url
+    .then(msg => {
+      if (msg) {
+        throw new Error(msg.trim())
+      } else {
+        throw new Error('system error')
+      }
     })
     .catch(function (err) {
       warning(`Error logging in (${err.message.toLowerCase()})`)

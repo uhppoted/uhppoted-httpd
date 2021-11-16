@@ -21,23 +21,22 @@ export function onPassword (event) {
       switch (response.status) {
         case 200:
           if (response.redirected) {
-            return { redirected: true, url: response.url }
+            window.location = response.url
           } else {
-            return { ok: true }
+            window.location = referrer
           }
+          return
 
         case 401:
           throw new Error(messages.unauthorized)
 
         default:
-          throw new Error(response.text())
+          return response.text()
       }
     })
-    .then(o => {
-      if (o.ok) {
-        window.location = referrer
-      } else if (o.redirected && o.url) {
-        window.location = o.url
+    .then(msg => {
+      if (msg) {
+        throw new Error(msg.trim())
       } else {
         throw new Error('system error')
       }

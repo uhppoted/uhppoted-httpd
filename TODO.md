@@ -10,7 +10,7 @@
 
 - [ ] Apply fix for 'interim hack':
       - [ ] (?) Return status if IsValid && !IsDeleted
-      - [ ] (?) Seperate deleted value
+      - [ ] (?) Item deleted OID
             
       - [ ] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
             - [ ] interfaces
@@ -23,6 +23,7 @@
 - [ ] Genericize load/save
       - [ ] Define system.Component interface
       - [ ] (?) maybe rather just read file and pass in bytes/reader/writer (??)
+            - [ ] Move file to system
       - [ ] logs
       - [ ] events
       - [ ] groups
@@ -34,8 +35,9 @@
 - [ ] Change password
       - [x] 'float' menu
       - [x] Restyle avatar to be a bit floaty
-      - [ ] Get error message text
-            - [ ] Fix login.js too
+      - [x] Get error message text
+            - [x] Fix login.js too
+      - [ ] Implement httpd handler
 
 - [ ] Reload auth.json if changed
 - [ ] Make login cookie expire in 60s
