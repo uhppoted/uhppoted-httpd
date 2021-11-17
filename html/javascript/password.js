@@ -37,8 +37,6 @@ export function onPassword (event) {
     .then(msg => {
       if (msg) {
         throw new Error(msg.trim())
-      } else {
-        throw new Error('system error')
       }
     })
     .catch(function (err) {

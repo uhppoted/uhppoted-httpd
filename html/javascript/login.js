@@ -54,9 +54,6 @@ async function preauth () {
     .then(response => {
       return response
     })
-    .catch(function (err) {
-      throw err
-    })
 }
 
 function auth () {
@@ -86,12 +83,7 @@ function auth () {
     .then(msg => {
       if (msg) {
         throw new Error(msg.trim())
-      } else {
-        throw new Error('system error')
       }
-    })
-    .catch(function (err) {
-      warning(`Error logging in (${err.message.toLowerCase()})`)
     })
 }
 
