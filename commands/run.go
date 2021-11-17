@@ -92,6 +92,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 				Cards  string
 				Doors  string
 				Groups string
+				Users  string
 				ACL    string
 			}
 		}{
@@ -100,12 +101,14 @@ func (cmd *Run) Execute(args ...interface{}) error {
 				Cards  string
 				Doors  string
 				Groups string
+				Users  string
 				ACL    string
 			}{
 				System: conf.HTTPD.DB.Rules.System,
 				Cards:  conf.HTTPD.DB.Rules.Cards,
 				Doors:  conf.HTTPD.DB.Rules.Doors,
 				Groups: conf.HTTPD.DB.Rules.Groups,
+				Users:  conf.HTTPD.DB.Rules.Users,
 				ACL:    conf.HTTPD.DB.Rules.ACL,
 			},
 		},

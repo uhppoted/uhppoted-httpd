@@ -33,6 +33,7 @@ type HTTPD struct {
 			Cards  string
 			Doors  string
 			Groups string
+			Users  string
 			ACL    string
 		}
 	}
@@ -47,6 +48,7 @@ type dispatcher struct {
 		cards  string
 		doors  string
 		groups string
+		users  string
 	}
 	timeout time.Duration
 }
@@ -69,11 +71,13 @@ func (h *HTTPD) Run() {
 			cards  string
 			doors  string
 			groups string
+			users  string
 		}{
 			system: h.DB.GRules.System,
 			cards:  h.DB.GRules.Cards,
 			doors:  h.DB.GRules.Doors,
 			groups: h.DB.GRules.Groups,
+			users:  h.DB.GRules.Users,
 		},
 		timeout: h.RequestTimeout,
 	}
@@ -224,10 +228,6 @@ func (d *dispatcher) user(r *http.Request) string {
 	}
 
 	return ""
-}
-
-func (d *dispatcher) password(w http.ResponseWriter, r *http.Request) {
-	http.Error(w, "NOT IMPLEMENTED", http.StatusInternalServerError)
 }
 
 func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {

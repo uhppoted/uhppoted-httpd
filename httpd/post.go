@@ -2,12 +2,12 @@ package httpd
 
 import (
 	"net/http"
-	"regexp"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/cards"
 	"github.com/uhppoted/uhppoted-httpd/httpd/controllers"
 	"github.com/uhppoted/uhppoted-httpd/httpd/doors"
 	"github.com/uhppoted/uhppoted-httpd/httpd/groups"
+	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 )
 
 func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
@@ -23,55 +23,53 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if path == "/password" {
-		d.password(w, r)
-		return
-	}
-
 	uid, role, ok := d.authorized(w, r, path)
 	if !ok {
 		return
 	}
 
-	if match, err := regexp.MatchString(`/system`, path); err == nil && match {
-		auth, err := NewAuthorizator(uid, role, "system", d.grule.system)
-		if err != nil {
-			http.Error(w, "Error executing request", http.StatusInternalServerError)
+	switch path {
+	case "/password":
+		if auth, err := NewAuthorizator(uid, role, "password", d.grule.users); err != nil {
+			warn(err)
+			http.Error(w, "internal system error", http.StatusInternalServerError)
+		} else {
+			users.Password(w, r, d.timeout, auth)
 		}
 
-		controllers.Post(w, r, d.timeout, auth)
-		return
-	}
-
-	if match, err := regexp.MatchString(`/doors`, path); err == nil && match {
-		auth, err := NewAuthorizator(uid, role, "doors", d.grule.doors)
-		if err != nil {
-			http.Error(w, "Error executing request", http.StatusInternalServerError)
+	case "/system":
+		if auth, err := NewAuthorizator(uid, role, "system", d.grule.system); err != nil {
+			warn(err)
+			http.Error(w, "internal system error", http.StatusInternalServerError)
+		} else {
+			controllers.Post(w, r, d.timeout, auth)
 		}
 
-		doors.Post(w, r, d.timeout, auth)
-		return
-	}
-
-	if match, err := regexp.MatchString(`/cards`, path); err == nil && match {
-		auth, err := NewAuthorizator(uid, role, "cards", d.grule.cards)
-		if err != nil {
-			http.Error(w, "Error executing request", http.StatusInternalServerError)
+	case "/doors":
+		if auth, err := NewAuthorizator(uid, role, "doors", d.grule.doors); err != nil {
+			warn(err)
+			http.Error(w, "internal system error", http.StatusInternalServerError)
+		} else {
+			doors.Post(w, r, d.timeout, auth)
 		}
 
-		cards.Post(w, r, d.timeout, auth)
-		return
-	}
-
-	if match, err := regexp.MatchString(`/groups`, path); err == nil && match {
-		auth, err := NewAuthorizator(uid, role, "groups", d.grule.groups)
-		if err != nil {
-			http.Error(w, "Error executing request", http.StatusInternalServerError)
+	case "/cards":
+		if auth, err := NewAuthorizator(uid, role, "cards", d.grule.cards); err != nil {
+			warn(err)
+			http.Error(w, "internal system error", http.StatusInternalServerError)
+		} else {
+			cards.Post(w, r, d.timeout, auth)
 		}
 
-		groups.Post(w, r, d.timeout, auth)
-		return
-	}
+	case "/groups":
+		if auth, err := NewAuthorizator(uid, role, "groups", d.grule.groups); err != nil {
+			warn(err)
+			http.Error(w, "internal system error", http.StatusInternalServerError)
+		} else {
+			groups.Post(w, r, d.timeout, auth)
+		}
 
-	http.Error(w, "API not implemented", http.StatusNotImplemented)
+	default:
+		http.Error(w, "API not implemented", http.StatusNotImplemented)
+	}
 }

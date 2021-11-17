@@ -74,14 +74,8 @@ func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	switch contentType {
 	case "application/x-www-form-urlencoded":
-		r.ParseForm()
-		if v, ok := r.Form["uid"]; ok && len(v) > 0 {
-			uid = v[0]
-		}
-
-		if v, ok := r.Form["pwd"]; ok && len(v) > 0 {
-			pwd = v[0]
-		}
+		uid = r.FormValue("uid")
+		pwd = r.FormValue("pwd")
 
 	case "application/json":
 		blob, err := ioutil.ReadAll(r.Body)

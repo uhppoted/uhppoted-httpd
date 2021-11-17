@@ -1,6 +1,5 @@
 ## v0.7.x
 
-- [x] 'squoosh' update lists
 - [ ] OIDs:
       - .0.0 status
       - .0.1 created
@@ -11,19 +10,18 @@
 - [ ] Apply fix for 'interim hack':
       - [ ] (?) Return status if IsValid && !IsDeleted
       - [ ] (?) Item deleted OID
-            
       - [ ] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
             - [ ] interfaces
             - [ ] controllers
             - [ ] doors
             - [ ] cards
             - [ ] groups
-      - [x] Update now returns multiple copies of status - maybe coalesce into one final status (?)
 
 - [ ] Genericize load/save
       - [ ] Define system.Component interface
       - [ ] (?) maybe rather just read file and pass in bytes/reader/writer (??)
             - [ ] Move file to system
+            - [ ] Restructure to support e.g. DB as an alternative
       - [ ] logs
       - [ ] events
       - [ ] groups
@@ -33,11 +31,8 @@
       - [ ] interfaces
   
 - [ ] Change password
-      - [x] 'float' menu
-      - [x] Restyle avatar to be a bit floaty
-      - [x] Get error message text
-            - [x] Fix login.js too
       - [ ] Implement httpd handler
+      - [ ] 'users' page
 
 - [ ] Reload auth.json if changed
 - [ ] Make login cookie expire in 60s
