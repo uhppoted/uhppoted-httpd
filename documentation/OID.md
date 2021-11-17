@@ -3,18 +3,16 @@
 0                                                                            # root
 |
 |- 0.1                                                                       # interfaces
-|    |
 |    |- 0.1.1: <status>                                                      # interface #1
-|    |      |- 0.1.1.0: <type>                                               #    type
-|    |      |- 0.1.1.1: <name>                                               #    name
-|    |      |- 0.1.1.2: <bind>                                               #    bind address
-|    |      |- 0.1.1.3: <broadcast>                                          #    broadcast address
-|    |      |- 0.1.1.4: <listen>                                             #    listen address
+|    |      |- 0.1.1.1: <type>                                               #    type
+|    |      |- 0.1.1.2: <name>                                               #    name
+|    |      |- 0.1.1.3: <bind>                                               #    bind address
+|    |      |- 0.1.1.4: <broadcast>                                          #    broadcast address
+|    |      |- 0.1.1.5: <listen>                                             #    listen address
 |    |
 |    |- ...
 | 
 |- 0.2                                                                       # boards
-|    |
 |    |- 0.2.1: <status>                                                      # board #1
 |    |      |- 0.2.1.0: <type>                                               #    type
 |    |      |        |- 0.2.1.0.1: <created>                                 #    created date/time

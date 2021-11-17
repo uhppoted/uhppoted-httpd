@@ -19,13 +19,13 @@
       <!-- MAIN -->
       <main>
         <div id="container">
-          <table id="interface" class="interface" data-oid="{{ .schema.Interfaces }}.1">
+          <table id="interface" class="interface" data-oid="{{ .schema.Interfaces.OID }}.1">
             <tr>
               <td colspan="3">
                 <div style="display:flex;">
                   <input type="text" class="name" placeholder="-" style="flex-grow:1;"
                           onchange="onEdited('interface', event)" 
-                          data-oid="{{ .schema.Interfaces }}.1.1"
+                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Name }}"
                           data-original=""
                           data-value="" 
                           readonly />
@@ -35,29 +35,29 @@
               </td>
             </tr>
             <tr>
-              <td><img id="F{{ .schema.Interfaces }}.1.2" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
+              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Bind }}" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
               <td>bind:</td>
               <td><input type="text" class="bind" placeholder="-" 
                           onchange="onEdited('interface', event)" 
-                          data-oid="{{ .schema.Interfaces }}.1.2"
+                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Bind }}"
                           data-original=""
                           data-value="" /></td>
             </tr>
             <tr>
-              <td><img id="F{{ .schema.Interfaces }}.1.3" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
+              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
               <td>broadcast:</td>
               <td><input type="text" class="broadcast" placeholder="-" 
                           onchange="onEdited('interface', event)" 
-                          data-oid="{{ .schema.Interfaces }}.1.3"
+                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}"
                           data-original=""
                           data-value="" /></td>
             </tr>
             <tr>
-              <td><img id="F{{ .schema.Interfaces }}.1.4" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
+              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Listen }}" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
               <td>listen:</td>
               <td><input type="text" class="listen" value="" placeholder="-"
                           onchange="onEdited('interface', event)" 
-                          data-oid="{{ .schema.Interfaces }}.1.4"
+                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Listen }}"
                           data-original=""
                           data-value="" /></td>
             </tr>
