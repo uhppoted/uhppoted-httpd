@@ -96,6 +96,7 @@
 
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
+            - 'natural' number type :-)
       - Input + datalist for timezone ?????
         - https://demo.agektmr.com/datalist/
 

@@ -1,5 +1,6 @@
 import { update, deleted } from './tabular.js'
-import { DB, schema } from './db.js'
+import { DB } from './db.js'
+import { schema } from './schema.js'
 
 export function refreshed () {
   const cards = [...DB.cards.values()].sort((p, q) => p.created.localeCompare(q.created))

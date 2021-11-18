@@ -1,5 +1,227 @@
 package catalog
 
+type Schema struct {
+	Interfaces  Interfaces  `json:"interfaces"`
+	Controllers Controllers `json:"controllers"`
+	Doors       Doors       `json:"doors"`
+	Cards       Cards       `json:"cards"`
+	Groups      Groups      `json:"groups"`
+	Events      Events      `json:"events"`
+	Logs        Logs        `json:"logs"`
+}
+
+type Interfaces struct {
+	OID       OID    `json:"OID"`
+	Type      Suffix `json:"type"`
+	Name      Suffix `json:"name"`
+	Bind      Suffix `json:"bind"`
+	Broadcast Suffix `json:"broadcast"`
+	Listen    Suffix `json:"listen"`
+}
+
+type Controllers struct {
+	OID               OID    `json:"OID"`
+	Created           Suffix `json:"created"`
+	Name              Suffix `json:"name"`
+	DeviceID          Suffix `json:"deviceId"`
+	Address           Suffix `json:"address"`
+	AddressConfigured Suffix `json:"address-configured"`
+	AddressStatus     Suffix `json:"address-status"`
+	DateTime          Suffix `json:"datetime"`
+	DateTimeSystem    Suffix `json:"systemtime"`
+	DateTimeStatus    Suffix `json:"datetime-status"`
+	Cards             Suffix `json:"cards"`
+	CardsStatus       Suffix `json:"cards-status"`
+	Events            Suffix `json:"events"`
+	EventsStatus      Suffix `json:"events-status"`
+	Door1             Suffix `json:"door1"`
+	Door2             Suffix `json:"door2"`
+	Door3             Suffix `json:"door3"`
+	Door4             Suffix `json:"door4"`
+}
+
+type Doors struct {
+	OID               OID    `json:"OID"`
+	Created           Suffix `json:"created"`
+	ControllerOID     Suffix `json:"controller-OID"`
+	ControllerCreated Suffix `json:"controller-created"`
+	ControllerName    Suffix `json:"controller-name"`
+	ControllerID      Suffix `json:"controller-ID"`
+	ControllerDoor    Suffix `json:"controller-door"`
+	Name              Suffix `json:"name"`
+	Delay             Suffix `json:"delay"`
+	DelayStatus       Suffix `json:"delay-status"`
+	DelayConfigured   Suffix `json:"delay-configured"`
+	DelayError        Suffix `json:"delay-error"`
+	DelayModified     Suffix `json:"delay-modified"`
+	Control           Suffix `json:"control"`
+	ControlStatus     Suffix `json:"control-status"`
+	ControlConfigured Suffix `json:"control-configured"`
+	ControlError      Suffix `json:"control-error"`
+	ControlModified   Suffix `json:"control-modified"`
+	DisplayIndex      Suffix `json:"display-index"`
+}
+
+type Cards struct {
+	OID     OID    `json:"OID"`
+	Created Suffix `json:"created"`
+	Name    Suffix `json:"name"`
+	Card    Suffix `json:"card"`
+	From    Suffix `json:"from"`
+	To      Suffix `json:"to"`
+	Groups  Suffix `json:"groups"`
+}
+
+type Groups struct {
+	OID          OID    `json:"OID"`
+	Created      Suffix `json:"created"`
+	Name         Suffix `json:"name"`
+	Doors        Suffix `json:"doors"`
+	DisplayIndex Suffix `json:"display-index"`
+}
+
+type Events struct {
+	OID   OID    `json:"OID"`
+	First Suffix `json:"first"`
+	Last  Suffix `json:"last"`
+
+	Timestamp  Suffix `json:"timestamp"`
+	DeviceID   Suffix `json:"device-id"`
+	Index      Suffix `json:"index"`
+	Type       Suffix `json:"type"`
+	Door       Suffix `json:"door"`
+	Direction  Suffix `json:"direction"`
+	Card       Suffix `json:"card"`
+	Granted    Suffix `json:"granted"`
+	Reason     Suffix `json:"reason"`
+	DeviceName Suffix `json:"device-name"`
+	DoorName   Suffix `json:"door-name"`
+	CardName   Suffix `json:"card-name"`
+}
+
+type Logs struct {
+	OID   OID    `json:"OID"`
+	First Suffix `json:"first"`
+	Last  Suffix `json:"last"`
+
+	Timestamp Suffix `json:"timestamp"`
+	UID       Suffix `json:"uid"`
+	Item      Suffix `json:"item"`
+	ItemID    Suffix `json:"item-id"`
+	ItemName  Suffix `json:"item-name"`
+	Field     Suffix `json:"field"`
+	Details   Suffix `json:"details"`
+}
+
+func GetSchema() Schema {
+	return schema
+}
+
+var schema = Schema{
+	Interfaces: Interfaces{
+		OID:       InterfacesOID,
+		Type:      InterfaceType,
+		Name:      InterfaceName,
+		Bind:      LANBindAddress,
+		Broadcast: LANBroadcastAddress,
+		Listen:    LANListenAddress,
+	},
+
+	Controllers: Controllers{
+		OID:               ControllersOID,
+		Created:           ControllerCreated,
+		Name:              ControllerName,
+		DeviceID:          ControllerDeviceID,
+		Address:           ControllerAddress,
+		AddressConfigured: ControllerAddressConfigured,
+		AddressStatus:     ControllerAddressStatus,
+		DateTime:          ControllerDateTime,
+		DateTimeSystem:    ControllerDateTimeSystem,
+		DateTimeStatus:    ControllerDateTimeStatus,
+		Cards:             ControllerCards,
+		CardsStatus:       ControllerCardsStatus,
+		Events:            ControllerEvents,
+		EventsStatus:      ControllerEventsStatus,
+		Door1:             ControllerDoor1,
+		Door2:             ControllerDoor2,
+		Door3:             ControllerDoor3,
+		Door4:             ControllerDoor4,
+	},
+
+	Doors: Doors{
+		OID:               DoorsOID,
+		Created:           DoorCreated,
+		ControllerOID:     DoorControllerOID,
+		ControllerCreated: DoorControllerCreated,
+		ControllerName:    DoorControllerName,
+		ControllerID:      DoorControllerID,
+		ControllerDoor:    DoorControllerDoor,
+		Name:              DoorName,
+		Delay:             DoorDelay,
+		DelayStatus:       DoorDelayStatus,
+		DelayConfigured:   DoorDelayConfigured,
+		DelayError:        DoorDelayError,
+		DelayModified:     DoorDelayModified,
+		Control:           DoorControl,
+		ControlStatus:     DoorControlStatus,
+		ControlConfigured: DoorControlConfigured,
+		ControlError:      DoorControlError,
+		ControlModified:   DoorControlModified,
+		DisplayIndex:      DoorIndex,
+	},
+
+	Cards: Cards{
+		OID:     CardsOID,
+		Created: CardCreated,
+		Name:    CardName,
+		Card:    CardNumber,
+		From:    CardFrom,
+		To:      CardTo,
+		Groups:  CardGroups,
+	},
+
+	Groups: Groups{
+		OID:          GroupsOID,
+		Created:      GroupCreated,
+		Name:         GroupName,
+		Doors:        GroupDoors,
+		DisplayIndex: GroupIndex,
+	},
+
+	Events: Events{
+		OID:   EventsOID,
+		First: EventsFirst,
+		Last:  EventsLast,
+
+		Timestamp:  EventTimestamp,
+		DeviceID:   EventDeviceID,
+		Index:      EventIndex,
+		Type:       EventType,
+		Door:       EventDoor,
+		Direction:  EventDirection,
+		Card:       EventCard,
+		Granted:    EventGranted,
+		Reason:     EventReason,
+		DeviceName: EventDeviceName,
+		DoorName:   EventDoorName,
+		CardName:   EventCardName,
+	},
+
+	Logs: Logs{
+		OID:   LogsOID,
+		First: LogsFirst,
+		Last:  LogsLast,
+
+		Timestamp: LogTimestamp,
+		UID:       LogUID,
+		Item:      LogItem,
+		ItemID:    LogItemID,
+		ItemName:  LogItemName,
+		Field:     LogField,
+		Details:   LogDetails,
+	},
+}
+
 const InterfacesOID OID = "0.1"
 const ControllersOID OID = "0.2"
 const DoorsOID OID = "0.3"

@@ -63,7 +63,7 @@
             </tr>
           </table>
 
-          <div id="controls" data-oid="{{ .schema.Controllers }}">
+          <div id="controls" data-oid="{{ .schema.Controllers.OID }}">
             <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controllers', event, 'controllers')" />
             <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('controllers', event, 'controllers')" />
             <div id="message" class="message">

@@ -1,6 +1,6 @@
 package catalog
 
-func Groups() []OID {
+func GetGroups() []OID {
 	list := []OID{}
 
 	for g, _ := range catalog.groups {

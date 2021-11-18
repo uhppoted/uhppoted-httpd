@@ -94,7 +94,7 @@ func (c *Card) AsObjects() []interface{} {
 		catalog.NewObject2(c.OID, CardTo, to),
 	}
 
-	groups := catalog.Groups()
+	groups := catalog.GetGroups()
 	re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
 
 	for _, group := range groups {
@@ -397,7 +397,7 @@ func (c Card) serialize() ([]byte, error) {
 		record.Card = uint32(*c.Card)
 	}
 
-	groups := catalog.Groups()
+	groups := catalog.GetGroups()
 
 	for _, g := range groups {
 		if c.Groups[g] {

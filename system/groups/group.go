@@ -69,7 +69,7 @@ func (g *Group) AsObjects() []interface{} {
 		catalog.NewObject2(g.OID, GroupIndex, index),
 	}
 
-	doors := catalog.Doors()
+	doors := catalog.GetDoors()
 	re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
 
 	for _, door := range doors {
@@ -99,7 +99,7 @@ func (g *Group) AsRuleEntity() interface{} {
 	if g != nil {
 		entity.Name = fmt.Sprintf("%v", g.Name)
 
-		doors := catalog.Doors()
+		doors := catalog.GetDoors()
 		for _, d := range doors {
 			allowed := g.Doors[d]
 			door := catalog.GetV(d, DoorName)
@@ -195,7 +195,7 @@ func (g Group) serialize() ([]byte, error) {
 		Created: g.created.Format("2006-01-02 15:04:05"),
 	}
 
-	doors := catalog.Doors()
+	doors := catalog.GetDoors()
 
 	for _, d := range doors {
 		if g.Doors[d] {

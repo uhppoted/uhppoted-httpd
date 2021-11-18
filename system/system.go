@@ -165,6 +165,10 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	return nil
 }
 
+func Schema() interface{} {
+	return catalog.GetSchema()
+}
+
 func System() interface{} {
 	sys.RLock()
 

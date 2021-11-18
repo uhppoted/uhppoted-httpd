@@ -19,7 +19,7 @@
       <!-- MAIN -->
       <main>
         <div id="container">
-          <div id="controls" data-oid="{{ .schema.Doors }}">
+          <div id="controls" data-oid="{{ .schema.Doors.OID }}">
             <img id="commitall" class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('doors', event, 'doors')" draggable="false" />
             <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('doors', event)"  draggable="false"  />
             <div id="message" class="message">

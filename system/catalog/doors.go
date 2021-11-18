@@ -1,6 +1,6 @@
 package catalog
 
-func Doors() []OID {
+func GetDoors() []OID {
 	list := []OID{}
 
 	for d, _ := range catalog.doors {
