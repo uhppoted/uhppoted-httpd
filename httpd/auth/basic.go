@@ -49,6 +49,10 @@ func (b *Basic) Verify(uid, pwd string, r *http.Request) error {
 		return fmt.Errorf("UID '%v' does not match login ID '%v'", uid, id)
 	}
 
+	if err := b.auth.Validate(uid, pwd); err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -43,7 +43,7 @@
 - [ ] Change password
       - [x] Validate pwd + pwd2 in JS
       - [x] Validate uid
-      - [ ] Verify UID+old password
+      - [x] Verify UID+old password
       - [ ] Update password
       - [ ] Confirm that /password out of a session fails miserably
       - [ ] 'users' page

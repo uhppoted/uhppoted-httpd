@@ -231,6 +231,29 @@ func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) 
 	return token.String(), nil
 }
 
+// func (p *Local) Validate(uid, pwd string, sessionId uuid.UUID) error {
+func (p *Local) Validate(uid, pwd string) error {
+	p.guard.Lock()
+	users := p.Users
+	p.guard.Unlock()
+
+	u, ok := users[uid]
+	if !ok {
+		return fmt.Errorf("invalid user ID or password")
+	}
+
+	h := sha256.New()
+	h.Write(u.Salt)
+	h.Write([]byte(pwd))
+
+	hash := fmt.Sprintf("%0x", h.Sum(nil))
+	if hash != u.Password {
+		return fmt.Errorf("invalid user ID or password")
+	}
+
+	return nil
+}
+
 func (p *Local) Verify(tokenType TokenType, cookie string) error {
 	p.guard.Lock()
 	secret := []byte(p.Key)

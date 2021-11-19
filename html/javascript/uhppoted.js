@@ -52,6 +52,19 @@ export function onSignOut (event) {
     })
 }
 
+export function onShowHidePassword (event, id) {
+  const pwd = document.getElementById(id)
+  const eye = event.target
+
+  if (pwd.type === 'password') {
+    pwd.type = 'text'
+    eye.src = eye.dataset.hide
+  } else {
+    pwd.type = 'password'
+    eye.src = eye.dataset.show
+  }
+}
+
 export function retheme (theme) {
   const expires = new Date()
   const stylesheets = document.querySelectorAll("link[rel='stylesheet']")

@@ -32,7 +32,10 @@
                 </div>
                 <div class="field">
                   <input id="pwd" name="pwd" type="password" size="28" placeholder="{{.Login.Password.Hint}}" required value="uhppoted" />
-                  <img id="eye" src="images/{{$.context.Theme}}/eye-solid.svg" onclick="showHidePassword()"/>
+                  <img src="images/{{$.context.Theme}}/eye-solid.svg" 
+                       onclick="onShowHidePassword(event, 'pwd')" 
+                       data-hide='images/{{$.context.Theme}}/eye-slash-solid.svg'
+                       data-show='images/{{$.context.Theme}}/eye-solid.svg' />
                 </div>
                 <button action="submit">{{.Login.Ok.Label}}</button>
               </form>
@@ -58,13 +61,11 @@
 
   <!-- SCRIPTS -->
  
-  <script type="module" src="./javascript/uhppoted.js"></script>
-  <script type="module" src="./javascript/login.js"></script>
-
   <script type="module">
-    import { showHidePassword, login } from "./javascript/login.js"
+    import { onShowHidePassword } from "./javascript/uhppoted.js"
+    import { login              } from "./javascript/login.js"
 
-    window.showHidePassword = showHidePassword
+    window.onShowHidePassword = onShowHidePassword
     window.login = login
 
     document.addEventListener('keydown', event => {

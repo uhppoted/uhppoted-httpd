@@ -52,19 +52,6 @@ export function onPassword (event) {
     })
 }
 
-export function showHidePassword () {
-  const pwd = document.getElementById('pwd')
-  const eye = document.getElementById('eye')
-
-  if (pwd.type === 'password') {
-    pwd.type = 'text'
-    eye.src = 'images/eye-slash-solid.svg'
-  } else {
-    pwd.type = 'password'
-    eye.src = 'images/eye-solid.svg'
-  }
-}
-
 function warning (msg) {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
