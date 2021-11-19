@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 	"sync"
 	"time"
 
@@ -231,7 +232,6 @@ func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) 
 	return token.String(), nil
 }
 
-// func (p *Local) Validate(uid, pwd string, sessionId uuid.UUID) error {
 func (p *Local) Validate(uid, pwd string) error {
 	p.guard.Lock()
 	users := p.Users
@@ -249,6 +249,35 @@ func (p *Local) Validate(uid, pwd string) error {
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
 	if hash != u.Password {
 		return fmt.Errorf("invalid user ID or password")
+	}
+
+	return nil
+}
+
+func (p *Local) Store(uid, pwd, role string) error {
+	if strings.TrimSpace(uid) == "" {
+		return fmt.Errorf("Invalid user ID or password")
+	}
+
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	salt := make([]byte, 16)
+	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
+		return err
+	}
+
+	k := strings.TrimSpace(uid)
+	h := sha256.New()
+	h.Write(salt)
+	h.Write([]byte(pwd))
+
+	hash := fmt.Sprintf("%0x", h.Sum(nil))
+
+	p.Users[k] = &user{
+		Salt:     salt,
+		Password: hash,
+		Role:     role,
 	}
 
 	return nil

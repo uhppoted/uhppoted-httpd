@@ -44,10 +44,11 @@
       - [x] Validate pwd + pwd2 in JS
       - [x] Validate uid
       - [x] Verify UID+old password
-      - [ ] Update password
+      - [x] Update password
+      - [ ] Serialize updated passwords to file
       - [ ] Confirm that /password out of a session fails miserably
-      - [ ] 'users' page
 
+- [ ] Admin 'users' page
 - [ ] Reload auth.json if changed
 - [ ] Make login cookie expire in 60s
       - Don't check login cookie except for login and

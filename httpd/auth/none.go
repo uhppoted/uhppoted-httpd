@@ -14,15 +14,19 @@ func NewNoneAuthenticator() *None {
 	return &None{}
 }
 
-func (n *None) Verify(uid, pwd string, r *http.Request) error {
-	return nil
-}
-
 func (n *None) Authenticate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (n *None) Authorized(w http.ResponseWriter, r *http.Request, path string) (string, string, bool) {
 	return "-", "-", true
+}
+
+func (n *None) Verify(uid, pwd string, r *http.Request) error {
+	return nil
+}
+
+func (n *None) SetPassword(uid, pwd string, r *http.Request) error {
+	return nil
 }
 
 func (n *None) Logout(w http.ResponseWriter, r *http.Request) {

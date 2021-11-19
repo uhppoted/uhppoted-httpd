@@ -19,6 +19,8 @@ type IAuth interface {
 	Authorized(token, resource string) (string, string, error)
 	GetLoginId(token string) (*uuid.UUID, error)
 	GetSessionId(token string) (*uuid.UUID, error)
+
+	Store(uid, pwd, role string) error
 }
 
 type OpAuth interface {

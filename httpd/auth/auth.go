@@ -31,6 +31,9 @@ type IAuth interface {
 	Authenticate(w http.ResponseWriter, r *http.Request)
 	Logout(w http.ResponseWriter, r *http.Request)
 	Session(r *http.Request) (*session, error)
+
+	SetPassword(uid, pwd string, r *http.Request) error
+
 	Sweep()
 }
 

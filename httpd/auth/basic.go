@@ -40,22 +40,6 @@ func NewBasicAuthenticator(auth auth.IAuth, cookieMaxAge int, stale time.Duratio
 	return &a
 }
 
-func (b *Basic) Verify(uid, pwd string, r *http.Request) error {
-	path := r.URL.Path
-
-	if id, _, ok := b.authorized(r, path); !ok {
-		return types.Unauthorised(fmt.Errorf("Not authorised"), fmt.Errorf("'%v' not authorised for '%v'", uid, path))
-	} else if uid != id {
-		return fmt.Errorf("UID '%v' does not match login ID '%v'", uid, id)
-	}
-
-	if err := b.auth.Validate(uid, pwd); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // NOTE TO SELF: the uhppoted-httpd-login cookie is a single use expiring cookie
 //               intended to (eventually) support opaque login credentials
 func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
@@ -159,6 +143,35 @@ func (b *Basic) Authorized(w http.ResponseWriter, r *http.Request, path string) 
 	}
 
 	return uid, role, true
+}
+
+func (b *Basic) Verify(uid, pwd string, r *http.Request) error {
+	path := r.URL.Path
+
+	if id, _, ok := b.authorized(r, path); !ok {
+		return types.Unauthorised(fmt.Errorf("Not authorised"), fmt.Errorf("'%v' not authorised for '%v'", uid, path))
+	} else if uid != id {
+		return fmt.Errorf("UID '%v' does not match login ID '%v'", uid, id)
+	}
+
+	if err := b.auth.Validate(uid, pwd); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (b *Basic) SetPassword(uid, pwd string, r *http.Request) error {
+	path := r.URL.Path
+
+	id, role, ok := b.authorized(r, path)
+	if !ok {
+		return types.Unauthorised(fmt.Errorf("Not authorised"), fmt.Errorf("'%v' not authorised for '%v'", uid, path))
+	} else if uid != id {
+		return fmt.Errorf("UID '%v' does not match login ID '%v'", uid, id)
+	}
+
+	return b.auth.Store(uid, pwd, role)
 }
 
 func (b *Basic) Logout(w http.ResponseWriter, r *http.Request) {

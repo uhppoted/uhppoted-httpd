@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -83,8 +82,7 @@ func Password(w http.ResponseWriter, r *http.Request, timeout time.Duration, aut
 	defer cancel()
 
 	go func() {
-		_, err := system.UpdateUsers(uid, old, pwd)
-		if err != nil {
+		if err := auth.SetPassword(uid, pwd, r); err != nil {
 			ch <- err
 			return
 		}
