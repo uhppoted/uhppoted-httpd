@@ -4,11 +4,11 @@
 |
 |- 0.1                                                                       # interfaces
 |    |- 0.1.1: <status>                                                      # interface #1
-|    |      |- 0.1.1.1: <type>                                               #    type
-|    |      |- 0.1.1.2: <name>                                               #    name
-|    |      |- 0.1.1.3: <bind>                                               #    bind address
-|    |      |- 0.1.1.4: <broadcast>                                          #    broadcast address
-|    |      |- 0.1.1.5: <listen>                                             #    listen address
+|    |      |- 0.1.1.1: <name>                                               #    name
+|    |      |- 0.1.1.2: <type>                                               #    type
+|    |      |- 0.1.1.3.1: <bind>                                             #    LAN bind address
+|    |      |- 0.1.1.3.2: <broadcast>                                        #    LAN broadcast address
+|    |      |- 0.1.1.3.3: <listen>                                           #    LAN listen address
 |    |
 |    |- ...
 | 

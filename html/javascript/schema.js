@@ -2,11 +2,11 @@ export const schema = {
   interfaces: {
     base: '0.1',
     status: '.0.0',
-    type: '.1',
-    name: '.2',
-    bind: '.3',
-    broadcast: '.4',
-    listen: '.5',
+    name: '.1',
+    type: '.2',
+    bind: '.3.1',
+    broadcast: '.3.2',
+    listen: '.3.3',
 
     regex: /^(0\.1\.[1-9][0-9]*).*$/
   },

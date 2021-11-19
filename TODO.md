@@ -46,9 +46,10 @@
       - [x] Verify UID+old password
       - [x] Update password
       - [x] Serialize updated passwords to file
+      - [ ] Confirm that /password out of a session fails miserably
       - [ ] Hide auth.Local.Users and auth.Local.Resources
       - [ ] Unit test for auth.Local serialization
-      - [ ] Confirm that /password out of a session fails miserably
+      - [ ] Remove debug values from password.html
 
 - [ ] Admin 'users' page
 - [ ] Reload auth.json if changed

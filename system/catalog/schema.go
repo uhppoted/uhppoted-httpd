@@ -15,8 +15,8 @@ type Interfaces struct {
 	Status    Suffix `json:"status"`
 	Created   Suffix `json:"created"`
 	Deleted   Suffix `json:"deleted"`
-	Type      Suffix `json:"type"`
 	Name      Suffix `json:"name"`
+	Type      Suffix `json:"type"`
 	Bind      Suffix `json:"bind"`
 	Broadcast Suffix `json:"broadcast"`
 	Listen    Suffix `json:"listen"`
@@ -126,8 +126,8 @@ var schema = Schema{
 		Status:    InterfaceStatus,
 		Created:   InterfaceCreated,
 		Deleted:   InterfaceDeleted,
-		Type:      InterfaceType,
 		Name:      InterfaceName,
+		Type:      InterfaceType,
 		Bind:      LANBindAddress,
 		Broadcast: LANBroadcastAddress,
 		Listen:    LANListenAddress,
@@ -239,11 +239,11 @@ const LogsOID OID = "0.7"
 const InterfaceStatus Suffix = ".0.0"
 const InterfaceCreated Suffix = ".0.1"
 const InterfaceDeleted Suffix = ".0.2"
-const InterfaceType Suffix = ".1"
-const InterfaceName Suffix = ".2"
-const LANBindAddress Suffix = ".3"
-const LANBroadcastAddress Suffix = ".4"
-const LANListenAddress Suffix = ".5"
+const InterfaceName Suffix = ".1"
+const InterfaceType Suffix = ".2"
+const LANBindAddress Suffix = ".3.1"
+const LANBroadcastAddress Suffix = ".3.2"
+const LANListenAddress Suffix = ".3.3"
 
 const ControllerCreated = ".0.1"
 const ControllerName = ".1"
