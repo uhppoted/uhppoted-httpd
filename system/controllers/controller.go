@@ -46,24 +46,6 @@ type controller struct {
 	created time.Time
 }
 
-const ControllerCreated = catalog.ControllerCreated
-const ControllerName = catalog.ControllerName
-const ControllerDeviceID = catalog.ControllerDeviceID
-const ControllerAddress = catalog.ControllerAddress
-const ControllerAddressConfigured = catalog.ControllerAddressConfigured
-const ControllerAddressStatus = catalog.ControllerAddressStatus
-const ControllerDateTime = catalog.ControllerDateTime
-const ControllerDateTimeSystem = catalog.ControllerDateTimeSystem
-const ControllerDateTimeStatus = catalog.ControllerDateTimeStatus
-const ControllerCards = catalog.ControllerCards
-const ControllerCardsStatus = catalog.ControllerCardsStatus
-const ControllerEvents = catalog.ControllerEvents
-const ControllerEventsStatus = catalog.ControllerEventsStatus
-const ControllerDoor1 = catalog.ControllerDoor1
-const ControllerDoor2 = catalog.ControllerDoor2
-const ControllerDoor3 = catalog.ControllerDoor3
-const ControllerDoor4 = catalog.ControllerDoor4
-
 func (c *Controller) AsObjects() []interface{} {
 	type addr struct {
 		address    string
@@ -188,7 +170,10 @@ func (c *Controller) AsObjects() []interface{} {
 
 	objects := []interface{}{
 		catalog.NewObject(c.OID, status),
+		catalog.NewObject2(c.OID, ControllerStatus, status),
 		catalog.NewObject2(c.OID, ControllerCreated, created),
+		catalog.NewObject2(c.OID, ControllerDeleted, c.deleted),
+
 		catalog.NewObject2(c.OID, ControllerName, name),
 		catalog.NewObject2(c.OID, ControllerDeviceID, deviceID),
 		catalog.NewObject2(c.OID, ControllerAddress, address.address),
@@ -545,6 +530,8 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			now := time.Now()
 			c.deleted = &now
 			objects = append(objects, catalog.NewObject(c.OID, "deleted"))
+			objects = append(objects, catalog.NewObject2(c.OID, ControllerStatus, "deleted"))
+			objects = append(objects, catalog.NewObject2(c.OID, ControllerDeleted, c.deleted))
 
 			catalog.Delete(c.OID)
 		}
@@ -565,6 +552,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			}
 
 			objects = append(objects, catalog.NewObject(c.OID, status))
+			objects = append(objects, catalog.NewObject2(c.OID, ControllerStatus, status))
 		}
 	}
 

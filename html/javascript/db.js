@@ -175,15 +175,15 @@ function interfaces (o) {
 
 function controllers (o) {
   const oid = o.OID
+  const match = oid.match(schema.controllers.regex)
 
-  if (schema.controllers.regex.test(oid)) {
-    if (DB.controllers.has(oid)) {
-      const record = DB.controllers.get(oid)
-      record.status = o.value
-      record.mark = 0
-      return
-    }
+  if (!match || match.length < 2) {
+    return
+  }
 
+  const base = match[1]
+
+  if (!DB.controllers.has(base)) {
     DB.controllers.set(oid, {
       OID: oid,
       created: '',
@@ -197,87 +197,83 @@ function controllers (o) {
       status: o.value,
       mark: 0
     })
-
-    return
   }
 
-  DB.controllers.forEach((v, k) => {
-    if (oid.startsWith(k)) {
-      switch (oid) {
-        case k:
-          v.status = o.value
-          break
+  const v = DB.controllers.get(base)
 
-        case k + '.0.1':
-          v.created = o.value
-          break
+  switch (oid) {
+    case base + schema.controllers.status:
+      v.status = o.value
+      break
 
-        case k + '.1':
-          v.name = o.value
-          break
+    case base + schema.controllers.created:
+      v.created = o.value
+      break
 
-        case k + '.2':
-          v.deviceID = o.value
-          break
+    case base + '.1':
+      v.name = o.value
+      break
 
-        case k + '.3':
-          v.address.address = o.value
-          break
+    case base + '.2':
+      v.deviceID = o.value
+      break
 
-        case k + '.3.1':
-          v.address.configured = o.value
-          break
+    case base + '.3':
+      v.address.address = o.value
+      break
 
-        case k + '.3.2':
-          v.address.status = o.value
-          break
+    case base + '.3.1':
+      v.address.configured = o.value
+      break
 
-        case k + '.4':
-          v.datetime.datetime = o.value
-          break
+    case base + '.3.2':
+      v.address.status = o.value
+      break
 
-        case k + '.4.1':
-          v.datetime.expected = o.value
-          break
+    case base + '.4':
+      v.datetime.datetime = o.value
+      break
 
-        case k + '.4.2':
-          v.datetime.status = o.value
-          break
+    case base + '.4.1':
+      v.datetime.expected = o.value
+      break
 
-        case k + '.5':
-          v.cards.cards = o.value
-          break
+    case base + '.4.2':
+      v.datetime.status = o.value
+      break
 
-        case k + '.5.1':
-          v.cards.status = o.value
-          break
+    case base + '.5':
+      v.cards.cards = o.value
+      break
 
-        case k + '.6':
-          v.events.events = o.value
-          break
+    case base + '.5.1':
+      v.cards.status = o.value
+      break
 
-        case k + '.6.1':
-          v.events.status = o.value
-          break
+    case base + '.6':
+      v.events.events = o.value
+      break
 
-        case k + '.7':
-          v.doors[1] = o.value
-          break
+    case base + '.6.1':
+      v.events.status = o.value
+      break
 
-        case k + '.8':
-          v.doors[2] = o.value
-          break
+    case base + '.7':
+      v.doors[1] = o.value
+      break
 
-        case k + '.9':
-          v.doors[3] = o.value
-          break
+    case base + '.8':
+      v.doors[2] = o.value
+      break
 
-        case k + '.10':
-          v.doors[4] = o.value
-          break
-      }
-    }
-  })
+    case base + '.9':
+      v.doors[3] = o.value
+      break
+
+    case base + '.10':
+      v.doors[4] = o.value
+      break
+  }
 }
 
 function doors (o) {

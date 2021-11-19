@@ -2,8 +2,8 @@ export const schema = {
   interfaces: {
     base: '0.1',
     status: '.0.0',
+    type: '.0.3',
     name: '.1',
-    type: '.2',
     bind: '.3.1',
     broadcast: '.3.2',
     listen: '.3.3',
@@ -13,7 +13,10 @@ export const schema = {
 
   controllers: {
     base: '0.2',
-    regex: /^0\.2\.[1-9][0-9]*$/
+    status: '.0.0',
+    created: '.0.1',
+    deleted: '.0.2',
+    regex: /^(0\.2\.[1-9][0-9]*).*$/
   },
 
   doors: {

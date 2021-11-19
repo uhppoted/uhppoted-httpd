@@ -11,22 +11,29 @@ type Schema struct {
 }
 
 type Interfaces struct {
-	OID       OID    `json:"OID"`
-	Status    Suffix `json:"status"`
-	Created   Suffix `json:"created"`
-	Deleted   Suffix `json:"deleted"`
+	OID OID `json:"OID"`
+
+	Status  Suffix `json:"status"`
+	Created Suffix `json:"created"`
+	Deleted Suffix `json:"deleted"`
+	Type    Suffix `json:"type"`
+
 	Name      Suffix `json:"name"`
-	Type      Suffix `json:"type"`
+	ID        Suffix `json:"ID"`
 	Bind      Suffix `json:"bind"`
 	Broadcast Suffix `json:"broadcast"`
 	Listen    Suffix `json:"listen"`
 }
 
 type Controllers struct {
-	OID               OID    `json:"OID"`
-	Created           Suffix `json:"created"`
+	OID OID `json:"OID"`
+
+	Status  Suffix `json:"status"`
+	Created Suffix `json:"created"`
+	Deleted Suffix `json:"deleted"`
+
 	Name              Suffix `json:"name"`
-	DeviceID          Suffix `json:"deviceId"`
+	DeviceID          Suffix `json:"deviceID"`
 	Address           Suffix `json:"address"`
 	AddressConfigured Suffix `json:"address-configured"`
 	AddressStatus     Suffix `json:"address-status"`
@@ -126,8 +133,9 @@ var schema = Schema{
 		Status:    InterfaceStatus,
 		Created:   InterfaceCreated,
 		Deleted:   InterfaceDeleted,
-		Name:      InterfaceName,
 		Type:      InterfaceType,
+		Name:      InterfaceName,
+		ID:        InterfaceID,
 		Bind:      LANBindAddress,
 		Broadcast: LANBroadcastAddress,
 		Listen:    LANListenAddress,
@@ -135,7 +143,9 @@ var schema = Schema{
 
 	Controllers: Controllers{
 		OID:               ControllersOID,
+		Status:            ControllerStatus,
 		Created:           ControllerCreated,
+		Deleted:           ControllerDeleted,
 		Name:              ControllerName,
 		DeviceID:          ControllerDeviceID,
 		Address:           ControllerAddress,
@@ -239,13 +249,16 @@ const LogsOID OID = "0.7"
 const InterfaceStatus Suffix = ".0.0"
 const InterfaceCreated Suffix = ".0.1"
 const InterfaceDeleted Suffix = ".0.2"
+const InterfaceType Suffix = ".0.3"
 const InterfaceName Suffix = ".1"
-const InterfaceType Suffix = ".2"
+const InterfaceID Suffix = ".2"
 const LANBindAddress Suffix = ".3.1"
 const LANBroadcastAddress Suffix = ".3.2"
 const LANListenAddress Suffix = ".3.3"
 
+const ControllerStatus = ".0.0"
 const ControllerCreated = ".0.1"
+const ControllerDeleted = ".0.2"
 const ControllerName = ".1"
 const ControllerDeviceID = ".2"
 const ControllerAddress = ".3"

@@ -1,8 +1,9 @@
 ## v0.7.x
 
 - [ ] OIDs:
+      - [ ] move 'type' to metadata
       - .0.0 status
-        - [ ] controllers
+        - [x] controllers
         - [ ] cards
         - [ ] doors
         - [ ] groups
@@ -10,10 +11,10 @@
         - [ ] logs
 
       - .0.1 created
-        - [ ] controllers
+        - [x] controllers
 
       - .0.2 deleted
-        - [ ] controllers
+        - [x] controllers
 
 ### IN PROGRESS
 
