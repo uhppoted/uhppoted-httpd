@@ -14,7 +14,7 @@ func (e *HttpdError) Error() string {
 	return e.Err.Error()
 }
 
-func Unauthorized(msg, err error) *HttpdError {
+func Unauthorised(msg, err error) *HttpdError {
 	return &HttpdError{
 		Status: http.StatusUnauthorized,
 		Err:    msg,

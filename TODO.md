@@ -2,7 +2,6 @@
 
 - [ ] OIDs:
       - .0.0 status
-        - [x] interfaces
         - [ ] controllers
         - [ ] cards
         - [ ] doors
@@ -11,10 +10,10 @@
         - [ ] logs
 
       - .0.1 created
-        - [x] interfaces
+        - [ ] controllers
 
       - .0.2 deleted
-        - [x] interfaces
+        - [ ] controllers
 
 ### IN PROGRESS
 
@@ -42,9 +41,8 @@
       - [ ] interfaces
   
 - [ ] Change password
-      - [x] Implement httpd handler
-      - [x] Validate pwd + pwd2
-      - [ ] Validate uid
+      - [x] Validate pwd + pwd2 in JS
+      - [x] Validate uid
       - [ ] Verify UID+old password
       - [ ] Update password
       - [ ] Confirm that /password out of a session fails miserably

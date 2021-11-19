@@ -19,7 +19,6 @@ func Password(w http.ResponseWriter, r *http.Request, timeout time.Duration, aut
 	var uid string
 	var old string
 	var pwd string
-	var pwd2 string
 	var contentType string
 	var acceptsGzip bool
 
@@ -44,7 +43,6 @@ func Password(w http.ResponseWriter, r *http.Request, timeout time.Duration, aut
 		uid = r.FormValue("uid")
 		old = r.FormValue("old")
 		pwd = r.FormValue("pwd")
-		pwd2 = r.FormValue("pwd2")
 
 	case "application/json":
 		blob, err := io.ReadAll(r.Body)
@@ -55,10 +53,9 @@ func Password(w http.ResponseWriter, r *http.Request, timeout time.Duration, aut
 		}
 
 		body := struct {
-			UID  string `json:"uid"`
-			Old  string `json:"old"`
-			Pwd  string `json:"pwd"`
-			Pwd2 string `json:"pwd2"`
+			UID string `json:"uid"`
+			Old string `json:"old"`
+			Pwd string `json:"pwd"`
 		}{}
 
 		if err := json.Unmarshal(blob, &body); err != nil {
@@ -70,18 +67,12 @@ func Password(w http.ResponseWriter, r *http.Request, timeout time.Duration, aut
 		uid = body.Old
 		old = body.Old
 		pwd = body.Pwd
-		pwd2 = body.Pwd2
 	}
 
 	// ... validate
 	if err := auth.Verify(uid, old, r); err != nil {
 		warn(err)
 		http.Error(w, "Invalid user ID or password", http.StatusBadRequest)
-		return
-	}
-
-	if pwd != pwd2 {
-		http.Error(w, "Passwords do not match", http.StatusBadRequest)
 		return
 	}
 

@@ -3,17 +3,25 @@
 import { dismiss, postAsForm } from './uhppoted.js'
 
 export function onPassword (event) {
-  dismiss()
-
   event.preventDefault()
 
+  dismiss()
+
   const referrer = document.referrer
+  const uid = document.getElementById('uid').value
+  const old = document.getElementById('old').value
+  const pwd = document.getElementById('pwd').value
+  const pwd2 = document.getElementById('pwd2').value
+
+  if (pwd !== pwd2) {
+    warning('Passwords do not match')
+    return
+  }
 
   const credentials = {
-    uid: document.getElementById('uid').value,
-    old: document.getElementById('old').value,
-    pwd: document.getElementById('pwd').value,
-    pwd2: document.getElementById('pwd2').value
+    uid: uid,
+    old: old,
+    pwd: pwd
   }
 
   postAsForm('/password', credentials)

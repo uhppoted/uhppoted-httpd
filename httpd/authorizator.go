@@ -109,7 +109,7 @@ func (a *authorizator) CanUpdateInterface(lan auth.Operant, field string, value 
 		}
 
 		if err = a.eval("system", "update::interface", &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -119,7 +119,7 @@ func (a *authorizator) CanUpdateInterface(lan auth.Operant, field string, value 
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::interface %v, field:%v, value:%v", toString(lan), field, value))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanAddController(controller auth.Operant) error {
@@ -137,7 +137,7 @@ func (a *authorizator) CanAddController(controller auth.Operant) error {
 		}
 
 		if err := a.eval("system", "add::controller", &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -147,7 +147,7 @@ func (a *authorizator) CanAddController(controller auth.Operant) error {
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::controller %s", toString(controller)))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanUpdateController(controller auth.Operant, field string, value interface{}) error {
@@ -167,7 +167,7 @@ func (a *authorizator) CanUpdateController(controller auth.Operant, field string
 		}
 
 		if err = a.eval("system", "update::controller", &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -177,7 +177,7 @@ func (a *authorizator) CanUpdateController(controller auth.Operant, field string
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::controller %v, field:%v, value:%v", controller, field, value))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanDeleteController(controller auth.Operant) error {
@@ -195,7 +195,7 @@ func (a *authorizator) CanDeleteController(controller auth.Operant) error {
 		}
 
 		if err := a.eval("system", "delete::controller", &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -205,7 +205,7 @@ func (a *authorizator) CanDeleteController(controller auth.Operant) error {
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("delete::controller %s", toString(controller)))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanAddCard(card auth.Operant) error {
@@ -223,7 +223,7 @@ func (a *authorizator) CanAddCard(card auth.Operant) error {
 		}
 
 		if err := a.eval("cards", "add::card", &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -233,7 +233,7 @@ func (a *authorizator) CanAddCard(card auth.Operant) error {
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::card %s", toString(card)))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanUpdateCard(card auth.Operant, field string, value interface{}) error {
@@ -253,7 +253,7 @@ func (a *authorizator) CanUpdateCard(card auth.Operant, field string, value inte
 		}
 
 		if err = a.eval("cards", "update::card", &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -263,7 +263,7 @@ func (a *authorizator) CanUpdateCard(card auth.Operant, field string, value inte
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::card %v, field:%v, value:%v", card, field, value))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanDeleteCard(card auth.Operant) error {
@@ -293,7 +293,7 @@ func (a *authorizator) CanAddDoor(door auth.Operant) error {
 		}
 
 		if err := a.eval("doors", "add::door", &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -303,7 +303,7 @@ func (a *authorizator) CanAddDoor(door auth.Operant) error {
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::door %s", toString(door)))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanUpdateDoor(door auth.Operant, field string, value interface{}) error {
@@ -323,7 +323,7 @@ func (a *authorizator) CanUpdateDoor(door auth.Operant, field string, value inte
 		}
 
 		if err = a.eval("doors", "update::door", &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -333,7 +333,7 @@ func (a *authorizator) CanUpdateDoor(door auth.Operant, field string, value inte
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("update::door %v, field:%v, value:%v", door, field, value))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanDeleteDoor(door auth.Operant) error {
@@ -351,7 +351,7 @@ func (a *authorizator) CanDeleteDoor(door auth.Operant) error {
 		}
 
 		if err := a.eval("doors", "delete::door", &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -361,7 +361,7 @@ func (a *authorizator) CanDeleteDoor(door auth.Operant) error {
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("delete::door %s", toString(door)))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanAddGroup(group auth.Operant) error {
@@ -395,7 +395,7 @@ func (a *authorizator) CanUpdateGroup(group auth.Operant, field string, value in
 		}
 
 		if err = a.eval(ruleset, op, &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -405,7 +405,7 @@ func (a *authorizator) CanUpdateGroup(group auth.Operant, field string, value in
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("%v %v, field:%v, value:%v", op, group, field, value))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanDeleteGroup(group auth.Operant) error {
@@ -430,7 +430,7 @@ func (a *authorizator) evaluate(ruleset, op string, operant auth.Operant, m map[
 		}
 
 		if err := a.eval(ruleset, op, &r, m); err != nil {
-			return types.Unauthorized(msg, err)
+			return types.Unauthorised(msg, err)
 		}
 
 		if r.Allow && !r.Refuse {
@@ -440,7 +440,7 @@ func (a *authorizator) evaluate(ruleset, op string, operant auth.Operant, m map[
 		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("%v %v", op, toString(operant)))
 	}
 
-	return types.Unauthorized(msg, err)
+	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) eval(ruleset string, op string, r *result, m map[string]interface{}) error {
