@@ -21,6 +21,7 @@ type IAuth interface {
 	GetSessionId(token string) (*uuid.UUID, error)
 
 	Store(uid, pwd, role string) error
+	Save() error
 }
 
 type OpAuth interface {

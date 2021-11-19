@@ -45,7 +45,9 @@
       - [x] Validate uid
       - [x] Verify UID+old password
       - [x] Update password
-      - [ ] Serialize updated passwords to file
+      - [x] Serialize updated passwords to file
+      - [ ] Hide auth.Local.Users and auth.Local.Resources
+      - [ ] Unit test for auth.Local serialization
       - [ ] Confirm that /password out of a session fails miserably
 
 - [ ] Admin 'users' page

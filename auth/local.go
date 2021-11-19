@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"sync"
@@ -22,14 +23,15 @@ import (
 const SALT_LENGTH = 32
 
 type Local struct {
-	Key           string           `json:"key"`
-	Users         map[string]*user `json:"users"`
-	Resources     []resource       `json:"resources"`
+	Key       string           `json:"key"`
+	Users     map[string]*user `json:"users"`
+	Resources []resource       `json:"resources"`
+
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
+	file          string
 
-	guard    sync.Mutex
-	resource []resource
+	guard sync.Mutex
 }
 
 type salt []byte
@@ -87,6 +89,18 @@ func (s *salt) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
+func (r resource) MarshalJSON() ([]byte, error) {
+	object := struct {
+		Path       string `json:"path"`
+		Authorised string `json:"authorised"`
+	}{
+		Path:       fmt.Sprintf("%v", r.Path),
+		Authorised: fmt.Sprintf("%v", r.Authorised),
+	}
+
+	return json.Marshal(object)
+}
+
 func (r *resource) UnmarshalJSON(bytes []byte) error {
 	x := struct {
 		Path       string `json:"path"`
@@ -115,7 +129,10 @@ func (r *resource) UnmarshalJSON(bytes []byte) error {
 }
 
 func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
-	provider := Local{}
+	provider := Local{
+		file: file,
+	}
+
 	if err := provider.load(file); err != nil {
 		return nil, err
 	}
@@ -458,6 +475,37 @@ func (p *Local) load(file string) error {
 	}
 
 	return nil
+}
+
+func (p *Local) Save() error {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	b, err := json.MarshalIndent(p, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	tmp, err := os.CreateTemp("", "uhppoted-auth.*")
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(b); err != nil {
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(p.file), 0770); err != nil {
+		return err
+	}
+
+	return os.Rename(tmp.Name(), p.file)
 }
 
 // NOTE: interim file watcher implementation pending fsnotify in Go v?.?

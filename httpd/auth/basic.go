@@ -171,7 +171,11 @@ func (b *Basic) SetPassword(uid, pwd string, r *http.Request) error {
 		return fmt.Errorf("UID '%v' does not match login ID '%v'", uid, id)
 	}
 
-	return b.auth.Store(uid, pwd, role)
+	if err := b.auth.Store(uid, pwd, role); err != nil {
+		return err
+	}
+
+	return b.auth.Save()
 }
 
 func (b *Basic) Logout(w http.ResponseWriter, r *http.Request) {
