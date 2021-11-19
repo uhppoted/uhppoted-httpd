@@ -12,7 +12,6 @@ import (
 	"sync"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -82,24 +81,11 @@ func (cc *ControllerSet) AsObjects() []interface{} {
 }
 
 func (cc *ControllerSet) Load(file string) error {
-	type controller struct {
-		OID      string           `json:"OID"`
-		Name     *types.Name      `json:"name,omitempty"`
-		DeviceID *uint32          `json:"device-id,omitempty"`
-		Address  *core.Address    `json:"address,omitempty"`
-		Doors    map[uint8]string `json:"doors"`
-		TimeZone *string          `json:"timezone,omitempty"`
-		Created  time.Time        `json:"created"`
-	}
-
 	blob := struct {
 		Controllers []json.RawMessage `json:"controllers"`
-		LAN         *LAN              `json:"LAN"`
+		LAN         json.RawMessage   `json:"LAN"`
 	}{
 		Controllers: []json.RawMessage{},
-		LAN: &LAN{
-			status: types.StatusOk,
-		},
 	}
 
 	bytes, err := ioutil.ReadFile(file)
@@ -113,14 +99,10 @@ func (cc *ControllerSet) Load(file string) error {
 
 	cc.file = file
 	cc.Controllers = []*Controller{}
-	cc.LAN = &LAN{
-		OID:              blob.LAN.OID,
-		Name:             blob.LAN.Name,
-		BindAddress:      blob.LAN.BindAddress,
-		BroadcastAddress: blob.LAN.BroadcastAddress,
-		ListenAddress:    blob.LAN.ListenAddress,
-		Debug:            blob.LAN.Debug,
-		status:           types.StatusOk,
+
+	var lan LAN
+	if err := lan.deserialize(blob.LAN); err == nil {
+		cc.LAN = &lan
 	}
 
 	for _, v := range blob.Controllers {
@@ -130,7 +112,10 @@ func (cc *ControllerSet) Load(file string) error {
 		}
 	}
 
-	catalog.PutInterface(cc.LAN.OID)
+	if cc.LAN != nil {
+		catalog.PutInterface(cc.LAN.OID)
+	}
+
 	for _, c := range cc.Controllers {
 		if c.DeviceID != nil && *c.DeviceID != 0 {
 			catalog.PutController(*c.DeviceID, c.OID)
@@ -174,15 +159,20 @@ func (cc *ControllerSet) Save() error {
 
 	serializable := struct {
 		Controllers []json.RawMessage `json:"controllers"`
-		LAN         *LAN              `json:"LAN"`
+		LAN         json.RawMessage   `json:"LAN"`
 	}{
 		Controllers: []json.RawMessage{},
-		LAN:         cc.LAN.clone(),
+	}
+
+	if cc.LAN != nil {
+		if bytes, err := cc.LAN.serialize(); err == nil && bytes != nil {
+			serializable.LAN = bytes
+		}
 	}
 
 	for _, c := range cc.Controllers {
-		if record, err := c.serialize(); err == nil && record != nil {
-			serializable.Controllers = append(serializable.Controllers, record)
+		if bytes, err := c.serialize(); err == nil && bytes != nil {
+			serializable.Controllers = append(serializable.Controllers, bytes)
 		}
 	}
 

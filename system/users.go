@@ -1,18 +1,22 @@
 package system
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/auth"
+//	"github.com/uhppoted/uhppoted-httpd/auth"
+//"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func UpdateUsers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+func UpdateUsers(uid, old, pwd string) (interface{}, error) {
 	sys.Lock()
 
 	defer sys.Unlock()
 
-	//	fmt.Printf(">>>>>>>>> UID:  %v\n", m["uid"])
-	//	fmt.Printf(">>>>>>>>> OLD:  %v\n", m["old"])
-	//	fmt.Printf(">>>>>>>>> PWD:  %v\n", m["pwd"])
-	//	fmt.Printf(">>>>>>>>> PWD2: %v\n", m["pwd2"])
+	//	if uid == "" || uid != auth.UID() {
+	//		return nil, types.BadRequest(fmt.Errorf("Invalid user ID or password"), fmt.Errorf("update password: UID does not match session user"))
+	//	}
+	//
+	//	if err := auth.Verify(uid, old); err != nil {
+	//		return nil, types.BadRequest(fmt.Errorf("Invalid user ID or password"), fmt.Errorf("update password: invalid UID and/or PWD for %va, auth.UID()"))
+	//	}
 
 	return struct {
 	}{}, nil

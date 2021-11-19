@@ -26,6 +26,7 @@ type session struct {
 }
 
 type IAuth interface {
+	Verify(uid, pwd string, r *http.Request) error
 	Authorized(w http.ResponseWriter, r *http.Request, path string) (string, string, bool)
 	Authenticate(w http.ResponseWriter, r *http.Request)
 	Logout(w http.ResponseWriter, r *http.Request)

@@ -1,6 +1,7 @@
 import { busy, unbusy, warning, postAsJSON } from './uhppoted.js'
 import * as system from './system.js'
 import { DB } from './db.js'
+import { schema } from './schema.js'
 
 export function refreshed () {
   DB.interfaces.forEach(c => {
@@ -12,10 +13,10 @@ function updateFromDB (oid, record) {
   const section = document.querySelector(`[data-oid="${oid}"]`)
 
   if (section) {
-    const name = section.querySelector(`[data-oid="${oid}.2"]`)
-    const bind = section.querySelector(`[data-oid="${oid}.3"]`)
-    const broadcast = section.querySelector(`[data-oid="${oid}.4"]`)
-    const listen = section.querySelector(`[data-oid="${oid}.5"]`)
+    const name = section.querySelector(`[data-oid="${oid}${schema.interfaces.name}"]`)
+    const bind = section.querySelector(`[data-oid="${oid}${schema.interfaces.bind}"]`)
+    const broadcast = section.querySelector(`[data-oid="${oid}${schema.interfaces.broadcast}"]`)
+    const listen = section.querySelector(`[data-oid="${oid}${schema.interfaces.listen}"]`)
 
     update(name, record.name)
     update(bind, record.bind)

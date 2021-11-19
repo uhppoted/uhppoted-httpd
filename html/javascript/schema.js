@@ -1,7 +1,14 @@
 export const schema = {
   interfaces: {
     base: '0.1',
-    regex: /^0\.1\.[1-9][0-9]*$/
+    status: '.0.0',
+    type: '.1',
+    name: '.2',
+    bind: '.3',
+    broadcast: '.4',
+    listen: '.5',
+
+    regex: /^(0\.1\.[1-9][0-9]*).*$/
   },
 
   controllers: {

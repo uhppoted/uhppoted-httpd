@@ -14,6 +14,10 @@ func NewNoneAuthenticator() *None {
 	return &None{}
 }
 
+func (n *None) Verify(uid, pwd string, r *http.Request) error {
+	return nil
+}
+
 func (n *None) Authenticate(w http.ResponseWriter, r *http.Request) {
 }
 

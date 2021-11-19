@@ -30,12 +30,8 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 
 	switch path {
 	case "/password":
-		if auth, err := NewAuthorizator(uid, role, "password", d.grule.users); err != nil {
-			warn(err)
-			http.Error(w, "internal system error", http.StatusInternalServerError)
-		} else {
-			users.Password(w, r, d.timeout, auth)
-		}
+		users.Password(w, r, d.timeout, d.auth)
+		return
 
 	case "/system":
 		if auth, err := NewAuthorizator(uid, role, "system", d.grule.system); err != nil {
@@ -44,6 +40,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		} else {
 			controllers.Post(w, r, d.timeout, auth)
 		}
+		return
 
 	case "/doors":
 		if auth, err := NewAuthorizator(uid, role, "doors", d.grule.doors); err != nil {
@@ -52,6 +49,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		} else {
 			doors.Post(w, r, d.timeout, auth)
 		}
+		return
 
 	case "/cards":
 		if auth, err := NewAuthorizator(uid, role, "cards", d.grule.cards); err != nil {
@@ -60,6 +58,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		} else {
 			cards.Post(w, r, d.timeout, auth)
 		}
+		return
 
 	case "/groups":
 		if auth, err := NewAuthorizator(uid, role, "groups", d.grule.groups); err != nil {
@@ -68,8 +67,10 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		} else {
 			groups.Post(w, r, d.timeout, auth)
 		}
+		return
 
 	default:
 		http.Error(w, "API not implemented", http.StatusNotImplemented)
+		return
 	}
 }

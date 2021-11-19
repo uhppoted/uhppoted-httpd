@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -29,7 +30,10 @@ type LAN struct {
 	ListenAddress    core.ListenAddr    `json:"listen-address"`
 	Debug            bool               `json:"debug"`
 
-	status types.Status
+	status       types.Status
+	created      time.Time
+	deleted      *time.Time
+	unconfigured bool
 }
 
 type device struct {
@@ -40,16 +44,6 @@ type device struct {
 	events   *uint32
 	acl      types.Status
 }
-
-const LANName = catalog.InterfaceName
-const LANType = catalog.InterfaceType
-const LANBindAddress = catalog.LANBindAddress
-const LANBroadcastAddress = catalog.LANBroadcastAddress
-const LANListenAddress = catalog.LANListenAddress
-const DoorDelay = catalog.DoorDelay
-const DoorDelayModified = catalog.DoorDelayModified
-const DoorControl = catalog.DoorControl
-const DoorControlModified = catalog.DoorControlModified
 
 var cache = struct {
 	cache map[uint32]device
@@ -64,7 +58,8 @@ func (l *LAN) String() string {
 
 func (l *LAN) AsObjects() []interface{} {
 	objects := []interface{}{
-		catalog.NewObject(l.OID, l.status),
+		catalog.NewObject(l.OID, types.StatusUncertain),
+		catalog.NewObject2(l.OID, Status, l.status),
 		catalog.NewObject2(l.OID, LANType, "LAN"),
 		catalog.NewObject2(l.OID, LANName, l.Name),
 		catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress),
@@ -101,7 +96,10 @@ func (l *LAN) clone() *LAN {
 			ListenAddress:    l.ListenAddress,
 			Debug:            l.Debug,
 
-			status: l.status,
+			status:       l.status,
+			created:      l.created,
+			deleted:      l.deleted,
+			unconfigured: l.unconfigured,
 		}
 
 		return &lan
@@ -589,6 +587,58 @@ func (l *LAN) synchDoors(controllers []*Controller) []catalog.Object {
 	}
 
 	return objects
+}
+
+func (l *LAN) serialize() ([]byte, error) {
+	if l == nil || l.deleted != nil || l.unconfigured {
+		return nil, nil
+	}
+
+	record := struct {
+		OID              catalog.OID        `json:"OID"`
+		Name             string             `json:"name,omitempty"`
+		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
+		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
+		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
+		Created          types.DateTime     `json:"created,omitempty"`
+	}{
+		OID:              l.OID,
+		Name:             l.Name,
+		BindAddress:      l.BindAddress,
+		BroadcastAddress: l.BroadcastAddress,
+		ListenAddress:    l.ListenAddress,
+		Created:          types.DateTime(l.created),
+	}
+
+	return json.MarshalIndent(record, "", "  ")
+}
+
+func (l *LAN) deserialize(bytes []byte) error {
+	created := types.DateTime(time.Now())
+	record := struct {
+		OID              catalog.OID        `json:"OID"`
+		Name             string             `json:"name,omitempty"`
+		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
+		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
+		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
+		Created          *types.DateTime    `json:"created,omitempty"`
+	}{
+		Created: &created,
+	}
+
+	if err := json.Unmarshal(bytes, &record); err != nil {
+		return err
+	}
+
+	l.OID = record.OID
+	l.Name = record.Name
+	l.BindAddress = record.BindAddress
+	l.BroadcastAddress = record.BroadcastAddress
+	l.ListenAddress = record.ListenAddress
+	l.status = types.StatusOk
+	l.created = time.Time(*record.Created)
+
+	return nil
 }
 
 func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {

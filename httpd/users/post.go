@@ -10,12 +10,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Password(w http.ResponseWriter, r *http.Request, timeout time.Duration, auth auth.OpAuth) {
+func Password(w http.ResponseWriter, r *http.Request, timeout time.Duration, auth auth.IAuth) {
 	var uid string
 	var old string
 	var pwd string
@@ -73,6 +73,18 @@ func Password(w http.ResponseWriter, r *http.Request, timeout time.Duration, aut
 		pwd2 = body.Pwd2
 	}
 
+	// ... validate
+	if err := auth.Verify(uid, old, r); err != nil {
+		warn(err)
+		http.Error(w, "Invalid user ID or password", http.StatusBadRequest)
+		return
+	}
+
+	if pwd != pwd2 {
+		http.Error(w, "Passwords do not match", http.StatusBadRequest)
+		return
+	}
+
 	// ... update users
 	ch := make(chan error)
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
@@ -80,14 +92,7 @@ func Password(w http.ResponseWriter, r *http.Request, timeout time.Duration, aut
 	defer cancel()
 
 	go func() {
-		rq := map[string]interface{}{
-			"uid":  uid,
-			"old":  old,
-			"pwd":  pwd,
-			"pwd2": pwd2,
-		}
-
-		_, err := system.UpdateUsers(rq, auth)
+		_, err := system.UpdateUsers(uid, old, pwd)
 		if err != nil {
 			ch <- err
 			return

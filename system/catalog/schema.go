@@ -12,6 +12,9 @@ type Schema struct {
 
 type Interfaces struct {
 	OID       OID    `json:"OID"`
+	Status    Suffix `json:"status"`
+	Created   Suffix `json:"created"`
+	Deleted   Suffix `json:"deleted"`
 	Type      Suffix `json:"type"`
 	Name      Suffix `json:"name"`
 	Bind      Suffix `json:"bind"`
@@ -120,6 +123,9 @@ func GetSchema() Schema {
 var schema = Schema{
 	Interfaces: Interfaces{
 		OID:       InterfacesOID,
+		Status:    InterfaceStatus,
+		Created:   InterfaceCreated,
+		Deleted:   InterfaceDeleted,
 		Type:      InterfaceType,
 		Name:      InterfaceName,
 		Bind:      LANBindAddress,
@@ -230,6 +236,9 @@ const GroupsOID OID = "0.5"
 const EventsOID OID = "0.6"
 const LogsOID OID = "0.7"
 
+const InterfaceStatus Suffix = ".0.0"
+const InterfaceCreated Suffix = ".0.1"
+const InterfaceDeleted Suffix = ".0.2"
 const InterfaceType Suffix = ".1"
 const InterfaceName Suffix = ".2"
 const LANBindAddress Suffix = ".3"

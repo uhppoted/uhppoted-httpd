@@ -40,7 +40,7 @@ export function onPassword (event) {
       }
     })
     .catch(function (err) {
-      warning(`Error changing password (${err.message.toLowerCase()})`)
+      warning(`${err.message}`)
     })
 }
 

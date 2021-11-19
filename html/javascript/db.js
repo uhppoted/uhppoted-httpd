@@ -123,50 +123,54 @@ function object (o) {
 
 function interfaces (o) {
   const oid = o.OID
+  const match = oid.match(schema.interfaces.regex)
 
-  if (schema.interfaces.regex.test(oid)) {
-    if (!DB.interfaces.has(oid)) {
-      DB.interfaces.set(oid, {
-        OID: oid,
-        type: 'LAN',
-        name: 'LAN',
-        bind: '',
-        broadcast: '',
-        listen: '',
-
-        status: o.value,
-        mark: 0
-      })
-
-      return
-    }
+  if (!match || match.length < 2) {
+    return
   }
 
-  DB.interfaces.forEach((v, k) => {
-    if (oid.startsWith(k)) {
-      switch (oid) {
-        case k + '.1':
-          v.type = o.value
-          break
+  const base = match[1]
 
-        case k + '.2':
-          v.name = o.value
-          break
+  if (!DB.interfaces.has(base)) {
+    DB.interfaces.set(oid, {
+      OID: oid,
+      type: 'LAN',
+      name: 'LAN',
+      bind: '',
+      broadcast: '',
+      listen: '',
+      status: '',
+      mark: 0
+    })
+  }
 
-        case k + '.3':
-          v.bind = o.value
-          break
+  const v = DB.interfaces.get(base)
 
-        case k + '.4':
-          v.broadcast = o.value
-          break
+  switch (oid) {
+    case base + schema.interfaces.status:
+      v.status = o.value
+      break
 
-        case k + '.5':
-          v.listen = o.value
-          break
-      }
-    }
-  })
+    case base + schema.interfaces.type:
+      v.type = o.value
+      break
+
+    case base + schema.interfaces.name:
+      v.name = o.value
+      break
+
+    case base + schema.interfaces.bind:
+      v.bind = o.value
+      break
+
+    case base + schema.interfaces.broadcast:
+      v.broadcast = o.value
+      break
+
+    case base + schema.interfaces.listen:
+      v.listen = o.value
+      break
+  }
 }
 
 function controllers (o) {

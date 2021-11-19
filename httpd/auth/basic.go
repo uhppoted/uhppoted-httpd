@@ -39,6 +39,82 @@ func NewBasicAuthenticator(auth auth.IAuth, cookieMaxAge int, stale time.Duratio
 	return &a
 }
 
+func (b *Basic) Verify(uid, pwd string, r *http.Request) error {
+	return fmt.Errorf("NOT IMPLEMENTED")
+	// if err := b.validateLoginCookie(r); err != nil {
+	// 	warn(err)
+	// 	b.unauthenticated(w, r)
+	// 	return
+	// }
+
+	// var sessionId = uuid.New()
+	// var uid string
+	// var pwd string
+	// var contentType string
+
+	// for k, h := range r.Header {
+	// 	if strings.TrimSpace(strings.ToLower(k)) == "content-type" {
+	// 		for _, v := range h {
+	// 			contentType = strings.TrimSpace(strings.ToLower(v))
+	// 		}
+	// 	}
+	// }
+
+	// switch contentType {
+	// case "application/x-www-form-urlencoded":
+	// 	uid = r.FormValue("uid")
+	// 	pwd = r.FormValue("pwd")
+
+	// case "application/json":
+	// 	blob, err := ioutil.ReadAll(r.Body)
+	// 	if err != nil {
+	// 		warn(err)
+	// 		http.Error(w, "Error reading request", http.StatusInternalServerError)
+	// 		return
+	// 	}
+
+	// 	body := struct {
+	// 		UserId   string `json:"uid"`
+	// 		Password string `json:"pwd"`
+	// 	}{}
+
+	// 	if err := json.Unmarshal(blob, &body); err != nil {
+	// 		warn(err)
+	// 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	// 		return
+	// 	}
+
+	// 	uid = body.UserId
+	// 	pwd = body.Password
+	// }
+
+	// token, err := b.auth.Authorize(uid, pwd, sessionId)
+	// if err != nil {
+	// 	warn(err)
+	// 	http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+	// 	return
+	// }
+
+	// cookie := http.Cookie{
+	// 	Name:     SessionCookie,
+	// 	Value:    token,
+	// 	Path:     "/",
+	// 	MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),
+	// 	HttpOnly: true,
+	// 	SameSite: http.SameSiteStrictMode,
+	// 	//	Secure:   true,
+	// }
+
+	// b.sessions[sessionId] = &session{
+	// 	id:      sessionId,
+	// 	touched: time.Now(),
+
+	// 	User: uid,
+	// }
+
+	// http.SetCookie(w, &cookie)
+}
+
 // NTS: the uhppoted-httpd-login cookie is a single use expiring cookie intended to
 //      (eventually) support opaque login credentials
 func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
