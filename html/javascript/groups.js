@@ -56,7 +56,7 @@ function realize (groups) {
 
   const doors = new Map([...DB.doors.values()]
     .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
-    .sort((p, q) => p.index - q.index)
+    .sort((p, q) => p.created.localeCompare(q.created))
     .map(o => [o.OID, o]))
 
   // ... columns
@@ -102,7 +102,7 @@ function realize (groups) {
     const surplus = [...cols].filter(([k]) => !doors.has(k))
 
     missing.forEach(o => {
-      const door = o.OID.match(schema.doors.regex)[1]
+      const door = o.OID.match(schema.doors.regex)[2]
       const template = document.querySelector('#door')
 
       const uuid = row.id

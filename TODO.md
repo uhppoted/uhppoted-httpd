@@ -6,21 +6,21 @@
 
       - .0.0 status
         - [ ] cards
-        - [ ] doors
+        - [x] doors
         - [ ] groups
         - [ ] events
         - [ ] logs
 
       - .0.1 created
         - [ ] cards
-        - [ ] doors
+        - [x] doors
         - [ ] groups
         - [ ] events
         - [ ] logs
 
       - .0.2 deleted
         - [ ] cards
-        - [ ] doors
+        - [x] doors
         - [ ] groups
         - [ ] events
         - [ ] logs

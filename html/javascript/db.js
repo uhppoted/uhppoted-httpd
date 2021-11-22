@@ -278,15 +278,15 @@ function controllers (o) {
 
 function doors (o) {
   const oid = o.OID
+  const match = oid.match(schema.doors.regex)
 
-  if (schema.doors.regex.test(oid)) {
-    if (DB.doors.has(oid)) {
-      const record = DB.doors.get(oid)
-      record.status = o.value
-      record.mark = 0
-      return
-    }
+  if (!match || match.length < 2) {
+    return
+  }
 
+  const base = match[1]
+
+  if (!DB.doors.has(base)) {
     DB.doors.set(oid, {
       OID: oid,
       created: '',
@@ -297,78 +297,69 @@ function doors (o) {
       delay: { delay: '', configured: '', status: 'unknown', err: '' },
       mode: { mode: '', configured: '', status: 'unknown', err: '' },
       status: o.value,
-      index: 0,
       mark: 0
     })
-
-    return
   }
 
-  DB.doors.forEach((v, k) => {
-    if (oid.startsWith(k)) {
-      switch (oid) {
-        case k:
-          v.status = o.value
-          break
+  const v = DB.doors.get(base)
 
-        case k + '.0.1':
-          v.created = o.value
-          break
+  switch (oid) {
+    case base + schema.doors.status:
+      v.status = o.value
+      break
 
-        case k + '.0.2.2':
-          v.controller = o.value
-          break
+    case base + schema.doors.created:
+      v.created = o.value
+      break
 
-        case k + '.0.2.3':
-          v.deviceID = o.value
-          break
+    case base + '.0.2.2':
+      v.controller = o.value
+      break
 
-        case k + '.0.2.4':
-          v.door = o.value
-          break
+    case base + '.0.2.3':
+      v.deviceID = o.value
+      break
 
-        case k + '.1':
-          v.name = o.value
-          break
+    case base + '.0.2.4':
+      v.door = o.value
+      break
 
-        case k + '.2':
-          v.delay.delay = o.value
-          break
+    case base + '.1':
+      v.name = o.value
+      break
 
-        case k + '.2.1':
-          v.delay.status = o.value
-          break
+    case base + '.2':
+      v.delay.delay = o.value
+      break
 
-        case k + '.2.2':
-          v.delay.configured = o.value
-          break
+    case base + '.2.1':
+      v.delay.status = o.value
+      break
 
-        case k + '.2.3':
-          v.delay.err = o.value
-          break
+    case base + '.2.2':
+      v.delay.configured = o.value
+      break
 
-        case k + '.3':
-          v.mode.mode = o.value
-          break
+    case base + '.2.3':
+      v.delay.err = o.value
+      break
 
-        case k + '.3.1':
-          v.mode.status = o.value
-          break
+    case base + '.3':
+      v.mode.mode = o.value
+      break
 
-        case k + '.3.2':
-          v.mode.configured = o.value
-          break
+    case base + '.3.1':
+      v.mode.status = o.value
+      break
 
-        case k + '.3.3':
-          v.mode.err = o.value
-          break
+    case base + '.3.2':
+      v.mode.configured = o.value
+      break
 
-        case k + '.4':
-          v.index = o.value
-          break
-      }
-    }
-  })
+    case base + '.3.3':
+      v.mode.err = o.value
+      break
+  }
 }
 
 function cards (o) {

@@ -51,8 +51,12 @@ type Controllers struct {
 }
 
 type Doors struct {
-	OID               OID    `json:"OID"`
-	Created           Suffix `json:"created"`
+	OID OID `json:"OID"`
+
+	Status  Suffix `json:"status"`
+	Created Suffix `json:"created"`
+	Deleted Suffix `json:"deleted"`
+
 	ControllerOID     Suffix `json:"controller-OID"`
 	ControllerCreated Suffix `json:"controller-created"`
 	ControllerName    Suffix `json:"controller-name"`
@@ -129,10 +133,12 @@ func GetSchema() Schema {
 
 var schema = Schema{
 	Interfaces: Interfaces{
-		OID:       InterfacesOID,
-		Status:    InterfaceStatus,
-		Created:   InterfaceCreated,
-		Deleted:   InterfaceDeleted,
+		OID: InterfacesOID,
+
+		Status:  InterfaceStatus,
+		Created: InterfaceCreated,
+		Deleted: InterfaceDeleted,
+
 		Type:      InterfaceType,
 		Name:      InterfaceName,
 		ID:        InterfaceID,
@@ -142,10 +148,12 @@ var schema = Schema{
 	},
 
 	Controllers: Controllers{
-		OID:               ControllersOID,
-		Status:            ControllerStatus,
-		Created:           ControllerCreated,
-		Deleted:           ControllerDeleted,
+		OID: ControllersOID,
+
+		Status:  ControllerStatus,
+		Created: ControllerCreated,
+		Deleted: ControllerDeleted,
+
 		Name:              ControllerName,
 		DeviceID:          ControllerDeviceID,
 		Address:           ControllerAddress,
@@ -165,8 +173,12 @@ var schema = Schema{
 	},
 
 	Doors: Doors{
-		OID:               DoorsOID,
-		Created:           DoorCreated,
+		OID: DoorsOID,
+
+		Status:  DoorStatus,
+		Created: DoorCreated,
+		Deleted: DoorDeleted,
+
 		ControllerOID:     DoorControllerOID,
 		ControllerCreated: DoorControllerCreated,
 		ControllerName:    DoorControllerName,
@@ -276,7 +288,9 @@ const ControllerDoor2 = ".8"
 const ControllerDoor3 = ".9"
 const ControllerDoor4 = ".10"
 
+const DoorStatus = ".0.0"
 const DoorCreated = ".0.1"
+const DoorDeleted = ".0.2"
 const DoorControllerOID = ".0.2"
 const DoorControllerCreated = ".0.2.1"
 const DoorControllerName = ".0.2.2"

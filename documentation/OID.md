@@ -48,13 +48,15 @@
 |
 |- 0.3                                                                       # doors
 |    |- 0.3.1: <status>                                                      # door #1
-|    |      |- 0.3.1.0:                                                      #
-|    |      |        |- 0.3.1.0.1: <created>                                 #    created date/time
-|    |      |        |- 0.3.1.0.2: <controller>                              #    associated controller OID
-|    |      |                   |- 0.3.1.0.2.1: <created>                    #               controller created date/time
-|    |      |                   |- 0.3.1.0.2.2: <name>                       #               controller name
-|    |      |                   |- 0.3.1.0.2.3: <deviceID>                   #               controller serial number
-|    |      |                   |- 0.3.1.0.2.4: <door>                       #               controller door number
+|    |      |- 0.3.1.0: <metadata>                                           #    metadata
+|    |      |        |- 0.3.1.0.0: <status>                                  #       current status
+|    |      |        |- 0.3.1.0.1: <created>                                 #       created date/time
+|    |      |        |- 0.3.1.0.2: <deleted>                                 #       deleted date/time
+|    |      |        |- 0.3.1.0.3: <controller>                              #       associated controller OID
+|    |      |                   |- 0.3.1.0.3.1: <created>                    #               controller created date/time
+|    |      |                   |- 0.3.1.0.3.2: <name>                       #               controller name
+|    |      |                   |- 0.3.1.0.3.3: <deviceID>                   #               controller serial number
+|    |      |                   |- 0.3.1.0.3.4: <door>                       #               controller door number
 |    |      |                                                                #
 |    |      |- 0.3.1.1: <name>                                               #    name
 |    |      |- 0.3.1.2: <delay>                                              #    door open delay value

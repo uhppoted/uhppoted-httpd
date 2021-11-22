@@ -21,7 +21,10 @@ export const schema = {
 
   doors: {
     base: '0.3',
-    regex: /^0\.3\.([1-9][0-9]*)$/
+    status: '.0.0',
+    created: '.0.1',
+    deleted: '.0.2',
+    regex: /^(0\.3\.([1-9][0-9]*)).*$/
   },
 
   cards: {

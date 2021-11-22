@@ -28,25 +28,6 @@ type Door struct {
 
 var created = time.Now()
 
-const DoorCreated = catalog.DoorCreated
-const DoorControllerOID = catalog.DoorControllerOID
-const DoorControllerCreated = catalog.DoorControllerCreated
-const DoorControllerName = catalog.DoorControllerName
-const DoorControllerID = catalog.DoorControllerID
-const DoorControllerDoor = catalog.DoorControllerDoor
-const DoorName = catalog.DoorName
-const DoorDelay = catalog.DoorDelay
-const DoorDelayStatus = catalog.DoorDelayStatus
-const DoorDelayConfigured = catalog.DoorDelayConfigured
-const DoorDelayError = catalog.DoorDelayError
-const DoorDelayModified = catalog.DoorDelayModified
-const DoorControl = catalog.DoorControl
-const DoorControlStatus = catalog.DoorControlStatus
-const DoorControlConfigured = catalog.DoorControlConfigured
-const DoorControlError = catalog.DoorControlError
-const DoorControlModified = catalog.DoorControlModified
-const DoorIndex = catalog.DoorIndex
-
 func (d *Door) IsValid() bool {
 	if d != nil {
 		controller := ""
@@ -195,7 +176,8 @@ func (d *Door) AsObjects() []interface{} {
 	}
 
 	objects := []interface{}{
-		catalog.NewObject(d.OID, status),
+		catalog.NewObject(d.OID, ""),
+		catalog.NewObject2(d.OID, DoorStatus, status),
 		catalog.NewObject2(d.OID, DoorCreated, created),
 		catalog.NewObject2(d.OID, DoorControllerOID, controller.OID),
 		catalog.NewObject2(d.OID, DoorControllerCreated, controller.created),
