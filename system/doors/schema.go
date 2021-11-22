@@ -23,4 +23,3 @@ const DoorControlStatus = catalog.DoorControlStatus
 const DoorControlConfigured = catalog.DoorControlConfigured
 const DoorControlError = catalog.DoorControlError
 const DoorControlModified = catalog.DoorControlModified
-const DoorIndex = catalog.DoorIndex

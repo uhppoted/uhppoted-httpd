@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -71,26 +70,6 @@ func (dd *Doors) Load(file string) error {
 
 			dd.Doors[d.OID] = d
 		}
-	}
-
-	keys := []catalog.OID{}
-	for k, _ := range dd.Doors {
-		keys = append(keys, k)
-	}
-
-	sort.SliceStable(keys, func(i, j int) bool {
-		p := dd.Doors[keys[i]]
-		q := dd.Doors[keys[j]]
-
-		return p.created.Before(q.created)
-	})
-
-	var index uint32 = 1
-	for _, k := range keys {
-		d := dd.Doors[k]
-		d.Index = index
-		dd.Doors[k] = d
-		index++
 	}
 
 	for _, d := range dd.Doors {

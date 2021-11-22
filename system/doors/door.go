@@ -16,9 +16,8 @@ import (
 )
 
 type Door struct {
-	OID   catalog.OID `json:"OID"`
-	Name  string      `json:"name"`
-	Index uint32      `json:"index"`
+	OID  catalog.OID `json:"OID"`
+	Name string      `json:"name"`
 
 	delay   uint8
 	mode    core.ControlState
@@ -89,7 +88,6 @@ func (d *Door) AsObjects() []interface{} {
 	created := d.created.Format("2006-01-02 15:04:05")
 	status := types.StatusOk
 	name := d.Name
-	index := d.Index
 
 	controller := struct {
 		OID     string
@@ -193,7 +191,6 @@ func (d *Door) AsObjects() []interface{} {
 		catalog.NewObject2(d.OID, DoorControlStatus, control.status),
 		catalog.NewObject2(d.OID, DoorControlConfigured, control.configured),
 		catalog.NewObject2(d.OID, DoorControlError, control.err),
-		catalog.NewObject2(d.OID, DoorIndex, index),
 	}
 
 	return objects
@@ -309,14 +306,12 @@ func (d Door) serialize() ([]byte, error) {
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
-		Index   uint32            `json:"index,omitempty"`
 		Created string            `json:"created"`
 	}{
 		OID:     d.OID,
 		Name:    d.Name,
 		Delay:   d.delay,
 		Mode:    d.mode,
-		Index:   d.Index,
 		Created: d.created.Format("2006-01-02 15:04:05"),
 	}
 
@@ -331,7 +326,6 @@ func (d *Door) deserialize(bytes []byte) error {
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
-		Index   uint32            `json:"index,omitempty"`
 		Created string            `json:"created"`
 	}{
 		Delay: 5,
@@ -346,7 +340,6 @@ func (d *Door) deserialize(bytes []byte) error {
 	d.Name = record.Name
 	d.delay = record.Delay
 	d.mode = record.Mode
-	d.Index = record.Index
 	d.created = created
 
 	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {
@@ -360,7 +353,6 @@ func (d *Door) clone() Door {
 	return Door{
 		OID:     d.OID,
 		Name:    d.Name,
-		Index:   d.Index,
 		delay:   d.delay,
 		mode:    d.mode,
 		created: d.created,

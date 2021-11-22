@@ -2,7 +2,9 @@
 
 - [ ] OIDs:
       - [ ] move 'type' to metadata
-      - [ ] move 'display-index' to metadata (or lose it entirely)
+      - [ ] remove 'display-index' 
+            - [x] doors
+            - [ ] groups
 
       - .0.0 status
         - [ ] cards

@@ -73,7 +73,6 @@ type Doors struct {
 	ControlConfigured Suffix `json:"control-configured"`
 	ControlError      Suffix `json:"control-error"`
 	ControlModified   Suffix `json:"control-modified"`
-	DisplayIndex      Suffix `json:"display-index"`
 }
 
 type Cards struct {
@@ -195,7 +194,6 @@ var schema = Schema{
 		ControlConfigured: DoorControlConfigured,
 		ControlError:      DoorControlError,
 		ControlModified:   DoorControlModified,
-		DisplayIndex:      DoorIndex,
 	},
 
 	Cards: Cards{
@@ -307,7 +305,6 @@ const DoorControlStatus = ".3.1"
 const DoorControlConfigured = ".3.2"
 const DoorControlError = ".3.3"
 const DoorControlModified = ".3.4"
-const DoorIndex Suffix = ".4"
 
 const CardCreated Suffix = ".0.1"
 const CardName Suffix = ".1"

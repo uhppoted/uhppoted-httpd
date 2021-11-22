@@ -39,20 +39,9 @@ function updateFromDB (oid, record) {
   const door4 = row.querySelector(`[data-oid="${oid}.10"]`)
 
   // ... populate door dropdowns
-  const doors = []
-
-  DB.doors.forEach(d => {
-    if (d.status !== 'deleted') {
-      doors.push({ OID: d.OID, name: d.name, status: d.status })
-    }
-  })
-
-  doors.sort((p, q) => {
-    const u = p.name.toLowerCase()
-    const v = q.name.toLowerCase()
-
-    return u.localeCompare(v)
-  }); // https://eslint.org/docs/2.0.0/rules/no-unexpected-multiline
+  const doors = [...DB.doors.values()]
+    .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
+    .sort((p, q) => p.created.localeCompare(q.created));
 
   [door1, door2, door3, door4].forEach(select => {
     const options = select.options
