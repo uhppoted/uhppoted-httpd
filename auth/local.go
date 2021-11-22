@@ -23,9 +23,9 @@ import (
 const SALT_LENGTH = 32
 
 type Local struct {
-	Key       string           `json:"key"`
-	users     map[string]*user `json:"users"`
-	resources []resource       `json:"resources"`
+	key       string
+	users     map[string]*user
+	resources []resource
 
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
@@ -162,7 +162,7 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 
 func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
 	p.guard.Lock()
-	secret := []byte(p.Key)
+	secret := []byte(p.key)
 	expiry := p.loginExpiry
 	p.guard.Unlock()
 
@@ -202,7 +202,7 @@ func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
 func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) {
 	p.guard.Lock()
 
-	secret := []byte(p.Key)
+	secret := []byte(p.key)
 	users := p.users
 	expiry := p.sessionExpiry
 	p.guard.Unlock()
@@ -303,7 +303,7 @@ func (p *Local) Store(uid, pwd, role string) error {
 
 func (p *Local) Verify(tokenType TokenType, cookie string) error {
 	p.guard.Lock()
-	secret := []byte(p.Key)
+	secret := []byte(p.key)
 	p.guard.Unlock()
 
 	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
@@ -346,7 +346,7 @@ func (p *Local) Verify(tokenType TokenType, cookie string) error {
 
 func (p *Local) Authorized(cookie, resource string) (string, string, error) {
 	p.guard.Lock()
-	secret := []byte(p.Key)
+	secret := []byte(p.key)
 	p.guard.Unlock()
 
 	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
@@ -385,7 +385,7 @@ func (p *Local) Authorized(cookie, resource string) (string, string, error) {
 
 func (p *Local) GetLoginId(cookie string) (*uuid.UUID, error) {
 	p.guard.Lock()
-	secret := []byte(p.Key)
+	secret := []byte(p.key)
 	p.guard.Unlock()
 
 	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
@@ -420,7 +420,7 @@ func (p *Local) GetLoginId(cookie string) (*uuid.UUID, error) {
 
 func (p *Local) GetSessionId(cookie string) (*uuid.UUID, error) {
 	p.guard.Lock()
-	secret := []byte(p.Key)
+	secret := []byte(p.key)
 	p.guard.Unlock()
 
 	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
@@ -464,49 +464,16 @@ func (p *Local) authorised(role, resource string) bool {
 }
 
 func (p *Local) load(file string) error {
-	serializable := struct {
-		Key       string           `json:"key"`
-		Users     map[string]*user `json:"users"`
-		Resources []resource       `json:"resources"`
-	}{
-		Key:       "",
-		Users:     map[string]*user{},
-		Resources: []resource{},
-	}
-
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
 	}
 
-	p.guard.Lock()
-	defer p.guard.Unlock()
-	if err := json.Unmarshal(bytes, &serializable); err != nil {
-		return err
-	}
-
-	p.Key = serializable.Key
-	p.users = serializable.Users
-	p.resources = serializable.Resources
-
-	return nil
+	return p.deserialize(bytes)
 }
 
 func (p *Local) Save() error {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	serializable := struct {
-		Key       string           `json:"key"`
-		Users     map[string]*user `json:"users"`
-		Resources []resource       `json:"resources"`
-	}{
-		Key:       p.Key,
-		Users:     p.users,
-		Resources: p.resources,
-	}
-
-	b, err := json.MarshalIndent(serializable, "", "  ")
+	b, err := p.serialize()
 	if err != nil {
 		return err
 	}
@@ -531,6 +498,47 @@ func (p *Local) Save() error {
 	}
 
 	return os.Rename(tmp.Name(), p.file)
+}
+
+func (p *Local) serialize() ([]byte, error) {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	serializable := struct {
+		Key       string           `json:"key"`
+		Users     map[string]*user `json:"users"`
+		Resources []resource       `json:"resources"`
+	}{
+		Key:       p.key,
+		Users:     p.users,
+		Resources: p.resources,
+	}
+
+	return json.MarshalIndent(serializable, "", "  ")
+}
+
+func (p *Local) deserialize(bytes []byte) error {
+	serializable := struct {
+		Key       string           `json:"key"`
+		Users     map[string]*user `json:"users"`
+		Resources []resource       `json:"resources"`
+	}{
+		Key:       "",
+		Users:     map[string]*user{},
+		Resources: []resource{},
+	}
+
+	p.guard.Lock()
+	defer p.guard.Unlock()
+	if err := json.Unmarshal(bytes, &serializable); err != nil {
+		return err
+	}
+
+	p.key = serializable.Key
+	p.users = serializable.Users
+	p.resources = serializable.Resources
+
+	return nil
 }
 
 // NOTE: interim file watcher implementation pending fsnotify in Go v?.?

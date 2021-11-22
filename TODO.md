@@ -50,14 +50,14 @@
       - [ ] controllers
       - [ ] interfaces
   
-- [ ] Change password
+- [x] Change password
       - [x] Confirm that /password out of a session fails miserably
       - [x] Hide auth.Local.Users and auth.Local.Resources
-      - [ ] Unit test for auth.Local serialization
-      - [ ] Remove debug values from password.html
+      - [x] Unit test for auth.Local serialization
+      - [x] Remove debug values from password.html
+      - [x] Reload auth.json if changed
 
 - [ ] Admin 'users' page
-- [ ] Reload auth.json if changed
 - [ ] Make login cookie expire in 60s
       - Don't check login cookie except for login and
 - [ ] Set initial password
