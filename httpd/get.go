@@ -35,7 +35,24 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		path = "/" + path
 	}
 
-	if !strings.HasPrefix(path, "/images/") && !strings.HasPrefix(path, "/css/") && !strings.HasPrefix(path, "/javascript/") && path != "/manifest.json" {
+	// authorise unless images,CSS,etc
+	prefixes := []string{"/images/", "/css/", "/javascript/"}
+	files := []string{"/manifest.json"}
+	authorised := false
+
+	for _, p := range prefixes {
+		if strings.HasPrefix(path, p) {
+			authorised = true
+		}
+	}
+
+	for _, f := range files {
+		if path == f {
+			authorised = true
+		}
+	}
+
+	if !authorised {
 		if _, _, ok := d.authorized(w, r, path); !ok {
 			return
 		}

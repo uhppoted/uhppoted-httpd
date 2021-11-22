@@ -2,8 +2,9 @@
 
 - [ ] OIDs:
       - [ ] move 'type' to metadata
+      - [ ] move 'display-index' to metadata (or lose it entirely)
+
       - .0.0 status
-        - [x] controllers
         - [ ] cards
         - [ ] doors
         - [ ] groups
@@ -11,10 +12,18 @@
         - [ ] logs
 
       - .0.1 created
-        - [x] controllers
+        - [ ] cards
+        - [ ] doors
+        - [ ] groups
+        - [ ] events
+        - [ ] logs
 
       - .0.2 deleted
-        - [x] controllers
+        - [ ] cards
+        - [ ] doors
+        - [ ] groups
+        - [ ] events
+        - [ ] logs
 
 ### IN PROGRESS
 
@@ -42,12 +51,7 @@
       - [ ] interfaces
   
 - [ ] Change password
-      - [x] Validate pwd + pwd2 in JS
-      - [x] Validate uid
-      - [x] Verify UID+old password
-      - [x] Update password
-      - [x] Serialize updated passwords to file
-      - [ ] Confirm that /password out of a session fails miserably
+      - [x] Confirm that /password out of a session fails miserably
       - [ ] Hide auth.Local.Users and auth.Local.Resources
       - [ ] Unit test for auth.Local serialization
       - [ ] Remove debug values from password.html
@@ -57,9 +61,6 @@
 - [ ] Make login cookie expire in 60s
       - Don't check login cookie except for login and
 - [ ] Set initial password
-- [ ] Hash passwords
-      - https://github.com/dchest/tweetnacl-js#hashing
-      - https://stackoverflow.com/questions/64761119/tweetnacl-js-minimal-public-key-signatures-example
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 
