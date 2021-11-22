@@ -52,7 +52,7 @@
   
 - [ ] Change password
       - [x] Confirm that /password out of a session fails miserably
-      - [ ] Hide auth.Local.Users and auth.Local.Resources
+      - [x] Hide auth.Local.Users and auth.Local.Resources
       - [ ] Unit test for auth.Local serialization
       - [ ] Remove debug values from password.html
 

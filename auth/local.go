@@ -24,8 +24,8 @@ const SALT_LENGTH = 32
 
 type Local struct {
 	Key       string           `json:"key"`
-	Users     map[string]*user `json:"users"`
-	Resources []resource       `json:"resources"`
+	users     map[string]*user `json:"users"`
+	resources []resource       `json:"resources"`
 
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
@@ -201,8 +201,9 @@ func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
 
 func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) {
 	p.guard.Lock()
+
 	secret := []byte(p.Key)
-	users := p.Users
+	users := p.users
 	expiry := p.sessionExpiry
 	p.guard.Unlock()
 
@@ -251,9 +252,9 @@ func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) 
 
 func (p *Local) Validate(uid, pwd string) error {
 	p.guard.Lock()
-	users := p.Users
-	p.guard.Unlock()
+	defer p.guard.Unlock()
 
+	users := p.users
 	u, ok := users[uid]
 	if !ok {
 		return fmt.Errorf("invalid user ID or password")
@@ -291,7 +292,7 @@ func (p *Local) Store(uid, pwd, role string) error {
 
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
 
-	p.Users[k] = &user{
+	p.users[k] = &user{
 		Salt:     salt,
 		Password: hash,
 		Role:     role,
@@ -453,7 +454,7 @@ func (p *Local) GetSessionId(cookie string) (*uuid.UUID, error) {
 }
 
 func (p *Local) authorised(role, resource string) bool {
-	for _, r := range p.Resources {
+	for _, r := range p.resources {
 		if r.Path.Match([]byte(resource)) && r.Authorised.Match([]byte(role)) {
 			return true
 		}
@@ -463,6 +464,16 @@ func (p *Local) authorised(role, resource string) bool {
 }
 
 func (p *Local) load(file string) error {
+	serializable := struct {
+		Key       string           `json:"key"`
+		Users     map[string]*user `json:"users"`
+		Resources []resource       `json:"resources"`
+	}{
+		Key:       "",
+		Users:     map[string]*user{},
+		Resources: []resource{},
+	}
+
 	bytes, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
@@ -470,9 +481,13 @@ func (p *Local) load(file string) error {
 
 	p.guard.Lock()
 	defer p.guard.Unlock()
-	if err := json.Unmarshal(bytes, p); err != nil {
+	if err := json.Unmarshal(bytes, &serializable); err != nil {
 		return err
 	}
+
+	p.Key = serializable.Key
+	p.users = serializable.Users
+	p.resources = serializable.Resources
 
 	return nil
 }
@@ -481,7 +496,17 @@ func (p *Local) Save() error {
 	p.guard.Lock()
 	defer p.guard.Unlock()
 
-	b, err := json.MarshalIndent(p, "", "  ")
+	serializable := struct {
+		Key       string           `json:"key"`
+		Users     map[string]*user `json:"users"`
+		Resources []resource       `json:"resources"`
+	}{
+		Key:       p.Key,
+		Users:     p.users,
+		Resources: p.resources,
+	}
+
+	b, err := json.MarshalIndent(serializable, "", "  ")
 	if err != nil {
 		return err
 	}

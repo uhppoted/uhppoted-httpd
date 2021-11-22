@@ -72,6 +72,9 @@ function auth () {
         throw new Error(msg.trim())
       }
     })
+    .catch(function (err) {
+      warning(`${err.message}`)
+    })
 }
 
 function warning (msg) {
