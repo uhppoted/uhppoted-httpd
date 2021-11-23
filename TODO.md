@@ -2,23 +2,24 @@
 
 - [ ] OIDs:
       - [ ] move 'type' to metadata
+      - [ ] 'modified' timestamps
       - [x] remove 'display-index' 
             - [x] groups
 
       - .0.0 status
-        - [ ] cards
+        - [x] cards
         - [ ] groups
         - [ ] events
         - [ ] logs
 
       - .0.1 created
-        - [ ] cards
+        - [x] cards
         - [ ] groups
         - [ ] events
         - [ ] logs
 
       - .0.2 deleted
-        - [ ] cards
+        - [x] cards
         - [ ] groups
         - [ ] events
         - [ ] logs
@@ -157,7 +158,6 @@
 
 - [ ] MemDB
       - Rather use sync.Map
-      - add modified timestamps to records
       - keep historical copies on save (for undo/revert)
       - unit tests for ACL rules
 

@@ -2,6 +2,9 @@ export const schema = {
   interfaces: {
     base: '0.1',
     status: '.0.0',
+    created: '.0.1',
+    deleted: '.0.2',
+    modified: '.0.3',
     type: '.0.3',
     name: '.1',
     bind: '.3.1',
@@ -16,6 +19,7 @@ export const schema = {
     status: '.0.0',
     created: '.0.1',
     deleted: '.0.2',
+    modified: '.0.3',
     regex: /^(0\.2\.[1-9][0-9]*).*$/
   },
 
@@ -24,12 +28,22 @@ export const schema = {
     status: '.0.0',
     created: '.0.1',
     deleted: '.0.2',
+    modified: '.0.3',
     regex: /^(0\.3\.([1-9][0-9]*)).*$/
   },
 
   cards: {
     base: '0.4',
-    regex: /^0\.4\.[1-9][0-9]*$/,
+    status: '.0.0',
+    created: '.0.1',
+    deleted: '.0.2',
+    modified: '.0.3',
+    name: '.1',
+    card: '.2',
+    from: '.3',
+    to: '.4',
+    group: '.5.',
+    regex: /^(0\.4\.[1-9][0-9]*).*$/,
     groups: /^(0\.4\.[1-9][0-9]*\.5\.[1-9][0-9]*)(\.[1-3])?$/
   },
 

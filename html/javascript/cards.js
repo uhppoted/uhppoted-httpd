@@ -69,10 +69,10 @@ function updateFromDB (oid, record) {
     return
   }
 
-  const name = row.querySelector(`[data-oid="${oid}.1"]`)
-  const number = row.querySelector(`[data-oid="${oid}.2"]`)
-  const from = row.querySelector(`[data-oid="${oid}.3"]`)
-  const to = row.querySelector(`[data-oid="${oid}.4"]`)
+  const name = row.querySelector(`[data-oid="${oid}${schema.cards.name}"]`)
+  const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
+  const from = row.querySelector(`[data-oid="${oid}${schema.cards.from}"]`)
+  const to = row.querySelector(`[data-oid="${oid}${schema.cards.to}"]`)
   const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && g.status !== 'deleted')
 
   row.dataset.status = record.status
@@ -153,7 +153,7 @@ function realize (cards) {
       const template = document.querySelector('#group')
 
       const uuid = row.id
-      const oid = row.dataset.oid + '.5.' + group
+      const oid = row.dataset.oid + `${schema.cards.group}` + group
       const ix = row.cells.length - 1
       const cell = row.insertCell(ix)
 
@@ -208,10 +208,10 @@ function add (oid, record) {
     rollback.dataset.enabled = 'false'
 
     const fields = [
-      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' },
-      { suffix: 'number', oid: `${oid}.2`, selector: 'td input.number', flag: 'td img.number' },
-      { suffix: 'from', oid: `${oid}.3`, selector: 'td input.from', flag: 'td img.from' },
-      { suffix: 'to', oid: `${oid}.4`, selector: 'td input.to', flag: 'td img.to' }
+      { suffix: 'name', oid: `${oid}${schema.cards.name}`, selector: 'td input.name', flag: 'td img.name' },
+      { suffix: 'number', oid: `${oid}${schema.cards.card}`, selector: 'td input.number', flag: 'td img.number' },
+      { suffix: 'from', oid: `${oid}${schema.cards.from}`, selector: 'td input.from', flag: 'td img.from' },
+      { suffix: 'to', oid: `${oid}${schema.cards.to}`, selector: 'td input.to', flag: 'td img.to' }
     ]
 
     fields.forEach(f => {

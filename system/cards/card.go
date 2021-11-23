@@ -26,14 +26,6 @@ type Card struct {
 	deleted *time.Time
 }
 
-const CardCreated = catalog.CardCreated
-const CardName = catalog.CardName
-const CardNumber = catalog.CardNumber
-const CardFrom = catalog.CardFrom
-const CardTo = catalog.CardTo
-const CardGroups = catalog.CardGroups
-const GroupName = catalog.GroupName
-
 var created = time.Now()
 
 func (c Card) String() string {
@@ -86,7 +78,8 @@ func (c *Card) AsObjects() []interface{} {
 	}
 
 	objects := []interface{}{
-		catalog.NewObject(c.OID, status),
+		catalog.NewObject(c.OID, ""),
+		catalog.NewObject2(c.OID, CardStatus, status),
 		catalog.NewObject2(c.OID, CardCreated, created),
 		catalog.NewObject2(c.OID, CardName, name),
 		catalog.NewObject2(c.OID, CardNumber, number),
@@ -357,7 +350,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		}
 
 		if c.deleted == nil {
-			objects = append(objects, catalog.NewObject(c.OID, types.StatusOk))
+			objects = append(objects, catalog.NewObject2(c.OID, CardStatus, types.StatusOk))
 		}
 	}
 

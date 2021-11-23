@@ -363,16 +363,44 @@ function doors (o) {
 }
 
 function cards (o) {
+  // const oid = o.OID
+
+  // if (schema.cards.regex.test(oid)) {
+  //   if (DB.cards.has(oid)) {
+  //     const record = DB.cards.get(oid)
+  //     record.status = o.value
+  //     record.mark = 0
+  //     return
+  //   }
+
+  //   DB.cards.set(oid, {
+  //     OID: oid,
+  //     created: '',
+  //     name: '',
+  //     number: '',
+  //     from: '',
+  //     to: '',
+  //     groups: new Map(),
+  //     status: o.value,
+  //     mark: 0
+  //   })
+
+  //   return
+  // }
+
+  // DB.cards.forEach((v, k) => {
+  // if (oid.startsWith(k)) {
+
   const oid = o.OID
+  const match = oid.match(schema.cards.regex)
 
-  if (schema.cards.regex.test(oid)) {
-    if (DB.cards.has(oid)) {
-      const record = DB.cards.get(oid)
-      record.status = o.value
-      record.mark = 0
-      return
-    }
+  if (!match || match.length < 2) {
+    return
+  }
 
+  const base = match[1]
+
+  if (!DB.cards.has(base)) {
     DB.cards.set(oid, {
       OID: oid,
       created: '',
@@ -384,60 +412,55 @@ function cards (o) {
       status: o.value,
       mark: 0
     })
-
-    return
   }
 
-  DB.cards.forEach((v, k) => {
-    if (oid.startsWith(k)) {
-      switch (oid) {
-        case k:
-          v.status = o.value
-          break
+  const v = DB.cards.get(base)
 
-        case k + '.0.1':
-          v.created = o.value
-          break
+  switch (oid) {
+    case base + schema.cards.status:
+      v.status = o.value
+      break
 
-        case k + '.1':
-          v.name = o.value
-          break
+    case base + schema.cards.created:
+      v.created = o.value
+      break
 
-        case k + '.2':
-          v.number = o.value
-          break
+    case base + schema.cards.name:
+      v.name = o.value
+      break
 
-        case k + '.3':
-          v.from = o.value
-          break
+    case base + schema.cards.card:
+      v.number = o.value
+      break
 
-        case k + '.4':
-          v.to = o.value
-          break
+    case base + schema.cards.from:
+      v.from = o.value
+      break
 
-        default:
-          if (oid.startsWith(k + '.5.')) {
-            const m = oid.match(schema.cards.groups)
-            if (m && m.length > 2) {
-              const suboid = m[1]
-              const suffix = m[2]
+    case base + schema.cards.to:
+      v.to = o.value
+      break
 
-              if (!v.groups.has(suboid)) {
-                v.groups.set(suboid, { group: '', member: false })
-              }
+    default: {
+      const m = oid.match(schema.cards.groups)
+      if (m && m.length > 2) {
+        const suboid = m[1]
+        const suffix = m[2]
 
-              const group = v.groups.get(suboid)
+        if (!v.groups.has(suboid)) {
+          v.groups.set(suboid, { group: '', member: false })
+        }
 
-              if (!suffix) {
-                group.member = o.value === 'true'
-              } else if (suffix === '.1') {
-                group.group = o.value
-              }
-            }
-          }
+        const group = v.groups.get(suboid)
+
+        if (!suffix) {
+          group.member = o.value === 'true'
+        } else if (suffix === '.1') {
+          group.group = o.value
+        }
       }
     }
-  })
+  }
 }
 
 function groups (o) {
