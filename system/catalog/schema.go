@@ -13,10 +13,11 @@ type Schema struct {
 type Interfaces struct {
 	OID OID `json:"OID"`
 
-	Status  Suffix `json:"status"`
-	Created Suffix `json:"created"`
-	Deleted Suffix `json:"deleted"`
-	Type    Suffix `json:"type"`
+	Status   Suffix `json:"status"`
+	Created  Suffix `json:"created"`
+	Deleted  Suffix `json:"deleted"`
+	Modified Suffix `json:"modified"`
+	Type     Suffix `json:"type"`
 
 	Name      Suffix `json:"name"`
 	ID        Suffix `json:"ID"`
@@ -28,9 +29,10 @@ type Interfaces struct {
 type Controllers struct {
 	OID OID `json:"OID"`
 
-	Status  Suffix `json:"status"`
-	Created Suffix `json:"created"`
-	Deleted Suffix `json:"deleted"`
+	Status   Suffix `json:"status"`
+	Created  Suffix `json:"created"`
+	Deleted  Suffix `json:"deleted"`
+	Modified Suffix `json:"modified"`
 
 	Name              Suffix `json:"name"`
 	DeviceID          Suffix `json:"deviceID"`
@@ -53,9 +55,10 @@ type Controllers struct {
 type Doors struct {
 	OID OID `json:"OID"`
 
-	Status  Suffix `json:"status"`
-	Created Suffix `json:"created"`
-	Deleted Suffix `json:"deleted"`
+	Status   Suffix `json:"status"`
+	Created  Suffix `json:"created"`
+	Deleted  Suffix `json:"deleted"`
+	Modified Suffix `json:"modified"`
 
 	ControllerOID     Suffix `json:"controller-OID"`
 	ControllerCreated Suffix `json:"controller-created"`
@@ -76,20 +79,30 @@ type Doors struct {
 }
 
 type Cards struct {
-	OID     OID    `json:"OID"`
-	Created Suffix `json:"created"`
-	Name    Suffix `json:"name"`
-	Card    Suffix `json:"card"`
-	From    Suffix `json:"from"`
-	To      Suffix `json:"to"`
-	Groups  Suffix `json:"groups"`
+	OID OID `json:"OID"`
+
+	Status   Suffix `json:"status"`
+	Created  Suffix `json:"created"`
+	Deleted  Suffix `json:"deleted"`
+	Modified Suffix `json:"modified"`
+
+	Name   Suffix `json:"name"`
+	Card   Suffix `json:"card"`
+	From   Suffix `json:"from"`
+	To     Suffix `json:"to"`
+	Groups Suffix `json:"groups"`
 }
 
 type Groups struct {
-	OID     OID    `json:"OID"`
-	Created Suffix `json:"created"`
-	Name    Suffix `json:"name"`
-	Doors   Suffix `json:"doors"`
+	OID OID `json:"OID"`
+
+	Status   Suffix `json:"status"`
+	Created  Suffix `json:"created"`
+	Deleted  Suffix `json:"deleted"`
+	Modified Suffix `json:"modified"`
+
+	Name  Suffix `json:"name"`
+	Doors Suffix `json:"doors"`
 }
 
 type Events struct {
@@ -133,9 +146,10 @@ var schema = Schema{
 	Interfaces: Interfaces{
 		OID: InterfacesOID,
 
-		Status:  InterfaceStatus,
-		Created: InterfaceCreated,
-		Deleted: InterfaceDeleted,
+		Status:   InterfaceStatus,
+		Created:  InterfaceCreated,
+		Deleted:  InterfaceDeleted,
+		Modified: InterfaceModified,
 
 		Type:      InterfaceType,
 		Name:      InterfaceName,
@@ -148,9 +162,10 @@ var schema = Schema{
 	Controllers: Controllers{
 		OID: ControllersOID,
 
-		Status:  ControllerStatus,
-		Created: ControllerCreated,
-		Deleted: ControllerDeleted,
+		Status:   ControllerStatus,
+		Created:  ControllerCreated,
+		Deleted:  ControllerDeleted,
+		Modified: ControllerModified,
 
 		Name:              ControllerName,
 		DeviceID:          ControllerDeviceID,
@@ -173,9 +188,10 @@ var schema = Schema{
 	Doors: Doors{
 		OID: DoorsOID,
 
-		Status:  DoorStatus,
-		Created: DoorCreated,
-		Deleted: DoorDeleted,
+		Status:   DoorStatus,
+		Created:  DoorCreated,
+		Deleted:  DoorDeleted,
+		Modified: DoorModified,
 
 		ControllerOID:     DoorControllerOID,
 		ControllerCreated: DoorControllerCreated,
@@ -196,20 +212,28 @@ var schema = Schema{
 	},
 
 	Cards: Cards{
-		OID:     CardsOID,
-		Created: CardCreated,
-		Name:    CardName,
-		Card:    CardNumber,
-		From:    CardFrom,
-		To:      CardTo,
-		Groups:  CardGroups,
+		OID: CardsOID,
+
+		Created:  CardCreated,
+		Deleted:  CardDeleted,
+		Modified: CardModified,
+
+		Name:   CardName,
+		Card:   CardNumber,
+		From:   CardFrom,
+		To:     CardTo,
+		Groups: CardGroups,
 	},
 
 	Groups: Groups{
-		OID:     GroupsOID,
-		Created: GroupCreated,
-		Name:    GroupName,
-		Doors:   GroupDoors,
+		OID: GroupsOID,
+
+		Created:  GroupCreated,
+		Deleted:  GroupDeleted,
+		Modified: GroupModified,
+
+		Name:  GroupName,
+		Doors: GroupDoors,
 	},
 
 	Events: Events{
@@ -257,7 +281,8 @@ const LogsOID OID = "0.7"
 const InterfaceStatus Suffix = ".0.0"
 const InterfaceCreated Suffix = ".0.1"
 const InterfaceDeleted Suffix = ".0.2"
-const InterfaceType Suffix = ".0.3"
+const InterfaceModified Suffix = ".0.3"
+const InterfaceType Suffix = ".0.4"
 const InterfaceName Suffix = ".1"
 const InterfaceID Suffix = ".2"
 const LANBindAddress Suffix = ".3.1"
@@ -267,6 +292,7 @@ const LANListenAddress Suffix = ".3.3"
 const ControllerStatus = ".0.0"
 const ControllerCreated = ".0.1"
 const ControllerDeleted = ".0.2"
+const ControllerModified = ".0.3"
 const ControllerName = ".1"
 const ControllerDeviceID = ".2"
 const ControllerAddress = ".3"
@@ -287,11 +313,12 @@ const ControllerDoor4 = ".10"
 const DoorStatus = ".0.0"
 const DoorCreated = ".0.1"
 const DoorDeleted = ".0.2"
-const DoorControllerOID = ".0.2"
-const DoorControllerCreated = ".0.2.1"
-const DoorControllerName = ".0.2.2"
-const DoorControllerID = ".0.2.3"
-const DoorControllerDoor = ".0.2.4"
+const DoorModified = ".0.3"
+const DoorControllerOID = ".0.4"
+const DoorControllerCreated = ".0.4.1"
+const DoorControllerName = ".0.4.2"
+const DoorControllerID = ".0.4.3"
+const DoorControllerDoor = ".0.4.4"
 const DoorName = ".1"
 const DoorDelay = ".2"
 const DoorDelayStatus = ".2.1"
@@ -304,14 +331,20 @@ const DoorControlConfigured = ".3.2"
 const DoorControlError = ".3.3"
 const DoorControlModified = ".3.4"
 
+const CardStatus Suffix = ".0.0"
 const CardCreated Suffix = ".0.1"
+const CardDeleted Suffix = ".0.2"
+const CardModified Suffix = ".0.3"
 const CardName Suffix = ".1"
 const CardNumber Suffix = ".2"
 const CardFrom Suffix = ".3"
 const CardTo Suffix = ".4"
 const CardGroups Suffix = ".5"
 
+const GroupStatus Suffix = ".0.0"
 const GroupCreated Suffix = ".0.1"
+const GroupDeleted Suffix = ".0.2"
+const GroupModified Suffix = ".0.3"
 const GroupName Suffix = ".1"
 const GroupDoors Suffix = ".2"
 

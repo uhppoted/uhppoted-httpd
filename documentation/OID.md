@@ -8,7 +8,8 @@
 |    |      |        |- 0.1.1.0.0: <status>                                  #       current status
 |    |      |        |- 0.1.1.0.1: <created>                                 #       created date/time
 |    |      |        |- 0.1.1.0.2: <deleted>                                 #       deleted date/time
-|    |      |         - 0.1.1.0.3: <type>                                            type
+|    |      |        |- 0.1.1.0.3: <modified>                                #       modified timestamp
+|    |      |        |- 0.1.1.0.4: <type>                                            type
 |    |      |                                                                #
 |    |      |- 0.1.1.1: <name>                                               #    name
 |    |      |- 0.1.1.2: <ID>                                                 #    ID
@@ -24,6 +25,7 @@
 |    |      |        |- 0.2.1.0.0: <status>                                  #       current status
 |    |      |        |- 0.2.1.0.1: <created>                                 #       created date/time
 |    |      |        |- 0.2.1.0.2: <deleted>                                 #       deleted date/time
+|    |      |        |- 0.2.1.0.3: <modified>                                #       modified timestamp
 |    |      |
 |    |      |- 0.2.1.1: <name>                                               #    name
 |    |      |- 0.2.1.2: <ID>                                                 #    serial number
@@ -47,16 +49,17 @@
 |    |- ...
 |
 |- 0.3                                                                       # doors
-|    |- 0.3.1: <status>                                                      # door #1
+|    |- 0.3.1:                                                               # door #1
 |    |      |- 0.3.1.0: <metadata>                                           #    metadata
 |    |      |        |- 0.3.1.0.0: <status>                                  #       current status
 |    |      |        |- 0.3.1.0.1: <created>                                 #       created date/time
 |    |      |        |- 0.3.1.0.2: <deleted>                                 #       deleted date/time
-|    |      |        |- 0.3.1.0.3: <controller>                              #       associated controller OID
-|    |      |                   |- 0.3.1.0.3.1: <created>                    #               controller created date/time
-|    |      |                   |- 0.3.1.0.3.2: <name>                       #               controller name
-|    |      |                   |- 0.3.1.0.3.3: <deviceID>                   #               controller serial number
-|    |      |                   |- 0.3.1.0.3.4: <door>                       #               controller door number
+|    |      |        |- 0.3.1.0.3: <modified>                                #       modified timestamp
+|    |      |        |- 0.3.1.0.4: <controller>                              #       associated controller OID
+|    |      |                   |- 0.3.1.0.4.1: <created>                    #               controller created date/time
+|    |      |                   |- 0.3.1.0.4.2: <name>                       #               controller name
+|    |      |                   |- 0.3.1.0.4.3: <deviceID>                   #               controller serial number
+|    |      |                   |- 0.3.1.0.4.4: <door>                       #               controller door number
 |    |      |                                                                #
 |    |      |- 0.3.1.1: <name>                                               #    name
 |    |      |- 0.3.1.2: <delay>                                              #    door open delay value
@@ -71,9 +74,12 @@
 |    |               |- 0.3.1.2.4: <modified>                                #                       has been modified
 |
 |- 0.4                                                                       # cards
-|    |- 0.4.1: <status>                                                      # card #1
-|    |      |- 0.4.1.0:                                                      #
-|    |      |        |- 0.4.1.0.1: <created>                                 #      created date/time
+|    |- 0.4.1:                                                               # card #1
+|    |      |- 0.4.1.0: <metadata>                                           #    metadata
+|    |      |        |- 0.4.1.0.0: <status>                                  #       current status
+|    |      |        |- 0.4.1.0.1: <created>                                 #       created timestamp
+|    |      |        |- 0.4.1.0.2: <deleted>                                 #       deleted timestamp
+|    |      |        |- 0.4.1.0.3: <modified>                                #       modified timestamp
 |    |      |                                                                # 
 |    |      |- 0.4.1.1: <name>                                               #      name
 |    |      |- 0.4.1.2: <number>                                             #      card number

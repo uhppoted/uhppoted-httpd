@@ -312,15 +312,15 @@ function doors (o) {
       v.created = o.value
       break
 
-    case base + '.0.2.2':
+    case base + '.0.4.2':
       v.controller = o.value
       break
 
-    case base + '.0.2.3':
+    case base + '.0.4.3':
       v.deviceID = o.value
       break
 
-    case base + '.0.2.4':
+    case base + '.0.4.4':
       v.door = o.value
       break
 
