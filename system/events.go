@@ -35,7 +35,7 @@ func eventController(e uhppoted.Event) string {
 			}
 		}
 
-		edits := sys.logs.Query("controller", fmt.Sprintf("%v", e.DeviceID), "name")
+		edits := sys.logs.logs.Query("controller", fmt.Sprintf("%v", e.DeviceID), "name")
 
 		sort.SliceStable(edits, func(i, j int) bool {
 			p := edits[i].Timestamp
@@ -73,7 +73,7 @@ func eventCard(e uhppoted.Event) string {
 			}
 		}
 
-		edits := sys.logs.Query("card", fmt.Sprintf("%v", e.CardNumber), "name")
+		edits := sys.logs.logs.Query("card", fmt.Sprintf("%v", e.CardNumber), "name")
 
 		sort.SliceStable(edits, func(i, j int) bool {
 			p := edits[i].Timestamp
@@ -125,7 +125,7 @@ func eventDoor(e uhppoted.Event) string {
 			}
 		}
 
-		edits := sys.logs.Query("door", fmt.Sprintf("%v:%v", e.DeviceID, e.Door), "name")
+		edits := sys.logs.logs.Query("door", fmt.Sprintf("%v:%v", e.DeviceID, e.Door), "name")
 
 		sort.SliceStable(edits, func(i, j int) bool {
 			p := edits[i].Timestamp

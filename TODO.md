@@ -1,5 +1,12 @@
 ## v0.7.x
 
+- [ ] Fix logs:
+      - [ ] multiple duplicate OIDs (?????)
+      - [ ] formatting
+```
+      "details": "Updated name from \u003cblank\u003e to q"
+```
+
 - [ ] OIDs:
       - [ ] move 'type' to metadata
       - [ ] 'modified' timestamps

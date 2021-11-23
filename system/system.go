@@ -33,9 +33,15 @@ var sys = system{
 	cards:       cards.NewCards(),
 	groups:      groups.NewGroups(),
 	events:      *events.NewEvents(),
-	logs:        logs.NewLogs(),
-	taskQ:       NewTaskQ(),
-	retention:   6 * time.Hour,
+	logs: struct {
+		logs logs.Logs
+		file string
+	}{
+		logs: logs.NewLogs(),
+	},
+
+	taskQ:     NewTaskQ(),
+	retention: 6 * time.Hour,
 }
 
 type system struct {
@@ -46,13 +52,16 @@ type system struct {
 	cards       cards.Cards
 	groups      groups.Groups
 	events      events.Events
-	logs        logs.Logs
-	rules       grule.Rules
-	taskQ       TaskQ
-	retention   time.Duration // time after which 'deleted' items are permanently removed
-	callback    callback
-	trail       trail
-	debug       bool
+	logs        struct {
+		logs logs.Logs
+		file string
+	}
+	rules     grule.Rules
+	taskQ     TaskQ
+	retention time.Duration // time after which 'deleted' items are permanently removed
+	callback  callback
+	trail     trail
+	debug     bool
 }
 
 type trail struct {
@@ -61,7 +70,8 @@ type trail struct {
 
 func (t trail) Write(records ...audit.AuditRecord) {
 	t.trail.Write(records...)
-	sys.logs.Received(records...)
+	sys.logs.logs.Received(records...)
+	sys.logs.logs.Save(sys.logs.file)
 }
 
 type callback struct {
@@ -73,6 +83,8 @@ type object struct {
 }
 
 func Init(cfg config.Config, conf string, debug bool) error {
+	sys.logs.file = cfg.HTTPD.System.Logs
+
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
 		if os.IsNotExist(err) {
 			warn(err)
@@ -113,13 +125,13 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		}
 	}
 
-	if blob, err := load(cfg.HTTPD.System.Logs); err != nil {
+	if blob, err := load(sys.logs.file); err != nil {
 		if os.IsNotExist(err) {
 			warn(err)
 		} else {
 			return err
 		}
-	} else if err := sys.logs.Load(cfg.HTTPD.System.Logs, blob["logs"]); err != nil {
+	} else if err := sys.logs.logs.Load(sys.logs.file, blob["logs"]); err != nil {
 		return err
 	}
 
@@ -151,6 +163,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	//	sys.groups.Print()
 	//	sys.cards.Print()
 	//	sys.events.Print()
+	//	sys.logs.Print()
 
 	go func() {
 		time.Sleep(2500 * time.Millisecond)
@@ -198,7 +211,7 @@ func Logs(start, count int) []interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	return sys.logs.AsObjects(start, count)
+	return sys.logs.logs.AsObjects(start, count)
 }
 
 func (s *system) refresh() {

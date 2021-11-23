@@ -93,3 +93,5 @@ undaemonize: build
 run: build
 	$(CMD) --debug --console
 
+delve: build
+	dlv exec ./bin/uhppoted-httpd -- --debug --console

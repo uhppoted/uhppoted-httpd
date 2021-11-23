@@ -18,8 +18,6 @@ import (
 
 type Logs struct {
 	Logs map[key]LogEntry `json:"logs"`
-
-	file string `json:"-"`
 }
 
 type key [20]byte
@@ -73,11 +71,6 @@ func (ll *Logs) Load(file string, blob []json.RawMessage) error {
 		return &l, newKey(l.Timestamp, l.UID, l.Item, l.ItemID, l.ItemName, l.Field, l.Details)
 	}
 
-	//	blob, err := load(file)
-	//	if err != nil {
-	//		return err
-	//	}
-
 	logs := map[key]LogEntry{}
 	for _, v := range blob {
 		if record, k := f(v); record != nil {
@@ -89,13 +82,12 @@ func (ll *Logs) Load(file string, blob []json.RawMessage) error {
 		}
 	}
 
-	ll.file = file
 	ll.Logs = logs
 
 	return nil
 }
 
-func (ll Logs) Save() error {
+func (ll Logs) Save(file string) error {
 	if err := validate(ll); err != nil {
 		return err
 	}
@@ -104,7 +96,7 @@ func (ll Logs) Save() error {
 		return err
 	}
 
-	if ll.file == "" {
+	if file == "" {
 		return nil
 	}
 
@@ -142,11 +134,11 @@ func (ll Logs) Save() error {
 		return err
 	}
 
-	if err := os.MkdirAll(filepath.Dir(ll.file), 0770); err != nil {
+	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
 		return err
 	}
 
-	return os.Rename(tmp.Name(), ll.file)
+	return os.Rename(tmp.Name(), file)
 }
 
 func (ll Logs) Print() {
@@ -158,7 +150,6 @@ func (ll Logs) Print() {
 func (ll *Logs) Clone() *Logs {
 	shadow := Logs{
 		Logs: map[key]LogEntry{},
-		file: ll.file,
 	}
 
 	for k, l := range ll.Logs {
@@ -186,6 +177,16 @@ func (ll *Logs) AsObjects(start, max int) []interface{} {
 		return q.Before(p)
 	})
 
+	jx := 0
+	for jx < len(keys) {
+		k := keys[jx]
+		if l, ok := ll.Logs[k]; ok {
+			fmt.Printf(">> %v  %v\n", jx, l)
+		}
+
+		jx++
+	}
+
 	ix := start
 	count := 0
 	for ix < len(keys) && count < max {
@@ -207,7 +208,6 @@ func (ll *Logs) AsObjects(start, max int) []interface{} {
 		last := ll.Logs[keys[len(keys)-1]]
 		objects = append(objects, catalog.NewObject2(LogsOID, LogsFirst, first.OID))
 		objects = append(objects, catalog.NewObject2(LogsOID, LogsLast, last.OID))
-
 	}
 
 	return objects
@@ -253,8 +253,6 @@ func (ll *Logs) Received(records ...audit.AuditRecord) {
 			ll.Logs[k] = NewLogEntry(oid, timestamp, record)
 		}
 	}
-
-	ll.Save()
 }
 
 func (ll *Logs) Query(item, id, field string) []LogEntry {

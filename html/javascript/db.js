@@ -363,34 +363,6 @@ function doors (o) {
 }
 
 function cards (o) {
-  // const oid = o.OID
-
-  // if (schema.cards.regex.test(oid)) {
-  //   if (DB.cards.has(oid)) {
-  //     const record = DB.cards.get(oid)
-  //     record.status = o.value
-  //     record.mark = 0
-  //     return
-  //   }
-
-  //   DB.cards.set(oid, {
-  //     OID: oid,
-  //     created: '',
-  //     name: '',
-  //     number: '',
-  //     from: '',
-  //     to: '',
-  //     groups: new Map(),
-  //     status: o.value,
-  //     mark: 0
-  //   })
-
-  //   return
-  // }
-
-  // DB.cards.forEach((v, k) => {
-  // if (oid.startsWith(k)) {
-
   const oid = o.OID
   const match = oid.match(schema.cards.regex)
 
@@ -628,6 +600,7 @@ function events (o) {
 }
 
 function logs (o) {
+  console.log(o)
   const oid = o.OID
 
   if (oid === schema.logs.base + '.0.1') {
