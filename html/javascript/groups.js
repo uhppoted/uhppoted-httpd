@@ -3,7 +3,7 @@ import { DB } from './db.js'
 import { schema } from './schema.js'
 
 export function refreshed () {
-  const groups = [...DB.groups.values()].sort((p, q) => p.index - q.index)
+  const groups = [...DB.groups.values()].sort((p, q) => p.created.localeCompare(q.created))
 
   realize(groups)
 

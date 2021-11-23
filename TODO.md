@@ -2,27 +2,23 @@
 
 - [ ] OIDs:
       - [ ] move 'type' to metadata
-      - [ ] remove 'display-index' 
-            - [x] doors
-            - [ ] groups
+      - [x] remove 'display-index' 
+            - [x] groups
 
       - .0.0 status
         - [ ] cards
-        - [x] doors
         - [ ] groups
         - [ ] events
         - [ ] logs
 
       - .0.1 created
         - [ ] cards
-        - [x] doors
         - [ ] groups
         - [ ] events
         - [ ] logs
 
       - .0.2 deleted
         - [ ] cards
-        - [x] doors
         - [ ] groups
         - [ ] events
         - [ ] logs
@@ -52,17 +48,10 @@
       - [ ] controllers
       - [ ] interfaces
   
-- [x] Change password
-      - [x] Confirm that /password out of a session fails miserably
-      - [x] Hide auth.Local.Users and auth.Local.Resources
-      - [x] Unit test for auth.Local serialization
-      - [x] Remove debug values from password.html
-      - [x] Reload auth.json if changed
-
-- [ ] Admin 'users' page
+- [ ] 'users' page
 - [ ] Make login cookie expire in 60s
       - Don't check login cookie except for login and
-- [ ] Set initial password
+- [ ] Set initial user + password
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 
@@ -168,10 +157,8 @@
 
 - [ ] MemDB
       - Rather use sync.Map
-      - JSON field names to lowercase
-      - add created and modified timestamps to records
+      - add modified timestamps to records
       - keep historical copies on save (for undo/revert)
-      - default row order should be by 'created'
       - unit tests for ACL rules
 
 - [ ] Cards
@@ -185,9 +172,6 @@
         - redirect to error page
 
       - custom webelement (https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
-      - draw out (TLA+ ?) local record FSM
-        -- e.g. add -> delete on rollback deletes
-        -- e.g. add -> commit only enabled after modified
 
       - pin selected rows
       - virtual DOM
@@ -253,6 +237,9 @@
       - [plurid](https://github.com/plurid/plurid)
       - []
 
+- Model editing in TLA+
+  -- e.g. add -> delete on rollback deletes
+  -- e.g. add -> commit only enabled after modified
 
 ## NOTES
 

@@ -18,7 +18,6 @@ type Group struct {
 	OID   catalog.OID          `json:"OID"`
 	Name  string               `json:"name"`
 	Doors map[catalog.OID]bool `json:"doors"`
-	Index uint32               `json:"index"`
 
 	created time.Time
 	deleted *time.Time
@@ -28,7 +27,6 @@ const DoorName = catalog.DoorName
 const GroupName = catalog.GroupName
 const GroupCreated = catalog.GroupCreated
 const GroupDoors = catalog.GroupDoors
-const GroupIndex = catalog.GroupIndex
 
 var created = time.Now()
 
@@ -56,7 +54,6 @@ func (g *Group) AsObjects() []interface{} {
 	created := g.created.Format("2006-01-02 15:04:05")
 	status := types.StatusOk
 	name := g.Name
-	index := g.Index
 
 	if g.deleted != nil {
 		status = types.StatusDeleted
@@ -66,7 +63,6 @@ func (g *Group) AsObjects() []interface{} {
 		catalog.NewObject(g.OID, status),
 		catalog.NewObject2(g.OID, GroupCreated, created),
 		catalog.NewObject2(g.OID, GroupName, name),
-		catalog.NewObject2(g.OID, GroupIndex, index),
 	}
 
 	doors := catalog.GetDoors()
@@ -185,13 +181,11 @@ func (g Group) serialize() ([]byte, error) {
 		OID     catalog.OID   `json:"OID"`
 		Name    string        `json:"name,omitempty"`
 		Doors   []catalog.OID `json:"doors"`
-		Index   uint32        `json:"index,omitempty"`
 		Created string        `json:"created"`
 	}{
 		OID:     g.OID,
 		Name:    g.Name,
 		Doors:   []catalog.OID{},
-		Index:   g.Index,
 		Created: g.created.Format("2006-01-02 15:04:05"),
 	}
 
@@ -213,7 +207,6 @@ func (g *Group) deserialize(bytes []byte) error {
 		OID     string        `json:"OID"`
 		Name    string        `json:"name,omitempty"`
 		Doors   []catalog.OID `json:"doors"`
-		Index   uint32        `json:"index,omitempty"`
 		Created string        `json:"created"`
 	}{}
 
@@ -224,7 +217,6 @@ func (g *Group) deserialize(bytes []byte) error {
 	g.OID = catalog.OID(record.OID)
 	g.Name = record.Name
 	g.Doors = map[catalog.OID]bool{}
-	g.Index = record.Index
 	g.created = created
 
 	for _, d := range record.Doors {
@@ -243,7 +235,6 @@ func (g Group) clone() Group {
 		OID:     g.OID,
 		Name:    g.Name,
 		Doors:   map[catalog.OID]bool{},
-		Index:   g.Index,
 		created: g.created,
 		deleted: g.deleted,
 	}

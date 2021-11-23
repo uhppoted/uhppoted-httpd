@@ -456,7 +456,6 @@ function groups (o) {
       created: '',
       name: '',
       doors: new Map(),
-      index: 0,
       status: o.value,
       mark: 0
     })
@@ -477,10 +476,6 @@ function groups (o) {
 
         case k + '.1':
           v.name = o.value
-          break
-
-        case k + '.3':
-          v.index = parseInt(o.value, 10)
           break
 
         default:

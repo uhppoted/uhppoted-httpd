@@ -2,17 +2,9 @@ import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
 
 export function refreshed () {
-  const list = []
+  const doors = [...DB.doors.values()].sort((p, q) => p.created.localeCompare(q.created))
 
-  DB.doors.forEach(c => {
-    list.push(c)
-  })
-
-  list.sort((p, q) => {
-    return p.created.localeCompare(q.created)
-  })
-
-  list.forEach(d => {
+  doors.forEach(d => {
     const row = updateFromDB(d.OID, d)
     if (row) {
       if (d.status === 'new') {

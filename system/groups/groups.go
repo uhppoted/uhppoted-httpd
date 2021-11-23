@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -45,8 +44,6 @@ func (gg *Groups) Load(file string) error {
 		return err
 	}
 
-	var index uint32 = 1
-
 	for _, v := range blob.Groups {
 		var g Group
 		if err := g.deserialize(v); err == nil {
@@ -54,10 +51,7 @@ func (gg *Groups) Load(file string) error {
 				return fmt.Errorf("group '%v': duplicate OID (%v)", g.Name, g.OID)
 			}
 
-			g.Index = index
 			gg.Groups[g.OID] = g
-
-			index++
 		}
 	}
 
@@ -91,15 +85,8 @@ func (gg Groups) Save() error {
 		Groups: []json.RawMessage{},
 	}
 
-	keys := []catalog.OID{}
 	for _, g := range gg.Groups {
-		keys = append(keys, g.OID)
-	}
-
-	sort.SliceStable(keys, func(i, j int) bool { return gg.Groups[keys[i]].Index < gg.Groups[keys[j]].Index })
-
-	for _, k := range keys {
-		if g, ok := gg.Groups[k]; ok && g.IsValid() && !g.IsDeleted() {
+		if g.IsValid() && !g.IsDeleted() {
 			if record, err := g.serialize(); err == nil && record != nil {
 				serializable.Groups = append(serializable.Groups, record)
 			}
@@ -158,19 +145,10 @@ func (gg *Groups) AsObjects() []interface{} {
 
 	objects := []interface{}{}
 
-	keys := []catalog.OID{}
 	for _, g := range gg.Groups {
-		keys = append(keys, g.OID)
-	}
-
-	sort.SliceStable(keys, func(i, j int) bool { return gg.Groups[keys[i]].Index < gg.Groups[keys[j]].Index })
-
-	for _, k := range keys {
-		if g, ok := gg.Groups[k]; ok {
-			if g.IsValid() || g.IsDeleted() {
-				if l := g.AsObjects(); l != nil {
-					objects = append(objects, l...)
-				}
+		if g.IsValid() || g.IsDeleted() {
+			if l := g.AsObjects(); l != nil {
+				objects = append(objects, l...)
 			}
 		}
 	}
@@ -203,13 +181,6 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, d
 			return nil, fmt.Errorf("Failed to add 'new' group")
 		} else {
 			g.log(auth, "add", g.OID, "group", "Added 'new' group", dbc)
-
-			g.Index = uint32(len(gg.Groups) + 1)
-			for _, p := range gg.Groups {
-				if g.Index < p.Index {
-					g.Index = uint32(p.Index + 1)
-				}
-			}
 
 			gg.Groups[g.OID] = *g
 			objects = append(objects, catalog.NewObject(g.OID, "new"))
