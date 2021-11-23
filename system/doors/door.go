@@ -25,6 +25,8 @@ type Door struct {
 	deleted *time.Time
 }
 
+const BLANK = "'blank'"
+
 var created = time.Now()
 
 func (d *Door) IsValid() bool {
@@ -229,7 +231,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, "<blank>"), stringify(value, "<blank>")), dbc)
+				d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, BLANK), stringify(value, BLANK)), dbc)
 				d.Name = value
 				objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
 			}

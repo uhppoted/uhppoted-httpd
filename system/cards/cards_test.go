@@ -395,7 +395,7 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 					ID:          "1234567",
 					Name:        "Dobby",
 					Field:       "name",
-					Description: "Updated name from Dobby to <blank>",
+					Description: "Updated name from Dobby to 'blank'",
 					Before:      "Dobby",
 					After:       "",
 				},

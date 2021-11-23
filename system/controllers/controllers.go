@@ -32,6 +32,8 @@ type Callback interface {
 	Append(deviceID uint32, events []uhppoted.Event)
 }
 
+const BLANK = "'blank'"
+
 var guard sync.Mutex
 
 var windows = struct {

@@ -26,6 +26,8 @@ type Card struct {
 	deleted *time.Time
 }
 
+const BLANK = "'blank'"
+
 var created = time.Now()
 
 func (c Card) String() string {
@@ -166,7 +168,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 					"update",
 					c.OID,
 					"name",
-					fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, "<blank>"), stringify(value, "<blank>")),
+					fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, BLANK), stringify(value, BLANK)),
 					stringify(c.Name, ""),
 					stringify(value, ""),
 					dbc)

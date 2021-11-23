@@ -28,6 +28,8 @@ const GroupName = catalog.GroupName
 const GroupCreated = catalog.GroupCreated
 const GroupDoors = catalog.GroupDoors
 
+const BLANK = "'blank'"
+
 var created = time.Now()
 
 func (g Group) String() string {
@@ -127,7 +129,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, "<blank>"), stringify(value, "<blank>")), dbc)
+				g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, BLANK), stringify(value, BLANK)), dbc)
 				g.Name = value
 				objects = append(objects, catalog.NewObject2(g.OID, GroupName, g.Name))
 			}

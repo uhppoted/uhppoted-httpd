@@ -288,7 +288,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					"update",
 					c.OID,
 					"name",
-					fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, "<blank>"), stringify(value, "<blank>")),
+					fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, BLANK), stringify(value, BLANK)),
 					stringify(c.Name, ""),
 					stringify(value, ""),
 					dbc)
@@ -308,7 +308,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 						"update",
 						c.OID,
 						"device-id",
-						fmt.Sprintf("Updated device ID from %v to %v", stringify(c.DeviceID, "<blank>"), stringify(value, "<blank>")),
+						fmt.Sprintf("Updated device ID from %v to %v", stringify(c.DeviceID, BLANK), stringify(value, BLANK)),
 						stringify(c.DeviceID, ""),
 						stringify(value, ""),
 						dbc)
@@ -363,7 +363,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					"update",
 					c.OID,
 					"address",
-					fmt.Sprintf("Updated endpoint from %v to %v", stringify(c.IP, "<blank>"), stringify(value, "<blank>")),
+					fmt.Sprintf("Updated endpoint from %v to %v", stringify(c.IP, BLANK), stringify(value, BLANK)),
 					stringify(c.IP, ""),
 					stringify(value, ""),
 					dbc)
@@ -382,7 +382,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					"update",
 					c.OID,
 					"timezone",
-					fmt.Sprintf("Updated timezone from %v to %v", stringify(c.TimeZone, "<blank>"), stringify(tz.String(), "<blank>")),
+					fmt.Sprintf("Updated timezone from %v to %v", stringify(c.TimeZone, BLANK), stringify(tz.String(), BLANK)),
 					stringify(c.TimeZone, ""),
 					stringify(tz.String(), ""),
 					dbc)

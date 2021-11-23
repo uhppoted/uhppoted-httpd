@@ -2,7 +2,7 @@
 
 - [ ] Fix logs:
       - [ ] multiple duplicate OIDs (?????)
-      - [ ] formatting
+      - [x] formatting
 ```
       "details": "Updated name from \u003cblank\u003e to q"
 ```
@@ -45,8 +45,14 @@
 
 - [ ] Genericize load/save
       - [ ] Define system.Component interface
-      - [ ] (?) maybe rather just read file and pass in bytes/reader/writer (??)
+      - [ ] Read file in system and pass in json.RawMessage to Load(...)
             - [ ] Move file to system
+                  - [ ] interfaces
+                  - [ ] controllers
+                  - [ ] doors
+                  - [ ] cards
+                  - [ ] groups
+                  - [x] logs
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] logs
       - [ ] events
