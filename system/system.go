@@ -292,8 +292,8 @@ func unpack(m map[string]interface{}) ([]object, error) {
 	return o.Objects, nil
 }
 
-func load(file string) (map[string][]json.RawMessage, error) {
-	blob := map[string][]json.RawMessage{}
+func load(file string) (map[string]json.RawMessage, error) {
+	blob := map[string]json.RawMessage{}
 
 	bytes, err := os.ReadFile(file)
 	if err != nil {

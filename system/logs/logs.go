@@ -61,7 +61,7 @@ func NewLogs() Logs {
 	return logs
 }
 
-func (ll *Logs) Load(file string, blob []json.RawMessage) error {
+func (ll *Logs) Load(file string, blob json.RawMessage) error {
 	f := func(bytes json.RawMessage) (*LogEntry, key) {
 		var l LogEntry
 		if err := l.deserialize(bytes); err != nil {
@@ -71,8 +71,13 @@ func (ll *Logs) Load(file string, blob []json.RawMessage) error {
 		return &l, newKey(l.Timestamp, l.UID, l.Item, l.ItemID, l.ItemName, l.Field, l.Details)
 	}
 
+	rs := []json.RawMessage{}
+	if err := json.Unmarshal(blob, &rs); err != nil {
+		return err
+	}
+
 	logs := map[key]LogEntry{}
-	for _, v := range blob {
+	for _, v := range rs {
 		if record, k := f(v); record != nil {
 			if x, ok := logs[k]; ok {
 				return fmt.Errorf("duplicate record (%#v and %#v)", record, x)
