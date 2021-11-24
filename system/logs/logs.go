@@ -86,6 +86,10 @@ func (ll *Logs) Load(file string, blob json.RawMessage) error {
 		}
 	}
 
+	for _, v := range logs {
+		catalog.PutLogEntry(v.OID)
+	}
+
 	ll.Logs = logs
 
 	return nil

@@ -1,7 +1,6 @@
 ## v0.7.x
 
-- [ ] Fix logs:
-      - [ ] multiple duplicate OIDs (?????) e.g.
+- [x] Fix multiple duplicate logs OIDs
 ```
   {
       "timestamp": "2021-11-24T12:05:51.909812-08:00",
@@ -16,7 +15,6 @@
       "after": "BetaXYZ"
     },
 ```
-
 
 - [ ] OIDs:
       - [ ] move 'type' to metadata
