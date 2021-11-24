@@ -28,11 +28,13 @@
       - [ ] (?) Return status if IsValid && !IsDeleted
       - [ ] (?) Item deleted OID
       - [ ] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
-            - [ ] interfaces
+            - [x] interfaces
             - [ ] controllers
-            - [ ] doors
-            - [ ] cards
-            - [ ] groups
+            - [x] doors
+            - [x] cards
+            - [x] groups
+      - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
+            object that has been swept
 
 - [ ] Genericize load/save
       - [ ] Define system.Component interface

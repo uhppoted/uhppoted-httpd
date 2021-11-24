@@ -471,24 +471,25 @@ function groups (o) {
       v.name = o.value
       break
 
-    default:
-        const m = oid.match(schema.groups.doors)
-        if (m && m.length > 2) {
-          const suboid = m[1]
-          const suffix = m[2]
+    default: {
+      const m = oid.match(schema.groups.doors)
+      if (m && m.length > 2) {
+        const suboid = m[1]
+        const suffix = m[2]
 
-          if (!v.doors.has(suboid)) {
-            v.doors.set(suboid, { door: '', allowed: false })
-          }
-
-          const door = v.doors.get(suboid)
-
-          if (!suffix) {
-            door.allowed = o.value === 'true'
-          } else if (suffix === '.1') {
-            door.door = o.value
-          }
+        if (!v.doors.has(suboid)) {
+          v.doors.set(suboid, { door: '', allowed: false })
         }
+
+        const door = v.doors.get(suboid)
+
+        if (!suffix) {
+          door.allowed = o.value === 'true'
+        } else if (suffix === '.1') {
+          door.door = o.value
+        }
+      }
+    }
   }
 }
 

@@ -4,7 +4,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
-const Status = catalog.Status
+const LANStatus = catalog.Status
 const LANName = catalog.InterfaceName
 const LANType = catalog.InterfaceType
 const LANBindAddress = catalog.LANBindAddress

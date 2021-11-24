@@ -59,7 +59,7 @@ func (l *LAN) String() string {
 func (l *LAN) AsObjects() []interface{} {
 	objects := []interface{}{
 		catalog.NewObject(l.OID, types.StatusUncertain),
-		catalog.NewObject2(l.OID, Status, l.status),
+		catalog.NewObject2(l.OID, LANStatus, l.Status()),
 		catalog.NewObject2(l.OID, LANType, "LAN"),
 		catalog.NewObject2(l.OID, LANName, l.Name),
 		catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress),
@@ -106,6 +106,10 @@ func (l *LAN) clone() *LAN {
 	}
 
 	return nil
+}
+
+func (l *LAN) Status() types.Status {
+	return l.status
 }
 
 func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
@@ -162,6 +166,10 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 				l.ListenAddress = *addr
 				objects = append(objects, catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress))
 			}
+		}
+
+		if l.deleted == nil {
+			objects = append(objects, catalog.NewObject2(l.OID, LANStatus, l.Status()))
 		}
 	}
 

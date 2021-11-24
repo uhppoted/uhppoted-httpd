@@ -49,16 +49,11 @@ func (g Group) IsDeleted() bool {
 
 func (g *Group) AsObjects() []interface{} {
 	created := g.created.Format("2006-01-02 15:04:05")
-	status := types.StatusOk
 	name := g.Name
-
-	if g.deleted != nil {
-		status = types.StatusDeleted
-	}
 
 	objects := []interface{}{
 		catalog.NewObject(g.OID, ""),
-		catalog.NewObject2(g.OID, GroupStatus, status),
+		catalog.NewObject2(g.OID, GroupStatus, g.Status()),
 		catalog.NewObject2(g.OID, GroupCreated, created),
 		catalog.NewObject2(g.OID, GroupName, name),
 	}
@@ -105,6 +100,14 @@ func (g *Group) AsRuleEntity() interface{} {
 	}
 
 	return &entity
+}
+
+func (g *Group) Status() types.Status {
+	if g.deleted != nil {
+		return types.StatusDeleted
+	}
+
+	return types.StatusOk
 }
 
 func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
@@ -167,7 +170,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 		}
 
 		if g.deleted == nil {
-			objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, types.StatusOk))
+			objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, g.Status()))
 		}
 	}
 

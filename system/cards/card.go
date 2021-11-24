@@ -68,20 +68,15 @@ func (c *Card) IsDeleted() bool {
 }
 
 func (c *Card) AsObjects() []interface{} {
-	status := types.StatusOk
 	created := c.created.Format("2006-01-02 15:04:05")
 	name := c.Name
 	number := c.Card
 	from := c.From
 	to := c.To
 
-	if c.deleted != nil {
-		status = types.StatusDeleted
-	}
-
 	objects := []interface{}{
 		catalog.NewObject(c.OID, ""),
-		catalog.NewObject2(c.OID, CardStatus, status),
+		catalog.NewObject2(c.OID, CardStatus, c.Status()),
 		catalog.NewObject2(c.OID, CardCreated, created),
 		catalog.NewObject2(c.OID, CardName, name),
 		catalog.NewObject2(c.OID, CardNumber, number),
@@ -143,6 +138,14 @@ func (c *Card) AsRuleEntity() interface{} {
 	}
 
 	return &entity{}
+}
+
+func (c *Card) Status() types.Status {
+	if c.deleted != nil {
+		return types.StatusDeleted
+	}
+
+	return types.StatusOk
 }
 
 func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
@@ -352,7 +355,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		}
 
 		if c.deleted == nil {
-			objects = append(objects, catalog.NewObject2(c.OID, CardStatus, types.StatusOk))
+			objects = append(objects, catalog.NewObject2(c.OID, CardStatus, c.Status()))
 		}
 	}
 
