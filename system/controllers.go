@@ -31,7 +31,11 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 		}
 	}
 
-	if err := save(&shadow); err != nil {
+	if err := validate(&shadow); err != nil {
+		return nil, err
+	}
+
+	if err := shadow.Save(); err != nil {
 		return nil, err
 	}
 
@@ -45,14 +49,6 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}{
 		Objects: list,
 	}, nil
-}
-
-func save(c *controllers.ControllerSet) error {
-	if err := validate(c); err != nil {
-		return err
-	}
-
-	return c.Save()
 }
 
 func validate(c *controllers.ControllerSet) error {

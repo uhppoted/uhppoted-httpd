@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"sort"
 	"sync"
 	"time"
@@ -92,58 +91,26 @@ func (ll *Logs) Load(file string, blob json.RawMessage) error {
 	return nil
 }
 
-func (ll Logs) Save(file string) error {
+func (ll Logs) Save() (json.RawMessage, error) {
 	if err := validate(ll); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := scrub(ll); err != nil {
-		return err
+		return nil, err
 	}
 
-	if file == "" {
-		return nil
-	}
-
-	serializable := struct {
-		Logs []json.RawMessage `json:"logs"`
-	}{
-		Logs: []json.RawMessage{},
-	}
+	serializable := []json.RawMessage{}
 
 	for _, l := range ll.Logs {
 		if l.IsValid() && !l.IsDeleted() {
 			if record, err := l.serialize(); err == nil && record != nil {
-				serializable.Logs = append(serializable.Logs, record)
+				serializable = append(serializable, record)
 			}
 		}
 	}
 
-	b, err := json.MarshalIndent(serializable, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	tmp, err := os.CreateTemp("", "uhppoted-logs.*")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), file)
+	return json.MarshalIndent(serializable, "", "  ")
 }
 
 func (ll Logs) Print() {

@@ -1,7 +1,22 @@
 ## v0.7.x
 
 - [ ] Fix logs:
-      - [ ] multiple duplicate OIDs (?????)
+      - [ ] multiple duplicate OIDs (?????) e.g.
+```
+  {
+      "timestamp": "2021-11-24T12:05:51.909812-08:00",
+      "UID": "admin",
+      "OID": "0.7.1",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "name",
+      "details": "Updated name from Beta to BetaXYZ",
+      "before": "Beta",
+      "after": "BetaXYZ"
+    },
+```
+
 
 - [ ] OIDs:
       - [ ] move 'type' to metadata
@@ -46,13 +61,14 @@
                   - [ ] cards
                   - [ ] groups
             - [ ] Restructure to support e.g. DB as an alternative
-      - [ ] logs
-      - [ ] events
-      - [ ] groups
-      - [ ] cards
-      - [ ] doors
-      - [ ] controllers
-      - [ ] interfaces
+      - [ ] Save file in system and get json.RawMessage from Save(...)
+            - [x] logs
+            - [ ] events
+            - [ ] groups
+            - [ ] cards
+            - [ ] doors
+            - [ ] controllers
+            - [ ] interfaces
   
 - [ ] 'users' page
 - [ ] Make login cookie expire in 60s

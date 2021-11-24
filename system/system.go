@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -36,8 +37,10 @@ var sys = system{
 	logs: struct {
 		logs logs.Logs
 		file string
+		tag  string
 	}{
 		logs: logs.NewLogs(),
+		tag:  "logs",
 	},
 
 	taskQ:     NewTaskQ(),
@@ -55,6 +58,7 @@ type system struct {
 	logs        struct {
 		logs logs.Logs
 		file string
+		tag  string
 	}
 	rules     grule.Rules
 	taskQ     TaskQ
@@ -71,7 +75,12 @@ type trail struct {
 func (t trail) Write(records ...audit.AuditRecord) {
 	t.trail.Write(records...)
 	sys.logs.logs.Received(records...)
-	sys.logs.logs.Save(sys.logs.file)
+
+	if bytes, err := sys.logs.logs.Save(); err != nil {
+		warn(err)
+	} else if err := save(sys.logs.file, sys.logs.tag, bytes); err != nil {
+		warn(err)
+	}
 }
 
 type callback struct {
@@ -131,7 +140,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		} else {
 			return err
 		}
-	} else if err := sys.logs.logs.Load(sys.logs.file, blob["logs"]); err != nil {
+	} else if err := sys.logs.logs.Load(sys.logs.file, blob[sys.logs.tag]); err != nil {
 		return err
 	}
 
@@ -305,6 +314,42 @@ func load(file string) (map[string]json.RawMessage, error) {
 	}
 
 	return blob, nil
+}
+
+func save(file string, tag string, bytes json.RawMessage) error {
+	if file == "" {
+		return nil
+	}
+
+	serializable := map[string]json.RawMessage{
+		tag: bytes,
+	}
+
+	b, err := json.MarshalIndent(serializable, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	tmp, err := os.CreateTemp("", fmt.Sprintf("uhppoted-%v.*", tag))
+	if err != nil {
+		return err
+	}
+
+	defer os.Remove(tmp.Name())
+
+	if _, err := tmp.Write(b); err != nil {
+		return err
+	}
+
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
+		return err
+	}
+
+	return os.Rename(tmp.Name(), file)
 }
 
 // Returns a deduplicated list of objects, retaining only the the last (i.e. latest) value.
