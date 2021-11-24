@@ -149,7 +149,7 @@ function realize (cards) {
     const surplus = [...cols].filter(([k]) => !groups.has(k))
 
     missing.forEach(o => {
-      const group = o.OID.match(schema.groups.regex)[1]
+      const group = o.OID.match(schema.groups.regex)[2]
       const template = document.querySelector('#group')
 
       const uuid = row.id

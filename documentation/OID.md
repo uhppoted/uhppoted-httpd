@@ -94,6 +94,11 @@
 |
 |- 0.5                                                                       # groups
 |    |- 0.5.1                                                                # group #1
+|    |      |- 0.5.1.0: <metadata>                                           #    metadata
+|    |      |        |- 0.5.1.0.0: <status>                                  #       current status
+|    |      |        |- 0.5.1.0.1: <created>                                 #       created date/time
+|    |      |        |- 0.5.1.0.2: <deleted>                                 #       deleted date/time
+|    |      |        |- 0.5.1.0.3: <modified>                                #       modified timestamp
 |    |      |- 0.5.1.1: <name>                                               #       Name
 |    |      |- 0.5.1.2: <index>                                              #       Index (display order)
 |    |- ...

@@ -146,10 +146,10 @@ var schema = Schema{
 	Interfaces: Interfaces{
 		OID: InterfacesOID,
 
-		Status:   InterfaceStatus,
-		Created:  InterfaceCreated,
-		Deleted:  InterfaceDeleted,
-		Modified: InterfaceModified,
+		Status:   Status,
+		Created:  Created,
+		Deleted:  Deleted,
+		Modified: Modified,
 
 		Type:      InterfaceType,
 		Name:      InterfaceName,
@@ -214,6 +214,7 @@ var schema = Schema{
 	Cards: Cards{
 		OID: CardsOID,
 
+		Status:   Status,
 		Created:  CardCreated,
 		Deleted:  CardDeleted,
 		Modified: CardModified,
@@ -228,9 +229,10 @@ var schema = Schema{
 	Groups: Groups{
 		OID: GroupsOID,
 
-		Created:  GroupCreated,
-		Deleted:  GroupDeleted,
-		Modified: GroupModified,
+		Status:   Status,
+		Created:  Created,
+		Deleted:  Deleted,
+		Modified: Modified,
 
 		Name:  GroupName,
 		Doors: GroupDoors,
@@ -278,10 +280,11 @@ const GroupsOID OID = "0.5"
 const EventsOID OID = "0.6"
 const LogsOID OID = "0.7"
 
-const InterfaceStatus Suffix = ".0.0"
-const InterfaceCreated Suffix = ".0.1"
-const InterfaceDeleted Suffix = ".0.2"
-const InterfaceModified Suffix = ".0.3"
+const Status Suffix = ".0.0"
+const Created Suffix = ".0.1"
+const Deleted Suffix = ".0.2"
+const Modified Suffix = ".0.3"
+
 const InterfaceType Suffix = ".0.4"
 const InterfaceName Suffix = ".1"
 const InterfaceID Suffix = ".2"
@@ -289,47 +292,47 @@ const LANBindAddress Suffix = ".3.1"
 const LANBroadcastAddress Suffix = ".3.2"
 const LANListenAddress Suffix = ".3.3"
 
-const ControllerStatus = ".0.0"
-const ControllerCreated = ".0.1"
-const ControllerDeleted = ".0.2"
-const ControllerModified = ".0.3"
-const ControllerName = ".1"
-const ControllerDeviceID = ".2"
-const ControllerAddress = ".3"
-const ControllerAddressConfigured = ".3.1"
-const ControllerAddressStatus = ".3.2"
-const ControllerDateTime = ".4"
-const ControllerDateTimeSystem = ".4.1"
-const ControllerDateTimeStatus = ".4.2"
-const ControllerCards = ".5"
-const ControllerCardsStatus = ".5.1"
-const ControllerEvents = ".6"
-const ControllerEventsStatus = ".6.1"
-const ControllerDoor1 = ".7"
-const ControllerDoor2 = ".8"
-const ControllerDoor3 = ".9"
-const ControllerDoor4 = ".10"
+const ControllerStatus Suffix = ".0.0"
+const ControllerCreated Suffix = ".0.1"
+const ControllerDeleted Suffix = ".0.2"
+const ControllerModified Suffix = ".0.3"
+const ControllerName Suffix = ".1"
+const ControllerDeviceID Suffix = ".2"
+const ControllerAddress Suffix = ".3"
+const ControllerAddressConfigured Suffix = ".3.1"
+const ControllerAddressStatus Suffix = ".3.2"
+const ControllerDateTime Suffix = ".4"
+const ControllerDateTimeSystem Suffix = ".4.1"
+const ControllerDateTimeStatus Suffix = ".4.2"
+const ControllerCards Suffix = ".5"
+const ControllerCardsStatus Suffix = ".5.1"
+const ControllerEvents Suffix = ".6"
+const ControllerEventsStatus Suffix = ".6.1"
+const ControllerDoor1 Suffix = ".7"
+const ControllerDoor2 Suffix = ".8"
+const ControllerDoor3 Suffix = ".9"
+const ControllerDoor4 Suffix = ".10"
 
-const DoorStatus = ".0.0"
-const DoorCreated = ".0.1"
-const DoorDeleted = ".0.2"
-const DoorModified = ".0.3"
-const DoorControllerOID = ".0.4"
-const DoorControllerCreated = ".0.4.1"
-const DoorControllerName = ".0.4.2"
-const DoorControllerID = ".0.4.3"
-const DoorControllerDoor = ".0.4.4"
-const DoorName = ".1"
-const DoorDelay = ".2"
-const DoorDelayStatus = ".2.1"
-const DoorDelayConfigured = ".2.2"
-const DoorDelayError = ".2.3"
-const DoorDelayModified = ".2.4"
-const DoorControl = ".3"
-const DoorControlStatus = ".3.1"
-const DoorControlConfigured = ".3.2"
-const DoorControlError = ".3.3"
-const DoorControlModified = ".3.4"
+const DoorStatus Suffix = ".0.0"
+const DoorCreated Suffix = ".0.1"
+const DoorDeleted Suffix = ".0.2"
+const DoorModified Suffix = ".0.3"
+const DoorControllerOID Suffix = ".0.4"
+const DoorControllerCreated Suffix = ".0.4.1"
+const DoorControllerName Suffix = ".0.4.2"
+const DoorControllerID Suffix = ".0.4.3"
+const DoorControllerDoor Suffix = ".0.4.4"
+const DoorName Suffix = ".1"
+const DoorDelay Suffix = ".2"
+const DoorDelayStatus Suffix = ".2.1"
+const DoorDelayConfigured Suffix = ".2.2"
+const DoorDelayError Suffix = ".2.3"
+const DoorDelayModified Suffix = ".2.4"
+const DoorControl Suffix = ".3"
+const DoorControlStatus Suffix = ".3.1"
+const DoorControlConfigured Suffix = ".3.2"
+const DoorControlError Suffix = ".3.3"
+const DoorControlModified Suffix = ".3.4"
 
 const CardStatus Suffix = ".0.0"
 const CardCreated Suffix = ".0.1"
@@ -341,15 +344,11 @@ const CardFrom Suffix = ".3"
 const CardTo Suffix = ".4"
 const CardGroups Suffix = ".5"
 
-const GroupStatus Suffix = ".0.0"
-const GroupCreated Suffix = ".0.1"
-const GroupDeleted Suffix = ".0.2"
-const GroupModified Suffix = ".0.3"
 const GroupName Suffix = ".1"
 const GroupDoors Suffix = ".2"
 
-const EventsFirst = ".0.1"
-const EventsLast = ".0.2"
+const EventsFirst Suffix = ".0.1"
+const EventsLast Suffix = ".0.2"
 
 const EventTimestamp Suffix = ".1"
 const EventDeviceID Suffix = ".2"
@@ -364,8 +363,8 @@ const EventDeviceName Suffix = ".10"
 const EventDoorName Suffix = ".11"
 const EventCardName Suffix = ".12"
 
-const LogsFirst = ".0.1"
-const LogsLast = ".0.2"
+const LogsFirst Suffix = ".0.1"
+const LogsLast Suffix = ".0.2"
 
 const LogTimestamp Suffix = ".1"
 const LogUID Suffix = ".2"

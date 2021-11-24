@@ -132,7 +132,7 @@ function interfaces (o) {
   const base = match[1]
 
   if (!DB.interfaces.has(base)) {
-    DB.interfaces.set(oid, {
+    DB.interfaces.set(base, {
       OID: oid,
       type: 'LAN',
       name: 'LAN',
@@ -147,27 +147,27 @@ function interfaces (o) {
   const v = DB.interfaces.get(base)
 
   switch (oid) {
-    case base + schema.interfaces.status:
+    case `${base}${schema.interfaces.status}`:
       v.status = o.value
       break
 
-    case base + schema.interfaces.type:
+    case `${base}${schema.interfaces.type}`:
       v.type = o.value
       break
 
-    case base + schema.interfaces.name:
+    case `${base}${schema.interfaces.name}`:
       v.name = o.value
       break
 
-    case base + schema.interfaces.bind:
+    case `${base}${schema.interfaces.bind}`:
       v.bind = o.value
       break
 
-    case base + schema.interfaces.broadcast:
+    case `${base}${schema.interfaces.broadcast}`:
       v.broadcast = o.value
       break
 
-    case base + schema.interfaces.listen:
+    case `${base}${schema.interfaces.listen}`:
       v.listen = o.value
       break
   }
@@ -184,7 +184,7 @@ function controllers (o) {
   const base = match[1]
 
   if (!DB.controllers.has(base)) {
-    DB.controllers.set(oid, {
+    DB.controllers.set(base, {
       OID: oid,
       created: '',
       name: '',
@@ -202,75 +202,75 @@ function controllers (o) {
   const v = DB.controllers.get(base)
 
   switch (oid) {
-    case base + schema.controllers.status:
+    case `${base}${schema.controllers.status}`:
       v.status = o.value
       break
 
-    case base + schema.controllers.created:
+    case `${base}${schema.controllers.created}`:
       v.created = o.value
       break
 
-    case base + '.1':
+    case `${base}.1`:
       v.name = o.value
       break
 
-    case base + '.2':
+    case `${base}.2`:
       v.deviceID = o.value
       break
 
-    case base + '.3':
+    case `${base}.3`:
       v.address.address = o.value
       break
 
-    case base + '.3.1':
+    case `${base}.3.1`:
       v.address.configured = o.value
       break
 
-    case base + '.3.2':
+    case `${base}.3.2`:
       v.address.status = o.value
       break
 
-    case base + '.4':
+    case `${base}.4`:
       v.datetime.datetime = o.value
       break
 
-    case base + '.4.1':
+    case `${base}.4.1`:
       v.datetime.expected = o.value
       break
 
-    case base + '.4.2':
+    case `${base}.4.2`:
       v.datetime.status = o.value
       break
 
-    case base + '.5':
+    case `${base}.5`:
       v.cards.cards = o.value
       break
 
-    case base + '.5.1':
+    case `${base}.5.1`:
       v.cards.status = o.value
       break
 
-    case base + '.6':
+    case `${base}.6`:
       v.events.events = o.value
       break
 
-    case base + '.6.1':
+    case `${base}.6.1`:
       v.events.status = o.value
       break
 
-    case base + '.7':
+    case `${base}.7`:
       v.doors[1] = o.value
       break
 
-    case base + '.8':
+    case `${base}.8`:
       v.doors[2] = o.value
       break
 
-    case base + '.9':
+    case `${base}.9`:
       v.doors[3] = o.value
       break
 
-    case base + '.10':
+    case `${base}.10`:
       v.doors[4] = o.value
       break
   }
@@ -287,7 +287,7 @@ function doors (o) {
   const base = match[1]
 
   if (!DB.doors.has(base)) {
-    DB.doors.set(oid, {
+    DB.doors.set(base, {
       OID: oid,
       created: '',
       controller: '',
@@ -304,59 +304,59 @@ function doors (o) {
   const v = DB.doors.get(base)
 
   switch (oid) {
-    case base + schema.doors.status:
+    case `${base}${schema.doors.status}`:
       v.status = o.value
       break
 
-    case base + schema.doors.created:
+    case `${base}${schema.doors.created}`:
       v.created = o.value
       break
 
-    case base + '.0.4.2':
+    case `${base}.0.4.2`:
       v.controller = o.value
       break
 
-    case base + '.0.4.3':
+    case `${base}.0.4.3`:
       v.deviceID = o.value
       break
 
-    case base + '.0.4.4':
+    case `${base}.0.4.4`:
       v.door = o.value
       break
 
-    case base + '.1':
+    case `${base}.1`:
       v.name = o.value
       break
 
-    case base + '.2':
+    case `${base}.2`:
       v.delay.delay = o.value
       break
 
-    case base + '.2.1':
+    case `${base}.2.1`:
       v.delay.status = o.value
       break
 
-    case base + '.2.2':
+    case `${base}.2.2`:
       v.delay.configured = o.value
       break
 
-    case base + '.2.3':
+    case `${base}.2.3`:
       v.delay.err = o.value
       break
 
-    case base + '.3':
+    case `${base}.3`:
       v.mode.mode = o.value
       break
 
-    case base + '.3.1':
+    case `${base}.3.1`:
       v.mode.status = o.value
       break
 
-    case base + '.3.2':
+    case `${base}.3.2`:
       v.mode.configured = o.value
       break
 
-    case base + '.3.3':
+    case `${base}.3.3`:
       v.mode.err = o.value
       break
   }
@@ -373,7 +373,7 @@ function cards (o) {
   const base = match[1]
 
   if (!DB.cards.has(base)) {
-    DB.cards.set(oid, {
+    DB.cards.set(base, {
       OID: oid,
       created: '',
       name: '',
@@ -389,27 +389,27 @@ function cards (o) {
   const v = DB.cards.get(base)
 
   switch (oid) {
-    case base + schema.cards.status:
+    case `${base}${schema.cards.status}`:
       v.status = o.value
       break
 
-    case base + schema.cards.created:
+    case `${base}${schema.cards.created}`:
       v.created = o.value
       break
 
-    case base + schema.cards.name:
+    case `${base}${schema.cards.name}`:
       v.name = o.value
       break
 
-    case base + schema.cards.card:
+    case `${base}${schema.cards.card}`:
       v.number = o.value
       break
 
-    case base + schema.cards.from:
+    case `${base}${schema.cards.from}`:
       v.from = o.value
       break
 
-    case base + schema.cards.to:
+    case `${base}${schema.cards.to}`:
       v.to = o.value
       break
 
@@ -437,16 +437,16 @@ function cards (o) {
 
 function groups (o) {
   const oid = o.OID
+  const match = oid.match(schema.groups.regex)
 
-  if (schema.groups.regex.test(oid)) {
-    if (DB.groups.has(oid)) {
-      const record = DB.groups.get(oid)
-      record.status = o.value
-      record.mark = 0
-      return
-    }
+  if (!match || match.length < 2) {
+    return
+  }
 
-    DB.groups.set(oid, {
+  const base = match[1]
+
+  if (!DB.groups.has(base)) {
+    DB.groups.set(base, {
       OID: oid,
       created: '',
       name: '',
@@ -454,59 +454,53 @@ function groups (o) {
       status: o.value,
       mark: 0
     })
-
-    return
   }
 
-  DB.groups.forEach((v, k) => {
-    if (oid.startsWith(k)) {
-      switch (oid) {
-        case k:
-          v.status = o.value
-          break
+  const v = DB.groups.get(base)
 
-        case k + '.0.1':
-          v.created = o.value
-          break
+  switch (oid) {
+    case `${base}${schema.groups.status}`:
+      v.status = o.value
+      break
 
-        case k + '.1':
-          v.name = o.value
-          break
+    case `${base}${schema.groups.created}`:
+      v.created = o.value
+      break
 
-        default:
-          if (oid.startsWith(k + '.2.')) {
-            const m = oid.match(schema.groups.doors)
-            if (m && m.length > 2) {
-              const suboid = m[1]
-              const suffix = m[2]
+    case `${base}${schema.groups.name}`:
+      v.name = o.value
+      break
 
-              if (!v.doors.has(suboid)) {
-                v.doors.set(suboid, { door: '', allowed: false })
-              }
+    default:
+        const m = oid.match(schema.groups.doors)
+        if (m && m.length > 2) {
+          const suboid = m[1]
+          const suffix = m[2]
 
-              const door = v.doors.get(suboid)
-
-              if (!suffix) {
-                door.allowed = o.value === 'true'
-              } else if (suffix === '.1') {
-                door.door = o.value
-              }
-            }
+          if (!v.doors.has(suboid)) {
+            v.doors.set(suboid, { door: '', allowed: false })
           }
-      }
-    }
-  })
+
+          const door = v.doors.get(suboid)
+
+          if (!suffix) {
+            door.allowed = o.value === 'true'
+          } else if (suffix === '.1') {
+            door.door = o.value
+          }
+        }
+  }
 }
 
 function events (o) {
   const oid = o.OID
 
-  if (oid === schema.events.base + '.0.1') {
+  if (oid === `${schema.events.base}.0.1`) {
     DB.tables.events.first = o.value
     return
   }
 
-  if (oid === schema.events.base + '.0.2') {
+  if (oid === `${schema.events.base}.0.2`) {
     DB.tables.events.last = o.value
     return
   }
@@ -603,12 +597,12 @@ function logs (o) {
   console.log(o)
   const oid = o.OID
 
-  if (oid === schema.logs.base + '.0.1') {
+  if (oid === `${schema.logs.base}.0.1`) {
     DB.tables.logs.first = o.value
     return
   }
 
-  if (oid === schema.logs.base + '.0.2') {
+  if (oid === `${schema.logs.base}.0.2`) {
     DB.tables.logs.last = o.value
     return
   }

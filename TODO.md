@@ -2,32 +2,23 @@
 
 - [ ] Fix logs:
       - [ ] multiple duplicate OIDs (?????)
-      - [x] formatting
-```
-      "details": "Updated name from \u003cblank\u003e to q"
-```
 
 - [ ] OIDs:
       - [ ] move 'type' to metadata
       - [ ] 'modified' timestamps
-      - [x] remove 'display-index' 
-            - [x] groups
 
       - .0.0 status
-        - [x] cards
-        - [ ] groups
+        - [x] groups
         - [ ] events
         - [ ] logs
 
       - .0.1 created
-        - [x] cards
-        - [ ] groups
+        - [x] groups
         - [ ] events
         - [ ] logs
 
       - .0.2 deleted
-        - [x] cards
-        - [ ] groups
+        - [x] groups
         - [ ] events
         - [ ] logs
 
@@ -52,7 +43,6 @@
                   - [ ] doors
                   - [ ] cards
                   - [ ] groups
-                  - [x] logs
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] logs
       - [ ] events

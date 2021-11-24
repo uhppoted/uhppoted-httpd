@@ -28,7 +28,7 @@ function updateFromDB (oid, record) {
     return
   }
 
-  const name = row.querySelector(`[data-oid="${oid}.1"]`)
+  const name = row.querySelector(`[data-oid="${oid}${schema.groups.name}"]`)
   const doors = [...DB.doors.values()].filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
 
   row.dataset.status = record.status
@@ -106,7 +106,7 @@ function realize (groups) {
       const template = document.querySelector('#door')
 
       const uuid = row.id
-      const oid = row.dataset.oid + '.2.' + door
+      const oid = `${row.dataset.oid}${schema.groups.door}.${door}`
       const ix = row.cells.length - 1
       const cell = row.insertCell(ix)
 

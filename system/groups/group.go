@@ -23,11 +23,6 @@ type Group struct {
 	deleted *time.Time
 }
 
-const DoorName = catalog.DoorName
-const GroupName = catalog.GroupName
-const GroupCreated = catalog.GroupCreated
-const GroupDoors = catalog.GroupDoors
-
 const BLANK = "'blank'"
 
 var created = time.Now()
@@ -62,7 +57,8 @@ func (g *Group) AsObjects() []interface{} {
 	}
 
 	objects := []interface{}{
-		catalog.NewObject(g.OID, status),
+		catalog.NewObject(g.OID, ""),
+		catalog.NewObject2(g.OID, GroupStatus, status),
 		catalog.NewObject2(g.OID, GroupCreated, created),
 		catalog.NewObject2(g.OID, GroupName, name),
 	}
@@ -171,7 +167,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 		}
 
 		if g.deleted == nil {
-			objects = append(objects, catalog.NewObject(g.OID, types.StatusOk))
+			objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, types.StatusOk))
 		}
 	}
 
