@@ -1,51 +1,19 @@
 ## v0.7.x
 
-- [x] Fix multiple duplicate logs OIDs
-```
-  {
-      "timestamp": "2021-11-24T12:05:51.909812-08:00",
-      "UID": "admin",
-      "OID": "0.7.1",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "name",
-      "details": "Updated name from Beta to BetaXYZ",
-      "before": "Beta",
-      "after": "BetaXYZ"
-    },
-```
-
 - [ ] OIDs:
       - [ ] move 'type' to metadata
       - [ ] 'modified' timestamps
-
-      - .0.0 status
-        - [x] groups
-        - [ ] events
-        - [ ] logs
-
-      - .0.1 created
-        - [x] groups
-        - [ ] events
-        - [ ] logs
-
-      - .0.2 deleted
-        - [x] groups
-        - [ ] events
-        - [ ] logs
+      - [x] .0.0 status
+      - [ ] Clean up controller schema
+      - [ ] Clean up door schema
 
 ### IN PROGRESS
 
 - [ ] Apply fix for 'interim hack':
       - [ ] (?) Return status if IsValid && !IsDeleted
       - [ ] (?) Item deleted OID
-      - [ ] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
-            - [x] interfaces
-            - [ ] controllers
-            - [x] doors
-            - [x] cards
-            - [x] groups
+      - [x] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
+            - [x] controllers
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
             object that has been swept
 
@@ -53,14 +21,14 @@
       - [ ] Define system.Component interface
       - [ ] Read file in system and pass in json.RawMessage to Load(...)
             - [ ] Move file to system
+                  - [ ] events
+                  - [ ] groups
                   - [ ] interfaces
                   - [ ] controllers
                   - [ ] doors
                   - [ ] cards
-                  - [ ] groups
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
-            - [x] logs
             - [ ] events
             - [ ] groups
             - [ ] cards

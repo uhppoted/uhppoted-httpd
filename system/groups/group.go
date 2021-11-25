@@ -53,7 +53,7 @@ func (g *Group) AsObjects() []interface{} {
 
 	objects := []interface{}{
 		catalog.NewObject(g.OID, ""),
-		catalog.NewObject2(g.OID, GroupStatus, g.Status()),
+		catalog.NewObject2(g.OID, GroupStatus, g.status()),
 		catalog.NewObject2(g.OID, GroupCreated, created),
 		catalog.NewObject2(g.OID, GroupName, name),
 	}
@@ -102,7 +102,7 @@ func (g *Group) AsRuleEntity() interface{} {
 	return &entity
 }
 
-func (g *Group) Status() types.Status {
+func (g *Group) status() types.Status {
 	if g.deleted != nil {
 		return types.StatusDeleted
 	}
@@ -170,7 +170,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 		}
 
 		if g.deleted == nil {
-			objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, g.Status()))
+			objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, g.status()))
 		}
 	}
 

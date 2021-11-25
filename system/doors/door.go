@@ -172,7 +172,7 @@ func (d *Door) AsObjects() []interface{} {
 
 	objects := []interface{}{
 		catalog.NewObject(d.OID, ""),
-		catalog.NewObject2(d.OID, DoorStatus, d.Status()),
+		catalog.NewObject2(d.OID, DoorStatus, d.status()),
 		catalog.NewObject2(d.OID, DoorCreated, created),
 		catalog.NewObject2(d.OID, DoorControllerOID, controller.OID),
 		catalog.NewObject2(d.OID, DoorControllerCreated, controller.created),
@@ -207,7 +207,7 @@ func (d *Door) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (d *Door) Status() types.Status {
+func (d *Door) status() types.Status {
 	if d.deleted != nil {
 		return types.StatusDeleted
 	}
@@ -298,7 +298,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		}
 
 		if d.deleted == nil {
-			objects = append(objects, catalog.NewObject2(d.OID, DoorStatus, d.Status()))
+			objects = append(objects, catalog.NewObject2(d.OID, DoorStatus, d.status()))
 		}
 	}
 

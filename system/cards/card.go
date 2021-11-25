@@ -76,7 +76,7 @@ func (c *Card) AsObjects() []interface{} {
 
 	objects := []interface{}{
 		catalog.NewObject(c.OID, ""),
-		catalog.NewObject2(c.OID, CardStatus, c.Status()),
+		catalog.NewObject2(c.OID, CardStatus, c.status()),
 		catalog.NewObject2(c.OID, CardCreated, created),
 		catalog.NewObject2(c.OID, CardName, name),
 		catalog.NewObject2(c.OID, CardNumber, number),
@@ -140,7 +140,7 @@ func (c *Card) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (c *Card) Status() types.Status {
+func (c *Card) status() types.Status {
 	if c.deleted != nil {
 		return types.StatusDeleted
 	}
@@ -355,7 +355,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		}
 
 		if c.deleted == nil {
-			objects = append(objects, catalog.NewObject2(c.OID, CardStatus, c.Status()))
+			objects = append(objects, catalog.NewObject2(c.OID, CardStatus, c.status()))
 		}
 	}
 

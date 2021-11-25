@@ -16,7 +16,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
-	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/config"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
@@ -59,8 +58,7 @@ func NewControllerSet() ControllerSet {
 	return ControllerSet{
 		Controllers: []*Controller{},
 		LAN: &LAN{
-			OID:    catalog.InterfacesOID.AppendS(".1"),
-			status: types.StatusOk,
+			OID: catalog.InterfacesOID.AppendS(".1"),
 		},
 	}
 }

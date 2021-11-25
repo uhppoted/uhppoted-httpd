@@ -70,7 +70,7 @@ func (c *Controller) AsObjects() []interface{} {
 	}
 
 	created := c.created.Format("2006-01-02 15:04:05")
-	status := types.StatusUnknown
+	//	status := types.StatusUnknown
 	name := c.Name
 	deviceID := ""
 	address := addr{}
@@ -97,16 +97,6 @@ func (c *Controller) AsObjects() []interface{} {
 
 	if c.DeviceID != nil && *c.DeviceID != 0 {
 		if cached, ok := cache.cache[*c.DeviceID]; ok {
-			// ... set status field from cached value
-			dt := time.Now().Sub(cached.touched)
-			switch {
-			case dt < windows.deviceOk:
-				status = types.StatusOk
-
-			case dt < windows.deviceUncertain:
-				status = types.StatusUncertain
-			}
-
 			// ... set IP address field from cached value
 			if cached.address != nil {
 				address.address = fmt.Sprintf("%v", cached.address)
@@ -164,13 +154,9 @@ func (c *Controller) AsObjects() []interface{} {
 		}
 	}
 
-	if c.deleted != nil {
-		status = types.StatusDeleted
-	}
-
 	objects := []interface{}{
-		catalog.NewObject(c.OID, status),
-		catalog.NewObject2(c.OID, ControllerStatus, status),
+		catalog.NewObject(c.OID, ""),
+		catalog.NewObject2(c.OID, ControllerStatus, c.status()),
 		catalog.NewObject2(c.OID, ControllerCreated, created),
 		catalog.NewObject2(c.OID, ControllerDeleted, c.deleted),
 
@@ -264,6 +250,27 @@ func (c *Controller) IsSaveable() bool {
 	}
 
 	return true
+}
+
+func (c *Controller) status() types.Status {
+	if c.deleted != nil {
+		return types.StatusDeleted
+	}
+
+	if c.DeviceID != nil && *c.DeviceID != 0 {
+		if cached, ok := cache.cache[*c.DeviceID]; ok {
+			dt := time.Now().Sub(cached.touched)
+			switch {
+			case dt < windows.deviceOk:
+				return types.StatusOk
+
+			case dt < windows.deviceUncertain:
+				return types.StatusUncertain
+			}
+		}
+	}
+
+	return types.StatusUnknown
 }
 
 func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {

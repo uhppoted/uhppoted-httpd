@@ -30,7 +30,6 @@ type LAN struct {
 	ListenAddress    core.ListenAddr    `json:"listen-address"`
 	Debug            bool               `json:"debug"`
 
-	status       types.Status
 	created      time.Time
 	deleted      *time.Time
 	unconfigured bool
@@ -59,7 +58,7 @@ func (l *LAN) String() string {
 func (l *LAN) AsObjects() []interface{} {
 	objects := []interface{}{
 		catalog.NewObject(l.OID, types.StatusUncertain),
-		catalog.NewObject2(l.OID, LANStatus, l.Status()),
+		catalog.NewObject2(l.OID, LANStatus, l.status()),
 		catalog.NewObject2(l.OID, LANType, "LAN"),
 		catalog.NewObject2(l.OID, LANName, l.Name),
 		catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress),
@@ -96,7 +95,6 @@ func (l *LAN) clone() *LAN {
 			ListenAddress:    l.ListenAddress,
 			Debug:            l.Debug,
 
-			status:       l.status,
 			created:      l.created,
 			deleted:      l.deleted,
 			unconfigured: l.unconfigured,
@@ -108,8 +106,8 @@ func (l *LAN) clone() *LAN {
 	return nil
 }
 
-func (l *LAN) Status() types.Status {
-	return l.status
+func (l *LAN) status() types.Status {
+	return types.StatusOk
 }
 
 func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
@@ -169,7 +167,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 		}
 
 		if l.deleted == nil {
-			objects = append(objects, catalog.NewObject2(l.OID, LANStatus, l.Status()))
+			objects = append(objects, catalog.NewObject2(l.OID, LANStatus, l.status()))
 		}
 	}
 
@@ -643,7 +641,6 @@ func (l *LAN) deserialize(bytes []byte) error {
 	l.BindAddress = record.BindAddress
 	l.BroadcastAddress = record.BroadcastAddress
 	l.ListenAddress = record.ListenAddress
-	l.status = types.StatusOk
 	l.created = time.Time(*record.Created)
 
 	return nil
