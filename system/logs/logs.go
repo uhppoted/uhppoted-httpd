@@ -153,16 +153,6 @@ func (ll *Logs) AsObjects(start, max int) []interface{} {
 		return q.Before(p)
 	})
 
-	jx := 0
-	for jx < len(keys) {
-		k := keys[jx]
-		if l, ok := ll.Logs[k]; ok {
-			fmt.Printf(">> %v  %v\n", jx, l)
-		}
-
-		jx++
-	}
-
 	ix := start
 	count := 0
 	for ix < len(keys) && count < max {

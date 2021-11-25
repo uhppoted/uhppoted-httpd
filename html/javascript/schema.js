@@ -5,7 +5,7 @@ export const schema = {
     created: '.0.1',
     deleted: '.0.2',
     modified: '.0.3',
-    type: '.0.3',
+    type: '.0.4',
     name: '.1',
     bind: '.3.1',
     broadcast: '.3.2',
@@ -20,6 +20,7 @@ export const schema = {
     created: '.0.1',
     deleted: '.0.2',
     modified: '.0.3',
+    type: '.0.4',
     regex: /^(0\.2\.[1-9][0-9]*).*$/
   },
 
@@ -29,6 +30,7 @@ export const schema = {
     created: '.0.1',
     deleted: '.0.2',
     modified: '.0.3',
+    type: '.0.4',
     regex: /^(0\.3\.([1-9][0-9]*)).*$/
   },
 
@@ -38,6 +40,7 @@ export const schema = {
     created: '.0.1',
     deleted: '.0.2',
     modified: '.0.3',
+    type: '.0.4',
     name: '.1',
     card: '.2',
     from: '.3',
@@ -53,6 +56,7 @@ export const schema = {
     created: '.0.1',
     deleted: '.0.2',
     modified: '.0.3',
+    type: '.0.4',
     name: '.1',
     door: '.2',
     regex: /^(0\.5\.([1-9][0-9]*)).*$/,
