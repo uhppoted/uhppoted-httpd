@@ -4,10 +4,10 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
-const CardStatus = catalog.CardStatus
-const CardCreated = catalog.CardCreated
-const CardDeleted = catalog.CardDeleted
-const CardModified = catalog.CardModified
+const CardStatus = catalog.Status
+const CardCreated = catalog.Created
+const CardDeleted = catalog.Deleted
+const CardModified = catalog.Modified
 const CardName = catalog.CardName
 const CardNumber = catalog.CardNumber
 const CardFrom = catalog.CardFrom

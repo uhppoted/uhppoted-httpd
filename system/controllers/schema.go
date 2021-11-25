@@ -15,9 +15,9 @@ const DoorDelayModified = catalog.DoorDelayModified
 const DoorControl = catalog.DoorControl
 const DoorControlModified = catalog.DoorControlModified
 
-const ControllerStatus = catalog.ControllerStatus
-const ControllerCreated = catalog.ControllerCreated
-const ControllerDeleted = catalog.ControllerDeleted
+const ControllerStatus = catalog.Status
+const ControllerCreated = catalog.Created
+const ControllerDeleted = catalog.Deleted
 const ControllerName = catalog.ControllerName
 const ControllerDeviceID = catalog.ControllerDeviceID
 const ControllerAddress = catalog.ControllerAddress

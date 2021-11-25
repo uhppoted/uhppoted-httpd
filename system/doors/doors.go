@@ -202,7 +202,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 			d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added 'new' door"), dbc)
 			dd.Doors[d.OID] = *d
 			objects = append(objects, catalog.NewObject(d.OID, "new"))
-			objects = append(objects, catalog.NewObject2(d.OID, catalog.DoorCreated, d.created))
+			objects = append(objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
 		}
 	}
 

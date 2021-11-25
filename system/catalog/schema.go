@@ -162,10 +162,10 @@ var schema = Schema{
 	Controllers: Controllers{
 		OID: ControllersOID,
 
-		Status:   ControllerStatus,
-		Created:  ControllerCreated,
-		Deleted:  ControllerDeleted,
-		Modified: ControllerModified,
+		Status:   Status,
+		Created:  Created,
+		Deleted:  Deleted,
+		Modified: Modified,
 
 		Name:              ControllerName,
 		DeviceID:          ControllerDeviceID,
@@ -188,10 +188,10 @@ var schema = Schema{
 	Doors: Doors{
 		OID: DoorsOID,
 
-		Status:   DoorStatus,
-		Created:  DoorCreated,
-		Deleted:  DoorDeleted,
-		Modified: DoorModified,
+		Status:   Status,
+		Created:  Created,
+		Deleted:  Deleted,
+		Modified: Modified,
 
 		ControllerOID:     DoorControllerOID,
 		ControllerCreated: DoorControllerCreated,
@@ -215,9 +215,9 @@ var schema = Schema{
 		OID: CardsOID,
 
 		Status:   Status,
-		Created:  CardCreated,
-		Deleted:  CardDeleted,
-		Modified: CardModified,
+		Created:  Created,
+		Deleted:  Deleted,
+		Modified: Modified,
 
 		Name:   CardName,
 		Card:   CardNumber,
@@ -292,10 +292,6 @@ const LANBindAddress Suffix = ".3.1"
 const LANBroadcastAddress Suffix = ".3.2"
 const LANListenAddress Suffix = ".3.3"
 
-const ControllerStatus Suffix = ".0.0"
-const ControllerCreated Suffix = ".0.1"
-const ControllerDeleted Suffix = ".0.2"
-const ControllerModified Suffix = ".0.3"
 const ControllerName Suffix = ".1"
 const ControllerDeviceID Suffix = ".2"
 const ControllerAddress Suffix = ".3"
@@ -313,10 +309,6 @@ const ControllerDoor2 Suffix = ".8"
 const ControllerDoor3 Suffix = ".9"
 const ControllerDoor4 Suffix = ".10"
 
-const DoorStatus Suffix = ".0.0"
-const DoorCreated Suffix = ".0.1"
-const DoorDeleted Suffix = ".0.2"
-const DoorModified Suffix = ".0.3"
 const DoorControllerOID Suffix = ".0.4"
 const DoorControllerCreated Suffix = ".0.4.1"
 const DoorControllerName Suffix = ".0.4.2"
@@ -334,10 +326,6 @@ const DoorControlConfigured Suffix = ".3.2"
 const DoorControlError Suffix = ".3.3"
 const DoorControlModified Suffix = ".3.4"
 
-const CardStatus Suffix = ".0.0"
-const CardCreated Suffix = ".0.1"
-const CardDeleted Suffix = ".0.2"
-const CardModified Suffix = ".0.3"
 const CardName Suffix = ".1"
 const CardNumber Suffix = ".2"
 const CardFrom Suffix = ".3"

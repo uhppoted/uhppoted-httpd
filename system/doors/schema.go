@@ -4,9 +4,9 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
-const DoorStatus = catalog.DoorStatus
-const DoorCreated = catalog.DoorCreated
-const DoorDeleted = catalog.DoorDeleted
+const DoorStatus = catalog.Status
+const DoorCreated = catalog.Created
+const DoorDeleted = catalog.Deleted
 const DoorControllerOID = catalog.DoorControllerOID
 const DoorControllerCreated = catalog.DoorControllerCreated
 const DoorControllerName = catalog.DoorControllerName
