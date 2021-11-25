@@ -506,15 +506,16 @@ function events (o) {
     return
   }
 
-  if (schema.events.regex.test(oid)) {
-    if (DB.events().has(oid)) {
-      const record = DB.events().get(oid)
-      record.status = o.value
-      record.mark = 0
-      return
-    }
+  const match = oid.match(schema.events.regex)
 
-    DB.events().set(oid, {
+  if (!match || match.length < 2) {
+    return
+  }
+
+  const base = match[1]
+
+  if (!DB.events.events.has(base)) {
+    DB.events.events.set(base, {
       OID: oid,
       timestamp: '',
       deviceID: '',
@@ -528,70 +529,61 @@ function events (o) {
       deviceName: '',
       doorName: '',
       cardName: '',
-      status: o.value,
       mark: 0
     })
-
-    return
   }
 
-  DB.events().forEach((v, k) => {
-    if (oid.startsWith(k)) {
-      switch (oid) {
-        case k:
-          v.status = o.value
-          break
+  const v = DB.events.events.get(base)
 
-        case k + '.1':
-          v.timestamp = o.value
-          break
+  switch (oid) {
+    case `${base}${schema.events.timestamp}`:
+      v.timestamp = o.value
+      break
 
-        case k + '.2':
-          v.deviceID = o.value
-          break
+    case `${base}${schema.events.deviceID}`:
+      v.deviceID = o.value
+      break
 
-        case k + '.3':
-          v.index = parseInt(o.value)
-          break
+    case `${base}${schema.events.index}`:
+      v.index = parseInt(o.value)
+      break
 
-        case k + '.4':
-          v.eventType = o.value
-          break
+    case `${base}${schema.events.type}`:
+      v.eventType = o.value
+      break
 
-        case k + '.5':
-          v.door = o.value
-          break
+    case `${base}${schema.events.door}`:
+      v.door = o.value
+      break
 
-        case k + '.6':
-          v.direction = o.value
-          break
+    case `${base}${schema.events.direction}`:
+      v.direction = o.value
+      break
 
-        case k + '.7':
-          v.card = o.value
-          break
+    case `${base}${schema.events.card}`:
+      v.card = o.value
+      break
 
-        case k + '.8':
-          v.granted = o.value
-          break
+    case `${base}${schema.events.granted}`:
+      v.granted = o.value
+      break
 
-        case k + '.9':
-          v.reason = o.value
-          break
+    case `${base}${schema.events.reason}`:
+      v.reason = o.value
+      break
 
-        case k + '.10':
-          v.deviceName = o.value
-          break
+    case `${base}.${schema.events.deviceName}`:
+      v.deviceName = o.value
+      break
 
-        case k + '.11':
-          v.doorName = o.value
-          break
+    case `${base}${schema.events.dorName}`:
+      v.doorName = o.value
+      break
 
-        case k + '.12':
-          v.cardName = o.value
-          break
-      }
-    }
-  })
+    case `${base}${schema.events.cardName}`:
+      v.cardName = o.value
+      break
+  }
 }
 
 function logs (o) {

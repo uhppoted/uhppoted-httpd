@@ -1,5 +1,6 @@
 import { deleted } from './tabular.js'
 import { DB } from './db.js'
+import { schema } from './schema.js'
 
 export function refreshed () {
   const events = [...DB.events().values()].sort((p, q) => q.timestamp.localeCompare(p.timestamp))
@@ -81,7 +82,7 @@ function realize (events) {
   const tbody = table.tBodies[0]
 
   events.forEach(o => {
-    let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
+    let row = tbody.querySelector(`tr[data-oid="${o.OID}"]`)
 
     if (o.status === 'deleted') {
       deleted('events', row)
@@ -123,17 +124,17 @@ function add (oid) {
     }
 
     const fields = [
-      { suffix: 'timestamp', oid: `${oid}.1`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
-      { suffix: 'deviceID', oid: `${oid}.2`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
-      { suffix: 'device', oid: `${oid}.10`, selector: 'td input.device', flag: 'td img.device' },
-      { suffix: 'eventType', oid: `${oid}.4`, selector: 'td input.eventType', flag: 'td img.eventType' },
-      { suffix: 'doorid', oid: `${oid}.5`, selector: 'td input.doorid', flag: 'td img.doorid' },
-      { suffix: 'door', oid: `${oid}.11`, selector: 'td input.door', flag: 'td img.door' },
-      { suffix: 'direction', oid: `${oid}.6`, selector: 'td input.direction', flag: 'td img.direction' },
-      { suffix: 'cardno', oid: `${oid}.7`, selector: 'td input.cardno', flag: 'td img.cardno' },
-      { suffix: 'card', oid: `${oid}.12`, selector: 'td input.card', flag: 'td img.card' },
-      { suffix: 'access', oid: `${oid}.8`, selector: 'td input.access', flag: 'td img.access' },
-      { suffix: 'reason', oid: `${oid}.9`, selector: 'td input.reason', flag: 'td img.reason' }
+      { suffix: 'timestamp', oid: `${oid}${schema.events.timestamp}`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
+      { suffix: 'deviceID', oid: `${oid}${schema.events.deviceID}`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
+      { suffix: 'device', oid: `${oid}${schema.events.deviceName}`, selector: 'td input.device', flag: 'td img.device' },
+      { suffix: 'eventType', oid: `${oid}${schema.events.type}`, selector: 'td input.eventType', flag: 'td img.eventType' },
+      { suffix: 'doorid', oid: `${oid}${schema.events.door}`, selector: 'td input.doorid', flag: 'td img.doorid' },
+      { suffix: 'door', oid: `${oid}${schema.events.doorName}`, selector: 'td input.door', flag: 'td img.door' },
+      { suffix: 'direction', oid: `${oid}${schema.events.direction}`, selector: 'td input.direction', flag: 'td img.direction' },
+      { suffix: 'cardno', oid: `${oid}${schema.events.card}`, selector: 'td input.cardno', flag: 'td img.cardno' },
+      { suffix: 'card', oid: `${oid}${schema.events.cardName}`, selector: 'td input.card', flag: 'td img.card' },
+      { suffix: 'access', oid: `${oid}${schema.events.granted}`, selector: 'td input.access', flag: 'td img.access' },
+      { suffix: 'reason', oid: `${oid}${schema.events.reason}`, selector: 'td input.reason', flag: 'td img.reason' }
     ]
 
     fields.forEach(f => {
@@ -167,17 +168,17 @@ function updateFromDB (oid, record) {
     return
   }
 
-  const timestamp = row.querySelector(`[data-oid="${oid}.1"]`)
-  const deviceID = row.querySelector(`[data-oid="${oid}.2"]`)
-  const device = row.querySelector(`[data-oid="${oid}.10"]`)
-  const eventType = row.querySelector(`[data-oid="${oid}.4"]`)
-  const doorid = row.querySelector(`[data-oid="${oid}.5"]`)
-  const door = row.querySelector(`[data-oid="${oid}.11"]`)
-  const direction = row.querySelector(`[data-oid="${oid}.6"]`)
-  const cardno = row.querySelector(`[data-oid="${oid}.7"]`)
-  const card = row.querySelector(`[data-oid="${oid}.12"]`)
-  const access = row.querySelector(`[data-oid="${oid}.8"]`)
-  const reason = row.querySelector(`[data-oid="${oid}.9"]`)
+  const timestamp = row.querySelector(`[data-oid="${oid}${schema.events.timestamp}"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}${schema.events.deviceID}"]`)
+  const device = row.querySelector(`[data-oid="${oid}${schema.events.deviceName}"]`)
+  const eventType = row.querySelector(`[data-oid="${oid}${schema.events.type}"]`)
+  const doorid = row.querySelector(`[data-oid="${oid}${schema.events.door}"]`)
+  const door = row.querySelector(`[data-oid="${oid}${schema.events.doorName}"]`)
+  const direction = row.querySelector(`[data-oid="${oid}${schema.events.direction}"]`)
+  const cardno = row.querySelector(`[data-oid="${oid}${schema.events.card}"]`)
+  const card = row.querySelector(`[data-oid="${oid}${schema.events.cardName}"]`)
+  const access = row.querySelector(`[data-oid="${oid}${schema.events.granted}"]`)
+  const reason = row.querySelector(`[data-oid="${oid}${schema.events.reason}"]`)
 
   row.dataset.status = record.status
 

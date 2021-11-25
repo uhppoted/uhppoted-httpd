@@ -61,7 +61,19 @@ export const schema = {
 
   events: {
     base: '0.6',
-    regex: /^0\.6\.[1-9][0-9]*$/
+    timestamp: '.1',
+    deviceID: '.2',
+    index: '.3',
+    type: '.4',
+    door: '.5',
+    direction: '.6',
+    card: '.7',
+    granted: '.8',
+    reason: '.9',
+    deviceName: '.10',
+    doorName: '.11',
+    cardName: '.12',
+    regex: /^(0\.6\.[1-9][0-9]*).*$/
   },
 
   logs: {
