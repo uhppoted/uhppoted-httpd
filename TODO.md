@@ -6,6 +6,8 @@
       - [x] .0.0 status
       - [ ] Clean up controller schema
       - [ ] Clean up door schema
+      - [x] JS: use events schema
+      - [x] JS: use logs schema
 
 ### IN PROGRESS
 

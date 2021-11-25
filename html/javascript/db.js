@@ -496,12 +496,12 @@ function groups (o) {
 function events (o) {
   const oid = o.OID
 
-  if (oid === `${schema.events.base}.0.1`) {
+  if (oid === `${schema.events.base}${schema.events.first}`) {
     DB.tables.events.first = o.value
     return
   }
 
-  if (oid === `${schema.events.base}.0.2`) {
+  if (oid === `${schema.events.base}${schema.events.first}`) {
     DB.tables.events.last = o.value
     return
   }
@@ -514,8 +514,8 @@ function events (o) {
 
   const base = match[1]
 
-  if (!DB.events.events.has(base)) {
-    DB.events.events.set(base, {
+  if (!DB.tables.events.events.has(base)) {
+    DB.tables.events.events.set(base, {
       OID: oid,
       timestamp: '',
       deviceID: '',
@@ -533,7 +533,7 @@ function events (o) {
     })
   }
 
-  const v = DB.events.events.get(base)
+  const v = DB.tables.events.events.get(base)
 
   switch (oid) {
     case `${base}${schema.events.timestamp}`:
@@ -572,11 +572,11 @@ function events (o) {
       v.reason = o.value
       break
 
-    case `${base}.${schema.events.deviceName}`:
+    case `${base}${schema.events.deviceName}`:
       v.deviceName = o.value
       break
 
-    case `${base}${schema.events.dorName}`:
+    case `${base}${schema.events.doorName}`:
       v.doorName = o.value
       break
 
@@ -587,82 +587,73 @@ function events (o) {
 }
 
 function logs (o) {
-  console.log(o)
   const oid = o.OID
 
-  if (oid === `${schema.logs.base}.0.1`) {
+  if (oid === `${schema.logs.base}${schema.logs.first}`) {
     DB.tables.logs.first = o.value
     return
   }
 
-  if (oid === `${schema.logs.base}.0.2`) {
+  if (oid === `${schema.logs.base}${schema.logs.last}`) {
     DB.tables.logs.last = o.value
     return
   }
 
-  if (schema.logs.regex.test(oid)) {
-    if (DB.logs().has(oid)) {
-      const record = DB.logs().get(oid)
-      record.status = o.value
-      record.mark = 0
-      return
-    }
+  const match = oid.match(schema.logs.regex)
 
-    DB.logs().set(oid, {
+  if (!match || match.length < 2) {
+    return
+  }
+
+  const base = match[1]
+
+  if (!DB.tables.logs.logs.has(base)) {
+    DB.tables.logs.logs.set(base, {
       OID: oid,
       timestamp: '',
       uid: '',
-      module: {
+      item: {
         type: '',
         ID: '',
         name: '',
         field: ''
       },
       details: '',
-      status: o.value,
       mark: 0
     })
-
-    return
   }
 
-  DB.logs().forEach((v, k) => {
-    if (oid.startsWith(k)) {
-      switch (oid) {
-        case k:
-          v.status = o.value
-          break
+  const v = DB.tables.logs.logs.get(base)
 
-        case k + '.1':
-          v.timestamp = o.value
-          break
+  switch (oid) {
+    case `${base}${schema.logs.timestamp}`:
+      v.timestamp = o.value
+      break
 
-        case k + '.2':
-          v.uid = o.value
-          break
+    case `${base}${schema.logs.uid}`:
+      v.uid = o.value
+      break
 
-        case k + '.3':
-          v.module.type = o.value
-          break
+    case `${base}${schema.logs.item}`:
+      v.item.type = o.value
+      break
 
-        case k + '.4':
-          v.module.ID = o.value
-          break
+    case `${base}${schema.logs.itemID}`:
+      v.item.ID = o.value
+      break
 
-        case k + '.5':
-          v.module.name = o.value
-          break
+    case `${base}${schema.logs.itemName}`:
+      v.item.name = o.value
+      break
 
-        case k + '.6':
-          v.module.field = o.value
-          break
+    case `${base}${schema.logs.field}`:
+      v.item.field = o.value
+      break
 
-        case k + '.7':
-          v.module.details = o.value
-          break
-      }
-    }
-  })
+    case `${base}${schema.logs.details}`:
+      v.item.details = o.value
+      break
+  }
 }
 
 function mark (tag) {

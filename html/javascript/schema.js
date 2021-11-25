@@ -61,6 +61,8 @@ export const schema = {
 
   events: {
     base: '0.6',
+    first: '.0.1',
+    last: '.0.2',
     timestamp: '.1',
     deviceID: '.2',
     index: '.3',
@@ -78,6 +80,15 @@ export const schema = {
 
   logs: {
     base: '0.7',
-    regex: /^0\.7\.[1-9][0-9]*$/
+    first: '.0.1',
+    last: '.0.2',
+    timestamp: '.1',
+    uid: '.2',
+    item: '.3',
+    itemID: '.4',
+    itemName: '.5',
+    field: '.6',
+    details: '.7',
+    regex: /^(0\.7\.[1-9][0-9]*).*$/
   }
 }

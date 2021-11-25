@@ -1,5 +1,6 @@
 import { deleted } from './tabular.js'
 import { DB } from './db.js'
+import { schema } from './schema.js'
 
 export function refreshed () {
   const entries = [...DB.logs().values()].sort((p, q) => q.timestamp.localeCompare(p.timestamp))
@@ -81,7 +82,7 @@ function realize (entries) {
   const tbody = table.tBodies[0]
 
   entries.forEach(o => {
-    let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
+    let row = tbody.querySelector(`tr[data-oid='${o.OID}']`)
 
     if (o.status === 'deleted') {
       deleted('logs', row)
@@ -123,13 +124,13 @@ function add (oid) {
     }
 
     const fields = [
-      { suffix: 'timestamp', oid: `${oid}.1`, selector: 'td input.timestamp' },
-      { suffix: 'uid', oid: `${oid}.2`, selector: 'td input.uid' },
-      { suffix: 'module', oid: `${oid}.3`, selector: 'td input.module' },
-      { suffix: 'module-id', oid: `${oid}.4`, selector: 'td input.module-id' },
-      { suffix: 'module-name', oid: `${oid}.5`, selector: 'td input.module-name' },
-      { suffix: 'module-field', oid: `${oid}.6`, selector: 'td input.module-field' },
-      { suffix: 'details', oid: `${oid}.7`, selector: 'td input.details' }
+      { suffix: 'timestamp', oid: `${oid}${schema.logs.timestamp}`, selector: 'td input.timestamp' },
+      { suffix: 'uid', oid: `${oid}${schema.logs.uid}`, selector: 'td input.uid' },
+      { suffix: 'item', oid: `${oid}${schema.logs.item}`, selector: 'td input.item' },
+      { suffix: 'item-id', oid: `${oid}${schema.logs.itemID}`, selector: 'td input.item-id' },
+      { suffix: 'item-name', oid: `${oid}${schema.logs.itemName}`, selector: 'td input.item-name' },
+      { suffix: 'item-field', oid: `${oid}${schema.logs.field}`, selector: 'td input.item-field' },
+      { suffix: 'details', oid: `${oid}${schema.logs.details}`, selector: 'td input.details' }
     ]
 
     fields.forEach(f => {
@@ -163,23 +164,23 @@ function updateFromDB (oid, record) {
     return
   }
 
-  const timestamp = row.querySelector(`[data-oid="${oid}.1"]`)
-  const uid = row.querySelector(`[data-oid="${oid}.2"]`)
-  const module = row.querySelector(`[data-oid="${oid}.3"]`)
-  const moduleID = row.querySelector(`[data-oid="${oid}.4"]`)
-  const moduleName = row.querySelector(`[data-oid="${oid}.5"]`)
-  const moduleField = row.querySelector(`[data-oid="${oid}.6"]`)
-  const details = row.querySelector(`[data-oid="${oid}.7"]`)
+  const timestamp = row.querySelector(`[data-oid="${oid}${schema.logs.timestamp}"]`)
+  const uid = row.querySelector(`[data-oid="${oid}${schema.logs.uid}"]`)
+  const item = row.querySelector(`[data-oid="${oid}${schema.logs.item}"]`)
+  const itemID = row.querySelector(`[data-oid="${oid}${schema.logs.itemID}"]`)
+  const itemName = row.querySelector(`[data-oid="${oid}${schema.logs.itemName}"]`)
+  const itemField = row.querySelector(`[data-oid="${oid}${schema.logs.field}"]`)
+  const details = row.querySelector(`[data-oid="${oid}${schema.logs.details}"]`)
 
   row.dataset.status = record.status
 
   update(timestamp, format(record.timestamp))
   update(uid, record.uid)
-  update(module, record.module.type)
-  update(moduleID, record.module.ID)
-  update(moduleName, record.module.name.toLowerCase())
-  update(moduleField, record.module.field.toLowerCase())
-  update(details, record.module.details)
+  update(item, record.item.type)
+  update(itemID, record.item.ID)
+  update(itemName, record.item.name.toLowerCase())
+  update(itemField, record.item.field.toLowerCase())
+  update(details, record.item.details)
 
   return row
 }
