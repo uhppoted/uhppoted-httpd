@@ -60,7 +60,7 @@ func NewLogs() Logs {
 	return logs
 }
 
-func (ll *Logs) Load(file string, blob json.RawMessage) error {
+func (ll *Logs) Load(blob json.RawMessage) error {
 	f := func(bytes json.RawMessage) (*LogEntry, key) {
 		var l LogEntry
 		if err := l.deserialize(bytes); err != nil {

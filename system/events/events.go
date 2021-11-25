@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
-	"path/filepath"
 	"sort"
 	"sync"
 	"time"
@@ -17,8 +15,6 @@ import (
 
 type Events struct {
 	Events sync.Map `json:"events"`
-
-	file string `json:"-"`
 }
 
 type key struct {
@@ -46,27 +42,17 @@ func newKey(deviceID uint32, index uint32, timestamp time.Time) key {
 	}
 }
 
-func NewEvents() *Events {
-	return &Events{}
+func NewEvents() Events {
+	return Events{}
 }
 
-func (ee *Events) Load(file string) error {
-	blob := struct {
-		Events []json.RawMessage `json:"events"`
-	}{
-		Events: []json.RawMessage{},
-	}
-
-	bytes, err := os.ReadFile(file)
-	if err != nil {
+func (ee *Events) Load(blob json.RawMessage) error {
+	rs := []json.RawMessage{}
+	if err := json.Unmarshal(blob, &rs); err != nil {
 		return err
 	}
 
-	if err := json.Unmarshal(bytes, &blob); err != nil {
-		return err
-	}
-
-	for _, v := range blob.Events {
+	for _, v := range rs {
 		var e Event
 		if err := e.deserialize(v); err == nil {
 			k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
@@ -83,66 +69,32 @@ func (ee *Events) Load(file string) error {
 		return true
 	})
 
-	ee.file = file
-
 	return nil
 }
 
-func (ee *Events) Save() error {
+func (ee *Events) Save() (json.RawMessage, error) {
 	if err := validate(ee); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := scrub(ee); err != nil {
-		return err
+		return nil, err
 	}
 
-	if ee.file == "" {
-		return nil
-	}
-
-	serializable := struct {
-		Events []json.RawMessage `json:"events"`
-	}{
-		Events: []json.RawMessage{},
-	}
+	serializable := []json.RawMessage{}
 
 	ee.Events.Range(func(k, v interface{}) bool {
 		e := v.(Event)
 		if e.IsValid() && !e.IsDeleted() {
 			if record, err := e.serialize(); err == nil && record != nil {
-				serializable.Events = append(serializable.Events, record)
+				serializable = append(serializable, record)
 			}
 		}
 
 		return true
 	})
 
-	b, err := json.MarshalIndent(serializable, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	tmp, err := os.CreateTemp("", "uhppoted-events.*")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(ee.file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), ee.file)
+	return json.MarshalIndent(serializable, "", "  ")
 }
 
 func (ee *Events) Print() {
@@ -152,9 +104,7 @@ func (ee *Events) Print() {
 }
 
 func (ee *Events) Clone() *Events {
-	shadow := Events{
-		file: ee.file,
-	}
+	shadow := Events{}
 
 	ee.Events.Range(func(k, v interface{}) bool {
 		shadow.Events.Store(k, v.(Event).clone())

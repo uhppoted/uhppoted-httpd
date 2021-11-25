@@ -33,7 +33,15 @@ var sys = system{
 	doors:       doors.NewDoors(),
 	cards:       cards.NewCards(),
 	groups:      groups.NewGroups(),
-	events:      *events.NewEvents(),
+	events: struct {
+		events events.Events
+		file   string
+		tag    string
+	}{
+		events: events.NewEvents(),
+		tag:    "events",
+	},
+
 	logs: struct {
 		logs logs.Logs
 		file string
@@ -54,8 +62,12 @@ type system struct {
 	doors       doors.Doors
 	cards       cards.Cards
 	groups      groups.Groups
-	events      events.Events
-	logs        struct {
+	events      struct {
+		events events.Events
+		file   string
+		tag    string
+	}
+	logs struct {
 		logs logs.Logs
 		file string
 		tag  string
@@ -92,6 +104,7 @@ type object struct {
 }
 
 func Init(cfg config.Config, conf string, debug bool) error {
+	sys.events.file = cfg.HTTPD.System.Events
 	sys.logs.file = cfg.HTTPD.System.Logs
 
 	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
@@ -126,12 +139,14 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		}
 	}
 
-	if err := sys.events.Load(cfg.HTTPD.System.Events); err != nil {
+	if blob, err := load(sys.events.file); err != nil {
 		if os.IsNotExist(err) {
 			warn(err)
 		} else {
 			return err
 		}
+	} else if err := sys.events.events.Load(blob[sys.events.tag]); err != nil {
+		return err
 	}
 
 	if blob, err := load(sys.logs.file); err != nil {
@@ -140,7 +155,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		} else {
 			return err
 		}
-	} else if err := sys.logs.logs.Load(sys.logs.file, blob[sys.logs.tag]); err != nil {
+	} else if err := sys.logs.logs.Load(blob[sys.logs.tag]); err != nil {
 		return err
 	}
 
@@ -207,13 +222,6 @@ func System() interface{} {
 	}{
 		Objects: objects,
 	}
-}
-
-func Events(start, count int) []interface{} {
-	sys.RLock()
-	defer sys.RUnlock()
-
-	return sys.events.AsObjects(start, count)
 }
 
 func Logs(start, count int) []interface{} {

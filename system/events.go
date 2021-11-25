@@ -9,6 +9,13 @@ import (
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
+func Events(start, count int) []interface{} {
+	sys.RLock()
+	defer sys.RUnlock()
+
+	return sys.events.events.AsObjects(start, count)
+}
+
 func (f *callback) Append(deviceID uint32, recent []uhppoted.Event) {
 	l := func(e uhppoted.Event) (string, string, string) {
 		device := eventController(e)
@@ -18,10 +25,14 @@ func (f *callback) Append(deviceID uint32, recent []uhppoted.Event) {
 		return device, door, card
 	}
 
-	sys.events.Received(deviceID, recent, l)
+	sys.events.events.Received(deviceID, recent, l)
 
 	if len(recent) > 0 {
-		sys.events.Save()
+		if bytes, err := sys.events.events.Save(); err != nil {
+			warn(err)
+		} else if err := save(sys.events.file, sys.events.tag, bytes); err != nil {
+			warn(err)
+		}
 	}
 }
 

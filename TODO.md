@@ -1,5 +1,8 @@
 ## v0.7.x
 
+- [ ] Make login cookie expire in 60s
+      - Don't check login cookie except for login and
+
 - [ ] OIDs:
       - [x] move 'type' to metadata
       - [x] .0.0 status
@@ -12,8 +15,8 @@
 ### IN PROGRESS
 
 - [ ] Apply fix for 'interim hack':
+      - [ ] Use deleted OID rather than status
       - [ ] (?) Return status if IsValid && !IsDeleted
-      - [ ] (?) Item deleted OID
       - [x] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
             - [x] controllers
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
@@ -23,7 +26,7 @@
       - [ ] Define system.Component interface
       - [ ] Read file in system and pass in json.RawMessage to Load(...)
             - [ ] Move file to system
-                  - [ ] events
+                  - [x] events
                   - [ ] groups
                   - [ ] interfaces
                   - [ ] controllers
@@ -31,7 +34,7 @@
                   - [ ] cards
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
-            - [ ] events
+            - [x] events
             - [ ] groups
             - [ ] cards
             - [ ] doors
@@ -39,8 +42,6 @@
             - [ ] interfaces
   
 - [ ] 'users' page
-- [ ] Make login cookie expire in 60s
-      - Don't check login cookie except for login and
 - [ ] Set initial user + password
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
