@@ -33,6 +33,7 @@ type Controllers struct {
 	Created  Suffix `json:"created"`
 	Deleted  Suffix `json:"deleted"`
 	Modified Suffix `json:"modified"`
+	Type     Suffix `json:"type"`
 
 	Name              Suffix `json:"name"`
 	DeviceID          Suffix `json:"deviceID"`
@@ -59,6 +60,7 @@ type Doors struct {
 	Created  Suffix `json:"created"`
 	Deleted  Suffix `json:"deleted"`
 	Modified Suffix `json:"modified"`
+	Type     Suffix `json:"type"`
 
 	ControllerOID     Suffix `json:"controller-OID"`
 	ControllerCreated Suffix `json:"controller-created"`
@@ -85,6 +87,7 @@ type Cards struct {
 	Created  Suffix `json:"created"`
 	Deleted  Suffix `json:"deleted"`
 	Modified Suffix `json:"modified"`
+	Type     Suffix `json:"type"`
 
 	Name   Suffix `json:"name"`
 	Card   Suffix `json:"card"`
@@ -100,6 +103,7 @@ type Groups struct {
 	Created  Suffix `json:"created"`
 	Deleted  Suffix `json:"deleted"`
 	Modified Suffix `json:"modified"`
+	Type     Suffix `json:"type"`
 
 	Name  Suffix `json:"name"`
 	Doors Suffix `json:"doors"`
@@ -150,8 +154,8 @@ var schema = Schema{
 		Created:  Created,
 		Deleted:  Deleted,
 		Modified: Modified,
+		Type:     Type,
 
-		Type:      InterfaceType,
 		Name:      InterfaceName,
 		ID:        InterfaceID,
 		Bind:      LANBindAddress,
@@ -166,6 +170,7 @@ var schema = Schema{
 		Created:  Created,
 		Deleted:  Deleted,
 		Modified: Modified,
+		Type:     Type,
 
 		Name:              ControllerName,
 		DeviceID:          ControllerDeviceID,
@@ -192,6 +197,7 @@ var schema = Schema{
 		Created:  Created,
 		Deleted:  Deleted,
 		Modified: Modified,
+		Type:     Type,
 
 		ControllerOID:     DoorControllerOID,
 		ControllerCreated: DoorControllerCreated,
@@ -218,6 +224,7 @@ var schema = Schema{
 		Created:  Created,
 		Deleted:  Deleted,
 		Modified: Modified,
+		Type:     Type,
 
 		Name:   CardName,
 		Card:   CardNumber,
@@ -233,6 +240,7 @@ var schema = Schema{
 		Created:  Created,
 		Deleted:  Deleted,
 		Modified: Modified,
+		Type:     Type,
 
 		Name:  GroupName,
 		Doors: GroupDoors,
@@ -284,8 +292,8 @@ const Status Suffix = ".0.0"
 const Created Suffix = ".0.1"
 const Deleted Suffix = ".0.2"
 const Modified Suffix = ".0.3"
+const Type Suffix = ".0.4"
 
-const InterfaceType Suffix = ".0.4"
 const InterfaceName Suffix = ".1"
 const InterfaceID Suffix = ".2"
 const LANBindAddress Suffix = ".3.1"

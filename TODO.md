@@ -1,13 +1,13 @@
 ## v0.7.x
 
 - [ ] OIDs:
-      - [ ] move 'type' to metadata
-      - [ ] 'modified' timestamps
+      - [x] move 'type' to metadata
       - [x] .0.0 status
       - [ ] Clean up controller schema
       - [ ] Clean up door schema
       - [x] JS: use events schema
       - [x] JS: use logs schema
+      - [ ] Use embedded struct for schema metadata
 
 ### IN PROGRESS
 

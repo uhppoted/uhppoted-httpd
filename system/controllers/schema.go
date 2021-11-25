@@ -5,8 +5,8 @@ import (
 )
 
 const LANStatus = catalog.Status
+const LANType = catalog.Type
 const LANName = catalog.InterfaceName
-const LANType = catalog.InterfaceType
 const LANBindAddress = catalog.LANBindAddress
 const LANBroadcastAddress = catalog.LANBroadcastAddress
 const LANListenAddress = catalog.LANListenAddress
