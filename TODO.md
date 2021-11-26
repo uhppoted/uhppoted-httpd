@@ -17,6 +17,7 @@
             - [x] Remove controller created
             - [ ] Remove controller door
       - [x] Use embedded struct for schema metadata
+      - [ ] catalog.Objects type to streamline e.g. append, trim, etc
 
 ### IN PROGRESS
 
@@ -24,7 +25,7 @@
       - [ ] Use deleted OID rather than status
             - [ ] controllers
             - [ ] cards
-            - [ ] doors
+            - [x] doors
             - [ ] groups
       - [ ] (?) Return status if IsValid && !IsDeleted
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an

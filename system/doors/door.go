@@ -22,7 +22,7 @@ type Door struct {
 	delay   uint8
 	mode    core.ControlState
 	created time.Time
-	deleted *time.Time
+	deleted *types.DateTime
 }
 
 const BLANK = "'blank'"
@@ -127,6 +127,7 @@ func (d *Door) AsObjects() []interface{} {
 		catalog.NewObject(d.OID, ""),
 		catalog.NewObject2(d.OID, DoorStatus, d.status()),
 		catalog.NewObject2(d.OID, DoorCreated, created),
+		catalog.NewObject2(d.OID, DoorDeleted, d.deleted),
 		catalog.NewObject2(d.OID, DoorName, name),
 		catalog.NewObject2(d.OID, DoorDelay, types.Uint8(delay.delay)),
 		catalog.NewObject2(d.OID, DoorDelayStatus, delay.status),
@@ -237,17 +238,14 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			}
 
 			d.log(auth, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
-			now := time.Now()
+			now := types.DateTime(time.Now())
 			d.deleted = &now
-
-			objects = append(objects, catalog.NewObject(d.OID, "deleted"))
 
 			catalog.Delete(d.OID)
 		}
 
-		if d.deleted == nil {
-			objects = append(objects, catalog.NewObject2(d.OID, DoorStatus, d.status()))
-		}
+		objects = append(objects, catalog.NewObject2(d.OID, DoorStatus, d.status()))
+		objects = append(objects, catalog.NewObject2(d.OID, DoorDeleted, d.deleted))
 	}
 
 	return objects, nil
