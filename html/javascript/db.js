@@ -290,9 +290,6 @@ function doors (o) {
     DB.doors.set(base, {
       OID: oid,
       created: '',
-      controller: '',
-      deviceID: '',
-      door: '',
       name: '',
       delay: { delay: '', configured: '', status: 'unknown', err: '' },
       mode: { mode: '', configured: '', status: 'unknown', err: '' },
@@ -310,18 +307,6 @@ function doors (o) {
 
     case `${base}${schema.doors.created}`:
       v.created = o.value
-      break
-
-    case `${base}.0.4.2`:
-      v.controller = o.value
-      break
-
-    case `${base}.0.4.3`:
-      v.deviceID = o.value
-      break
-
-    case `${base}.0.4.4`:
-      v.door = o.value
       break
 
     case `${base}.1`:

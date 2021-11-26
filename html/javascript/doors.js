@@ -41,11 +41,12 @@ function updateFromDB (oid, record) {
 
   const d = record.delay.status === 'uncertain' ? record.delay.configured : record.delay.delay
   const m = record.mode.status === 'uncertain' ? record.mode.configured : record.mode.mode
+  const c = lookup(record)
 
   update(name, record.name)
-  update(controller, record.controller)
-  update(deviceID, record.deviceID)
-  update(door, record.door)
+  update(controller, c.name)
+  update(deviceID, c.deviceID)
+  update(door, c.door)
   update(delay, d, record.delay.status)
   update(mode, m, record.mode.status)
 
@@ -144,4 +145,37 @@ function add (oid) {
 
     return row
   }
+}
+
+function lookup (record) {
+  const oid = record.OID
+
+  const object = { 
+      name: '',
+      deviceID: '',
+      door: ''
+    }
+
+  const controller = [...DB.controllers.values()].find(c => {
+    for (const d of [1, 2, 3, 4]) {
+      if (c.doors[d] === oid) {
+        return true
+      }
+    }
+
+    return false
+  })
+
+  if (controller) {
+      object.name = controller.name
+      object.deviceID = controller.deviceID
+
+      for (const d of [1, 2, 3, 4]) {
+          if (controller.doors[d] === oid) {
+            object.door = d
+          }
+        }
+    }
+
+  return object
 }

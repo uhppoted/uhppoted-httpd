@@ -4,7 +4,12 @@
       - Don't check login cookie except for login
 
 - [ ] OIDs:
-      - [ ] Clean up controller schema
+      - [ ] Clean up controller schem
+            - [x] restructure doors
+            - [ ] restructure address
+            - [ ] restructure date/time
+            - [ ] restructure cards
+            - [ ] restructure events
       - [ ] Clean up door schema
       - [x] Use embedded struct for schema metadata
 
@@ -12,6 +17,10 @@
 
 - [ ] Apply fix for 'interim hack':
       - [ ] Use deleted OID rather than status
+            - [ ] controllers
+            - [ ] cards
+            - [ ] doors
+            - [ ] groups
       - [ ] (?) Return status if IsValid && !IsDeleted
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
             object that has been swept
