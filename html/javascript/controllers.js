@@ -1,5 +1,6 @@
 import { deleted, update } from './tabular.js'
 import { DB } from './db.js'
+import { schema } from './schema.js'
 
 export function refreshed () {
   const list = [...DB.controllers.values()].sort((p, q) => p.created.localeCompare(q.created))
@@ -27,16 +28,16 @@ function updateFromDB (oid, record) {
     return
   }
 
-  const name = row.querySelector(`[data-oid="${oid}.1"]`)
-  const deviceID = row.querySelector(`[data-oid="${oid}.2"]`)
-  const address = row.querySelector(`[data-oid="${oid}.3"]`)
-  const datetime = row.querySelector(`[data-oid="${oid}.4"]`)
-  const cards = row.querySelector(`[data-oid="${oid}.5"]`)
-  const events = row.querySelector(`[data-oid="${oid}.6"]`)
-  const door1 = row.querySelector(`[data-oid="${oid}.7"]`)
-  const door2 = row.querySelector(`[data-oid="${oid}.8"]`)
-  const door3 = row.querySelector(`[data-oid="${oid}.9"]`)
-  const door4 = row.querySelector(`[data-oid="${oid}.10"]`)
+  const name = row.querySelector(`[data-oid="${oid}${schema.controllers.name}"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}${schema.controllers.deviceID}"]`)
+  const address = row.querySelector(`[data-oid="${oid}${schema.controllers.address}"]`)
+  const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime}"]`)
+  const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards}"]`)
+  const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events}"]`)
+  const door1 = row.querySelector(`[data-oid="${oid}${schema.controllers.door1}"]`)
+  const door2 = row.querySelector(`[data-oid="${oid}${schema.controllers.door2}"]`)
+  const door3 = row.querySelector(`[data-oid="${oid}${schema.controllers.door3}"]`)
+  const door4 = row.querySelector(`[data-oid="${oid}${schema.controllers.door4}"]`)
 
   // ... populate door dropdowns
   const doors = [...DB.doors.values()]
@@ -133,16 +134,16 @@ function add (oid, record) {
     rollback.dataset.enabled = 'false'
 
     const fields = [
-      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' },
-      { suffix: 'ID', oid: `${oid}.2`, selector: 'td input.ID', flag: 'td img.ID' },
-      { suffix: 'IP', oid: `${oid}.3`, selector: 'td input.IP', flag: 'td img.IP' },
-      { suffix: 'datetime', oid: `${oid}.4`, selector: 'td input.datetime', flag: 'td img.datetime' },
-      { suffix: 'cards', oid: `${oid}.5`, selector: 'td input.cards', flag: 'td img.cards' },
-      { suffix: 'events', oid: `${oid}.6`, selector: 'td input.events', flag: 'td img.events' },
-      { suffix: 'door-1', oid: `${oid}.7`, selector: 'td select.door1', flag: 'td img.door1' },
-      { suffix: 'door-2', oid: `${oid}.8`, selector: 'td select.door2', flag: 'td img.door2' },
-      { suffix: 'door-3', oid: `${oid}.9`, selector: 'td select.door3', flag: 'td img.door3' },
-      { suffix: 'door-4', oid: `${oid}.10`, selector: 'td select.door4', flag: 'td img.door4' }
+      { suffix: 'name', oid: `${oid}${schema.controllers.name}`, selector: 'td input.name', flag: 'td img.name' },
+      { suffix: 'ID', oid: `${oid}${schema.controllers.deviceID}`, selector: 'td input.ID', flag: 'td img.ID' },
+      { suffix: 'IP', oid: `${oid}${schema.controllers.address}`, selector: 'td input.IP', flag: 'td img.IP' },
+      { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime}`, selector: 'td input.datetime', flag: 'td img.datetime' },
+      { suffix: 'cards', oid: `${oid}${schema.controllers.cards}`, selector: 'td input.cards', flag: 'td img.cards' },
+      { suffix: 'events', oid: `${oid}${schema.controllers.events}`, selector: 'td input.events', flag: 'td img.events' },
+      { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td select.door1', flag: 'td img.door1' },
+      { suffix: 'door-2', oid: `${oid}${schema.controllers.door2}`, selector: 'td select.door2', flag: 'td img.door2' },
+      { suffix: 'door-3', oid: `${oid}${schema.controllers.door3}`, selector: 'td select.door3', flag: 'td img.door3' },
+      { suffix: 'door-4', oid: `${oid}${schema.controllers.door4}`, selector: 'td select.door4', flag: 'td img.door4' }
     ]
 
     fields.forEach(f => {

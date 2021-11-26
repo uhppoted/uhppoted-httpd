@@ -210,67 +210,67 @@ function controllers (o) {
       v.created = o.value
       break
 
-    case `${base}.1`:
+    case `${base}${schema.controllers.name}`:
       v.name = o.value
       break
 
-    case `${base}.2`:
+    case `${base}${schema.controllers.deviceID}`:
       v.deviceID = o.value
       break
 
-    case `${base}.3`:
+    case `${base}${schema.controllers.address}`:
       v.address.address = o.value
       break
 
-    case `${base}.3.1`:
+    case `${base}${schema.controllers.addressConfigured}`:
       v.address.configured = o.value
       break
 
-    case `${base}.3.2`:
+    case `${base}${schema.controllers.addressStatus}`:
       v.address.status = o.value
       break
 
-    case `${base}.4`:
+    case `${base}${schema.controllers.datetime}`:
       v.datetime.datetime = o.value
       break
 
-    case `${base}.4.1`:
+    case `${base}${schema.controllers.expected}`:
       v.datetime.expected = o.value
       break
 
-    case `${base}.4.2`:
+    case `${base}${schema.controllers.datetimeStatus}`:
       v.datetime.status = o.value
       break
 
-    case `${base}.5`:
+    case `${base}${schema.controllers.cards}`:
       v.cards.cards = o.value
       break
 
-    case `${base}.5.1`:
+    case `${base}${schema.controllers.cardsStatus}`:
       v.cards.status = o.value
       break
 
-    case `${base}.6`:
+    case `${base}${schema.controllers.events}`:
       v.events.events = o.value
       break
 
-    case `${base}.6.1`:
+    case `${base}${schema.controllers.eventsStatus}`:
       v.events.status = o.value
       break
 
-    case `${base}.7`:
+    case `${base}${schema.controllers.door1}`:
       v.doors[1] = o.value
       break
 
-    case `${base}.8`:
+    case `${base}${schema.controllers.door2}`:
       v.doors[2] = o.value
       break
 
-    case `${base}.9`:
+    case `${base}${schema.controllers.door3}`:
       v.doors[3] = o.value
       break
 
-    case `${base}.10`:
+    case `${base}${schema.controllers.door4}`:
       v.doors[4] = o.value
       break
   }
