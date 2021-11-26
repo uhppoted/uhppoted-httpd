@@ -31,17 +31,9 @@ var created = time.Now()
 
 func (d *Door) IsValid() bool {
 	if d != nil {
-		controller := ""
-		if v := catalog.GetV(d.OID, DoorControllerOID); v != nil {
-			controller = fmt.Sprintf("%v", v)
-		}
+		door := d.Door()
 
-		door := uint8(0)
-		if v := catalog.GetV(d.OID, DoorControllerDoor); v != nil {
-			door = v.(uint8)
-		}
-
-		if strings.TrimSpace(d.Name) != "" || (controller != "" && door >= 1 && door <= 4) {
+		if strings.TrimSpace(d.Name) != "" || door != 0 {
 			return true
 		}
 	}
