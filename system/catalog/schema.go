@@ -10,15 +10,17 @@ type Schema struct {
 	Logs        Logs        `json:"logs"`
 }
 
-type Interfaces struct {
-	OID OID `json:"OID"`
-
+type Metadata struct {
 	Status   Suffix `json:"status"`
 	Created  Suffix `json:"created"`
 	Deleted  Suffix `json:"deleted"`
 	Modified Suffix `json:"modified"`
 	Type     Suffix `json:"type"`
+}
 
+type Interfaces struct {
+	OID OID `json:"OID"`
+	Metadata
 	Name      Suffix `json:"name"`
 	ID        Suffix `json:"ID"`
 	Bind      Suffix `json:"bind"`
@@ -28,13 +30,7 @@ type Interfaces struct {
 
 type Controllers struct {
 	OID OID `json:"OID"`
-
-	Status   Suffix `json:"status"`
-	Created  Suffix `json:"created"`
-	Deleted  Suffix `json:"deleted"`
-	Modified Suffix `json:"modified"`
-	Type     Suffix `json:"type"`
-
+	Metadata
 	Name              Suffix `json:"name"`
 	DeviceID          Suffix `json:"deviceID"`
 	Address           Suffix `json:"address"`
@@ -55,13 +51,7 @@ type Controllers struct {
 
 type Doors struct {
 	OID OID `json:"OID"`
-
-	Status   Suffix `json:"status"`
-	Created  Suffix `json:"created"`
-	Deleted  Suffix `json:"deleted"`
-	Modified Suffix `json:"modified"`
-	Type     Suffix `json:"type"`
-
+	Metadata
 	ControllerOID     Suffix `json:"controller-OID"`
 	ControllerCreated Suffix `json:"controller-created"`
 	ControllerName    Suffix `json:"controller-name"`
@@ -82,13 +72,7 @@ type Doors struct {
 
 type Cards struct {
 	OID OID `json:"OID"`
-
-	Status   Suffix `json:"status"`
-	Created  Suffix `json:"created"`
-	Deleted  Suffix `json:"deleted"`
-	Modified Suffix `json:"modified"`
-	Type     Suffix `json:"type"`
-
+	Metadata
 	Name   Suffix `json:"name"`
 	Card   Suffix `json:"card"`
 	From   Suffix `json:"from"`
@@ -98,19 +82,14 @@ type Cards struct {
 
 type Groups struct {
 	OID OID `json:"OID"`
-
-	Status   Suffix `json:"status"`
-	Created  Suffix `json:"created"`
-	Deleted  Suffix `json:"deleted"`
-	Modified Suffix `json:"modified"`
-	Type     Suffix `json:"type"`
-
+	Metadata
 	Name  Suffix `json:"name"`
 	Doors Suffix `json:"doors"`
 }
 
 type Events struct {
-	OID   OID    `json:"OID"`
+	OID OID `json:"OID"`
+	Metadata
 	First Suffix `json:"first"`
 	Last  Suffix `json:"last"`
 
@@ -129,7 +108,8 @@ type Events struct {
 }
 
 type Logs struct {
-	OID   OID    `json:"OID"`
+	OID OID `json:"OID"`
+	Metadata
 	First Suffix `json:"first"`
 	Last  Suffix `json:"last"`
 
@@ -149,13 +129,13 @@ func GetSchema() Schema {
 var schema = Schema{
 	Interfaces: Interfaces{
 		OID: InterfacesOID,
-
-		Status:   Status,
-		Created:  Created,
-		Deleted:  Deleted,
-		Modified: Modified,
-		Type:     Type,
-
+		Metadata: Metadata{
+			Status:   Status,
+			Created:  Created,
+			Deleted:  Deleted,
+			Modified: Modified,
+			Type:     Type,
+		},
 		Name:      InterfaceName,
 		ID:        InterfaceID,
 		Bind:      LANBindAddress,
@@ -165,13 +145,13 @@ var schema = Schema{
 
 	Controllers: Controllers{
 		OID: ControllersOID,
-
-		Status:   Status,
-		Created:  Created,
-		Deleted:  Deleted,
-		Modified: Modified,
-		Type:     Type,
-
+		Metadata: Metadata{
+			Status:   Status,
+			Created:  Created,
+			Deleted:  Deleted,
+			Modified: Modified,
+			Type:     Type,
+		},
 		Name:              ControllerName,
 		DeviceID:          ControllerDeviceID,
 		Address:           ControllerAddress,
@@ -192,13 +172,13 @@ var schema = Schema{
 
 	Doors: Doors{
 		OID: DoorsOID,
-
-		Status:   Status,
-		Created:  Created,
-		Deleted:  Deleted,
-		Modified: Modified,
-		Type:     Type,
-
+		Metadata: Metadata{
+			Status:   Status,
+			Created:  Created,
+			Deleted:  Deleted,
+			Modified: Modified,
+			Type:     Type,
+		},
 		ControllerOID:     DoorControllerOID,
 		ControllerCreated: DoorControllerCreated,
 		ControllerName:    DoorControllerName,
@@ -219,13 +199,13 @@ var schema = Schema{
 
 	Cards: Cards{
 		OID: CardsOID,
-
-		Status:   Status,
-		Created:  Created,
-		Deleted:  Deleted,
-		Modified: Modified,
-		Type:     Type,
-
+		Metadata: Metadata{
+			Status:   Status,
+			Created:  Created,
+			Deleted:  Deleted,
+			Modified: Modified,
+			Type:     Type,
+		},
 		Name:   CardName,
 		Card:   CardNumber,
 		From:   CardFrom,
@@ -235,13 +215,13 @@ var schema = Schema{
 
 	Groups: Groups{
 		OID: GroupsOID,
-
-		Status:   Status,
-		Created:  Created,
-		Deleted:  Deleted,
-		Modified: Modified,
-		Type:     Type,
-
+		Metadata: Metadata{
+			Status:   Status,
+			Created:  Created,
+			Deleted:  Deleted,
+			Modified: Modified,
+			Type:     Type,
+		},
 		Name:  GroupName,
 		Doors: GroupDoors,
 	},

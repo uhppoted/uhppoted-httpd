@@ -1,24 +1,18 @@
 ## v0.7.x
 
 - [ ] Make login cookie expire in 60s
-      - Don't check login cookie except for login and
+      - Don't check login cookie except for login
 
 - [ ] OIDs:
-      - [x] move 'type' to metadata
-      - [x] .0.0 status
       - [ ] Clean up controller schema
       - [ ] Clean up door schema
-      - [x] JS: use events schema
-      - [x] JS: use logs schema
-      - [ ] Use embedded struct for schema metadata
+      - [x] Use embedded struct for schema metadata
 
 ### IN PROGRESS
 
 - [ ] Apply fix for 'interim hack':
       - [ ] Use deleted OID rather than status
       - [ ] (?) Return status if IsValid && !IsDeleted
-      - [x] Recalculate returned status i.e. needs to be new/unknown/etc not just StatusOk
-            - [x] controllers
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
             object that has been swept
 
@@ -26,7 +20,6 @@
       - [ ] Define system.Component interface
       - [ ] Read file in system and pass in json.RawMessage to Load(...)
             - [ ] Move file to system
-                  - [x] events
                   - [ ] groups
                   - [ ] interfaces
                   - [ ] controllers
@@ -34,7 +27,6 @@
                   - [ ] cards
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
-            - [x] events
             - [ ] groups
             - [ ] cards
             - [ ] doors
