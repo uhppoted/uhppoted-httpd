@@ -57,31 +57,6 @@ func (d *Door) IsDeleted() bool {
 	return false
 }
 
-func (d *Door) DeviceID() uint32 {
-	if d != nil {
-		if deviceID := d.lookup(DoorControllerID); deviceID != nil {
-			if v, ok := deviceID.(*uint32); ok && v != nil {
-				return *v
-			}
-		}
-
-	}
-
-	return 0
-}
-
-func (d *Door) Door() uint8 {
-	if d != nil {
-		if door := d.lookup(DoorControllerDoor); door != nil {
-			if v, ok := door.(uint8); ok {
-				return v
-			}
-		}
-
-	}
-
-	return 0
-}
 func (d Door) String() string {
 	return fmt.Sprintf("%v", d.Name)
 }
@@ -89,20 +64,6 @@ func (d Door) String() string {
 func (d *Door) AsObjects() []interface{} {
 	created := d.created.Format("2006-01-02 15:04:05")
 	name := d.Name
-
-	controller := struct {
-		OID     string
-		created string
-		name    string
-		ID      string
-		door    string
-	}{
-		OID:     stringify(d.lookup(DoorControllerOID), ""),
-		created: stringify(d.lookup(DoorControllerCreated), ""),
-		name:    stringify(d.lookup(DoorControllerName), ""),
-		ID:      stringify(d.lookup(DoorControllerID), ""),
-		door:    stringify(d.lookup(DoorControllerDoor), ""),
-	}
 
 	delay := struct {
 		delay      uint8
@@ -174,11 +135,6 @@ func (d *Door) AsObjects() []interface{} {
 		catalog.NewObject(d.OID, ""),
 		catalog.NewObject2(d.OID, DoorStatus, d.status()),
 		catalog.NewObject2(d.OID, DoorCreated, created),
-		catalog.NewObject2(d.OID, DoorControllerOID, controller.OID),
-		catalog.NewObject2(d.OID, DoorControllerCreated, controller.created),
-		catalog.NewObject2(d.OID, DoorControllerName, controller.name),
-		catalog.NewObject2(d.OID, DoorControllerID, controller.ID),
-		catalog.NewObject2(d.OID, DoorControllerDoor, controller.door),
 		catalog.NewObject2(d.OID, DoorName, name),
 		catalog.NewObject2(d.OID, DoorDelay, types.Uint8(delay.delay)),
 		catalog.NewObject2(d.OID, DoorDelayStatus, delay.status),
@@ -391,6 +347,32 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 	if dbc != nil {
 		dbc.Write(record)
 	}
+}
+
+func (d *Door) DeviceID() uint32 {
+	if d != nil {
+		if deviceID := d.lookup(DoorControllerID); deviceID != nil {
+			if v, ok := deviceID.(*uint32); ok && v != nil {
+				return *v
+			}
+		}
+
+	}
+
+	return 0
+}
+
+func (d *Door) Door() uint8 {
+	if d != nil {
+		if door := d.lookup(DoorControllerDoor); door != nil {
+			if v, ok := door.(uint8); ok {
+				return v
+			}
+		}
+
+	}
+
+	return 0
 }
 
 func stringify(i interface{}, defval string) string {

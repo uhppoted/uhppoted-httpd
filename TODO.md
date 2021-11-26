@@ -11,6 +11,11 @@
             - [ ] restructure cards
             - [ ] restructure events
       - [ ] Clean up door schema
+            - [ ] Remove controller OID
+            - [ ] Remove controller device ID
+            - [x] Remove controller name
+            - [x] Remove controller created
+            - [ ] Remove controller door
       - [x] Use embedded struct for schema metadata
 
 ### IN PROGRESS

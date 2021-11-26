@@ -150,11 +150,11 @@ function add (oid) {
 function lookup (record) {
   const oid = record.OID
 
-  const object = { 
-      name: '',
-      deviceID: '',
-      door: ''
-    }
+  const object = {
+    name: '',
+    deviceID: '',
+    door: ''
+  }
 
   const controller = [...DB.controllers.values()].find(c => {
     for (const d of [1, 2, 3, 4]) {
@@ -167,15 +167,15 @@ function lookup (record) {
   })
 
   if (controller) {
-      object.name = controller.name
-      object.deviceID = controller.deviceID
+    object.name = controller.name
+    object.deviceID = controller.deviceID
 
-      for (const d of [1, 2, 3, 4]) {
-          if (controller.doors[d] === oid) {
-            object.door = d
-          }
-        }
+    for (const d of [1, 2, 3, 4]) {
+      if (controller.doors[d] === oid) {
+        object.door = d
+      }
     }
+  }
 
   return object
 }

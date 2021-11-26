@@ -7,9 +7,8 @@ import (
 const DoorStatus = catalog.Status
 const DoorCreated = catalog.Created
 const DoorDeleted = catalog.Deleted
+
 const DoorControllerOID = catalog.DoorControllerOID
-const DoorControllerCreated = catalog.DoorControllerCreated
-const DoorControllerName = catalog.DoorControllerName
 const DoorControllerID = catalog.DoorControllerID
 const DoorControllerDoor = catalog.DoorControllerDoor
 const DoorName = catalog.DoorName

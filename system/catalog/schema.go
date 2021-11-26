@@ -52,11 +52,6 @@ type Controllers struct {
 type Doors struct {
 	OID OID `json:"OID"`
 	Metadata
-	ControllerOID     Suffix `json:"controller-OID"`
-	ControllerCreated Suffix `json:"controller-created"`
-	ControllerName    Suffix `json:"controller-name"`
-	ControllerID      Suffix `json:"controller-ID"`
-	ControllerDoor    Suffix `json:"controller-door"`
 	Name              Suffix `json:"name"`
 	Delay             Suffix `json:"delay"`
 	DelayStatus       Suffix `json:"delay-status"`
@@ -179,11 +174,6 @@ var schema = Schema{
 			Modified: Modified,
 			Type:     Type,
 		},
-		ControllerOID:     DoorControllerOID,
-		ControllerCreated: DoorControllerCreated,
-		ControllerName:    DoorControllerName,
-		ControllerID:      DoorControllerID,
-		ControllerDoor:    DoorControllerDoor,
 		Name:              DoorName,
 		Delay:             DoorDelay,
 		DelayStatus:       DoorDelayStatus,
@@ -298,8 +288,6 @@ const ControllerDoor3 Suffix = ".7.3"
 const ControllerDoor4 Suffix = ".7.4"
 
 const DoorControllerOID Suffix = ".0.4"
-const DoorControllerCreated Suffix = ".0.4.1"
-const DoorControllerName Suffix = ".0.4.2"
 const DoorControllerID Suffix = ".0.4.3"
 const DoorControllerDoor Suffix = ".0.4.4"
 const DoorName Suffix = ".1"

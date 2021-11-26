@@ -129,8 +129,6 @@ func (cc *ControllerSet) Load(file string) error {
 		for _, d := range []uint8{1, 2, 3, 4} {
 			if oid, ok := c.Doors[d]; ok && oid != "" {
 				catalog.PutV(catalog.OID(oid), catalog.DoorControllerOID, c.OID)
-				catalog.PutV(catalog.OID(oid), catalog.DoorControllerCreated, c.created)
-				catalog.PutV(catalog.OID(oid), catalog.DoorControllerName, c.Name)
 				catalog.PutV(catalog.OID(oid), catalog.DoorControllerID, c.DeviceID)
 				catalog.PutV(catalog.OID(oid), catalog.DoorControllerDoor, d)
 			}
