@@ -439,6 +439,7 @@ function groups (o) {
     DB.groups.set(base, {
       OID: oid,
       created: '',
+      deleted: '',
       name: '',
       doors: new Map(),
       status: o.value,
@@ -455,6 +456,10 @@ function groups (o) {
 
     case `${base}${schema.groups.created}`:
       v.created = o.value
+      break
+
+    case `${base}${schema.groups.deleted}`:
+      v.deleted = o.value
       break
 
     case `${base}${schema.groups.name}`:

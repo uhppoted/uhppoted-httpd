@@ -22,10 +22,15 @@ export function refreshed () {
 }
 
 function updateFromDB (oid, record) {
-  const row = document.querySelector("div#groups tr[data-oid='" + oid + "']")
+  let row = document.querySelector("div#groups tr[data-oid='" + oid + "']")
 
-  if (record.status === 'deleted' || !row) {
+  if (record.deleted && record.deleted !== '') {
+    deleted('groups', row)
     return
+  }
+
+  if (!row) {
+    row = add(oid)
   }
 
   const name = row.querySelector(`[data-oid="${oid}${schema.groups.name}"]`)

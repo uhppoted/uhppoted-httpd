@@ -19,6 +19,8 @@
       - [x] Use embedded struct for schema metadata
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
 
+- [ ] Make 'created' field a DateTime
+
 ### IN PROGRESS
 
 - [ ] Apply fix for 'interim hack':
@@ -26,7 +28,7 @@
             - [ ] controllers
             - [ ] cards
             - [x] doors
-            - [ ] groups
+            - [x] groups
       - [ ] (?) Return status if IsValid && !IsDeleted
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
             object that has been swept

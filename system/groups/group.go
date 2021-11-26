@@ -20,7 +20,7 @@ type Group struct {
 	Doors map[catalog.OID]bool `json:"doors"`
 
 	created time.Time
-	deleted *time.Time
+	deleted *types.DateTime
 }
 
 const BLANK = "'blank'"
@@ -55,6 +55,7 @@ func (g *Group) AsObjects() []interface{} {
 		catalog.NewObject(g.OID, ""),
 		catalog.NewObject2(g.OID, GroupStatus, g.status()),
 		catalog.NewObject2(g.OID, GroupCreated, created),
+		catalog.NewObject2(g.OID, GroupDeleted, g.deleted),
 		catalog.NewObject2(g.OID, GroupName, name),
 	}
 
@@ -162,16 +163,15 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 			}
 
 			g.log(auth, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
-			now := time.Now()
+			now := types.DateTime(time.Now())
 			g.deleted = &now
 			objects = append(objects, catalog.NewObject(g.OID, "deleted"))
 
 			catalog.Delete(g.OID)
 		}
 
-		if g.deleted == nil {
-			objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, g.status()))
-		}
+		objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, g.status()))
+		objects = append(objects, catalog.NewObject2(g.OID, GroupDeleted, g.deleted))
 	}
 
 	return objects, nil
