@@ -3,8 +3,6 @@ package groups
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -16,8 +14,6 @@ import (
 
 type Groups struct {
 	Groups map[catalog.OID]Group `json:"groups"`
-
-	file string `json:"-"`
 }
 
 var guard sync.RWMutex
@@ -28,23 +24,13 @@ func NewGroups() Groups {
 	}
 }
 
-func (gg *Groups) Load(file string) error {
-	blob := struct {
-		Groups []json.RawMessage `json:"groups"`
-	}{
-		Groups: []json.RawMessage{},
-	}
-
-	bytes, err := os.ReadFile(file)
-	if err != nil {
+func (gg *Groups) Load(blob json.RawMessage) error {
+	rs := []json.RawMessage{}
+	if err := json.Unmarshal(blob, &rs); err != nil {
 		return err
 	}
 
-	if err := json.Unmarshal(bytes, &blob); err != nil {
-		return err
-	}
-
-	for _, v := range blob.Groups {
+	for _, v := range rs {
 		var g Group
 		if err := g.deserialize(v); err == nil {
 			if _, ok := gg.Groups[g.OID]; ok {
@@ -61,63 +47,29 @@ func (gg *Groups) Load(file string) error {
 		catalog.PutV(g.OID, GroupCreated, g.created)
 	}
 
-	gg.file = file
-
 	return nil
 }
 
-func (gg Groups) Save() error {
+func (gg Groups) Save() (json.RawMessage, error) {
 	if err := validate(gg); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := scrub(gg); err != nil {
-		return err
+		return nil, err
 	}
 
-	if gg.file == "" {
-		return nil
-	}
-
-	serializable := struct {
-		Groups []json.RawMessage `json:"groups"`
-	}{
-		Groups: []json.RawMessage{},
-	}
+	serializable := []json.RawMessage{}
 
 	for _, g := range gg.Groups {
 		if g.IsValid() && !g.IsDeleted() {
 			if record, err := g.serialize(); err == nil && record != nil {
-				serializable.Groups = append(serializable.Groups, record)
+				serializable = append(serializable, record)
 			}
 		}
 	}
 
-	b, err := json.MarshalIndent(serializable, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	tmp, err := os.CreateTemp("", "uhppoted-groups.*")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(gg.file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), gg.file)
+	return json.MarshalIndent(serializable, "", "  ")
 }
 
 func (gg Groups) Print() {
@@ -129,7 +81,6 @@ func (gg Groups) Print() {
 func (gg *Groups) Clone() Groups {
 	shadow := Groups{
 		Groups: map[catalog.OID]Group{},
-		file:   gg.file,
 	}
 
 	for k, v := range gg.Groups {

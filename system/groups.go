@@ -1,6 +1,8 @@
 package system
 
 import (
+	"fmt"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -17,7 +19,7 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.groups.Clone()
+	shadow := sys.groups.groups.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -31,12 +33,16 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 		return nil, types.BadRequest(err, err)
 	}
 
-	if err := shadow.Save(); err != nil {
+	if bytes, err := shadow.Save(); err != nil {
+		return nil, err
+	} else if bytes == nil {
+		return nil, fmt.Errorf("invalid serialized 'groups' (%v)", err)
+	} else if err := save(sys.groups.file, sys.groups.tag, bytes); err != nil {
 		return nil, err
 	}
 
 	dbc.Commit()
-	sys.groups = shadow
+	sys.groups.groups = shadow
 	sys.updated()
 
 	list := squoosh(dbc.Objects())

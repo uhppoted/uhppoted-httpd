@@ -32,7 +32,14 @@ var sys = system{
 	controllers: controllers.NewControllerSet(),
 	doors:       doors.NewDoors(),
 	cards:       cards.NewCards(),
-	groups:      groups.NewGroups(),
+	groups: struct {
+		groups groups.Groups
+		file   string
+		tag    string
+	}{
+		groups: groups.NewGroups(),
+		tag:    "groups",
+	},
 	events: struct {
 		events events.Events
 		file   string
@@ -61,8 +68,12 @@ type system struct {
 	controllers controllers.ControllerSet
 	doors       doors.Doors
 	cards       cards.Cards
-	groups      groups.Groups
-	events      struct {
+	groups      struct {
+		groups groups.Groups
+		file   string
+		tag    string
+	}
+	events struct {
 		events events.Events
 		file   string
 		tag    string
@@ -104,6 +115,7 @@ type object struct {
 }
 
 func Init(cfg config.Config, conf string, debug bool) error {
+	sys.groups.file = cfg.HTTPD.System.Groups
 	sys.events.file = cfg.HTTPD.System.Events
 	sys.logs.file = cfg.HTTPD.System.Logs
 
@@ -123,7 +135,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		}
 	}
 
-	if err := sys.groups.Load(cfg.HTTPD.System.Groups); err != nil {
+	if err := sys.cards.Load(cfg.HTTPD.System.Cards); err != nil {
 		if os.IsNotExist(err) {
 			warn(err)
 		} else {
@@ -131,12 +143,22 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		}
 	}
 
-	if err := sys.cards.Load(cfg.HTTPD.System.Cards); err != nil {
+	//	if err := sys.groups.Load(cfg.HTTPD.System.Groups); err != nil {
+	//		if os.IsNotExist(err) {
+	//			warn(err)
+	//		} else {
+	//			return err
+	//		}
+	//	}
+
+	if blob, err := load(sys.groups.file); err != nil {
 		if os.IsNotExist(err) {
 			warn(err)
 		} else {
 			return err
 		}
+	} else if err := sys.groups.groups.Load(blob[sys.groups.tag]); err != nil {
+		return err
 	}
 
 	if blob, err := load(sys.events.file); err != nil {
@@ -215,7 +237,7 @@ func System() interface{} {
 	objects = append(objects, sys.controllers.AsObjects()...)
 	objects = append(objects, sys.doors.AsObjects()...)
 	objects = append(objects, sys.cards.AsObjects()...)
-	objects = append(objects, sys.groups.AsObjects()...)
+	objects = append(objects, sys.groups.groups.AsObjects()...)
 
 	return struct {
 		Objects []interface{} `json:"objects"`

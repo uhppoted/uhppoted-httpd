@@ -34,7 +34,7 @@
 - [ ] Genericize load/save
       - [ ] Define system.Component interface
       - [ ] Read file in system and pass in json.RawMessage to Load(...)
-            - [ ] Move file to system
+            - [x] Move file to system
                   - [ ] groups
                   - [ ] interfaces
                   - [ ] controllers
@@ -42,12 +42,13 @@
                   - [ ] cards
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
-            - [ ] groups
+            - [x] groups
             - [ ] cards
             - [ ] doors
             - [ ] controllers
             - [ ] interfaces
-  
+      - [ ] Groups, etc probably don't need to be structs anymore => typedef arrays
+
 - [ ] 'users' page
 - [ ] Set initial user + password
 - [ ] Rename 'address' to 'endpoint'
