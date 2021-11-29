@@ -187,6 +187,7 @@ function controllers (o) {
     DB.controllers.set(base, {
       OID: oid,
       created: '',
+      deleted: '',
       name: '',
       deviceID: '',
       address: { address: '', configured: '', status: 'unknown' },
@@ -208,6 +209,10 @@ function controllers (o) {
 
     case `${base}${schema.controllers.created}`:
       v.created = o.value
+      break
+
+    case `${base}${schema.controllers.deleted}`:
+      v.deleted = o.value
       break
 
     case `${base}${schema.controllers.name}`:

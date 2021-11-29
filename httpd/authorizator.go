@@ -134,6 +134,8 @@ func (a *authorizator) CanAddController(controller auth.Operant) error {
 
 		m := map[string]interface{}{
 			"CONTROLLER": controller.AsRuleEntity(),
+			"FIELD":      "",
+			"VALUE":      "",
 		}
 
 		if err := a.eval("system", "add::controller", &r, m); err != nil {
@@ -192,6 +194,8 @@ func (a *authorizator) CanDeleteController(controller auth.Operant) error {
 
 		m := map[string]interface{}{
 			"CONTROLLER": controller.AsRuleEntity(),
+			"FIELD":      "",
+			"VALUE":      "",
 		}
 
 		if err := a.eval("system", "delete::controller", &r, m); err != nil {

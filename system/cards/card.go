@@ -351,12 +351,12 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			c.deleted = &now
 
 			objects = append(objects, catalog.NewObject(c.OID, "deleted"))
+			objects = append(objects, catalog.NewObject2(c.OID, CardDeleted, c.deleted))
 
 			catalog.Delete(c.OID)
 		}
 
 		objects = append(objects, catalog.NewObject2(c.OID, CardStatus, c.status()))
-		objects = append(objects, catalog.NewObject2(c.OID, CardDeleted, c.deleted))
 	}
 
 	return objects, nil

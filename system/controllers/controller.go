@@ -26,7 +26,7 @@ type Controller struct {
 	TimeZone *string               `json:"timezone,omitempty"`
 
 	created      time.Time
-	deleted      *time.Time
+	deleted      *types.DateTime
 	unconfigured bool
 }
 
@@ -70,7 +70,6 @@ func (c *Controller) AsObjects() []interface{} {
 	}
 
 	created := c.created.Format("2006-01-02 15:04:05")
-	//	status := types.StatusUnknown
 	name := c.Name
 	deviceID := ""
 	address := addr{}
@@ -534,33 +533,16 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					dbc)
 			}
 
-			now := time.Now()
+			now := types.DateTime(time.Now())
 			c.deleted = &now
 			objects = append(objects, catalog.NewObject(c.OID, "deleted"))
-			objects = append(objects, catalog.NewObject2(c.OID, ControllerStatus, "deleted"))
 			objects = append(objects, catalog.NewObject2(c.OID, ControllerDeleted, c.deleted))
 
 			catalog.Delete(c.OID)
 		}
 
-		if c.deleted == nil {
-			status := types.StatusUnknown
-			if c.DeviceID != nil && *c.DeviceID != 0 {
-				if cached, ok := cache.cache[*c.DeviceID]; ok {
-					dt := time.Now().Sub(cached.touched)
-					switch {
-					case dt < windows.deviceOk:
-						status = types.StatusOk
-
-					case dt < windows.deviceUncertain:
-						status = types.StatusUncertain
-					}
-				}
-			}
-
-			objects = append(objects, catalog.NewObject(c.OID, status))
-			objects = append(objects, catalog.NewObject2(c.OID, ControllerStatus, status))
-		}
+		objects = append(objects, catalog.NewObject2(c.OID, ControllerStatus, c.status()))
+		objects = append(objects, catalog.NewObject2(c.OID, ControllerDeleted, c.deleted))
 	}
 
 	return objects, nil

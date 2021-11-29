@@ -19,12 +19,13 @@
 
 - [ ] Make 'created' field a DateTime
       - Retype *DateTime as a DateTimePtr
+      - Refactor DateTime out to use core implementation only
 
 ### IN PROGRESS
 
 - [ ] Apply fix for 'interim hack':
-      - [ ] Use deleted OID rather than status
-            - [ ] controllers
+      - [x] Use deleted OID rather than status
+            - [x] controllers
             - [x] cards
       - [ ] (?) Return status if IsValid && !IsDeleted
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
@@ -77,8 +78,9 @@
 #### Cards
   - [ ] Weirdness around card add/delete
         - [ ] Handle edits to 'new' card that don't e.g. update the name or number
-              - Return error (?)
-              - Don't delete card
+              - Return error
+              - Make sure card name/number edits are sent before anything else
+                for multiple edits
 
   - [ ] Fix bottom right of scrollbar
         - [ ] Scrollbar 'goes funny' if -webkit styles are modified
