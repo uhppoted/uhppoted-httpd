@@ -366,6 +366,7 @@ function cards (o) {
     DB.cards.set(base, {
       OID: oid,
       created: '',
+      deleted: '',
       name: '',
       number: '',
       from: '',
@@ -385,6 +386,10 @@ function cards (o) {
 
     case `${base}${schema.cards.created}`:
       v.created = o.value
+      break
+
+    case `${base}${schema.cards.deleted}`:
+      v.deleted = o.value
       break
 
     case `${base}${schema.cards.name}`:

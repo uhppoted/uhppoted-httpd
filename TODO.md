@@ -4,31 +4,28 @@
       - Don't check login cookie except for login
 
 - [ ] OIDs:
-      - [ ] Clean up controller schem
-            - [x] restructure doors
+      - [ ] Clean up controller schema
             - [ ] restructure address
             - [ ] restructure date/time
             - [ ] restructure cards
             - [ ] restructure events
+
       - [ ] Clean up door schema
             - [ ] Remove controller OID
             - [ ] Remove controller device ID
-            - [x] Remove controller name
-            - [x] Remove controller created
             - [ ] Remove controller door
-      - [x] Use embedded struct for schema metadata
+
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
 
 - [ ] Make 'created' field a DateTime
+      - Retype *DateTime as a DateTimePtr
 
 ### IN PROGRESS
 
 - [ ] Apply fix for 'interim hack':
       - [ ] Use deleted OID rather than status
             - [ ] controllers
-            - [ ] cards
-            - [x] doors
-            - [x] groups
+            - [x] cards
       - [ ] (?) Return status if IsValid && !IsDeleted
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
             object that has been swept
@@ -36,15 +33,13 @@
 - [ ] Genericize load/save
       - [ ] Define system.Component interface
       - [ ] Read file in system and pass in json.RawMessage to Load(...)
-            - [x] Move file to system
-                  - [ ] groups
+            - [ ] Move file to system
                   - [ ] interfaces
                   - [ ] controllers
                   - [ ] doors
                   - [ ] cards
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
-            - [x] groups
             - [ ] cards
             - [ ] doors
             - [ ] controllers

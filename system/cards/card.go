@@ -22,8 +22,8 @@ type Card struct {
 	To     *types.Date
 	Groups map[catalog.OID]bool
 
-	created types.DateTime `json:"-"`
-	deleted *time.Time
+	created types.DateTime
+	deleted *types.DateTime
 }
 
 const BLANK = "'blank'"
@@ -78,6 +78,7 @@ func (c *Card) AsObjects() []interface{} {
 		catalog.NewObject(c.OID, ""),
 		catalog.NewObject2(c.OID, CardStatus, c.status()),
 		catalog.NewObject2(c.OID, CardCreated, created),
+		catalog.NewObject2(c.OID, CardDeleted, c.deleted),
 		catalog.NewObject2(c.OID, CardName, name),
 		catalog.NewObject2(c.OID, CardNumber, number),
 		catalog.NewObject2(c.OID, CardFrom, from),
@@ -346,7 +347,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 					dbc)
 			}
 
-			now := time.Now()
+			now := types.DateTime(time.Now())
 			c.deleted = &now
 
 			objects = append(objects, catalog.NewObject(c.OID, "deleted"))
@@ -354,9 +355,8 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			catalog.Delete(c.OID)
 		}
 
-		if c.deleted == nil {
-			objects = append(objects, catalog.NewObject2(c.OID, CardStatus, c.status()))
-		}
+		objects = append(objects, catalog.NewObject2(c.OID, CardStatus, c.status()))
+		objects = append(objects, catalog.NewObject2(c.OID, CardDeleted, c.deleted))
 	}
 
 	return objects, nil

@@ -65,7 +65,8 @@ export function refreshed () {
 function updateFromDB (oid, record) {
   const row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
 
-  if (record.status === 'deleted' || !row) {
+  if (record.deleted && record.deleted !== '') {
+    deleted('cards', row)
     return
   }
 
