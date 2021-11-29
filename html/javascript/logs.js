@@ -84,7 +84,7 @@ function realize (entries) {
   entries.forEach(o => {
     let row = tbody.querySelector(`tr[data-oid='${o.OID}']`)
 
-    if (o.status === 'deleted') {
+    if (o.deleted && o.deleted !== '') {
       deleted('logs', row)
       return
     }
@@ -160,7 +160,7 @@ function add (oid) {
 function updateFromDB (oid, record) {
   const row = document.querySelector("div#logs tr[data-oid='" + oid + "']")
 
-  if (record.status === 'deleted' || !row) {
+  if ((record.deleted && record.deleted) !== '' || !row) {
     return
   }
 

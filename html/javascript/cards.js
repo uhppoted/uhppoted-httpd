@@ -74,7 +74,7 @@ function updateFromDB (oid, record) {
   const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
   const from = row.querySelector(`[data-oid="${oid}${schema.cards.from}"]`)
   const to = row.querySelector(`[data-oid="${oid}${schema.cards.to}"]`)
-  const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && g.status !== 'deleted')
+  const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && !(g.deleted && g.deleted !== ''))
 
   row.dataset.status = record.status
 
@@ -103,7 +103,7 @@ function realize (cards) {
   const tbody = table.tBodies[0]
 
   const groups = new Map([...DB.groups.values()]
-    .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
+    .filter(g => g.status && g.status !== '<new>' && !(g.deleted && g.deleted !== ''))
     .sort((p, q) => p.created.localeCompare(q.created))
     .map(o => [o.OID, o]))
 
@@ -135,7 +135,7 @@ function realize (cards) {
   cards.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
 
-    if (o.status === 'deleted') {
+    if (o.deleted && o.deleted !== '') {
       deleted('cards', row)
       return
     }

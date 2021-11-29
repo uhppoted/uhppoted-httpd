@@ -42,7 +42,7 @@ function updateFromDB (oid, record) {
 
   // ... populate door dropdowns
   const doors = [...DB.doors.values()]
-    .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
+    .filter(o => o.status && o.status !== '<new>' && !(o.deleted && o.deleted !== ''))
     .sort((p, q) => p.created.localeCompare(q.created));
 
   [door1, door2, door3, door4].forEach(select => {
@@ -98,7 +98,7 @@ function realize (controllers) {
   controllers.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
 
-    if (o.status === 'deleted') {
+    if (o.deleted && o.deleted !== '') {
       deleted('controllers', row)
       return
     }

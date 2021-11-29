@@ -34,7 +34,7 @@ function updateFromDB (oid, record) {
   }
 
   const name = row.querySelector(`[data-oid="${oid}${schema.groups.name}"]`)
-  const doors = [...DB.doors.values()].filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
+  const doors = [...DB.doors.values()].filter(o => o.status && o.status !== '<new>' && !(o.deleted && o.deleted !== ''))
 
   row.dataset.status = record.status
 
@@ -60,7 +60,7 @@ function realize (groups) {
   const tbody = table.tBodies[0]
 
   const doors = new Map([...DB.doors.values()]
-    .filter(o => o.status && o.status !== '<new>' && o.status !== 'deleted')
+    .filter(o => o.status && o.status !== '<new>' && !(o.deleted && o.deleted !== ''))
     .sort((p, q) => p.created.localeCompare(q.created))
     .map(o => [o.OID, o]))
 
@@ -92,7 +92,7 @@ function realize (groups) {
   groups.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
 
-    if (o.status === 'deleted') {
+    if (o.deleted && o.deleted !== '') {
       deleted('groups', row)
       return
     }

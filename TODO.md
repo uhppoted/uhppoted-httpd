@@ -27,6 +27,7 @@
       - [x] Use deleted OID rather than status
             - [x] controllers
             - [x] cards
+      - [ ] Neaten up all the repetitive `deleted && deleted !== ''`
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
             object that has been swept
 
@@ -52,6 +53,9 @@
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 
 #### Doors
+  - [ ] Weird thing on new door
+        - Can't rollback
+        - Has default name
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
@@ -94,11 +98,6 @@
         - time based (?)
         - make update ID base (?)
         - use tag (?)
-
-#### Doors
-     - [ ]  Weird thing on new door
-            - Doesn't highlight as door
-            - Has default name
 
 #### System
       - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name

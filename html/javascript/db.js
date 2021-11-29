@@ -35,37 +35,25 @@ export const DB = {
     switch (tag) {
       case 'controllers':
         if (oid && this.controllers.has(oid)) {
-          const record = this.controllers.get(oid)
-
-          record.mark = 0
-          record.status = 'deleted'
+          this.controllers.get(oid).mark = 0
         }
         break
 
       case 'doors':
         if (oid && this.doors.has(oid)) {
-          const record = this.doors.get(oid)
-
-          record.mark = 0
-          record.status = 'deleted'
+          this.doors.get(oid).mark = 0
         }
         break
 
       case 'cards':
         if (oid && this.cards.has(oid)) {
-          const record = this.cards.get(oid)
-
-          record.mark = 0
-          record.status = 'deleted'
+          this.cards.get(oid).mark = 0
         }
         break
 
       case 'groups':
         if (oid && this.groups.has(oid)) {
-          const record = this.groups.get(oid)
-
-          record.mark = 0
-          record.status = 'deleted'
+          this.groups.get(oid).mark = 0
         }
         break
     }
@@ -689,37 +677,37 @@ function mark (tag) {
 
 function sweep (tag) {
   DB.controllers.forEach((v, k) => {
-    if (v.mark >= 25 && v.status === 'deleted') {
+    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
       DB.controllers.delete(k)
     }
   })
 
   DB.doors.forEach((v, k) => {
-    if (v.mark >= 25 && v.status === 'deleted') {
+    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
       DB.doors.delete(k)
     }
   })
 
   DB.cards.forEach((v, k) => {
-    if (v.mark >= 25 && v.status === 'deleted') {
+    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
       DB.doors.delete(k)
     }
   })
 
   DB.groups.forEach((v, k) => {
-    if (v.mark >= 25 && v.status === 'deleted') {
+    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
       DB.groups.delete(k)
     }
   })
 
   DB.events().forEach((v, k) => {
-    if (v.mark >= 25 && v.status === 'deleted') {
+    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
       DB.events().delete(k)
     }
   })
 
   DB.logs().forEach((v, k) => {
-    if (v.mark >= 25 && v.status === 'deleted') {
+    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
       DB.logs().delete(k)
     }
   })
