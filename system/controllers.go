@@ -61,13 +61,13 @@ func validate(c *controllers.ControllerSet) error {
 	for _, r := range c.Controllers {
 		for _, v := range r.Doors {
 			if v != "" {
-				if _, ok := sys.doors.Doors[catalog.OID(v)]; !ok {
+				if _, ok := sys.doors.doors.Doors[catalog.OID(v)]; !ok {
 					return types.BadRequest(fmt.Errorf("Invalid door ID"), fmt.Errorf("controller %v: invalid door ID (%v)", r.OID, v))
 				}
 			}
 
 			if rid, ok := doors[v]; ok && v != "" {
-				return types.BadRequest(fmt.Errorf("%v door assigned to more than one controller", sys.doors.Doors[catalog.OID(v)].Name), fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID))
+				return types.BadRequest(fmt.Errorf("%v door assigned to more than one controller", sys.doors.doors.Doors[catalog.OID(v)].Name), fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID))
 			}
 
 			doors[v] = string(r.OID)

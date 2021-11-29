@@ -20,7 +20,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.doors.Clone()
+	shadow := sys.doors.doors.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -55,11 +55,15 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	// ... save
-	if err := shadow.Save(); err != nil {
+	if bytes, err := shadow.Save(); err != nil {
+		return nil, err
+	} else if bytes == nil {
+		return nil, fmt.Errorf("invalid serialized 'doors' (%v)", err)
+	} else if err := save(sys.doors.file, sys.doors.tag, bytes); err != nil {
 		return nil, err
 	}
 
-	sys.doors = shadow
+	sys.doors.doors = shadow
 	dbc.Commit()
 	sys.updated()
 

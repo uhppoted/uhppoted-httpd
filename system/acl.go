@@ -32,7 +32,7 @@ func CompareACL() {
 func permissions() (acl.ACL, error) {
 	cards := sys.cards.Cards
 	groups := sys.groups.groups.Groups
-	doors := sys.doors.Doors
+	doors := sys.doors.doors.Doors
 
 	// initialise empty ACL
 
@@ -109,7 +109,7 @@ func permissions() (acl.ACL, error) {
 
 	if sys.rules != nil {
 		for _, c := range cards {
-			allowed, forbidden, err := sys.rules.Eval(*c, sys.groups.groups, sys.doors)
+			allowed, forbidden, err := sys.rules.Eval(*c, sys.groups.groups, sys.doors.doors)
 			if err != nil {
 				return nil, err
 			}

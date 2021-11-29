@@ -3,8 +3,6 @@ package doors
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 	"sync"
@@ -45,23 +43,13 @@ func (dd *Doors) AsObjects() []interface{} {
 	return objects
 }
 
-func (dd *Doors) Load(file string) error {
-	blob := struct {
-		Doors []json.RawMessage `json:"doors"`
-	}{
-		Doors: []json.RawMessage{},
-	}
-
-	bytes, err := os.ReadFile(file)
-	if err != nil {
+func (dd *Doors) Load(blob json.RawMessage) error {
+	rs := []json.RawMessage{}
+	if err := json.Unmarshal(blob, &rs); err != nil {
 		return err
 	}
 
-	if err := json.Unmarshal(bytes, &blob); err != nil {
-		return err
-	}
-
-	for _, v := range blob.Doors {
+	for _, v := range rs {
 		var d Door
 		if err := d.deserialize(v); err == nil {
 			if _, ok := dd.Doors[d.OID]; ok {
@@ -81,63 +69,28 @@ func (dd *Doors) Load(file string) error {
 		catalog.PutV(d.OID, DoorControlModified, false)
 	}
 
-	dd.file = file
-
 	return nil
 }
 
-func (dd Doors) Save() error {
+func (dd Doors) Save() (json.RawMessage, error) {
 	if err := validate(dd); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := scrub(dd); err != nil {
-		return err
+		return nil, err
 	}
 
-	if dd.file == "" {
-		return nil
-	}
-
-	serializable := struct {
-		Doors []json.RawMessage `json:"doors"`
-	}{
-		Doors: []json.RawMessage{},
-	}
-
+	serializable := []json.RawMessage{}
 	for _, d := range dd.Doors {
 		if d.IsValid() && !d.IsDeleted() {
 			if record, err := d.serialize(); err == nil && record != nil {
-				serializable.Doors = append(serializable.Doors, record)
+				serializable = append(serializable, record)
 			}
 		}
 	}
 
-	b, err := json.MarshalIndent(serializable, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	tmp, err := os.CreateTemp("", "uhppoted-doors.*")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(dd.file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), dd.file)
+	return json.MarshalIndent(serializable, "", "  ")
 }
 
 func (dd *Doors) Sweep(retention time.Duration) {

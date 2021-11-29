@@ -30,8 +30,15 @@ import (
 
 var sys = system{
 	controllers: controllers.NewControllerSet(),
-	doors:       doors.NewDoors(),
-	cards:       cards.NewCards(),
+	doors: struct {
+		doors doors.Doors
+		file  string
+		tag   string
+	}{
+		doors: doors.NewDoors(),
+		tag:   "doors",
+	},
+	cards: cards.NewCards(),
 	groups: struct {
 		groups groups.Groups
 		file   string
@@ -66,9 +73,13 @@ type system struct {
 	sync.RWMutex
 	conf        string
 	controllers controllers.ControllerSet
-	doors       doors.Doors
-	cards       cards.Cards
-	groups      struct {
+	doors       struct {
+		doors doors.Doors
+		file  string
+		tag   string
+	}
+	cards  cards.Cards
+	groups struct {
 		groups groups.Groups
 		file   string
 		tag    string
@@ -115,16 +126,19 @@ type object struct {
 }
 
 func Init(cfg config.Config, conf string, debug bool) error {
+	sys.doors.file = cfg.HTTPD.System.Doors
 	sys.groups.file = cfg.HTTPD.System.Groups
 	sys.events.file = cfg.HTTPD.System.Events
 	sys.logs.file = cfg.HTTPD.System.Logs
 
-	if err := sys.doors.Load(cfg.HTTPD.System.Doors); err != nil {
+	if blob, err := load(sys.doors.file); err != nil {
 		if os.IsNotExist(err) {
 			warn(err)
 		} else {
 			return err
 		}
+	} else if err := sys.doors.doors.Load(blob[sys.doors.tag]); err != nil {
+		return err
 	}
 
 	if err := sys.controllers.Load(cfg.HTTPD.System.Controllers); err != nil {
@@ -142,14 +156,6 @@ func Init(cfg config.Config, conf string, debug bool) error {
 			return err
 		}
 	}
-
-	//	if err := sys.groups.Load(cfg.HTTPD.System.Groups); err != nil {
-	//		if os.IsNotExist(err) {
-	//			warn(err)
-	//		} else {
-	//			return err
-	//		}
-	//	}
 
 	if blob, err := load(sys.groups.file); err != nil {
 		if os.IsNotExist(err) {
@@ -235,7 +241,7 @@ func System() interface{} {
 
 	objects := []interface{}{}
 	objects = append(objects, sys.controllers.AsObjects()...)
-	objects = append(objects, sys.doors.AsObjects()...)
+	objects = append(objects, sys.doors.doors.AsObjects()...)
 	objects = append(objects, sys.cards.AsObjects()...)
 	objects = append(objects, sys.groups.groups.AsObjects()...)
 
@@ -303,7 +309,9 @@ func (s *system) sweep() {
 	log.Printf("INFO  Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
 
 	s.controllers.Sweep(s.retention)
-	s.doors.Sweep(s.retention)
+	s.doors.doors.Sweep(s.retention)
+	s.cards.Sweep(s.retention)
+	s.groups.groups.Sweep(s.retention)
 }
 
 func unpack(m map[string]interface{}) ([]object, error) {

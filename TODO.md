@@ -27,22 +27,21 @@
       - [x] Use deleted OID rather than status
             - [x] controllers
             - [x] cards
-      - [ ] (?) Return status if IsValid && !IsDeleted
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
             object that has been swept
 
 - [ ] Genericize load/save
-      - [ ] Define system.Component interface
+      - [ ] Define system.Serializable interface
       - [ ] Read file in system and pass in json.RawMessage to Load(...)
             - [ ] Move file to system
                   - [ ] interfaces
                   - [ ] controllers
-                  - [ ] doors
+                  - [x] doors
                   - [ ] cards
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
             - [ ] cards
-            - [ ] doors
+            - [x] doors
             - [ ] controllers
             - [ ] interfaces
       - [ ] Groups, etc probably don't need to be structs anymore => typedef arrays
@@ -95,6 +94,11 @@
         - time based (?)
         - make update ID base (?)
         - use tag (?)
+
+#### Doors
+     - [ ]  Weird thing on new door
+            - Doesn't highlight as door
+            - Has default name
 
 #### System
       - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name

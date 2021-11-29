@@ -211,6 +211,17 @@ func (cc *Cards) AsObjects() []interface{} {
 	return objects
 }
 
+func (cc *Cards) Sweep(retention time.Duration) {
+	if cc != nil {
+		cutoff := time.Now().Add(-retention)
+		for i, v := range cc.Cards {
+			if v.deleted != nil && v.deleted.Before(cutoff) {
+				delete(cc.Cards, i)
+			}
+		}
+	}
+}
+
 func (cc *Cards) Lookup(card uint32) *Card {
 	if card != 0 {
 		for _, c := range cc.Cards {

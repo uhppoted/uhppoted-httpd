@@ -150,6 +150,17 @@ func (gg *Groups) Validate() error {
 	return nil
 }
 
+func (gg *Groups) Sweep(retention time.Duration) {
+	if gg != nil {
+		cutoff := time.Now().Add(-retention)
+		for i, v := range gg.Groups {
+			if v.deleted != nil && v.deleted.Before(cutoff) {
+				delete(gg.Groups, i)
+			}
+		}
+	}
+}
+
 func (gg *Groups) add(auth auth.OpAuth, g Group) (*Group, error) {
 	oid := catalog.NewGroup()
 
