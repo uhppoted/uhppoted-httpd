@@ -1,8 +1,6 @@
 package system
 
 import (
-	"fmt"
-
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -33,11 +31,7 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 		return nil, types.BadRequest(err, err)
 	}
 
-	if bytes, err := shadow.Save(); err != nil {
-		return nil, err
-	} else if bytes == nil {
-		return nil, fmt.Errorf("invalid serialized 'groups' (%v)", err)
-	} else if err := save(sys.groups.file, sys.groups.tag, bytes); err != nil {
+	if err := save(sys.groups.file, sys.groups.tag, &shadow); err != nil {
 		return nil, err
 	}
 

@@ -55,11 +55,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	// ... save
-	if bytes, err := shadow.Save(); err != nil {
-		return nil, err
-	} else if bytes == nil {
-		return nil, fmt.Errorf("invalid serialized 'doors' (%v)", err)
-	} else if err := save(sys.doors.file, sys.doors.tag, bytes); err != nil {
+	if err := save(sys.doors.file, sys.doors.tag, &shadow); err != nil {
 		return nil, err
 	}
 

@@ -31,7 +31,7 @@
             object that has been swept
 
 - [ ] Genericize load/save
-      - [ ] Define system.Serializable interface
+      - [x] Define system.Serializable interface
       - [ ] Read file in system and pass in json.RawMessage to Load(...)
             - [ ] Move file to system
                   - [ ] interfaces

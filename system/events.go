@@ -28,9 +28,7 @@ func (f *callback) Append(deviceID uint32, recent []uhppoted.Event) {
 	sys.events.events.Received(deviceID, recent, l)
 
 	if len(recent) > 0 {
-		if bytes, err := sys.events.events.Save(); err != nil {
-			warn(err)
-		} else if err := save(sys.events.file, sys.events.tag, bytes); err != nil {
+		if err := save(sys.events.file, sys.events.tag, &sys.events.events); err != nil {
 			warn(err)
 		}
 	}

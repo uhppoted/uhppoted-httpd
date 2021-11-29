@@ -110,9 +110,7 @@ func (t trail) Write(records ...audit.AuditRecord) {
 	t.trail.Write(records...)
 	sys.logs.logs.Received(records...)
 
-	if bytes, err := sys.logs.logs.Save(); err != nil {
-		warn(err)
-	} else if err := save(sys.logs.file, sys.logs.tag, bytes); err != nil {
+	if err := save(sys.logs.file, sys.logs.tag, &sys.logs.logs); err != nil {
 		warn(err)
 	}
 }
@@ -125,19 +123,18 @@ type object struct {
 	Value string      `json:"value"`
 }
 
+type serializable interface {
+	Load(blob json.RawMessage) error
+	Save() (json.RawMessage, error)
+}
+
 func Init(cfg config.Config, conf string, debug bool) error {
 	sys.doors.file = cfg.HTTPD.System.Doors
 	sys.groups.file = cfg.HTTPD.System.Groups
 	sys.events.file = cfg.HTTPD.System.Events
 	sys.logs.file = cfg.HTTPD.System.Logs
 
-	if blob, err := load(sys.doors.file); err != nil {
-		if os.IsNotExist(err) {
-			warn(err)
-		} else {
-			return err
-		}
-	} else if err := sys.doors.doors.Load(blob[sys.doors.tag]); err != nil {
+	if err := load(sys.doors.file, sys.doors.tag, &sys.doors.doors); err != nil {
 		return err
 	}
 
@@ -157,33 +154,15 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		}
 	}
 
-	if blob, err := load(sys.groups.file); err != nil {
-		if os.IsNotExist(err) {
-			warn(err)
-		} else {
-			return err
-		}
-	} else if err := sys.groups.groups.Load(blob[sys.groups.tag]); err != nil {
+	if err := load(sys.groups.file, sys.groups.tag, &sys.groups.groups); err != nil {
 		return err
 	}
 
-	if blob, err := load(sys.events.file); err != nil {
-		if os.IsNotExist(err) {
-			warn(err)
-		} else {
-			return err
-		}
-	} else if err := sys.events.events.Load(blob[sys.events.tag]); err != nil {
+	if err := load(sys.events.file, sys.events.tag, &sys.events.events); err != nil {
 		return err
 	}
 
-	if blob, err := load(sys.logs.file); err != nil {
-		if os.IsNotExist(err) {
-			warn(err)
-		} else {
-			return err
-		}
-	} else if err := sys.logs.logs.Load(blob[sys.logs.tag]); err != nil {
+	if err := load(sys.logs.file, sys.logs.tag, &sys.logs.logs); err != nil {
 		return err
 	}
 
@@ -339,31 +318,40 @@ func unpack(m map[string]interface{}) ([]object, error) {
 	return o.Objects, nil
 }
 
-func load(file string) (map[string]json.RawMessage, error) {
-	blob := map[string]json.RawMessage{}
-
+func load(file string, tag string, v serializable) error {
 	bytes, err := os.ReadFile(file)
 	if err != nil {
-		return nil, err
+		if !os.IsNotExist(err) {
+			return err
+		}
+
+		warn(err)
+		return nil
 	}
 
+	blob := map[string]json.RawMessage{}
 	if err = json.Unmarshal(bytes, &blob); err != nil {
-		return nil, err
+		return err
 	}
 
-	return blob, nil
+	return v.Load(blob[tag])
 }
 
-func save(file string, tag string, bytes json.RawMessage) error {
+func save(file string, tag string, v serializable) error {
 	if file == "" {
 		return nil
 	}
 
-	serializable := map[string]json.RawMessage{
+	bytes, err := v.Save()
+	if err != nil {
+		return err
+	}
+
+	blob := map[string]json.RawMessage{
 		tag: bytes,
 	}
 
-	b, err := json.MarshalIndent(serializable, "", "  ")
+	b, err := json.MarshalIndent(blob, "", "  ")
 	if err != nil {
 		return err
 	}
