@@ -35,24 +35,28 @@ export const DB = {
     switch (tag) {
       case 'controllers':
         if (oid && this.controllers.has(oid)) {
+          this.doors.get(oid).deleted = 'Y'
           this.controllers.get(oid).mark = 0
         }
         break
 
       case 'doors':
         if (oid && this.doors.has(oid)) {
+          this.doors.get(oid).deleted = 'Y'
           this.doors.get(oid).mark = 0
         }
         break
 
       case 'cards':
         if (oid && this.cards.has(oid)) {
+          this.doors.get(oid).deleted = 'Y'
           this.cards.get(oid).mark = 0
         }
         break
 
       case 'groups':
         if (oid && this.groups.has(oid)) {
+          this.doors.get(oid).deleted = 'Y'
           this.groups.get(oid).mark = 0
         }
         break

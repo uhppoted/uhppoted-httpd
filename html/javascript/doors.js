@@ -4,6 +4,8 @@ import { DB } from './db.js'
 export function refreshed () {
   const doors = [...DB.doors.values()].sort((p, q) => p.created.localeCompare(q.created))
 
+  realize(doors)
+
   doors.forEach(d => {
     const row = updateFromDB(d.OID, d)
     if (row) {
@@ -19,15 +21,11 @@ export function refreshed () {
 }
 
 function updateFromDB (oid, record) {
-  let row = document.querySelector("div#doors tr[data-oid='" + oid + "']")
+  const row = document.querySelector("div#doors tr[data-oid='" + oid + "']")
 
   if (record.deleted && record.deleted !== '') {
     deleted('doors', row)
     return
-  }
-
-  if (!row) {
-    row = add(oid)
   }
 
   const name = row.querySelector(`[data-oid="${oid}.1"]`)
@@ -49,9 +47,6 @@ function updateFromDB (oid, record) {
   update(door, c.door)
   update(delay, d, record.delay.status)
   update(mode, m, record.mode.status)
-
-  // ... set placeholders for blank names
-  name.placeholder = record.name !== '' ? '-' : `<D${oid}>`.replaceAll('.', '')
 
   // ... set tooltips for error'd values
   { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)
@@ -89,6 +84,26 @@ function updateFromDB (oid, record) {
   }
 
   return row
+}
+
+function realize (doors) {
+  const table = document.querySelector('#doors table')
+  const tbody = table.tBodies[0]
+
+  // ... rows
+
+  doors.forEach(o => {
+    let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
+
+    if (o.deleted && o.deleted !== '') {
+      deleted('doors', row)
+      return
+    }
+
+    if (!row) {
+      row = add(o.OID, o)
+    }
+  })
 }
 
 function add (oid) {

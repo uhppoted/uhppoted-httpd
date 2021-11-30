@@ -6,7 +6,7 @@ import * as cards from './cards.js'
 import * as groups from './groups.js'
 import * as events from './events.js'
 import * as logs from './logs.js'
-import * as db from './db.js'
+import { DB } from './db.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
 HTMLTableSectionElement.prototype.sort = function (cb) {
@@ -51,14 +51,14 @@ const pages = {
   events: {
     get: '/events?range=' + encodeURIComponent('0,15'),
     url: '/events',
-    recordset: db.DB.events(),
+    recordset: DB.events(),
     refreshed: events.refreshed
   },
 
   logs: {
     get: '/logs?range=' + encodeURIComponent('0,15'),
     url: '/logs',
-    recordset: db.DB.logs(),
+    recordset: DB.logs(),
     refreshed: logs.refreshed
   }
 }
@@ -479,7 +479,7 @@ function get (url, refreshed) {
           case 200:
             response.json().then(object => {
               if (object && object.system && object.system.objects) {
-                db.DB.updated('objects', object.system.objects)
+                DB.updated('objects', object.system.objects)
               }
 
               refreshed()
@@ -498,7 +498,7 @@ function get (url, refreshed) {
 
 function rollback (recordset, row, refreshed) {
   if (row && row.classList.contains('new')) {
-    db.DB.delete(recordset, row.dataset.oid)
+    DB.delete(recordset, row.dataset.oid)
     refreshed()
   } else {
     revert(row)
@@ -578,7 +578,7 @@ function post (page, records, reset, cleanup, refreshed) {
           case 200:
             response.json().then(object => {
               if (object && object.system && object.system.objects) {
-                db.DB.updated('objects', object.system.objects)
+                DB.updated('objects', object.system.objects)
               }
 
               page.refreshed()
