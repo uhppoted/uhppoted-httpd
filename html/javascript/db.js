@@ -243,11 +243,11 @@ function controllers (o) {
       v.cards.status = o.value
       break
 
-    case `${base}${schema.controllers.events}`:
+    case `${base}${schema.controllers.events.count}`:
       v.events.events = o.value
       break
 
-    case `${base}${schema.controllers.eventsStatus}`:
+    case `${base}${schema.controllers.events.status}`:
       v.events.status = o.value
       break
 

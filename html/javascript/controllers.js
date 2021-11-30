@@ -34,7 +34,7 @@ function updateFromDB (oid, record) {
   const address = row.querySelector(`[data-oid="${oid}${schema.controllers.address}"]`)
   const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime}"]`)
   const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards}"]`)
-  const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events}"]`)
+  const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.count}"]`)
   const door1 = row.querySelector(`[data-oid="${oid}${schema.controllers.door1}"]`)
   const door2 = row.querySelector(`[data-oid="${oid}${schema.controllers.door2}"]`)
   const door3 = row.querySelector(`[data-oid="${oid}${schema.controllers.door3}"]`)
@@ -140,7 +140,7 @@ function add (oid, record) {
       { suffix: 'IP', oid: `${oid}${schema.controllers.address}`, selector: 'td input.IP', flag: 'td img.IP' },
       { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime}`, selector: 'td input.datetime', flag: 'td img.datetime' },
       { suffix: 'cards', oid: `${oid}${schema.controllers.cards}`, selector: 'td input.cards', flag: 'td img.cards' },
-      { suffix: 'events', oid: `${oid}${schema.controllers.events}`, selector: 'td input.events', flag: 'td img.events' },
+      { suffix: 'events', oid: `${oid}${schema.controllers.events.count}`, selector: 'td input.events', flag: 'td img.events' },
       { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td select.door1', flag: 'td img.door1' },
       { suffix: 'door-2', oid: `${oid}${schema.controllers.door2}`, selector: 'td select.door2', flag: 'td img.door2' },
       { suffix: 'door-3', oid: `${oid}${schema.controllers.door3}`, selector: 'td select.door3', flag: 'td img.door3' },

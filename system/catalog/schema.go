@@ -41,12 +41,15 @@ type Controllers struct {
 	DateTimeStatus    Suffix `json:"datetime-status"`
 	Cards             Suffix `json:"cards"`
 	CardsStatus       Suffix `json:"cards-status"`
-	Events            Suffix `json:"events"`
-	EventsStatus      Suffix `json:"events-status"`
-	Door1             Suffix `json:"door1"`
-	Door2             Suffix `json:"door2"`
-	Door3             Suffix `json:"door3"`
-	Door4             Suffix `json:"door4"`
+	Events            struct {
+		Status Suffix `json:"status"`
+		Count  Suffix `json:"count"`
+	} `json:"events"`
+	EventsStatus Suffix `json:"events-status"`
+	Door1        Suffix `json:"door1"`
+	Door2        Suffix `json:"door2"`
+	Door3        Suffix `json:"door3"`
+	Door4        Suffix `json:"door4"`
 }
 
 type Doors struct {
@@ -157,12 +160,18 @@ var schema = Schema{
 		DateTimeStatus:    ControllerDateTimeStatus,
 		Cards:             ControllerCards,
 		CardsStatus:       ControllerCardsStatus,
-		Events:            ControllerEvents,
-		EventsStatus:      ControllerEventsStatus,
-		Door1:             ControllerDoor1,
-		Door2:             ControllerDoor2,
-		Door3:             ControllerDoor3,
-		Door4:             ControllerDoor4,
+		Events: struct {
+			Status Suffix `json:"status"`
+			Count  Suffix `json:"count"`
+		}{
+			Status: ControllerEventsStatus,
+			Count:  ControllerEventsCount,
+		},
+
+		Door1: ControllerDoor1,
+		Door2: ControllerDoor2,
+		Door3: ControllerDoor3,
+		Door4: ControllerDoor4,
 	},
 
 	Doors: Doors{
@@ -280,8 +289,8 @@ const ControllerDateTimeSystem Suffix = ".4.1"
 const ControllerDateTimeStatus Suffix = ".4.2"
 const ControllerCards Suffix = ".5"
 const ControllerCardsStatus Suffix = ".5.1"
-const ControllerEvents Suffix = ".6"
-const ControllerEventsStatus Suffix = ".6.1"
+const ControllerEventsStatus Suffix = ".6.0"
+const ControllerEventsCount Suffix = ".6.1"
 const ControllerDoor1 Suffix = ".7.1"
 const ControllerDoor2 Suffix = ".7.2"
 const ControllerDoor3 Suffix = ".7.3"

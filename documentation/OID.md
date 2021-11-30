@@ -26,26 +26,26 @@
 |    |      |        |- 0.2.1.0.1: <created>                                 #       created date/time
 |    |      |        |- 0.2.1.0.2: <deleted>                                 #       deleted date/time
 |    |      |        |- 0.2.1.0.3: <modified>                                #       modified timestamp
+|    |      |        |- 0.2.1.0.4: <type>                                    #    type
 |    |      |
 |    |      |- 0.2.1.1: <name>                                               #    name
 |    |      |- 0.2.1.2: <ID>                                                 #    serial number
-|    |      |- 0.2.1.3: <type>                                               #    type
-|    |      |- 0.2.1.4: <address>                                            #    address:port
+|    |      |- 0.2.1.3: <address>                                            #    address:port
 |    |      |        |- 0.2.1.4.1: <configured>                              #    configured address:port
 |    |      |        |- 0.2.1.4.2: <status>                                  #    address status
-|    |      |- 0.2.1.5:  <datetime>                                          #    controller date/time
+|    |      |- 0.2.1.4:  <datetime>                                          #    controller date/time
 |    |      |        |- 0.2.1.5.1: <now>                                     #    system date/time
 |    |      |        |- 0.2.1.5.2: <status>                                  #    controller date/time status
-|    |      |- 0.2.1.6:  <cards>                                             #    number of card records
-|    |      |        |- 0.2.1.6.1: <status>                                  #    cards status
-|    |      |- 0.2.1.7:  <events>                                            #    events
-|    |      |        |- 0.2.1.7.0: <status>                                  #       events status
-|    |      |        |- 0.2.1.7.1: <count>                                   #       number of events
-|    |      |- 0.2.1.8:  <doors>                                             #    doors
-|    |      |        |- 0.2.1.8.1: <door1>                                   #       door 1 OID
-|    |      |        |- 0.2.1.8.2: <door2>                                   #       door 2 OID
-|    |      |        |- 0.2.1.8.3: <door3>                                   #       door 3 OID
-|    |      |        |- 0.2.1.8.4: <door4>                                   #       door 4 OID
+|    |      |- 0.2.1.5:  <cards>                                             #    number of card records
+|    |      |        |- 0.2.1.5.1: <status>                                  #    cards status
+|    |      |- 0.2.1.6:  <events>                                            #    events
+|    |      |        |- 0.2.1.6.0: <status>                                  #       events status
+|    |      |        |- 0.2.1.6.1: <count>                                   #       number of events
+|    |      |- 0.2.1.7:  <doors>                                             #    doors
+|    |      |        |- 0.2.1.7.1: <door1>                                   #       door 1 OID
+|    |      |        |- 0.2.1.7.2: <door2>                                   #       door 2 OID
+|    |      |        |- 0.2.1.7.3: <door3>                                   #       door 3 OID
+|    |      |        |- 0.2.1.7.4: <door4>                                   #       door 4 OID
 |    |- ...
 |
 |- 0.3                                                                       # doors

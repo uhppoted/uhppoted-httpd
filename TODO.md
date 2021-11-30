@@ -8,7 +8,7 @@
             - [ ] restructure address
             - [ ] restructure date/time
             - [ ] restructure cards
-            - [ ] restructure events
+            - [x] restructure events
 
       - [ ] Clean up door schema
             - [ ] Remove controller OID
