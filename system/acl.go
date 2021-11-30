@@ -30,7 +30,7 @@ func CompareACL() {
 }
 
 func permissions() (acl.ACL, error) {
-	cards := sys.cards.Cards
+	cards := sys.cards.cards.Cards
 	groups := sys.groups.groups.Groups
 	doors := sys.doors.doors.Doors
 

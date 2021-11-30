@@ -18,7 +18,7 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.cards.Clone()
+	shadow := sys.cards.cards.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -32,12 +32,12 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, types.BadRequest(err, err)
 	}
 
-	if err := shadow.Save(); err != nil {
+	if err := save(sys.cards.file, sys.cards.tag, &shadow); err != nil {
 		return nil, err
 	}
 
 	dbc.Commit()
-	sys.cards = shadow
+	sys.cards.cards = shadow
 	sys.updated()
 
 	list := squoosh(dbc.Objects())

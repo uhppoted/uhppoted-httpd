@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
 	"sync"
 	"time"
 
@@ -17,7 +15,6 @@ import (
 
 type Cards struct {
 	Cards map[catalog.OID]*Card `json:"cardholders"`
-	file  string
 }
 
 type result struct {
@@ -33,23 +30,13 @@ func NewCards() Cards {
 	}
 }
 
-func (cc *Cards) Load(file string) error {
-	blob := struct {
-		Cards []json.RawMessage `json:"cards"`
-	}{
-		Cards: []json.RawMessage{},
-	}
-
-	bytes, err := os.ReadFile(file)
-	if err != nil {
+func (cc *Cards) Load(blob json.RawMessage) error {
+	rs := []json.RawMessage{}
+	if err := json.Unmarshal(blob, &rs); err != nil {
 		return err
 	}
 
-	if err := json.Unmarshal(bytes, &blob); err != nil {
-		return err
-	}
-
-	for _, v := range blob.Cards {
+	for _, v := range rs {
 		var c Card
 		if err := c.deserialize(v); err == nil {
 			if _, ok := cc.Cards[c.OID]; ok {
@@ -66,69 +53,33 @@ func (cc *Cards) Load(file string) error {
 		catalog.PutV(v.OID, catalog.CardName, v.Name)
 	}
 
-	cc.file = file
-
 	return nil
 }
 
-func (cc *Cards) Save() error {
+func (cc *Cards) Save() (json.RawMessage, error) {
 	if err := validate(*cc); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := cc.scrub(); err != nil {
-		return err
+		return nil, err
 	}
 
-	if cc.file == "" {
-		return nil
-	}
-
-	serializable := struct {
-		Cards []json.RawMessage `json:"cards"`
-	}{
-		Cards: []json.RawMessage{},
-	}
-
+	serializable := []json.RawMessage{}
 	for _, c := range cc.Cards {
 		if c.IsValid() && !c.IsDeleted() {
 			if record, err := c.serialize(); err == nil && record != nil {
-				serializable.Cards = append(serializable.Cards, record)
+				serializable = append(serializable, record)
 			}
 		}
 	}
 
-	b, err := json.MarshalIndent(serializable, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	tmp, err := os.CreateTemp("", "uhppoted-cards.*")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(cc.file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), cc.file)
+	return json.MarshalIndent(serializable, "", "  ")
 }
 
 func (cc *Cards) Clone() Cards {
 	shadow := Cards{
 		Cards: map[catalog.OID]*Card{},
-		file:  cc.file,
 	}
 
 	for cid, v := range cc.Cards {

@@ -41,13 +41,13 @@
             - [ ] Move file to system
                   - [ ] interfaces
                   - [ ] controllers
-                  - [ ] cards
+                  - [x] cards
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
-            - [ ] cards
+            - [x] cards
             - [ ] controllers
             - [ ] interfaces
-      - [ ] Groups, etc probably don't need to be structs anymore => typedef arrays
+      - [ ] (?) Groups, etc probably don't need to be structs anymore => typedef arrays
 
 - [ ] 'users' page
 - [ ] Set initial user + password

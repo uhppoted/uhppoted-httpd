@@ -38,7 +38,14 @@ var sys = system{
 		doors: doors.NewDoors(),
 		tag:   "doors",
 	},
-	cards: cards.NewCards(),
+	cards: struct {
+		cards cards.Cards
+		file  string
+		tag   string
+	}{
+		cards: cards.NewCards(),
+		tag:   "cards",
+	},
 	groups: struct {
 		groups groups.Groups
 		file   string
@@ -78,7 +85,11 @@ type system struct {
 		file  string
 		tag   string
 	}
-	cards  cards.Cards
+	cards struct {
+		cards cards.Cards
+		file  string
+		tag   string
+	}
 	groups struct {
 		groups groups.Groups
 		file   string
@@ -130,6 +141,7 @@ type serializable interface {
 
 func Init(cfg config.Config, conf string, debug bool) error {
 	sys.doors.file = cfg.HTTPD.System.Doors
+	sys.cards.file = cfg.HTTPD.System.Cards
 	sys.groups.file = cfg.HTTPD.System.Groups
 	sys.events.file = cfg.HTTPD.System.Events
 	sys.logs.file = cfg.HTTPD.System.Logs
@@ -146,12 +158,8 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		}
 	}
 
-	if err := sys.cards.Load(cfg.HTTPD.System.Cards); err != nil {
-		if os.IsNotExist(err) {
-			warn(err)
-		} else {
-			return err
-		}
+	if err := load(sys.cards.file, sys.cards.tag, &sys.cards.cards); err != nil {
+		return err
 	}
 
 	if err := load(sys.groups.file, sys.groups.tag, &sys.groups.groups); err != nil {
@@ -221,7 +229,7 @@ func System() interface{} {
 	objects := []interface{}{}
 	objects = append(objects, sys.controllers.AsObjects()...)
 	objects = append(objects, sys.doors.doors.AsObjects()...)
-	objects = append(objects, sys.cards.AsObjects()...)
+	objects = append(objects, sys.cards.cards.AsObjects()...)
 	objects = append(objects, sys.groups.groups.AsObjects()...)
 
 	return struct {
@@ -289,7 +297,7 @@ func (s *system) sweep() {
 
 	s.controllers.Sweep(s.retention)
 	s.doors.doors.Sweep(s.retention)
-	s.cards.Sweep(s.retention)
+	s.cards.cards.Sweep(s.retention)
 	s.groups.groups.Sweep(s.retention)
 }
 
