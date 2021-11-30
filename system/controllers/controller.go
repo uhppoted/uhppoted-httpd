@@ -161,9 +161,9 @@ func (c *Controller) AsObjects() []interface{} {
 
 		catalog.NewObject2(c.OID, ControllerName, name),
 		catalog.NewObject2(c.OID, ControllerDeviceID, deviceID),
-		catalog.NewObject2(c.OID, ControllerAddress, address.address),
-		catalog.NewObject2(c.OID, ControllerAddressConfigured, address.configured),
-		catalog.NewObject2(c.OID, ControllerAddressStatus, address.status),
+		catalog.NewObject2(c.OID, ControllerEndpointStatus, address.status),
+		catalog.NewObject2(c.OID, ControllerEndpointAddress, address.address),
+		catalog.NewObject2(c.OID, ControllerEndpointConfigured, address.configured),
 		catalog.NewObject2(c.OID, ControllerDateTimeStatus, datetime.status),
 		catalog.NewObject2(c.OID, ControllerDateTimeCurrent, datetime.datetime),
 		catalog.NewObject2(c.OID, ControllerDateTimeSystem, datetime.system),
@@ -359,7 +359,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				objects = append(objects, catalog.NewObject2(c.OID, ".2", ""))
 			}
 
-		case c.OID.Append(ControllerAddress):
+		case c.OID.Append(ControllerEndpointAddress):
 			if addr, err := core.ResolveAddr(value); err != nil {
 				return nil, err
 			} else if err := f("address", addr); err != nil {

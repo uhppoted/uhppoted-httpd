@@ -211,16 +211,16 @@ function controllers (o) {
       v.deviceID = o.value
       break
 
-    case `${base}${schema.controllers.address}`:
+    case `${base}${schema.controllers.endpoint.status}`:
+      v.address.status = o.value
+      break
+
+    case `${base}${schema.controllers.endpoint.address}`:
       v.address.address = o.value
       break
 
-    case `${base}${schema.controllers.addressConfigured}`:
+    case `${base}${schema.controllers.endpoint.configured}`:
       v.address.configured = o.value
-      break
-
-    case `${base}${schema.controllers.addressStatus}`:
-      v.address.status = o.value
       break
 
     case `${base}${schema.controllers.datetime.status}`:

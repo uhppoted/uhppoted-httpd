@@ -31,12 +31,14 @@ type Interfaces struct {
 type Controllers struct {
 	OID OID `json:"OID"`
 	Metadata
-	Name              Suffix `json:"name"`
-	DeviceID          Suffix `json:"deviceID"`
-	Address           Suffix `json:"address"`
-	AddressConfigured Suffix `json:"address-configured"`
-	AddressStatus     Suffix `json:"address-status"`
-	DateTime          struct {
+	Name     Suffix `json:"name"`
+	DeviceID Suffix `json:"deviceID"`
+	Endpoint struct {
+		Status     Suffix `json:"status"`
+		Address    Suffix `json:"address"`
+		Configured Suffix `json:"configured"`
+	} `json:"endpoint"`
+	DateTime struct {
 		Status  Suffix `json:"status"`
 		Current Suffix `json:"datetime"`
 		System  Suffix `json:"system"`
@@ -154,11 +156,17 @@ var schema = Schema{
 			Modified: Modified,
 			Type:     Type,
 		},
-		Name:              ControllerName,
-		DeviceID:          ControllerDeviceID,
-		Address:           ControllerAddress,
-		AddressConfigured: ControllerAddressConfigured,
-		AddressStatus:     ControllerAddressStatus,
+		Name:     ControllerName,
+		DeviceID: ControllerDeviceID,
+		Endpoint: struct {
+			Status     Suffix `json:"status"`
+			Address    Suffix `json:"address"`
+			Configured Suffix `json:"configured"`
+		}{
+			Status:     ControllerEndpointStatus,
+			Address:    ControllerEndpointAddress,
+			Configured: ControllerEndpointConfigured,
+		},
 		DateTime: struct {
 			Status  Suffix `json:"status"`
 			Current Suffix `json:"datetime"`
@@ -296,9 +304,9 @@ const LANListenAddress Suffix = ".3.3"
 
 const ControllerName Suffix = ".1"
 const ControllerDeviceID Suffix = ".2"
-const ControllerAddress Suffix = ".3"
-const ControllerAddressConfigured Suffix = ".3.1"
-const ControllerAddressStatus Suffix = ".3.2"
+const ControllerEndpointStatus Suffix = ".3.0"
+const ControllerEndpointAddress Suffix = ".3.1"
+const ControllerEndpointConfigured Suffix = ".3.2"
 const ControllerDateTimeStatus Suffix = ".4.0"
 const ControllerDateTimeCurrent Suffix = ".4.1"
 const ControllerDateTimeSystem Suffix = ".4.2"

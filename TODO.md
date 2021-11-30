@@ -4,8 +4,8 @@
       - Don't check login cookie except for login
 
 - [ ] OIDs:
-      - [ ] Clean up controller schema
-            - [ ] restructure address
+      - [x] Clean up controller schema
+            - [x] restructure address
             - [x] restructure date/time
             - [x] restructure cards
             - [x] restructure events

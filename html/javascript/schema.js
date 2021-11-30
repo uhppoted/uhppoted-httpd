@@ -27,9 +27,11 @@ export const schema = {
 
     name: '.1',
     deviceID: '.2',
-    address: '.3',
-    addressConfigured: '.3.1',
-    addressStatus: '.3.2',
+    endpoint: {
+      status: '.3.0',
+      address: '.3.1',
+      configured: '.3.2'
+    },
     datetime: {
       status: '.4.0',
       current: '.4.1',
