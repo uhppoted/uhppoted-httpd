@@ -69,7 +69,7 @@ bump:
 	go get -u golang.org/x/sys
 
 debug: format
-	go test -v -run TestSquoosh* ./system
+	go test -v -run TestDateTimeUnmarshalJSON ./types
 
 # NOTE: sass --watch doesn't seem to consistently pick up changes in themed partials
 sass:

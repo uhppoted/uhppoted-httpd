@@ -23,8 +23,11 @@
       - [x] door
       - [x] groups
 
-- [ ] Refactor DateTime out to use core implementation only
-      - [ ] Unmarshal should handle missing timezone
+- [ ] Fix DateTime mess
+      - [ ] Change String(), Format(), etc to not take pointer receiver
+      - [ ] Define FormatDateTime() method that *does* take pointer
+      - [ ] Refactor DateTime out to use core implementation only
+      - [x] Unmarshal should handle missing timezone
 
 ### IN PROGRESS
 
