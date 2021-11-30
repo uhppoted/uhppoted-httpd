@@ -6,7 +6,7 @@
 - [ ] OIDs:
       - [ ] Clean up controller schema
             - [ ] restructure address
-            - [ ] restructure date/time
+            - [x] restructure date/time
             - [x] restructure cards
             - [x] restructure events
 

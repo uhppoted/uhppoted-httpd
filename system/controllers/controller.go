@@ -164,9 +164,9 @@ func (c *Controller) AsObjects() []interface{} {
 		catalog.NewObject2(c.OID, ControllerAddress, address.address),
 		catalog.NewObject2(c.OID, ControllerAddressConfigured, address.configured),
 		catalog.NewObject2(c.OID, ControllerAddressStatus, address.status),
-		catalog.NewObject2(c.OID, ControllerDateTime, datetime.datetime),
-		catalog.NewObject2(c.OID, ControllerDateTimeSystem, datetime.system),
 		catalog.NewObject2(c.OID, ControllerDateTimeStatus, datetime.status),
+		catalog.NewObject2(c.OID, ControllerDateTimeCurrent, datetime.datetime),
+		catalog.NewObject2(c.OID, ControllerDateTimeSystem, datetime.system),
 		catalog.NewObject2(c.OID, ControllerCardsStatus, cards.status),
 		catalog.NewObject2(c.OID, ControllerCardsCount, cards.cards),
 		catalog.NewObject2(c.OID, ControllerEventsStatus, events.status),
@@ -378,7 +378,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				objects = append(objects, catalog.NewObject2(c.OID, ".3", c.IP))
 			}
 
-		case c.OID.Append(ControllerDateTime):
+		case c.OID.Append(ControllerDateTimeCurrent):
 			if tz, err := types.Timezone(value); err != nil {
 				return nil, err
 			} else if err := f("timezone", tz); err != nil {

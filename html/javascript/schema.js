@@ -30,9 +30,11 @@ export const schema = {
     address: '.3',
     addressConfigured: '.3.1',
     addressStatus: '.3.2',
-    datetime: '.4',
-    datetimeSystem: '.4.1',
-    datetimeStatus: '.4.2',
+    datetime: {
+      status: '.4.0',
+      current: '.4.1',
+      system: '.4.2'
+    },
     cards: {
       status: '.5.0',
       count: '.5.1'

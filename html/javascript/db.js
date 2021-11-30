@@ -223,16 +223,16 @@ function controllers (o) {
       v.address.status = o.value
       break
 
-    case `${base}${schema.controllers.datetime}`:
+    case `${base}${schema.controllers.datetime.status}`:
+      v.datetime.status = o.value
+      break
+
+    case `${base}${schema.controllers.datetime.current}`:
       v.datetime.datetime = o.value
       break
 
-    case `${base}${schema.controllers.expected}`:
+    case `${base}${schema.controllers.datetime.system}`:
       v.datetime.expected = o.value
-      break
-
-    case `${base}${schema.controllers.datetimeStatus}`:
-      v.datetime.status = o.value
       break
 
     case `${base}${schema.controllers.cards.status}`:
