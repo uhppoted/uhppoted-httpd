@@ -19,7 +19,7 @@ type Group struct {
 	Name  string               `json:"name"`
 	Doors map[catalog.OID]bool `json:"doors"`
 
-	created time.Time
+	created types.DateTime
 	deleted *types.DateTime
 }
 
@@ -203,13 +203,16 @@ func (g Group) serialize() ([]byte, error) {
 
 func (g *Group) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
+	datetime := types.DateTime(created)
 
 	record := struct {
-		OID     string        `json:"OID"`
-		Name    string        `json:"name,omitempty"`
-		Doors   []catalog.OID `json:"doors"`
-		Created string        `json:"created"`
-	}{}
+		OID     string          `json:"OID"`
+		Name    string          `json:"name,omitempty"`
+		Doors   []catalog.OID   `json:"doors"`
+		Created *types.DateTime `json:"created,omitempty"`
+	}{
+		Created: &datetime,
+	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
 		return err
@@ -218,14 +221,10 @@ func (g *Group) deserialize(bytes []byte) error {
 	g.OID = catalog.OID(record.OID)
 	g.Name = record.Name
 	g.Doors = map[catalog.OID]bool{}
-	g.created = created
+	g.created = *record.Created
 
 	for _, d := range record.Doors {
 		g.Doors[catalog.OID(d)] = true
-	}
-
-	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {
-		g.created = t
 	}
 
 	return nil

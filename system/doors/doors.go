@@ -3,6 +3,7 @@ package doors
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 	"sync"
@@ -11,6 +12,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Doors struct {
@@ -51,7 +53,9 @@ func (dd *Doors) Load(blob json.RawMessage) error {
 
 	for _, v := range rs {
 		var d Door
-		if err := d.deserialize(v); err == nil {
+		if err := d.deserialize(v); err != nil {
+			warn(err)
+		} else {
 			if _, ok := dd.Doors[d.OID]; ok {
 				return fmt.Errorf("door '%v': duplicate OID (%v)", d.Name, d.OID)
 			}
@@ -167,7 +171,7 @@ func (dd *Doors) add(auth auth.OpAuth, d Door) (*Door, error) {
 
 	record := d.clone()
 	record.OID = oid
-	record.created = time.Now()
+	record.created = types.DateTime(time.Now())
 
 	if auth != nil {
 		if err := auth.CanAddDoor(&record); err != nil {
@@ -228,4 +232,8 @@ func validate(dd Doors) error {
 
 func scrub(dd Doors) error {
 	return nil
+}
+
+func warn(err error) {
+	log.Printf("ERROR %v", err)
 }

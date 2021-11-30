@@ -30,8 +30,8 @@ type LAN struct {
 	ListenAddress    core.ListenAddr    `json:"listen-address"`
 	Debug            bool               `json:"debug"`
 
-	created      time.Time
-	deleted      *time.Time
+	created      types.DateTime
+	deleted      *types.DateTime
 	unconfigured bool
 }
 
@@ -641,7 +641,7 @@ func (l *LAN) deserialize(bytes []byte) error {
 	l.BindAddress = record.BindAddress
 	l.BroadcastAddress = record.BroadcastAddress
 	l.ListenAddress = record.ListenAddress
-	l.created = time.Time(*record.Created)
+	l.created = *record.Created
 
 	return nil
 }

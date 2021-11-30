@@ -17,32 +17,31 @@
 
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
 
-- [ ] Make 'created' field a DateTime
-      - Retype *DateTime as a DateTimePtr
-      - Refactor DateTime out to use core implementation only
+- [x] Make 'created' field a DateTime
+      - [x] controller
+      - [x] LAN
+      - [x] door
+      - [x] groups
+
+- [ ] Refactor DateTime out to use core implementation only
+      - [ ] Unmarshal should handle missing timezone
 
 ### IN PROGRESS
 
 - [ ] Apply fix for 'interim hack':
-      - [x] Use deleted OID rather than status
-            - [x] controllers
-            - [x] cards
       - [ ] Neaten up all the repetitive `deleted && deleted !== ''`
       - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
             object that has been swept
 
 - [ ] Genericize load/save
-      - [x] Define system.Serializable interface
       - [ ] Read file in system and pass in json.RawMessage to Load(...)
             - [ ] Move file to system
                   - [ ] interfaces
                   - [ ] controllers
-                  - [x] doors
                   - [ ] cards
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
             - [ ] cards
-            - [x] doors
             - [ ] controllers
             - [ ] interfaces
       - [ ] Groups, etc probably don't need to be structs anymore => typedef arrays

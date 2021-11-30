@@ -21,7 +21,7 @@ type Door struct {
 
 	delay   uint8
 	mode    core.ControlState
-	created time.Time
+	created types.DateTime
 	deleted *types.DateTime
 }
 
@@ -271,16 +271,18 @@ func (d Door) serialize() ([]byte, error) {
 
 func (d *Door) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
+	datetime := types.DateTime(created)
 
 	record := struct {
 		OID     catalog.OID       `json:"OID"`
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
-		Created string            `json:"created"`
+		Created *types.DateTime   `json:"created,omitempty"`
 	}{
-		Delay: 5,
-		Mode:  core.Controlled,
+		Delay:   5,
+		Mode:    core.Controlled,
+		Created: &datetime,
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -291,11 +293,7 @@ func (d *Door) deserialize(bytes []byte) error {
 	d.Name = record.Name
 	d.delay = record.Delay
 	d.mode = record.Mode
-	d.created = created
-
-	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {
-		d.created = t
-	}
+	d.created = *record.Created
 
 	return nil
 }

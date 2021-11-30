@@ -16,6 +16,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
+	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/config"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
@@ -101,13 +102,17 @@ func (cc *ControllerSet) Load(file string) error {
 	cc.Controllers = []*Controller{}
 
 	var lan LAN
-	if err := lan.deserialize(blob.LAN); err == nil {
+	if err := lan.deserialize(blob.LAN); err != nil {
+		warn(err)
+	} else {
 		cc.LAN = &lan
 	}
 
 	for _, v := range blob.Controllers {
 		var c Controller
-		if err := c.deserialize(v); err == nil {
+		if err := c.deserialize(v); err != nil {
+			warn(err)
+		} else {
 			cc.Controllers = append(cc.Controllers, &c)
 		}
 	}
@@ -289,7 +294,7 @@ loop:
 		cc.Controllers = append(cc.Controllers, &Controller{
 			OID:          catalog.OID(oid),
 			DeviceID:     &id,
-			created:      time.Now(),
+			created:      types.DateTime(time.Now()),
 			unconfigured: true,
 		})
 	}
@@ -431,7 +436,7 @@ func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error
 
 	record := c.clone()
 	record.OID = catalog.OID(catalog.NewController(id))
-	record.created = time.Now()
+	record.created = types.DateTime(time.Now())
 
 	if auth != nil {
 		if err := auth.CanAddController(record); err != nil {

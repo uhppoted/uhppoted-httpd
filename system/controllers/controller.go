@@ -25,7 +25,7 @@ type Controller struct {
 	Doors    map[uint8]catalog.OID `json:"doors"`
 	TimeZone *string               `json:"timezone,omitempty"`
 
-	created      time.Time
+	created      types.DateTime
 	deleted      *types.DateTime
 	unconfigured bool
 }
@@ -549,6 +549,8 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 }
 
 func (c *Controller) deserialize(bytes []byte) error {
+	created := types.DateTime(time.Now())
+
 	record := struct {
 		OID      catalog.OID      `json:"OID"`
 		Name     *types.Name      `json:"name,omitempty"`
@@ -556,8 +558,10 @@ func (c *Controller) deserialize(bytes []byte) error {
 		Address  *core.Address    `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
 		TimeZone *string          `json:"timezone,omitempty"`
-		Created  time.Time        `json:"created"`
-	}{}
+		Created  *types.DateTime  `json:"created,omitempty"`
+	}{
+		Created: &created,
+	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
 		return err
@@ -569,7 +573,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.IP = record.Address
 	c.Doors = map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
 	c.TimeZone = record.TimeZone
-	c.created = record.Created
+	c.created = *record.Created
 
 	for k, v := range record.Doors {
 		c.Doors[k] = catalog.OID(v)
@@ -594,7 +598,7 @@ func (c *Controller) serialize() ([]byte, error) {
 		Address  *core.Address         `json:"address,omitempty"`
 		Doors    map[uint8]catalog.OID `json:"doors"`
 		TimeZone *string               `json:"timezone,omitempty"`
-		Created  time.Time             `json:"created"`
+		Created  types.DateTime        `json:"created"`
 	}{
 		OID:      c.OID,
 		Name:     c.Name,

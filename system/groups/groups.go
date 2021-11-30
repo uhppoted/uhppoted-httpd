@@ -10,6 +10,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Groups struct {
@@ -166,7 +167,7 @@ func (gg *Groups) add(auth auth.OpAuth, g Group) (*Group, error) {
 
 	record := g.clone()
 	record.OID = oid
-	record.created = time.Now()
+	record.created = types.DateTime(time.Now())
 
 	if auth != nil {
 		if err := auth.CanAddGroup(&record); err != nil {
