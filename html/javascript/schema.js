@@ -33,11 +33,13 @@ export const schema = {
     datetime: '.4',
     datetimeSystem: '.4.1',
     datetimeStatus: '.4.2',
-    cards: '.5',
-    cardsStatus: '.5.1',
+    cards: {
+      status: '.5.0',
+      count: '.5.1'
+    },
     events: {
-        status: '.6.0',
-        count: '.6.1'
+      status: '.6.0',
+      count: '.6.1'
     },
     door1: '.7.1',
     door2: '.7.2',

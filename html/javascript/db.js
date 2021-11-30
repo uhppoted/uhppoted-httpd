@@ -235,20 +235,20 @@ function controllers (o) {
       v.datetime.status = o.value
       break
 
-    case `${base}${schema.controllers.cards}`:
-      v.cards.cards = o.value
-      break
-
-    case `${base}${schema.controllers.cardsStatus}`:
+    case `${base}${schema.controllers.cards.status}`:
       v.cards.status = o.value
       break
 
-    case `${base}${schema.controllers.events.count}`:
-      v.events.events = o.value
+    case `${base}${schema.controllers.cards.count}`:
+      v.cards.cards = o.value
       break
 
     case `${base}${schema.controllers.events.status}`:
       v.events.status = o.value
+      break
+
+    case `${base}${schema.controllers.events.count}`:
+      v.events.events = o.value
       break
 
     case `${base}${schema.controllers.door1}`:

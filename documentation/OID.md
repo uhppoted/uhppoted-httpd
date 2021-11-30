@@ -36,9 +36,10 @@
 |    |      |- 0.2.1.4:  <datetime>                                          #    controller date/time
 |    |      |        |- 0.2.1.5.1: <now>                                     #    system date/time
 |    |      |        |- 0.2.1.5.2: <status>                                  #    controller date/time status
-|    |      |- 0.2.1.5:  <cards>                                             #    number of card records
-|    |      |        |- 0.2.1.5.1: <status>                                  #    cards status
-|    |      |- 0.2.1.6:  <events>                                            #    events
+|    |      |- 0.2.1.5:  <cards>                                             #
+|    |      |        |- 0.2.1.5.0: <status>                                  #       cards status
+|    |      |        |- 0.2.1.5.1: <count>                                   #       number of card
+|    |      |- 0.2.1.6:  <events>                                            #
 |    |      |        |- 0.2.1.6.0: <status>                                  #       events status
 |    |      |        |- 0.2.1.6.1: <count>                                   #       number of events
 |    |      |- 0.2.1.7:  <doors>                                             #    doors

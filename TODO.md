@@ -7,7 +7,7 @@
       - [ ] Clean up controller schema
             - [ ] restructure address
             - [ ] restructure date/time
-            - [ ] restructure cards
+            - [x] restructure cards
             - [x] restructure events
 
       - [ ] Clean up door schema
