@@ -7,7 +7,7 @@
 
 - [ ] OIDs:
       - [ ] Clean up door schema
-            - [ ] Remove controller OID
+            - [x] Remove controller OID
             - [ ] Remove controller device ID
             - [ ] Remove controller door
 

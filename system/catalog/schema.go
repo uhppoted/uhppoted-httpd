@@ -319,7 +319,6 @@ const ControllerDoor2 Suffix = ".7.2"
 const ControllerDoor3 Suffix = ".7.3"
 const ControllerDoor4 Suffix = ".7.4"
 
-const DoorControllerOID Suffix = ".0.4"
 const DoorControllerID Suffix = ".0.4.3"
 const DoorControllerDoor Suffix = ".0.4.4"
 const DoorName Suffix = ".1"
