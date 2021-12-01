@@ -32,34 +32,28 @@ export const DB = {
   },
 
   delete: function (tag, oid) {
-    switch (tag) {
-      case 'controllers':
-        if (oid && this.controllers.has(oid)) {
-          this.doors.get(oid).deleted = 'Y'
-          this.controllers.get(oid).mark = 0
-        }
-        break
+    if (oid) {
+      switch (tag) {
+        case 'interfaces':
+          this.interfaces.delete(oid)
+          break
 
-      case 'doors':
-        if (oid && this.doors.has(oid)) {
-          this.doors.get(oid).deleted = 'Y'
-          this.doors.get(oid).mark = 0
-        }
-        break
+        case 'controllers':
+          this.controllers.delete(oid)
+          break
 
-      case 'cards':
-        if (oid && this.cards.has(oid)) {
-          this.doors.get(oid).deleted = 'Y'
-          this.cards.get(oid).mark = 0
-        }
-        break
+        case 'doors':
+          this.doors.delete(oid)
+          break
 
-      case 'groups':
-        if (oid && this.groups.has(oid)) {
-          this.doors.get(oid).deleted = 'Y'
-          this.groups.get(oid).mark = 0
-        }
-        break
+        case 'cards':
+          this.cards.delete(oid)
+          break
+
+        case 'groups':
+          this.groups.delete(oid)
+          break
+      }
     }
   },
 

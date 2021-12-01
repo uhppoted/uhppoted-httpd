@@ -2,7 +2,9 @@ import { update, deleted } from './tabular.js'
 import { DB } from './db.js'
 
 export function refreshed () {
-  const doors = [...DB.doors.values()].sort((p, q) => p.created.localeCompare(q.created))
+  const doors = [...DB.doors.values()]
+    .filter(d => !(d.deleted && d.deleted !== ''))
+    .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(doors)
 
@@ -22,11 +24,6 @@ export function refreshed () {
 
 function updateFromDB (oid, record) {
   const row = document.querySelector("div#doors tr[data-oid='" + oid + "']")
-
-  if (record.deleted && record.deleted !== '') {
-    deleted('doors', row)
-    return
-  }
 
   const name = row.querySelector(`[data-oid="${oid}.1"]`)
   const controller = row.querySelector(`[data-oid="${oid}.0.4.2"]`)
@@ -91,14 +88,25 @@ function realize (doors) {
   const tbody = table.tBodies[0]
 
   // ... rows
+  const rows = tbody.querySelectorAll('tr.door')
+  const remove = []
+
+  rows.forEach(row => {
+    for (const d of doors) {
+      if (d.OID === row.dataset.oid) {
+        return
+      }
+    }
+
+    remove.push(row)
+  })
+
+  remove.forEach(row => {
+    deleted('doors', row)
+  })
 
   doors.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
-
-    if (o.deleted && o.deleted !== '') {
-      deleted('doors', row)
-      return
-    }
 
     if (!row) {
       row = add(o.OID, o)

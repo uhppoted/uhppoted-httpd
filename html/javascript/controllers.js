@@ -3,7 +3,9 @@ import { DB } from './db.js'
 import { schema } from './schema.js'
 
 export function refreshed () {
-  const list = [...DB.controllers.values()].sort((p, q) => p.created.localeCompare(q.created))
+  const list = [...DB.controllers.values()]
+    .filter(c => !(c.deleted && c.deleted !== ''))
+    .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(list)
 
@@ -23,11 +25,6 @@ export function refreshed () {
 
 function updateFromDB (oid, record) {
   const row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
-
-  if (record.deleted && record.deleted !== '') {
-    deleted('controllers', row)
-    return
-  }
 
   const name = row.querySelector(`[data-oid="${oid}${schema.controllers.name}"]`)
   const deviceID = row.querySelector(`[data-oid="${oid}${schema.controllers.deviceID}"]`)
@@ -95,13 +92,25 @@ function realize (controllers) {
   const table = document.querySelector('#controllers table')
   const tbody = table.tBodies[0]
 
+  const rows = tbody.querySelectorAll('tr.controller')
+  const remove = []
+
+  rows.forEach(row => {
+    for (const c of controllers) {
+      if (c.OID === row.dataset.oid) {
+        return
+      }
+    }
+
+    remove.push(row)
+  })
+
+  remove.forEach(row => {
+    deleted('controllers', row)
+  })
+
   controllers.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
-
-    if (o.deleted && o.deleted !== '') {
-      deleted('controllers', row)
-      return
-    }
 
     if (!row) {
       row = add(o.OID, o)

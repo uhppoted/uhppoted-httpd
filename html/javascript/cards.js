@@ -3,8 +3,11 @@ import { DB } from './db.js'
 import { schema } from './schema.js'
 
 export function refreshed () {
-  const cards = [...DB.cards.values()].sort((p, q) => p.created.localeCompare(q.created))
-  const pagesize = 1
+  const pagesize = 20
+
+  const cards = [...DB.cards.values()]
+    .filter(c => !(c.deleted && c.deleted !== ''))
+    .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(cards)
 
@@ -64,11 +67,6 @@ export function refreshed () {
 
 function updateFromDB (oid, record) {
   const row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
-
-  if (record.deleted && record.deleted !== '') {
-    deleted('cards', row)
-    return
-  }
 
   const name = row.querySelector(`[data-oid="${oid}${schema.cards.name}"]`)
   const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
@@ -131,14 +129,25 @@ function realize (cards) {
   })
 
   // ... rows
+  const rows = tbody.querySelectorAll('tr.card')
+  const remove = []
+
+  rows.forEach(row => {
+    for (const c of cards) {
+      if (c.OID === row.dataset.oid) {
+        return
+      }
+    }
+
+    remove.push(row)
+  })
+
+  remove.forEach(row => {
+    deleted('cards', row)
+  })
 
   cards.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
-
-    if (o.deleted && o.deleted !== '') {
-      deleted('cards', row)
-      return
-    }
 
     if (!row) {
       row = add(o.OID, o)

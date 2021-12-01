@@ -3,7 +3,9 @@ import { DB } from './db.js'
 import { schema } from './schema.js'
 
 export function refreshed () {
-  const groups = [...DB.groups.values()].sort((p, q) => p.created.localeCompare(q.created))
+  const groups = [...DB.groups.values()]
+    .filter(g => !(g.deleted && g.deleted !== ''))
+    .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(groups)
 
@@ -22,16 +24,7 @@ export function refreshed () {
 }
 
 function updateFromDB (oid, record) {
-  let row = document.querySelector("div#groups tr[data-oid='" + oid + "']")
-
-  if (record.deleted && record.deleted !== '') {
-    deleted('groups', row)
-    return
-  }
-
-  if (!row) {
-    row = add(oid)
-  }
+  const row = document.querySelector("div#groups tr[data-oid='" + oid + "']")
 
   const name = row.querySelector(`[data-oid="${oid}${schema.groups.name}"]`)
   const doors = [...DB.doors.values()].filter(o => o.status && o.status !== '<new>' && !(o.deleted && o.deleted !== ''))
@@ -65,7 +58,6 @@ function realize (groups) {
     .map(o => [o.OID, o]))
 
   // ... columns
-
   const columns = table.querySelectorAll('th.door')
   const cols = new Map([...columns].map(c => [c.dataset.door, c]))
   const missing = [...doors.values()].filter(o => o.OID === '' || !cols.has(o.OID))
@@ -88,14 +80,25 @@ function realize (groups) {
   })
 
   // ... rows
+  const rows = tbody.querySelectorAll('tr.group')
+  const remove = []
+
+  rows.forEach(row => {
+    for (const g of groups) {
+      if (g.OID === row.dataset.oid) {
+        return
+      }
+    }
+
+    remove.push(row)
+  })
+
+  remove.forEach(row => {
+    deleted('groups', row)
+  })
 
   groups.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
-
-    if (o.deleted && o.deleted !== '') {
-      deleted('groups', row)
-      return
-    }
 
     if (!row) {
       row = add(o.OID, o)

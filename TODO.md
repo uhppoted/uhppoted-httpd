@@ -21,14 +21,14 @@
 ### IN PROGRESS
 
 - [ ] Apply fix for 'interim hack':
-      - [ ] 'realize' should delete unnecessary rows
-            - [ ] controllers
-            - [ ] cards
-            - [ ] doors
-            - [ ] groups
-            - [ ] Removed DB.deleted ... deleted = 'Y' hack
+      - [x] 'realize' should delete unnecessary rows
+            - [x] controllers
+            - [x] cards
+            - [x] doors
+            - [x] groups
+            - [x] Remove DB.deleted ... deleted = 'Y' hack
       - [ ] Neaten up all the repetitive `deleted && deleted !== ''`
-      - [ ] With the way db.js works now, returning a 'deleted' status will recreate an
+      - [ ] With the way db.js works now, returning a 'deleted' field will recreate an
             object that has been swept
 
 - [ ] Genericize load/save
