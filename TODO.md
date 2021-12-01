@@ -6,10 +6,10 @@
 - [ ] Separate LAN and controllers
 
 - [ ] OIDs:
-      - [ ] Clean up door schema
+      - [x] Clean up door schema
             - [x] Remove controller OID
-            - [ ] Remove controller device ID
-            - [ ] Remove controller door
+            - [x] Remove controller device ID
+            - [x] Remove controller door
 
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
 

@@ -10,9 +10,6 @@ import (
 	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
-const DoorControllerID = catalog.DoorControllerID
-const DoorControllerDoor = catalog.DoorControllerDoor
-
 func UpdateACL() {
 	if acl, err := permissions(); err != nil {
 		warn(err)

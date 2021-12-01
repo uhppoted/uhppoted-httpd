@@ -260,7 +260,6 @@ func TestLookupDoorName(t *testing.T) {
 	catalog.PutV(controller, catalog.ControllerDoor3, door)
 
 	catalog.PutDoor(door)
-	catalog.PutV(door, catalog.DoorControllerOID, controller)
 	catalog.PutV(door, catalog.DoorName, "Gringotts")
 
 	expected := "Gringotts"
@@ -283,7 +282,6 @@ func TestLookupHistoricalDoorName(t *testing.T) {
 	catalog.PutV(controller, catalog.ControllerDoor3, door)
 
 	catalog.PutDoor(door)
-	catalog.PutV(door, catalog.DoorControllerOID, controller)
 	catalog.PutV(door, catalog.DoorName, "Gringotts")
 
 	for k, v := range history {

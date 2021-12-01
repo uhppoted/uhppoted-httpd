@@ -80,13 +80,20 @@ func Find(prefix OID, suffix Suffix, value interface{}) (OID, bool) {
 }
 
 func GetDoorDeviceID(door OID) uint32 {
-	if v := GetV(door, DoorControllerID); v != nil {
-		if deviceID, ok := v.(uint32); ok {
-			return deviceID
-		}
+	fields := map[uint8]Suffix{
+		1: ControllerDoor1,
+		2: ControllerDoor2,
+		3: ControllerDoor3,
+		4: ControllerDoor4,
+	}
 
-		if deviceID, ok := v.(*uint32); ok && deviceID != nil {
-			return *deviceID
+	for k, c := range catalog.controllers {
+		if !c.deleted {
+			for _, s := range fields {
+				if v := GetV(k, s); v == door {
+					return c.ID
+				}
+			}
 		}
 	}
 
@@ -94,9 +101,20 @@ func GetDoorDeviceID(door OID) uint32 {
 }
 
 func GetDoorDeviceDoor(door OID) uint8 {
-	if v := GetV(door, DoorControllerDoor); v != nil {
-		if d, ok := v.(uint8); ok {
-			return d
+	fields := map[uint8]Suffix{
+		1: ControllerDoor1,
+		2: ControllerDoor2,
+		3: ControllerDoor3,
+		4: ControllerDoor4,
+	}
+
+	for k, c := range catalog.controllers {
+		if !c.deleted {
+			for d, s := range fields {
+				if v := GetV(k, s); v == door {
+					return d
+				}
+			}
 		}
 	}
 
