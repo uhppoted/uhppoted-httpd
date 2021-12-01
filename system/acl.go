@@ -94,8 +94,8 @@ func permissions() (acl.ACL, error) {
 					for d, allowed := range group.Doors {
 						if door, ok := doors[d]; ok && allowed {
 							card := uint32(*c.Card)
-							device := door.DeviceID()
-							doorID := door.Door()
+							device := catalog.GetDoorDeviceID(door.OID)
+							doorID := catalog.GetDoorDeviceDoor(door.OID)
 
 							grant(card, device, doorID)
 						}
@@ -116,15 +116,15 @@ func permissions() (acl.ACL, error) {
 
 			for _, door := range allowed {
 				card := uint32(*c.Card)
-				device := door.DeviceID()
-				doorID := door.Door()
+				device := catalog.GetDoorDeviceID(door.OID)
+				doorID := catalog.GetDoorDeviceDoor(door.OID)
 				grant(card, device, doorID)
 			}
 
 			for _, door := range forbidden {
 				card := uint32(*c.Card)
-				device := door.DeviceID()
-				doorID := door.Door()
+				device := catalog.GetDoorDeviceID(door.OID)
+				doorID := catalog.GetDoorDeviceDoor(door.OID)
 				revoke(card, device, doorID)
 			}
 		}

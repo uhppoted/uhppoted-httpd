@@ -31,7 +31,7 @@ var created = time.Now()
 
 func (d *Door) IsValid() bool {
 	if d != nil {
-		door := d.Door()
+		door := catalog.GetDoorDeviceDoor(d.OID)
 
 		if strings.TrimSpace(d.Name) != "" || door != 0 {
 			return true
@@ -309,15 +309,14 @@ func (d *Door) clone() Door {
 	}
 }
 
-func (d *Door) lookup(suffix catalog.Suffix) interface{} {
-	return catalog.GetV(d.OID, suffix)
-}
-
 func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
 	}
+
+	deviceID := catalog.GetDoorDeviceID(d.OID)
+	door := catalog.GetDoorDeviceDoor(d.OID)
 
 	record := audit.AuditRecord{
 		UID:       uid,
@@ -325,7 +324,7 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 		Component: "door",
 		Operation: operation,
 		Details: audit.Details{
-			ID:          fmt.Sprintf("%v:%v", d.DeviceID(), d.Door()),
+			ID:          fmt.Sprintf("%v:%v", deviceID, door),
 			Name:        stringify(d.Name, ""),
 			Field:       field,
 			Description: description,
@@ -335,32 +334,6 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 	if dbc != nil {
 		dbc.Write(record)
 	}
-}
-
-func (d *Door) DeviceID() uint32 {
-	if d != nil {
-		if deviceID := d.lookup(DoorControllerID); deviceID != nil {
-			if v, ok := deviceID.(*uint32); ok && v != nil {
-				return *v
-			}
-		}
-
-	}
-
-	return 0
-}
-
-func (d *Door) Door() uint8 {
-	if d != nil {
-		if door := d.lookup(DoorControllerDoor); door != nil {
-			if v, ok := door.(uint8); ok {
-				return v
-			}
-		}
-
-	}
-
-	return 0
 }
 
 func stringify(i interface{}, defval string) string {

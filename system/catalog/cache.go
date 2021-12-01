@@ -78,3 +78,27 @@ func Find(prefix OID, suffix Suffix, value interface{}) (OID, bool) {
 
 	return OID(""), false
 }
+
+func GetDoorDeviceID(door OID) uint32 {
+	if v := GetV(door, DoorControllerID); v != nil {
+		if deviceID, ok := v.(uint32); ok {
+			return deviceID
+		}
+
+		if deviceID, ok := v.(*uint32); ok && deviceID != nil {
+			return *deviceID
+		}
+	}
+
+	return 0
+}
+
+func GetDoorDeviceDoor(door OID) uint8 {
+	if v := GetV(door, DoorControllerDoor); v != nil {
+		if d, ok := v.(uint8); ok {
+			return d
+		}
+	}
+
+	return 0
+}

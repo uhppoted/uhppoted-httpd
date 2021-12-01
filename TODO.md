@@ -6,12 +6,6 @@
 - [ ] Separate LAN and controllers
 
 - [ ] OIDs:
-      - [x] Clean up controller schema
-            - [x] restructure address
-            - [x] restructure date/time
-            - [x] restructure cards
-            - [x] restructure events
-
       - [ ] Clean up door schema
             - [ ] Remove controller OID
             - [ ] Remove controller device ID
@@ -19,17 +13,10 @@
 
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
 
-- [x] Make 'created' field a DateTime
-      - [x] controller
-      - [x] LAN
-      - [x] door
-      - [x] groups
-
 - [ ] Fix DateTime mess
       - [ ] Change String(), Format(), etc to not take pointer receiver
       - [ ] Define FormatDateTime() method that *does* take pointer
       - [ ] Refactor DateTime out to use core implementation only
-      - [x] Unmarshal should handle missing timezone
 
 ### IN PROGRESS
 
@@ -49,10 +36,8 @@
             - [ ] Move file to system
                   - [ ] interfaces
                   - [ ] controllers
-                  - [x] cards
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
-            - [x] cards
             - [ ] controllers
             - [ ] interfaces
       - [ ] (?) Groups, etc probably don't need to be structs anymore => typedef arrays

@@ -69,7 +69,8 @@ bump:
 	go get -u golang.org/x/sys
 
 debug: format
-	go test -v -run TestDateTimeUnmarshalJSON ./types
+	go test -v -run TestGetDoor* ./system/catalog
+	# dlv test github.com/uhppoted/uhppoted-httpd/system/catalog
 
 # NOTE: sass --watch doesn't seem to consistently pick up changes in themed partials
 sass:
