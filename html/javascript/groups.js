@@ -1,10 +1,10 @@
 import { update, deleted } from './tabular.js'
-import { DB } from './db.js'
+import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 
 export function refreshed () {
   const groups = [...DB.groups.values()]
-    .filter(g => !(g.deleted && g.deleted !== ''))
+    .filter(g => alive(g))
     .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(groups)
@@ -27,7 +27,7 @@ function updateFromDB (oid, record) {
   const row = document.querySelector("div#groups tr[data-oid='" + oid + "']")
 
   const name = row.querySelector(`[data-oid="${oid}${schema.groups.name}"]`)
-  const doors = [...DB.doors.values()].filter(o => o.status && o.status !== '<new>' && !(o.deleted && o.deleted !== ''))
+  const doors = [...DB.doors.values()].filter(o => o.status && o.status !== '<new>' && alive(o))
 
   row.dataset.status = record.status
 
@@ -53,7 +53,7 @@ function realize (groups) {
   const tbody = table.tBodies[0]
 
   const doors = new Map([...DB.doors.values()]
-    .filter(o => o.status && o.status !== '<new>' && !(o.deleted && o.deleted !== ''))
+    .filter(o => o.status && o.status !== '<new>' && alive(o))
     .sort((p, q) => p.created.localeCompare(q.created))
     .map(o => [o.OID, o]))
 

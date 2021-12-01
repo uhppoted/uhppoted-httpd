@@ -1,9 +1,9 @@
 import { update, deleted } from './tabular.js'
-import { DB } from './db.js'
+import { DB, alive } from './db.js'
 
 export function refreshed () {
   const doors = [...DB.doors.values()]
-    .filter(d => !(d.deleted && d.deleted !== ''))
+    .filter(d => alive(d))
     .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(doors)

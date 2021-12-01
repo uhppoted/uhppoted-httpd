@@ -675,38 +675,46 @@ function mark (tag) {
 
 function sweep (tag) {
   DB.controllers.forEach((v, k) => {
-    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
+    if (v.mark >= 25 && alive(v)) {
       DB.controllers.delete(k)
     }
   })
 
   DB.doors.forEach((v, k) => {
-    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
+    if (v.mark >= 25 && alive(v)) {
       DB.doors.delete(k)
     }
   })
 
   DB.cards.forEach((v, k) => {
-    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
+    if (v.mark >= 25 && alive(v)) {
       DB.doors.delete(k)
     }
   })
 
   DB.groups.forEach((v, k) => {
-    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
+    if (v.mark >= 25 && alive(v)) {
       DB.groups.delete(k)
     }
   })
 
   DB.events().forEach((v, k) => {
-    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
+    if (v.mark >= 25 && alive(v)) {
       DB.events().delete(k)
     }
   })
 
   DB.logs().forEach((v, k) => {
-    if (v.mark >= 25 && v.deleted && v.deleted !== '') {
+    if (v.mark >= 25 && alive(v)) {
       DB.logs().delete(k)
     }
   })
+}
+
+export function alive (object) {
+  if (object) {
+    return !(object.deleted && object.deleted !== '')
+  }
+
+  return false
 }

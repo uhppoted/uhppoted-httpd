@@ -1,12 +1,12 @@
 import { update, deleted } from './tabular.js'
-import { DB } from './db.js'
+import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 
-export function refreshed () {
-  const pagesize = 20
+const pagesize = 5
 
+export function refreshed () {
   const cards = [...DB.cards.values()]
-    .filter(c => !(c.deleted && c.deleted !== ''))
+    .filter(c => alive(c))
     .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(cards)
@@ -72,7 +72,7 @@ function updateFromDB (oid, record) {
   const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
   const from = row.querySelector(`[data-oid="${oid}${schema.cards.from}"]`)
   const to = row.querySelector(`[data-oid="${oid}${schema.cards.to}"]`)
-  const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && !(g.deleted && g.deleted !== ''))
+  const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && alive(g))
 
   row.dataset.status = record.status
 
@@ -101,7 +101,7 @@ function realize (cards) {
   const tbody = table.tBodies[0]
 
   const groups = new Map([...DB.groups.values()]
-    .filter(g => g.status && g.status !== '<new>' && !(g.deleted && g.deleted !== ''))
+    .filter(g => g.status && g.status !== '<new>' && alive(g))
     .sort((p, q) => p.created.localeCompare(q.created))
     .map(o => [o.OID, o]))
 

@@ -27,7 +27,7 @@
             - [x] doors
             - [x] groups
             - [x] Remove DB.deleted ... deleted = 'Y' hack
-      - [ ] Neaten up all the repetitive `deleted && deleted !== ''`
+      - [x] Neaten up all the repetitive `deleted && deleted !== ''`
       - [ ] With the way db.js works now, returning a 'deleted' field will recreate an
             object that has been swept
 

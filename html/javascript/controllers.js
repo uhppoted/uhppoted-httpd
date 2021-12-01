@@ -1,10 +1,10 @@
 import { deleted, update } from './tabular.js'
-import { DB } from './db.js'
+import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 
 export function refreshed () {
   const list = [...DB.controllers.values()]
-    .filter(c => !(c.deleted && c.deleted !== ''))
+    .filter(c => alive(c))
     .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(list)
@@ -39,7 +39,7 @@ function updateFromDB (oid, record) {
 
   // ... populate door dropdowns
   const doors = [...DB.doors.values()]
-    .filter(o => o.status && o.status !== '<new>' && !(o.deleted && o.deleted !== ''))
+    .filter(o => o.status && o.status !== '<new>' && alive(o))
     .sort((p, q) => p.created.localeCompare(q.created));
 
   [door1, door2, door3, door4].forEach(select => {

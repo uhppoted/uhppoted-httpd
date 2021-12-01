@@ -1,10 +1,13 @@
 import { deleted } from './tabular.js'
-import { DB } from './db.js'
+import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 
+const pagesize = 5
+
 export function refreshed () {
-  const events = [...DB.events().values()].sort((p, q) => q.timestamp.localeCompare(p.timestamp))
-  const pagesize = 5
+  const events = [...DB.events().values()]
+    .filter(e => alive(e))
+    .sort((p, q) => q.timestamp.localeCompare(p.timestamp))
 
   realize(events)
 
@@ -81,14 +84,25 @@ function realize (events) {
   const table = document.querySelector('#events table')
   const tbody = table.tBodies[0]
 
-  events.forEach(o => {
-    let row = tbody.querySelector(`tr[data-oid="${o.OID}"]`)
+  const rows = tbody.querySelectorAll('tr.event')
+  const remove = []
 
-    if (o.deleted && o.deleted !== '') {
-      deleted('events', row)
-      return
+  rows.forEach(row => {
+    for (const e of events) {
+      if (e.OID === row.dataset.oid) {
+        return
+      }
     }
 
+    remove.push(row)
+  })
+
+  remove.forEach(row => {
+    deleted('events', row)
+  })
+
+  events.forEach(o => {
+    let row = tbody.querySelector(`tr[data-oid="${o.OID}"]`)
     if (!row) {
       row = add(o.OID, o)
     }
@@ -164,7 +178,7 @@ function add (oid) {
 function updateFromDB (oid, record) {
   const row = document.querySelector("div#events tr[data-oid='" + oid + "']")
 
-  if ((record.deleted && record.deleted !== '') || !row) {
+  if (alive(record) || !row) {
     return
   }
 

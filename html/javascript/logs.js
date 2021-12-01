@@ -1,10 +1,13 @@
 import { deleted } from './tabular.js'
-import { DB } from './db.js'
+import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 
+const pagesize = 5
+
 export function refreshed () {
-  const entries = [...DB.logs().values()].sort((p, q) => q.timestamp.localeCompare(p.timestamp))
-  const pagesize = 5
+  const entries = [...DB.logs().values()]
+    .filter(l => alive(l))
+    .sort((p, q) => q.timestamp.localeCompare(p.timestamp))
 
   realize(entries)
 
@@ -77,18 +80,29 @@ export function refreshed () {
     .catch(err => console.error(err))
 }
 
-function realize (entries) {
+function realize (logs) {
   const table = document.querySelector('#logs table')
   const tbody = table.tBodies[0]
 
-  entries.forEach(o => {
-    let row = tbody.querySelector(`tr[data-oid='${o.OID}']`)
+  const rows = tbody.querySelectorAll('tr.event')
+  const remove = []
 
-    if (o.deleted && o.deleted !== '') {
-      deleted('logs', row)
-      return
+  rows.forEach(row => {
+    for (const l of logs) {
+      if (l.OID === row.dataset.oid) {
+        return
+      }
     }
 
+    remove.push(row)
+  })
+
+  remove.forEach(row => {
+    deleted('events', row)
+  })
+
+  logs.forEach(o => {
+    let row = tbody.querySelector(`tr[data-oid='${o.OID}']`)
     if (!row) {
       row = add(o.OID, o)
     }
