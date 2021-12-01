@@ -1,4 +1,4 @@
-import { update, deleted } from './tabular.js'
+import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 
@@ -80,22 +80,7 @@ function realize (groups) {
   })
 
   // ... rows
-  const rows = tbody.querySelectorAll('tr.group')
-  const remove = []
-
-  rows.forEach(row => {
-    for (const g of groups) {
-      if (g.OID === row.dataset.oid) {
-        return
-      }
-    }
-
-    remove.push(row)
-  })
-
-  remove.forEach(row => {
-    deleted('groups', row)
-  })
+  trim('groups', groups, tbody.querySelectorAll('tr.group'))
 
   groups.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")

@@ -1,4 +1,4 @@
-import { update, deleted } from './tabular.js'
+import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 
@@ -106,7 +106,6 @@ function realize (cards) {
     .map(o => [o.OID, o]))
 
   // ... columns
-
   const columns = table.querySelectorAll('th.group')
   const cols = new Map([...columns].map(c => [c.dataset.group, c]))
   const missing = [...groups.values()].filter(o => o.OID === '' || !cols.has(o.OID))
@@ -129,22 +128,7 @@ function realize (cards) {
   })
 
   // ... rows
-  const rows = tbody.querySelectorAll('tr.card')
-  const remove = []
-
-  rows.forEach(row => {
-    for (const c of cards) {
-      if (c.OID === row.dataset.oid) {
-        return
-      }
-    }
-
-    remove.push(row)
-  })
-
-  remove.forEach(row => {
-    deleted('cards', row)
-  })
+  trim('cards', cards, tbody.querySelectorAll('tr.card'))
 
   cards.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")

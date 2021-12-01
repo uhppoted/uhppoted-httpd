@@ -1,4 +1,4 @@
-import { deleted } from './tabular.js'
+import { trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 
@@ -84,22 +84,7 @@ function realize (logs) {
   const table = document.querySelector('#logs table')
   const tbody = table.tBodies[0]
 
-  const rows = tbody.querySelectorAll('tr.event')
-  const remove = []
-
-  rows.forEach(row => {
-    for (const l of logs) {
-      if (l.OID === row.dataset.oid) {
-        return
-      }
-    }
-
-    remove.push(row)
-  })
-
-  remove.forEach(row => {
-    deleted('events', row)
-  })
+  trim('logs', logs, tbody.querySelectorAll('tr.entry'))
 
   logs.forEach(o => {
     let row = tbody.querySelector(`tr[data-oid='${o.OID}']`)

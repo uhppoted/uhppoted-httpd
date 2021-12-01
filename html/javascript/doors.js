@@ -1,4 +1,4 @@
-import { update, deleted } from './tabular.js'
+import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
 
 export function refreshed () {
@@ -88,22 +88,7 @@ function realize (doors) {
   const tbody = table.tBodies[0]
 
   // ... rows
-  const rows = tbody.querySelectorAll('tr.door')
-  const remove = []
-
-  rows.forEach(row => {
-    for (const d of doors) {
-      if (d.OID === row.dataset.oid) {
-        return
-      }
-    }
-
-    remove.push(row)
-  })
-
-  remove.forEach(row => {
-    deleted('doors', row)
-  })
+  trim('doors', doors, tbody.querySelectorAll('tr.door'))
 
   doors.forEach(o => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")

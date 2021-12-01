@@ -455,6 +455,21 @@ export function deleted (tag, row) {
   }
 }
 
+export function trim (tag, objects, rows) {
+  const list = new Set(objects.map(o => o.OID))
+  const remove = []
+
+  rows.forEach(row => {
+    if (!list.has(row.dataset.oid)) {
+      remove.push(row)
+    }
+  })
+
+  remove.forEach(row => {
+    deleted(tag, row)
+  })
+}
+
 export function percolate (oid, f) {
   let oidx = oid
 
