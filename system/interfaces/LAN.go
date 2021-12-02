@@ -7,7 +7,10 @@ import (
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
+	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -19,12 +22,16 @@ type LANx struct {
 	ListenAddress    core.ListenAddr
 	Debug            bool
 
-	Created      types.DateTime
-	Deleted      *types.DateTime
-	Unconfigured bool
+	created      types.DateTime
+	deleted      *types.DateTime
+	unconfigured bool
 }
 
 var created = time.Now()
+
+func (l LANx) String() string {
+	return fmt.Sprintf("%v", l.Name)
+}
 
 func (l *LANx) IsValid() bool {
 	if l != nil {
@@ -37,15 +44,124 @@ func (l *LANx) IsValid() bool {
 }
 
 func (l *LANx) IsDeleted() bool {
-	if l != nil && l.Deleted != nil {
+	if l != nil && l.deleted != nil {
 		return true
 	}
 
 	return false
 }
 
-func (l LANx) String() string {
-	return fmt.Sprintf("%v", l.Name)
+func (l *LANx) AsObjects() []interface{} {
+	objects := []interface{}{
+		catalog.NewObject(l.OID, types.StatusUncertain),
+		catalog.NewObject2(l.OID, LANStatus, l.status()),
+		catalog.NewObject2(l.OID, LANType, "LAN"),
+		catalog.NewObject2(l.OID, LANName, l.Name),
+		catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress),
+		catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress),
+		catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress),
+	}
+
+	return objects
+}
+
+func (l *LANx) AsRuleEntity() interface{} {
+	type entity struct {
+		Type string
+		Name string
+	}
+
+	if l != nil {
+		return &entity{
+			Type: "LAN",
+			Name: fmt.Sprintf("%v", l.Name),
+		}
+	}
+
+	return &entity{}
+}
+
+func (l *LANx) Set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	objects := []catalog.Object{}
+
+	f := func(field string, value interface{}) error {
+		if auth == nil {
+			return nil
+		}
+
+		return auth.CanUpdateInterface(l, field, value)
+	}
+
+	if l != nil {
+		switch oid {
+		case l.OID.Append(LANName):
+			if err := f("name", value); err != nil {
+				return nil, err
+			} else {
+				l.log(auth, "update", l.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(l.Name, BLANK), stringify(value, BLANK)), dbc)
+				l.Name = value
+				objects = append(objects, catalog.NewObject2(l.OID, LANName, l.Name))
+			}
+
+		case l.OID.Append(LANBindAddress):
+			if addr, err := core.ResolveBindAddr(value); err != nil {
+				return nil, err
+			} else if err := f("bind", addr); err != nil {
+				return nil, err
+			} else {
+				l.log(auth, "update", l.OID, "bind", fmt.Sprintf("Updated bind address from %v to %v", stringify(l.BindAddress, BLANK), stringify(value, BLANK)), dbc)
+				l.BindAddress = *addr
+				objects = append(objects, catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress))
+			}
+
+		case l.OID.Append(LANBroadcastAddress):
+			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
+				return nil, err
+			} else if err := f("broadcast", addr); err != nil {
+				return nil, err
+			} else {
+				l.log(auth, "update", l.OID, "broadcast", fmt.Sprintf("Updated broadcast address from %v to %v", stringify(l.BroadcastAddress, BLANK), stringify(value, BLANK)), dbc)
+				l.BroadcastAddress = *addr
+				objects = append(objects, catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress))
+			}
+
+		case l.OID.Append(LANListenAddress):
+			if addr, err := core.ResolveListenAddr(value); err != nil {
+				return nil, err
+			} else if err = f("listen", addr); err != nil {
+				return nil, err
+			} else {
+				l.log(auth, "update", l.OID, "listen", fmt.Sprintf("Updated listen address from %v to %v", stringify(l.ListenAddress, BLANK), stringify(value, BLANK)), dbc)
+				l.ListenAddress = *addr
+				objects = append(objects, catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress))
+			}
+		}
+
+		if l.deleted == nil {
+			objects = append(objects, catalog.NewObject2(l.OID, LANStatus, l.status()))
+		}
+	}
+
+	return objects, nil
+}
+
+func (l *LANx) status() types.Status {
+	return types.StatusOk
+}
+
+func (l LANx) Clone() LANx {
+	return LANx{
+		OID:              l.OID,
+		Name:             l.Name,
+		BindAddress:      l.BindAddress,
+		BroadcastAddress: l.BroadcastAddress,
+		ListenAddress:    l.ListenAddress,
+		Debug:            l.Debug,
+
+		created:      l.created,
+		deleted:      l.deleted,
+		unconfigured: l.unconfigured,
+	}
 }
 
 func (l LANx) serialize() ([]byte, error) {
@@ -62,7 +178,7 @@ func (l LANx) serialize() ([]byte, error) {
 		BindAddress:      l.BindAddress,
 		BroadcastAddress: l.BroadcastAddress,
 		ListenAddress:    l.ListenAddress,
-		Created:          types.DateTime(l.Created),
+		Created:          types.DateTime(l.created),
 	}
 
 	return json.MarshalIndent(record, "", "  ")
@@ -92,8 +208,32 @@ func (l *LANx) deserialize(bytes []byte) error {
 	l.BindAddress = record.BindAddress
 	l.BroadcastAddress = record.BroadcastAddress
 	l.ListenAddress = record.ListenAddress
-	l.Created = *record.Created
-	l.Unconfigured = false
+	l.created = *record.Created
+	l.unconfigured = false
 
 	return nil
+}
+
+func (l *LANx) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
+	}
+
+	record := audit.AuditRecord{
+		UID:       uid,
+		OID:       OID,
+		Component: "interface",
+		Operation: operation,
+		Details: audit.Details{
+			ID:          "LAN",
+			Name:        stringify(l.Name, ""),
+			Field:       field,
+			Description: description,
+		},
+	}
+
+	if dbc != nil {
+		dbc.Write(record)
+	}
 }

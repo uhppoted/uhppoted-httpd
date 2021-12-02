@@ -13,6 +13,8 @@ type Interfaces struct {
 	LANs map[catalog.OID]*LANx
 }
 
+const BLANK = "'blank'"
+
 func NewInterfaces() Interfaces {
 	return Interfaces{
 		LANs: map[catalog.OID]*LANx{},
@@ -68,7 +70,7 @@ func validate(ii Interfaces) error {
 	names := map[string]string{}
 
 	for k, l := range ii.LANs {
-		if l.Deleted != nil {
+		if l.deleted != nil {
 			continue
 		}
 
@@ -93,6 +95,30 @@ func validate(ii Interfaces) error {
 
 func scrub(ii Interfaces) error {
 	return nil
+}
+
+func stringify(i interface{}, defval string) string {
+	s := ""
+	switch v := i.(type) {
+	case *uint32:
+		if v != nil {
+			s = fmt.Sprintf("%v", *v)
+		}
+
+	case *string:
+		if v != nil {
+			s = fmt.Sprintf("%v", *v)
+		}
+
+	default:
+		s = fmt.Sprintf("%v", i)
+	}
+
+	if s != "" {
+		return s
+	}
+
+	return defval
 }
 
 func warn(err error) {
