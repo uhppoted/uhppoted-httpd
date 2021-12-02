@@ -324,7 +324,7 @@ func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 		Component: "door",
 		Operation: operation,
 		Details: audit.Details{
-			ID:          fmt.Sprintf("%v:%v", deviceID, door),
+			ID:          fmt.Sprintf("%v/%v", deviceID, door),
 			Name:        stringify(d.Name, ""),
 			Field:       field,
 			Description: description,

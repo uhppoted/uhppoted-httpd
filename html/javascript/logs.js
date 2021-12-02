@@ -159,10 +159,6 @@ function add (oid) {
 function updateFromDB (oid, record) {
   const row = document.querySelector("div#logs tr[data-oid='" + oid + "']")
 
-  if ((record.deleted && record.deleted) !== '' || !row) {
-    return
-  }
-
   const timestamp = row.querySelector(`[data-oid="${oid}${schema.logs.timestamp}"]`)
   const uid = row.querySelector(`[data-oid="${oid}${schema.logs.uid}"]`)
   const item = row.querySelector(`[data-oid="${oid}${schema.logs.item}"]`)

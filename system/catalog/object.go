@@ -66,9 +66,10 @@ func stringify(i interface{}) string {
 			return fmt.Sprintf("%v", *v)
 		}
 
-	case types.DateTime:
-		w := i.(types.DateTime)
-		return fmt.Sprintf("%v", &w)
+	case *types.DateTime:
+		if v != nil {
+			return fmt.Sprintf("%v", v)
+		}
 
 	default:
 		if i != nil {

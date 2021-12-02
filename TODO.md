@@ -6,30 +6,24 @@
 - [ ] Separate LAN and controllers
 
 - [ ] OIDs:
-      - [x] Clean up door schema
-            - [x] Remove controller OID
-            - [x] Remove controller device ID
-            - [x] Remove controller door
-
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
+      - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Fix DateTime mess
-      - [ ] Change String(), Format(), etc to not take pointer receiver
+      - [x] Change String() to not take pointer receiver
+      - [ ] Change Format(), etc to not take pointer receiver
       - [ ] Define FormatDateTime() method that *does* take pointer
       - [ ] Refactor DateTime out to use core implementation only
 
 ### IN PROGRESS
 
-- [ ] Apply fix for 'interim hack':
-      - [x] 'realize' should delete unnecessary rows
-            - [x] controllers
-            - [x] cards
-            - [x] doors
-            - [x] groups
-            - [x] Remove DB.deleted ... deleted = 'Y' hack
-      - [x] Neaten up all the repetitive `deleted && deleted !== ''`
-      - [ ] With the way db.js works now, returning a 'deleted' field will recreate an
-            object that has been swept
+- [ ] Rethink mark/sweep to not use a counter
+      - with the way db.js works now, returning a 'deleted' field will recreate an
+        object that has been swept
+      - mark/sweep can be called multiple times for the same update
+      - time based (?)
+      - make update ID base (?)
+      - use tag (?)
 
 - [ ] Genericize load/save
       - [ ] Read file in system and pass in json.RawMessage to Load(...)
@@ -48,16 +42,12 @@
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 
 #### Doors
-  - [x] Weird thing on new door
-        - [x] Can't rollback
-        - [x] Has default name
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
   - [ ] 'door' select chooses first item if list changes while select is open
 
 #### OID
-  - [ ] GetV => GetBool, GetInt, etc
   - [ ] Store all values in catalog and 'realize' local copies from cache
   - [ ] Check RWLock for clone to make shadow
         - [ ] controllers
@@ -88,11 +78,6 @@
   - [ ] `refresh` is overwriting pending group edits
   - [ ] Replace dataset.original with value from DB
   - [ ] Unit test for AsObjects
-  - [ ] Rethink mark/sweep to not use a counter
-        - mark/sweep can be called multiple times for the same update
-        - time based (?)
-        - make update ID base (?)
-        - use tag (?)
 
 #### System
       - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name

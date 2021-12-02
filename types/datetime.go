@@ -64,10 +64,6 @@ func (d *DateTime) Format(layout string) string {
 	return ""
 }
 
-func (d *DateTime) String() string {
-	if d != nil {
-		return time.Time(*d).Format("2006-01-02 15:04:05")
-	}
-
-	return ""
+func (d DateTime) String() string {
+	return time.Time(d).Format("2006-01-02 15:04:05")
 }

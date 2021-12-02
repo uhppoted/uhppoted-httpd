@@ -163,10 +163,6 @@ function add (oid) {
 function updateFromDB (oid, record) {
   const row = document.querySelector("div#events tr[data-oid='" + oid + "']")
 
-  if (alive(record) || !row) {
-    return
-  }
-
   const timestamp = row.querySelector(`[data-oid="${oid}${schema.events.timestamp}"]`)
   const deviceID = row.querySelector(`[data-oid="${oid}${schema.events.deviceID}"]`)
   const device = row.querySelector(`[data-oid="${oid}${schema.events.deviceName}"]`)

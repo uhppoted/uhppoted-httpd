@@ -11,11 +11,10 @@ func TestDateTimeString(t *testing.T) {
 	datetime := DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local))
 
 	tests := []struct {
-		dt       *DateTime
+		dt       DateTime
 		expected string
 	}{
-		{nil, ""},
-		{&datetime, "2021-02-28 12:34:56"},
+		{datetime, "2021-02-28 12:34:56"},
 	}
 
 	for _, v := range tests {
