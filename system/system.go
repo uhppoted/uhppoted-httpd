@@ -23,13 +23,24 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/events"
 	"github.com/uhppoted/uhppoted-httpd/system/groups"
 	"github.com/uhppoted/uhppoted-httpd/system/grule"
+	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/system/logs"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/config"
 )
 
 var sys = system{
+	interfaces: struct {
+		interfaces interfaces.Interfaces
+		file       string
+		tag        string
+	}{
+		interfaces: interfaces.NewInterfaces(),
+		tag:        "interfaces",
+	},
+
 	controllers: controllers.NewControllerSet(),
+
 	doors: struct {
 		doors doors.Doors
 		file  string
@@ -38,6 +49,7 @@ var sys = system{
 		doors: doors.NewDoors(),
 		tag:   "doors",
 	},
+
 	cards: struct {
 		cards cards.Cards
 		file  string
@@ -46,6 +58,7 @@ var sys = system{
 		cards: cards.NewCards(),
 		tag:   "cards",
 	},
+
 	groups: struct {
 		groups groups.Groups
 		file   string
@@ -54,6 +67,7 @@ var sys = system{
 		groups: groups.NewGroups(),
 		tag:    "groups",
 	},
+
 	events: struct {
 		events events.Events
 		file   string
@@ -78,7 +92,12 @@ var sys = system{
 
 type system struct {
 	sync.RWMutex
-	conf        string
+	conf       string
+	interfaces struct {
+		interfaces interfaces.Interfaces
+		file       string
+		tag        string
+	}
 	controllers controllers.ControllerSet
 	doors       struct {
 		doors doors.Doors
@@ -140,13 +159,14 @@ type serializable interface {
 }
 
 func Init(cfg config.Config, conf string, debug bool) error {
+	sys.interfaces.file = cfg.HTTPD.System.Interfaces
 	sys.doors.file = cfg.HTTPD.System.Doors
 	sys.cards.file = cfg.HTTPD.System.Cards
 	sys.groups.file = cfg.HTTPD.System.Groups
 	sys.events.file = cfg.HTTPD.System.Events
 	sys.logs.file = cfg.HTTPD.System.Logs
 
-	if err := load(sys.doors.file, sys.doors.tag, &sys.doors.doors); err != nil {
+	if err := load(sys.interfaces.file, sys.interfaces.tag, &sys.interfaces.interfaces); err != nil {
 		return err
 	}
 
@@ -156,6 +176,10 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		} else {
 			return err
 		}
+	}
+
+	if err := load(sys.doors.file, sys.doors.tag, &sys.doors.doors); err != nil {
+		return err
 	}
 
 	if err := load(sys.cards.file, sys.cards.tag, &sys.cards.cards); err != nil {

@@ -14,13 +14,13 @@ import (
 )
 
 type Cards struct {
-	Cards map[catalog.OID]*Card `json:"cardholders"`
+	Cards map[catalog.OID]*Card
 }
 
-type result struct {
-	Updated []interface{} `json:"updated"`
-	Deleted []interface{} `json:"deleted"`
-}
+// type result struct {
+// 	Updated []interface{} `json:"updated"`
+// 	Deleted []interface{} `json:"deleted"`
+// }
 
 var guard sync.RWMutex
 

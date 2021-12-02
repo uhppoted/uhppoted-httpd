@@ -4,6 +4,7 @@
       - Don't check login cookie except for login
 
 - [ ] Separate LAN and controllers
+      - [ ] Move LAN to `interfaces` subsystem
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
@@ -11,9 +12,12 @@
 
 - [ ] Fix DateTime mess
       - [x] Change String() to not take pointer receiver
+      - [ ] MAYBE: treat empty DateTime as the null value
       - [ ] Change Format(), etc to not take pointer receiver
       - [ ] Define FormatDateTime() method that *does* take pointer
       - [ ] Refactor DateTime out to use core implementation only
+      - [ ] Implement Add() for the repetitive created + 1 thing
+      - [ ] Implement Ptr() for the repetitive assign to variable to take address thing
 
 ### IN PROGRESS
 
