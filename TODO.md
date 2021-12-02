@@ -4,7 +4,11 @@
       - Don't check login cookie except for login
 
 - [ ] Separate LAN and controllers
+      - [x] Remove LAN serialization from ControllerSet
       - [ ] Move LAN to `interfaces` subsystem
+      - [ ] Hide LANx created, deleted and unconfigured
+      - [ ] Implement `UpdateObjects` for `interfaces`
+      - [ ] Implement `AsObjects` for `interfaces`
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
@@ -30,14 +34,15 @@
       - use tag (?)
 
 - [ ] Genericize load/save
+      - [ ] MAYBE: embed controllers etc. in sys structs
       - [ ] Read file in system and pass in json.RawMessage to Load(...)
             - [ ] Move file to system
                   - [ ] interfaces
-                  - [ ] controllers
+                  - [x] controllers
             - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
-            - [ ] controllers
             - [ ] interfaces
+            - [x] controllers
       - [ ] (?) Groups, etc probably don't need to be structs anymore => typedef arrays
 
 - [ ] 'users' page

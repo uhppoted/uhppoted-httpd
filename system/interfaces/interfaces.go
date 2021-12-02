@@ -10,12 +10,12 @@ import (
 )
 
 type Interfaces struct {
-	LANs map[catalog.OID]*LAN
+	LANs map[catalog.OID]*LANx
 }
 
 func NewInterfaces() Interfaces {
 	return Interfaces{
-		LANs: map[catalog.OID]*LAN{},
+		LANs: map[catalog.OID]*LANx{},
 	}
 }
 
@@ -26,7 +26,7 @@ func (ii *Interfaces) Load(blob json.RawMessage) error {
 	}
 
 	for _, v := range rs {
-		var l LAN
+		var l LANx
 		if err := l.deserialize(v); err == nil {
 			if _, ok := ii.LANs[l.OID]; ok {
 				return fmt.Errorf("card '%v': duplicate OID (%v)", l.Name, l.OID)
@@ -68,7 +68,7 @@ func validate(ii Interfaces) error {
 	names := map[string]string{}
 
 	for k, l := range ii.LANs {
-		if l.deleted != nil {
+		if l.Deleted != nil {
 			continue
 		}
 

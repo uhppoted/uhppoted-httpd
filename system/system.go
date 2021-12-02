@@ -39,7 +39,14 @@ var sys = system{
 		tag:        "interfaces",
 	},
 
-	controllers: controllers.NewControllerSet(),
+	controllers: struct {
+		controllers controllers.ControllerSet
+		file        string
+		tag         string
+	}{
+		controllers: controllers.NewControllerSet(),
+		tag:         "controllers",
+	},
 
 	doors: struct {
 		doors doors.Doors
@@ -92,14 +99,21 @@ var sys = system{
 
 type system struct {
 	sync.RWMutex
-	conf       string
+	conf string
+
 	interfaces struct {
 		interfaces interfaces.Interfaces
 		file       string
 		tag        string
 	}
-	controllers controllers.ControllerSet
-	doors       struct {
+
+	controllers struct {
+		controllers controllers.ControllerSet
+		file        string
+		tag         string
+	}
+
+	doors struct {
 		doors doors.Doors
 		file  string
 		tag   string
@@ -160,6 +174,7 @@ type serializable interface {
 
 func Init(cfg config.Config, conf string, debug bool) error {
 	sys.interfaces.file = cfg.HTTPD.System.Interfaces
+	sys.controllers.file = cfg.HTTPD.System.Controllers
 	sys.doors.file = cfg.HTTPD.System.Doors
 	sys.cards.file = cfg.HTTPD.System.Cards
 	sys.groups.file = cfg.HTTPD.System.Groups
@@ -170,12 +185,10 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		return err
 	}
 
-	if err := sys.controllers.Load(cfg.HTTPD.System.Controllers); err != nil {
-		if os.IsNotExist(err) {
-			warn(err)
-		} else {
-			return err
-		}
+	sys.controllers.controllers.Init(sys.interfaces.interfaces)
+
+	if err := load(sys.controllers.file, sys.controllers.tag, &sys.controllers.controllers); err != nil {
+		return err
 	}
 
 	if err := load(sys.doors.file, sys.doors.tag, &sys.doors.doors); err != nil {
@@ -251,7 +264,7 @@ func System() interface{} {
 	defer sys.RUnlock()
 
 	objects := []interface{}{}
-	objects = append(objects, sys.controllers.AsObjects()...)
+	objects = append(objects, sys.controllers.controllers.AsObjects()...)
 	objects = append(objects, sys.doors.doors.AsObjects()...)
 	objects = append(objects, sys.cards.cards.AsObjects()...)
 	objects = append(objects, sys.groups.groups.AsObjects()...)
@@ -277,7 +290,7 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			if objects := s.controllers.Refresh(&s.callback); objects != nil {
+			if objects := s.controllers.controllers.Refresh(&s.callback); objects != nil {
 				catalog.PutL(objects)
 			}
 		},
@@ -306,7 +319,7 @@ func (s *system) updated() {
 	s.taskQ.Add(Task{
 		f: func() {
 			info("Updating controllers from configuration")
-			if objects := sys.controllers.Sync(); objects != nil {
+			if objects := sys.controllers.controllers.Sync(); objects != nil {
 				catalog.PutL(objects)
 			}
 
@@ -319,7 +332,7 @@ func (s *system) sweep() {
 	cutoff := time.Now().Add(-s.retention)
 	log.Printf("INFO  Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
 
-	s.controllers.Sweep(s.retention)
+	s.controllers.controllers.Sweep(s.retention)
 	s.doors.doors.Sweep(s.retention)
 	s.cards.cards.Sweep(s.retention)
 	s.groups.groups.Sweep(s.retention)

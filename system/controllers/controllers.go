@@ -16,6 +16,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
+	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/config"
@@ -23,7 +24,6 @@ import (
 )
 
 type ControllerSet struct {
-	file        string        `json:"-"`
 	Controllers []*Controller `json:"controllers"`
 	LAN         *LAN          `json:"LAN"`
 }
@@ -58,10 +58,79 @@ func SetWindows(ok, uncertain, systime, cacheExpiry time.Duration) {
 func NewControllerSet() ControllerSet {
 	return ControllerSet{
 		Controllers: []*Controller{},
-		LAN: &LAN{
-			OID: catalog.InterfacesOID.AppendS(".1"),
-		},
 	}
+}
+
+func (cc *ControllerSet) Init(interfaces interfaces.Interfaces) {
+	for _, v := range interfaces.LANs {
+		cc.LAN = &LAN{
+			OID:              v.OID,
+			Name:             v.Name,
+			BindAddress:      v.BindAddress,
+			BroadcastAddress: v.BroadcastAddress,
+			ListenAddress:    v.ListenAddress,
+			Debug:            v.Debug,
+
+			created:      v.Created,
+			deleted:      v.Deleted,
+			unconfigured: v.Unconfigured,
+		}
+
+		break
+	}
+}
+
+func (cc *ControllerSet) Load(blob json.RawMessage) error {
+	rs := []json.RawMessage{}
+	if err := json.Unmarshal(blob, &rs); err != nil {
+		return err
+	}
+
+	cc.Controllers = []*Controller{}
+	for _, v := range rs {
+		var c Controller
+		if err := c.deserialize(v); err != nil {
+			warn(err)
+		} else {
+			cc.Controllers = append(cc.Controllers, &c)
+		}
+	}
+
+	for _, c := range cc.Controllers {
+		if c.DeviceID != nil && *c.DeviceID != 0 {
+			catalog.PutController(*c.DeviceID, c.OID)
+			catalog.PutV(c.OID, ControllerName, c.Name)
+			catalog.PutV(c.OID, ControllerDoor1, c.Doors[1])
+			catalog.PutV(c.OID, ControllerDoor2, c.Doors[2])
+			catalog.PutV(c.OID, ControllerDoor3, c.Doors[3])
+			catalog.PutV(c.OID, ControllerDoor4, c.Doors[4])
+		}
+	}
+
+	return nil
+}
+
+func (cc *ControllerSet) Save() (json.RawMessage, error) {
+	if cc == nil {
+		return nil, nil
+	}
+
+	if err := validate(*cc); err != nil {
+		return nil, err
+	}
+
+	if err := scrub(cc); err != nil {
+		return nil, err
+	}
+
+	serializable := []json.RawMessage{}
+	for _, c := range cc.Controllers {
+		if bytes, err := c.serialize(); err == nil && bytes != nil {
+			serializable = append(serializable, bytes)
+		}
+	}
+
+	return json.MarshalIndent(serializable, "", "  ")
 }
 
 func (cc *ControllerSet) AsObjects() []interface{} {
@@ -79,123 +148,6 @@ func (cc *ControllerSet) AsObjects() []interface{} {
 	}
 
 	return objects
-}
-
-func (cc *ControllerSet) Load(file string) error {
-	blob := struct {
-		Controllers []json.RawMessage `json:"controllers"`
-		LAN         json.RawMessage   `json:"LAN"`
-	}{
-		Controllers: []json.RawMessage{},
-	}
-
-	bytes, err := ioutil.ReadFile(file)
-	if err != nil {
-		return err
-	}
-
-	if err = json.Unmarshal(bytes, &blob); err != nil {
-		return err
-	}
-
-	cc.file = file
-	cc.Controllers = []*Controller{}
-
-	var lan LAN
-	if err := lan.deserialize(blob.LAN); err != nil {
-		warn(err)
-	} else {
-		cc.LAN = &lan
-	}
-
-	for _, v := range blob.Controllers {
-		var c Controller
-		if err := c.deserialize(v); err != nil {
-			warn(err)
-		} else {
-			cc.Controllers = append(cc.Controllers, &c)
-		}
-	}
-
-	if cc.LAN != nil {
-		catalog.PutInterface(cc.LAN.OID)
-	}
-
-	for _, c := range cc.Controllers {
-		if c.DeviceID != nil && *c.DeviceID != 0 {
-			catalog.PutController(*c.DeviceID, c.OID)
-			catalog.PutV(c.OID, ControllerName, c.Name)
-			catalog.PutV(c.OID, ControllerDoor1, c.Doors[1])
-			catalog.PutV(c.OID, ControllerDoor2, c.Doors[2])
-			catalog.PutV(c.OID, ControllerDoor3, c.Doors[3])
-			catalog.PutV(c.OID, ControllerDoor4, c.Doors[4])
-		}
-	}
-
-	return nil
-}
-
-func (cc *ControllerSet) Save() error {
-	if cc == nil {
-		return nil
-	}
-
-	if err := validate(*cc); err != nil {
-		return err
-	}
-
-	if err := scrub(cc); err != nil {
-		return err
-	}
-
-	if cc.file == "" {
-		return nil
-	}
-
-	serializable := struct {
-		Controllers []json.RawMessage `json:"controllers"`
-		LAN         json.RawMessage   `json:"LAN"`
-	}{
-		Controllers: []json.RawMessage{},
-	}
-
-	if cc.LAN != nil {
-		if bytes, err := cc.LAN.serialize(); err == nil && bytes != nil {
-			serializable.LAN = bytes
-		}
-	}
-
-	for _, c := range cc.Controllers {
-		if bytes, err := c.serialize(); err == nil && bytes != nil {
-			serializable.Controllers = append(serializable.Controllers, bytes)
-		}
-	}
-
-	b, err := json.MarshalIndent(serializable, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted-controllers.json")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(cc.file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), cc.file)
 }
 
 func (cc *ControllerSet) Sweep(retention time.Duration) {
@@ -296,7 +248,6 @@ loop:
 
 func (cc *ControllerSet) Clone() ControllerSet {
 	shadow := ControllerSet{
-		file:        cc.file,
 		Controllers: make([]*Controller, len(cc.Controllers)),
 		LAN:         &LAN{},
 	}

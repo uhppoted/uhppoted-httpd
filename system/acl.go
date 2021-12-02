@@ -14,14 +14,14 @@ func UpdateACL() {
 	if acl, err := permissions(); err != nil {
 		warn(err)
 	} else {
-		sys.controllers.UpdateACL(acl)
+		sys.controllers.controllers.UpdateACL(acl)
 	}
 }
 
 func CompareACL() {
 	if acl, err := permissions(); err != nil {
 		warn(err)
-	} else if err := sys.controllers.Compare(acl); err != nil {
+	} else if err := sys.controllers.controllers.Compare(acl); err != nil {
 		warn(err)
 	}
 }
@@ -35,7 +35,7 @@ func permissions() (acl.ACL, error) {
 
 	acl := make(acl.ACL)
 
-	for _, b := range sys.controllers.Controllers {
+	for _, b := range sys.controllers.controllers.Controllers {
 		if b.DeviceID != nil && *b.DeviceID > 0 {
 			acl[*b.DeviceID] = map[uint32]core.Card{}
 		}
