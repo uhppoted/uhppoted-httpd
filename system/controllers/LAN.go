@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -17,22 +16,14 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
+	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type LAN struct {
-	OID              catalog.OID        `json:"OID"`
-	Name             string             `json:"name"`
-	BindAddress      core.BindAddr      `json:"bind-address"`
-	BroadcastAddress core.BroadcastAddr `json:"broadcast-address"`
-	ListenAddress    core.ListenAddr    `json:"listen-address"`
-	Debug            bool               `json:"debug"`
-
-	created      types.DateTime
-	deleted      *types.DateTime
-	unconfigured bool
+	interfaces.LANx
 }
 
 type device struct {
@@ -88,16 +79,7 @@ func (l *LAN) AsRuleEntity() interface{} {
 func (l *LAN) clone() *LAN {
 	if l != nil {
 		lan := LAN{
-			OID:              l.OID,
-			Name:             l.Name,
-			BindAddress:      l.BindAddress,
-			BroadcastAddress: l.BroadcastAddress,
-			ListenAddress:    l.ListenAddress,
-			Debug:            l.Debug,
-
-			created:      l.created,
-			deleted:      l.deleted,
-			unconfigured: l.unconfigured,
+			l.LANx,
 		}
 
 		return &lan
@@ -166,7 +148,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 			}
 		}
 
-		if l.deleted == nil {
+		if l.Deleted == nil {
 			objects = append(objects, catalog.NewObject2(l.OID, LANStatus, l.status()))
 		}
 	}
@@ -593,57 +575,6 @@ func (l *LAN) synchDoors(controllers []*Controller) []catalog.Object {
 	}
 
 	return objects
-}
-
-func (l *LAN) serialize() ([]byte, error) {
-	if l == nil || l.deleted != nil || l.unconfigured {
-		return nil, nil
-	}
-
-	record := struct {
-		OID              catalog.OID        `json:"OID"`
-		Name             string             `json:"name,omitempty"`
-		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
-		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
-		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
-		Created          types.DateTime     `json:"created,omitempty"`
-	}{
-		OID:              l.OID,
-		Name:             l.Name,
-		BindAddress:      l.BindAddress,
-		BroadcastAddress: l.BroadcastAddress,
-		ListenAddress:    l.ListenAddress,
-		Created:          types.DateTime(l.created),
-	}
-
-	return json.MarshalIndent(record, "", "  ")
-}
-
-func (l *LAN) deserialize(bytes []byte) error {
-	created := types.DateTime(time.Now())
-	record := struct {
-		OID              catalog.OID        `json:"OID"`
-		Name             string             `json:"name,omitempty"`
-		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
-		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
-		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
-		Created          *types.DateTime    `json:"created,omitempty"`
-	}{
-		Created: &created,
-	}
-
-	if err := json.Unmarshal(bytes, &record); err != nil {
-		return err
-	}
-
-	l.OID = record.OID
-	l.Name = record.Name
-	l.BindAddress = record.BindAddress
-	l.BroadcastAddress = record.BroadcastAddress
-	l.ListenAddress = record.ListenAddress
-	l.created = *record.Created
-
-	return nil
 }
 
 func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {

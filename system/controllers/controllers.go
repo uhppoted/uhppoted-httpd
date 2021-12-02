@@ -63,20 +63,13 @@ func NewControllerSet() ControllerSet {
 
 func (cc *ControllerSet) Init(interfaces interfaces.Interfaces) {
 	for _, v := range interfaces.LANs {
-		cc.LAN = &LAN{
-			OID:              v.OID,
-			Name:             v.Name,
-			BindAddress:      v.BindAddress,
-			BroadcastAddress: v.BroadcastAddress,
-			ListenAddress:    v.ListenAddress,
-			Debug:            v.Debug,
+		if v != nil {
+			cc.LAN = &LAN{
+				*v,
+			}
 
-			created:      v.Created,
-			deleted:      v.Deleted,
-			unconfigured: v.Unconfigured,
+			break
 		}
-
-		break
 	}
 }
 
