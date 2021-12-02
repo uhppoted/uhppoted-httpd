@@ -34,7 +34,7 @@ type Callback interface {
 
 const BLANK = "'blank'"
 
-var guard sync.Mutex
+var guard sync.RWMutex
 
 var windows = struct {
 	deviceOk        time.Duration
@@ -247,6 +247,9 @@ loop:
 }
 
 func (cc *ControllerSet) Clone() ControllerSet {
+	guard.RLock()
+	defer guard.RUnlock()
+
 	shadow := ControllerSet{
 		Controllers: make([]*Controller, len(cc.Controllers)),
 		LAN:         &LAN{},
@@ -262,9 +265,9 @@ func (cc *ControllerSet) Clone() ControllerSet {
 }
 
 func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.Door) error {
-	guard.Lock()
+	guard.RLock()
 
-	defer guard.Unlock()
+	defer guard.RUnlock()
 
 	conf := config.NewConfig()
 	if err := conf.Load(file); err != nil {

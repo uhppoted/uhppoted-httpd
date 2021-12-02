@@ -28,22 +28,21 @@
 - [ ] Rethink mark/sweep to not use a counter
       - with the way db.js works now, returning a 'deleted' field will recreate an
         object that has been swept
+      - i.e. AsObjects should only return deleted field for deleted objects
+      - only needs to sweep objects that have been deleted and swept by remote
       - mark/sweep can be called multiple times for the same update
       - time based (?)
-      - make update ID base (?)
-      - use tag (?)
 
 - [ ] Genericize load/save
       - [ ] MAYBE: embed controllers etc. in sys structs
-      - [ ] Read file in system and pass in json.RawMessage to Load(...)
-            - [ ] Move file to system
-                  - [ ] interfaces
+      - [x] Read file in system and pass in json.RawMessage to Load(...)
+            - [x] Move file to system
+                  - [x] interfaces
                   - [x] controllers
-            - [ ] Restructure to support e.g. DB as an alternative
       - [ ] Save file in system and get json.RawMessage from Save(...)
             - [ ] interfaces
             - [x] controllers
-      - [ ] (?) Groups, etc probably don't need to be structs anymore => typedef arrays
+      - [ ] MAYBE: groups, etc probably don't need to be structs anymore => typedef arrays
 
 - [ ] 'users' page
 - [ ] Set initial user + password
@@ -58,11 +57,11 @@
 
 #### OID
   - [ ] Store all values in catalog and 'realize' local copies from cache
-  - [ ] Check RWLock for clone to make shadow
-        - [ ] controllers
-        - [ ] doors
-        - [ ] cards
-        - [ ] groups
+  - [x] Check RWLock for clone to make shadow
+        - [x] controllers
+        - [x] doors
+        - [x] cards
+        - [x] groups
 
 #### Events
   - [ ] Replace LAN callback with something more idiomatic

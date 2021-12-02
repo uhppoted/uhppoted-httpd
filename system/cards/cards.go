@@ -78,6 +78,9 @@ func (cc *Cards) Save() (json.RawMessage, error) {
 }
 
 func (cc *Cards) Clone() Cards {
+	guard.RLock()
+	defer guard.RUnlock()
+
 	shadow := Cards{
 		Cards: map[catalog.OID]*Card{},
 	}

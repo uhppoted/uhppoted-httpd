@@ -80,6 +80,9 @@ func (gg Groups) Print() {
 }
 
 func (gg *Groups) Clone() Groups {
+	guard.RLock()
+	defer guard.RUnlock()
+
 	shadow := Groups{
 		Groups: map[catalog.OID]Group{},
 	}

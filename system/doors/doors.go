@@ -183,6 +183,9 @@ func (dd *Doors) add(auth auth.OpAuth, d Door) (*Door, error) {
 }
 
 func (dd *Doors) Clone() Doors {
+	guard.RLock()
+	defer guard.RUnlock()
+
 	shadow := Doors{
 		Doors: map[catalog.OID]Door{},
 		file:  dd.file,
