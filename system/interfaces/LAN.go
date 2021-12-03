@@ -81,7 +81,7 @@ func (l *LANx) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (l *LANx) Set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (l *LANx) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	objects := []catalog.Object{}
 
 	f := func(field string, value interface{}) error {
@@ -98,7 +98,14 @@ func (l *LANx) Set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
-				l.log(auth, "update", l.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(l.Name, BLANK), stringify(value, BLANK)), dbc)
+				l.log(auth,
+					"update",
+					l.OID,
+					"name",
+					fmt.Sprintf("Updated name from %v to %v", stringify(l.Name, BLANK), stringify(value, BLANK)),
+					stringify(l.Name, BLANK),
+					stringify(value, BLANK),
+					dbc)
 				l.Name = value
 				objects = append(objects, catalog.NewObject2(l.OID, LANName, l.Name))
 			}
@@ -109,7 +116,14 @@ func (l *LANx) Set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			} else if err := f("bind", addr); err != nil {
 				return nil, err
 			} else {
-				l.log(auth, "update", l.OID, "bind", fmt.Sprintf("Updated bind address from %v to %v", stringify(l.BindAddress, BLANK), stringify(value, BLANK)), dbc)
+				l.log(auth,
+					"update",
+					l.OID,
+					"bind",
+					fmt.Sprintf("Updated bind address from %v to %v", stringify(l.BindAddress, BLANK), stringify(value, BLANK)),
+					stringify(l.BindAddress, BLANK),
+					stringify(value, BLANK),
+					dbc)
 				l.BindAddress = *addr
 				objects = append(objects, catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress))
 			}
@@ -120,7 +134,14 @@ func (l *LANx) Set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			} else if err := f("broadcast", addr); err != nil {
 				return nil, err
 			} else {
-				l.log(auth, "update", l.OID, "broadcast", fmt.Sprintf("Updated broadcast address from %v to %v", stringify(l.BroadcastAddress, BLANK), stringify(value, BLANK)), dbc)
+				l.log(auth,
+					"update",
+					l.OID,
+					"broadcast",
+					fmt.Sprintf("Updated broadcast address from %v to %v", stringify(l.BroadcastAddress, BLANK), stringify(value, BLANK)),
+					stringify(l.BroadcastAddress, BLANK),
+					stringify(value, BLANK),
+					dbc)
 				l.BroadcastAddress = *addr
 				objects = append(objects, catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress))
 			}
@@ -131,7 +152,14 @@ func (l *LANx) Set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			} else if err = f("listen", addr); err != nil {
 				return nil, err
 			} else {
-				l.log(auth, "update", l.OID, "listen", fmt.Sprintf("Updated listen address from %v to %v", stringify(l.ListenAddress, BLANK), stringify(value, BLANK)), dbc)
+				l.log(auth,
+					"update",
+					l.OID,
+					"listen",
+					fmt.Sprintf("Updated listen address from %v to %v", stringify(l.ListenAddress, BLANK), stringify(value, BLANK)),
+					stringify(l.ListenAddress, BLANK),
+					stringify(value, BLANK),
+					dbc)
 				l.ListenAddress = *addr
 				objects = append(objects, catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress))
 			}
@@ -213,7 +241,31 @@ func (l *LANx) deserialize(bytes []byte) error {
 	return nil
 }
 
-func (l *LANx) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
+// func (l *LANx) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
+// 	uid := ""
+// 	if auth != nil {
+// 		uid = auth.UID()
+// 	}
+//
+// 	record := audit.AuditRecord{
+// 		UID:       uid,
+// 		OID:       OID,
+// 		Component: "interface",
+// 		Operation: operation,
+// 		Details: audit.Details{
+// 			ID:          "LAN",
+// 			Name:        stringify(l.Name, ""),
+// 			Field:       field,
+// 			Description: description,
+// 		},
+// 	}
+//
+// 	if dbc != nil {
+// 		dbc.Write(record)
+// 	}
+// }
+
+func (l *LANx) log(auth auth.OpAuth, operation string, OID catalog.OID, field, description, before, after string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()
@@ -222,13 +274,15 @@ func (l *LANx) log(auth auth.OpAuth, operation string, OID catalog.OID, field st
 	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       OID,
-		Component: "interface",
+		Component: "LAN",
 		Operation: operation,
 		Details: audit.Details{
 			ID:          "LAN",
 			Name:        stringify(l.Name, ""),
 			Field:       field,
 			Description: description,
+			Before:      before,
+			After:       after,
 		},
 	}
 

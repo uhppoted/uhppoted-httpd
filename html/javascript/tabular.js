@@ -26,7 +26,7 @@ const pages = {
   },
 
   controllers: {
-    url: '/system',
+    url: '/controllers',
     refreshed: system.refreshed
   },
 
@@ -189,7 +189,7 @@ export function onCommitAll (tag, event, table) {
 
   switch (tag) {
     case 'controllers':
-      commit(pages.system, ...list)
+      commit(pages.controllers, ...list)
       break
 
     case 'doors':

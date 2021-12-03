@@ -103,7 +103,7 @@ export function commit (element) {
     unmark('modified', e, flag)
   })
 
-  post('objects', records, reset, cleanup)
+  post('interfaces', records, reset, cleanup)
 }
 
 function modified (oid) {
@@ -198,7 +198,7 @@ function percolate (oid) {
 function post (tag, records, reset, cleanup) {
   busy()
 
-  postAsJSON('/system', { [tag]: records })
+  postAsJSON('/interfaces', { objects: records })
     .then(response => {
       if (response.redirected) {
         window.location = response.url

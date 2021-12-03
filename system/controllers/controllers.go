@@ -128,9 +128,6 @@ func (cc *ControllerSet) Save() (json.RawMessage, error) {
 
 func (cc *ControllerSet) AsObjects() []interface{} {
 	objects := []interface{}{}
-	lan := cc.LAN.AsObjects()
-
-	objects = append(objects, lan...)
 
 	for _, c := range cc.Controllers {
 		if c.IsValid() {
@@ -167,12 +164,6 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 		return nil, nil
 	}
 
-	// ... interface
-	if cc.LAN != nil && cc.LAN.OID.Contains(oid) {
-		return cc.LAN.set(auth, oid, value, dbc)
-	}
-
-	// ... controllers
 	for _, c := range cc.Controllers {
 		if c != nil && c.OID.Contains(oid) {
 			return c.set(auth, oid, value, dbc)
@@ -248,11 +239,12 @@ func (cc *ControllerSet) Clone() ControllerSet {
 		LAN:         &LAN{},
 	}
 
+	lan := cc.LAN.clone()
+	shadow.LAN = &lan
+
 	for k, v := range cc.Controllers {
 		shadow.Controllers[k] = v.clone()
 	}
-
-	shadow.LAN = cc.LAN.clone()
 
 	return shadow
 }

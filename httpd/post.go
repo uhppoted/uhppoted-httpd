@@ -7,6 +7,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd/controllers"
 	"github.com/uhppoted/uhppoted-httpd/httpd/doors"
 	"github.com/uhppoted/uhppoted-httpd/httpd/groups"
+	"github.com/uhppoted/uhppoted-httpd/httpd/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 )
 
@@ -33,7 +34,16 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		users.Password(w, r, d.timeout, d.auth)
 		return
 
-	case "/system":
+	case "/interfaces":
+		if auth, err := NewAuthorizator(uid, role, "system", d.grule.system); err != nil {
+			warn(err)
+			http.Error(w, "internal system error", http.StatusInternalServerError)
+		} else {
+			interfaces.Post(w, r, d.timeout, auth)
+		}
+		return
+
+	case "/controllers":
 		if auth, err := NewAuthorizator(uid, role, "system", d.grule.system); err != nil {
 			warn(err)
 			http.Error(w, "internal system error", http.StatusInternalServerError)

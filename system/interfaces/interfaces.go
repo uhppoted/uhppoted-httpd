@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"sync"
 
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 )
 
 type Interfaces struct {
@@ -14,6 +17,8 @@ type Interfaces struct {
 }
 
 const BLANK = "'blank'"
+
+var guard sync.RWMutex
 
 func NewInterfaces() Interfaces {
 	return Interfaces{
@@ -64,6 +69,69 @@ func (ii Interfaces) Save() (json.RawMessage, error) {
 	}
 
 	return json.MarshalIndent(serializable, "", "  ")
+}
+
+func (ii *Interfaces) Clone() Interfaces {
+	guard.RLock()
+	defer guard.RUnlock()
+
+	shadow := Interfaces{
+		LANs: map[catalog.OID]*LANx{},
+	}
+
+	for k, v := range ii.LANs {
+		clone := v.Clone()
+		shadow.LANs[k] = &clone
+	}
+
+	return shadow
+}
+
+func (ii *Interfaces) AsObjects() []interface{} {
+	objects := []interface{}{}
+
+	for _, l := range ii.LANs {
+		if l.IsValid() {
+			if v := l.AsObjects(); v != nil {
+				objects = append(objects, v...)
+			}
+		}
+	}
+
+	return objects
+}
+
+func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	if ii == nil {
+		return nil, nil
+	}
+
+	for _, l := range ii.LANs {
+		if l != nil && l.OID.Contains(oid) {
+			return l.set(auth, oid, value, dbc)
+		}
+	}
+
+	objects := []catalog.Object{}
+
+	if oid == "<new>" {
+		if l, err := ii.add(auth, LANx{}); err != nil {
+			return nil, err
+		} else if l == nil {
+			return nil, fmt.Errorf("Failed to add 'new' interface")
+		} else {
+			l.log(auth, "add", l.OID, "interface", fmt.Sprintf("Added 'new' interface"), "", "", dbc)
+			objects = append(objects, catalog.NewObject(l.OID, "new"))
+			objects = append(objects, catalog.NewObject2(l.OID, LANStatus, "new"))
+			objects = append(objects, catalog.NewObject2(l.OID, LANCreated, l.created))
+		}
+	}
+
+	return objects, nil
+}
+
+func (ii *Interfaces) add(auth auth.OpAuth, l LANx) (*LANx, error) {
+	return nil, fmt.Errorf("NOT SUPPORTED")
 }
 
 func validate(ii Interfaces) error {

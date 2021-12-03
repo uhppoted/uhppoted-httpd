@@ -5,7 +5,8 @@ import (
 )
 
 const LANStatus = catalog.Status
-
+const LANCreated = catalog.Created
+const LANDeleted = catalog.Deleted
 const LANType = catalog.Type
 
 const LANName = catalog.InterfaceName

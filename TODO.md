@@ -4,10 +4,15 @@
       - Don't check login cookie except for login
 
 - [ ] Separate LAN and controllers
-      - [ ] POST to `/interfaces` 
+      - [x] POST to `/interfaces` 
+      - [ ] Update ControllerSet after LAN edit
+      - [x] POST controllers to `/controllers` 
+      - [ ] CommitAll for controllers isn't return correct doors 
+      - [ ] (?) GET from /interfaces and /controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-      - [ ] Implement `UpdateObjects` for `interfaces`
-      - [ ] Implement `AsObjects` for `interfaces`
+      - [x] Implement `UpdateObjects` for `interfaces`
+      - [x] Implement `AsObjects` for `interfaces`
+      - [ ] Commonalise httpd handlers
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
@@ -28,15 +33,16 @@
       - with the way db.js works now, returning a 'deleted' field will recreate an
         object that has been swept
       - i.e. AsObjects should only return deleted field for deleted objects
-      - only needs to sweep objects that have been deleted and swept by remote
+      - only needs to sweep objects that have been deleted and swept by remote i.e. not updated
+        so ... updated timestamp??
       - mark/sweep can be called multiple times for the same update
       - time based (?)
       - fail with error on update deleted object
         e.g. deleted on one browser, edit on another without refresh in between
 
 - [ ] Genericize load/save
-      - [ ] Save file in system and get json.RawMessage from Save(...)
-            - [ ] interfaces
+      - [x] Save file in system and get json.RawMessage from Save(...)
+            - [x] interfaces
       - [ ] Embed controllers etc. in sys structs
       - [ ] Put subsystems into list for iterating
       - [ ] MAYBE: groups, etc probably don't need to be structs anymore => typedef arrays

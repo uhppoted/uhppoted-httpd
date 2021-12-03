@@ -44,6 +44,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	sys.updated()
 
 	list := squoosh(dbc.Objects())
+
 	return struct {
 		Objects []catalog.Object `json:"objects,omitempty"`
 	}{

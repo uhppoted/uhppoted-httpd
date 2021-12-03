@@ -46,20 +46,10 @@ func (l *LAN) String() string {
 	return fmt.Sprintf("%v", l.Name)
 }
 
-func (l *LAN) clone() *LAN {
-	if l != nil {
-		lan := LAN{
-			l.LANx.Clone(),
-		}
-
-		return &lan
+func (l LAN) clone() LAN {
+	return LAN{
+		l.LANx,
 	}
-
-	return nil
-}
-
-func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	return l.Set(auth, oid, value, dbc)
 }
 
 func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {

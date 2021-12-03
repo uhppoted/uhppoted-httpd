@@ -264,6 +264,7 @@ func System() interface{} {
 	defer sys.RUnlock()
 
 	objects := []interface{}{}
+	objects = append(objects, sys.interfaces.interfaces.AsObjects()...)
 	objects = append(objects, sys.controllers.controllers.AsObjects()...)
 	objects = append(objects, sys.doors.doors.AsObjects()...)
 	objects = append(objects, sys.cards.cards.AsObjects()...)
