@@ -130,6 +130,10 @@ func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value strin
 	return objects, nil
 }
 
+func (ii Interfaces) Validate() error {
+	return validate(ii)
+}
+
 func (ii *Interfaces) add(auth auth.OpAuth, l LANx) (*LANx, error) {
 	return nil, fmt.Errorf("NOT SUPPORTED")
 }

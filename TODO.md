@@ -5,11 +5,11 @@
 
 - [ ] Separate LAN and controllers
       - [x] POST to `/interfaces` 
-      - [ ] Interfaces.Validate
+      - [x] Interfaces.Validate
       - [ ] Update ControllerSet after LAN edit
       - [x] POST controllers to `/controllers` 
       - [x] CommitAll for controllers isn't return correct doors 
-      - [ ] (?) GET from /interfaces and /controllers
+      - [ ] GET from /interfaces and /controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
       - [x] Implement `UpdateObjects` for `interfaces`
       - [x] Implement `AsObjects` for `interfaces`

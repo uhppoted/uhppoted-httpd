@@ -4,6 +4,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func UpdateInterfaces(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
@@ -27,9 +28,9 @@ func UpdateInterfaces(m map[string]interface{}, auth auth.OpAuth) (interface{}, 
 		}
 	}
 
-	//	if err := shadow.Validate(); err != nil {
-	// 		return types.BadRequest(err, err)
-	//	}
+	if err := shadow.Validate(); err != nil {
+		return nil, types.BadRequest(err, err)
+	}
 
 	if err := save(sys.interfaces.file, sys.interfaces.tag, &shadow); err != nil {
 		return nil, err
