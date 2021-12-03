@@ -27,7 +27,7 @@ type LANx struct {
 	unconfigured bool
 }
 
-var created = time.Now()
+var created = types.DateTimeNow()
 
 func (l LANx) String() string {
 	return fmt.Sprintf("%v", l.Name)
@@ -186,7 +186,6 @@ func (l LANx) serialize() ([]byte, error) {
 
 func (l *LANx) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
-	datetime := types.DateTime(created)
 
 	record := struct {
 		OID              catalog.OID        `json:"OID"`
@@ -194,9 +193,9 @@ func (l *LANx) deserialize(bytes []byte) error {
 		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
 		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
-		Created          *types.DateTime    `json:"created,omitempty"`
+		Created          types.DateTime     `json:"created,omitempty"`
 	}{
-		Created: &datetime,
+		Created: created,
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -208,7 +207,7 @@ func (l *LANx) deserialize(bytes []byte) error {
 	l.BindAddress = record.BindAddress
 	l.BroadcastAddress = record.BroadcastAddress
 	l.ListenAddress = record.ListenAddress
-	l.created = *record.Created
+	l.created = record.Created
 	l.unconfigured = false
 
 	return nil

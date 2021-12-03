@@ -28,7 +28,7 @@ type Card struct {
 
 const BLANK = "'blank'"
 
-var created = time.Now()
+var created = types.DateTimeNow()
 
 func (c Card) String() string {
 	name := "-"
@@ -410,16 +410,16 @@ func (c *Card) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     catalog.OID   `json:"OID"`
-		Name    string        `json:"name,omitempty"`
-		Card    uint32        `json:"card,omitempty"`
-		From    *types.Date   `json:"from,omitempty"`
-		To      *types.Date   `json:"to,omitempty"`
-		Groups  []catalog.OID `json:"groups"`
-		Created string        `json:"created"`
+		OID     catalog.OID    `json:"OID"`
+		Name    string         `json:"name,omitempty"`
+		Card    uint32         `json:"card,omitempty"`
+		From    *types.Date    `json:"from,omitempty"`
+		To      *types.Date    `json:"to,omitempty"`
+		Groups  []catalog.OID  `json:"groups"`
+		Created types.DateTime `json:"created"`
 	}{
 		Groups:  []catalog.OID{},
-		Created: created.Format("2006-01-02 15:04:05"),
+		Created: created,
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -430,6 +430,7 @@ func (c *Card) deserialize(bytes []byte) error {
 	c.From = record.From
 	c.To = record.To
 	c.Groups = map[catalog.OID]bool{}
+	c.created = record.Created
 
 	if record.Name != "" {
 		c.Name = (*types.Name)(&record.Name)
@@ -441,10 +442,6 @@ func (c *Card) deserialize(bytes []byte) error {
 
 	for _, g := range record.Groups {
 		c.Groups[g] = true
-	}
-
-	if t, err := time.Parse("2006-01-02 15:04:05", record.Created); err == nil {
-		c.created = types.DateTime(t)
 	}
 
 	return nil

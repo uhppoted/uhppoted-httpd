@@ -53,3 +53,15 @@ func TestDateTimeUnmarshalJSON(t *testing.T) {
 		}
 	}
 }
+
+func TestDateTimeAdd(t *testing.T) {
+	datetime := DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local))
+	expected := DateTime(time.Date(2021, time.February, 28, 15, 34, 56, 789, time.Local))
+
+	datetime = datetime.Add(3 * time.Hour)
+
+	if datetime != expected {
+		t.Errorf("Incorrect date/time - expected:%v, got:%v", expected, datetime)
+	}
+
+}

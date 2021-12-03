@@ -25,7 +25,7 @@ type Group struct {
 
 const BLANK = "'blank'"
 
-var created = time.Now()
+var created = types.DateTimeNow()
 
 func (g Group) String() string {
 	return fmt.Sprintf("%v", g.Name)
@@ -203,15 +203,14 @@ func (g Group) serialize() ([]byte, error) {
 
 func (g *Group) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
-	datetime := types.DateTime(created)
 
 	record := struct {
-		OID     string          `json:"OID"`
-		Name    string          `json:"name,omitempty"`
-		Doors   []catalog.OID   `json:"doors"`
-		Created *types.DateTime `json:"created,omitempty"`
+		OID     string         `json:"OID"`
+		Name    string         `json:"name,omitempty"`
+		Doors   []catalog.OID  `json:"doors"`
+		Created types.DateTime `json:"created,omitempty"`
 	}{
-		Created: &datetime,
+		Created: created,
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -221,7 +220,7 @@ func (g *Group) deserialize(bytes []byte) error {
 	g.OID = catalog.OID(record.OID)
 	g.Name = record.Name
 	g.Doors = map[catalog.OID]bool{}
-	g.created = *record.Created
+	g.created = record.Created
 
 	for _, d := range record.Doors {
 		g.Doors[catalog.OID(d)] = true

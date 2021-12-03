@@ -4,27 +4,22 @@
       - Don't check login cookie except for login
 
 - [ ] Separate LAN and controllers
-      - [x] Remove LAN serialization from ControllerSet
       - [ ] POST to `/interfaces` 
       - [ ] Move LAN device stuff to `interfaces` subsystem
       - [ ] Implement `UpdateObjects` for `interfaces`
       - [ ] Implement `AsObjects` for `interfaces`
-      - [x] Rehide LANx created
-      - [x] Rehide LANx deleted
-      - [x] Rehide LANx unconfigured
-      - [x] Rehide LANx status()
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
       - [ ] GetV => GetBool, GetInt, etc
+      - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
 
 - [ ] Fix DateTime mess
-      - [x] Change String() to not take pointer receiver
       - [ ] MAYBE: treat empty DateTime as the null value
       - [ ] MAYBE: change Format(), etc to not take pointer receiver
       - [ ] MAYBE: define FormatDateTime() method that *does* take pointer
       - [ ] Refactor DateTime out to use core implementation only
-      - [ ] Implement Add() for the repetitive created + 1 thing
+      - [x] Implement Add() for the repetitive created + 1 thing
       - [ ] Implement Ptr() for the repetitive assign to variable to take address thing
 
 ### IN PROGRESS
@@ -36,16 +31,14 @@
       - only needs to sweep objects that have been deleted and swept by remote
       - mark/sweep can be called multiple times for the same update
       - time based (?)
+      - fail with error on update deleted object
+        e.g. deleted on one browser, edit on another without refresh in between
 
 - [ ] Genericize load/save
-      - [ ] MAYBE: embed controllers etc. in sys structs
-      - [x] Read file in system and pass in json.RawMessage to Load(...)
-            - [x] Move file to system
-                  - [x] interfaces
-                  - [x] controllers
       - [ ] Save file in system and get json.RawMessage from Save(...)
             - [ ] interfaces
-            - [x] controllers
+      - [ ] Embed controllers etc. in sys structs
+      - [ ] Put subsystems into list for iterating
       - [ ] MAYBE: groups, etc probably don't need to be structs anymore => typedef arrays
 
 - [ ] 'users' page
@@ -58,14 +51,6 @@
         - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
   - [ ] 'door' select chooses first item if list changes while select is open
-
-#### OID
-  - [ ] Store all values in catalog and 'realize' local copies from cache
-  - [x] Check RWLock for clone to make shadow
-        - [x] controllers
-        - [x] doors
-        - [x] cards
-        - [x] groups
 
 #### Events
   - [ ] Replace LAN callback with something more idiomatic

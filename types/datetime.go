@@ -9,6 +9,10 @@ import (
 
 type DateTime core.DateTime
 
+func DateTimeNow() DateTime {
+	return DateTime(time.Now())
+}
+
 func (d *DateTime) Copy() *DateTime {
 	if d == nil {
 		return nil
@@ -29,6 +33,10 @@ func (d *DateTime) IsValid() bool {
 
 func (d *DateTime) Before(t time.Time) bool {
 	return (*time.Time)(d).Before(t)
+}
+
+func (d DateTime) Add(dt time.Duration) DateTime {
+	return DateTime(time.Time(d).Add(dt))
 }
 
 func (d DateTime) MarshalJSON() ([]byte, error) {
