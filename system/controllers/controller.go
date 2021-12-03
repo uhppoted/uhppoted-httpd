@@ -435,7 +435,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.Doors[1] = catalog.OID(value)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ".7", c.Doors[1]))
+				objects = append(objects, catalog.NewObject2(c.OID, ControllerDoor1, c.Doors[1]))
 			}
 
 		case c.OID.Append(ControllerDoor2):
@@ -455,7 +455,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.Doors[2] = catalog.OID(value)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ".8", c.Doors[2]))
+				objects = append(objects, catalog.NewObject2(c.OID, ControllerDoor2, c.Doors[2]))
 			}
 
 		case c.OID.Append(ControllerDoor3):
@@ -475,7 +475,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.Doors[3] = catalog.OID(value)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ".9", c.Doors[3]))
+				objects = append(objects, catalog.NewObject2(c.OID, ControllerDoor3, c.Doors[3]))
 			}
 
 		case c.OID.Append(ControllerDoor4):
@@ -495,7 +495,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.Doors[4] = catalog.OID(value)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ".10", c.Doors[4]))
+				objects = append(objects, catalog.NewObject2(c.OID, ControllerDoor4, c.Doors[4]))
 			}
 		}
 
