@@ -58,8 +58,7 @@ export const DB = {
   },
 
   refreshed: function (tag) {
-    mark(tag)
-    sweep(tag)
+    sweep()
   },
 
   events: function () {
@@ -126,11 +125,13 @@ function interfaces (o) {
       broadcast: '',
       listen: '',
       status: '',
-      mark: 0
+      touched: new Date()
     })
   }
 
   const v = DB.interfaces.get(base)
+
+  v.touched = new Date()
 
   switch (oid) {
     case `${base}${schema.interfaces.status}`:
@@ -182,11 +183,13 @@ function controllers (o) {
       events: { events: '', status: 'unknown' },
       doors: { 1: '', 2: '', 3: '', 4: '' },
       status: o.value,
-      mark: 0
+      touched: new Date()
     })
   }
 
   const v = DB.controllers.get(base)
+
+  v.touched = new Date()
 
   switch (oid) {
     case `${base}${schema.controllers.status}`:
@@ -286,11 +289,13 @@ function doors (o) {
       delay: { delay: '', configured: '', status: 'unknown', err: '' },
       mode: { mode: '', configured: '', status: 'unknown', err: '' },
       status: o.value,
-      mark: 0
+      touched: new Date()
     })
   }
 
   const v = DB.doors.get(base)
+
+  v.touched = new Date()
 
   switch (oid) {
     case `${base}${schema.doors.status}`:
@@ -364,11 +369,13 @@ function cards (o) {
       to: '',
       groups: new Map(),
       status: o.value,
-      mark: 0
+      touched: new Date()
     })
   }
 
   const v = DB.cards.get(base)
+
+  v.touched = new Date()
 
   switch (oid) {
     case `${base}${schema.cards.status}`:
@@ -439,11 +446,13 @@ function groups (o) {
       name: '',
       doors: new Map(),
       status: o.value,
-      mark: 0
+      touched: new Date()
     })
   }
 
   const v = DB.groups.get(base)
+
+  v.touched = new Date()
 
   switch (oid) {
     case `${base}${schema.groups.status}`:
@@ -520,11 +529,13 @@ function events (o) {
       deviceName: '',
       doorName: '',
       cardName: '',
-      mark: 0
+      touched: new Date()
     })
   }
 
   const v = DB.tables.events.events.get(base)
+
+  v.touched = new Date()
 
   switch (oid) {
     case `${base}${schema.events.timestamp}`:
@@ -610,11 +621,13 @@ function logs (o) {
         field: ''
       },
       details: '',
-      mark: 0
+      touched: new Date()
     })
   }
 
   const v = DB.tables.logs.logs.get(base)
+
+  v.touched = new Date()
 
   switch (oid) {
     case `${base}${schema.logs.timestamp}`:
@@ -647,67 +660,18 @@ function logs (o) {
   }
 }
 
-function mark (tag) {
-  DB.controllers.forEach(v => {
-    v.mark += 1
-  })
+function sweep () {
+  const tables = [DB.interfaces, DB.controllers, DB.doors, DB.cards, DB.groups]
+  const now = new Date()
+  const sweepable = 30 * 60 * 1000 // 30 minutes (?)
 
-  DB.doors.forEach(v => {
-    v.mark += 1
-  })
-
-  DB.cards.forEach(v => {
-    v.mark += 1
-  })
-
-  DB.groups.forEach(v => {
-    v.mark += 1
-  })
-
-  DB.events().forEach(v => {
-    v.mark += 1
-  })
-
-  DB.logs().forEach(v => {
-    v.mark += 1
-  })
-}
-
-function sweep (tag) {
-  DB.controllers.forEach((v, k) => {
-    if (v.mark >= 25 && alive(v)) {
-      DB.controllers.delete(k)
-    }
-  })
-
-  DB.doors.forEach((v, k) => {
-    if (v.mark >= 25 && alive(v)) {
-      DB.doors.delete(k)
-    }
-  })
-
-  DB.cards.forEach((v, k) => {
-    if (v.mark >= 25 && alive(v)) {
-      DB.doors.delete(k)
-    }
-  })
-
-  DB.groups.forEach((v, k) => {
-    if (v.mark >= 25 && alive(v)) {
-      DB.groups.delete(k)
-    }
-  })
-
-  DB.events().forEach((v, k) => {
-    if (v.mark >= 25 && alive(v)) {
-      DB.events().delete(k)
-    }
-  })
-
-  DB.logs().forEach((v, k) => {
-    if (v.mark >= 25 && alive(v)) {
-      DB.logs().delete(k)
-    }
+  tables.forEach(t => {
+    t.forEach((v, k) => {
+      const dt = now - v.touched
+      if (!Number.isNaN(dt) && dt > sweepable && !alive(v)) {
+        t.delete(k)
+      }
+    })
   })
 }
 

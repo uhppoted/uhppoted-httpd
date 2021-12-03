@@ -29,18 +29,32 @@
       - [x] Implement Add() for the repetitive created + 1 thing
       - [ ] Implement Ptr() for the repetitive assign to variable to take address thing
 
+- [ ] Recurring HTML error
+```
+Uncaught ReferenceError: onMenu is not defined
+    at HTMLDivElement.onmouseleave (system.html:17)
+onmouseleave @ system.html:17
+```
+
 ### IN PROGRESS
 
-- [ ] Rethink mark/sweep to not use a counter
-      - with the way db.js works now, returning a 'deleted' field will recreate an
-        object that has been swept
-      - i.e. AsObjects should only return deleted field for deleted objects
-      - only needs to sweep objects that have been deleted and swept by remote i.e. not updated
-        so ... updated timestamp??
-      - mark/sweep can be called multiple times for the same update
-      - time based (?)
-      - fail with error on update deleted object
-        e.g. deleted on one browser, edit on another without refresh in between
+- [ ] Rethink mark/sweep: with the way db.js works now, returning a 'deleted' field will
+      recreate an object that has been swept and it's full of problems anyway
+      - [ ] AsObjects should only return deleted field for deleted objects
+            - [ ] interfaces
+            - [ ] controllers
+            - [ ] doors
+            - [ ] cards
+            - [ ] groups
+            - [ ] events
+            - [ ] logs
+      - [x] object 'touched' field
+      - [x] Remove 'mark'
+      - [x] JS: sweep objects that have been deleted and not updated in a while
+            - [ ] Verify it's working as expected
+      - [ ] Sweep with DB timer rather than on refreshed (and remove 'DB.refreshed')
+      - [ ] Fail with error on update deleted object
+            e.g. deleted on one browser, edit on another without refresh in between
 
 - [ ] Genericize load/save
       - [x] Save file in system and get json.RawMessage from Save(...)
