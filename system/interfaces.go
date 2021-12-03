@@ -38,6 +38,7 @@ func UpdateInterfaces(m map[string]interface{}, auth auth.OpAuth) (interface{}, 
 
 	dbc.Commit()
 	sys.interfaces.interfaces = shadow
+	sys.controllers.controllers.Init(sys.interfaces.interfaces)
 	sys.updated()
 
 	list := squoosh(dbc.Objects())

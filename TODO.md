@@ -6,7 +6,7 @@
 - [ ] Separate LAN and controllers
       - [x] POST to `/interfaces` 
       - [x] Interfaces.Validate
-      - [ ] Update ControllerSet after LAN edit
+      - [x] Update ControllerSet after LAN edit
       - [x] POST controllers to `/controllers` 
       - [x] CommitAll for controllers isn't return correct doors 
       - [ ] GET from /interfaces and /controllers
@@ -14,6 +14,7 @@
       - [x] Implement `UpdateObjects` for `interfaces`
       - [x] Implement `AsObjects` for `interfaces`
       - [ ] Commonalise httpd handlers
+      - [ ] Rework 'update controllers after LAN edit'
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
