@@ -51,7 +51,7 @@ var created = types.DateTimeNow()
 
 func (c *Controller) Name() string {
 	if c != nil {
-		return fmt.Sprintf("%v", c.Name)
+		return c.name
 	}
 
 	return ""
