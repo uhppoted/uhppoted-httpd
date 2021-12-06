@@ -263,15 +263,11 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 	for _, c := range controllers {
 		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
 			device := config.Device{
-				Name:     "",
+				Name:     c.name,
 				Address:  nil,
 				Doors:    []string{"", "", "", ""},
 				TimeZone: "",
 				Rollover: 100000,
-			}
-
-			if c.name != nil {
-				device.Name = fmt.Sprintf("%v", c.name)
 			}
 
 			if c.IP != nil {

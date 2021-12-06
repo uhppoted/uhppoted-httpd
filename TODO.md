@@ -75,10 +75,8 @@ onmouseleave @ system.html:17
 
 #### Cards
   - [ ] Weirdness around card add/delete
-        - [ ] Handle edits to 'new' card that don't e.g. update the name or number
-              - Return error
-              - Make sure card name/number edits are sent before anything else
-                for multiple edits
+        - [ ] Return error for edits to card without name or number (e.g.'new' card)
+        - [ ] What happens if other edits happen before card name/number is updated (e.g. for delete/add)?
 
   - [ ] Fix bottom right of scrollbar
         - [ ] Scrollbar 'goes funny' if -webkit styles are modified

@@ -19,12 +19,12 @@ import (
 )
 
 type Controller struct {
-	OID      catalog.OID           `json:"OID"`
-	name     *types.Name           `json:"name,omitempty"`
-	deviceID *uint32               `json:"device-id,omitempty"`
-	IP       *core.Address         `json:"address,omitempty"`
-	Doors    map[uint8]catalog.OID `json:"doors"`
-	TimeZone *string               `json:"timezone,omitempty"`
+	OID      catalog.OID
+	name     string
+	deviceID *uint32
+	IP       *core.Address
+	Doors    map[uint8]catalog.OID
+	TimeZone *string
 
 	created      types.DateTime
 	deleted      *types.DateTime
@@ -258,7 +258,7 @@ func (c *Controller) String() string {
 }
 
 func (c *Controller) IsValid() bool {
-	if c != nil && (c.name != nil && *c.name != "") || (c.deviceID != nil && *c.deviceID != 0) {
+	if c != nil && (c.name != "" || (c.deviceID != nil && *c.deviceID != 0)) {
 		return true
 	}
 
@@ -270,7 +270,7 @@ func (c *Controller) IsSaveable() bool {
 		return false
 	}
 
-	if (c.name == nil || *c.name != "") && (c.deviceID == nil || *c.deviceID == 0) {
+	if c.name != "" && (c.deviceID == nil || *c.deviceID == 0) {
 		return false
 	}
 
@@ -325,8 +325,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					stringify(value, ""),
 					dbc)
 
-				name := types.Name(value)
-				c.name = &name
+				c.name = strings.TrimSpace(value)
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ControllerName, c.name))
 			}
@@ -523,7 +522,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			}
 		}
 
-		if (c.name == nil || *c.name == "") && (c.deviceID == nil || *c.deviceID == 0) {
+		if c.name == "" && (c.deviceID == nil || *c.deviceID == 0) {
 			if auth != nil {
 				if err := auth.CanDeleteController(c); err != nil {
 					return nil, err
@@ -579,7 +578,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 
 	record := struct {
 		OID      catalog.OID      `json:"OID"`
-		Name     *types.Name      `json:"name,omitempty"`
+		Name     string           `json:"name,omitempty"`
 		DeviceID *uint32          `json:"device-id,omitempty"`
 		Address  *core.Address    `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
@@ -594,7 +593,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 	}
 
 	c.OID = record.OID
-	c.name = record.Name
+	c.name = strings.TrimSpace(record.Name)
 	c.deviceID = record.DeviceID
 	c.IP = record.Address
 	c.Doors = map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
@@ -613,13 +612,13 @@ func (c *Controller) serialize() ([]byte, error) {
 		return nil, nil
 	}
 
-	if (c.name == nil || *c.name == "") && (c.deviceID == nil || *c.deviceID == 0) {
+	if c.name == "" && (c.deviceID == nil || *c.deviceID == 0) {
 		return nil, nil
 	}
 
 	record := struct {
 		OID      catalog.OID           `json:"OID"`
-		Name     *types.Name           `json:"name,omitempty"`
+		Name     string                `json:"name,omitempty"`
 		DeviceID *uint32               `json:"device-id,omitempty"`
 		Address  *core.Address         `json:"address,omitempty"`
 		Doors    map[uint8]catalog.OID `json:"doors"`
@@ -646,7 +645,7 @@ func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
 			OID:      c.OID,
-			name:     c.name.Copy(),
+			name:     c.name,
 			deviceID: c.deviceID,
 			IP:       c.IP,
 			TimeZone: c.TimeZone,
