@@ -63,9 +63,17 @@ func (l *LANx) IsDeleted() bool {
 }
 
 func (l *LANx) AsObjects() []interface{} {
+	if l.deleted != nil {
+		return []interface{}{
+			catalog.NewObject2(l.OID, LANDeleted, l.deleted),
+		}
+	}
+
 	objects := []interface{}{
 		catalog.NewObject(l.OID, types.StatusUncertain),
 		catalog.NewObject2(l.OID, LANStatus, l.status()),
+		catalog.NewObject2(l.OID, LANCreated, l.created),
+		catalog.NewObject2(l.OID, LANDeleted, l.deleted),
 		catalog.NewObject2(l.OID, LANType, "LAN"),
 		catalog.NewObject2(l.OID, LANName, l.Name),
 		catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress),

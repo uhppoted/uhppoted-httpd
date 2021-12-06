@@ -73,6 +73,12 @@ func (c *Controller) EndPoint() *net.UDPAddr {
 	return nil
 }
 func (c *Controller) AsObjects() []interface{} {
+	if c.deleted != nil {
+		return []interface{}{
+			catalog.NewObject2(c.OID, ControllerDeleted, c.deleted),
+		}
+	}
+
 	type addr struct {
 		address    string
 		configured string

@@ -68,6 +68,12 @@ func (c *Card) IsDeleted() bool {
 }
 
 func (c *Card) AsObjects() []interface{} {
+	if c.deleted != nil {
+		return []interface{}{
+			catalog.NewObject2(c.OID, CardDeleted, c.deleted),
+		}
+	}
+
 	created := c.created.Format("2006-01-02 15:04:05")
 	name := c.Name
 	number := c.Card

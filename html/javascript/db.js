@@ -663,7 +663,7 @@ function logs (o) {
 function sweep () {
   const tables = [DB.interfaces, DB.controllers, DB.doors, DB.cards, DB.groups]
   const now = new Date()
-  const sweepable = 30 * 60 * 1000 // 30 minutes (?)
+  const sweepable = 5 * 60 * 1000 // 5 minutes
 
   tables.forEach(t => {
     t.forEach((v, k) => {

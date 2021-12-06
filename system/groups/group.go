@@ -51,6 +51,12 @@ func (g *Group) AsObjects() []interface{} {
 	created := g.created.Format("2006-01-02 15:04:05")
 	name := g.Name
 
+	if g.deleted != nil {
+		return []interface{}{
+			catalog.NewObject2(g.OID, GroupDeleted, g.deleted),
+		}
+	}
+
 	objects := []interface{}{
 		catalog.NewObject(g.OID, ""),
 		catalog.NewObject2(g.OID, GroupStatus, g.status()),

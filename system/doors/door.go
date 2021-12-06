@@ -54,6 +54,12 @@ func (d Door) String() string {
 }
 
 func (d *Door) AsObjects() []interface{} {
+	if d.deleted != nil {
+		return []interface{}{
+			catalog.NewObject2(d.OID, DoorDeleted, d.deleted),
+		}
+	}
+
 	created := d.created.Format("2006-01-02 15:04:05")
 	name := d.Name
 

@@ -31,23 +31,31 @@ Uncaught ReferenceError: onMenu is not defined
 onmouseleave @ system.html:17
 ```
 
+- [ ] Can add new group with same name
+
 ### IN PROGRESS
 
 - [ ] Rethink mark/sweep: with the way db.js works now, returning a 'deleted' field will
       recreate an object that has been swept and it's full of problems anyway
       - [ ] AsObjects should only return deleted field for deleted objects
+            - [x] interfaces
+            - [x] controllers
+            - [x] doors
+            - [x] cards
+            - [x] groups
+            - [ ] unit test(s)
+      - [x] JS: sweep objects that have been deleted and not updated in a while
+            - [x] Verify it's working as expected
+      - [ ] Sweep with DB timer rather than on refreshed (and remove 'DB.refreshed')
+            - https://stackoverflow.com/questions/9271293/constructor-or-init-function-for-an-object
+
+      - [ ] Fail with error on update deleted object
+            e.g. deleted on one browser, edit on another without refresh in between
             - [ ] interfaces
             - [ ] controllers
             - [ ] doors
             - [ ] cards
             - [ ] groups
-            - [ ] events
-            - [ ] logs
-      - [x] JS: sweep objects that have been deleted and not updated in a while
-            - [ ] Verify it's working as expected
-      - [ ] Sweep with DB timer rather than on refreshed (and remove 'DB.refreshed')
-      - [ ] Fail with error on update deleted object
-            e.g. deleted on one browser, edit on another without refresh in between
 
 - [ ] Genericize load/save
       - [ ] Embed controllers etc. in sys structs
