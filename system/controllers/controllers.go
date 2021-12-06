@@ -90,9 +90,9 @@ func (cc *ControllerSet) Load(blob json.RawMessage) error {
 	}
 
 	for _, c := range cc.Controllers {
-		if c.DeviceID != nil && *c.DeviceID != 0 {
-			catalog.PutController(*c.DeviceID, c.OID)
-			catalog.PutV(c.OID, ControllerName, c.Name)
+		if c.deviceID != nil && *c.deviceID != 0 {
+			catalog.PutController(*c.deviceID, c.OID)
+			catalog.PutV(c.OID, ControllerName, c.name)
 			catalog.PutV(c.OID, ControllerDoor1, c.Doors[1])
 			catalog.PutV(c.OID, ControllerDoor2, c.Doors[2])
 			catalog.PutV(c.OID, ControllerDoor3, c.Doors[3])
@@ -191,7 +191,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 func (cc *ControllerSet) Find(deviceID uint32) *Controller {
 	if deviceID != 0 {
 		for _, c := range cc.Controllers {
-			if c.DeviceID != nil && *c.DeviceID == deviceID {
+			if c.deviceID != nil && *c.deviceID == deviceID {
 				return c
 			}
 		}
@@ -211,7 +211,7 @@ func (cc *ControllerSet) Refresh(callback Callback) []catalog.Object {
 loop:
 	for k, _ := range cache.cache {
 		for _, c := range cc.Controllers {
-			if c.DeviceID != nil && *c.DeviceID == k && c.deleted == nil {
+			if c.deviceID != nil && *c.deviceID == k && c.deleted == nil {
 				continue loop
 			}
 		}
@@ -221,7 +221,7 @@ loop:
 
 		cc.Controllers = append(cc.Controllers, &Controller{
 			OID:          catalog.OID(oid),
-			DeviceID:     &id,
+			deviceID:     &id,
 			created:      types.DateTime(time.Now()),
 			unconfigured: true,
 		})
@@ -261,7 +261,7 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 
 	devices := config.DeviceMap{}
 	for _, c := range controllers {
-		if c.DeviceID != nil && *c.DeviceID != 0 && c.deleted == nil {
+		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
 			device := config.Device{
 				Name:     "",
 				Address:  nil,
@@ -270,8 +270,8 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 				Rollover: 100000,
 			}
 
-			if c.Name != nil {
-				device.Name = fmt.Sprintf("%v", c.Name)
+			if c.name != nil {
+				device.Name = fmt.Sprintf("%v", c.name)
 			}
 
 			if c.IP != nil {
@@ -298,7 +298,7 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 				device.Doors[3] = d.Name
 			}
 
-			devices[*c.DeviceID] = &device
+			devices[*c.deviceID] = &device
 		}
 	}
 
@@ -361,8 +361,8 @@ func (cc *ControllerSet) Validate() error {
 
 func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error) {
 	id := uint32(0)
-	if c.DeviceID != nil {
-		id = *c.DeviceID
+	if c.deviceID != nil {
+		id = *c.deviceID
 	}
 
 	record := c.clone()
@@ -392,8 +392,8 @@ func validate(cc ControllerSet) error {
 			continue
 		}
 
-		if c.DeviceID != nil && *c.DeviceID != 0 {
-			id := *c.DeviceID
+		if c.deviceID != nil && *c.deviceID != 0 {
+			id := *c.deviceID
 
 			if _, ok := devices[id]; ok {
 				return fmt.Errorf("Duplicate controller ID (%v)", id)

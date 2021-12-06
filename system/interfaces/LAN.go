@@ -3,15 +3,20 @@ package interfaces
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"net"
+	"os"
 	"strings"
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
+	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type LANx struct {
@@ -25,6 +30,12 @@ type LANx struct {
 	created      types.DateTime
 	deleted      *types.DateTime
 	unconfigured bool
+}
+
+type Controller interface {
+	Name() string
+	DeviceID() uint32
+	EndPoint() *net.UDPAddr
 }
 
 var created = types.DateTimeNow()
@@ -79,6 +90,35 @@ func (l *LANx) AsRuleEntity() interface{} {
 	}
 
 	return &entity{}
+}
+
+func (l *LANx) API(controllers []Controller) *uhppoted.UHPPOTED {
+	devices := []uhppote.Device{}
+
+	for _, v := range controllers {
+		name := v.Name()
+		id := v.DeviceID()
+		addr := v.EndPoint()
+
+		if id > 0 && addr != nil {
+			devices = append(devices, uhppote.Device{
+				Name:     name,
+				DeviceID: id,
+				Address:  addr,
+				Rollover: 100000,
+				Doors:    []string{},
+				TimeZone: time.Local,
+			})
+		}
+	}
+
+	u := uhppote.NewUHPPOTE(l.BindAddress, l.BroadcastAddress, l.ListenAddress, 1*time.Second, devices, l.Debug)
+	api := uhppoted.UHPPOTED{
+		UHPPOTE: u,
+		Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
+	}
+
+	return &api
 }
 
 func (l *LANx) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {

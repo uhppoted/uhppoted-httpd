@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"log"
-	"net"
-	"os"
 	"sort"
 	"sync"
 	"time"
@@ -53,34 +51,12 @@ func (l LAN) clone() LAN {
 }
 
 func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {
-	devices := []uhppote.Device{}
-
+	devices := []interfaces.Controller{}
 	for _, v := range controllers {
-		if v.DeviceID == nil || *v.DeviceID == 0 || v.IP == nil {
-			continue
-		}
-
-		name := v.Name.String()
-		id := *v.DeviceID
-		addr := net.UDPAddr(*v.IP)
-
-		devices = append(devices, uhppote.Device{
-			Name:     name,
-			DeviceID: id,
-			Address:  &addr,
-			Rollover: 100000,
-			Doors:    []string{},
-			TimeZone: time.Local,
-		})
+		devices = append(devices, v)
 	}
 
-	u := uhppote.NewUHPPOTE(l.BindAddress, l.BroadcastAddress, l.ListenAddress, 1*time.Second, devices, l.Debug)
-	api := uhppoted.UHPPOTED{
-		UHPPOTE: u,
-		Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
-	}
-
-	return &api
+	return l.API(devices)
 }
 
 func (l *LAN) updateACL(controllers []*Controller, permissions acl.ACL) {
@@ -179,8 +155,8 @@ func (l *LAN) refresh(controllers []*Controller, callback Callback) []catalog.Ob
 
 	list := map[uint32]struct{}{}
 	for _, c := range controllers {
-		if c.DeviceID != nil && *c.DeviceID != 0 {
-			list[*c.DeviceID] = struct{}{}
+		if c.deviceID != nil && *c.deviceID != 0 {
+			list[*c.deviceID] = struct{}{}
 		}
 	}
 
@@ -211,7 +187,7 @@ func (l *LAN) refresh(controllers []*Controller, callback Callback) []catalog.Ob
 
 			var controller *Controller
 			for _, c := range controllers {
-				if c.DeviceID != nil && *c.DeviceID == id {
+				if c.deviceID != nil && *c.deviceID == id {
 					controller = c
 					break
 				}
@@ -364,8 +340,8 @@ func (l *LAN) synchTime(controllers []*Controller) []catalog.Object {
 	objects := []catalog.Object{}
 	api := l.api(controllers)
 	for _, c := range controllers {
-		if c.DeviceID != nil {
-			device := uhppoted.DeviceID(*c.DeviceID)
+		if c.deviceID != nil {
+			device := uhppoted.DeviceID(*c.deviceID)
 			location := time.Local
 
 			if c.TimeZone != nil {
@@ -399,8 +375,8 @@ func (l *LAN) synchDoors(controllers []*Controller) []catalog.Object {
 	api := l.api(controllers)
 
 	for _, c := range controllers {
-		if c.DeviceID != nil {
-			device := uhppoted.DeviceID(*c.DeviceID)
+		if c.deviceID != nil {
+			device := uhppoted.DeviceID(*c.deviceID)
 
 			// ... update door delays
 			for _, door := range []uint8{1, 2, 3, 4} {

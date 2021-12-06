@@ -36,8 +36,8 @@ func permissions() (acl.ACL, error) {
 	acl := make(acl.ACL)
 
 	for _, b := range sys.controllers.controllers.Controllers {
-		if b.DeviceID != nil && *b.DeviceID > 0 {
-			acl[*b.DeviceID] = map[uint32]core.Card{}
+		if v := b.DeviceID(); v != 0 {
+			acl[v] = map[uint32]core.Card{}
 		}
 	}
 

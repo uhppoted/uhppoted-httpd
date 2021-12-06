@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"net"
 	"regexp"
 	"strconv"
 	"strings"
@@ -19,8 +20,8 @@ import (
 
 type Controller struct {
 	OID      catalog.OID           `json:"OID"`
-	Name     *types.Name           `json:"name,omitempty"`
-	DeviceID *uint32               `json:"device-id,omitempty"`
+	name     *types.Name           `json:"name,omitempty"`
+	deviceID *uint32               `json:"device-id,omitempty"`
 	IP       *core.Address         `json:"address,omitempty"`
 	Doors    map[uint8]catalog.OID `json:"doors"`
 	TimeZone *string               `json:"timezone,omitempty"`
@@ -48,6 +49,29 @@ type controller struct {
 
 var created = types.DateTimeNow()
 
+func (c *Controller) Name() string {
+	if c != nil {
+		return fmt.Sprintf("%v", c.Name)
+	}
+
+	return ""
+}
+
+func (c *Controller) DeviceID() uint32 {
+	if c != nil && c.deviceID != nil {
+		return uint32(*c.deviceID)
+	}
+
+	return 0
+}
+
+func (c *Controller) EndPoint() *net.UDPAddr {
+	if c != nil && c.IP != nil {
+		return (*net.UDPAddr)(c.IP)
+	}
+
+	return nil
+}
 func (c *Controller) AsObjects() []interface{} {
 	type addr struct {
 		address    string
@@ -72,7 +96,7 @@ func (c *Controller) AsObjects() []interface{} {
 	}
 
 	created := c.created.Format("2006-01-02 15:04:05")
-	name := c.Name
+	name := c.name
 	deviceID := ""
 	address := addr{}
 	datetime := tinfo{}
@@ -81,8 +105,8 @@ func (c *Controller) AsObjects() []interface{} {
 
 	doors := map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
 
-	if c.DeviceID != nil && *c.DeviceID != 0 {
-		deviceID = fmt.Sprintf("%v", *c.DeviceID)
+	if c.deviceID != nil && *c.deviceID != 0 {
+		deviceID = fmt.Sprintf("%v", *c.deviceID)
 	}
 
 	if c.IP != nil {
@@ -96,8 +120,8 @@ func (c *Controller) AsObjects() []interface{} {
 		}
 	}
 
-	if c.DeviceID != nil && *c.DeviceID != 0 {
-		if cached, ok := cache.cache[*c.DeviceID]; ok {
+	if c.deviceID != nil && *c.deviceID != 0 {
+		if cached, ok := cache.cache[*c.deviceID]; ok {
 			// ... set IP address field from cached value
 			if cached.address != nil {
 				address.address = fmt.Sprintf("%v", cached.address)
@@ -191,12 +215,12 @@ func (c *Controller) AsRuleEntity() interface{} {
 	if c != nil {
 		deviceID := uint32(0)
 
-		if c.DeviceID != nil {
-			deviceID = *c.DeviceID
+		if c.deviceID != nil {
+			deviceID = *c.deviceID
 		}
 
 		return &entity{
-			Name:     fmt.Sprintf("%v", c.Name),
+			Name:     fmt.Sprintf("%v", c.name),
 			DeviceID: deviceID,
 		}
 	}
@@ -215,10 +239,10 @@ func (c *Controller) Get(key string) interface{} {
 			return c.created
 
 		case "name":
-			return c.Name
+			return c.name
 
 		case "id":
-			return c.DeviceID
+			return c.deviceID
 		}
 	}
 
@@ -230,11 +254,11 @@ func (c *Controller) String() string {
 		return ""
 	}
 
-	return fmt.Sprintf("%v (%v)", c.Name, c.DeviceID)
+	return fmt.Sprintf("%v (%v)", c.name, c.deviceID)
 }
 
 func (c *Controller) IsValid() bool {
-	if c != nil && (c.Name != nil && *c.Name != "") || (c.DeviceID != nil && *c.DeviceID != 0) {
+	if c != nil && (c.name != nil && *c.name != "") || (c.deviceID != nil && *c.deviceID != 0) {
 		return true
 	}
 
@@ -246,7 +270,7 @@ func (c *Controller) IsSaveable() bool {
 		return false
 	}
 
-	if (c.Name == nil || *c.Name != "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+	if (c.name == nil || *c.name != "") && (c.deviceID == nil || *c.deviceID == 0) {
 		return false
 	}
 
@@ -258,8 +282,8 @@ func (c *Controller) status() types.Status {
 		return types.StatusDeleted
 	}
 
-	if c.DeviceID != nil && *c.DeviceID != 0 {
-		if cached, ok := cache.cache[*c.DeviceID]; ok {
+	if c.deviceID != nil && *c.deviceID != 0 {
+		if cached, ok := cache.cache[*c.deviceID]; ok {
 			dt := time.Now().Sub(cached.touched)
 			switch {
 			case dt < windows.deviceOk:
@@ -296,15 +320,15 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					"update",
 					c.OID,
 					"name",
-					fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, BLANK), stringify(value, BLANK)),
-					stringify(c.Name, ""),
+					fmt.Sprintf("Updated name from %v to %v", stringify(c.name, BLANK), stringify(value, BLANK)),
+					stringify(c.name, ""),
 					stringify(value, ""),
 					dbc)
 
 				name := types.Name(value)
-				c.Name = &name
+				c.name = &name
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ControllerName, c.Name))
+				objects = append(objects, catalog.NewObject2(c.OID, ControllerName, c.name))
 			}
 
 		case c.OID.Append(ControllerDeviceID):
@@ -316,18 +340,18 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 						"update",
 						c.OID,
 						"device-id",
-						fmt.Sprintf("Updated device ID from %v to %v", stringify(c.DeviceID, BLANK), stringify(value, BLANK)),
-						stringify(c.DeviceID, ""),
+						fmt.Sprintf("Updated device ID from %v to %v", stringify(c.deviceID, BLANK), stringify(value, BLANK)),
+						stringify(c.deviceID, ""),
 						stringify(value, ""),
 						dbc)
 
 					cid := uint32(id)
-					c.DeviceID = &cid
+					c.deviceID = &cid
 					c.unconfigured = false
 					objects = append(objects, catalog.NewObject2(c.OID, ".2", cid))
 				}
 			} else if value == "" {
-				if p := stringify(c.DeviceID, ""); p != "" {
+				if p := stringify(c.deviceID, ""); p != "" {
 					c.log(auth,
 						"update",
 						c.OID,
@@ -336,7 +360,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 						p,
 						"",
 						dbc)
-				} else if p = stringify(c.Name, ""); p != "" {
+				} else if p = stringify(c.name, ""); p != "" {
 					c.log(auth,
 						"update",
 						c.OID,
@@ -356,7 +380,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 						dbc)
 				}
 
-				c.DeviceID = nil
+				c.deviceID = nil
 				c.unconfigured = false
 				objects = append(objects, catalog.NewObject2(c.OID, ".2", ""))
 			}
@@ -398,8 +422,8 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				c.TimeZone = &tzs
 				c.unconfigured = false
 
-				if c.DeviceID != nil {
-					if cached, ok := cache.cache[*c.DeviceID]; ok {
+				if c.deviceID != nil {
+					if cached, ok := cache.cache[*c.deviceID]; ok {
 						if cached.datetime != nil {
 							tz := time.Local
 							if c.TimeZone != nil {
@@ -499,14 +523,14 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			}
 		}
 
-		if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+		if (c.name == nil || *c.name == "") && (c.deviceID == nil || *c.deviceID == 0) {
 			if auth != nil {
 				if err := auth.CanDeleteController(c); err != nil {
 					return nil, err
 				}
 			}
 
-			if p := stringify(clone.Name, ""); p != "" {
+			if p := stringify(clone.name, ""); p != "" {
 				clone.log(auth,
 					"delete",
 					c.OID,
@@ -515,7 +539,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					"",
 					"",
 					dbc)
-			} else if p = stringify(clone.DeviceID, ""); p != "" {
+			} else if p = stringify(clone.deviceID, ""); p != "" {
 				clone.log(auth,
 					"delete",
 					c.OID,
@@ -570,8 +594,8 @@ func (c *Controller) deserialize(bytes []byte) error {
 	}
 
 	c.OID = record.OID
-	c.Name = record.Name
-	c.DeviceID = record.DeviceID
+	c.name = record.Name
+	c.deviceID = record.DeviceID
 	c.IP = record.Address
 	c.Doors = map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
 	c.TimeZone = record.TimeZone
@@ -589,7 +613,7 @@ func (c *Controller) serialize() ([]byte, error) {
 		return nil, nil
 	}
 
-	if (c.Name == nil || *c.Name == "") && (c.DeviceID == nil || *c.DeviceID == 0) {
+	if (c.name == nil || *c.name == "") && (c.deviceID == nil || *c.deviceID == 0) {
 		return nil, nil
 	}
 
@@ -603,8 +627,8 @@ func (c *Controller) serialize() ([]byte, error) {
 		Created  types.DateTime        `json:"created"`
 	}{
 		OID:      c.OID,
-		Name:     c.Name,
-		DeviceID: c.DeviceID,
+		Name:     c.name,
+		DeviceID: c.deviceID,
 		Address:  c.IP,
 		Doors:    map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""},
 		TimeZone: c.TimeZone,
@@ -622,8 +646,8 @@ func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
 			OID:      c.OID,
-			Name:     c.Name.Copy(),
-			DeviceID: c.DeviceID,
+			name:     c.name.Copy(),
+			deviceID: c.deviceID,
 			IP:       c.IP,
 			TimeZone: c.TimeZone,
 			Doors:    map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""},
@@ -655,8 +679,8 @@ func (c *Controller) log(auth auth.OpAuth, operation string, OID catalog.OID, fi
 		Component: "controller",
 		Operation: operation,
 		Details: audit.Details{
-			ID:          stringify(c.DeviceID, ""),
-			Name:        stringify(c.Name, ""),
+			ID:          stringify(c.deviceID, ""),
+			Name:        stringify(c.name, ""),
 			Field:       field,
 			Description: description,
 			Before:      before,

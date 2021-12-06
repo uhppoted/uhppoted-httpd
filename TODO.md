@@ -1,18 +1,14 @@
 ## v0.7.x
 
-- [ ] Make login cookie expire in 60s
-      - Don't check login cookie except for login
+- [ ] Cookies
+      - [ ] Make login cookie expire in 60s
+      - [ ] Don't check login cookie except for login
+      - [ ] Also clear cookie on logout
+            https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [x] POST to `/interfaces` 
-      - [x] Interfaces.Validate
-      - [x] Update ControllerSet after LAN edit
-      - [x] POST controllers to `/controllers` 
-      - [x] CommitAll for controllers isn't return correct doors 
-      - [ ] GET from /interfaces and /controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-      - [x] Implement `UpdateObjects` for `interfaces`
-      - [x] Implement `AsObjects` for `interfaces`
+      - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
       - [ ] Rework 'update controllers after LAN edit'
 
@@ -26,7 +22,6 @@
       - [ ] MAYBE: change Format(), etc to not take pointer receiver
       - [ ] MAYBE: define FormatDateTime() method that *does* take pointer
       - [ ] Refactor DateTime out to use core implementation only
-      - [x] Implement Add() for the repetitive created + 1 thing
       - [ ] Implement Ptr() for the repetitive assign to variable to take address thing
 
 - [ ] Recurring HTML error
@@ -48,8 +43,6 @@ onmouseleave @ system.html:17
             - [ ] groups
             - [ ] events
             - [ ] logs
-      - [x] object 'touched' field
-      - [x] Remove 'mark'
       - [x] JS: sweep objects that have been deleted and not updated in a while
             - [ ] Verify it's working as expected
       - [ ] Sweep with DB timer rather than on refreshed (and remove 'DB.refreshed')
@@ -57,8 +50,6 @@ onmouseleave @ system.html:17
             e.g. deleted on one browser, edit on another without refresh in between
 
 - [ ] Genericize load/save
-      - [x] Save file in system and get json.RawMessage from Save(...)
-            - [x] interfaces
       - [ ] Embed controllers etc. in sys structs
       - [ ] Put subsystems into list for iterating
       - [ ] MAYBE: groups, etc probably don't need to be structs anymore => typedef arrays
