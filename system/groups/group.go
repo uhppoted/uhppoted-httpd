@@ -128,57 +128,63 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 		return nil
 	}
 
-	if g != nil {
-		name := g.Name
-		switch {
-		case oid == g.OID.Append(GroupName):
-			if err := f("name", value); err != nil {
+	if g == nil {
+		return objects, nil
+	}
+
+	name := g.Name
+	switch {
+	case oid == g.OID.Append(GroupName):
+		if err := f("name", value); err != nil {
+			return nil, err
+		} else {
+			g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, BLANK), stringify(value, BLANK)), dbc)
+			g.Name = value
+			objects = append(objects, catalog.NewObject2(g.OID, GroupName, g.Name))
+		}
+
+	case catalog.OID(g.OID.Append(GroupDoors)).Contains(oid):
+		if g.deleted != nil {
+			return nil, fmt.Errorf("Group has been deleted")
+		}
+
+		if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
+			did := m[1]
+			k := catalog.DoorsOID.AppendS(did)
+			door := catalog.GetV(k, DoorName)
+
+			if err := f(door.(string), value); err != nil {
 				return nil, err
 			} else {
-				g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, BLANK), stringify(value, BLANK)), dbc)
-				g.Name = value
-				objects = append(objects, catalog.NewObject2(g.OID, GroupName, g.Name))
-			}
-
-		case catalog.OID(g.OID.Append(GroupDoors)).Contains(oid):
-			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
-				did := m[1]
-				k := catalog.DoorsOID.AppendS(did)
-				door := catalog.GetV(k, DoorName)
-
-				if err := f(door.(string), value); err != nil {
-					return nil, err
+				if value == "true" {
+					g.log(auth, "update", g.OID, "door", fmt.Sprintf("Granted access to %v", door), dbc)
 				} else {
-					if value == "true" {
-						g.log(auth, "update", g.OID, "door", fmt.Sprintf("Granted access to %v", door), dbc)
-					} else {
-						g.log(auth, "update", g.OID, "door", fmt.Sprintf("Revoked access to %v", door), dbc)
-					}
-
-					g.Doors[k] = value == "true"
-					objects = append(objects, catalog.NewObject2(g.OID, GroupDoors.Append(did), g.Doors[k]))
+					g.log(auth, "update", g.OID, "door", fmt.Sprintf("Revoked access to %v", door), dbc)
 				}
+
+				g.Doors[k] = value == "true"
+				objects = append(objects, catalog.NewObject2(g.OID, GroupDoors.Append(did), g.Doors[k]))
 			}
 		}
-
-		if !g.IsValid() {
-			if auth != nil {
-				if err := auth.CanDeleteGroup(g); err != nil {
-					return nil, err
-				}
-			}
-
-			g.log(auth, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
-			now := types.DateTime(time.Now())
-			g.deleted = &now
-			objects = append(objects, catalog.NewObject(g.OID, "deleted"))
-
-			catalog.Delete(g.OID)
-		}
-
-		objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, g.status()))
-		objects = append(objects, catalog.NewObject2(g.OID, GroupDeleted, g.deleted))
 	}
+
+	if !g.IsValid() {
+		if auth != nil {
+			if err := auth.CanDeleteGroup(g); err != nil {
+				return nil, err
+			}
+		}
+
+		g.log(auth, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
+		now := types.DateTime(time.Now())
+		g.deleted = &now
+		objects = append(objects, catalog.NewObject(g.OID, "deleted"))
+
+		catalog.Delete(g.OID)
+	}
+
+	objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, g.status()))
+	objects = append(objects, catalog.NewObject2(g.OID, GroupDeleted, g.deleted))
 
 	return objects, nil
 }

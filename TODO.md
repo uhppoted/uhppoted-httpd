@@ -1,7 +1,5 @@
 ## v0.7.x
 
-- [ ] Can add new group with same name
-
 - [ ] Cookies
       - [ ] Make login cookie expire in 60s
       - [ ] Don't check login cookie except for login
@@ -53,7 +51,8 @@ onmouseleave @ system.html:17
             - [ ] controllers
             - [ ] doors
             - [ ] cards
-            - [ ] groups
+            - [x] groups
+            - [ ] unit test
 
 - [ ] Genericize load/save
       - [ ] Embed controllers etc. in sys structs
