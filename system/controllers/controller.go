@@ -19,7 +19,7 @@ import (
 )
 
 type Controller struct {
-	OID      catalog.OID
+	oid      catalog.OID
 	name     string
 	deviceID *uint32
 	IP       *core.Address
@@ -47,7 +47,24 @@ type controller struct {
 	created time.Time
 }
 
+type cached struct {
+	touched  time.Time
+	address  *core.Address
+	datetime *types.DateTime
+	cards    *uint32
+	events   *uint32
+	acl      types.Status
+}
+
 var created = types.DateTimeNow()
+
+func (c *Controller) OID() catalog.OID {
+	if c != nil {
+		return c.oid
+	}
+
+	return ""
+}
 
 func (c *Controller) Name() string {
 	if c != nil {
@@ -72,10 +89,23 @@ func (c *Controller) EndPoint() *net.UDPAddr {
 
 	return nil
 }
+
+func (c *Controller) Door(d uint8) (catalog.OID, bool) {
+	if c != nil {
+		if v, ok := c.Doors[d]; ok {
+			return v, true
+		}
+	}
+
+	return "", false
+}
+
 func (c *Controller) AsObjects() []interface{} {
+	OID := c.OID()
+
 	if c.deleted != nil {
 		return []interface{}{
-			catalog.NewObject2(c.OID, ControllerDeleted, c.deleted),
+			catalog.NewObject2(OID, ControllerDeleted, c.deleted),
 		}
 	}
 
@@ -127,7 +157,8 @@ func (c *Controller) AsObjects() []interface{} {
 	}
 
 	if c.deviceID != nil && *c.deviceID != 0 {
-		if cached, ok := cache.cache[*c.deviceID]; ok {
+		//if cached, ok := cache.cache[*c.deviceID]; ok {
+		if cached := c.get(); cached != nil {
 			// ... set IP address field from cached value
 			if cached.address != nil {
 				address.address = fmt.Sprintf("%v", cached.address)
@@ -186,27 +217,27 @@ func (c *Controller) AsObjects() []interface{} {
 	}
 
 	objects := []interface{}{
-		catalog.NewObject(c.OID, ""),
-		catalog.NewObject2(c.OID, ControllerStatus, c.status()),
-		catalog.NewObject2(c.OID, ControllerCreated, created),
-		catalog.NewObject2(c.OID, ControllerDeleted, c.deleted),
+		catalog.NewObject(OID, ""),
+		catalog.NewObject2(OID, ControllerStatus, c.status()),
+		catalog.NewObject2(OID, ControllerCreated, created),
+		catalog.NewObject2(OID, ControllerDeleted, c.deleted),
 
-		catalog.NewObject2(c.OID, ControllerName, name),
-		catalog.NewObject2(c.OID, ControllerDeviceID, deviceID),
-		catalog.NewObject2(c.OID, ControllerEndpointStatus, address.status),
-		catalog.NewObject2(c.OID, ControllerEndpointAddress, address.address),
-		catalog.NewObject2(c.OID, ControllerEndpointConfigured, address.configured),
-		catalog.NewObject2(c.OID, ControllerDateTimeStatus, datetime.status),
-		catalog.NewObject2(c.OID, ControllerDateTimeCurrent, datetime.datetime),
-		catalog.NewObject2(c.OID, ControllerDateTimeSystem, datetime.system),
-		catalog.NewObject2(c.OID, ControllerCardsStatus, cards.status),
-		catalog.NewObject2(c.OID, ControllerCardsCount, cards.cards),
-		catalog.NewObject2(c.OID, ControllerEventsStatus, events.status),
-		catalog.NewObject2(c.OID, ControllerEventsCount, events.events),
-		catalog.NewObject2(c.OID, ControllerDoor1, doors[1]),
-		catalog.NewObject2(c.OID, ControllerDoor2, doors[2]),
-		catalog.NewObject2(c.OID, ControllerDoor3, doors[3]),
-		catalog.NewObject2(c.OID, ControllerDoor4, doors[4]),
+		catalog.NewObject2(OID, ControllerName, name),
+		catalog.NewObject2(OID, ControllerDeviceID, deviceID),
+		catalog.NewObject2(OID, ControllerEndpointStatus, address.status),
+		catalog.NewObject2(OID, ControllerEndpointAddress, address.address),
+		catalog.NewObject2(OID, ControllerEndpointConfigured, address.configured),
+		catalog.NewObject2(OID, ControllerDateTimeStatus, datetime.status),
+		catalog.NewObject2(OID, ControllerDateTimeCurrent, datetime.datetime),
+		catalog.NewObject2(OID, ControllerDateTimeSystem, datetime.system),
+		catalog.NewObject2(OID, ControllerCardsStatus, cards.status),
+		catalog.NewObject2(OID, ControllerCardsCount, cards.cards),
+		catalog.NewObject2(OID, ControllerEventsStatus, events.status),
+		catalog.NewObject2(OID, ControllerEventsCount, events.events),
+		catalog.NewObject2(OID, ControllerDoor1, doors[1]),
+		catalog.NewObject2(OID, ControllerDoor2, doors[2]),
+		catalog.NewObject2(OID, ControllerDoor3, doors[3]),
+		catalog.NewObject2(OID, ControllerDoor4, doors[4]),
 	}
 
 	return objects
@@ -239,7 +270,7 @@ func (c *Controller) Get(key string) interface{} {
 	if c != nil {
 		switch f {
 		case "oid":
-			return c.OID
+			return c.OID()
 
 		case "created":
 			return c.created
@@ -289,7 +320,7 @@ func (c *Controller) status() types.Status {
 	}
 
 	if c.deviceID != nil && *c.deviceID != 0 {
-		if cached, ok := cache.cache[*c.deviceID]; ok {
+		if cached := c.get(); cached != nil {
 			dt := time.Now().Sub(cached.touched)
 			switch {
 			case dt < windows.deviceOk:
@@ -304,7 +335,52 @@ func (c *Controller) status() types.Status {
 	return types.StatusUnknown
 }
 
+func (c *Controller) get() *cached {
+	e := cached{
+		acl: types.StatusUnknown,
+	}
+
+	if v := catalog.GetV(c.OID(), ControllerTouched); v != nil {
+		if touched, ok := v.(time.Time); ok {
+			e.touched = touched
+		}
+	}
+
+	if v := catalog.GetV(c.OID(), ControllerEndpointAddress); v != nil {
+		if address, ok := v.(core.Address); ok {
+			e.address = &address
+		}
+	}
+
+	if v := catalog.GetV(c.OID(), ControllerDateTimeCurrent); v != nil {
+		if datetime, ok := v.(types.DateTime); ok {
+			e.datetime = &datetime
+		}
+	}
+
+	if v := catalog.GetV(c.OID(), ControllerCardsCount); v != nil {
+		if cards, ok := v.(uint32); ok {
+			e.cards = &cards
+		}
+	}
+
+	if v := catalog.GetV(c.OID(), ControllerEventsCount); v != nil {
+		if events, ok := v.(*uint32); ok {
+			e.events = events
+		}
+	}
+
+	if v := catalog.GetV(c.OID(), ControllerCardsStatus); v != nil {
+		if acl, ok := v.(types.Status); ok {
+			e.acl = acl
+		}
+	}
+
+	return &e
+}
+
 func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	OID := c.OID()
 	objects := []catalog.Object{}
 
 	f := func(field string, value interface{}) error {
@@ -318,13 +394,13 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 	if c != nil {
 		clone := c.clone()
 		switch oid {
-		case c.OID.Append(ControllerName):
+		case OID.Append(ControllerName):
 			if err := f("name", value); err != nil {
 				return nil, err
 			} else {
 				c.log(auth,
 					"update",
-					c.OID,
+					OID,
 					"name",
 					fmt.Sprintf("Updated name from %v to %v", stringify(c.name, BLANK), stringify(value, BLANK)),
 					stringify(c.name, ""),
@@ -333,17 +409,17 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.name = strings.TrimSpace(value)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ControllerName, c.name))
+				objects = append(objects, catalog.NewObject2(OID, ControllerName, c.name))
 			}
 
-		case c.OID.Append(ControllerDeviceID):
+		case OID.Append(ControllerDeviceID):
 			if err := f("deviceID", value); err != nil {
 				return nil, err
 			} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 				if id, err := strconv.ParseUint(value, 10, 32); err == nil {
 					c.log(auth,
 						"update",
-						c.OID,
+						OID,
 						"device-id",
 						fmt.Sprintf("Updated device ID from %v to %v", stringify(c.deviceID, BLANK), stringify(value, BLANK)),
 						stringify(c.deviceID, ""),
@@ -353,13 +429,13 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					cid := uint32(id)
 					c.deviceID = &cid
 					c.unconfigured = false
-					objects = append(objects, catalog.NewObject2(c.OID, ".2", cid))
+					objects = append(objects, catalog.NewObject2(OID, ".2", cid))
 				}
 			} else if value == "" {
 				if p := stringify(c.deviceID, ""); p != "" {
 					c.log(auth,
 						"update",
-						c.OID,
+						OID,
 						"device-id",
 						fmt.Sprintf("Cleared device ID %v", p),
 						p,
@@ -368,7 +444,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				} else if p = stringify(c.name, ""); p != "" {
 					c.log(auth,
 						"update",
-						c.OID,
+						OID,
 						"device-id",
 						fmt.Sprintf("Cleared device ID for %v", p),
 						"",
@@ -377,7 +453,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				} else {
 					c.log(auth,
 						"update",
-						c.OID,
+						OID,
 						"device-id",
 						fmt.Sprintf("Cleared device ID"),
 						"",
@@ -387,10 +463,10 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.deviceID = nil
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ".2", ""))
+				objects = append(objects, catalog.NewObject2(OID, ".2", ""))
 			}
 
-		case c.OID.Append(ControllerEndpointAddress):
+		case OID.Append(ControllerEndpointAddress):
 			if addr, err := core.ResolveAddr(value); err != nil {
 				return nil, err
 			} else if err := f("address", addr); err != nil {
@@ -398,7 +474,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			} else {
 				c.log(auth,
 					"update",
-					c.OID,
+					OID,
 					"address",
 					fmt.Sprintf("Updated endpoint from %v to %v", stringify(c.IP, BLANK), stringify(value, BLANK)),
 					stringify(c.IP, ""),
@@ -406,10 +482,10 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					dbc)
 				c.IP = addr
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ".3", c.IP))
+				objects = append(objects, catalog.NewObject2(OID, ".3", c.IP))
 			}
 
-		case c.OID.Append(ControllerDateTimeCurrent):
+		case OID.Append(ControllerDateTimeCurrent):
 			if tz, err := types.Timezone(value); err != nil {
 				return nil, err
 			} else if err := f("timezone", tz); err != nil {
@@ -417,7 +493,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			} else {
 				c.log(auth,
 					"update",
-					c.OID,
+					OID,
 					"timezone",
 					fmt.Sprintf("Updated timezone from %v to %v", stringify(c.TimeZone, BLANK), stringify(tz.String(), BLANK)),
 					stringify(c.TimeZone, ""),
@@ -428,7 +504,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				c.unconfigured = false
 
 				if c.deviceID != nil {
-					if cached, ok := cache.cache[*c.deviceID]; ok {
+					if cached := c.get(); cached != nil {
 						if cached.datetime != nil {
 							tz := time.Local
 							if c.TimeZone != nil {
@@ -441,13 +517,13 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 							t := time.Time(*cached.datetime)
 							dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-							objects = append(objects, catalog.NewObject2(c.OID, ".4", dt.Format("2006-01-02 15:04 MST")))
+							objects = append(objects, catalog.NewObject2(OID, ".4", dt.Format("2006-01-02 15:04 MST")))
 						}
 					}
 				}
 			}
 
-		case c.OID.Append(ControllerDoor1):
+		case OID.Append(ControllerDoor1):
 			if err := f("door[1]", value); err != nil {
 				return nil, err
 			} else {
@@ -455,7 +531,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				q := catalog.GetV(catalog.OID(value), catalog.DoorName)
 				c.log(auth,
 					"update",
-					c.OID,
+					OID,
 					"door:1",
 					fmt.Sprintf("Updated door:1 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
 					stringify(p, ""),
@@ -464,10 +540,10 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.Doors[1] = catalog.OID(value)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ControllerDoor1, c.Doors[1]))
+				objects = append(objects, catalog.NewObject2(OID, ControllerDoor1, c.Doors[1]))
 			}
 
-		case c.OID.Append(ControllerDoor2):
+		case OID.Append(ControllerDoor2):
 			if err := f("door[2]", value); err != nil {
 				return nil, err
 			} else {
@@ -475,7 +551,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				q := catalog.GetV(catalog.OID(value), catalog.DoorName)
 				c.log(auth,
 					"update",
-					c.OID,
+					OID,
 					"door:2",
 					fmt.Sprintf("Updated door:2 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
 					stringify(p, ""),
@@ -484,10 +560,10 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.Doors[2] = catalog.OID(value)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ControllerDoor2, c.Doors[2]))
+				objects = append(objects, catalog.NewObject2(OID, ControllerDoor2, c.Doors[2]))
 			}
 
-		case c.OID.Append(ControllerDoor3):
+		case OID.Append(ControllerDoor3):
 			if err := f("door[3]", value); err != nil {
 				return nil, err
 			} else {
@@ -495,7 +571,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				q := catalog.GetV(catalog.OID(value), catalog.DoorName)
 				c.log(auth,
 					"update",
-					c.OID,
+					OID,
 					"door:3",
 					fmt.Sprintf("Updated door:3 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
 					stringify(p, ""),
@@ -504,10 +580,10 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.Doors[3] = catalog.OID(value)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ControllerDoor3, c.Doors[3]))
+				objects = append(objects, catalog.NewObject2(OID, ControllerDoor3, c.Doors[3]))
 			}
 
-		case c.OID.Append(ControllerDoor4):
+		case OID.Append(ControllerDoor4):
 			if err := f("door[4]", value); err != nil {
 				return nil, err
 			} else {
@@ -515,7 +591,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				q := catalog.GetV(catalog.OID(value), catalog.DoorName)
 				c.log(auth,
 					"update",
-					c.OID,
+					OID,
 					"door:4",
 					fmt.Sprintf("Updated door:4 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
 					stringify(p, ""),
@@ -524,7 +600,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.Doors[4] = catalog.OID(value)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(c.OID, ControllerDoor4, c.Doors[4]))
+				objects = append(objects, catalog.NewObject2(OID, ControllerDoor4, c.Doors[4]))
 			}
 		}
 
@@ -538,7 +614,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			if p := stringify(clone.name, ""); p != "" {
 				clone.log(auth,
 					"delete",
-					c.OID,
+					OID,
 					"device-id",
 					fmt.Sprintf("Deleted controller %v", p),
 					"",
@@ -547,7 +623,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			} else if p = stringify(clone.deviceID, ""); p != "" {
 				clone.log(auth,
 					"delete",
-					c.OID,
+					OID,
 					"device-id",
 					fmt.Sprintf("Deleted controller %v", p),
 					"",
@@ -556,7 +632,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			} else {
 				clone.log(auth,
 					"delete",
-					c.OID,
+					OID,
 					"device-id",
 					fmt.Sprintf("Deleted controller"),
 					"",
@@ -566,14 +642,14 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 			now := types.DateTime(time.Now())
 			c.deleted = &now
-			objects = append(objects, catalog.NewObject(c.OID, "deleted"))
-			objects = append(objects, catalog.NewObject2(c.OID, ControllerDeleted, c.deleted))
+			objects = append(objects, catalog.NewObject(OID, "deleted"))
+			objects = append(objects, catalog.NewObject2(OID, ControllerDeleted, c.deleted))
 
-			catalog.Delete(c.OID)
+			catalog.Delete(OID)
 		}
 
-		objects = append(objects, catalog.NewObject2(c.OID, ControllerStatus, c.status()))
-		objects = append(objects, catalog.NewObject2(c.OID, ControllerDeleted, c.deleted))
+		objects = append(objects, catalog.NewObject2(OID, ControllerStatus, c.status()))
+		objects = append(objects, catalog.NewObject2(OID, ControllerDeleted, c.deleted))
 	}
 
 	return objects, nil
@@ -598,7 +674,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 		return err
 	}
 
-	c.OID = record.OID
+	c.oid = record.OID
 	c.name = strings.TrimSpace(record.Name)
 	c.deviceID = record.DeviceID
 	c.IP = record.Address
@@ -623,7 +699,7 @@ func (c *Controller) serialize() ([]byte, error) {
 	}
 
 	record := struct {
-		OID      catalog.OID           `json:"OID"`
+		OID      catalog.OID           `json:"OID,omitempty"`
 		Name     string                `json:"name,omitempty"`
 		DeviceID *uint32               `json:"device-id,omitempty"`
 		Address  *core.Address         `json:"address,omitempty"`
@@ -631,7 +707,7 @@ func (c *Controller) serialize() ([]byte, error) {
 		TimeZone *string               `json:"timezone,omitempty"`
 		Created  types.DateTime        `json:"created"`
 	}{
-		OID:      c.OID,
+		OID:      c.OID(),
 		Name:     c.name,
 		DeviceID: c.deviceID,
 		Address:  c.IP,
@@ -650,7 +726,7 @@ func (c *Controller) serialize() ([]byte, error) {
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
-			OID:      c.OID,
+			oid:      c.oid,
 			name:     c.name,
 			deviceID: c.deviceID,
 			IP:       c.IP,

@@ -16,6 +16,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
+	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
@@ -27,15 +28,19 @@ type LANx struct {
 	ListenAddress    core.ListenAddr
 	Debug            bool
 
+	cacheExpiry time.Duration
+
 	created      types.DateTime
 	deleted      *types.DateTime
 	unconfigured bool
 }
 
 type Controller interface {
+	OID() catalog.OID
 	Name() string
 	DeviceID() uint32
 	EndPoint() *net.UDPAddr
+	Door(uint8) (catalog.OID, bool)
 }
 
 var created = types.DateTimeNow()
@@ -240,6 +245,58 @@ func (l LANx) Clone() LANx {
 	}
 }
 
+// Possibly a long-running function - expects to be invoked from an external goroutine
+func (l *LANx) Refresh() {
+	//	expired := time.Now().Add(-l.cacheExpiry)
+	//	for k, v := range cache.cache {
+	//		if v.touched.Before(expired) {
+	//			delete(cache.cache, k)
+	//			log.Printf("Controller %v cache entry expired", k)
+	//		}
+	//	}
+}
+
+func (l *LANx) Store(id uint32, info interface{}, controller Controller) {
+	switch v := info.(type) {
+	case uhppoted.GetDeviceResponse:
+		addr := core.Address(v.Address)
+		catalog.PutV(controller.OID(), ControllerTouched, time.Now())
+		catalog.PutV(controller.OID(), ControllerEndpointAddress, addr)
+
+	case uhppoted.GetStatusResponse:
+		datetime := types.DateTime(v.Status.SystemDateTime)
+		catalog.PutV(controller.OID(), ControllerTouched, time.Now())
+		catalog.PutV(controller.OID(), ControllerDateTimeCurrent, datetime)
+
+	case uhppoted.GetCardRecordsResponse:
+		cards := v.Cards
+		catalog.PutV(controller.OID(), ControllerTouched, time.Now())
+		catalog.PutV(controller.OID(), ControllerCardsCount, cards)
+
+	case uhppoted.GetEventRangeResponse:
+		events := v.Events.Last
+		catalog.PutV(controller.OID(), ControllerTouched, time.Now())
+		catalog.PutV(controller.OID(), ControllerEventsCount, events)
+
+	case uhppoted.GetDoorDelayResponse:
+		if door, ok := controller.Door(v.Door); ok {
+			catalog.PutV(door, DoorDelay, v.Delay)
+		}
+
+	case uhppoted.GetDoorControlResponse:
+		if door, ok := controller.Door(v.Door); ok {
+			catalog.PutV(door, DoorControl, v.Control)
+		}
+
+	case acl.Diff:
+		if len(v.Updated)+len(v.Added)+len(v.Deleted) > 0 {
+			catalog.PutV(controller.OID(), ControllerCardsStatus, types.StatusError)
+		} else {
+			catalog.PutV(controller.OID(), ControllerCardsStatus, types.StatusOk)
+		}
+	}
+}
+
 func (l LANx) serialize() ([]byte, error) {
 	record := struct {
 		OID              catalog.OID        `json:"OID"`
@@ -269,9 +326,11 @@ func (l *LANx) deserialize(bytes []byte) error {
 		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
 		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
+		CacheExpiry      time.Duration      `json:"cache-expirty,omitempty"`
 		Created          types.DateTime     `json:"created,omitempty"`
 	}{
-		Created: created,
+		CacheExpiry: 120 * time.Second,
+		Created:     created,
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -283,6 +342,7 @@ func (l *LANx) deserialize(bytes []byte) error {
 	l.BindAddress = record.BindAddress
 	l.BroadcastAddress = record.BroadcastAddress
 	l.ListenAddress = record.ListenAddress
+	l.cacheExpiry = record.CacheExpiry
 	l.created = record.Created
 	l.unconfigured = false
 

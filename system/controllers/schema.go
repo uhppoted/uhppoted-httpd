@@ -18,6 +18,7 @@ const DoorControlModified = catalog.DoorControlModified
 const ControllerStatus = catalog.Status
 const ControllerCreated = catalog.Created
 const ControllerDeleted = catalog.Deleted
+const ControllerTouched = catalog.Touched
 const ControllerName = catalog.ControllerName
 const ControllerDeviceID = catalog.ControllerDeviceID
 const ControllerEndpointStatus = catalog.ControllerEndpointStatus

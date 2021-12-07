@@ -16,6 +16,7 @@ type Metadata struct {
 	Deleted  Suffix `json:"deleted"`
 	Modified Suffix `json:"modified"`
 	Type     Suffix `json:"type"`
+	Touched  Suffix `json:"touched"`
 }
 
 type Interfaces struct {
@@ -295,6 +296,7 @@ const Created Suffix = ".0.1"
 const Deleted Suffix = ".0.2"
 const Modified Suffix = ".0.3"
 const Type Suffix = ".0.4"
+const Touched Suffix = ".0.5"
 
 const InterfaceName Suffix = ".1"
 const InterfaceID Suffix = ".2"

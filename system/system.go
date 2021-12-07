@@ -291,9 +291,7 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			if objects := s.controllers.controllers.Refresh(&s.callback); objects != nil {
-				catalog.PutL(objects)
-			}
+			s.controllers.controllers.Refresh(&s.callback)
 		},
 	})
 

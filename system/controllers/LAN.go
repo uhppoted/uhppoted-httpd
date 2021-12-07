@@ -24,22 +24,6 @@ type LAN struct {
 	interfaces.LANx
 }
 
-type device struct {
-	touched  time.Time
-	address  *core.Address
-	datetime *types.DateTime
-	cards    *uint32
-	events   *uint32
-	acl      types.Status
-}
-
-var cache = struct {
-	cache map[uint32]device
-	guard sync.RWMutex
-}{
-	cache: map[uint32]device{},
-}
-
 func (l *LAN) String() string {
 	return fmt.Sprintf("%v", l.Name)
 }
@@ -134,24 +118,15 @@ func (l *LAN) compareACL(controllers []*Controller, permissions acl.ACL) error {
 
 	for _, v := range devices {
 		id := v.DeviceID
-		l.store(id, compare[id], nil)
+		l.Store(id, compare[id], nil)
 	}
 
 	return nil
 }
 
 // Possibly a long-running function - expects to be invoked from an external goroutine
-func (l *LAN) refresh(controllers []*Controller, callback Callback) []catalog.Object {
-	var lock sync.Mutex
-	var objects = []catalog.Object{}
-
-	expired := time.Now().Add(-windows.cacheExpiry)
-	for k, v := range cache.cache {
-		if v.touched.Before(expired) {
-			delete(cache.cache, k)
-			log.Printf("Controller %v cache entry expired", k)
-		}
-	}
+func (l *LAN) refresh(controllers []*Controller, callback Callback) {
+	l.Refresh()
 
 	list := map[uint32]struct{}{}
 	for _, c := range controllers {
@@ -193,54 +168,46 @@ func (l *LAN) refresh(controllers []*Controller, callback Callback) []catalog.Ob
 				}
 			}
 
-			if list := l.update(api, id, controller, callback); list != nil {
-				lock.Lock()
-				defer lock.Unlock()
-				objects = append(objects, list...)
-			}
+			l.update(api, id, controller, callback)
 		}()
 	}
 
 	wg.Wait()
-
-	return objects
 }
 
-func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, callback Callback) []catalog.Object {
-	objects := []catalog.Object{}
-
+func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, callback Callback) {
 	log.Printf("%v: refreshing LAN controller status", id)
 
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if info == nil {
 		log.Printf("Got %v response to get-device request for %v", info, id)
-	} else if list := l.store(id, *info, controller); list != nil {
-		objects = append(objects, list...)
+	} else {
+		l.Store(id, *info, controller)
 	}
 
 	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if status == nil {
 		log.Printf("Got %v response to get-status request for %v", status, id)
-	} else if list := l.store(id, *status, controller); list != nil {
-		objects = append(objects, list...)
+	} else {
+		l.Store(id, *status, controller)
 	}
 
 	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if cards == nil {
 		log.Printf("Got %v response to get-card-records request for %v", cards, id)
-	} else if list := l.store(id, *cards, controller); list != nil {
-		objects = append(objects, list...)
+	} else {
+		l.Store(id, *cards, controller)
 	}
 
 	if events, err := api.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
 		log.Printf("%v", err)
 	} else if events == nil {
 		log.Printf("Got %v response to get-event-range request for %v", events, id)
-	} else if list := l.store(id, *events, controller); list != nil {
-		objects = append(objects, list...)
+	} else {
+		l.Store(id, *events, controller)
 	}
 
 	for _, d := range []uint8{1, 2, 3, 4} {
@@ -248,8 +215,8 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 			log.Printf("%v", err)
 		} else if delay == nil {
 			log.Printf("Got %v response to get-door-delay request for %v", delay, id)
-		} else if list := l.store(id, *delay, controller); list != nil {
-			objects = append(objects, list...)
+		} else {
+			l.Store(id, *delay, controller)
 		}
 	}
 
@@ -258,8 +225,8 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 			log.Printf("%v", err)
 		} else if control == nil {
 			log.Printf("Got %v response to get-door-control request for %v", control, id)
-		} else if list := l.store(id, *control, controller); list != nil {
-			objects = append(objects, list...)
+		} else {
+			l.Store(id, *control, controller)
 		}
 	}
 
@@ -268,72 +235,6 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 	} else if callback != nil {
 		callback.Append(id, recent.Events)
 	}
-
-	return objects
-}
-
-func (l *LAN) store(id uint32, info interface{}, controller *Controller) []catalog.Object {
-	cache.guard.Lock()
-	defer cache.guard.Unlock()
-
-	objects := []catalog.Object{}
-	cached, ok := cache.cache[id]
-	if !ok {
-		cached = device{}
-	}
-
-	switch v := info.(type) {
-	case uhppoted.GetDeviceResponse:
-		addr := core.Address(v.Address)
-		cached.address = &addr
-		cached.touched = time.Now()
-		cache.cache[id] = cached
-
-	case uhppoted.GetStatusResponse:
-		datetime := types.DateTime(v.Status.SystemDateTime)
-		cached.datetime = &datetime
-		cached.touched = time.Now()
-		cache.cache[id] = cached
-
-	case uhppoted.GetCardRecordsResponse:
-		cards := v.Cards
-		cached.cards = &cards
-		cached.touched = time.Now()
-		cache.cache[id] = cached
-
-	case uhppoted.GetEventRangeResponse:
-		events := v.Events.Last
-		cached.events = events
-		cached.touched = time.Now()
-		cache.cache[id] = cached
-
-	case uhppoted.GetDoorDelayResponse:
-		if controller != nil {
-			if door, ok := controller.Doors[v.Door]; ok {
-				objects = append(objects, catalog.NewObject2(door, DoorDelay, v.Delay))
-			}
-		}
-
-	case uhppoted.GetDoorControlResponse:
-		if controller != nil {
-			if door, ok := controller.Doors[v.Door]; ok {
-				objects = append(objects, catalog.NewObject2(door, DoorControl, v.Control))
-			}
-		}
-
-	case acl.Diff:
-		if ok {
-			if len(v.Updated)+len(v.Added)+len(v.Deleted) > 0 {
-				cached.acl = types.StatusError
-			} else {
-				cached.acl = types.StatusOk
-			}
-
-			cache.cache[id] = cached
-		}
-	}
-
-	return objects
 }
 
 func (l *LAN) synchTime(controllers []*Controller) []catalog.Object {

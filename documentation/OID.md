@@ -27,6 +27,7 @@
 |    |      |        |- 0.2.1.0.2: <deleted>                                 #       deleted date/time
 |    |      |        |- 0.2.1.0.3: <modified>                                #       modified timestamp
 |    |      |        |- 0.2.1.0.4: <type>                                    #    type
+|    |      |        |- 0.2.1.0.5: <touched>                                 #    refreshed timestamp
 |    |      |
 |    |      |- 0.2.1.1: <name>                                               #    name
 |    |      |- 0.2.1.2: <ID>                                                 #    serial number

@@ -1,5 +1,7 @@
 ## v0.7.x
 
+- [ ] Can add new group with same name
+
 - [ ] Cookies
       - [ ] Make login cookie expire in 60s
       - [ ] Don't check login cookie except for login
@@ -8,6 +10,11 @@
 
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
+            - expire items from cache
+            - set cache expiry from config
+            - reinstate 'found' controllers (in Controllers.Refresh)
+            - DBC.Commit on return from AsObjects now overwrites stuff cached by LANx
+              - maybe have an 'ignore' list (??)
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
       - [ ] Rework 'update controllers after LAN edit'
@@ -31,21 +38,12 @@ Uncaught ReferenceError: onMenu is not defined
 onmouseleave @ system.html:17
 ```
 
-- [ ] Can add new group with same name
-
 ### IN PROGRESS
 
 - [ ] Rethink mark/sweep: with the way db.js works now, returning a 'deleted' field will
       recreate an object that has been swept and it's full of problems anyway
       - [ ] AsObjects should only return deleted field for deleted objects
-            - [x] interfaces
-            - [x] controllers
-            - [x] doors
-            - [x] cards
-            - [x] groups
             - [ ] unit test(s)
-      - [x] JS: sweep objects that have been deleted and not updated in a while
-            - [x] Verify it's working as expected
       - [ ] Sweep with DB timer rather than on refreshed (and remove 'DB.refreshed')
             - https://stackoverflow.com/questions/9271293/constructor-or-init-function-for-an-object
 
@@ -60,6 +58,7 @@ onmouseleave @ system.html:17
 - [ ] Genericize load/save
       - [ ] Embed controllers etc. in sys structs
       - [ ] Put subsystems into list for iterating
+      - [ ] Commonalise 'print'
       - [ ] MAYBE: groups, etc probably don't need to be structs anymore => typedef arrays
 
 - [ ] 'users' page
@@ -90,7 +89,6 @@ onmouseleave @ system.html:17
         - [ ] Scrollbar 'goes funny' if -webkit styles are modified
 
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
-  - [ ] Commonalise load/save/print implementation
   - [ ] `refresh` is overwriting pending group edits
   - [ ] Replace dataset.original with value from DB
   - [ ] Unit test for AsObjects
@@ -155,6 +153,7 @@ onmouseleave @ system.html:17
 - [ ] MemDB
       - Rather use sync.Map
       - keep historical copies on save (for undo/revert)
+        - git (?)
       - unit tests for ACL rules
 
 - [ ] Cards

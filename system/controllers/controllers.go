@@ -91,12 +91,13 @@ func (cc *ControllerSet) Load(blob json.RawMessage) error {
 
 	for _, c := range cc.Controllers {
 		if c.deviceID != nil && *c.deviceID != 0 {
-			catalog.PutController(*c.deviceID, c.OID)
-			catalog.PutV(c.OID, ControllerName, c.name)
-			catalog.PutV(c.OID, ControllerDoor1, c.Doors[1])
-			catalog.PutV(c.OID, ControllerDoor2, c.Doors[2])
-			catalog.PutV(c.OID, ControllerDoor3, c.Doors[3])
-			catalog.PutV(c.OID, ControllerDoor4, c.Doors[4])
+			oid := c.OID()
+			catalog.PutController(*c.deviceID, oid)
+			catalog.PutV(oid, ControllerName, c.name)
+			catalog.PutV(oid, ControllerDoor1, c.Doors[1])
+			catalog.PutV(oid, ControllerDoor2, c.Doors[2])
+			catalog.PutV(oid, ControllerDoor3, c.Doors[3])
+			catalog.PutV(oid, ControllerDoor4, c.Doors[4])
 		}
 	}
 
@@ -165,7 +166,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 	}
 
 	for _, c := range cc.Controllers {
-		if c != nil && c.OID.Contains(oid) {
+		if c != nil && c.OID().Contains(oid) {
 			return c.set(auth, oid, value, dbc)
 		}
 	}
@@ -178,10 +179,11 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
-			c.log(auth, "add", c.OID, "controller", fmt.Sprintf("Added 'new' controller"), "", "", dbc)
-			objects = append(objects, catalog.NewObject(c.OID, "new"))
-			objects = append(objects, catalog.NewObject2(c.OID, ControllerStatus, "new"))
-			objects = append(objects, catalog.NewObject2(c.OID, ControllerCreated, c.created))
+			OID := c.OID()
+			c.log(auth, "add", OID, "controller", fmt.Sprintf("Added 'new' controller"), "", "", dbc)
+			objects = append(objects, catalog.NewObject(OID, "new"))
+			objects = append(objects, catalog.NewObject2(OID, ControllerStatus, "new"))
+			objects = append(objects, catalog.NewObject2(OID, ControllerCreated, c.created))
 		}
 	}
 
@@ -200,34 +202,28 @@ func (cc *ControllerSet) Find(deviceID uint32) *Controller {
 	return nil
 }
 
-func (cc *ControllerSet) Refresh(callback Callback) []catalog.Object {
-	objects := []catalog.Object{}
+func (cc *ControllerSet) Refresh(callback Callback) {
+	cc.LAN.refresh(cc.Controllers, callback)
 
-	if list := cc.LAN.refresh(cc.Controllers, callback); list != nil {
-		objects = append(objects, list...)
-	}
-
-	// ... add 'found' controllers to list
-loop:
-	for k, _ := range cache.cache {
-		for _, c := range cc.Controllers {
-			if c.deviceID != nil && *c.deviceID == k && c.deleted == nil {
-				continue loop
-			}
-		}
-
-		id := k
-		oid := catalog.NewController(k)
-
-		cc.Controllers = append(cc.Controllers, &Controller{
-			OID:          catalog.OID(oid),
-			deviceID:     &id,
-			created:      types.DateTime(time.Now()),
-			unconfigured: true,
-		})
-	}
-
-	return objects
+	//	// ... add 'found' controllers to list
+	//loop:
+	//	for k, _ := range cache.cache {
+	//		for _, c := range cc.Controllers {
+	//			if c.deviceID != nil && *c.deviceID == k && c.deleted == nil {
+	//				continue loop
+	//			}
+	//		}
+	//
+	//		id := k
+	//		oid := catalog.NewController(k)
+	//
+	//		cc.Controllers = append(cc.Controllers, &Controller{
+	//			OID:          catalog.OID(oid),
+	//			deviceID:     &id,
+	//			created:      types.DateTime(time.Now()),
+	//			unconfigured: true,
+	//		})
+	//	}
 }
 
 func (cc *ControllerSet) Clone() ControllerSet {
@@ -362,7 +358,7 @@ func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error
 	}
 
 	record := c.clone()
-	record.OID = catalog.OID(catalog.NewController(id))
+	record.oid = catalog.OID(catalog.NewController(id))
 	record.created = types.DateTime(time.Now())
 
 	if auth != nil {
@@ -380,8 +376,9 @@ func validate(cc ControllerSet) error {
 	devices := map[uint32]string{}
 
 	for _, c := range cc.Controllers {
-		if c.OID == "" {
-			return fmt.Errorf("Invalid controller OID (%v)", c.OID)
+		OID := c.OID()
+		if OID == "" {
+			return fmt.Errorf("Invalid controller OID (%v)", OID)
 		}
 
 		if c.deleted != nil {
@@ -395,7 +392,7 @@ func validate(cc ControllerSet) error {
 				return fmt.Errorf("Duplicate controller ID (%v)", id)
 			}
 
-			devices[id] = string(c.OID)
+			devices[id] = string(OID)
 		}
 	}
 
