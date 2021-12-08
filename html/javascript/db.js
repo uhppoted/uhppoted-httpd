@@ -1,88 +1,100 @@
 import { schema } from './schema.js'
 
-export const DB = {
-  interfaces: new Map(),
-  controllers: new Map(),
-  doors: new Map(),
-  cards: new Map(),
-  groups: new Map(),
+class DBC {
+  constructor () {
+    this.interfaces = new Map()
+    this.controllers = new Map()
+    this.doors = new Map()
+    this.cards = new Map()
+    this.groups = new Map()
 
-  tables: {
-    events: {
-      first: null,
-      last: null,
-      events: new Map()
-    },
-
-    logs: {
-      first: null,
-      last: null,
-      logs: new Map()
+    this.init = function () {
+      setInterval(this.sweep, 15000)
     }
-  },
 
-  updated: function (tag, recordset) {
-    if (recordset) {
-      switch (tag) {
-        case 'objects':
-          recordset.forEach(o => object(o))
-          break
+    this.tables = {
+      events: {
+        first: null,
+        last: null,
+        events: new Map()
+      },
+
+      logs: {
+        first: null,
+        last: null,
+        logs: new Map()
       }
     }
-  },
 
-  delete: function (tag, oid) {
-    if (oid) {
-      switch (tag) {
-        case 'interfaces':
-          this.interfaces.delete(oid)
-          break
-
-        case 'controllers':
-          this.controllers.delete(oid)
-          break
-
-        case 'doors':
-          this.doors.delete(oid)
-          break
-
-        case 'cards':
-          this.cards.delete(oid)
-          break
-
-        case 'groups':
-          this.groups.delete(oid)
-          break
+    this.updated = function (tag, recordset) {
+      if (recordset) {
+        switch (tag) {
+          case 'objects':
+            recordset.forEach(o => object(o))
+            break
+        }
       }
     }
-  },
 
-  events: function () {
-    return this.tables.events.events
-  },
+    this.delete = function (tag, oid) {
+      if (oid) {
+        switch (tag) {
+          case 'interfaces':
+            this.interfaces.delete(oid)
+            break
 
-  firstEvent: function () {
-    return this.tables.events.first
-  },
+          case 'controllers':
+            this.controllers.delete(oid)
+            break
 
-  lastEvent: function () {
-    return this.tables.events.last
-  },
+          case 'doors':
+            this.doors.delete(oid)
+            break
 
-  logs: function () {
-    return this.tables.logs.logs
-  },
+          case 'cards':
+            this.cards.delete(oid)
+            break
 
-  firstLog: function () {
-    return this.tables.logs.first
-  },
+          case 'groups':
+            this.groups.delete(oid)
+            break
+        }
+      }
+    }
 
-  lastLog: function () {
-    return this.tables.logs.last
+    this.events = function () {
+      return this.tables.events.events
+    }
+
+    this.firstEvent = function () {
+      return this.tables.events.first
+    }
+
+    this.lastEvent = function () {
+      return this.tables.events.last
+    }
+
+    this.logs = function () {
+      return this.tables.logs.logs
+    }
+
+    this.firstLog = function () {
+      return this.tables.logs.first
+    }
+
+    this.lastLog = function () {
+      return this.tables.logs.last
+    }
+
+    this.sweep = function () {
+      sweep()
+    }
+
+    this.init()
   }
 }
 
-setInterval(sweep, 15000)
+export const DB = new DBC()
 
 function object (o) {
   const oid = o.OID
