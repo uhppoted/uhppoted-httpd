@@ -467,7 +467,9 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			}
 
 		case OID.Append(ControllerEndpointAddress):
-			if addr, err := core.ResolveAddr(value); err != nil {
+			if c.deleted != nil {
+				return nil, fmt.Errorf("Controller has been deleted")
+			} else if addr, err := core.ResolveAddr(value); err != nil {
 				return nil, err
 			} else if err := f("address", addr); err != nil {
 				return nil, err
@@ -486,7 +488,9 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			}
 
 		case OID.Append(ControllerDateTimeCurrent):
-			if tz, err := types.Timezone(value); err != nil {
+			if c.deleted != nil {
+				return nil, fmt.Errorf("Controller has been deleted")
+			} else if tz, err := types.Timezone(value); err != nil {
 				return nil, err
 			} else if err := f("timezone", tz); err != nil {
 				return nil, err
@@ -524,7 +528,9 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			}
 
 		case OID.Append(ControllerDoor1):
-			if err := f("door[1]", value); err != nil {
+			if c.deleted != nil {
+				return nil, fmt.Errorf("Controller has been deleted")
+			} else if err := f("door[1]", value); err != nil {
 				return nil, err
 			} else {
 				p := catalog.GetV(catalog.OID(c.Doors[1]), catalog.DoorName)
@@ -544,7 +550,9 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			}
 
 		case OID.Append(ControllerDoor2):
-			if err := f("door[2]", value); err != nil {
+			if c.deleted != nil {
+				return nil, fmt.Errorf("Controller has been deleted")
+			} else if err := f("door[2]", value); err != nil {
 				return nil, err
 			} else {
 				p := catalog.GetV(catalog.OID(c.Doors[2]), catalog.DoorName)
@@ -564,7 +572,9 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			}
 
 		case OID.Append(ControllerDoor3):
-			if err := f("door[3]", value); err != nil {
+			if c.deleted != nil {
+				return nil, fmt.Errorf("Controller has been deleted")
+			} else if err := f("door[3]", value); err != nil {
 				return nil, err
 			} else {
 				p := catalog.GetV(catalog.OID(c.Doors[3]), catalog.DoorName)
@@ -584,7 +594,9 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			}
 
 		case OID.Append(ControllerDoor4):
-			if err := f("door[4]", value); err != nil {
+			if c.deleted != nil {
+				return nil, fmt.Errorf("Controller has been deleted")
+			} else if err := f("door[4]", value); err != nil {
 				return nil, err
 			} else {
 				p := catalog.GetV(catalog.OID(c.Doors[4]), catalog.DoorName)

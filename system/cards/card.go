@@ -238,7 +238,9 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			}
 
 		case oid == c.OID.Append(CardFrom):
-			if err := f("from", value); err != nil {
+			if c.deleted != nil {
+				return nil, fmt.Errorf("Card has been deleted")
+			} else if err := f("from", value); err != nil {
 				return nil, err
 			} else if from, err := types.ParseDate(value); err != nil {
 				return nil, err
@@ -259,7 +261,9 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			}
 
 		case oid == c.OID.Append(CardTo):
-			if err := f("to", value); err != nil {
+			if c.deleted != nil {
+				return nil, fmt.Errorf("Card has been deleted")
+			} else if err := f("to", value); err != nil {
 				return nil, err
 			} else if to, err := types.ParseDate(value); err != nil {
 				return nil, err
@@ -280,7 +284,9 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			}
 
 		case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
-			if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
+			if c.deleted != nil {
+				return nil, fmt.Errorf("Card has been deleted")
+			} else if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
 				gid := m[1]
 				k := catalog.GroupsOID.AppendS(gid)
 

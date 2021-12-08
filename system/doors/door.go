@@ -197,7 +197,9 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		case d.OID.Append(DoorDelay):
 			delay := d.delay
 
-			if err := f("delay", value); err != nil {
+			if d.deleted != nil {
+				return nil, fmt.Errorf("Door has been deleted")
+			} else if err := f("delay", value); err != nil {
 				return nil, err
 			} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
 				return nil, err
@@ -212,7 +214,9 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			}
 
 		case d.OID.Append(DoorControl):
-			if err := f("mode", value); err != nil {
+			if d.deleted != nil {
+				return nil, fmt.Errorf("Door has been deleted")
+			} else if err := f("mode", value); err != nil {
 				return nil, err
 			} else {
 				mode := d.mode

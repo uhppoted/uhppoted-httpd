@@ -161,7 +161,9 @@ func (l *LANx) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			}
 
 		case l.OID.Append(LANBindAddress):
-			if addr, err := core.ResolveBindAddr(value); err != nil {
+			if l.deleted != nil {
+				return nil, fmt.Errorf("LAN has been deleted")
+			} else if addr, err := core.ResolveBindAddr(value); err != nil {
 				return nil, err
 			} else if err := f("bind", addr); err != nil {
 				return nil, err
@@ -179,7 +181,9 @@ func (l *LANx) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			}
 
 		case l.OID.Append(LANBroadcastAddress):
-			if addr, err := core.ResolveBroadcastAddr(value); err != nil {
+			if l.deleted != nil {
+				return nil, fmt.Errorf("LAN has been deleted")
+			} else if addr, err := core.ResolveBroadcastAddr(value); err != nil {
 				return nil, err
 			} else if err := f("broadcast", addr); err != nil {
 				return nil, err
@@ -197,7 +201,9 @@ func (l *LANx) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			}
 
 		case l.OID.Append(LANListenAddress):
-			if addr, err := core.ResolveListenAddr(value); err != nil {
+			if l.deleted != nil {
+				return nil, fmt.Errorf("LAN has been deleted")
+			} else if addr, err := core.ResolveListenAddr(value); err != nil {
 				return nil, err
 			} else if err = f("listen", addr); err != nil {
 				return nil, err

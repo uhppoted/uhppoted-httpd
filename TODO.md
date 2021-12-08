@@ -47,10 +47,10 @@ onmouseleave @ system.html:17
 
       - [ ] Fail with error on update deleted object
             e.g. deleted on one browser, edit on another without refresh in between
-            - [ ] interfaces
-            - [ ] controllers
-            - [ ] doors
-            - [ ] cards
+            - [x] interfaces
+            - [x] controllers
+            - [x] doors
+            - [x] cards
             - [ ] unit test
 
 - [ ] Genericize load/save
