@@ -18,8 +18,6 @@ export function refreshed () {
       }
     }
   })
-
-  DB.refreshed('doors')
 }
 
 function updateFromDB (oid, record) {

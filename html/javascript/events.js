@@ -76,7 +76,6 @@ export function refreshed () {
   })()
     .then(() => g())
     .then(() => h())
-    .then(() => DB.refreshed('events'))
     .catch(err => console.error(err))
 }
 

@@ -61,7 +61,6 @@ export function refreshed () {
     }
   })()
     .then(() => g())
-    .then(() => DB.refreshed('cards'))
     .catch(err => console.error(err))
 }
 

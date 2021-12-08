@@ -19,8 +19,6 @@ export function refreshed () {
       }
     }
   })
-
-  DB.refreshed('controllers')
 }
 
 function updateFromDB (oid, record) {

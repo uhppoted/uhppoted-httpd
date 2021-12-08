@@ -57,10 +57,6 @@ export const DB = {
     }
   },
 
-  refreshed: function (tag) {
-    sweep()
-  },
-
   events: function () {
     return this.tables.events.events
   },
@@ -85,6 +81,8 @@ export const DB = {
     return this.tables.logs.last
   }
 }
+
+setInterval(sweep, 15000)
 
 function object (o) {
   const oid = o.OID

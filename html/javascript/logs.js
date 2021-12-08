@@ -76,7 +76,6 @@ export function refreshed () {
   })()
     .then(() => g())
     .then(() => h())
-    .then(() => DB.refreshed('logs'))
     .catch(err => console.error(err))
 }
 

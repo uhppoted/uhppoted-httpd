@@ -35,6 +35,10 @@ Uncaught ReferenceError: onMenu is not defined
     at HTMLDivElement.onmouseleave (system.html:17)
 onmouseleave @ system.html:17
 ```
+```
+crbug/1173575, non-JS module files deprecated.
+(anonymous) @ VM10:6772
+```
 
 ### IN PROGRESS
 
@@ -42,7 +46,7 @@ onmouseleave @ system.html:17
       recreate an object that has been swept and it's full of problems anyway
       - [ ] AsObjects should only return deleted field for deleted objects
             - [ ] unit test(s)
-      - [ ] Sweep with DB timer rather than on refreshed (and remove 'DB.refreshed')
+      - [x] Sweep with DB timer rather than on refreshed (and remove 'DB.refreshed')
             - https://stackoverflow.com/questions/9271293/constructor-or-init-function-for-an-object
 
       - [ ] Fail with error on update deleted object

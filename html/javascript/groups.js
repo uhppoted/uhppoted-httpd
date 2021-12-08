@@ -19,8 +19,6 @@ export function refreshed () {
       }
     }
   })
-
-  DB.refreshed('groups')
 }
 
 function updateFromDB (oid, record) {
