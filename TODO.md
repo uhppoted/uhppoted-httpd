@@ -11,6 +11,8 @@
             - [x] Expire items from cache
             - [ ] Reinstate 'found' controllers
             - [ ] Delete 'found' controllers on expiry
+            - [x] Fix ACL stuff (compare/update)
+            - [x] Move ACL stuff to Controllers
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
       - [ ] Rework 'update controllers after LAN edit'

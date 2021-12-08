@@ -9,9 +9,11 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"sort"
 	"sync"
 	"time"
 
+	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -205,7 +207,7 @@ func (cc *ControllerSet) Find(deviceID uint32) *Controller {
 func (cc *ControllerSet) Refresh(callback Callback) {
 	cc.LAN.refresh(cc.Controllers, callback)
 
-		// ... add 'found' controllers to list
+	// ... add 'found' controllers to list
 	//loop:
 	//	for k, _ := range cache.cache {
 	//		for _, c := range cc.Controllers {
@@ -225,7 +227,7 @@ func (cc *ControllerSet) Refresh(callback Callback) {
 	//		})
 	//	}
 
-    // ... 'expire' controller values that haven't been updated in a while
+	// ... 'expire' controller values that haven't been updated in a while
 	expired := time.Now().Add(-windows.cacheExpiry)
 	for _, c := range cc.Controllers {
 		touched := time.Time(c.created)
@@ -249,7 +251,6 @@ func (cc *ControllerSet) Refresh(callback Callback) {
 					catalog.PutV(door, DoorControl, nil)
 				}
 			}
-
 
 			log.Printf("Controller %v cached values expired", c)
 		}
@@ -366,11 +367,94 @@ func (cc *ControllerSet) Sync() []catalog.Object {
 }
 
 func (cc *ControllerSet) Compare(permissions acl.ACL) error {
-	return cc.LAN.compareACL(cc.Controllers, permissions)
+	log.Printf("Comparing ACL")
+
+	devices := []uhppote.Device{}
+	api := cc.LAN.api(cc.Controllers)
+	for _, v := range api.UHPPOTE.DeviceList() {
+		device := v
+		devices = append(devices, device)
+	}
+
+	current, errors := acl.GetACL(api.UHPPOTE, devices)
+	for _, err := range errors {
+		warn(err)
+	}
+
+	compare, err := acl.Compare(permissions, current)
+	if err != nil {
+		return err
+	} else if compare == nil {
+		return fmt.Errorf("Invalid ACL compare report: %v", compare)
+	}
+
+	for k, v := range compare {
+		log.Printf("ACL %v - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", k, len(v.Unchanged), len(v.Updated), len(v.Added), len(v.Deleted))
+	}
+
+	diff := acl.SystemDiff(compare)
+	report := diff.Consolidate()
+	if report == nil {
+		return fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
+	}
+
+	unchanged := len(report.Unchanged)
+	updated := len(report.Updated)
+	added := len(report.Added)
+	deleted := len(report.Deleted)
+
+	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
+
+	for _, c := range cc.Controllers {
+		for _, d := range devices {
+			if c.DeviceID() == d.DeviceID {
+				rs := compare[c.DeviceID()]
+				if len(rs.Updated)+len(rs.Added)+len(rs.Deleted) > 0 {
+					catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusError)
+				} else {
+					catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusOk)
+				}
+
+				break
+			}
+		}
+	}
+
+	return nil
 }
 
-func (cc *ControllerSet) UpdateACL(acl acl.ACL) {
-	cc.LAN.updateACL(cc.Controllers, acl)
+func (cc *ControllerSet) UpdateACL(permissions acl.ACL) {
+	log.Printf("Updating ACL")
+
+	api := cc.LAN.api(cc.Controllers)
+	rpt, errors := acl.PutACL(api.UHPPOTE, permissions, false)
+	for _, err := range errors {
+		warn(err)
+	}
+
+	keys := []uint32{}
+	for k, _ := range rpt {
+		keys = append(keys, k)
+	}
+
+	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
+
+	var msg bytes.Buffer
+	fmt.Fprintf(&msg, "ACL updated\n")
+
+	for _, k := range keys {
+		v := rpt[k]
+		fmt.Fprintf(&msg, "                    %v", k)
+		fmt.Fprintf(&msg, " unchanged:%-3v", len(v.Unchanged))
+		fmt.Fprintf(&msg, " updated:%-3v", len(v.Updated))
+		fmt.Fprintf(&msg, " added:%-3v", len(v.Added))
+		fmt.Fprintf(&msg, " deleted:%-3v", len(v.Deleted))
+		fmt.Fprintf(&msg, " failed:%-3v", len(v.Failed))
+		fmt.Fprintf(&msg, " errored:%-3v", len(v.Errored))
+		fmt.Fprintln(&msg)
+	}
+
+	log.Printf("%v", string(msg.Bytes()))
 }
 
 func (cc *ControllerSet) Validate() error {

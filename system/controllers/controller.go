@@ -655,40 +655,6 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 	return objects, nil
 }
 
-func (c *Controller) deserialize(bytes []byte) error {
-	created = created.Add(1 * time.Minute)
-
-	record := struct {
-		OID      catalog.OID      `json:"OID"`
-		Name     string           `json:"name,omitempty"`
-		DeviceID *uint32          `json:"device-id,omitempty"`
-		Address  *core.Address    `json:"address,omitempty"`
-		Doors    map[uint8]string `json:"doors"`
-		TimeZone *string          `json:"timezone,omitempty"`
-		Created  types.DateTime   `json:"created,omitempty"`
-	}{
-		Created: created,
-	}
-
-	if err := json.Unmarshal(bytes, &record); err != nil {
-		return err
-	}
-
-	c.oid = record.OID
-	c.name = strings.TrimSpace(record.Name)
-	c.deviceID = record.DeviceID
-	c.IP = record.Address
-	c.Doors = map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
-	c.TimeZone = record.TimeZone
-	c.created = record.Created
-
-	for k, v := range record.Doors {
-		c.Doors[k] = catalog.OID(v)
-	}
-
-	return nil
-}
-
 func (c *Controller) serialize() ([]byte, error) {
 	if c == nil || c.deleted != nil || c.unconfigured {
 		return nil, nil
@@ -721,6 +687,40 @@ func (c *Controller) serialize() ([]byte, error) {
 	}
 
 	return json.MarshalIndent(record, "", "  ")
+}
+
+func (c *Controller) deserialize(bytes []byte) error {
+	created = created.Add(1 * time.Minute)
+
+	record := struct {
+		OID      catalog.OID      `json:"OID"`
+		Name     string           `json:"name,omitempty"`
+		DeviceID *uint32          `json:"device-id,omitempty"`
+		Address  *core.Address    `json:"address,omitempty"`
+		Doors    map[uint8]string `json:"doors"`
+		TimeZone *string          `json:"timezone,omitempty"`
+		Created  types.DateTime   `json:"created,omitempty"`
+	}{
+		Created: created,
+	}
+
+	if err := json.Unmarshal(bytes, &record); err != nil {
+		return err
+	}
+
+	c.oid = record.OID
+	c.name = strings.TrimSpace(record.Name)
+	c.deviceID = record.DeviceID
+	c.IP = record.Address
+	c.Doors = map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
+	c.TimeZone = record.TimeZone
+	c.created = record.Created
+
+	for k, v := range record.Doors {
+		c.Doors[k] = catalog.OID(v)
+	}
+
+	return nil
 }
 
 func (c *Controller) clone() *Controller {

@@ -16,7 +16,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
-	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
@@ -247,44 +246,44 @@ func (l LANx) Clone() LANx {
 func (l *LANx) Refresh() {
 }
 
-func (l *LANx) Store(id uint32, info interface{}, controller Controller) {
+func (l *LANx) Store(c Controller, info interface{}) {
 	switch v := info.(type) {
 	case uhppoted.GetDeviceResponse:
 		addr := core.Address(v.Address)
-		catalog.PutV(controller.OID(), ControllerTouched, time.Now())
-		catalog.PutV(controller.OID(), ControllerEndpointAddress, addr)
+		catalog.PutV(c.OID(), ControllerTouched, time.Now())
+		catalog.PutV(c.OID(), ControllerEndpointAddress, addr)
 
 	case uhppoted.GetStatusResponse:
 		datetime := types.DateTime(v.Status.SystemDateTime)
-		catalog.PutV(controller.OID(), ControllerTouched, time.Now())
-		catalog.PutV(controller.OID(), ControllerDateTimeCurrent, datetime)
+		catalog.PutV(c.OID(), ControllerTouched, time.Now())
+		catalog.PutV(c.OID(), ControllerDateTimeCurrent, datetime)
 
 	case uhppoted.GetCardRecordsResponse:
 		cards := v.Cards
-		catalog.PutV(controller.OID(), ControllerTouched, time.Now())
-		catalog.PutV(controller.OID(), ControllerCardsCount, cards)
+		catalog.PutV(c.OID(), ControllerTouched, time.Now())
+		catalog.PutV(c.OID(), ControllerCardsCount, cards)
 
 	case uhppoted.GetEventRangeResponse:
 		events := v.Events.Last
-		catalog.PutV(controller.OID(), ControllerTouched, time.Now())
-		catalog.PutV(controller.OID(), ControllerEventsCount, events)
+		catalog.PutV(c.OID(), ControllerTouched, time.Now())
+		catalog.PutV(c.OID(), ControllerEventsCount, events)
 
 	case uhppoted.GetDoorDelayResponse:
-		if door, ok := controller.Door(v.Door); ok {
+		if door, ok := c.Door(v.Door); ok {
 			catalog.PutV(door, DoorDelay, v.Delay)
 		}
 
 	case uhppoted.GetDoorControlResponse:
-		if door, ok := controller.Door(v.Door); ok {
+		if door, ok := c.Door(v.Door); ok {
 			catalog.PutV(door, DoorControl, v.Control)
 		}
 
-	case acl.Diff:
-		if len(v.Updated)+len(v.Added)+len(v.Deleted) > 0 {
-			catalog.PutV(controller.OID(), ControllerCardsStatus, types.StatusError)
-		} else {
-			catalog.PutV(controller.OID(), ControllerCardsStatus, types.StatusOk)
-		}
+		//	case acl.Diff:
+		//		if len(v.Updated)+len(v.Added)+len(v.Deleted) > 0 {
+		//			catalog.PutV(controller.OID(), ControllerCardsStatus, types.StatusError)
+		//		} else {
+		//			catalog.PutV(controller.OID(), ControllerCardsStatus, types.StatusOk)
+		//		}
 	}
 }
 

@@ -1,22 +1,18 @@
 package controllers
 
 import (
-	"bytes"
 	"fmt"
 	"log"
-	"sort"
 	"sync"
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
-	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/types"
-	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
@@ -41,87 +37,6 @@ func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {
 	}
 
 	return l.API(devices)
-}
-
-func (l *LAN) updateACL(controllers []*Controller, permissions acl.ACL) {
-	log.Printf("Updating ACL")
-
-	api := l.api(controllers)
-	rpt, errors := acl.PutACL(api.UHPPOTE, permissions, false)
-	for _, err := range errors {
-		warn(err)
-	}
-
-	keys := []uint32{}
-	for k, _ := range rpt {
-		keys = append(keys, k)
-	}
-
-	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
-
-	var msg bytes.Buffer
-	fmt.Fprintf(&msg, "ACL updated\n")
-
-	for _, k := range keys {
-		v := rpt[k]
-		fmt.Fprintf(&msg, "                    %v", k)
-		fmt.Fprintf(&msg, " unchanged:%-3v", len(v.Unchanged))
-		fmt.Fprintf(&msg, " updated:%-3v", len(v.Updated))
-		fmt.Fprintf(&msg, " added:%-3v", len(v.Added))
-		fmt.Fprintf(&msg, " deleted:%-3v", len(v.Deleted))
-		fmt.Fprintf(&msg, " failed:%-3v", len(v.Failed))
-		fmt.Fprintf(&msg, " errored:%-3v", len(v.Errored))
-		fmt.Fprintln(&msg)
-	}
-
-	log.Printf("%v", string(msg.Bytes()))
-}
-
-func (l *LAN) compareACL(controllers []*Controller, permissions acl.ACL) error {
-	log.Printf("Comparing ACL")
-
-	devices := []uhppote.Device{}
-	api := l.api(controllers)
-	for _, v := range api.UHPPOTE.DeviceList() {
-		device := v
-		devices = append(devices, device)
-	}
-
-	current, errors := acl.GetACL(api.UHPPOTE, devices)
-	for _, err := range errors {
-		warn(err)
-	}
-
-	compare, err := acl.Compare(permissions, current)
-	if err != nil {
-		return err
-	} else if compare == nil {
-		return fmt.Errorf("Invalid ACL compare report: %v", compare)
-	}
-
-	for k, v := range compare {
-		log.Printf("ACL %v - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", k, len(v.Unchanged), len(v.Updated), len(v.Added), len(v.Deleted))
-	}
-
-	diff := acl.SystemDiff(compare)
-	report := diff.Consolidate()
-	if report == nil {
-		return fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
-	}
-
-	unchanged := len(report.Unchanged)
-	updated := len(report.Updated)
-	added := len(report.Added)
-	deleted := len(report.Deleted)
-
-	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
-
-	for _, v := range devices {
-		id := v.DeviceID
-		l.Store(id, compare[id], nil)
-	}
-
-	return nil
 }
 
 // Possibly a long-running function - expects to be invoked from an external goroutine
@@ -183,7 +98,7 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 	} else if info == nil {
 		log.Printf("Got %v response to get-device request for %v", info, id)
 	} else {
-		l.Store(id, *info, controller)
+		l.Store(controller, *info)
 	}
 
 	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
@@ -191,7 +106,7 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 	} else if status == nil {
 		log.Printf("Got %v response to get-status request for %v", status, id)
 	} else {
-		l.Store(id, *status, controller)
+		l.Store(controller, *status)
 	}
 
 	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
@@ -199,7 +114,7 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 	} else if cards == nil {
 		log.Printf("Got %v response to get-card-records request for %v", cards, id)
 	} else {
-		l.Store(id, *cards, controller)
+		l.Store(controller, *cards)
 	}
 
 	if events, err := api.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
@@ -207,7 +122,7 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 	} else if events == nil {
 		log.Printf("Got %v response to get-event-range request for %v", events, id)
 	} else {
-		l.Store(id, *events, controller)
+		l.Store(controller, *events)
 	}
 
 	for _, d := range []uint8{1, 2, 3, 4} {
@@ -216,7 +131,7 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 		} else if delay == nil {
 			log.Printf("Got %v response to get-door-delay request for %v", delay, id)
 		} else {
-			l.Store(id, *delay, controller)
+			l.Store(controller, *delay)
 		}
 	}
 
@@ -226,7 +141,7 @@ func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, 
 		} else if control == nil {
 			log.Printf("Got %v response to get-door-control request for %v", control, id)
 		} else {
-			l.Store(id, *control, controller)
+			l.Store(controller, *control)
 		}
 	}
 
