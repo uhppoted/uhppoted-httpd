@@ -109,7 +109,7 @@
 
     window.retheme = retheme
     window.dismiss = dismiss
-    window.onMenu = onMenu
+    window.onMenuX = onMenu
     window.onSignOut = onSignOut
     window.onReload = onReload
 
@@ -137,7 +137,14 @@
     var constants = {
       theme: {{$.context.Theme}}
     }
-  </script>
 
+    function onMenu(event, state) {
+      if (window.onMenuX) {
+        window.onMenuX(event, state)
+      } else {
+        console.debug('onMenu is not defined')
+      }
+    }
+  </script>
 
 </html>

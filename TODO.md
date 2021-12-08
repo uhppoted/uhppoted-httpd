@@ -29,15 +29,11 @@
       - [ ] Refactor DateTime out to use core implementation only
       - [ ] Implement Ptr() for the repetitive assign to variable to take address thing
 
-- [ ] Recurring HTML error
+- [x] Recurring HTML error
 ```
 Uncaught ReferenceError: onMenu is not defined
     at HTMLDivElement.onmouseleave (system.html:17)
 onmouseleave @ system.html:17
-```
-```
-crbug/1173575, non-JS module files deprecated.
-(anonymous) @ VM10:6772
 ```
 
 ### IN PROGRESS
