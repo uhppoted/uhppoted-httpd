@@ -8,11 +8,9 @@
 
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-            - expire items from cache
-            - set cache expiry from config
-            - reinstate 'found' controllers (in Controllers.Refresh)
-            - DBC.Commit on return from AsObjects now overwrites stuff cached by LANx
-              - maybe have an 'ignore' list (??)
+            - [x] Expire items from cache
+            - [ ] Reinstate 'found' controllers
+            - [ ] Delete 'found' controllers on expiry
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
       - [ ] Rework 'update controllers after LAN edit'
@@ -51,7 +49,6 @@ onmouseleave @ system.html:17
             - [ ] controllers
             - [ ] doors
             - [ ] cards
-            - [x] groups
             - [ ] unit test
 
 - [ ] Genericize load/save

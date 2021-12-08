@@ -92,7 +92,7 @@ undaemonize: build
 	sudo $(CMD) undaemonize
 
 run: build
-	$(CMD) --debug --console
+	$(CMD) --debug --console > ../runtime/debug.log
 
 delve: build
 	dlv exec ./bin/uhppoted-httpd -- --debug --console

@@ -28,8 +28,6 @@ type LANx struct {
 	ListenAddress    core.ListenAddr
 	Debug            bool
 
-	cacheExpiry time.Duration
-
 	created      types.DateTime
 	deleted      *types.DateTime
 	unconfigured bool
@@ -245,15 +243,8 @@ func (l LANx) Clone() LANx {
 	}
 }
 
-// Possibly a long-running function - expects to be invoked from an external goroutine
+// A long-running function i.e. expects to be invoked from an external goroutine
 func (l *LANx) Refresh() {
-	//	expired := time.Now().Add(-l.cacheExpiry)
-	//	for k, v := range cache.cache {
-	//		if v.touched.Before(expired) {
-	//			delete(cache.cache, k)
-	//			log.Printf("Controller %v cache entry expired", k)
-	//		}
-	//	}
 }
 
 func (l *LANx) Store(id uint32, info interface{}, controller Controller) {
@@ -326,11 +317,9 @@ func (l *LANx) deserialize(bytes []byte) error {
 		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
 		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
-		CacheExpiry      time.Duration      `json:"cache-expirty,omitempty"`
 		Created          types.DateTime     `json:"created,omitempty"`
 	}{
-		CacheExpiry: 120 * time.Second,
-		Created:     created,
+		Created: created,
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -342,7 +331,6 @@ func (l *LANx) deserialize(bytes []byte) error {
 	l.BindAddress = record.BindAddress
 	l.BroadcastAddress = record.BroadcastAddress
 	l.ListenAddress = record.ListenAddress
-	l.cacheExpiry = record.CacheExpiry
 	l.created = record.Created
 	l.unconfigured = false
 

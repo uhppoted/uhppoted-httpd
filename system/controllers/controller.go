@@ -340,37 +340,37 @@ func (c *Controller) get() *cached {
 		acl: types.StatusUnknown,
 	}
 
-	if v := catalog.GetV(c.OID(), ControllerTouched); v != nil {
+	if v := catalog.GetV(c.oid, ControllerTouched); v != nil {
 		if touched, ok := v.(time.Time); ok {
 			e.touched = touched
 		}
 	}
 
-	if v := catalog.GetV(c.OID(), ControllerEndpointAddress); v != nil {
+	if v := catalog.GetV(c.oid, ControllerEndpointAddress); v != nil {
 		if address, ok := v.(core.Address); ok {
 			e.address = &address
 		}
 	}
 
-	if v := catalog.GetV(c.OID(), ControllerDateTimeCurrent); v != nil {
+	if v := catalog.GetV(c.oid, ControllerDateTimeCurrent); v != nil {
 		if datetime, ok := v.(types.DateTime); ok {
 			e.datetime = &datetime
 		}
 	}
 
-	if v := catalog.GetV(c.OID(), ControllerCardsCount); v != nil {
+	if v := catalog.GetV(c.oid, ControllerCardsCount); v != nil {
 		if cards, ok := v.(uint32); ok {
 			e.cards = &cards
 		}
 	}
 
-	if v := catalog.GetV(c.OID(), ControllerEventsCount); v != nil {
+	if v := catalog.GetV(c.oid, ControllerEventsCount); v != nil {
 		if events, ok := v.(*uint32); ok {
 			e.events = events
 		}
 	}
 
-	if v := catalog.GetV(c.OID(), ControllerCardsStatus); v != nil {
+	if v := catalog.GetV(c.oid, ControllerCardsStatus); v != nil {
 		if acl, ok := v.(types.Status); ok {
 			e.acl = acl
 		}

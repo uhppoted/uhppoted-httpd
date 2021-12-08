@@ -205,7 +205,7 @@ func (cc *ControllerSet) Find(deviceID uint32) *Controller {
 func (cc *ControllerSet) Refresh(callback Callback) {
 	cc.LAN.refresh(cc.Controllers, callback)
 
-	//	// ... add 'found' controllers to list
+		// ... add 'found' controllers to list
 	//loop:
 	//	for k, _ := range cache.cache {
 	//		for _, c := range cc.Controllers {
@@ -224,6 +224,36 @@ func (cc *ControllerSet) Refresh(callback Callback) {
 	//			unconfigured: true,
 	//		})
 	//	}
+
+    // ... 'expire' controller values that haven't been updated in a while
+	expired := time.Now().Add(-windows.cacheExpiry)
+	for _, c := range cc.Controllers {
+		touched := time.Time(c.created)
+
+		if v := catalog.GetV(c.OID(), ControllerTouched); v != nil {
+			if t, ok := v.(time.Time); ok {
+				touched = t
+			}
+		}
+
+		if touched.Before(expired) {
+			catalog.PutV(c.OID(), ControllerEndpointAddress, nil)
+			catalog.PutV(c.OID(), ControllerDateTimeCurrent, nil)
+			catalog.PutV(c.OID(), ControllerCardsCount, nil)
+			catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusUnknown)
+			catalog.PutV(c.OID(), ControllerEventsCount, nil)
+
+			for _, d := range []uint8{1, 2, 3, 4} {
+				if door, ok := c.Door(d); ok {
+					catalog.PutV(door, DoorDelay, nil)
+					catalog.PutV(door, DoorControl, nil)
+				}
+			}
+
+
+			log.Printf("Controller %v cached values expired", c)
+		}
+	}
 }
 
 func (cc *ControllerSet) Clone() ControllerSet {
