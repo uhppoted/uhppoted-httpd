@@ -72,7 +72,7 @@ func (l *LANx) AsObjects() []interface{} {
 	}
 
 	objects := []interface{}{
-		catalog.NewObject(l.OID, types.StatusUncertain),
+		catalog.NewObject(l.OID, ""),
 		catalog.NewObject2(l.OID, LANStatus, l.status()),
 		catalog.NewObject2(l.OID, LANCreated, l.created),
 		catalog.NewObject2(l.OID, LANDeleted, l.deleted),

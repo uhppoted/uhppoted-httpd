@@ -14,6 +14,7 @@
             - [ ] MAYBE: move refresh into Controller
             - [ ] MAYBE: move ACL stuff into interfaces.LAN
             - [ ] Fix the whole 'LAN.api' mess - assign controllers to LAN
+            - [ ] Find a cleaner way to handle deleted controllers
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
       - [ ] Rework 'update controllers after LAN edit'
@@ -33,11 +34,21 @@
 ### IN PROGRESS
 
 - [ ] Rethink mark/sweep
-      - [ ] AsObjects should only return deleted field for deleted objects
-            - [ ] unit test(s)
+      - [x] AsObjects should only return deleted field for deleted objects
+            - unit test(s)
+              - [x] interfaces
+              - [x] controllers
+              - [x] cards
+              - [x] doors
+              - [x] groups
 
       - [ ] Fail with error on update deleted object
-            - [ ] unit test
+            - unit test(s)
+              - [ ] interfaces
+              - [ ] controllers
+              - [ ] cards
+              - [ ] doors
+              - [ ] groups
 
 - [ ] Genericize load/save
       - [ ] Embed controllers etc. in sys structs
