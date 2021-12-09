@@ -32,8 +32,10 @@ func (l LAN) clone() LAN {
 
 func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {
 	devices := []interfaces.Controller{}
-	for _, v := range controllers {
-		devices = append(devices, v)
+	for _, c := range controllers {
+		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
+			devices = append(devices, c)
+		}
 	}
 
 	return l.API(devices)
@@ -41,8 +43,10 @@ func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {
 
 func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
 	devices := []interfaces.Controller{}
-	for _, v := range controllers {
-		devices = append(devices, v)
+	for _, c := range controllers {
+		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
+			devices = append(devices, c)
+		}
 	}
 
 	return l.Search(devices)
@@ -54,7 +58,7 @@ func (l *LAN) refresh(controllers []*Controller, callback Callback) {
 
 	list := map[uint32]struct{}{}
 	for _, c := range controllers {
-		if c.deviceID != nil && *c.deviceID != 0 {
+		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
 			list[*c.deviceID] = struct{}{}
 		}
 	}
@@ -86,7 +90,7 @@ func (l *LAN) refresh(controllers []*Controller, callback Callback) {
 
 			var controller *Controller
 			for _, c := range controllers {
-				if c.deviceID != nil && *c.deviceID == id {
+				if c.DeviceID() == id && c.deleted == nil {
 					controller = c
 					break
 				}

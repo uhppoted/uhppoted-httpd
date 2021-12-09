@@ -259,7 +259,7 @@ func FindController(deviceID uint32) OID {
 
 	if deviceID != 0 {
 		for oid, v := range catalog.controllers {
-			if !v.deleted && v.ID == deviceID {
+			if v.ID == deviceID && !v.deleted {
 				return oid
 			}
 		}

@@ -9,9 +9,11 @@
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
             - [x] Reinstate 'found' controllers
-            - [ ] Delete 'found' controllers on expiry
+            - [x] Delete 'found' controllers on expiry
             - [ ] Move 'synch' to interfaces.LAN
             - [ ] MAYBE: move refresh into Controller
+            - [ ] MAYBE: move ACL stuff into interfaces.LAN
+            - [ ] Fix the whole 'LAN.api' mess - assign controllers to LAN
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
       - [ ] Rework 'update controllers after LAN edit'

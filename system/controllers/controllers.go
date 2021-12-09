@@ -210,17 +210,20 @@ func (cc *ControllerSet) Refresh(callback Callback) {
 		warn(err)
 	} else {
 	loop:
-		for _, deviceID := range found {
+		for _, d := range found {
 			for _, c := range cc.Controllers {
-				if c.DeviceID() == deviceID && c.deleted == nil {
+				if c.DeviceID() == d && c.deleted == nil {
 					continue loop
 				}
 			}
 
-			info(fmt.Sprintf("Found unconfigured controller %v", deviceID))
+			info(fmt.Sprintf("Adding unconfigured controller %v", d))
+
+			oid := catalog.NewController(d)
+			deviceID := d // Go/pointer gotcha (the loop variable is mutable)
 
 			cc.Controllers = append(cc.Controllers, &Controller{
-				oid:          catalog.NewController(deviceID),
+				oid:          oid,
 				deviceID:     &deviceID,
 				created:      types.DateTime(time.Now()),
 				unconfigured: true,

@@ -292,7 +292,11 @@ func (c *Controller) String() string {
 		return ""
 	}
 
-	return fmt.Sprintf("%v (%v)", c.name, c.deviceID)
+	if deviceID := c.DeviceID(); deviceID == 0 {
+		return fmt.Sprintf("%v", c.Name())
+	} else {
+		return fmt.Sprintf("%v (%v)", c.Name(), deviceID)
+	}
 }
 
 func (c *Controller) IsValid() bool {
@@ -694,6 +698,12 @@ func (c *Controller) refreshed() {
 		}
 
 		log.Printf("Controller %v cached values expired", c)
+
+		if c.unconfigured {
+			c.deleted = types.DateTimePtrNow()
+			catalog.Delete(c.OID())
+			log.Printf("'unconfigured' controller %v removed", c)
+		}
 	}
 }
 
@@ -757,6 +767,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.Doors = map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
 	c.TimeZone = record.TimeZone
 	c.created = record.Created
+	c.unconfigured = false
 
 	for k, v := range record.Doors {
 		c.Doors[k] = catalog.OID(v)
