@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"net"
 	"regexp"
@@ -665,6 +666,35 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 	}
 
 	return objects, nil
+}
+
+func (c *Controller) refreshed() {
+	expired := time.Now().Add(-windows.cacheExpiry)
+
+	touched := time.Time(c.created)
+
+	if v := catalog.GetV(c.OID(), ControllerTouched); v != nil {
+		if t, ok := v.(time.Time); ok {
+			touched = t
+		}
+	}
+
+	if touched.Before(expired) {
+		catalog.PutV(c.OID(), ControllerEndpointAddress, nil)
+		catalog.PutV(c.OID(), ControllerDateTimeCurrent, nil)
+		catalog.PutV(c.OID(), ControllerCardsCount, nil)
+		catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusUnknown)
+		catalog.PutV(c.OID(), ControllerEventsCount, nil)
+
+		for _, d := range []uint8{1, 2, 3, 4} {
+			if door, ok := c.Door(d); ok {
+				catalog.PutV(door, DoorDelay, nil)
+				catalog.PutV(door, DoorControl, nil)
+			}
+		}
+
+		log.Printf("Controller %v cached values expired", c)
+	}
 }
 
 func (c *Controller) serialize() ([]byte, error) {

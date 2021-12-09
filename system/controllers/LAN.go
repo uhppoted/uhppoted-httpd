@@ -39,6 +39,15 @@ func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {
 	return l.API(devices)
 }
 
+func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
+	devices := []interfaces.Controller{}
+	for _, v := range controllers {
+		devices = append(devices, v)
+	}
+
+	return l.Search(devices)
+}
+
 // Possibly a long-running function - expects to be invoked from an external goroutine
 func (l *LAN) refresh(controllers []*Controller, callback Callback) {
 	l.Refresh()

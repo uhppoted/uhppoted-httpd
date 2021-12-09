@@ -3,16 +3,15 @@
 - [ ] Cookies
       - [ ] Make login cookie expire in 60s
       - [ ] Don't check login cookie except for login
-      - [ ] Also clear cookie on logout
+      - [ ] (?) Clear cookie on logout
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-            - [x] Expire items from cache
-            - [ ] Reinstate 'found' controllers
+            - [x] Reinstate 'found' controllers
             - [ ] Delete 'found' controllers on expiry
-            - [x] Fix ACL stuff (compare/update)
-            - [x] Move ACL stuff to Controllers
+            - [ ] Move 'synch' to interfaces.LAN
+            - [ ] MAYBE: move refresh into Controller
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
       - [ ] Rework 'update controllers after LAN edit'
@@ -29,28 +28,13 @@
       - [ ] Refactor DateTime out to use core implementation only
       - [ ] Implement Ptr() for the repetitive assign to variable to take address thing
 
-- [x] Recurring HTML error
-```
-Uncaught ReferenceError: onMenu is not defined
-    at HTMLDivElement.onmouseleave (system.html:17)
-onmouseleave @ system.html:17
-```
-
 ### IN PROGRESS
 
-- [ ] Rethink mark/sweep: with the way db.js works now, returning a 'deleted' field will
-      recreate an object that has been swept and it's full of problems anyway
+- [ ] Rethink mark/sweep
       - [ ] AsObjects should only return deleted field for deleted objects
             - [ ] unit test(s)
-      - [x] Sweep with DB timer rather than on refreshed (and remove 'DB.refreshed')
-            - https://stackoverflow.com/questions/9271293/constructor-or-init-function-for-an-object
 
       - [ ] Fail with error on update deleted object
-            e.g. deleted on one browser, edit on another without refresh in between
-            - [x] interfaces
-            - [x] controllers
-            - [x] doors
-            - [x] cards
             - [ ] unit test
 
 - [ ] Genericize load/save

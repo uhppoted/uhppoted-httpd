@@ -248,6 +248,23 @@ func (l LANx) Clone() LANx {
 	}
 }
 
+func (l *LANx) Search(controllers []Controller) ([]uint32, error) {
+	list := []uint32{}
+
+	api := l.API(controllers)
+	if devices, err := api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
+		return list, err
+	} else if devices == nil {
+		return list, fmt.Errorf("Got %v response to get-devices request", devices)
+	} else {
+		for k, _ := range devices.Devices {
+			list = append(list, k)
+		}
+	}
+
+	return list, nil
+}
+
 // A long-running function i.e. expects to be invoked from an external goroutine
 func (l *LANx) Refresh() {
 }
