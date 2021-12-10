@@ -37,9 +37,9 @@
             - unit test(s)
               - [ ] interfaces
               - [ ] controllers
-              - [ ] cards
-              - [ ] doors
-              - [ ] groups
+              - [x] cards
+              - [x] doors
+              - [x] groups
 
 - [ ] Genericize load/save
       - [ ] Embed controllers etc. in sys structs

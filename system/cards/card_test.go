@@ -1,6 +1,7 @@
 package cards
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -72,5 +73,59 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 
 	if !reflect.DeepEqual(objects, expected) {
 		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+}
+
+func TestCardSet(t *testing.T) {
+	name := types.Name("Le Carte")
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.4.3.1", Value: "Ze Kardt"},
+		catalog.Object{OID: "0.4.3.0.0", Value: types.StatusOk},
+	}
+
+	c := Card{
+		OID:  "0.4.3",
+		Name: &name,
+	}
+
+	objects, err := c.set(nil, "0.4.3.1", "Ze Kardt", nil)
+	if err != nil {
+		t.Errorf("Unexpected error (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if fmt.Sprintf("%v", c.Name) != "Ze Kardt" {
+		t.Errorf("Card name not updated - expected:%v, got:%v", "Ze Kardt", c.Name)
+	}
+}
+
+func TestCardSetWithDeleted(t *testing.T) {
+	name := types.Name("Le Carte")
+
+	c := Card{
+		OID:  "0.4.3",
+		Name: &name,
+
+		deleted: types.DateTimePtrNow(),
+	}
+
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.4.3.0.2", Value: c.deleted},
+	}
+
+	objects, err := c.set(nil, "0.4.3.1", "Ze Kardt", nil)
+	if err == nil {
+		t.Errorf("Expected error, got (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if fmt.Sprintf("%v", c.Name) != "Le Carte" {
+		t.Errorf("Card name unexpectedly updated - expected:%v, got:%v", "Le Carte", c.Name)
 	}
 }

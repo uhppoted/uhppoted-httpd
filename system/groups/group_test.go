@@ -118,3 +118,62 @@ func TestGroupAsObjectsWithDeleted(t *testing.T) {
 		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
 	}
 }
+
+func TestGroupSet(t *testing.T) {
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.5.3.1", Value: "Ze Gruppe"},
+		catalog.Object{OID: "0.5.3.0.0", Value: types.StatusOk},
+	}
+
+	g := Group{
+		OID:  "0.5.3",
+		Name: "Le Groupe",
+		Doors: map[catalog.OID]bool{
+			"0.3.3": true,
+			"0.3.7": true,
+		},
+	}
+
+	objects, err := g.set(nil, "0.5.3.1", "Ze Gruppe", nil)
+	if err != nil {
+		t.Errorf("Unexpected error (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if g.Name != "Ze Gruppe" {
+		t.Errorf("Group name not updated - expected:%v, got:%v", "Ze Gruppe", g.Name)
+	}
+}
+
+func TestGroupSetWithDeleted(t *testing.T) {
+	g := Group{
+		OID:  "0.5.3",
+		Name: "Le Groupe",
+		Doors: map[catalog.OID]bool{
+			"0.3.3": true,
+			"0.3.7": true,
+		},
+
+		deleted: types.DateTimePtrNow(),
+	}
+
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.5.3.0.2", Value: g.deleted},
+	}
+
+	objects, err := g.set(nil, "0.5.3.1", "Ze Gruppe", nil)
+	if err == nil {
+		t.Errorf("Expected error, got (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if g.Name != "Le Groupe" {
+		t.Errorf("Group name unexpectedly updated - expected:%v, got:%v", "Le Group", g.Name)
+	}
+}

@@ -70,3 +70,58 @@ func TestDoorAsObjectsWithDeleted(t *testing.T) {
 		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
 	}
 }
+
+func TestDoorSet(t *testing.T) {
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.3.3.1", Value: "Eine Kleine Dooren"},
+		catalog.Object{OID: "0.3.3.0.0", Value: types.StatusOk},
+	}
+
+	d := Door{
+		OID:   "0.3.3",
+		Name:  "Le Door",
+		delay: 7,
+		mode:  core.NormallyOpen,
+	}
+
+	objects, err := d.set(nil, "0.3.3.1", "Eine Kleine Dooren", nil)
+	if err != nil {
+		t.Errorf("Unexpected error (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if d.Name != "Eine Kleine Dooren" {
+		t.Errorf("Door name not updated - expected:%v, got:%v", "Eine Kleine Dooren", d.Name)
+	}
+}
+
+func TestDoorSetWithDeleted(t *testing.T) {
+	d := Door{
+		OID:   "0.3.3",
+		Name:  "Le Door",
+		delay: 7,
+		mode:  core.NormallyOpen,
+
+		deleted: types.DateTimePtrNow(),
+	}
+
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.3.3.0.2", Value: d.deleted},
+	}
+
+	objects, err := d.set(nil, "0.3.3.1", "Eine Kleine Dooren", nil)
+	if err == nil {
+		t.Errorf("Expected error, got (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if d.Name != "Le Door" {
+		t.Errorf("Door name unexpectedly updated - expected:%v, got:%v", "Le Door", d.Name)
+	}
+}

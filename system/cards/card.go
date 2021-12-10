@@ -166,210 +166,210 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		return auth.CanUpdateCard(c, field, value)
 	}
 
-	if c != nil {
-		clone := c.clone()
+	if c == nil {
+		return objects, nil
+	} else if c.deleted != nil {
+		objects = append(objects, catalog.NewObject2(c.OID, CardDeleted, c.deleted))
 
-		switch {
-		case oid == c.OID.Append(CardName):
-			if err := f("name", value); err != nil {
+		return objects, fmt.Errorf("Card has been deleted")
+	}
+
+	clone := c.clone()
+
+	switch {
+	case oid == c.OID.Append(CardName):
+		if err := f("name", value); err != nil {
+			return nil, err
+		} else {
+			c.log(auth,
+				"update",
+				c.OID,
+				"name",
+				fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, BLANK), stringify(value, BLANK)),
+				stringify(c.Name, ""),
+				stringify(value, ""),
+				dbc)
+
+			v := types.Name(value)
+			c.Name = &v
+			objects = append(objects, catalog.NewObject2(c.OID, CardName, stringify(c.Name, "")))
+		}
+
+	case oid == c.OID.Append(CardNumber):
+		if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
+			if n, err := strconv.ParseUint(value, 10, 32); err != nil {
+				return nil, err
+			} else if err := f("number", n); err != nil {
 				return nil, err
 			} else {
 				c.log(auth,
 					"update",
 					c.OID,
-					"name",
-					fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, BLANK), stringify(value, BLANK)),
-					stringify(c.Name, ""),
+					"card",
+					fmt.Sprintf("Updated card number from %v to %v", c.Card, value),
+					stringify(c.Card, ""),
 					stringify(value, ""),
 					dbc)
 
-				v := types.Name(value)
-				c.Name = &v
-				objects = append(objects, catalog.NewObject2(c.OID, CardName, c.Name))
+				v := types.Card(n)
+				c.Card = &v
+				objects = append(objects, catalog.NewObject2(c.OID, CardNumber, c.Card))
 			}
-
-		case oid == c.OID.Append(CardNumber):
-			if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
-				if n, err := strconv.ParseUint(value, 10, 32); err != nil {
-					return nil, err
-				} else if err := f("number", n); err != nil {
-					return nil, err
+		} else if value == "" {
+			if err := f("number", 0); err != nil {
+				return nil, err
+			} else {
+				if p := stringify(c.Name, ""); p != "" {
+					c.log(auth,
+						"update",
+						c.OID,
+						"number",
+						fmt.Sprintf("Cleared card number %v for %v", c.Card, p),
+						stringify(c.Card, ""),
+						stringify(p, ""),
+						dbc)
 				} else {
 					c.log(auth,
 						"update",
 						c.OID,
-						"card",
-						fmt.Sprintf("Updated card number from %v to %v", c.Card, value),
+						"number",
+						fmt.Sprintf("Cleared card number %v", c.Card),
 						stringify(c.Card, ""),
-						stringify(value, ""),
+						"",
 						dbc)
-
-					v := types.Card(n)
-					c.Card = &v
-					objects = append(objects, catalog.NewObject2(c.OID, CardNumber, c.Card))
 				}
-			} else if value == "" {
-				if err := f("number", 0); err != nil {
-					return nil, err
-				} else {
-					if p := stringify(c.Name, ""); p != "" {
-						c.log(auth,
-							"update",
-							c.OID,
-							"number",
-							fmt.Sprintf("Cleared card number %v for %v", c.Card, p),
-							stringify(c.Card, ""),
-							stringify(p, ""),
-							dbc)
-					} else {
-						c.log(auth,
-							"update",
-							c.OID,
-							"number",
-							fmt.Sprintf("Cleared card number %v", c.Card),
-							stringify(c.Card, ""),
-							"",
-							dbc)
-					}
 
-					c.Card = nil
-					objects = append(objects, catalog.NewObject2(c.OID, CardNumber, ""))
-				}
-			}
-
-		case oid == c.OID.Append(CardFrom):
-			if c.deleted != nil {
-				return nil, fmt.Errorf("Card has been deleted")
-			} else if err := f("from", value); err != nil {
-				return nil, err
-			} else if from, err := types.ParseDate(value); err != nil {
-				return nil, err
-			} else if from == nil {
-				return nil, fmt.Errorf("invalid 'from' date (%v)", value)
-			} else {
-				c.log(auth,
-					"update",
-					c.OID,
-					"from",
-					fmt.Sprintf("Updated VALID FROM date from %v to %v", c.From, value),
-					stringify(c.From, ""),
-					stringify(value, ""),
-					dbc)
-
-				c.From = from
-				objects = append(objects, catalog.NewObject2(c.OID, CardFrom, c.From))
-			}
-
-		case oid == c.OID.Append(CardTo):
-			if c.deleted != nil {
-				return nil, fmt.Errorf("Card has been deleted")
-			} else if err := f("to", value); err != nil {
-				return nil, err
-			} else if to, err := types.ParseDate(value); err != nil {
-				return nil, err
-			} else if to == nil {
-				return nil, fmt.Errorf("invalid 'to' date (%v)", value)
-			} else {
-				c.log(auth,
-					"update",
-					c.OID,
-					"to",
-					fmt.Sprintf("Updated VALID UNTIL date from %v to %v", c.From, value),
-					stringify(c.From, ""),
-					stringify(value, ""),
-					dbc)
-
-				c.To = to
-				objects = append(objects, catalog.NewObject2(c.OID, CardTo, c.To))
-			}
-
-		case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
-			if c.deleted != nil {
-				return nil, fmt.Errorf("Card has been deleted")
-			} else if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
-				gid := m[1]
-				k := catalog.GroupsOID.AppendS(gid)
-
-				if err := f("group", value); err != nil {
-					return nil, err
-				} else if !catalog.HasGroup(catalog.OID(k)) {
-					return nil, fmt.Errorf("invalid group OID (%v)", k)
-				} else {
-					group := catalog.GetV(catalog.OID(k), GroupName)
-
-					if value == "true" {
-						c.log(auth,
-							"update",
-							c.OID,
-							"group",
-							fmt.Sprintf("Granted access to %v", group),
-							"",
-							"",
-							dbc)
-					} else {
-						c.log(auth,
-							"update",
-							c.OID,
-							"group",
-							fmt.Sprintf("Revoked access to %v", group),
-							"",
-							"",
-							dbc)
-					}
-
-					c.Groups[k] = value == "true"
-					objects = append(objects, catalog.NewObject2(c.OID, CardGroups.Append(gid), c.Groups[k]))
-				}
+				c.Card = nil
+				objects = append(objects, catalog.NewObject2(c.OID, CardNumber, ""))
 			}
 		}
 
-		if (c.Name == nil || *c.Name == "") && (c.Card == nil || *c.Card == 0) {
-			if auth != nil {
-				if err := auth.CanDeleteCard(clone); err != nil {
-					return nil, err
-				}
-			}
+	case oid == c.OID.Append(CardFrom):
+		if err := f("from", value); err != nil {
+			return nil, err
+		} else if from, err := types.ParseDate(value); err != nil {
+			return nil, err
+		} else if from == nil {
+			return nil, fmt.Errorf("invalid 'from' date (%v)", value)
+		} else {
+			c.log(auth,
+				"update",
+				c.OID,
+				"from",
+				fmt.Sprintf("Updated VALID FROM date from %v to %v", c.From, value),
+				stringify(c.From, ""),
+				stringify(value, ""),
+				dbc)
 
-			if p := stringify(clone.Card, ""); p != "" {
-				c.log(auth,
-					"delete",
-					c.OID,
-					"card",
-					fmt.Sprintf("Deleted card %v", p),
-					"",
-					"",
-					dbc)
-			} else if p = stringify(clone.Name, ""); p != "" {
-				c.log(auth,
-					"delete",
-					c.OID,
-					"card",
-					fmt.Sprintf("Deleted card for %v", p),
-					"",
-					"",
-					dbc)
-			} else {
-				c.log(auth,
-					"delete",
-					c.OID,
-					"card",
-					"Deleted card",
-					"",
-					"",
-					dbc)
-			}
-
-			now := types.DateTime(time.Now())
-			c.deleted = &now
-
-			objects = append(objects, catalog.NewObject(c.OID, "deleted"))
-			objects = append(objects, catalog.NewObject2(c.OID, CardDeleted, c.deleted))
-
-			catalog.Delete(c.OID)
+			c.From = from
+			objects = append(objects, catalog.NewObject2(c.OID, CardFrom, c.From))
 		}
 
-		objects = append(objects, catalog.NewObject2(c.OID, CardStatus, c.status()))
+	case oid == c.OID.Append(CardTo):
+		if err := f("to", value); err != nil {
+			return nil, err
+		} else if to, err := types.ParseDate(value); err != nil {
+			return nil, err
+		} else if to == nil {
+			return nil, fmt.Errorf("invalid 'to' date (%v)", value)
+		} else {
+			c.log(auth,
+				"update",
+				c.OID,
+				"to",
+				fmt.Sprintf("Updated VALID UNTIL date from %v to %v", c.From, value),
+				stringify(c.From, ""),
+				stringify(value, ""),
+				dbc)
+
+			c.To = to
+			objects = append(objects, catalog.NewObject2(c.OID, CardTo, c.To))
+		}
+
+	case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
+		if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
+			gid := m[1]
+			k := catalog.GroupsOID.AppendS(gid)
+
+			if err := f("group", value); err != nil {
+				return nil, err
+			} else if !catalog.HasGroup(catalog.OID(k)) {
+				return nil, fmt.Errorf("invalid group OID (%v)", k)
+			} else {
+				group := catalog.GetV(catalog.OID(k), GroupName)
+
+				if value == "true" {
+					c.log(auth,
+						"update",
+						c.OID,
+						"group",
+						fmt.Sprintf("Granted access to %v", group),
+						"",
+						"",
+						dbc)
+				} else {
+					c.log(auth,
+						"update",
+						c.OID,
+						"group",
+						fmt.Sprintf("Revoked access to %v", group),
+						"",
+						"",
+						dbc)
+				}
+
+				c.Groups[k] = value == "true"
+				objects = append(objects, catalog.NewObject2(c.OID, CardGroups.Append(gid), c.Groups[k]))
+			}
+		}
 	}
+
+	if (c.Name == nil || *c.Name == "") && (c.Card == nil || *c.Card == 0) {
+		if auth != nil {
+			if err := auth.CanDeleteCard(clone); err != nil {
+				return nil, err
+			}
+		}
+
+		if p := stringify(clone.Card, ""); p != "" {
+			c.log(auth,
+				"delete",
+				c.OID,
+				"card",
+				fmt.Sprintf("Deleted card %v", p),
+				"",
+				"",
+				dbc)
+		} else if p = stringify(clone.Name, ""); p != "" {
+			c.log(auth,
+				"delete",
+				c.OID,
+				"card",
+				fmt.Sprintf("Deleted card for %v", p),
+				"",
+				"",
+				dbc)
+		} else {
+			c.log(auth,
+				"delete",
+				c.OID,
+				"card",
+				"Deleted card",
+				"",
+				"",
+				dbc)
+		}
+
+		now := types.DateTime(time.Now())
+		c.deleted = &now
+
+		objects = append(objects, catalog.NewObject(c.OID, "deleted"))
+		objects = append(objects, catalog.NewObject2(c.OID, CardDeleted, c.deleted))
+
+		catalog.Delete(c.OID)
+	}
+
+	objects = append(objects, catalog.NewObject2(c.OID, CardStatus, c.status()))
 
 	return objects, nil
 }

@@ -181,82 +181,84 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		return auth.CanUpdateDoor(d, field, value)
 	}
 
-	if d != nil {
-		name := fmt.Sprintf("%v", d.Name)
-
-		switch oid {
-		case d.OID.Append(DoorName):
-			if err := f("name", value); err != nil {
-				return nil, err
-			} else {
-				d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, BLANK), stringify(value, BLANK)), dbc)
-				d.Name = value
-				objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
-			}
-
-		case d.OID.Append(DoorDelay):
-			delay := d.delay
-
-			if d.deleted != nil {
-				return nil, fmt.Errorf("Door has been deleted")
-			} else if err := f("delay", value); err != nil {
-				return nil, err
-			} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
-				return nil, err
-			} else {
-				d.delay = uint8(v)
-				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayStatus, types.StatusUncertain))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayError, ""))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorDelayModified, true))
-
-				d.log(auth, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
-			}
-
-		case d.OID.Append(DoorControl):
-			if d.deleted != nil {
-				return nil, fmt.Errorf("Door has been deleted")
-			} else if err := f("mode", value); err != nil {
-				return nil, err
-			} else {
-				mode := d.mode
-				switch value {
-				case "controlled":
-					d.mode = core.Controlled
-				case "normally open":
-					d.mode = core.NormallyOpen
-				case "normally closed":
-					d.mode = core.NormallyClosed
-				default:
-					return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
-				}
-
-				objects = append(objects, catalog.NewObject2(d.OID, DoorControlStatus, types.StatusUncertain))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorControlConfigured, d.mode))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorControlError, ""))
-				objects = append(objects, catalog.NewObject2(d.OID, DoorControlModified, true))
-
-				d.log(auth, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
-			}
-		}
-
-		if !d.IsValid() {
-			if auth != nil {
-				if err := auth.CanDeleteDoor(d); err != nil {
-					return nil, err
-				}
-			}
-
-			d.log(auth, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
-			now := types.DateTime(time.Now())
-			d.deleted = &now
-
-			catalog.Delete(d.OID)
-		}
-
-		objects = append(objects, catalog.NewObject2(d.OID, DoorStatus, d.status()))
+	if d == nil {
+		return objects, nil
+	} else if d.deleted != nil {
 		objects = append(objects, catalog.NewObject2(d.OID, DoorDeleted, d.deleted))
+
+		return objects, fmt.Errorf("Door has been deleted")
 	}
+
+	name := fmt.Sprintf("%v", d.Name)
+
+	switch oid {
+	case d.OID.Append(DoorName):
+		if err := f("name", value); err != nil {
+			return nil, err
+		} else {
+			d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, BLANK), stringify(value, BLANK)), dbc)
+			d.Name = value
+			objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
+		}
+
+	case d.OID.Append(DoorDelay):
+		delay := d.delay
+
+		if err := f("delay", value); err != nil {
+			return nil, err
+		} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
+			return nil, err
+		} else {
+			d.delay = uint8(v)
+			objects = append(objects, catalog.NewObject2(d.OID, DoorDelayStatus, types.StatusUncertain))
+			objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
+			objects = append(objects, catalog.NewObject2(d.OID, DoorDelayError, ""))
+			objects = append(objects, catalog.NewObject2(d.OID, DoorDelayModified, true))
+
+			d.log(auth, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
+		}
+
+	case d.OID.Append(DoorControl):
+		if err := f("mode", value); err != nil {
+			return nil, err
+		} else {
+			mode := d.mode
+			switch value {
+			case "controlled":
+				d.mode = core.Controlled
+			case "normally open":
+				d.mode = core.NormallyOpen
+			case "normally closed":
+				d.mode = core.NormallyClosed
+			default:
+				return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
+			}
+
+			objects = append(objects, catalog.NewObject2(d.OID, DoorControlStatus, types.StatusUncertain))
+			objects = append(objects, catalog.NewObject2(d.OID, DoorControlConfigured, d.mode))
+			objects = append(objects, catalog.NewObject2(d.OID, DoorControlError, ""))
+			objects = append(objects, catalog.NewObject2(d.OID, DoorControlModified, true))
+
+			d.log(auth, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
+		}
+	}
+
+	if !d.IsValid() {
+		if auth != nil {
+			if err := auth.CanDeleteDoor(d); err != nil {
+				return nil, err
+			}
+		}
+
+		d.log(auth, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
+		now := types.DateTime(time.Now())
+		d.deleted = &now
+
+		objects = append(objects, catalog.NewObject2(d.OID, DoorDeleted, d.deleted))
+		catalog.Delete(d.OID)
+	}
+
+	objects = append(objects, catalog.NewObject2(d.OID, DoorStatus, d.status()))
 
 	return objects, nil
 }

@@ -130,6 +130,10 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 
 	if g == nil {
 		return objects, nil
+	} else if g.deleted != nil {
+		objects = append(objects, catalog.NewObject2(g.OID, GroupDeleted, g.deleted))
+
+		return objects, fmt.Errorf("Group has been deleted")
 	}
 
 	name := g.Name
@@ -144,10 +148,6 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 		}
 
 	case catalog.OID(g.OID.Append(GroupDoors)).Contains(oid):
-		if g.deleted != nil {
-			return nil, fmt.Errorf("Group has been deleted")
-		}
-
 		if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
 			did := m[1]
 			k := catalog.DoorsOID.AppendS(did)
@@ -179,12 +179,12 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 		now := types.DateTime(time.Now())
 		g.deleted = &now
 		objects = append(objects, catalog.NewObject(g.OID, "deleted"))
+		objects = append(objects, catalog.NewObject2(g.OID, GroupDeleted, g.deleted))
 
 		catalog.Delete(g.OID)
 	}
 
 	objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, g.status()))
-	objects = append(objects, catalog.NewObject2(g.OID, GroupDeleted, g.deleted))
 
 	return objects, nil
 }
