@@ -8,8 +8,6 @@
 
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-            - [x] Reinstate 'found' controllers
-            - [x] Delete 'found' controllers on expiry
             - [ ] Move 'synch' to interfaces.LAN
             - [ ] MAYBE: move refresh into Controller
             - [ ] MAYBE: move ACL stuff into interfaces.LAN
@@ -18,11 +16,6 @@
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
       - [ ] Rework 'update controllers after LAN edit'
-
-- [ ] OIDs:
-      - [ ] catalog.Objects type to streamline e.g. append, trim, etc
-      - [ ] GetV => GetBool, GetInt, etc
-      - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
 
 - [ ] Fix DateTime mess
       - [ ] MAYBE: treat empty DateTime as the null value
@@ -34,14 +27,6 @@
 ### IN PROGRESS
 
 - [ ] Rethink mark/sweep
-      - [x] AsObjects should only return deleted field for deleted objects
-            - unit test(s)
-              - [x] interfaces
-              - [x] controllers
-              - [x] cards
-              - [x] doors
-              - [x] groups
-
       - [ ] Fail with error on update deleted object
             - unit test(s)
               - [ ] interfaces
@@ -55,6 +40,11 @@
       - [ ] Put subsystems into list for iterating
       - [ ] Commonalise 'print'
       - [ ] MAYBE: groups, etc probably don't need to be structs anymore => typedef arrays
+
+- [ ] OIDs:
+      - [ ] catalog.Objects type to streamline e.g. append, trim, etc
+      - [ ] GetV => GetBool, GetInt, etc
+      - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
 
 - [ ] 'users' page
 - [ ] Set initial user + password

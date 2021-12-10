@@ -7,10 +7,7 @@ import (
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
-	"github.com/uhppoted/uhppoted-httpd/audit"
-	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
-	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
@@ -52,117 +49,37 @@ func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
 	return l.Search(devices)
 }
 
-// Possibly a long-running function - expects to be invoked from an external goroutine
+// Long-running function. Synchronous - expects to be invoked from an external goroutine.
 func (l *LAN) refresh(controllers []*Controller, callback Callback) {
 	l.Refresh()
 
-	list := map[uint32]struct{}{}
-	for _, c := range controllers {
-		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
-			list[*c.deviceID] = struct{}{}
-		}
-	}
-
 	api := l.api(controllers)
-	if devices, err := api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
-		log.Printf("%v", err)
-	} else if devices == nil {
-		log.Printf("Got %v response to get-devices request", devices)
-	} else {
-		for k, v := range devices.Devices {
-			if d, ok := api.UHPPOTE.DeviceList()[k]; ok {
-				d.Address.IP = v.Address
-				d.Address.Port = v.Port
-			}
-
-			list[k] = struct{}{}
-		}
-	}
 
 	var wg sync.WaitGroup
 
-	for k, _ := range list {
-		wg.Add(1)
+	for _, c := range controllers {
+		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
+			wg.Add(1)
 
-		id := k
-		go func() {
-			defer wg.Done()
+			controller := c
 
-			var controller *Controller
-			for _, c := range controllers {
-				if c.DeviceID() == id && c.deleted == nil {
-					controller = c
-					break
+			go func(v *Controller) {
+				defer wg.Done()
+
+				l.Update(api, v)
+
+				deviceID := v.DeviceID()
+				recent, err := api.GetEvents(uhppoted.GetEventsRequest{DeviceID: uhppoted.DeviceID(deviceID), Max: 5})
+				if err != nil {
+					log.Printf("%v", err)
+				} else if callback != nil {
+					callback.Append(v.DeviceID(), recent.Events)
 				}
-			}
-
-			l.update(api, id, controller, callback)
-		}()
+			}(controller)
+		}
 	}
 
 	wg.Wait()
-}
-
-func (l *LAN) update(api *uhppoted.UHPPOTED, id uint32, controller *Controller, callback Callback) {
-	log.Printf("%v: refreshing LAN controller status", id)
-
-	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
-		log.Printf("%v", err)
-	} else if info == nil {
-		log.Printf("Got %v response to get-device request for %v", info, id)
-	} else {
-		l.Store(controller, *info)
-	}
-
-	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
-		log.Printf("%v", err)
-	} else if status == nil {
-		log.Printf("Got %v response to get-status request for %v", status, id)
-	} else {
-		l.Store(controller, *status)
-	}
-
-	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
-		log.Printf("%v", err)
-	} else if cards == nil {
-		log.Printf("Got %v response to get-card-records request for %v", cards, id)
-	} else {
-		l.Store(controller, *cards)
-	}
-
-	if events, err := api.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: uhppoted.DeviceID(id)}); err != nil {
-		log.Printf("%v", err)
-	} else if events == nil {
-		log.Printf("Got %v response to get-event-range request for %v", events, id)
-	} else {
-		l.Store(controller, *events)
-	}
-
-	for _, d := range []uint8{1, 2, 3, 4} {
-		if delay, err := api.GetDoorDelay(uhppoted.GetDoorDelayRequest{DeviceID: uhppoted.DeviceID(id), Door: d}); err != nil {
-			log.Printf("%v", err)
-		} else if delay == nil {
-			log.Printf("Got %v response to get-door-delay request for %v", delay, id)
-		} else {
-			l.Store(controller, *delay)
-		}
-	}
-
-	for _, d := range []uint8{1, 2, 3, 4} {
-		if control, err := api.GetDoorControl(uhppoted.GetDoorControlRequest{DeviceID: uhppoted.DeviceID(id), Door: d}); err != nil {
-			log.Printf("%v", err)
-		} else if control == nil {
-			log.Printf("Got %v response to get-door-control request for %v", control, id)
-		} else {
-			l.Store(controller, *control)
-		}
-	}
-
-	if recent, err := api.GetEvents(uhppoted.GetEventsRequest{DeviceID: uhppoted.DeviceID(id), Max: 5}); err != nil {
-		log.Printf("%v", err)
-	} else if callback != nil {
-		callback.Append(id, recent.Events)
-	}
 }
 
 func (l *LAN) synchTime(controllers []*Controller) []catalog.Object {
@@ -276,28 +193,4 @@ func (l *LAN) synchDoors(controllers []*Controller) []catalog.Object {
 	}
 
 	return objects
-}
-
-func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
-
-	record := audit.AuditRecord{
-		UID:       uid,
-		OID:       OID,
-		Component: "interface",
-		Operation: operation,
-		Details: audit.Details{
-			ID:          "LAN",
-			Name:        stringify(l.Name, ""),
-			Field:       field,
-			Description: description,
-		},
-	}
-
-	if dbc != nil {
-		dbc.Write(record)
-	}
 }

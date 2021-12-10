@@ -220,7 +220,7 @@ func (cc *ControllerSet) Refresh(callback Callback) {
 			info(fmt.Sprintf("Adding unconfigured controller %v", d))
 
 			oid := catalog.NewController(d)
-			deviceID := d // Go/pointer gotcha (the loop variable is mutable)
+			deviceID := d // because .. Go loop variable gotcha (the loop variable is mutable)
 
 			cc.Controllers = append(cc.Controllers, &Controller{
 				oid:          oid,

@@ -269,6 +269,70 @@ func (l *LANx) Search(controllers []Controller) ([]uint32, error) {
 func (l *LANx) Refresh() {
 }
 
+func (l *LANx) Update(api *uhppoted.UHPPOTED, controller Controller) {
+	log.Printf("%v: refreshing LAN controller status", controller.DeviceID())
+
+	deviceID := uhppoted.DeviceID(controller.DeviceID())
+
+	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: deviceID}); err != nil {
+		log.Printf("%v", err)
+	} else if info == nil {
+		log.Printf("Got %v response to get-device request for %v", info, deviceID)
+	} else {
+		l.Store(controller, *info)
+	}
+
+	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: deviceID}); err != nil {
+		log.Printf("%v", err)
+	} else if status == nil {
+		log.Printf("Got %v response to get-status request for %v", status, deviceID)
+	} else {
+		l.Store(controller, *status)
+	}
+
+	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: deviceID}); err != nil {
+		log.Printf("%v", err)
+	} else if cards == nil {
+		log.Printf("Got %v response to get-card-records request for %v", cards, deviceID)
+	} else {
+		l.Store(controller, *cards)
+	}
+
+	if events, err := api.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: deviceID}); err != nil {
+		log.Printf("%v", err)
+	} else if events == nil {
+		log.Printf("Got %v response to get-event-range request for %v", events, deviceID)
+	} else {
+		l.Store(controller, *events)
+	}
+
+	for _, d := range []uint8{1, 2, 3, 4} {
+		if delay, err := api.GetDoorDelay(uhppoted.GetDoorDelayRequest{DeviceID: deviceID, Door: d}); err != nil {
+			log.Printf("%v", err)
+		} else if delay == nil {
+			log.Printf("Got %v response to get-door-delay request for %v", delay, deviceID)
+		} else {
+			l.Store(controller, *delay)
+		}
+	}
+
+	for _, d := range []uint8{1, 2, 3, 4} {
+		if control, err := api.GetDoorControl(uhppoted.GetDoorControlRequest{DeviceID: deviceID, Door: d}); err != nil {
+			log.Printf("%v", err)
+		} else if control == nil {
+			log.Printf("Got %v response to get-door-control request for %v", control, deviceID)
+		} else {
+			l.Store(controller, *control)
+		}
+	}
+
+	//	if recent, err := api.GetEvents(uhppoted.GetEventsRequest{DeviceID: uhppoted.DeviceID(id), Max: 5}); err != nil {
+	//		log.Printf("%v", err)
+	//	} else if callback != nil {
+	//		callback.Append(id, recent.Events)
+	//	}
+}
+
 func (l *LANx) Store(c Controller, info interface{}) {
 	switch v := info.(type) {
 	case uhppoted.GetDeviceResponse:
