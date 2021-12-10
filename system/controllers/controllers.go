@@ -336,13 +336,7 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 
 func (cc *ControllerSet) Sync() {
 	cc.LAN.synchTime(cc.Controllers)
-
-	objects := []catalog.Object{}
-	if list := cc.LAN.synchDoors(cc.Controllers); list != nil {
-		objects = append(objects, list...)
-	}
-
-	catalog.PutL(objects)
+	cc.LAN.synchDoors(cc.Controllers)
 }
 
 func (cc *ControllerSet) Compare(permissions acl.ACL) error {

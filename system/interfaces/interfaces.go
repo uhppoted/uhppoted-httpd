@@ -193,6 +193,10 @@ func stringify(i interface{}, defval string) string {
 	return defval
 }
 
+func info(msg string) {
+	log.Printf("INFO  %v", msg)
+}
+
 func warn(err error) {
 	log.Printf("ERROR %v", err)
 }

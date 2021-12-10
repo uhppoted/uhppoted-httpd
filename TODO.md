@@ -10,10 +10,10 @@
       - [ ] Move LAN device stuff to `interfaces` subsystem
             - [x] Move 'update' to interfaces.LAN
             - [x] Move 'synchTime' to interfaces.LAN
-            - [ ] Move 'synchDoors' to interfaces.LAN
+            - [x] Move 'synchDoors' to interfaces.LAN
+            - [ ] Rework synchXXX to just do a single controller (and not take API as a parameter)
             - [ ] Replace LAN events callback with something more idiomatic
                   - (?) DBC.Commit (?)
-            - [ ] MAYBE: move refresh into Controller
             - [ ] MAYBE: move ACL stuff into interfaces.LAN
             - [ ] Fix the whole 'LAN.api' mess - assign controllers to LAN
             - [ ] Find a cleaner way to handle deleted controllers 

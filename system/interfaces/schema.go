@@ -22,4 +22,6 @@ const ControllerCardsStatus = catalog.ControllerCardsStatus
 const ControllerEventsCount = catalog.ControllerEventsCount
 
 const DoorDelay = catalog.DoorDelay
+const DoorDelayModified = catalog.DoorDelayModified
 const DoorControl = catalog.DoorControl
+const DoorControlModified = catalog.DoorControlModified
