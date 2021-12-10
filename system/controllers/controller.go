@@ -25,7 +25,7 @@ type Controller struct {
 	deviceID *uint32
 	IP       *core.Address
 	Doors    map[uint8]catalog.OID
-	TimeZone *string
+	timezone *string
 
 	created      types.DateTime
 	deleted      *types.DateTime
@@ -89,6 +89,19 @@ func (c *Controller) EndPoint() *net.UDPAddr {
 	}
 
 	return nil
+}
+
+func (c *Controller) TimeZone() *time.Location {
+	location := time.Local
+
+	if c.timezone != nil {
+		timezone := *c.timezone
+		if tz, err := types.Timezone(timezone); err == nil && tz != nil {
+			location = tz
+		}
+	}
+
+	return location
 }
 
 func (c *Controller) Door(d uint8) (catalog.OID, bool) {
@@ -178,8 +191,8 @@ func (c *Controller) AsObjects() []interface{} {
 			// ... set system date/time field from cached value
 			if cached.datetime != nil {
 				tz := time.Local
-				if c.TimeZone != nil {
-					if l, err := timezone(*c.TimeZone); err != nil {
+				if c.timezone != nil {
+					if l, err := timezone(*c.timezone); err != nil {
 						warn(err)
 					} else {
 						tz = l
@@ -504,20 +517,20 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					"update",
 					OID,
 					"timezone",
-					fmt.Sprintf("Updated timezone from %v to %v", stringify(c.TimeZone, BLANK), stringify(tz.String(), BLANK)),
-					stringify(c.TimeZone, ""),
+					fmt.Sprintf("Updated timezone from %v to %v", stringify(c.timezone, BLANK), stringify(tz.String(), BLANK)),
+					stringify(c.timezone, ""),
 					stringify(tz.String(), ""),
 					dbc)
 				tzs := tz.String()
-				c.TimeZone = &tzs
+				c.timezone = &tzs
 				c.unconfigured = false
 
 				if c.deviceID != nil {
 					if cached := c.get(); cached != nil {
 						if cached.datetime != nil {
 							tz := time.Local
-							if c.TimeZone != nil {
-								if l, err := timezone(*c.TimeZone); err != nil {
+							if c.timezone != nil {
+								if l, err := timezone(*c.timezone); err != nil {
 									warn(err)
 								} else {
 									tz = l
@@ -730,7 +743,7 @@ func (c *Controller) serialize() ([]byte, error) {
 		DeviceID: c.deviceID,
 		Address:  c.IP,
 		Doors:    map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""},
-		TimeZone: c.TimeZone,
+		TimeZone: c.timezone,
 		Created:  c.created,
 	}
 
@@ -765,7 +778,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.deviceID = record.DeviceID
 	c.IP = record.Address
 	c.Doors = map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
-	c.TimeZone = record.TimeZone
+	c.timezone = record.TimeZone
 	c.created = record.Created
 	c.unconfigured = false
 
@@ -783,7 +796,7 @@ func (c *Controller) clone() *Controller {
 			name:     c.name,
 			deviceID: c.deviceID,
 			IP:       c.IP,
-			TimeZone: c.TimeZone,
+			timezone: c.timezone,
 			Doors:    map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""},
 
 			created:      c.created,

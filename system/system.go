@@ -318,9 +318,7 @@ func (s *system) updated() {
 	s.taskQ.Add(Task{
 		f: func() {
 			info("Updating controllers from configuration")
-			if objects := sys.controllers.controllers.Sync(); objects != nil {
-				catalog.PutL(objects)
-			}
+			sys.controllers.controllers.Sync()
 
 			UpdateACL()
 		},

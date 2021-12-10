@@ -8,11 +8,17 @@
 
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-            - [ ] Move 'synch' to interfaces.LAN
+            - [x] Move 'update' to interfaces.LAN
+            - [x] Move 'synchTime' to interfaces.LAN
+            - [ ] Move 'synchDoors' to interfaces.LAN
+            - [ ] Replace LAN events callback with something more idiomatic
+                  - (?) DBC.Commit (?)
             - [ ] MAYBE: move refresh into Controller
             - [ ] MAYBE: move ACL stuff into interfaces.LAN
             - [ ] Fix the whole 'LAN.api' mess - assign controllers to LAN
-            - [ ] Find a cleaner way to handle deleted controllers
+            - [ ] Find a cleaner way to handle deleted controllers 
+                  i.e. one that doesn't involve checking `deviceID` and `deleted`
+                       in a hundred different places
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
       - [ ] Rework 'update controllers after LAN edit'
@@ -58,7 +64,6 @@
   - [ ] 'door' select chooses first item if list changes while select is open
 
 #### Events
-  - [ ] Replace LAN callback with something more idiomatic
   - [ ] Optimize page display
         - [ ] Realize e.g. two pages and repopulate OIDs a la Android RecyclerView
               - https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API

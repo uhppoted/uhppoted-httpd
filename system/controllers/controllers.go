@@ -231,6 +231,7 @@ func (cc *ControllerSet) Refresh(callback Callback) {
 		}
 	}
 
+	// ... refresh
 	cc.LAN.refresh(cc.Controllers, callback)
 
 	for _, c := range cc.Controllers {
@@ -282,8 +283,8 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 				device.Address = (*net.UDPAddr)(c.IP)
 			}
 
-			if c.TimeZone != nil {
-				device.TimeZone = *c.TimeZone
+			if c.timezone != nil {
+				device.TimeZone = *c.timezone
 			}
 
 			if d, ok := doors[c.Doors[1]]; ok {
@@ -333,18 +334,15 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 	return os.Rename(tmp.Name(), file)
 }
 
-func (cc *ControllerSet) Sync() []catalog.Object {
+func (cc *ControllerSet) Sync() {
+	cc.LAN.synchTime(cc.Controllers)
+
 	objects := []catalog.Object{}
-
-	if list := cc.LAN.synchTime(cc.Controllers); list != nil {
-		objects = append(objects, list...)
-	}
-
 	if list := cc.LAN.synchDoors(cc.Controllers); list != nil {
 		objects = append(objects, list...)
 	}
 
-	return objects
+	catalog.PutL(objects)
 }
 
 func (cc *ControllerSet) Compare(permissions acl.ACL) error {

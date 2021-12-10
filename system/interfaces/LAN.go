@@ -37,6 +37,7 @@ type Controller interface {
 	Name() string
 	DeviceID() uint32
 	EndPoint() *net.UDPAddr
+	TimeZone() *time.Location
 	Door(uint8) (catalog.OID, bool)
 }
 
@@ -331,6 +332,29 @@ func (l *LANx) Update(api *uhppoted.UHPPOTED, controller Controller) {
 	//	} else if callback != nil {
 	//		callback.Append(id, recent.Events)
 	//	}
+}
+
+func (l *LANx) SynchTime(api *uhppoted.UHPPOTED, controllers []Controller) {
+	for _, c := range controllers {
+		deviceID := c.DeviceID()
+
+		if deviceID > 0 {
+			location := c.TimeZone()
+			now := time.Now().In(location)
+			datetime := core.DateTime(now)
+
+			request := uhppoted.SetTimeRequest{
+				DeviceID: uhppoted.DeviceID(deviceID),
+				DateTime: datetime,
+			}
+
+			if response, err := api.SetTime(request); err != nil {
+				log.Printf("ERROR %v", err)
+			} else if response != nil {
+				log.Printf("INFO  synchronized device-time %v %v", response.DeviceID, response.DateTime)
+			}
+		}
+	}
 }
 
 func (l *LANx) Store(c Controller, info interface{}) {

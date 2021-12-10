@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"log"
 	"sync"
-	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
-	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
@@ -49,7 +47,7 @@ func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
 	return l.Search(devices)
 }
 
-// Long-running function. Synchronous - expects to be invoked from an external goroutine.
+// Synchronouse Long-running function - expects to be invoked from an external goroutine.
 func (l *LAN) refresh(controllers []*Controller, callback Callback) {
 	l.Refresh()
 
@@ -82,38 +80,17 @@ func (l *LAN) refresh(controllers []*Controller, callback Callback) {
 	wg.Wait()
 }
 
-func (l *LAN) synchTime(controllers []*Controller) []catalog.Object {
-	objects := []catalog.Object{}
+func (l *LAN) synchTime(controllers []*Controller) {
 	api := l.api(controllers)
+
+	list := []interfaces.Controller{}
 	for _, c := range controllers {
-		if c.deviceID != nil {
-			device := uhppoted.DeviceID(*c.deviceID)
-			location := time.Local
-
-			if c.TimeZone != nil {
-				timezone := *c.TimeZone
-				if tz, err := types.Timezone(timezone); err == nil && tz != nil {
-					location = tz
-				}
-			}
-
-			now := time.Now().In(location)
-			datetime := core.DateTime(now)
-
-			request := uhppoted.SetTimeRequest{
-				DeviceID: device,
-				DateTime: datetime,
-			}
-
-			if response, err := api.SetTime(request); err != nil {
-				log.Printf("ERROR %v", err)
-			} else if response != nil {
-				log.Printf("INFO  synchronized device-time %v %v", response.DeviceID, response.DateTime)
-			}
+		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
+			list = append(list, c)
 		}
 	}
 
-	return objects
+	l.SynchTime(api, list)
 }
 
 func (l *LAN) synchDoors(controllers []*Controller) []catalog.Object {
