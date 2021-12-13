@@ -22,16 +22,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/config"
-	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type ControllerSet struct {
 	Controllers []*Controller `json:"controllers"`
 	LAN         *LAN          `json:"LAN"`
-}
-
-type Callback interface {
-	Append(deviceID uint32, events []uhppoted.Event)
 }
 
 const BLANK = "'blank'"
@@ -204,7 +199,7 @@ func (cc *ControllerSet) Find(deviceID uint32) *Controller {
 	return nil
 }
 
-func (cc *ControllerSet) Refresh(callback Callback) {
+func (cc *ControllerSet) Refresh() {
 	// ... add 'found' controllers to list
 	if found, err := cc.LAN.search(cc.Controllers); err != nil {
 		warn(err)
@@ -232,7 +227,7 @@ func (cc *ControllerSet) Refresh(callback Callback) {
 	}
 
 	// ... refresh
-	cc.LAN.refresh(cc.Controllers, callback)
+	cc.LAN.refresh(cc.Controllers)
 
 	for _, c := range cc.Controllers {
 		c.refreshed()

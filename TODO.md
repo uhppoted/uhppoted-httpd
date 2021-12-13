@@ -8,12 +8,8 @@
 
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-            - [x] Move 'update' to interfaces.LAN
-            - [x] Move 'synchTime' to interfaces.LAN
-            - [x] Move 'synchDoors' to interfaces.LAN
             - [ ] Rework synchXXX to just do a single controller (and not take API as a parameter)
-            - [ ] Replace LAN events callback with something more idiomatic
-                  - (?) DBC.Commit (?)
+            - [x] Replace LAN events callback with channel
             - [ ] MAYBE: move ACL stuff into interfaces.LAN
             - [ ] Fix the whole 'LAN.api' mess - assign controllers to LAN
             - [ ] Find a cleaner way to handle deleted controllers 
@@ -37,9 +33,6 @@
             - unit test(s)
               - [ ] interfaces
               - [ ] controllers
-              - [x] cards
-              - [x] doors
-              - [x] groups
 
 - [ ] Genericize load/save
       - [ ] Embed controllers etc. in sys structs

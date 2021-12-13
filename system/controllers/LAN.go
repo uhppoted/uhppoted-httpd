@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
@@ -40,10 +39,8 @@ func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
 	return l.Search(devices)
 }
 
-// Synchronous Long-running function - expects to be invoked from an external goroutine.
-func (l *LAN) refresh(controllers []*Controller, callback Callback) {
-	l.Refresh()
-
+// Synchronous long-running function - expects to be invoked from an external goroutine.
+func (l *LAN) refresh(controllers []*Controller) {
 	api := l.api(controllers)
 
 	var wg sync.WaitGroup
@@ -57,15 +54,7 @@ func (l *LAN) refresh(controllers []*Controller, callback Callback) {
 			go func(v *Controller) {
 				defer wg.Done()
 
-				l.Update(api, v)
-
-				deviceID := v.DeviceID()
-				recent, err := api.GetEvents(uhppoted.GetEventsRequest{DeviceID: uhppoted.DeviceID(deviceID), Max: 5})
-				if err != nil {
-					log.Printf("%v", err)
-				} else if callback != nil {
-					callback.Append(v.DeviceID(), recent.Events)
-				}
+				l.Refresh(api, v)
 			}(controller)
 		}
 	}
@@ -73,6 +62,7 @@ func (l *LAN) refresh(controllers []*Controller, callback Callback) {
 	wg.Wait()
 }
 
+// Synchronous long-running function - expects to be invoked from an external goroutine.
 func (l *LAN) synchTime(controllers []*Controller) {
 	api := l.api(controllers)
 
@@ -86,6 +76,7 @@ func (l *LAN) synchTime(controllers []*Controller) {
 	l.SynchTime(api, list)
 }
 
+// Synchronous long-running function - expects to be invoked from an external goroutine.
 func (l *LAN) synchDoors(controllers []*Controller) {
 	api := l.api(controllers)
 

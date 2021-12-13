@@ -27,6 +27,7 @@ type LANx struct {
 	ListenAddress    core.ListenAddr
 	Debug            bool
 
+	ch           chan types.EventsList
 	created      types.DateTime
 	deleted      *types.DateTime
 	unconfigured bool
@@ -267,10 +268,7 @@ func (l *LANx) Search(controllers []Controller) ([]uint32, error) {
 }
 
 // A long-running function i.e. expects to be invoked from an external goroutine
-func (l *LANx) Refresh() {
-}
-
-func (l *LANx) Update(api *uhppoted.UHPPOTED, controller Controller) {
+func (l *LANx) Refresh(api *uhppoted.UHPPOTED, controller Controller) {
 	log.Printf("%v: refreshing LAN controller status", controller.DeviceID())
 
 	deviceID := uhppoted.DeviceID(controller.DeviceID())
@@ -327,11 +325,14 @@ func (l *LANx) Update(api *uhppoted.UHPPOTED, controller Controller) {
 		}
 	}
 
-	//	if recent, err := api.GetEvents(uhppoted.GetEventsRequest{DeviceID: uhppoted.DeviceID(id), Max: 5}); err != nil {
-	//		log.Printf("%v", err)
-	//	} else if callback != nil {
-	//		callback.Append(id, recent.Events)
-	//	}
+	if recent, err := api.GetEvents(uhppoted.GetEventsRequest{DeviceID: deviceID, Max: 5}); err != nil {
+		log.Printf("%v", err)
+	} else if l.ch != nil {
+		l.ch <- types.EventsList{
+			DeviceID: uint32(recent.DeviceID),
+			Events:   recent.Events,
+		}
+	}
 }
 
 func (l *LANx) SynchTime(api *uhppoted.UHPPOTED, controllers []Controller) {

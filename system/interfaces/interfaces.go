@@ -10,6 +10,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Interfaces struct {
@@ -23,6 +24,12 @@ var guard sync.RWMutex
 func NewInterfaces() Interfaces {
 	return Interfaces{
 		LANs: map[catalog.OID]*LANx{},
+	}
+}
+
+func (ii *Interfaces) SetCh(ch chan types.EventsList) {
+	for _, l := range ii.LANs {
+		l.ch = ch
 	}
 }
 

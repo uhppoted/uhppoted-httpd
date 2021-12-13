@@ -77,10 +77,12 @@ var sys = system{
 
 	events: struct {
 		events events.Events
+		ch     chan types.EventsList
 		file   string
 		tag    string
 	}{
 		events: events.NewEvents(),
+		ch:     make(chan types.EventsList),
 		tag:    "events",
 	},
 
@@ -118,30 +120,35 @@ type system struct {
 		file  string
 		tag   string
 	}
+
 	cards struct {
 		cards cards.Cards
 		file  string
 		tag   string
 	}
+
 	groups struct {
 		groups groups.Groups
 		file   string
 		tag    string
 	}
+
 	events struct {
 		events events.Events
+		ch     chan types.EventsList
 		file   string
 		tag    string
 	}
+
 	logs struct {
 		logs logs.Logs
 		file string
 		tag  string
 	}
+
 	rules     grule.Rules
 	taskQ     TaskQ
 	retention time.Duration // time after which 'deleted' items are permanently removed
-	callback  callback
 	trail     trail
 	debug     bool
 }
@@ -185,8 +192,6 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		return err
 	}
 
-	sys.controllers.controllers.Init(sys.interfaces.interfaces)
-
 	if err := load(sys.controllers.file, sys.controllers.tag, &sys.controllers.controllers); err != nil {
 		return err
 	}
@@ -229,6 +234,9 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	}
 	sys.debug = debug
 
+	sys.interfaces.interfaces.SetCh(sys.events.ch)
+	sys.controllers.controllers.Init(sys.interfaces.interfaces)
+
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
 		cfg.HTTPD.System.Windows.Uncertain,
 		cfg.HTTPD.System.Windows.Systime,
@@ -250,6 +258,12 @@ func Init(cfg config.Config, conf string, debug bool) error {
 			sys.refresh()
 		}
 	}()
+
+	go func(ch <-chan types.EventsList) {
+		for v := range ch {
+			AppendEvents(v)
+		}
+	}(sys.events.ch)
 
 	return nil
 }
@@ -291,7 +305,7 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			s.controllers.controllers.Refresh(&s.callback)
+			s.controllers.controllers.Refresh()
 		},
 	})
 

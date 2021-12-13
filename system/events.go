@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
@@ -16,7 +17,10 @@ func Events(start, count int) []interface{} {
 	return sys.events.events.AsObjects(start, count)
 }
 
-func (f *callback) Append(deviceID uint32, recent []uhppoted.Event) {
+func AppendEvents(list types.EventsList) {
+	deviceID := list.DeviceID
+	recent := list.Events
+
 	l := func(e uhppoted.Event) (string, string, string) {
 		device := eventController(e)
 		door := eventDoor(e)
