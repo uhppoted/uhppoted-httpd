@@ -29,11 +29,11 @@
 
 ### IN PROGRESS
 
-- [ ] Rethink mark/sweep
-      - [ ] Fail with error on update deleted object
+- [x] Rethink mark/sweep
+      - [x] Fail with error on update deleted object
             - unit test(s)
               - [x] interfaces
-              - [ ] controllers
+              - [x] controllers
 
 - [ ] Genericize load/save
       - [ ] Embed controllers etc. in sys structs

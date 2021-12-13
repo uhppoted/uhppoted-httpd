@@ -124,6 +124,6 @@ func TestLANSetWithDeleted(t *testing.T) {
 	}
 
 	if l.Name != "Le LAN" {
-		t.Errorf("Group name unexpectedly updated - expected:%v, got:%v", "Le LAN", l.Name)
+		t.Errorf("LAN name unexpectedly updated - expected:%v, got:%v", "Le LAN", l.Name)
 	}
 }

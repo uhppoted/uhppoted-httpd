@@ -96,3 +96,54 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
 	}
 }
+
+func TestControllerSet(t *testing.T) {
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.2.3.1", Value: "Ze Kontroller"},
+		catalog.Object{OID: "0.2.3.0.0", Value: types.StatusUnknown},
+	}
+
+	c := Controller{
+		oid:  "0.2.3",
+		name: "Le Controlleur",
+	}
+
+	objects, err := c.set(nil, "0.2.3.1", "Ze Kontroller", nil)
+	if err != nil {
+		t.Errorf("Unexpected error (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if c.name != "Ze Kontroller" {
+		t.Errorf("Controller name not updated - expected:%v, got:%v", "Ze Kontroller", c.name)
+	}
+}
+
+func TestControllerSetWithDeleted(t *testing.T) {
+	c := Controller{
+		oid:  "0.2.3",
+		name: "Le Controlleur",
+
+		deleted: types.DateTimePtrNow(),
+	}
+
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.2.3.0.2", Value: c.deleted},
+	}
+
+	objects, err := c.set(nil, "0.2.3.1", "Ze Kontroller", nil)
+	if err == nil {
+		t.Errorf("Expected error, got (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if c.name != "Le Controlleur" {
+		t.Errorf("Controller name unexpectedly updated - expected:%v, got:%v", "Le Controlleur", c.name)
+	}
+}

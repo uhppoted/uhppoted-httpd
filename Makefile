@@ -70,10 +70,11 @@ bump:
 
 debug: format
 	go build -o bin ./...
-	go test -v -run TestGroupSet*  ./system/groups
-	go test -v -run TestDoorSet*   ./system/doors
-	go test -v -run TestCardSet*   ./system/cards
-	go test -v -run TestLANSet*    ./system/interfaces
+	go test -v -run TestGroupSet*      ./system/groups
+	go test -v -run TestDoorSet*       ./system/doors
+	go test -v -run TestCardSet*       ./system/cards
+	go test -v -run TestControllerSet* ./system/controllers
+	go test -v -run TestLANSet*        ./system/interfaces
 	# dlv test github.com/uhppoted/uhppoted-httpd/system/catalog
 
 # NOTE: sass --watch doesn't seem to consistently pick up changes in themed partials

@@ -409,278 +409,283 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		return auth.CanUpdateController(c, field, value)
 	}
 
-	if c != nil {
-		clone := c.clone()
-		switch oid {
-		case OID.Append(ControllerName):
-			if err := f("name", value); err != nil {
-				return nil, err
-			} else {
+	if c == nil {
+		return objects, nil
+	} else if c.deleted != nil {
+		objects = append(objects, catalog.NewObject2(c.oid, ControllerDeleted, c.deleted))
+
+		return objects, fmt.Errorf("Controller has been deleted")
+	}
+
+	clone := c.clone()
+	switch oid {
+	case OID.Append(ControllerName):
+		if err := f("name", value); err != nil {
+			return nil, err
+		} else {
+			c.log(auth,
+				"update",
+				OID,
+				"name",
+				fmt.Sprintf("Updated name from %v to %v", stringify(c.name, BLANK), stringify(value, BLANK)),
+				stringify(c.name, ""),
+				stringify(value, ""),
+				dbc)
+
+			c.name = strings.TrimSpace(value)
+			c.unconfigured = false
+			objects = append(objects, catalog.NewObject2(OID, ControllerName, c.name))
+		}
+
+	case OID.Append(ControllerDeviceID):
+		if err := f("deviceID", value); err != nil {
+			return nil, err
+		} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
+			if id, err := strconv.ParseUint(value, 10, 32); err == nil {
 				c.log(auth,
 					"update",
 					OID,
-					"name",
-					fmt.Sprintf("Updated name from %v to %v", stringify(c.name, BLANK), stringify(value, BLANK)),
-					stringify(c.name, ""),
+					"device-id",
+					fmt.Sprintf("Updated device ID from %v to %v", stringify(c.deviceID, BLANK), stringify(value, BLANK)),
+					stringify(c.deviceID, ""),
 					stringify(value, ""),
 					dbc)
 
-				c.name = strings.TrimSpace(value)
+				cid := uint32(id)
+				c.deviceID = &cid
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(OID, ControllerName, c.name))
+				objects = append(objects, catalog.NewObject2(OID, ".2", cid))
 			}
-
-		case OID.Append(ControllerDeviceID):
-			if err := f("deviceID", value); err != nil {
-				return nil, err
-			} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
-				if id, err := strconv.ParseUint(value, 10, 32); err == nil {
-					c.log(auth,
-						"update",
-						OID,
-						"device-id",
-						fmt.Sprintf("Updated device ID from %v to %v", stringify(c.deviceID, BLANK), stringify(value, BLANK)),
-						stringify(c.deviceID, ""),
-						stringify(value, ""),
-						dbc)
-
-					cid := uint32(id)
-					c.deviceID = &cid
-					c.unconfigured = false
-					objects = append(objects, catalog.NewObject2(OID, ".2", cid))
-				}
-			} else if value == "" {
-				if p := stringify(c.deviceID, ""); p != "" {
-					c.log(auth,
-						"update",
-						OID,
-						"device-id",
-						fmt.Sprintf("Cleared device ID %v", p),
-						p,
-						"",
-						dbc)
-				} else if p = stringify(c.name, ""); p != "" {
-					c.log(auth,
-						"update",
-						OID,
-						"device-id",
-						fmt.Sprintf("Cleared device ID for %v", p),
-						"",
-						"",
-						dbc)
-				} else {
-					c.log(auth,
-						"update",
-						OID,
-						"device-id",
-						fmt.Sprintf("Cleared device ID"),
-						"",
-						"",
-						dbc)
-				}
-
-				c.deviceID = nil
-				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(OID, ".2", ""))
-			}
-
-		case OID.Append(ControllerEndpointAddress):
-			if c.deleted != nil {
-				return nil, fmt.Errorf("Controller has been deleted")
-			} else if addr, err := core.ResolveAddr(value); err != nil {
-				return nil, err
-			} else if err := f("address", addr); err != nil {
-				return nil, err
+		} else if value == "" {
+			if p := stringify(c.deviceID, ""); p != "" {
+				c.log(auth,
+					"update",
+					OID,
+					"device-id",
+					fmt.Sprintf("Cleared device ID %v", p),
+					p,
+					"",
+					dbc)
+			} else if p = stringify(c.name, ""); p != "" {
+				c.log(auth,
+					"update",
+					OID,
+					"device-id",
+					fmt.Sprintf("Cleared device ID for %v", p),
+					"",
+					"",
+					dbc)
 			} else {
 				c.log(auth,
 					"update",
 					OID,
-					"address",
-					fmt.Sprintf("Updated endpoint from %v to %v", stringify(c.IP, BLANK), stringify(value, BLANK)),
-					stringify(c.IP, ""),
-					stringify(value, ""),
+					"device-id",
+					fmt.Sprintf("Cleared device ID"),
+					"",
+					"",
 					dbc)
-				c.IP = addr
-				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(OID, ".3", c.IP))
 			}
 
-		case OID.Append(ControllerDateTimeCurrent):
-			if c.deleted != nil {
-				return nil, fmt.Errorf("Controller has been deleted")
-			} else if tz, err := types.Timezone(value); err != nil {
-				return nil, err
-			} else if err := f("timezone", tz); err != nil {
-				return nil, err
-			} else {
-				c.log(auth,
-					"update",
-					OID,
-					"timezone",
-					fmt.Sprintf("Updated timezone from %v to %v", stringify(c.timezone, BLANK), stringify(tz.String(), BLANK)),
-					stringify(c.timezone, ""),
-					stringify(tz.String(), ""),
-					dbc)
-				tzs := tz.String()
-				c.timezone = &tzs
-				c.unconfigured = false
+			c.deviceID = nil
+			c.unconfigured = false
+			objects = append(objects, catalog.NewObject2(OID, ".2", ""))
+		}
 
-				if c.deviceID != nil {
-					if cached := c.get(); cached != nil {
-						if cached.datetime != nil {
-							tz := time.Local
-							if c.timezone != nil {
-								if l, err := timezone(*c.timezone); err != nil {
-									warn(err)
-								} else {
-									tz = l
-								}
+	case OID.Append(ControllerEndpointAddress):
+		if c.deleted != nil {
+			return nil, fmt.Errorf("Controller has been deleted")
+		} else if addr, err := core.ResolveAddr(value); err != nil {
+			return nil, err
+		} else if err := f("address", addr); err != nil {
+			return nil, err
+		} else {
+			c.log(auth,
+				"update",
+				OID,
+				"address",
+				fmt.Sprintf("Updated endpoint from %v to %v", stringify(c.IP, BLANK), stringify(value, BLANK)),
+				stringify(c.IP, ""),
+				stringify(value, ""),
+				dbc)
+			c.IP = addr
+			c.unconfigured = false
+			objects = append(objects, catalog.NewObject2(OID, ".3", c.IP))
+		}
+
+	case OID.Append(ControllerDateTimeCurrent):
+		if c.deleted != nil {
+			return nil, fmt.Errorf("Controller has been deleted")
+		} else if tz, err := types.Timezone(value); err != nil {
+			return nil, err
+		} else if err := f("timezone", tz); err != nil {
+			return nil, err
+		} else {
+			c.log(auth,
+				"update",
+				OID,
+				"timezone",
+				fmt.Sprintf("Updated timezone from %v to %v", stringify(c.timezone, BLANK), stringify(tz.String(), BLANK)),
+				stringify(c.timezone, ""),
+				stringify(tz.String(), ""),
+				dbc)
+			tzs := tz.String()
+			c.timezone = &tzs
+			c.unconfigured = false
+
+			if c.deviceID != nil {
+				if cached := c.get(); cached != nil {
+					if cached.datetime != nil {
+						tz := time.Local
+						if c.timezone != nil {
+							if l, err := timezone(*c.timezone); err != nil {
+								warn(err)
+							} else {
+								tz = l
 							}
-
-							t := time.Time(*cached.datetime)
-							dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-							objects = append(objects, catalog.NewObject2(OID, ".4", dt.Format("2006-01-02 15:04 MST")))
 						}
+
+						t := time.Time(*cached.datetime)
+						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+						objects = append(objects, catalog.NewObject2(OID, ".4", dt.Format("2006-01-02 15:04 MST")))
 					}
 				}
 			}
-
-		case OID.Append(ControllerDoor1):
-			if c.deleted != nil {
-				return nil, fmt.Errorf("Controller has been deleted")
-			} else if err := f("door[1]", value); err != nil {
-				return nil, err
-			} else {
-				p := catalog.GetV(catalog.OID(c.Doors[1]), catalog.DoorName)
-				q := catalog.GetV(catalog.OID(value), catalog.DoorName)
-				c.log(auth,
-					"update",
-					OID,
-					"door:1",
-					fmt.Sprintf("Updated door:1 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
-					stringify(p, ""),
-					stringify(q, ""),
-					dbc)
-
-				c.Doors[1] = catalog.OID(value)
-				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(OID, ControllerDoor1, c.Doors[1]))
-			}
-
-		case OID.Append(ControllerDoor2):
-			if c.deleted != nil {
-				return nil, fmt.Errorf("Controller has been deleted")
-			} else if err := f("door[2]", value); err != nil {
-				return nil, err
-			} else {
-				p := catalog.GetV(catalog.OID(c.Doors[2]), catalog.DoorName)
-				q := catalog.GetV(catalog.OID(value), catalog.DoorName)
-				c.log(auth,
-					"update",
-					OID,
-					"door:2",
-					fmt.Sprintf("Updated door:2 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
-					stringify(p, ""),
-					stringify(q, ""),
-					dbc)
-
-				c.Doors[2] = catalog.OID(value)
-				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(OID, ControllerDoor2, c.Doors[2]))
-			}
-
-		case OID.Append(ControllerDoor3):
-			if c.deleted != nil {
-				return nil, fmt.Errorf("Controller has been deleted")
-			} else if err := f("door[3]", value); err != nil {
-				return nil, err
-			} else {
-				p := catalog.GetV(catalog.OID(c.Doors[3]), catalog.DoorName)
-				q := catalog.GetV(catalog.OID(value), catalog.DoorName)
-				c.log(auth,
-					"update",
-					OID,
-					"door:3",
-					fmt.Sprintf("Updated door:3 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
-					stringify(p, ""),
-					stringify(q, ""),
-					dbc)
-
-				c.Doors[3] = catalog.OID(value)
-				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(OID, ControllerDoor3, c.Doors[3]))
-			}
-
-		case OID.Append(ControllerDoor4):
-			if c.deleted != nil {
-				return nil, fmt.Errorf("Controller has been deleted")
-			} else if err := f("door[4]", value); err != nil {
-				return nil, err
-			} else {
-				p := catalog.GetV(catalog.OID(c.Doors[4]), catalog.DoorName)
-				q := catalog.GetV(catalog.OID(value), catalog.DoorName)
-				c.log(auth,
-					"update",
-					OID,
-					"door:4",
-					fmt.Sprintf("Updated door:4 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
-					stringify(p, ""),
-					stringify(q, ""),
-					dbc)
-
-				c.Doors[4] = catalog.OID(value)
-				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(OID, ControllerDoor4, c.Doors[4]))
-			}
 		}
 
-		if c.name == "" && (c.deviceID == nil || *c.deviceID == 0) {
-			if auth != nil {
-				if err := auth.CanDeleteController(c); err != nil {
-					return nil, err
-				}
-			}
+	case OID.Append(ControllerDoor1):
+		if c.deleted != nil {
+			return nil, fmt.Errorf("Controller has been deleted")
+		} else if err := f("door[1]", value); err != nil {
+			return nil, err
+		} else {
+			p := catalog.GetV(catalog.OID(c.Doors[1]), catalog.DoorName)
+			q := catalog.GetV(catalog.OID(value), catalog.DoorName)
+			c.log(auth,
+				"update",
+				OID,
+				"door:1",
+				fmt.Sprintf("Updated door:1 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
+				stringify(p, ""),
+				stringify(q, ""),
+				dbc)
 
-			if p := stringify(clone.name, ""); p != "" {
-				clone.log(auth,
-					"delete",
-					OID,
-					"device-id",
-					fmt.Sprintf("Deleted controller %v", p),
-					"",
-					"",
-					dbc)
-			} else if p = stringify(clone.deviceID, ""); p != "" {
-				clone.log(auth,
-					"delete",
-					OID,
-					"device-id",
-					fmt.Sprintf("Deleted controller %v", p),
-					"",
-					"",
-					dbc)
-			} else {
-				clone.log(auth,
-					"delete",
-					OID,
-					"device-id",
-					fmt.Sprintf("Deleted controller"),
-					"",
-					"",
-					dbc)
-			}
-
-			now := types.DateTime(time.Now())
-			c.deleted = &now
-			objects = append(objects, catalog.NewObject(OID, "deleted"))
-			objects = append(objects, catalog.NewObject2(OID, ControllerDeleted, c.deleted))
-
-			catalog.Delete(OID)
+			c.Doors[1] = catalog.OID(value)
+			c.unconfigured = false
+			objects = append(objects, catalog.NewObject2(OID, ControllerDoor1, c.Doors[1]))
 		}
 
-		objects = append(objects, catalog.NewObject2(OID, ControllerStatus, c.status()))
-		objects = append(objects, catalog.NewObject2(OID, ControllerDeleted, c.deleted))
+	case OID.Append(ControllerDoor2):
+		if c.deleted != nil {
+			return nil, fmt.Errorf("Controller has been deleted")
+		} else if err := f("door[2]", value); err != nil {
+			return nil, err
+		} else {
+			p := catalog.GetV(catalog.OID(c.Doors[2]), catalog.DoorName)
+			q := catalog.GetV(catalog.OID(value), catalog.DoorName)
+			c.log(auth,
+				"update",
+				OID,
+				"door:2",
+				fmt.Sprintf("Updated door:2 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
+				stringify(p, ""),
+				stringify(q, ""),
+				dbc)
+
+			c.Doors[2] = catalog.OID(value)
+			c.unconfigured = false
+			objects = append(objects, catalog.NewObject2(OID, ControllerDoor2, c.Doors[2]))
+		}
+
+	case OID.Append(ControllerDoor3):
+		if c.deleted != nil {
+			return nil, fmt.Errorf("Controller has been deleted")
+		} else if err := f("door[3]", value); err != nil {
+			return nil, err
+		} else {
+			p := catalog.GetV(catalog.OID(c.Doors[3]), catalog.DoorName)
+			q := catalog.GetV(catalog.OID(value), catalog.DoorName)
+			c.log(auth,
+				"update",
+				OID,
+				"door:3",
+				fmt.Sprintf("Updated door:3 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
+				stringify(p, ""),
+				stringify(q, ""),
+				dbc)
+
+			c.Doors[3] = catalog.OID(value)
+			c.unconfigured = false
+			objects = append(objects, catalog.NewObject2(OID, ControllerDoor3, c.Doors[3]))
+		}
+
+	case OID.Append(ControllerDoor4):
+		if c.deleted != nil {
+			return nil, fmt.Errorf("Controller has been deleted")
+		} else if err := f("door[4]", value); err != nil {
+			return nil, err
+		} else {
+			p := catalog.GetV(catalog.OID(c.Doors[4]), catalog.DoorName)
+			q := catalog.GetV(catalog.OID(value), catalog.DoorName)
+			c.log(auth,
+				"update",
+				OID,
+				"door:4",
+				fmt.Sprintf("Updated door:4 from %v to %v", stringify(p, "<none>"), stringify(q, "<none>")),
+				stringify(p, ""),
+				stringify(q, ""),
+				dbc)
+
+			c.Doors[4] = catalog.OID(value)
+			c.unconfigured = false
+			objects = append(objects, catalog.NewObject2(OID, ControllerDoor4, c.Doors[4]))
+		}
 	}
+
+	if c.name == "" && (c.deviceID == nil || *c.deviceID == 0) {
+		if auth != nil {
+			if err := auth.CanDeleteController(c); err != nil {
+				return nil, err
+			}
+		}
+
+		if p := stringify(clone.name, ""); p != "" {
+			clone.log(auth,
+				"delete",
+				OID,
+				"device-id",
+				fmt.Sprintf("Deleted controller %v", p),
+				"",
+				"",
+				dbc)
+		} else if p = stringify(clone.deviceID, ""); p != "" {
+			clone.log(auth,
+				"delete",
+				OID,
+				"device-id",
+				fmt.Sprintf("Deleted controller %v", p),
+				"",
+				"",
+				dbc)
+		} else {
+			clone.log(auth,
+				"delete",
+				OID,
+				"device-id",
+				fmt.Sprintf("Deleted controller"),
+				"",
+				"",
+				dbc)
+		}
+
+		now := types.DateTime(time.Now())
+		c.deleted = &now
+		objects = append(objects, catalog.NewObject(OID, "deleted"))
+		objects = append(objects, catalog.NewObject2(OID, ControllerDeleted, c.deleted))
+
+		catalog.Delete(OID)
+	}
+
+	objects = append(objects, catalog.NewObject2(OID, ControllerStatus, c.status()))
 
 	return objects, nil
 }
