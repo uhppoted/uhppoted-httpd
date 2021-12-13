@@ -32,14 +32,13 @@
 - [ ] Rethink mark/sweep
       - [ ] Fail with error on update deleted object
             - unit test(s)
-              - [ ] interfaces
+              - [x] interfaces
               - [ ] controllers
 
 - [ ] Genericize load/save
       - [ ] Embed controllers etc. in sys structs
       - [ ] Put subsystems into list for iterating
       - [ ] Commonalise 'print'
-      - [ ] MAYBE: groups, etc probably don't need to be structs anymore => typedef arrays
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc

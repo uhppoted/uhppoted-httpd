@@ -76,3 +76,54 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
 	}
 }
+
+func TestLANSet(t *testing.T) {
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.1.3.1", Value: "Ze LAN"},
+		catalog.Object{OID: "0.1.3.0.0", Value: types.StatusOk},
+	}
+
+	l := LANx{
+		OID:  "0.1.3",
+		Name: "Le LAN",
+	}
+
+	objects, err := l.set(nil, "0.1.3.1", "Ze LAN", nil)
+	if err != nil {
+		t.Errorf("Unexpected error (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if l.Name != "Ze LAN" {
+		t.Errorf("LAN name not updated - expected:%v, got:%v", "Ze LAN", l.Name)
+	}
+}
+
+func TestLANSetWithDeleted(t *testing.T) {
+	l := LANx{
+		OID:  "0.1.3",
+		Name: "Le LAN",
+
+		deleted: types.DateTimePtrNow(),
+	}
+
+	expected := []catalog.Object{
+		catalog.Object{OID: "0.1.3.0.2", Value: l.deleted},
+	}
+
+	objects, err := l.set(nil, "0.1.3.1", "Ze LAN", nil)
+	if err == nil {
+		t.Errorf("Expected error, got (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if l.Name != "Le LAN" {
+		t.Errorf("Group name unexpectedly updated - expected:%v, got:%v", "Le LAN", l.Name)
+	}
+}

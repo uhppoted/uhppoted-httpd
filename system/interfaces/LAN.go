@@ -144,88 +144,94 @@ func (l *LANx) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		return auth.CanUpdateInterface(l, field, value)
 	}
 
-	if l != nil {
-		switch oid {
-		case l.OID.Append(LANName):
-			if err := f("name", value); err != nil {
-				return nil, err
-			} else {
-				l.log(auth,
-					"update",
-					l.OID,
-					"name",
-					fmt.Sprintf("Updated name from %v to %v", stringify(l.Name, BLANK), stringify(value, BLANK)),
-					stringify(l.Name, BLANK),
-					stringify(value, BLANK),
-					dbc)
-				l.Name = value
-				objects = append(objects, catalog.NewObject2(l.OID, LANName, l.Name))
-			}
+	if l == nil {
+		return objects, nil
+	} else if l.deleted != nil {
+		objects = append(objects, catalog.NewObject2(l.OID, LANDeleted, l.deleted))
 
-		case l.OID.Append(LANBindAddress):
-			if l.deleted != nil {
-				return nil, fmt.Errorf("LAN has been deleted")
-			} else if addr, err := core.ResolveBindAddr(value); err != nil {
-				return nil, err
-			} else if err := f("bind", addr); err != nil {
-				return nil, err
-			} else {
-				l.log(auth,
-					"update",
-					l.OID,
-					"bind",
-					fmt.Sprintf("Updated bind address from %v to %v", stringify(l.BindAddress, BLANK), stringify(value, BLANK)),
-					stringify(l.BindAddress, BLANK),
-					stringify(value, BLANK),
-					dbc)
-				l.BindAddress = *addr
-				objects = append(objects, catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress))
-			}
+		return objects, fmt.Errorf("LAN has been deleted")
+	}
 
-		case l.OID.Append(LANBroadcastAddress):
-			if l.deleted != nil {
-				return nil, fmt.Errorf("LAN has been deleted")
-			} else if addr, err := core.ResolveBroadcastAddr(value); err != nil {
-				return nil, err
-			} else if err := f("broadcast", addr); err != nil {
-				return nil, err
-			} else {
-				l.log(auth,
-					"update",
-					l.OID,
-					"broadcast",
-					fmt.Sprintf("Updated broadcast address from %v to %v", stringify(l.BroadcastAddress, BLANK), stringify(value, BLANK)),
-					stringify(l.BroadcastAddress, BLANK),
-					stringify(value, BLANK),
-					dbc)
-				l.BroadcastAddress = *addr
-				objects = append(objects, catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress))
-			}
-
-		case l.OID.Append(LANListenAddress):
-			if l.deleted != nil {
-				return nil, fmt.Errorf("LAN has been deleted")
-			} else if addr, err := core.ResolveListenAddr(value); err != nil {
-				return nil, err
-			} else if err = f("listen", addr); err != nil {
-				return nil, err
-			} else {
-				l.log(auth,
-					"update",
-					l.OID,
-					"listen",
-					fmt.Sprintf("Updated listen address from %v to %v", stringify(l.ListenAddress, BLANK), stringify(value, BLANK)),
-					stringify(l.ListenAddress, BLANK),
-					stringify(value, BLANK),
-					dbc)
-				l.ListenAddress = *addr
-				objects = append(objects, catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress))
-			}
+	switch oid {
+	case l.OID.Append(LANName):
+		if err := f("name", value); err != nil {
+			return nil, err
+		} else {
+			l.log(auth,
+				"update",
+				l.OID,
+				"name",
+				fmt.Sprintf("Updated name from %v to %v", stringify(l.Name, BLANK), stringify(value, BLANK)),
+				stringify(l.Name, BLANK),
+				stringify(value, BLANK),
+				dbc)
+			l.Name = value
+			objects = append(objects, catalog.NewObject2(l.OID, LANName, l.Name))
 		}
 
-		if l.deleted == nil {
-			objects = append(objects, catalog.NewObject2(l.OID, LANStatus, l.status()))
+	case l.OID.Append(LANBindAddress):
+		if l.deleted != nil {
+			return nil, fmt.Errorf("LAN has been deleted")
+		} else if addr, err := core.ResolveBindAddr(value); err != nil {
+			return nil, err
+		} else if err := f("bind", addr); err != nil {
+			return nil, err
+		} else {
+			l.log(auth,
+				"update",
+				l.OID,
+				"bind",
+				fmt.Sprintf("Updated bind address from %v to %v", stringify(l.BindAddress, BLANK), stringify(value, BLANK)),
+				stringify(l.BindAddress, BLANK),
+				stringify(value, BLANK),
+				dbc)
+			l.BindAddress = *addr
+			objects = append(objects, catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress))
 		}
+
+	case l.OID.Append(LANBroadcastAddress):
+		if l.deleted != nil {
+			return nil, fmt.Errorf("LAN has been deleted")
+		} else if addr, err := core.ResolveBroadcastAddr(value); err != nil {
+			return nil, err
+		} else if err := f("broadcast", addr); err != nil {
+			return nil, err
+		} else {
+			l.log(auth,
+				"update",
+				l.OID,
+				"broadcast",
+				fmt.Sprintf("Updated broadcast address from %v to %v", stringify(l.BroadcastAddress, BLANK), stringify(value, BLANK)),
+				stringify(l.BroadcastAddress, BLANK),
+				stringify(value, BLANK),
+				dbc)
+			l.BroadcastAddress = *addr
+			objects = append(objects, catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress))
+		}
+
+	case l.OID.Append(LANListenAddress):
+		if l.deleted != nil {
+			return nil, fmt.Errorf("LAN has been deleted")
+		} else if addr, err := core.ResolveListenAddr(value); err != nil {
+			return nil, err
+		} else if err = f("listen", addr); err != nil {
+			return nil, err
+		} else {
+			l.log(auth,
+				"update",
+				l.OID,
+				"listen",
+				fmt.Sprintf("Updated listen address from %v to %v", stringify(l.ListenAddress, BLANK), stringify(value, BLANK)),
+				stringify(l.ListenAddress, BLANK),
+				stringify(value, BLANK),
+				dbc)
+			l.ListenAddress = *addr
+			objects = append(objects, catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress))
+		}
+	}
+
+	if l.deleted == nil {
+		objects = append(objects, catalog.NewObject2(l.OID, LANStatus, l.status()))
 	}
 
 	return objects, nil
