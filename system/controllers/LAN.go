@@ -41,6 +41,32 @@ func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
 
 // Synchronous long-running function - expects to be invoked from an external goroutine.
 func (l *LAN) refresh(controllers []*Controller) {
+	f := func(l *LAN, api *uhppoted.UHPPOTED, c *Controller) {
+		l.Refresh(api, c)
+	}
+
+	l.exec(controllers, f)
+}
+
+// Synchronous long-running function - expects to be invoked from an external goroutine.
+func (l *LAN) synchTime(controllers []*Controller) {
+	f := func(l *LAN, api *uhppoted.UHPPOTED, c *Controller) {
+		l.SynchTime(api, c)
+	}
+
+	l.exec(controllers, f)
+}
+
+// Synchronous long-running function - expects to be invoked from an external goroutine.
+func (l *LAN) synchDoors(controllers []*Controller) {
+	f := func(l *LAN, api *uhppoted.UHPPOTED, c *Controller) {
+		l.SynchDoors(api, c)
+	}
+
+	l.exec(controllers, f)
+}
+
+func (l *LAN) exec(controllers []*Controller, f func(l *LAN, api *uhppoted.UHPPOTED, c *Controller)) {
 	api := l.api(controllers)
 
 	var wg sync.WaitGroup
@@ -54,38 +80,10 @@ func (l *LAN) refresh(controllers []*Controller) {
 			go func(v *Controller) {
 				defer wg.Done()
 
-				l.Refresh(api, v)
+				f(l, api, v)
 			}(controller)
 		}
 	}
 
 	wg.Wait()
-}
-
-// Synchronous long-running function - expects to be invoked from an external goroutine.
-func (l *LAN) synchTime(controllers []*Controller) {
-	api := l.api(controllers)
-
-	list := []interfaces.Controller{}
-	for _, c := range controllers {
-		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
-			list = append(list, c)
-		}
-	}
-
-	l.SynchTime(api, list)
-}
-
-// Synchronous long-running function - expects to be invoked from an external goroutine.
-func (l *LAN) synchDoors(controllers []*Controller) {
-	api := l.api(controllers)
-
-	list := []interfaces.Controller{}
-	for _, c := range controllers {
-		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
-			list = append(list, c)
-		}
-	}
-
-	l.SynchDoors(api, list)
 }

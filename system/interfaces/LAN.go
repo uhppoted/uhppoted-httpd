@@ -335,95 +335,93 @@ func (l *LANx) Refresh(api *uhppoted.UHPPOTED, controller Controller) {
 	}
 }
 
-func (l *LANx) SynchTime(api *uhppoted.UHPPOTED, controllers []Controller) {
-	for _, c := range controllers {
-		if deviceID := c.DeviceID(); deviceID > 0 {
-			location := c.TimeZone()
-			now := time.Now().In(location)
-			datetime := core.DateTime(now)
+func (l *LANx) SynchTime(api *uhppoted.UHPPOTED, c Controller) {
+	if deviceID := c.DeviceID(); deviceID > 0 {
+		location := c.TimeZone()
+		now := time.Now().In(location)
+		datetime := core.DateTime(now)
 
-			request := uhppoted.SetTimeRequest{
-				DeviceID: uhppoted.DeviceID(deviceID),
-				DateTime: datetime,
-			}
+		request := uhppoted.SetTimeRequest{
+			DeviceID: uhppoted.DeviceID(deviceID),
+			DateTime: datetime,
+		}
 
-			if response, err := api.SetTime(request); err != nil {
-				log.Printf("ERROR %v", err)
-			} else if response != nil {
-				log.Printf("INFO  synchronized device-time %v %v", response.DeviceID, response.DateTime)
-			}
+		if response, err := api.SetTime(request); err != nil {
+			log.Printf("ERROR %v", err)
+		} else if response != nil {
+			log.Printf("INFO  synchronized device-time %v %v", response.DeviceID, response.DateTime)
 		}
 	}
 }
 
-func (l *LANx) SynchDoors(api *uhppoted.UHPPOTED, controllers []Controller) {
-	for _, c := range controllers {
-		if deviceID := c.DeviceID(); deviceID > 0 {
-			//			device := uhppoted.DeviceID(*c.deviceID)
+func (l *LANx) SynchDoors(api *uhppoted.UHPPOTED, c Controller) {
+	deviceID := c.DeviceID()
 
-			// ... update door delays
-			for _, door := range []uint8{1, 2, 3, 4} {
-				if oid, ok := c.Door(door); ok && oid != "" {
-					configured := catalog.GetV(oid, catalog.DoorDelayConfigured)
-					actual := catalog.GetV(oid, catalog.DoorDelay)
-					modified := false
+	if deviceID == 0 {
+		return
+	}
 
-					if v := catalog.GetV(oid, catalog.DoorDelayModified); v != nil {
-						if b, ok := v.(bool); ok {
-							modified = b
-						}
-					}
+	// ... update door delays
+	for _, door := range []uint8{1, 2, 3, 4} {
+		if oid, ok := c.Door(door); ok && oid != "" {
+			configured := catalog.GetV(oid, catalog.DoorDelayConfigured)
+			actual := catalog.GetV(oid, catalog.DoorDelay)
+			modified := false
 
-					if configured != nil && (actual == nil || actual != configured) && modified {
-						delay := configured.(uint8)
-
-						request := uhppoted.SetDoorDelayRequest{
-							DeviceID: uhppoted.DeviceID(deviceID),
-							Door:     door,
-							Delay:    delay,
-						}
-
-						if response, err := api.SetDoorDelay(request); err != nil {
-							warn(err)
-						} else if response != nil {
-							catalog.PutV(oid, DoorDelay, delay)
-							catalog.PutV(oid, DoorDelayModified, false)
-							info(fmt.Sprintf("%v: synchronized door %v delay (%v)", response.DeviceID, door, delay))
-						}
-					}
+			if v := catalog.GetV(oid, catalog.DoorDelayModified); v != nil {
+				if b, ok := v.(bool); ok {
+					modified = b
 				}
 			}
 
-			// ... update door control states
-			for _, door := range []uint8{1, 2, 3, 4} {
-				if oid, ok := c.Door(door); ok && oid != "" {
-					configured := catalog.GetV(oid, catalog.DoorControlConfigured)
-					actual := catalog.GetV(oid, catalog.DoorControl)
-					modified := false
+			if configured != nil && (actual == nil || actual != configured) && modified {
+				delay := configured.(uint8)
 
-					if v := catalog.GetV(oid, catalog.DoorControlModified); v != nil {
-						if b, ok := v.(bool); ok {
-							modified = b
-						}
-					}
+				request := uhppoted.SetDoorDelayRequest{
+					DeviceID: uhppoted.DeviceID(deviceID),
+					Door:     door,
+					Delay:    delay,
+				}
 
-					if configured != nil && (actual == nil || actual != configured) && modified {
-						mode := configured.(core.ControlState)
+				if response, err := api.SetDoorDelay(request); err != nil {
+					warn(err)
+				} else if response != nil {
+					catalog.PutV(oid, DoorDelay, delay)
+					catalog.PutV(oid, DoorDelayModified, false)
+					info(fmt.Sprintf("%v: synchronized door %v delay (%v)", response.DeviceID, door, delay))
+				}
+			}
+		}
+	}
 
-						request := uhppoted.SetDoorControlRequest{
-							DeviceID: uhppoted.DeviceID(deviceID),
-							Door:     door,
-							Control:  mode,
-						}
+	// ... update door control states
+	for _, door := range []uint8{1, 2, 3, 4} {
+		if oid, ok := c.Door(door); ok && oid != "" {
+			configured := catalog.GetV(oid, catalog.DoorControlConfigured)
+			actual := catalog.GetV(oid, catalog.DoorControl)
+			modified := false
 
-						if response, err := api.SetDoorControl(request); err != nil {
-							warn(err)
-						} else if response != nil {
-							catalog.PutV(oid, DoorControl, mode)
-							catalog.PutV(oid, DoorControlModified, false)
-							info(fmt.Sprintf("%v: synchronized door %v control (%v)", response.DeviceID, door, mode))
-						}
-					}
+			if v := catalog.GetV(oid, catalog.DoorControlModified); v != nil {
+				if b, ok := v.(bool); ok {
+					modified = b
+				}
+			}
+
+			if configured != nil && (actual == nil || actual != configured) && modified {
+				mode := configured.(core.ControlState)
+
+				request := uhppoted.SetDoorControlRequest{
+					DeviceID: uhppoted.DeviceID(deviceID),
+					Door:     door,
+					Control:  mode,
+				}
+
+				if response, err := api.SetDoorControl(request); err != nil {
+					warn(err)
+				} else if response != nil {
+					catalog.PutV(oid, DoorControl, mode)
+					catalog.PutV(oid, DoorControlModified, false)
+					info(fmt.Sprintf("%v: synchronized door %v control (%v)", response.DeviceID, door, mode))
 				}
 			}
 		}

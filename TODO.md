@@ -8,7 +8,7 @@
 
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-            - [ ] Rework synchXXX to just do a single controller (and not take API as a parameter)
+            - [x] Rework synchXXX to just do a single controller 
             - [x] Replace LAN events callback with channel
             - [ ] MAYBE: move ACL stuff into interfaces.LAN
             - [ ] Fix the whole 'LAN.api' mess - assign controllers to LAN
@@ -20,6 +20,7 @@
       - [ ] Rework 'update controllers after LAN edit'
 
 - [ ] Fix DateTime mess
+      - [ ] Do the 'uncertain/pending' thing for timezones
       - [ ] MAYBE: treat empty DateTime as the null value
       - [ ] MAYBE: change Format(), etc to not take pointer receiver
       - [ ] MAYBE: define FormatDateTime() method that *does* take pointer
