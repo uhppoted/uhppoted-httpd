@@ -41,8 +41,8 @@ func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
 
 // Synchronous long-running function - expects to be invoked from an external goroutine.
 func (l *LAN) refresh(controllers []*Controller) {
-	f := func(l *LAN, api *uhppoted.UHPPOTED, c *Controller) {
-		l.Refresh(api, c)
+	f := func(l *LAN, c *Controller) {
+		l.Refresh(c)
 	}
 
 	l.exec(controllers, f)
@@ -50,8 +50,8 @@ func (l *LAN) refresh(controllers []*Controller) {
 
 // Synchronous long-running function - expects to be invoked from an external goroutine.
 func (l *LAN) synchTime(controllers []*Controller) {
-	f := func(l *LAN, api *uhppoted.UHPPOTED, c *Controller) {
-		l.SynchTime(api, c)
+	f := func(l *LAN, c *Controller) {
+		l.SynchTime(c)
 	}
 
 	l.exec(controllers, f)
@@ -59,16 +59,14 @@ func (l *LAN) synchTime(controllers []*Controller) {
 
 // Synchronous long-running function - expects to be invoked from an external goroutine.
 func (l *LAN) synchDoors(controllers []*Controller) {
-	f := func(l *LAN, api *uhppoted.UHPPOTED, c *Controller) {
-		l.SynchDoors(api, c)
+	f := func(l *LAN, c *Controller) {
+		l.SynchDoors(c)
 	}
 
 	l.exec(controllers, f)
 }
 
-func (l *LAN) exec(controllers []*Controller, f func(l *LAN, api *uhppoted.UHPPOTED, c *Controller)) {
-	api := l.api(controllers)
-
+func (l *LAN) exec(controllers []*Controller, f func(l *LAN, c *Controller)) {
 	var wg sync.WaitGroup
 
 	for _, c := range controllers {
@@ -80,7 +78,7 @@ func (l *LAN) exec(controllers []*Controller, f func(l *LAN, api *uhppoted.UHPPO
 			go func(v *Controller) {
 				defer wg.Done()
 
-				f(l, api, v)
+				f(l, v)
 			}(controller)
 		}
 	}

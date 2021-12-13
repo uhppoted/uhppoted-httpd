@@ -10,7 +10,7 @@
       - [ ] Move LAN device stuff to `interfaces` subsystem
             - [x] Rework synchXXX to just do a single controller 
             - [x] Replace LAN events callback with channel
-            - [ ] MAYBE: move ACL stuff into interfaces.LAN
+            - [ ] Move ACL stuff into interfaces.LAN
             - [ ] Fix the whole 'LAN.api' mess - assign controllers to LAN
             - [ ] Find a cleaner way to handle deleted controllers 
                   i.e. one that doesn't involve checking `deviceID` and `deleted`

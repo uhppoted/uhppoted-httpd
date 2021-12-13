@@ -268,17 +268,18 @@ func (l *LANx) Search(controllers []Controller) ([]uint32, error) {
 }
 
 // A long-running function i.e. expects to be invoked from an external goroutine
-func (l *LANx) Refresh(api *uhppoted.UHPPOTED, controller Controller) {
-	log.Printf("%v: refreshing LAN controller status", controller.DeviceID())
+func (l *LANx) Refresh(c Controller) {
+	log.Printf("%v: refreshing LAN controller status", c.DeviceID())
 
-	deviceID := uhppoted.DeviceID(controller.DeviceID())
+	api := l.API([]Controller{c})
+	deviceID := uhppoted.DeviceID(c.DeviceID())
 
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: deviceID}); err != nil {
 		log.Printf("%v", err)
 	} else if info == nil {
 		log.Printf("Got %v response to get-device request for %v", info, deviceID)
 	} else {
-		l.store(controller, *info)
+		l.store(c, *info)
 	}
 
 	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: deviceID}); err != nil {
@@ -286,7 +287,7 @@ func (l *LANx) Refresh(api *uhppoted.UHPPOTED, controller Controller) {
 	} else if status == nil {
 		log.Printf("Got %v response to get-status request for %v", status, deviceID)
 	} else {
-		l.store(controller, *status)
+		l.store(c, *status)
 	}
 
 	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: deviceID}); err != nil {
@@ -294,7 +295,7 @@ func (l *LANx) Refresh(api *uhppoted.UHPPOTED, controller Controller) {
 	} else if cards == nil {
 		log.Printf("Got %v response to get-card-records request for %v", cards, deviceID)
 	} else {
-		l.store(controller, *cards)
+		l.store(c, *cards)
 	}
 
 	if events, err := api.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: deviceID}); err != nil {
@@ -302,7 +303,7 @@ func (l *LANx) Refresh(api *uhppoted.UHPPOTED, controller Controller) {
 	} else if events == nil {
 		log.Printf("Got %v response to get-event-range request for %v", events, deviceID)
 	} else {
-		l.store(controller, *events)
+		l.store(c, *events)
 	}
 
 	for _, d := range []uint8{1, 2, 3, 4} {
@@ -311,7 +312,7 @@ func (l *LANx) Refresh(api *uhppoted.UHPPOTED, controller Controller) {
 		} else if delay == nil {
 			log.Printf("Got %v response to get-door-delay request for %v", delay, deviceID)
 		} else {
-			l.store(controller, *delay)
+			l.store(c, *delay)
 		}
 	}
 
@@ -321,7 +322,7 @@ func (l *LANx) Refresh(api *uhppoted.UHPPOTED, controller Controller) {
 		} else if control == nil {
 			log.Printf("Got %v response to get-door-control request for %v", control, deviceID)
 		} else {
-			l.store(controller, *control)
+			l.store(c, *control)
 		}
 	}
 
@@ -335,31 +336,28 @@ func (l *LANx) Refresh(api *uhppoted.UHPPOTED, controller Controller) {
 	}
 }
 
-func (l *LANx) SynchTime(api *uhppoted.UHPPOTED, c Controller) {
-	if deviceID := c.DeviceID(); deviceID > 0 {
-		location := c.TimeZone()
-		now := time.Now().In(location)
-		datetime := core.DateTime(now)
+func (l *LANx) SynchTime(c Controller) {
+	api := l.API([]Controller{c})
+	deviceID := c.DeviceID()
+	location := c.TimeZone()
+	now := time.Now().In(location)
+	datetime := core.DateTime(now)
 
-		request := uhppoted.SetTimeRequest{
-			DeviceID: uhppoted.DeviceID(deviceID),
-			DateTime: datetime,
-		}
+	request := uhppoted.SetTimeRequest{
+		DeviceID: uhppoted.DeviceID(deviceID),
+		DateTime: datetime,
+	}
 
-		if response, err := api.SetTime(request); err != nil {
-			log.Printf("ERROR %v", err)
-		} else if response != nil {
-			log.Printf("INFO  synchronized device-time %v %v", response.DeviceID, response.DateTime)
-		}
+	if response, err := api.SetTime(request); err != nil {
+		log.Printf("ERROR %v", err)
+	} else if response != nil {
+		log.Printf("INFO  synchronized device-time %v %v", response.DeviceID, response.DateTime)
 	}
 }
 
-func (l *LANx) SynchDoors(api *uhppoted.UHPPOTED, c Controller) {
+func (l *LANx) SynchDoors(c Controller) {
+	api := l.API([]Controller{c})
 	deviceID := c.DeviceID()
-
-	if deviceID == 0 {
-		return
-	}
 
 	// ... update door delays
 	for _, door := range []uint8{1, 2, 3, 4} {
@@ -517,30 +515,6 @@ func (l *LANx) deserialize(bytes []byte) error {
 
 	return nil
 }
-
-// func (l *LANx) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
-// 	uid := ""
-// 	if auth != nil {
-// 		uid = auth.UID()
-// 	}
-//
-// 	record := audit.AuditRecord{
-// 		UID:       uid,
-// 		OID:       OID,
-// 		Component: "interface",
-// 		Operation: operation,
-// 		Details: audit.Details{
-// 			ID:          "LAN",
-// 			Name:        stringify(l.Name, ""),
-// 			Field:       field,
-// 			Description: description,
-// 		},
-// 	}
-//
-// 	if dbc != nil {
-// 		dbc.Write(record)
-// 	}
-// }
 
 func (l *LANx) log(auth auth.OpAuth, operation string, OID catalog.OID, field, description, before, after string, dbc db.DBC) {
 	uid := ""
