@@ -47,12 +47,12 @@ var sys = system{
 	},
 
 	controllers: struct {
-		controllers.ControllerSet
+		controllers.Controllers
 		file string
 		tag  string
 	}{
-		ControllerSet: controllers.NewControllerSet(),
-		tag:           "controllers",
+		Controllers: controllers.NewControllers(),
+		tag:         "controllers",
 	},
 
 	doors: struct {
@@ -115,7 +115,7 @@ type system struct {
 	}
 
 	controllers struct {
-		controllers.ControllerSet
+		controllers.Controllers
 		file string
 		tag  string
 	}

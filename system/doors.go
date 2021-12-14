@@ -35,7 +35,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, types.BadRequest(err, err)
 	}
 
-	controllers := sys.controllers.Controllers
+	controllers := sys.controllers.Controllers.Controllers
 	for _, c := range controllers {
 		for k, v := range c.Doors {
 			if v != "" {

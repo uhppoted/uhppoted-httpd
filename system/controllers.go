@@ -21,7 +21,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.controllers.ControllerSet.Clone()
+	shadow := sys.controllers.Controllers.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -40,7 +40,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}
 
 	dbc.Commit()
-	sys.controllers.ControllerSet = shadow
+	sys.controllers.Controllers = shadow
 	sys.updated()
 
 	list := squoosh(dbc.Objects())
@@ -52,7 +52,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}, nil
 }
 
-func validate(c *controllers.ControllerSet) error {
+func validate(c *controllers.Controllers) error {
 	if err := c.Validate(); err != nil {
 		return types.BadRequest(err, err)
 	}

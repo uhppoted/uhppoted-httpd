@@ -23,7 +23,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type ControllerSet struct {
+type Controllers struct {
 	Controllers []*Controller `json:"controllers"`
 	LAN         *LAN          `json:"LAN"`
 }
@@ -51,13 +51,13 @@ func SetWindows(ok, uncertain, systime, cacheExpiry time.Duration) {
 	windows.cacheExpiry = cacheExpiry
 }
 
-func NewControllerSet() ControllerSet {
-	return ControllerSet{
+func NewControllers() Controllers {
+	return Controllers{
 		Controllers: []*Controller{},
 	}
 }
 
-func (cc *ControllerSet) Init(interfaces interfaces.Interfaces) {
+func (cc *Controllers) Init(interfaces interfaces.Interfaces) {
 	for _, v := range interfaces.LANs {
 		if v != nil {
 			cc.LAN = &LAN{
@@ -69,7 +69,7 @@ func (cc *ControllerSet) Init(interfaces interfaces.Interfaces) {
 	}
 }
 
-func (cc *ControllerSet) Load(blob json.RawMessage) error {
+func (cc *Controllers) Load(blob json.RawMessage) error {
 	rs := []json.RawMessage{}
 	if err := json.Unmarshal(blob, &rs); err != nil {
 		return err
@@ -100,7 +100,7 @@ func (cc *ControllerSet) Load(blob json.RawMessage) error {
 	return nil
 }
 
-func (cc *ControllerSet) Save() (json.RawMessage, error) {
+func (cc *Controllers) Save() (json.RawMessage, error) {
 	if cc == nil {
 		return nil, nil
 	}
@@ -123,7 +123,7 @@ func (cc *ControllerSet) Save() (json.RawMessage, error) {
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
-func (cc *ControllerSet) AsObjects() []interface{} {
+func (cc *Controllers) AsObjects() []interface{} {
 	objects := []interface{}{}
 
 	for _, c := range cc.Controllers {
@@ -137,7 +137,7 @@ func (cc *ControllerSet) AsObjects() []interface{} {
 	return objects
 }
 
-func (cc *ControllerSet) Sweep(retention time.Duration) {
+func (cc *Controllers) Sweep(retention time.Duration) {
 	if cc == nil {
 		return
 	}
@@ -150,13 +150,13 @@ func (cc *ControllerSet) Sweep(retention time.Duration) {
 	}
 }
 
-func (cc *ControllerSet) Print() {
+func (cc *Controllers) Print() {
 	if b, err := json.MarshalIndent(cc, "", "  "); err == nil {
 		fmt.Printf("----------------- CONTROLLERS\n%s\n", string(b))
 	}
 }
 
-func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	if cc == nil {
 		return nil, nil
 	}
@@ -186,7 +186,7 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 	return objects, nil
 }
 
-func (cc *ControllerSet) Refresh() {
+func (cc *Controllers) Refresh() {
 	// ... add 'found' controllers to list
 	if found, err := cc.LAN.search(cc.Controllers); err != nil {
 		warn(err)
@@ -221,11 +221,11 @@ func (cc *ControllerSet) Refresh() {
 	}
 }
 
-func (cc *ControllerSet) Clone() ControllerSet {
+func (cc *Controllers) Clone() Controllers {
 	guard.RLock()
 	defer guard.RUnlock()
 
-	shadow := ControllerSet{
+	shadow := Controllers{
 		Controllers: make([]*Controller, len(cc.Controllers)),
 		LAN:         &LAN{},
 	}
@@ -316,20 +316,20 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 	return os.Rename(tmp.Name(), file)
 }
 
-func (cc *ControllerSet) Sync() {
+func (cc *Controllers) Sync() {
 	cc.LAN.synchTime(cc.Controllers)
 	cc.LAN.synchDoors(cc.Controllers)
 }
 
-func (cc *ControllerSet) CompareACL(permissions acl.ACL) error {
+func (cc *Controllers) CompareACL(permissions acl.ACL) error {
 	return cc.LAN.compare(cc.Controllers, permissions)
 }
 
-func (cc *ControllerSet) UpdateACL(permissions acl.ACL) error {
+func (cc *Controllers) UpdateACL(permissions acl.ACL) error {
 	return cc.LAN.update(cc.Controllers, permissions)
 }
 
-func (cc *ControllerSet) Validate() error {
+func (cc *Controllers) Validate() error {
 	if cc != nil {
 		return validate(*cc)
 	}
@@ -337,7 +337,7 @@ func (cc *ControllerSet) Validate() error {
 	return nil
 }
 
-func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error) {
+func (cc *Controllers) add(auth auth.OpAuth, c Controller) (*Controller, error) {
 	id := uint32(0)
 	if c.deviceID != nil {
 		id = *c.deviceID
@@ -358,7 +358,7 @@ func (cc *ControllerSet) add(auth auth.OpAuth, c Controller) (*Controller, error
 	return record, nil
 }
 
-func validate(cc ControllerSet) error {
+func validate(cc Controllers) error {
 	devices := map[uint32]string{}
 
 	for _, c := range cc.Controllers {
@@ -385,7 +385,7 @@ func validate(cc ControllerSet) error {
 	return nil
 }
 
-func scrub(cc *ControllerSet) error {
+func scrub(cc *Controllers) error {
 	return nil
 }
 

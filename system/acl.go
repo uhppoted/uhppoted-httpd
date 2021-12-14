@@ -30,7 +30,7 @@ func permissions() (acl.ACL, error) {
 	cards := sys.cards.Cards.Cards
 	groups := sys.groups.Groups.Groups
 	doors := sys.doors.Doors.Doors
-	controllers := sys.controllers.Controllers
+	controllers := sys.controllers.Controllers.Controllers
 
 	// initialise empty ACL
 
