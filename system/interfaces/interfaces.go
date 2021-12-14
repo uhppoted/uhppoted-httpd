@@ -15,21 +15,17 @@ import (
 
 type Interfaces struct {
 	LANs map[catalog.OID]*LANx
+	ch   chan types.EventsList
 }
 
 const BLANK = "'blank'"
 
 var guard sync.RWMutex
 
-func NewInterfaces() Interfaces {
+func NewInterfaces(ch chan types.EventsList) Interfaces {
 	return Interfaces{
 		LANs: map[catalog.OID]*LANx{},
-	}
-}
-
-func (ii *Interfaces) SetCh(ch chan types.EventsList) {
-	for _, l := range ii.LANs {
-		l.ch = ch
+		ch:   ch,
 	}
 }
 
@@ -46,6 +42,7 @@ func (ii *Interfaces) Load(blob json.RawMessage) error {
 				return fmt.Errorf("card '%v': duplicate OID (%v)", l.Name, l.OID)
 			}
 
+			l.ch = ii.ch
 			ii.LANs[l.OID] = &l
 		}
 	}

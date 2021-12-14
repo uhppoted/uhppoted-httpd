@@ -29,13 +29,19 @@ import (
 	"github.com/uhppoted/uhppoted-lib/config"
 )
 
+var channels = struct {
+	events chan types.EventsList
+}{
+	events: make(chan types.EventsList),
+}
+
 var sys = system{
 	interfaces: struct {
 		interfaces interfaces.Interfaces
 		file       string
 		tag        string
 	}{
-		interfaces: interfaces.NewInterfaces(),
+		interfaces: interfaces.NewInterfaces(channels.events),
 		tag:        "interfaces",
 	},
 
@@ -77,12 +83,10 @@ var sys = system{
 
 	events: struct {
 		events events.Events
-		ch     chan types.EventsList
 		file   string
 		tag    string
 	}{
 		events: events.NewEvents(),
-		ch:     make(chan types.EventsList),
 		tag:    "events",
 	},
 
@@ -135,7 +139,6 @@ type system struct {
 
 	events struct {
 		events events.Events
-		ch     chan types.EventsList
 		file   string
 		tag    string
 	}
@@ -234,7 +237,6 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	}
 	sys.debug = debug
 
-	sys.interfaces.interfaces.SetCh(sys.events.ch)
 	sys.controllers.controllers.Init(sys.interfaces.interfaces)
 
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
@@ -263,7 +265,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		for v := range ch {
 			AppendEvents(v)
 		}
-	}(sys.events.ch)
+	}(channels.events)
 
 	return nil
 }
