@@ -13,15 +13,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/uhppoted/uhppote-core/uhppote"
+	"github.com/uhppoted/uhppoted-lib/acl"
+	"github.com/uhppoted/uhppoted-lib/config"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/types"
-	"github.com/uhppoted/uhppoted-lib/acl"
-	"github.com/uhppoted/uhppoted-lib/config"
 )
 
 type ControllerSet struct {
@@ -334,61 +334,8 @@ func (cc *ControllerSet) Sync() {
 	cc.LAN.synchDoors(cc.Controllers)
 }
 
-func (cc *ControllerSet) Compare(permissions acl.ACL) error {
-	log.Printf("Comparing ACL")
-
-	devices := []uhppote.Device{}
-	api := cc.LAN.api(cc.Controllers)
-	for _, v := range api.UHPPOTE.DeviceList() {
-		device := v
-		devices = append(devices, device)
-	}
-
-	current, errors := acl.GetACL(api.UHPPOTE, devices)
-	for _, err := range errors {
-		warn(err)
-	}
-
-	compare, err := acl.Compare(permissions, current)
-	if err != nil {
-		return err
-	} else if compare == nil {
-		return fmt.Errorf("Invalid ACL compare report: %v", compare)
-	}
-
-	for k, v := range compare {
-		log.Printf("ACL %v - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", k, len(v.Unchanged), len(v.Updated), len(v.Added), len(v.Deleted))
-	}
-
-	diff := acl.SystemDiff(compare)
-	report := diff.Consolidate()
-	if report == nil {
-		return fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
-	}
-
-	unchanged := len(report.Unchanged)
-	updated := len(report.Updated)
-	added := len(report.Added)
-	deleted := len(report.Deleted)
-
-	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
-
-	for _, c := range cc.Controllers {
-		for _, d := range devices {
-			if c.DeviceID() == d.DeviceID {
-				rs := compare[c.DeviceID()]
-				if len(rs.Updated)+len(rs.Added)+len(rs.Deleted) > 0 {
-					catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusError)
-				} else {
-					catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusOk)
-				}
-
-				break
-			}
-		}
-	}
-
-	return nil
+func (cc *ControllerSet) CompareACL(permissions acl.ACL) error {
+	return cc.LAN.compare(cc.Controllers, permissions)
 }
 
 func (cc *ControllerSet) UpdateACL(permissions acl.ACL) {

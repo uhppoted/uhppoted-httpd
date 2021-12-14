@@ -8,8 +8,6 @@
 
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-            - [x] Rework synchXXX to just do a single controller 
-            - [x] Replace LAN events callback with channel
             - [ ] Move ACL stuff into interfaces.LAN
             - [ ] Fix the whole 'LAN.api' mess - assign controllers to LAN
             - [ ] Find a cleaner way to handle deleted controllers 
@@ -17,7 +15,7 @@
                        in a hundred different places
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
-      - [ ] Rework 'update controllers after LAN edit'
+      - [ ] Rework 'update controllers after LAN edit' hack
 
 - [ ] Fix DateTime mess
       - [ ] Do the 'uncertain/pending' thing for timezones
@@ -28,12 +26,6 @@
       - [ ] Implement Ptr() for the repetitive assign to variable to take address thing
 
 ### IN PROGRESS
-
-- [x] Rethink mark/sweep
-      - [x] Fail with error on update deleted object
-            - unit test(s)
-              - [x] interfaces
-              - [x] controllers
 
 - [ ] Genericize load/save
       - [ ] Embed controllers etc. in sys structs

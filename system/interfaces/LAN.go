@@ -11,12 +11,14 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppote-core/uhppote"
+	"github.com/uhppoted/uhppoted-lib/acl"
+	"github.com/uhppoted/uhppoted-lib/uhppoted"
+
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
-	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type LANx struct {
@@ -432,6 +434,58 @@ func (l *LANx) SynchDoors(c Controller) {
 	}
 }
 
+func (l *LANx) CompareACL(controllers []Controller, permissions acl.ACL) error {
+	log.Printf("Comparing ACL")
+
+	devices := []uhppote.Device{}
+	api := l.API(controllers)
+	for _, v := range api.UHPPOTE.DeviceList() {
+		device := v
+		devices = append(devices, device)
+	}
+
+	current, errors := acl.GetACL(api.UHPPOTE, devices)
+	for _, err := range errors {
+		warn(err)
+	}
+
+	compare, err := acl.Compare(permissions, current)
+	if err != nil {
+		return err
+	} else if compare == nil {
+		return fmt.Errorf("Invalid ACL compare report: %v", compare)
+	}
+
+	for k, v := range compare {
+		log.Printf("ACL %v - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", k, len(v.Unchanged), len(v.Updated), len(v.Added), len(v.Deleted))
+	}
+
+	diff := acl.SystemDiff(compare)
+	report := diff.Consolidate()
+	if report == nil {
+		return fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
+	}
+
+	unchanged := len(report.Unchanged)
+	updated := len(report.Updated)
+	added := len(report.Added)
+	deleted := len(report.Deleted)
+
+	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
+
+	for _, c := range controllers {
+		for _, d := range devices {
+			if c.DeviceID() == d.DeviceID {
+				rs := compare[c.DeviceID()]
+				l.store(c, rs)
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 func (l *LANx) store(c Controller, info interface{}) {
 	switch v := info.(type) {
 	case uhppoted.GetDeviceResponse:
@@ -464,15 +518,14 @@ func (l *LANx) store(c Controller, info interface{}) {
 			catalog.PutV(door, DoorControl, v.Control)
 		}
 
-		//	case acl.Diff:
-		//		if len(v.Updated)+len(v.Added)+len(v.Deleted) > 0 {
-		//			catalog.PutV(controller.OID(), ControllerCardsStatus, types.StatusError)
-		//		} else {
-		//			catalog.PutV(controller.OID(), ControllerCardsStatus, types.StatusOk)
-		//		}
+	case acl.Diff:
+		if len(v.Updated)+len(v.Added)+len(v.Deleted) > 0 {
+			catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusError)
+		} else {
+			catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusOk)
+		}
 	}
 }
-
 func (l LANx) serialize() ([]byte, error) {
 	record := struct {
 		OID              catalog.OID        `json:"OID"`

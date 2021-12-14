@@ -21,7 +21,7 @@ func UpdateACL() {
 func CompareACL() {
 	if acl, err := permissions(); err != nil {
 		warn(err)
-	} else if err := sys.controllers.controllers.Compare(acl); err != nil {
+	} else if err := sys.controllers.controllers.CompareACL(acl); err != nil {
 		warn(err)
 	}
 }
