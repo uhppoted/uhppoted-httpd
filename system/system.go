@@ -15,6 +15,8 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/builder"
 	"github.com/hyperjumptech/grule-rule-engine/pkg"
 
+	"github.com/uhppoted/uhppoted-lib/config"
+
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -26,7 +28,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/system/logs"
 	"github.com/uhppoted/uhppoted-httpd/types"
-	"github.com/uhppoted/uhppoted-lib/config"
 )
 
 var channels = struct {
@@ -37,65 +38,65 @@ var channels = struct {
 
 var sys = system{
 	interfaces: struct {
-		interfaces interfaces.Interfaces
-		file       string
-		tag        string
+		interfaces.Interfaces
+		file string
+		tag  string
 	}{
-		interfaces: interfaces.NewInterfaces(channels.events),
+		Interfaces: interfaces.NewInterfaces(channels.events),
 		tag:        "interfaces",
 	},
 
 	controllers: struct {
-		controllers controllers.ControllerSet
-		file        string
-		tag         string
+		controllers.ControllerSet
+		file string
+		tag  string
 	}{
-		controllers: controllers.NewControllerSet(),
-		tag:         "controllers",
+		ControllerSet: controllers.NewControllerSet(),
+		tag:           "controllers",
 	},
 
 	doors: struct {
-		doors doors.Doors
-		file  string
-		tag   string
+		doors.Doors
+		file string
+		tag  string
 	}{
-		doors: doors.NewDoors(),
+		Doors: doors.NewDoors(),
 		tag:   "doors",
 	},
 
 	cards: struct {
-		cards cards.Cards
-		file  string
-		tag   string
+		cards.Cards
+		file string
+		tag  string
 	}{
-		cards: cards.NewCards(),
+		Cards: cards.NewCards(),
 		tag:   "cards",
 	},
 
 	groups: struct {
-		groups groups.Groups
-		file   string
-		tag    string
+		groups.Groups
+		file string
+		tag  string
 	}{
-		groups: groups.NewGroups(),
+		Groups: groups.NewGroups(),
 		tag:    "groups",
 	},
 
 	events: struct {
-		events events.Events
-		file   string
-		tag    string
+		events.Events
+		file string
+		tag  string
 	}{
-		events: events.NewEvents(),
+		Events: events.NewEvents(),
 		tag:    "events",
 	},
 
 	logs: struct {
-		logs logs.Logs
+		logs.Logs
 		file string
 		tag  string
 	}{
-		logs: logs.NewLogs(),
+		Logs: logs.NewLogs(),
 		tag:  "logs",
 	},
 
@@ -108,43 +109,43 @@ type system struct {
 	conf string
 
 	interfaces struct {
-		interfaces interfaces.Interfaces
-		file       string
-		tag        string
+		interfaces.Interfaces
+		file string
+		tag  string
 	}
 
 	controllers struct {
-		controllers controllers.ControllerSet
-		file        string
-		tag         string
+		controllers.ControllerSet
+		file string
+		tag  string
 	}
 
 	doors struct {
-		doors doors.Doors
-		file  string
-		tag   string
+		doors.Doors
+		file string
+		tag  string
 	}
 
 	cards struct {
-		cards cards.Cards
-		file  string
-		tag   string
+		cards.Cards
+		file string
+		tag  string
 	}
 
 	groups struct {
-		groups groups.Groups
-		file   string
-		tag    string
+		groups.Groups
+		file string
+		tag  string
 	}
 
 	events struct {
-		events events.Events
-		file   string
-		tag    string
+		events.Events
+		file string
+		tag  string
 	}
 
 	logs struct {
-		logs logs.Logs
+		logs.Logs
 		file string
 		tag  string
 	}
@@ -162,9 +163,9 @@ type trail struct {
 
 func (t trail) Write(records ...audit.AuditRecord) {
 	t.trail.Write(records...)
-	sys.logs.logs.Received(records...)
+	sys.logs.Received(records...)
 
-	if err := save(sys.logs.file, sys.logs.tag, &sys.logs.logs); err != nil {
+	if err := save(sys.logs.file, sys.logs.tag, &sys.logs); err != nil {
 		warn(err)
 	}
 }
@@ -189,31 +190,31 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	sys.events.file = cfg.HTTPD.System.Events
 	sys.logs.file = cfg.HTTPD.System.Logs
 
-	if err := load(sys.interfaces.file, sys.interfaces.tag, &sys.interfaces.interfaces); err != nil {
+	if err := load(sys.interfaces.file, sys.interfaces.tag, &sys.interfaces); err != nil {
 		return err
 	}
 
-	if err := load(sys.controllers.file, sys.controllers.tag, &sys.controllers.controllers); err != nil {
+	if err := load(sys.controllers.file, sys.controllers.tag, &sys.controllers); err != nil {
 		return err
 	}
 
-	if err := load(sys.doors.file, sys.doors.tag, &sys.doors.doors); err != nil {
+	if err := load(sys.doors.file, sys.doors.tag, &sys.doors); err != nil {
 		return err
 	}
 
-	if err := load(sys.cards.file, sys.cards.tag, &sys.cards.cards); err != nil {
+	if err := load(sys.cards.file, sys.cards.tag, &sys.cards); err != nil {
 		return err
 	}
 
-	if err := load(sys.groups.file, sys.groups.tag, &sys.groups.groups); err != nil {
+	if err := load(sys.groups.file, sys.groups.tag, &sys.groups); err != nil {
 		return err
 	}
 
-	if err := load(sys.events.file, sys.events.tag, &sys.events.events); err != nil {
+	if err := load(sys.events.file, sys.events.tag, &sys.events); err != nil {
 		return err
 	}
 
-	if err := load(sys.logs.file, sys.logs.tag, &sys.logs.logs); err != nil {
+	if err := load(sys.logs.file, sys.logs.tag, &sys.logs); err != nil {
 		return err
 	}
 
@@ -235,7 +236,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	}
 	sys.debug = debug
 
-	sys.controllers.controllers.Init(sys.interfaces.interfaces)
+	sys.controllers.Init(sys.interfaces.Interfaces)
 
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
 		cfg.HTTPD.System.Windows.Uncertain,
@@ -278,11 +279,11 @@ func System() interface{} {
 	defer sys.RUnlock()
 
 	objects := []interface{}{}
-	objects = append(objects, sys.interfaces.interfaces.AsObjects()...)
-	objects = append(objects, sys.controllers.controllers.AsObjects()...)
-	objects = append(objects, sys.doors.doors.AsObjects()...)
-	objects = append(objects, sys.cards.cards.AsObjects()...)
-	objects = append(objects, sys.groups.groups.AsObjects()...)
+	objects = append(objects, sys.interfaces.AsObjects()...)
+	objects = append(objects, sys.controllers.AsObjects()...)
+	objects = append(objects, sys.doors.AsObjects()...)
+	objects = append(objects, sys.cards.AsObjects()...)
+	objects = append(objects, sys.groups.AsObjects()...)
 
 	return struct {
 		Objects []interface{} `json:"objects"`
@@ -295,7 +296,7 @@ func Logs(start, count int) []interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	return sys.logs.logs.AsObjects(start, count)
+	return sys.logs.AsObjects(start, count)
 }
 
 func (s *system) refresh() {
@@ -305,7 +306,7 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			s.controllers.controllers.Refresh()
+			s.controllers.Refresh()
 		},
 	})
 
@@ -332,7 +333,7 @@ func (s *system) updated() {
 	s.taskQ.Add(Task{
 		f: func() {
 			info("Updating controllers from configuration")
-			sys.controllers.controllers.Sync()
+			sys.controllers.Sync()
 
 			UpdateACL()
 		},
@@ -343,10 +344,10 @@ func (s *system) sweep() {
 	cutoff := time.Now().Add(-s.retention)
 	log.Printf("INFO  Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
 
-	s.controllers.controllers.Sweep(s.retention)
-	s.doors.doors.Sweep(s.retention)
-	s.cards.cards.Sweep(s.retention)
-	s.groups.groups.Sweep(s.retention)
+	s.controllers.Sweep(s.retention)
+	s.doors.Sweep(s.retention)
+	s.cards.Sweep(s.retention)
+	s.groups.Sweep(s.retention)
 }
 
 func unpack(m map[string]interface{}) ([]object, error) {

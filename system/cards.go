@@ -18,7 +18,7 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.cards.cards.Clone()
+	shadow := sys.cards.Cards.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -37,7 +37,7 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	dbc.Commit()
-	sys.cards.cards = shadow
+	sys.cards.Cards = shadow
 	sys.updated()
 
 	list := squoosh(dbc.Objects())

@@ -14,7 +14,7 @@ func Events(start, count int) []interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	return sys.events.events.AsObjects(start, count)
+	return sys.events.AsObjects(start, count)
 }
 
 func AppendEvents(list types.EventsList) {
@@ -29,10 +29,10 @@ func AppendEvents(list types.EventsList) {
 		return device, door, card
 	}
 
-	sys.events.events.Received(deviceID, recent, l)
+	sys.events.Received(deviceID, recent, l)
 
 	if len(recent) > 0 {
-		if err := save(sys.events.file, sys.events.tag, &sys.events.events); err != nil {
+		if err := save(sys.events.file, sys.events.tag, &sys.events); err != nil {
 			warn(err)
 		}
 	}
@@ -48,7 +48,7 @@ func eventController(e uhppoted.Event) string {
 			}
 		}
 
-		edits := sys.logs.logs.Query("controller", fmt.Sprintf("%v", e.DeviceID), "name")
+		edits := sys.logs.Query("controller", fmt.Sprintf("%v", e.DeviceID), "name")
 
 		sort.SliceStable(edits, func(i, j int) bool {
 			p := edits[i].Timestamp
@@ -86,7 +86,7 @@ func eventCard(e uhppoted.Event) string {
 			}
 		}
 
-		edits := sys.logs.logs.Query("card", fmt.Sprintf("%v", e.CardNumber), "name")
+		edits := sys.logs.Query("card", fmt.Sprintf("%v", e.CardNumber), "name")
 
 		sort.SliceStable(edits, func(i, j int) bool {
 			p := edits[i].Timestamp
@@ -138,7 +138,7 @@ func eventDoor(e uhppoted.Event) string {
 			}
 		}
 
-		edits := sys.logs.logs.Query("door", fmt.Sprintf("%v:%v", e.DeviceID, e.Door), "name")
+		edits := sys.logs.Query("door", fmt.Sprintf("%v:%v", e.DeviceID, e.Door), "name")
 
 		sort.SliceStable(edits, func(i, j int) bool {
 			p := edits[i].Timestamp

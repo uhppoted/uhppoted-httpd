@@ -28,7 +28,15 @@
 ### IN PROGRESS
 
 - [ ] Genericize load/save
-      - [ ] Embed controllers etc. in sys structs
+      - [x] Embed controllers etc. in sys structs
+            - [x] interfaces
+            - [x] controllers
+            - [x] doors
+            - [x] cards
+            - [x] groups
+            - [x] events
+            - [x] logs
+      - [ ] (MAYBE) redefine Groups and Doors as typedef arrays (or *rather* hide internal arrays)
       - [ ] Put subsystems into list for iterating
       - [x] Commonalise 'Print'
 

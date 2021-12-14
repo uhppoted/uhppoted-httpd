@@ -17,7 +17,7 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.groups.groups.Clone()
+	shadow := sys.groups.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -36,7 +36,7 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 	}
 
 	dbc.Commit()
-	sys.groups.groups = shadow
+	sys.groups.Groups = shadow
 	sys.updated()
 
 	list := squoosh(dbc.Objects())

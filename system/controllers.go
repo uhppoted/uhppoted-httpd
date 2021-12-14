@@ -21,7 +21,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.controllers.controllers.Clone()
+	shadow := sys.controllers.ControllerSet.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -40,7 +40,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}
 
 	dbc.Commit()
-	sys.controllers.controllers = shadow
+	sys.controllers.ControllerSet = shadow
 	sys.updated()
 
 	list := squoosh(dbc.Objects())
@@ -62,7 +62,7 @@ func validate(c *controllers.ControllerSet) error {
 	for _, r := range c.Controllers {
 		for _, v := range r.Doors {
 			if v != "" {
-				if _, ok := sys.doors.doors.Doors[catalog.OID(v)]; !ok {
+				if _, ok := sys.doors.Doors.Doors[catalog.OID(v)]; !ok {
 					return types.BadRequest(
 						fmt.Errorf("Invalid door ID"),
 						fmt.Errorf("controller %v: invalid door ID (%v)", r.OID(), v))
@@ -71,7 +71,7 @@ func validate(c *controllers.ControllerSet) error {
 
 			if rid, ok := doors[v]; ok && v != "" {
 				return types.BadRequest(
-					fmt.Errorf("%v door assigned to more than one controller", sys.doors.doors.Doors[catalog.OID(v)].Name),
+					fmt.Errorf("%v door assigned to more than one controller", sys.doors.Doors.Doors[catalog.OID(v)].Name),
 					fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID()))
 			}
 

@@ -20,7 +20,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.doors.doors.Clone()
+	shadow := sys.doors.Doors.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -35,7 +35,8 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, types.BadRequest(err, err)
 	}
 
-	for _, c := range sys.controllers.controllers.Controllers {
+	controllers := sys.controllers.Controllers
+	for _, c := range controllers {
 		for k, v := range c.Doors {
 			if v != "" {
 				if door, ok := shadow.Doors[catalog.OID(v)]; !ok {
@@ -59,7 +60,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, err
 	}
 
-	sys.doors.doors = shadow
+	sys.doors.Doors = shadow
 	dbc.Commit()
 	sys.updated()
 

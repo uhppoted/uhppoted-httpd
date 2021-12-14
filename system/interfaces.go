@@ -18,7 +18,7 @@ func UpdateInterfaces(m map[string]interface{}, auth auth.OpAuth) (interface{}, 
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.interfaces.interfaces.Clone()
+	shadow := sys.interfaces.Interfaces.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -37,8 +37,8 @@ func UpdateInterfaces(m map[string]interface{}, auth auth.OpAuth) (interface{}, 
 	}
 
 	dbc.Commit()
-	sys.interfaces.interfaces = shadow
-	sys.controllers.controllers.Init(sys.interfaces.interfaces)
+	sys.interfaces.Interfaces = shadow
+	sys.controllers.Init(sys.interfaces.Interfaces)
 	sys.updated()
 
 	list := squoosh(dbc.Objects())
