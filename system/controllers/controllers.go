@@ -9,7 +9,6 @@ import (
 	"net"
 	"os"
 	"path/filepath"
-	"sort"
 	"sync"
 	"time"
 
@@ -338,38 +337,8 @@ func (cc *ControllerSet) CompareACL(permissions acl.ACL) error {
 	return cc.LAN.compare(cc.Controllers, permissions)
 }
 
-func (cc *ControllerSet) UpdateACL(permissions acl.ACL) {
-	log.Printf("Updating ACL")
-
-	api := cc.LAN.api(cc.Controllers)
-	rpt, errors := acl.PutACL(api.UHPPOTE, permissions, false)
-	for _, err := range errors {
-		warn(err)
-	}
-
-	keys := []uint32{}
-	for k, _ := range rpt {
-		keys = append(keys, k)
-	}
-
-	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
-
-	var msg bytes.Buffer
-	fmt.Fprintf(&msg, "ACL updated\n")
-
-	for _, k := range keys {
-		v := rpt[k]
-		fmt.Fprintf(&msg, "                    %v", k)
-		fmt.Fprintf(&msg, " unchanged:%-3v", len(v.Unchanged))
-		fmt.Fprintf(&msg, " updated:%-3v", len(v.Updated))
-		fmt.Fprintf(&msg, " added:%-3v", len(v.Added))
-		fmt.Fprintf(&msg, " deleted:%-3v", len(v.Deleted))
-		fmt.Fprintf(&msg, " failed:%-3v", len(v.Failed))
-		fmt.Fprintf(&msg, " errored:%-3v", len(v.Errored))
-		fmt.Fprintln(&msg)
-	}
-
-	log.Printf("%v", string(msg.Bytes()))
+func (cc *ControllerSet) UpdateACL(permissions acl.ACL) error {
+	return cc.LAN.update(cc.Controllers, permissions)
 }
 
 func (cc *ControllerSet) Validate() error {

@@ -8,7 +8,7 @@
 
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-            - [ ] Move ACL stuff into interfaces.LAN
+            - [x] Move ACL stuff into interfaces.LAN
             - [ ] Fix the whole 'LAN.api' mess - assign controllers to LAN
             - [ ] Find a cleaner way to handle deleted controllers 
                   i.e. one that doesn't involve checking `deviceID` and `deleted`

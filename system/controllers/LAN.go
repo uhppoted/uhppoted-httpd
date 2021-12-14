@@ -95,3 +95,14 @@ func (l *LAN) compare(controllers []*Controller, permissions acl.ACL) error {
 
 	return l.CompareACL(devices, permissions)
 }
+
+func (l *LAN) update(controllers []*Controller, permissions acl.ACL) error {
+	devices := []interfaces.Controller{}
+	for _, c := range controllers {
+		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
+			devices = append(devices, c)
+		}
+	}
+
+	return l.UpdateACL(devices, permissions)
+}
