@@ -14,7 +14,7 @@ import (
 )
 
 type Interfaces struct {
-	LANs map[catalog.OID]*LANx
+	LANs map[catalog.OID]*LAN
 	ch   chan types.EventsList
 }
 
@@ -24,7 +24,7 @@ var guard sync.RWMutex
 
 func NewInterfaces(ch chan types.EventsList) Interfaces {
 	return Interfaces{
-		LANs: map[catalog.OID]*LANx{},
+		LANs: map[catalog.OID]*LAN{},
 		ch:   ch,
 	}
 }
@@ -36,7 +36,7 @@ func (ii *Interfaces) Load(blob json.RawMessage) error {
 	}
 
 	for _, v := range rs {
-		var l LANx
+		var l LAN
 		if err := l.deserialize(v); err == nil {
 			if _, ok := ii.LANs[l.OID]; ok {
 				return fmt.Errorf("card '%v': duplicate OID (%v)", l.Name, l.OID)
@@ -80,7 +80,7 @@ func (ii *Interfaces) Clone() Interfaces {
 	defer guard.RUnlock()
 
 	shadow := Interfaces{
-		LANs: map[catalog.OID]*LANx{},
+		LANs: map[catalog.OID]*LAN{},
 	}
 
 	for k, v := range ii.LANs {
@@ -119,7 +119,7 @@ func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value strin
 	objects := []catalog.Object{}
 
 	if oid == "<new>" {
-		if l, err := ii.add(auth, LANx{}); err != nil {
+		if l, err := ii.add(auth, LAN{}); err != nil {
 			return nil, err
 		} else if l == nil {
 			return nil, fmt.Errorf("Failed to add 'new' interface")
@@ -138,7 +138,7 @@ func (ii Interfaces) Validate() error {
 	return validate(ii)
 }
 
-func (ii *Interfaces) add(auth auth.OpAuth, l LANx) (*LANx, error) {
+func (ii *Interfaces) add(auth auth.OpAuth, l LAN) (*LAN, error) {
 	return nil, fmt.Errorf("NOT SUPPORTED")
 }
 

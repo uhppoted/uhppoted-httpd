@@ -31,6 +31,7 @@
       - [ ] Embed controllers etc. in sys structs
       - [ ] Put subsystems into list for iterating
       - [ ] Commonalise 'print'
+      - [ ] Commonalise 'clone'
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc

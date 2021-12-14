@@ -23,7 +23,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-type LANx struct {
+type LAN struct {
 	OID              catalog.OID
 	Name             string
 	BindAddress      core.BindAddr
@@ -48,11 +48,11 @@ type Controller interface {
 
 var created = types.DateTimeNow()
 
-func (l LANx) String() string {
+func (l LAN) String() string {
 	return fmt.Sprintf("%v", l.Name)
 }
 
-func (l *LANx) IsValid() bool {
+func (l *LAN) IsValid() bool {
 	if l != nil {
 		if strings.TrimSpace(l.Name) != "" {
 			return true
@@ -62,7 +62,7 @@ func (l *LANx) IsValid() bool {
 	return false
 }
 
-func (l *LANx) IsDeleted() bool {
+func (l *LAN) IsDeleted() bool {
 	if l != nil && l.deleted != nil {
 		return true
 	}
@@ -70,7 +70,7 @@ func (l *LANx) IsDeleted() bool {
 	return false
 }
 
-func (l *LANx) AsObjects() []interface{} {
+func (l *LAN) AsObjects() []interface{} {
 	if l.deleted != nil {
 		return []interface{}{
 			catalog.NewObject2(l.OID, LANDeleted, l.deleted),
@@ -92,7 +92,7 @@ func (l *LANx) AsObjects() []interface{} {
 	return objects
 }
 
-func (l *LANx) AsRuleEntity() interface{} {
+func (l *LAN) AsRuleEntity() interface{} {
 	type entity struct {
 		Type string
 		Name string
@@ -108,7 +108,7 @@ func (l *LANx) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (l *LANx) API(controllers []Controller) *uhppoted.UHPPOTED {
+func (l *LAN) API(controllers []Controller) *uhppoted.UHPPOTED {
 	devices := []uhppote.Device{}
 
 	for _, v := range controllers {
@@ -137,7 +137,7 @@ func (l *LANx) API(controllers []Controller) *uhppoted.UHPPOTED {
 	return &api
 }
 
-func (l *LANx) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	objects := []catalog.Object{}
 
 	f := func(field string, value interface{}) error {
@@ -241,12 +241,12 @@ func (l *LANx) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 	return objects, nil
 }
 
-func (l *LANx) status() types.Status {
+func (l *LAN) status() types.Status {
 	return types.StatusOk
 }
 
-func (l LANx) Clone() LANx {
-	return LANx{
+func (l LAN) Clone() LAN {
+	return LAN{
 		OID:              l.OID,
 		Name:             l.Name,
 		BindAddress:      l.BindAddress,
@@ -260,7 +260,7 @@ func (l LANx) Clone() LANx {
 	}
 }
 
-func (l *LANx) Search(controllers []Controller) ([]uint32, error) {
+func (l *LAN) Search(controllers []Controller) ([]uint32, error) {
 	list := []uint32{}
 
 	api := l.API(controllers)
@@ -278,7 +278,7 @@ func (l *LANx) Search(controllers []Controller) ([]uint32, error) {
 }
 
 // A long-running function i.e. expects to be invoked from an external goroutine
-func (l *LANx) Refresh(c Controller) {
+func (l *LAN) Refresh(c Controller) {
 	log.Printf("%v: refreshing LAN controller status", c.DeviceID())
 
 	api := l.API([]Controller{c})
@@ -346,7 +346,7 @@ func (l *LANx) Refresh(c Controller) {
 	}
 }
 
-func (l *LANx) SynchTime(c Controller) {
+func (l *LAN) SynchTime(c Controller) {
 	api := l.API([]Controller{c})
 	deviceID := c.DeviceID()
 	location := c.TimeZone()
@@ -365,7 +365,7 @@ func (l *LANx) SynchTime(c Controller) {
 	}
 }
 
-func (l *LANx) SynchDoors(c Controller) {
+func (l *LAN) SynchDoors(c Controller) {
 	api := l.API([]Controller{c})
 	deviceID := c.DeviceID()
 
@@ -436,7 +436,7 @@ func (l *LANx) SynchDoors(c Controller) {
 	}
 }
 
-func (l *LANx) CompareACL(controllers []Controller, permissions acl.ACL) error {
+func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
 	log.Printf("Comparing ACL")
 
 	devices := []uhppote.Device{}
@@ -488,7 +488,7 @@ func (l *LANx) CompareACL(controllers []Controller, permissions acl.ACL) error {
 	return nil
 }
 
-func (l *LANx) UpdateACL(controllers []Controller, permissions acl.ACL) error {
+func (l *LAN) UpdateACL(controllers []Controller, permissions acl.ACL) error {
 	log.Printf("Updating ACL")
 
 	api := l.API(controllers)
@@ -524,7 +524,7 @@ func (l *LANx) UpdateACL(controllers []Controller, permissions acl.ACL) error {
 	return nil
 }
 
-func (l *LANx) store(c Controller, info interface{}) {
+func (l *LAN) store(c Controller, info interface{}) {
 	switch v := info.(type) {
 	case uhppoted.GetDeviceResponse:
 		addr := core.Address(v.Address)
@@ -564,7 +564,7 @@ func (l *LANx) store(c Controller, info interface{}) {
 		}
 	}
 }
-func (l LANx) serialize() ([]byte, error) {
+func (l LAN) serialize() ([]byte, error) {
 	record := struct {
 		OID              catalog.OID        `json:"OID"`
 		Name             string             `json:"name,omitempty"`
@@ -584,7 +584,7 @@ func (l LANx) serialize() ([]byte, error) {
 	return json.MarshalIndent(record, "", "  ")
 }
 
-func (l *LANx) deserialize(bytes []byte) error {
+func (l *LAN) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
@@ -613,7 +613,7 @@ func (l *LANx) deserialize(bytes []byte) error {
 	return nil
 }
 
-func (l *LANx) log(auth auth.OpAuth, operation string, OID catalog.OID, field, description, before, after string, dbc db.DBC) {
+func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field, description, before, after string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()

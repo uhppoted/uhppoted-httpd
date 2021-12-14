@@ -186,18 +186,6 @@ func (cc *ControllerSet) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value st
 	return objects, nil
 }
 
-func (cc *ControllerSet) Find(deviceID uint32) *Controller {
-	if deviceID != 0 {
-		for _, c := range cc.Controllers {
-			if c.deviceID != nil && *c.deviceID == deviceID {
-				return c
-			}
-		}
-	}
-
-	return nil
-}
-
 func (cc *ControllerSet) Refresh() {
 	// ... add 'found' controllers to list
 	if found, err := cc.LAN.search(cc.Controllers); err != nil {

@@ -10,12 +10,12 @@ import (
 )
 
 type LAN struct {
-	interfaces.LANx
+	interfaces.LAN
 }
 
 func (l LAN) clone() LAN {
 	return LAN{
-		l.LANx,
+		l.LAN,
 	}
 }
 
