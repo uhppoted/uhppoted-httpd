@@ -75,6 +75,12 @@ func (ii Interfaces) Save() (json.RawMessage, error) {
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
+func (ii Interfaces) Print() {
+	if b, err := json.MarshalIndent(ii, "", "  "); err == nil {
+		fmt.Printf("----------------- INTERFACES\n%s\n", string(b))
+	}
+}
+
 func (ii *Interfaces) Clone() Interfaces {
 	guard.RLock()
 	defer guard.RUnlock()

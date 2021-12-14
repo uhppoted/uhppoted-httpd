@@ -169,9 +169,6 @@ func (t trail) Write(records ...audit.AuditRecord) {
 	}
 }
 
-type callback struct {
-}
-
 type object struct {
 	OID   catalog.OID `json:"OID"`
 	Value string      `json:"value"`
@@ -180,6 +177,7 @@ type object struct {
 type serializable interface {
 	Load(blob json.RawMessage) error
 	Save() (json.RawMessage, error)
+	Print()
 }
 
 func Init(cfg config.Config, conf string, debug bool) error {
