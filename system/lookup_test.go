@@ -140,7 +140,7 @@ func init() {
 }
 
 func TestLookupDefaultDeviceName(t *testing.T) {
-	sys.logs.logs = logs.NewLogs()
+	sys.logs.Logs = logs.NewLogs()
 
 	expected := ""
 
@@ -151,7 +151,7 @@ func TestLookupDefaultDeviceName(t *testing.T) {
 }
 
 func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
-	sys.logs.logs = logs.NewLogs()
+	sys.logs.Logs = logs.NewLogs()
 
 	oid := catalog.OID("0.2.1")
 	expected := "Alpha"
@@ -161,7 +161,7 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 
 	for k, v := range history {
 		if v.Timestamp.Before(time.Time(event.Timestamp)) {
-			sys.logs.logs.Logs[k] = v
+			sys.logs.Logs.Logs[k] = v
 		}
 	}
 
@@ -172,7 +172,7 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 }
 
 func TestLookupHistoricalDeviceName(t *testing.T) {
-	sys.logs.logs = logs.NewLogs()
+	sys.logs.Logs = logs.NewLogs()
 
 	oid := catalog.OID("0.2.1")
 	expected := "Alpha7"
@@ -181,7 +181,7 @@ func TestLookupHistoricalDeviceName(t *testing.T) {
 	catalog.PutV(oid, catalog.ControllerName, "Alpha")
 
 	for k, v := range history {
-		sys.logs.logs.Logs[k] = v
+		sys.logs.Logs.Logs[k] = v
 	}
 
 	name := eventController(event)
@@ -191,7 +191,7 @@ func TestLookupHistoricalDeviceName(t *testing.T) {
 }
 
 func TestLookupDefaultCardName(t *testing.T) {
-	sys.logs.logs = logs.NewLogs()
+	sys.logs.Logs = logs.NewLogs()
 
 	expected := ""
 
@@ -202,7 +202,7 @@ func TestLookupDefaultCardName(t *testing.T) {
 }
 
 func TestLookupCardName(t *testing.T) {
-	sys.logs.logs = logs.NewLogs()
+	sys.logs.Logs = logs.NewLogs()
 
 	oid := catalog.OID("0.4.1")
 	expected := "FredF"
@@ -218,7 +218,7 @@ func TestLookupCardName(t *testing.T) {
 }
 
 func TestLookupHistoricalCardName(t *testing.T) {
-	sys.logs.logs = logs.NewLogs()
+	sys.logs.Logs = logs.NewLogs()
 
 	oid := catalog.OID("0.4.1")
 	expected := "Barney"
@@ -228,7 +228,7 @@ func TestLookupHistoricalCardName(t *testing.T) {
 	catalog.PutV(oid, catalog.CardName, "FredF")
 
 	for k, v := range history {
-		sys.logs.logs.Logs[k] = v
+		sys.logs.Logs.Logs[k] = v
 	}
 
 	name := eventCard(event)
@@ -238,7 +238,7 @@ func TestLookupHistoricalCardName(t *testing.T) {
 }
 
 func TestLookupDefaultDoorName(t *testing.T) {
-	sys.logs.logs = logs.NewLogs()
+	sys.logs.Logs = logs.NewLogs()
 
 	expected := ""
 
@@ -249,7 +249,7 @@ func TestLookupDefaultDoorName(t *testing.T) {
 }
 
 func TestLookupDoorName(t *testing.T) {
-	sys.logs.logs = logs.NewLogs()
+	sys.logs.Logs = logs.NewLogs()
 
 	controller := catalog.OID("0.2.1")
 	door := catalog.OID("0.3.1")
@@ -271,7 +271,7 @@ func TestLookupDoorName(t *testing.T) {
 }
 
 func TestLookupHistoricalDoorName(t *testing.T) {
-	sys.logs.logs = logs.NewLogs()
+	sys.logs.Logs = logs.NewLogs()
 
 	controller := catalog.OID("0.2.1")
 	door := catalog.OID("0.3.1")
@@ -285,7 +285,7 @@ func TestLookupHistoricalDoorName(t *testing.T) {
 	catalog.PutV(door, catalog.DoorName, "Gringotts")
 
 	for k, v := range history {
-		sys.logs.logs.Logs[k] = v
+		sys.logs.Logs.Logs[k] = v
 	}
 
 	expected := "Cupboard"

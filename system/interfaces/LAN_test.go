@@ -16,7 +16,7 @@ func TestLANAsObjects(t *testing.T) {
 	broadcast, _ := core.ResolveBroadcastAddr("192.168.1.102")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
-	l := LANx{
+	l := LAN{
 		OID:              "0.1.3",
 		Name:             "Le LAN",
 		BindAddress:      *bind,
@@ -52,7 +52,7 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 	broadcast, _ := core.ResolveBroadcastAddr("192.168.1.102")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
-	l := LANx{
+	l := LAN{
 		OID:              "0.1.3",
 		Name:             "Le LAN",
 		BindAddress:      *bind,
@@ -83,7 +83,7 @@ func TestLANSet(t *testing.T) {
 		catalog.Object{OID: "0.1.3.0.0", Value: types.StatusOk},
 	}
 
-	l := LANx{
+	l := LAN{
 		OID:  "0.1.3",
 		Name: "Le LAN",
 	}
@@ -103,7 +103,7 @@ func TestLANSet(t *testing.T) {
 }
 
 func TestLANSetWithDeleted(t *testing.T) {
-	l := LANx{
+	l := LAN{
 		OID:  "0.1.3",
 		Name: "Le LAN",
 
