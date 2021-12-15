@@ -14,20 +14,27 @@ import (
 )
 
 type Cards struct {
-	Cards map[catalog.OID]*Card
+	cards map[catalog.OID]*Card
 }
-
-// type result struct {
-// 	Updated []interface{} `json:"updated"`
-// 	Deleted []interface{} `json:"deleted"`
-// }
 
 var guard sync.RWMutex
 
 func NewCards() Cards {
 	return Cards{
-		Cards: map[catalog.OID]*Card{},
+		cards: map[catalog.OID]*Card{},
 	}
+}
+
+func (cc *Cards) List() []Card {
+	list := []Card{}
+
+	for _, c := range cc.cards {
+		if c != nil {
+			list = append(list, *c)
+		}
+	}
+
+	return list
 }
 
 func (cc *Cards) Load(blob json.RawMessage) error {
@@ -39,15 +46,15 @@ func (cc *Cards) Load(blob json.RawMessage) error {
 	for _, v := range rs {
 		var c Card
 		if err := c.deserialize(v); err == nil {
-			if _, ok := cc.Cards[c.OID]; ok {
+			if _, ok := cc.cards[c.OID]; ok {
 				return fmt.Errorf("card '%v': duplicate OID (%v)", c.Card, c.OID)
 			}
 
-			cc.Cards[c.OID] = &c
+			cc.cards[c.OID] = &c
 		}
 	}
 
-	for _, v := range cc.Cards {
+	for _, v := range cc.cards {
 		catalog.PutCard(v.OID)
 		catalog.PutV(v.OID, catalog.CardNumber, v.Card)
 		catalog.PutV(v.OID, catalog.CardName, v.Name)
@@ -66,7 +73,7 @@ func (cc *Cards) Save() (json.RawMessage, error) {
 	}
 
 	serializable := []json.RawMessage{}
-	for _, c := range cc.Cards {
+	for _, c := range cc.cards {
 		if c.IsValid() && !c.IsDeleted() {
 			if record, err := c.serialize(); err == nil && record != nil {
 				serializable = append(serializable, record)
@@ -82,11 +89,11 @@ func (cc *Cards) Clone() Cards {
 	defer guard.RUnlock()
 
 	shadow := Cards{
-		Cards: map[catalog.OID]*Card{},
+		cards: map[catalog.OID]*Card{},
 	}
 
-	for cid, v := range cc.Cards {
-		shadow.Cards[cid] = v.clone()
+	for cid, v := range cc.cards {
+		shadow.cards[cid] = v.clone()
 	}
 
 	return shadow
@@ -97,11 +104,11 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 		return nil, nil
 	}
 
-	for k, c := range cc.Cards {
+	for k, c := range cc.cards {
 		if c.OID.Contains(oid) {
 			objects, err := c.set(auth, oid, value, dbc)
 			if err == nil {
-				cc.Cards[k] = c
+				cc.cards[k] = c
 			}
 
 			return objects, err
@@ -125,7 +132,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 				"",
 				dbc)
 
-			cc.Cards[c.OID] = c
+			cc.cards[c.OID] = c
 			objects = append(objects, catalog.NewObject(c.OID, "new"))
 			objects = append(objects, catalog.NewObject2(c.OID, CardCreated, c.created))
 		}
@@ -143,7 +150,7 @@ func (cc *Cards) Validate() error {
 }
 
 func (cc *Cards) Print() {
-	if b, err := json.MarshalIndent(cc.Cards, "", "  "); err == nil {
+	if b, err := json.MarshalIndent(cc.cards, "", "  "); err == nil {
 		fmt.Printf("----------------- CARDS\n%s\n", string(b))
 	}
 }
@@ -154,7 +161,7 @@ func (cc *Cards) AsObjects() []interface{} {
 
 	defer guard.RUnlock()
 
-	for _, card := range cc.Cards {
+	for _, card := range cc.cards {
 		if card.IsValid() || card.IsDeleted() {
 			if l := card.AsObjects(); l != nil {
 				objects = append(objects, l...)
@@ -168,9 +175,9 @@ func (cc *Cards) AsObjects() []interface{} {
 func (cc *Cards) Sweep(retention time.Duration) {
 	if cc != nil {
 		cutoff := time.Now().Add(-retention)
-		for i, v := range cc.Cards {
+		for i, v := range cc.cards {
 			if v.deleted != nil && v.deleted.Before(cutoff) {
-				delete(cc.Cards, i)
+				delete(cc.cards, i)
 			}
 		}
 	}
@@ -178,7 +185,7 @@ func (cc *Cards) Sweep(retention time.Duration) {
 
 func (cc *Cards) Lookup(card uint32) *Card {
 	if card != 0 {
-		for _, c := range cc.Cards {
+		for _, c := range cc.cards {
 			if c.Card != nil && uint32(*c.Card) == card {
 				return c
 			}
@@ -190,7 +197,7 @@ func (cc *Cards) Lookup(card uint32) *Card {
 
 func (cc *Cards) add(auth auth.OpAuth, c Card) (*Card, error) {
 	oid := catalog.NewCard()
-	if _, ok := cc.Cards[oid]; ok {
+	if _, ok := cc.cards[oid]; ok {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
 	}
 
@@ -210,7 +217,7 @@ func (cc *Cards) add(auth auth.OpAuth, c Card) (*Card, error) {
 func validate(cc Cards) error {
 	cards := map[uint32]string{}
 
-	for _, c := range cc.Cards {
+	for _, c := range cc.cards {
 		if c.IsDeleted() {
 			continue
 		}

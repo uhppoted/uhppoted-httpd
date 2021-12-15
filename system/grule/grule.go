@@ -101,27 +101,21 @@ func (r *rules) Eval(ch cards.Card, gg groups.Groups, dd doors.Doors) ([]doors.D
 
 		list := map[catalog.OID]int{}
 		for _, a := range p.allowed {
-			for _, d := range dd.Doors {
-				if clean(a) == clean(d.Name) {
-					list[d.OID] = 1
-					break
-				}
+			if d, ok := dd.ByName(a); ok {
+				list[d.OID] = 1
 			}
 		}
 
 		for _, f := range p.forbidden {
-			for _, d := range dd.Doors {
-				if clean(f) == clean(d.Name) {
-					list[d.OID] = -1
-					break
-				}
+			if d, ok := dd.ByName(f); ok {
+				list[d.OID] = -1
 			}
 		}
 
 		allowed := []doors.Door{}
 		forbidden := []doors.Door{}
 		for k, v := range list {
-			if d, ok := dd.Doors[k]; ok {
+			if d, ok := dd.Door(k); ok {
 				switch v {
 				case 1:
 					allowed = append(allowed, d)
@@ -151,7 +145,7 @@ func makeCard(ch cards.Card, groups groups.Groups) *card {
 
 	for k, v := range ch.Groups {
 		if v {
-			if g, ok := groups.Groups[k]; ok {
+			if g, ok := groups.Group(k); ok {
 				c.groups = append(c.groups, g.Name)
 			}
 		}

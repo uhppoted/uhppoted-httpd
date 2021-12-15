@@ -14,7 +14,7 @@ import (
 )
 
 type Events struct {
-	Events sync.Map `json:"events"`
+	events sync.Map `json:"events"`
 }
 
 type key struct {
@@ -56,15 +56,15 @@ func (ee *Events) Load(blob json.RawMessage) error {
 		var e Event
 		if err := e.deserialize(v); err == nil {
 			k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
-			if x, ok := ee.Events.Load(k); ok {
+			if x, ok := ee.events.Load(k); ok {
 				return fmt.Errorf("%v  duplicate events (%v and %v)", k, e.OID, x.(Event).OID)
 			} else {
-				ee.Events.Store(k, e)
+				ee.events.Store(k, e)
 			}
 		}
 	}
 
-	ee.Events.Range(func(k, v interface{}) bool {
+	ee.events.Range(func(k, v interface{}) bool {
 		catalog.PutEvent(v.(Event).OID)
 		return true
 	})
@@ -83,7 +83,7 @@ func (ee *Events) Save() (json.RawMessage, error) {
 
 	serializable := []json.RawMessage{}
 
-	ee.Events.Range(func(k, v interface{}) bool {
+	ee.events.Range(func(k, v interface{}) bool {
 		e := v.(Event)
 		if e.IsValid() && !e.IsDeleted() {
 			if record, err := e.serialize(); err == nil && record != nil {
@@ -98,7 +98,7 @@ func (ee *Events) Save() (json.RawMessage, error) {
 }
 
 func (ee *Events) Print() {
-	if b, err := json.MarshalIndent(&ee.Events, "", "  "); err == nil {
+	if b, err := json.MarshalIndent(&ee.events, "", "  "); err == nil {
 		fmt.Printf("----------------- EVENTS\n%s\n", string(b))
 	}
 }
@@ -106,8 +106,8 @@ func (ee *Events) Print() {
 func (ee *Events) Clone() *Events {
 	shadow := Events{}
 
-	ee.Events.Range(func(k, v interface{}) bool {
-		shadow.Events.Store(k, v.(Event).clone())
+	ee.events.Range(func(k, v interface{}) bool {
+		shadow.events.Store(k, v.(Event).clone())
 		return true
 	})
 
@@ -118,7 +118,7 @@ func (ee *Events) AsObjects(start, max int) []interface{} {
 	objects := []interface{}{}
 	keys := []key{}
 
-	ee.Events.Range(func(k, v interface{}) bool {
+	ee.events.Range(func(k, v interface{}) bool {
 		keys = append(keys, k.(key))
 		return true
 	})
@@ -133,7 +133,7 @@ func (ee *Events) AsObjects(start, max int) []interface{} {
 	count := 0
 	for ix < len(keys) && count < max {
 		k := keys[ix]
-		if v, ok := ee.Events.Load(k); ok {
+		if v, ok := ee.events.Load(k); ok {
 			e := v.(Event)
 			if e.IsValid() || e.IsDeleted() {
 				if l := e.AsObjects(); l != nil {
@@ -147,8 +147,8 @@ func (ee *Events) AsObjects(start, max int) []interface{} {
 	}
 
 	if len(keys) > 0 {
-		first, _ := ee.Events.Load(keys[0])
-		last, _ := ee.Events.Load(keys[len(keys)-1])
+		first, _ := ee.events.Load(keys[0])
+		last, _ := ee.events.Load(keys[len(keys)-1])
 
 		if first != nil {
 			objects = append(objects, catalog.NewObject2(EventsOID, EventsFirst, first.(Event).OID))
@@ -171,14 +171,14 @@ func (ee *Events) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) (
 	var objects = []interface{}{}
 	var err error
 
-	ee.Events.Range(func(k, v interface{}) bool {
+	ee.events.Range(func(k, v interface{}) bool {
 		e := v.(Event)
 		if !e.OID.Contains(oid) {
 			return true
 		}
 
 		if objects, err = e.set(auth, oid, value); err == nil {
-			ee.Events.Store(k, e)
+			ee.events.Store(k, e)
 		}
 
 		return false
@@ -194,10 +194,10 @@ func (ee *Events) Validate() error {
 func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {
 	for _, e := range recent {
 		k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
-		if _, ok := ee.Events.Load(k); !ok {
+		if _, ok := ee.events.Load(k); !ok {
 			oid := catalog.NewEvent()
 			device, door, card := lookup(e)
-			ee.Events.Store(k, NewEvent(oid, e, device, door, card))
+			ee.events.Store(k, NewEvent(oid, e, device, door, card))
 		}
 	}
 }

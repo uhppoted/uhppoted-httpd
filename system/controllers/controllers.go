@@ -24,8 +24,8 @@ import (
 )
 
 type Controllers struct {
-	Controllers []*Controller `json:"controllers"`
-	LAN         *LAN          `json:"LAN"`
+	controllers []*Controller `json:"controllers"`
+	lan         *LAN          `json:"LAN"`
 }
 
 const BLANK = "'blank'"
@@ -53,18 +53,26 @@ func SetWindows(ok, uncertain, systime, cacheExpiry time.Duration) {
 
 func NewControllers() Controllers {
 	return Controllers{
-		Controllers: []*Controller{},
+		controllers: []*Controller{},
 	}
 }
 
-func (cc *Controllers) Init(interfaces interfaces.Interfaces) {
-	for _, v := range interfaces.LANs {
-		if v != nil {
-			cc.LAN = &LAN{
-				*v,
-			}
+func (cc *Controllers) List() []Controller {
+	list := []Controller{}
 
-			break
+	for _, c := range cc.controllers {
+		if c != nil {
+			list = append(list, *c)
+		}
+	}
+
+	return list
+}
+
+func (cc *Controllers) Init(interfaces interfaces.Interfaces) {
+	if v, ok := interfaces.LAN(); ok {
+		cc.lan = &LAN{
+			v,
 		}
 	}
 }
@@ -75,17 +83,17 @@ func (cc *Controllers) Load(blob json.RawMessage) error {
 		return err
 	}
 
-	cc.Controllers = []*Controller{}
+	cc.controllers = []*Controller{}
 	for _, v := range rs {
 		var c Controller
 		if err := c.deserialize(v); err != nil {
 			warn(err)
 		} else {
-			cc.Controllers = append(cc.Controllers, &c)
+			cc.controllers = append(cc.controllers, &c)
 		}
 	}
 
-	for _, c := range cc.Controllers {
+	for _, c := range cc.controllers {
 		oid := c.OID()
 		catalog.PutController(c.deviceID, oid)
 		catalog.PutV(oid, ControllerName, c.name)
@@ -113,7 +121,7 @@ func (cc *Controllers) Save() (json.RawMessage, error) {
 	}
 
 	serializable := []json.RawMessage{}
-	for _, c := range cc.Controllers {
+	for _, c := range cc.controllers {
 		if bytes, err := c.serialize(); err == nil && bytes != nil {
 			serializable = append(serializable, bytes)
 		}
@@ -125,7 +133,7 @@ func (cc *Controllers) Save() (json.RawMessage, error) {
 func (cc *Controllers) AsObjects() []interface{} {
 	objects := []interface{}{}
 
-	for _, c := range cc.Controllers {
+	for _, c := range cc.controllers {
 		if c.IsValid() {
 			if l := c.AsObjects(); l != nil {
 				objects = append(objects, l...)
@@ -142,9 +150,9 @@ func (cc *Controllers) Sweep(retention time.Duration) {
 	}
 
 	cutoff := time.Now().Add(-retention)
-	for i, v := range cc.Controllers {
+	for i, v := range cc.controllers {
 		if v.deleted != nil && v.deleted.Before(cutoff) {
-			cc.Controllers = append(cc.Controllers[:i], cc.Controllers[i+1:]...)
+			cc.controllers = append(cc.controllers[:i], cc.controllers[i+1:]...)
 		}
 	}
 }
@@ -160,7 +168,7 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value stri
 		return nil, nil
 	}
 
-	for _, c := range cc.Controllers {
+	for _, c := range cc.controllers {
 		if c != nil && c.OID().Contains(oid) {
 			return c.set(auth, oid, value, dbc)
 		}
@@ -187,12 +195,12 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value stri
 
 func (cc *Controllers) Refresh() {
 	// ... add 'found' controllers to list
-	if found, err := cc.LAN.search(cc.Controllers); err != nil {
+	if found, err := cc.lan.search(cc.controllers); err != nil {
 		warn(err)
 	} else {
 	loop:
 		for _, d := range found {
-			for _, c := range cc.Controllers {
+			for _, c := range cc.controllers {
 				if c.DeviceID() == d && c.deleted == nil {
 					continue loop
 				}
@@ -203,7 +211,7 @@ func (cc *Controllers) Refresh() {
 			oid := catalog.NewController(d)
 			// deviceID := d // because .. Go loop variable gotcha (the loop variable is mutable)
 
-			cc.Controllers = append(cc.Controllers, &Controller{
+			cc.controllers = append(cc.controllers, &Controller{
 				oid:          oid,
 				deviceID:     d,
 				created:      types.DateTime(time.Now()),
@@ -213,9 +221,9 @@ func (cc *Controllers) Refresh() {
 	}
 
 	// ... refresh
-	cc.LAN.refresh(cc.Controllers)
+	cc.lan.refresh(cc.controllers)
 
-	for _, c := range cc.Controllers {
+	for _, c := range cc.controllers {
 		c.refreshed()
 	}
 }
@@ -225,15 +233,15 @@ func (cc *Controllers) Clone() Controllers {
 	defer guard.RUnlock()
 
 	shadow := Controllers{
-		Controllers: make([]*Controller, len(cc.Controllers)),
-		LAN:         &LAN{},
+		controllers: make([]*Controller, len(cc.controllers)),
+		lan:         &LAN{},
 	}
 
-	lan := cc.LAN.clone()
-	shadow.LAN = &lan
+	lan := cc.lan.clone()
+	shadow.lan = &lan
 
-	for k, v := range cc.Controllers {
-		shadow.Controllers[k] = v.clone()
+	for k, v := range cc.controllers {
+		shadow.controllers[k] = v.clone()
 	}
 
 	return shadow
@@ -316,16 +324,16 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 }
 
 func (cc *Controllers) Sync() {
-	cc.LAN.synchTime(cc.Controllers)
-	cc.LAN.synchDoors(cc.Controllers)
+	cc.lan.synchTime(cc.controllers)
+	cc.lan.synchDoors(cc.controllers)
 }
 
 func (cc *Controllers) CompareACL(permissions acl.ACL) error {
-	return cc.LAN.compare(cc.Controllers, permissions)
+	return cc.lan.compare(cc.controllers, permissions)
 }
 
 func (cc *Controllers) UpdateACL(permissions acl.ACL) error {
-	return cc.LAN.update(cc.Controllers, permissions)
+	return cc.lan.update(cc.controllers, permissions)
 }
 
 func (cc *Controllers) Validate() error {
@@ -347,7 +355,7 @@ func (cc *Controllers) add(auth auth.OpAuth, c Controller) (*Controller, error) 
 		}
 	}
 
-	cc.Controllers = append(cc.Controllers, record)
+	cc.controllers = append(cc.controllers, record)
 
 	return record, nil
 }
@@ -355,7 +363,7 @@ func (cc *Controllers) add(auth auth.OpAuth, c Controller) (*Controller, error) 
 func validate(cc Controllers) error {
 	devices := map[uint32]string{}
 
-	for _, c := range cc.Controllers {
+	for _, c := range cc.controllers {
 		OID := c.OID()
 		if OID == "" {
 			return fmt.Errorf("Invalid controller OID (%v)", OID)

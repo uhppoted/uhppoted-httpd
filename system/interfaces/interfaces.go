@@ -14,7 +14,7 @@ import (
 )
 
 type Interfaces struct {
-	LANs map[catalog.OID]*LAN
+	lans map[catalog.OID]*LAN
 	ch   chan types.EventsList
 }
 
@@ -24,9 +24,19 @@ var guard sync.RWMutex
 
 func NewInterfaces(ch chan types.EventsList) Interfaces {
 	return Interfaces{
-		LANs: map[catalog.OID]*LAN{},
+		lans: map[catalog.OID]*LAN{},
 		ch:   ch,
 	}
+}
+
+func (ii *Interfaces) LAN() (LAN, bool) {
+	for _, v := range ii.lans {
+		if v != nil {
+			return *v, true
+		}
+	}
+
+	return LAN{}, false
 }
 
 func (ii *Interfaces) Load(blob json.RawMessage) error {
@@ -38,16 +48,16 @@ func (ii *Interfaces) Load(blob json.RawMessage) error {
 	for _, v := range rs {
 		var l LAN
 		if err := l.deserialize(v); err == nil {
-			if _, ok := ii.LANs[l.OID]; ok {
+			if _, ok := ii.lans[l.OID]; ok {
 				return fmt.Errorf("card '%v': duplicate OID (%v)", l.Name, l.OID)
 			}
 
 			l.ch = ii.ch
-			ii.LANs[l.OID] = &l
+			ii.lans[l.OID] = &l
 		}
 	}
 
-	for _, v := range ii.LANs {
+	for _, v := range ii.lans {
 		catalog.PutInterface(v.OID)
 	}
 
@@ -64,7 +74,7 @@ func (ii Interfaces) Save() (json.RawMessage, error) {
 	}
 
 	serializable := []json.RawMessage{}
-	for _, l := range ii.LANs {
+	for _, l := range ii.lans {
 		if l.IsValid() && !l.IsDeleted() {
 			if record, err := l.serialize(); err == nil && record != nil {
 				serializable = append(serializable, record)
@@ -86,12 +96,12 @@ func (ii *Interfaces) Clone() Interfaces {
 	defer guard.RUnlock()
 
 	shadow := Interfaces{
-		LANs: map[catalog.OID]*LAN{},
+		lans: map[catalog.OID]*LAN{},
 	}
 
-	for k, v := range ii.LANs {
+	for k, v := range ii.lans {
 		clone := v.Clone()
-		shadow.LANs[k] = &clone
+		shadow.lans[k] = &clone
 	}
 
 	return shadow
@@ -100,7 +110,7 @@ func (ii *Interfaces) Clone() Interfaces {
 func (ii *Interfaces) AsObjects() []interface{} {
 	objects := []interface{}{}
 
-	for _, l := range ii.LANs {
+	for _, l := range ii.lans {
 		if l.IsValid() {
 			if v := l.AsObjects(); v != nil {
 				objects = append(objects, v...)
@@ -116,7 +126,7 @@ func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value strin
 		return nil, nil
 	}
 
-	for _, l := range ii.LANs {
+	for _, l := range ii.lans {
 		if l != nil && l.OID.Contains(oid) {
 			return l.set(auth, oid, value, dbc)
 		}
@@ -151,7 +161,7 @@ func (ii *Interfaces) add(auth auth.OpAuth, l LAN) (*LAN, error) {
 func validate(ii Interfaces) error {
 	names := map[string]string{}
 
-	for k, l := range ii.LANs {
+	for k, l := range ii.lans {
 		if l.deleted != nil {
 			continue
 		}

@@ -58,11 +58,12 @@ func validate(c *controllers.Controllers) error {
 	}
 
 	doors := map[catalog.OID]string{}
+	controllers := c.List()
 
-	for _, r := range c.Controllers {
+	for _, r := range controllers {
 		for _, v := range r.Doors {
 			if v != "" {
-				if _, ok := sys.doors.Doors.Doors[catalog.OID(v)]; !ok {
+				if _, ok := sys.doors.Door(catalog.OID(v)); !ok {
 					return types.BadRequest(
 						fmt.Errorf("Invalid door ID"),
 						fmt.Errorf("controller %v: invalid door ID (%v)", r.OID(), v))
@@ -70,8 +71,9 @@ func validate(c *controllers.Controllers) error {
 			}
 
 			if rid, ok := doors[v]; ok && v != "" {
+				d, _ := sys.doors.Door(v)
 				return types.BadRequest(
-					fmt.Errorf("%v door assigned to more than one controller", sys.doors.Doors.Doors[catalog.OID(v)].Name),
+					fmt.Errorf("%v door assigned to more than one controller", d.Name),
 					fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID()))
 			}
 

@@ -27,10 +27,10 @@ func CompareACL() {
 }
 
 func permissions() (acl.ACL, error) {
-	cards := sys.cards.Cards.Cards
-	groups := sys.groups.Groups.Groups
-	doors := sys.doors.Doors.Doors
-	controllers := sys.controllers.Controllers.Controllers
+	cards := sys.cards.List()
+	groups := sys.groups.Groups
+	doors := sys.doors.Doors
+	controllers := sys.controllers.List()
 
 	// initialise empty ACL
 
@@ -88,9 +88,9 @@ func permissions() (acl.ACL, error) {
 	for _, c := range cards {
 		if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
 			for g, member := range c.Groups {
-				if group, ok := groups[catalog.OID(g)]; ok && member {
+				if group, ok := groups.Group(g); ok && member {
 					for d, allowed := range group.Doors {
-						if door, ok := doors[d]; ok && allowed {
+						if door, ok := doors.Door(d); ok && allowed {
 							card := uint32(*c.Card)
 							device := catalog.GetDoorDeviceID(door.OID)
 							doorID := catalog.GetDoorDeviceDoor(door.OID)
@@ -107,7 +107,7 @@ func permissions() (acl.ACL, error) {
 
 	if sys.rules != nil {
 		for _, c := range cards {
-			allowed, forbidden, err := sys.rules.Eval(*c, sys.groups.Groups, sys.doors.Doors)
+			allowed, forbidden, err := sys.rules.Eval(c, sys.groups.Groups, sys.doors.Doors)
 			if err != nil {
 				return nil, err
 			}

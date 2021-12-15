@@ -20,7 +20,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.doors.Doors.Clone()
+	shadow := sys.doors.Clone()
 
 	for _, o := range objects {
 		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -35,11 +35,11 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, types.BadRequest(err, err)
 	}
 
-	controllers := sys.controllers.Controllers.Controllers
+	controllers := sys.controllers.List()
 	for _, c := range controllers {
 		for k, v := range c.Doors {
 			if v != "" {
-				if door, ok := shadow.Doors[catalog.OID(v)]; !ok {
+				if door, ok := shadow.Door(v); !ok {
 					return nil, types.BadRequest(fmt.Errorf("Door %v not defined for controller %v", k, c), fmt.Errorf("controller %v: invalid door (%v)", c, k))
 
 				} else if door.IsDeleted() {

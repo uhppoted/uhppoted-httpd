@@ -16,7 +16,7 @@ import (
 )
 
 type Logs struct {
-	Logs map[key]LogEntry `json:"logs"`
+	logs map[key]LogEntry `json:"logs"`
 }
 
 type key [20]byte
@@ -54,7 +54,7 @@ func newKey(timestamp time.Time, uid, item, id, name, field, details string) key
 
 func NewLogs() Logs {
 	logs := Logs{
-		Logs: map[key]LogEntry{},
+		logs: map[key]LogEntry{},
 	}
 
 	return logs
@@ -90,7 +90,7 @@ func (ll *Logs) Load(blob json.RawMessage) error {
 		catalog.PutLogEntry(v.OID)
 	}
 
-	ll.Logs = logs
+	ll.logs = logs
 
 	return nil
 }
@@ -106,7 +106,7 @@ func (ll Logs) Save() (json.RawMessage, error) {
 
 	serializable := []json.RawMessage{}
 
-	for _, l := range ll.Logs {
+	for _, l := range ll.logs {
 		if l.IsValid() && !l.IsDeleted() {
 			if record, err := l.serialize(); err == nil && record != nil {
 				serializable = append(serializable, record)
@@ -118,18 +118,18 @@ func (ll Logs) Save() (json.RawMessage, error) {
 }
 
 func (ll Logs) Print() {
-	if b, err := json.MarshalIndent(ll.Logs, "", "  "); err == nil {
+	if b, err := json.MarshalIndent(ll.logs, "", "  "); err == nil {
 		fmt.Printf("----------------- LOGS\n%s\n", string(b))
 	}
 }
 
 func (ll *Logs) Clone() *Logs {
 	shadow := Logs{
-		Logs: map[key]LogEntry{},
+		logs: map[key]LogEntry{},
 	}
 
-	for k, l := range ll.Logs {
-		shadow.Logs[k] = l.clone()
+	for k, l := range ll.logs {
+		shadow.logs[k] = l.clone()
 	}
 
 	return &shadow
@@ -142,13 +142,13 @@ func (ll *Logs) AsObjects(start, max int) []interface{} {
 	objects := []interface{}{}
 	keys := []key{}
 
-	for k := range ll.Logs {
+	for k := range ll.logs {
 		keys = append(keys, k)
 	}
 
 	sort.SliceStable(keys, func(i, j int) bool {
-		p := ll.Logs[keys[i]].Timestamp
-		q := ll.Logs[keys[j]].Timestamp
+		p := ll.logs[keys[i]].Timestamp
+		q := ll.logs[keys[j]].Timestamp
 
 		return q.Before(p)
 	})
@@ -157,7 +157,7 @@ func (ll *Logs) AsObjects(start, max int) []interface{} {
 	count := 0
 	for ix < len(keys) && count < max {
 		k := keys[ix]
-		if l, ok := ll.Logs[k]; ok {
+		if l, ok := ll.logs[k]; ok {
 			if l.IsValid() || l.IsDeleted() {
 				if l := l.AsObjects(); l != nil {
 					objects = append(objects, l...)
@@ -170,8 +170,8 @@ func (ll *Logs) AsObjects(start, max int) []interface{} {
 	}
 
 	if len(keys) > 0 {
-		first := ll.Logs[keys[0]]
-		last := ll.Logs[keys[len(keys)-1]]
+		first := ll.logs[keys[0]]
+		last := ll.logs[keys[len(keys)-1]]
 		objects = append(objects, catalog.NewObject2(LogsOID, LogsFirst, first.OID))
 		objects = append(objects, catalog.NewObject2(LogsOID, LogsLast, last.OID))
 	}
@@ -184,11 +184,11 @@ func (ll *Logs) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]
 		return nil, nil
 	}
 
-	for k, e := range ll.Logs {
+	for k, e := range ll.logs {
 		if e.OID.Contains(oid) {
 			objects, err := e.set(auth, oid, value)
 			if err == nil {
-				ll.Logs[k] = e
+				ll.logs[k] = e
 			}
 
 			return objects, err
@@ -214,9 +214,9 @@ func (ll *Logs) Received(records ...audit.AuditRecord) {
 		defer guard.Unlock()
 
 		k := newKey(record.Timestamp, record.UID, record.Component, record.Details.ID, record.Details.Name, record.Details.Field, record.Details.Description)
-		if _, ok := ll.Logs[k]; !ok {
+		if _, ok := ll.logs[k]; !ok {
 			oid := catalog.NewLogEntry()
-			ll.Logs[k] = NewLogEntry(oid, timestamp, record)
+			ll.logs[k] = NewLogEntry(oid, timestamp, record)
 		}
 	}
 }
@@ -224,7 +224,7 @@ func (ll *Logs) Received(records ...audit.AuditRecord) {
 func (ll *Logs) Query(item, id, field string) []LogEntry {
 	records := []LogEntry{}
 
-	for _, v := range ll.Logs {
+	for _, v := range ll.logs {
 		if v.Item == item && v.ItemID == id && v.Field == field {
 			records = append(records, v)
 		}

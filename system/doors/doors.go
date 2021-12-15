@@ -16,9 +16,9 @@ import (
 )
 
 type Doors struct {
-	Doors map[catalog.OID]Door `json:"doors"`
+	doors map[catalog.OID]Door
 
-	file string `json:"-"`
+	file string
 }
 
 type object catalog.Object
@@ -27,14 +27,33 @@ var guard sync.RWMutex
 
 func NewDoors() Doors {
 	return Doors{
-		Doors: map[catalog.OID]Door{},
+		doors: map[catalog.OID]Door{},
 	}
+}
+
+func (dd *Doors) Door(oid catalog.OID) (Door, bool) {
+	d, ok := dd.doors[oid]
+
+	return d, ok
+}
+
+func (dd *Doors) ByName(name string) (Door, bool) {
+	for _, d := range dd.doors {
+		p := strings.ReplaceAll(strings.ToLower(d.Name), " ", "")
+		q := strings.ReplaceAll(strings.ToLower(name), " ", "")
+
+		if p == q {
+			return d, false
+		}
+	}
+
+	return Door{}, false
 }
 
 func (dd *Doors) AsObjects() []interface{} {
 	objects := []interface{}{}
 
-	for _, d := range dd.Doors {
+	for _, d := range dd.doors {
 		if d.IsValid() || d.IsDeleted() {
 			if l := d.AsObjects(); l != nil {
 				objects = append(objects, l...)
@@ -56,15 +75,15 @@ func (dd *Doors) Load(blob json.RawMessage) error {
 		if err := d.deserialize(v); err != nil {
 			warn(err)
 		} else {
-			if _, ok := dd.Doors[d.OID]; ok {
+			if _, ok := dd.doors[d.OID]; ok {
 				return fmt.Errorf("door '%v': duplicate OID (%v)", d.Name, d.OID)
 			}
 
-			dd.Doors[d.OID] = d
+			dd.doors[d.OID] = d
 		}
 	}
 
-	for _, d := range dd.Doors {
+	for _, d := range dd.doors {
 		catalog.PutDoor(d.OID)
 		catalog.PutV(d.OID, DoorName, d.Name)
 		catalog.PutV(d.OID, DoorDelayConfigured, d.delay)
@@ -86,7 +105,7 @@ func (dd Doors) Save() (json.RawMessage, error) {
 	}
 
 	serializable := []json.RawMessage{}
-	for _, d := range dd.Doors {
+	for _, d := range dd.doors {
 		if d.IsValid() && !d.IsDeleted() {
 			if record, err := d.serialize(); err == nil && record != nil {
 				serializable = append(serializable, record)
@@ -100,9 +119,9 @@ func (dd Doors) Save() (json.RawMessage, error) {
 func (dd *Doors) Sweep(retention time.Duration) {
 	if dd != nil {
 		cutoff := time.Now().Add(-retention)
-		for i, v := range dd.Doors {
+		for i, v := range dd.doors {
 			if v.deleted != nil && v.deleted.Before(cutoff) {
-				delete(dd.Doors, i)
+				delete(dd.doors, i)
 			}
 		}
 	}
@@ -116,7 +135,7 @@ func (dd Doors) Find(name string) (Door, bool) {
 	p := clean(name)
 
 	if p != "" {
-		for _, d := range dd.Doors {
+		for _, d := range dd.doors {
 			if p == clean(d.Name) {
 				return d, true
 			}
@@ -127,7 +146,7 @@ func (dd Doors) Find(name string) (Door, bool) {
 }
 
 func (dd Doors) Print() {
-	if b, err := json.MarshalIndent(dd.Doors, "", "  "); err == nil {
+	if b, err := json.MarshalIndent(dd.doors, "", "  "); err == nil {
 		fmt.Printf("----------------- DOORS\n%s\n", string(b))
 	}
 }
@@ -137,11 +156,11 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 		return nil, nil
 	}
 
-	for k, d := range dd.Doors {
+	for k, d := range dd.doors {
 		if d.OID.Contains(oid) {
 			objects, err := d.set(auth, oid, value, dbc)
 			if err == nil {
-				dd.Doors[k] = d
+				dd.doors[k] = d
 			}
 
 			return objects, err
@@ -157,7 +176,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 			return nil, fmt.Errorf("Failed to add 'new' door")
 		} else {
 			d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added 'new' door"), dbc)
-			dd.Doors[d.OID] = *d
+			dd.doors[d.OID] = *d
 			objects = append(objects, catalog.NewObject(d.OID, "new"))
 			objects = append(objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
 		}
@@ -187,12 +206,12 @@ func (dd *Doors) Clone() Doors {
 	defer guard.RUnlock()
 
 	shadow := Doors{
-		Doors: map[catalog.OID]Door{},
+		doors: map[catalog.OID]Door{},
 		file:  dd.file,
 	}
 
-	for k, v := range dd.Doors {
-		shadow.Doors[k] = v.clone()
+	for k, v := range dd.doors {
+		shadow.doors[k] = v.clone()
 	}
 
 	return shadow
@@ -209,7 +228,7 @@ func (dd *Doors) Validate() error {
 func validate(dd Doors) error {
 	names := map[string]string{}
 
-	for k, d := range dd.Doors {
+	for k, d := range dd.doors {
 		if d.deleted != nil {
 			continue
 		}

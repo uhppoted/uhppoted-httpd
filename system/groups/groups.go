@@ -14,15 +14,21 @@ import (
 )
 
 type Groups struct {
-	Groups map[catalog.OID]Group `json:"groups"`
+	groups map[catalog.OID]Group
 }
 
 var guard sync.RWMutex
 
 func NewGroups() Groups {
 	return Groups{
-		Groups: map[catalog.OID]Group{},
+		groups: map[catalog.OID]Group{},
 	}
+}
+
+func (gg *Groups) Group(oid catalog.OID) (Group, bool) {
+	g, ok := gg.groups[oid]
+
+	return g, ok
 }
 
 func (gg *Groups) Load(blob json.RawMessage) error {
@@ -34,15 +40,15 @@ func (gg *Groups) Load(blob json.RawMessage) error {
 	for _, v := range rs {
 		var g Group
 		if err := g.deserialize(v); err == nil {
-			if _, ok := gg.Groups[g.OID]; ok {
+			if _, ok := gg.groups[g.OID]; ok {
 				return fmt.Errorf("group '%v': duplicate OID (%v)", g.Name, g.OID)
 			}
 
-			gg.Groups[g.OID] = g
+			gg.groups[g.OID] = g
 		}
 	}
 
-	for _, g := range gg.Groups {
+	for _, g := range gg.groups {
 		catalog.PutGroup(g.OID)
 		catalog.PutV(g.OID, GroupName, g.Name)
 		catalog.PutV(g.OID, GroupCreated, g.created)
@@ -62,7 +68,7 @@ func (gg Groups) Save() (json.RawMessage, error) {
 
 	serializable := []json.RawMessage{}
 
-	for _, g := range gg.Groups {
+	for _, g := range gg.groups {
 		if g.IsValid() && !g.IsDeleted() {
 			if record, err := g.serialize(); err == nil && record != nil {
 				serializable = append(serializable, record)
@@ -74,7 +80,7 @@ func (gg Groups) Save() (json.RawMessage, error) {
 }
 
 func (gg Groups) Print() {
-	if b, err := json.MarshalIndent(gg.Groups, "", "  "); err == nil {
+	if b, err := json.MarshalIndent(gg.groups, "", "  "); err == nil {
 		fmt.Printf("----------------- GROUPS\n%s\n", string(b))
 	}
 }
@@ -84,11 +90,11 @@ func (gg *Groups) Clone() Groups {
 	defer guard.RUnlock()
 
 	shadow := Groups{
-		Groups: map[catalog.OID]Group{},
+		groups: map[catalog.OID]Group{},
 	}
 
-	for k, v := range gg.Groups {
-		shadow.Groups[k] = v.clone()
+	for k, v := range gg.groups {
+		shadow.groups[k] = v.clone()
 	}
 
 	return shadow
@@ -100,7 +106,7 @@ func (gg *Groups) AsObjects() []interface{} {
 
 	objects := []interface{}{}
 
-	for _, g := range gg.Groups {
+	for _, g := range gg.groups {
 		if g.IsValid() || g.IsDeleted() {
 			if l := g.AsObjects(); l != nil {
 				objects = append(objects, l...)
@@ -116,11 +122,11 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, d
 		return nil, nil
 	}
 
-	for k, g := range gg.Groups {
+	for k, g := range gg.groups {
 		if g.OID.Contains(oid) {
 			objects, err := g.set(auth, oid, value, dbc)
 			if err == nil {
-				gg.Groups[k] = g
+				gg.groups[k] = g
 			}
 
 			return objects, err
@@ -137,7 +143,7 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, d
 		} else {
 			g.log(auth, "add", g.OID, "group", "Added 'new' group", dbc)
 
-			gg.Groups[g.OID] = *g
+			gg.groups[g.OID] = *g
 			objects = append(objects, catalog.NewObject(g.OID, "new"))
 			objects = append(objects, catalog.NewObject2(g.OID, GroupCreated, g.created))
 		}
@@ -157,9 +163,9 @@ func (gg *Groups) Validate() error {
 func (gg *Groups) Sweep(retention time.Duration) {
 	if gg != nil {
 		cutoff := time.Now().Add(-retention)
-		for i, v := range gg.Groups {
+		for i, v := range gg.groups {
 			if v.deleted != nil && v.deleted.Before(cutoff) {
-				delete(gg.Groups, i)
+				delete(gg.groups, i)
 			}
 		}
 	}
@@ -184,7 +190,7 @@ func (gg *Groups) add(auth auth.OpAuth, g Group) (*Group, error) {
 func validate(gg Groups) error {
 	names := map[string]string{}
 
-	for k, g := range gg.Groups {
+	for k, g := range gg.groups {
 		if g.deleted != nil {
 			continue
 		}

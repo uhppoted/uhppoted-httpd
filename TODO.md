@@ -7,12 +7,12 @@
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [ ] Move LAN device stuff to `interfaces` subsystem
+      - [x] Move LAN device stuff to `interfaces` subsystem
             - [x] Fix the whole 'LAN.api' mess - assign controllers to LAN
             - [x] Find a cleaner way to handle deleted controllers 
+      - [ ] Rework 'update controllers after LAN edit' hack
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
-      - [ ] Rework 'update controllers after LAN edit' hack
 
 - [ ] Fix DateTime mess
       - [ ] Do the 'uncertain/pending' thing for timezones
@@ -25,7 +25,15 @@
 ### IN PROGRESS
 
 - [ ] Genericize load/save
-      - [ ] (MAYBE) redefine Groups and Doors as typedef arrays (or *rather* hide internal arrays)
+      - [ ] Hide internal arrays
+            - [x] interfaces
+            - [x] controllers
+            - [x] doors
+            - [x] cards
+            - [x] groups
+            - [x] events
+            - [x] logs
+            - [ ] Fix all the Print() implementations
       - [ ] Put subsystems into list for iterating
  
 - [ ] OIDs:
