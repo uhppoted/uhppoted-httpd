@@ -8,8 +8,7 @@
 
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
-            - [x] Move ACL stuff into interfaces.LAN
-            - [ ] Fix the whole 'LAN.api' mess - assign controllers to LAN
+            - [x] Fix the whole 'LAN.api' mess - assign controllers to LAN
             - [ ] Find a cleaner way to handle deleted controllers 
                   i.e. one that doesn't involve checking `deviceID` and `deleted`
                        in a hundred different places
@@ -28,18 +27,9 @@
 ### IN PROGRESS
 
 - [ ] Genericize load/save
-      - [x] Embed controllers etc. in sys structs
-            - [x] interfaces
-            - [x] controllers
-            - [x] doors
-            - [x] cards
-            - [x] groups
-            - [x] events
-            - [x] logs
       - [ ] (MAYBE) redefine Groups and Doors as typedef arrays (or *rather* hide internal arrays)
       - [ ] Put subsystems into list for iterating
-      - [x] Commonalise 'Print'
-
+ 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
       - [ ] GetV => GetBool, GetInt, etc

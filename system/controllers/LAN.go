@@ -3,10 +3,8 @@ package controllers
 import (
 	"sync"
 
-	"github.com/uhppoted/uhppoted-lib/acl"
-	"github.com/uhppoted/uhppoted-lib/uhppoted"
-
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
+	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
 type LAN struct {
@@ -17,17 +15,6 @@ func (l LAN) clone() LAN {
 	return LAN{
 		l.LAN,
 	}
-}
-
-func (l *LAN) api(controllers []*Controller) *uhppoted.UHPPOTED {
-	devices := []interfaces.Controller{}
-	for _, c := range controllers {
-		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
-			devices = append(devices, c)
-		}
-	}
-
-	return l.API(devices)
 }
 
 func (l *LAN) search(controllers []*Controller) ([]uint32, error) {

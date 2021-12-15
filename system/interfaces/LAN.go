@@ -108,35 +108,6 @@ func (l *LAN) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (l *LAN) API(controllers []Controller) *uhppoted.UHPPOTED {
-	devices := []uhppote.Device{}
-
-	for _, v := range controllers {
-		name := v.Name()
-		id := v.DeviceID()
-		addr := v.EndPoint()
-
-		if id > 0 && addr != nil {
-			devices = append(devices, uhppote.Device{
-				Name:     name,
-				DeviceID: id,
-				Address:  addr,
-				Rollover: 100000,
-				Doors:    []string{},
-				TimeZone: time.Local,
-			})
-		}
-	}
-
-	u := uhppote.NewUHPPOTE(l.BindAddress, l.BroadcastAddress, l.ListenAddress, 1*time.Second, devices, l.Debug)
-	api := uhppoted.UHPPOTED{
-		UHPPOTE: u,
-		Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
-	}
-
-	return &api
-}
-
 func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	objects := []catalog.Object{}
 
@@ -260,10 +231,39 @@ func (l LAN) Clone() LAN {
 	}
 }
 
+func (l *LAN) api(controllers []Controller) *uhppoted.UHPPOTED {
+	devices := []uhppote.Device{}
+
+	for _, v := range controllers {
+		name := v.Name()
+		id := v.DeviceID()
+		addr := v.EndPoint()
+
+		if id > 0 && addr != nil {
+			devices = append(devices, uhppote.Device{
+				Name:     name,
+				DeviceID: id,
+				Address:  addr,
+				Rollover: 100000,
+				Doors:    []string{},
+				TimeZone: time.Local,
+			})
+		}
+	}
+
+	u := uhppote.NewUHPPOTE(l.BindAddress, l.BroadcastAddress, l.ListenAddress, 1*time.Second, devices, l.Debug)
+	api := uhppoted.UHPPOTED{
+		UHPPOTE: u,
+		Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
+	}
+
+	return &api
+}
+
 func (l *LAN) Search(controllers []Controller) ([]uint32, error) {
 	list := []uint32{}
 
-	api := l.API(controllers)
+	api := l.api(controllers)
 	if devices, err := api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
 		return list, err
 	} else if devices == nil {
@@ -281,7 +281,7 @@ func (l *LAN) Search(controllers []Controller) ([]uint32, error) {
 func (l *LAN) Refresh(c Controller) {
 	log.Printf("%v: refreshing LAN controller status", c.DeviceID())
 
-	api := l.API([]Controller{c})
+	api := l.api([]Controller{c})
 	deviceID := uhppoted.DeviceID(c.DeviceID())
 
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: deviceID}); err != nil {
@@ -347,7 +347,7 @@ func (l *LAN) Refresh(c Controller) {
 }
 
 func (l *LAN) SynchTime(c Controller) {
-	api := l.API([]Controller{c})
+	api := l.api([]Controller{c})
 	deviceID := c.DeviceID()
 	location := c.TimeZone()
 	now := time.Now().In(location)
@@ -366,7 +366,7 @@ func (l *LAN) SynchTime(c Controller) {
 }
 
 func (l *LAN) SynchDoors(c Controller) {
-	api := l.API([]Controller{c})
+	api := l.api([]Controller{c})
 	deviceID := c.DeviceID()
 
 	// ... update door delays
@@ -440,7 +440,7 @@ func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
 	log.Printf("Comparing ACL")
 
 	devices := []uhppote.Device{}
-	api := l.API(controllers)
+	api := l.api(controllers)
 	for _, v := range api.UHPPOTE.DeviceList() {
 		device := v
 		devices = append(devices, device)
@@ -491,7 +491,7 @@ func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
 func (l *LAN) UpdateACL(controllers []Controller, permissions acl.ACL) error {
 	log.Printf("Updating ACL")
 
-	api := l.API(controllers)
+	api := l.api(controllers)
 	rpt, errors := acl.PutACL(api.UHPPOTE, permissions, false)
 	for _, err := range errors {
 		warn(err)
