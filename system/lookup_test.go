@@ -151,19 +151,20 @@ func TestLookupDefaultDeviceName(t *testing.T) {
 }
 
 func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
-	sys.logs.Logs = logs.NewLogs()
+	h := []logs.LogEntry{}
+	for _, v := range history {
+		if v.Timestamp.Before(time.Time(event.Timestamp)) {
+			h = append(h, v)
+		}
+	}
+
+	sys.logs.Logs = logs.NewLogs(h...)
 
 	oid := catalog.OID("0.2.1")
 	expected := "Alpha"
 
 	catalog.PutController(405419896, oid)
 	catalog.PutV(oid, catalog.ControllerName, "Alpha")
-
-	for k, v := range history {
-		if v.Timestamp.Before(time.Time(event.Timestamp)) {
-			sys.logs.Logs.Logs[k] = v
-		}
-	}
 
 	name := eventController(event)
 	if name != expected {
@@ -172,17 +173,18 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 }
 
 func TestLookupHistoricalDeviceName(t *testing.T) {
-	sys.logs.Logs = logs.NewLogs()
+	h := []logs.LogEntry{}
+	for _, v := range history {
+		h = append(h, v)
+	}
+
+	sys.logs.Logs = logs.NewLogs(h...)
 
 	oid := catalog.OID("0.2.1")
 	expected := "Alpha7"
 
 	catalog.PutController(405419896, oid)
 	catalog.PutV(oid, catalog.ControllerName, "Alpha")
-
-	for k, v := range history {
-		sys.logs.Logs.Logs[k] = v
-	}
 
 	name := eventController(event)
 	if name != expected {
@@ -218,7 +220,12 @@ func TestLookupCardName(t *testing.T) {
 }
 
 func TestLookupHistoricalCardName(t *testing.T) {
-	sys.logs.Logs = logs.NewLogs()
+	h := []logs.LogEntry{}
+	for _, v := range history {
+		h = append(h, v)
+	}
+
+	sys.logs.Logs = logs.NewLogs(h...)
 
 	oid := catalog.OID("0.4.1")
 	expected := "Barney"
@@ -226,10 +233,6 @@ func TestLookupHistoricalCardName(t *testing.T) {
 	catalog.PutCard(oid)
 	catalog.PutV(oid, catalog.CardNumber, uint32(8165538))
 	catalog.PutV(oid, catalog.CardName, "FredF")
-
-	for k, v := range history {
-		sys.logs.Logs.Logs[k] = v
-	}
 
 	name := eventCard(event)
 	if name != expected {
@@ -271,7 +274,12 @@ func TestLookupDoorName(t *testing.T) {
 }
 
 func TestLookupHistoricalDoorName(t *testing.T) {
-	sys.logs.Logs = logs.NewLogs()
+	h := []logs.LogEntry{}
+	for _, v := range history {
+		h = append(h, v)
+	}
+
+	sys.logs.Logs = logs.NewLogs(h...)
 
 	controller := catalog.OID("0.2.1")
 	door := catalog.OID("0.3.1")
@@ -283,10 +291,6 @@ func TestLookupHistoricalDoorName(t *testing.T) {
 
 	catalog.PutDoor(door)
 	catalog.PutV(door, catalog.DoorName, "Gringotts")
-
-	for k, v := range history {
-		sys.logs.Logs.Logs[k] = v
-	}
 
 	expected := "Cupboard"
 

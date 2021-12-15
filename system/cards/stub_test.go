@@ -93,11 +93,11 @@ func date(s string) *types.Date {
 
 func makeCards(list ...Card) *Cards {
 	p := Cards{
-		Cards: map[catalog.OID]*Card{},
+		cards: map[catalog.OID]*Card{},
 	}
 
 	for _, c := range list {
-		p.Cards[c.OID] = c.clone()
+		p.cards[c.OID] = c.clone()
 	}
 
 	return &p
@@ -145,5 +145,5 @@ func compare(got, expected interface{}, t *testing.T) {
 }
 
 func compareDB(db, expected *Cards, t *testing.T) {
-	compare(db.Cards, expected.Cards, t)
+	compare(db.cards, expected.cards, t)
 }

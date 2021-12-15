@@ -14,7 +14,7 @@ import (
 )
 
 type Events struct {
-	events sync.Map `json:"events"`
+	events sync.Map
 }
 
 type key struct {

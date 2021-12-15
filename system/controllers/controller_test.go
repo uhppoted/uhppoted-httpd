@@ -20,7 +20,7 @@ func TestControllerAsObjects(t *testing.T) {
 	c := Controller{
 		oid:      "0.2.3",
 		name:     name,
-		deviceID: &deviceID,
+		deviceID: deviceID,
 		IP:       address,
 		Doors: map[uint8]catalog.OID{
 			1: "0.3.5",
@@ -71,7 +71,7 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 	c := Controller{
 		oid:      "0.2.3",
 		name:     name,
-		deviceID: &deviceID,
+		deviceID: deviceID,
 		IP:       address,
 		Doors: map[uint8]catalog.OID{
 			1: "0.3.5",

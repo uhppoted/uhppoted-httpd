@@ -24,8 +24,8 @@ import (
 )
 
 type Controllers struct {
-	controllers []*Controller `json:"controllers"`
-	lan         *LAN          `json:"LAN"`
+	controllers []*Controller
+	lan         *LAN
 }
 
 const BLANK = "'blank'"

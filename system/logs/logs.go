@@ -16,7 +16,7 @@ import (
 )
 
 type Logs struct {
-	logs map[key]LogEntry `json:"logs"`
+	logs map[key]LogEntry
 }
 
 type key [20]byte
@@ -52,9 +52,14 @@ func newKey(timestamp time.Time, uid, item, id, name, field, details string) key
 	return key(hash)
 }
 
-func NewLogs() Logs {
+func NewLogs(entries ...LogEntry) Logs {
 	logs := Logs{
 		logs: map[key]LogEntry{},
+	}
+
+	for _, l := range entries {
+		k := newKey(l.Timestamp, l.UID, l.Item, l.ItemID, l.ItemName, l.Field, l.Details)
+		logs.logs[k] = l
 	}
 
 	return logs
