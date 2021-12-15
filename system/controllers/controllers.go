@@ -251,7 +251,7 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 
 	devices := config.DeviceMap{}
 	for _, c := range controllers {
-		if c.deviceID != 0 && c.deleted == nil {
+		if c.realized() {
 			device := config.Device{
 				Name:     c.name,
 				Address:  nil,

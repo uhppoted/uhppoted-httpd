@@ -9,9 +9,7 @@
 - [ ] Separate LAN and controllers
       - [ ] Move LAN device stuff to `interfaces` subsystem
             - [x] Fix the whole 'LAN.api' mess - assign controllers to LAN
-            - [ ] Find a cleaner way to handle deleted controllers 
-                  i.e. one that doesn't involve checking `deviceID` and `deleted`
-                       in a hundred different places
+            - [x] Find a cleaner way to handle deleted controllers 
       - [ ] GET from /interfaces and /controllers
       - [ ] Commonalise httpd handlers
       - [ ] Rework 'update controllers after LAN edit' hack

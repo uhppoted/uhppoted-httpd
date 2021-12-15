@@ -32,22 +32,6 @@ type Controller struct {
 	unconfigured bool
 }
 
-// type controller struct {
-// 	OID      catalog.OID
-// 	Name     string
-// 	DeviceID string
-// 	IP       ip
-// 	Doors    map[uint8]string
-//
-// 	Status     types.Status
-// 	SystemTime datetime
-// 	Cards      cards
-// 	Events     *records
-// 	Deleted    bool
-//
-// 	created time.Time
-// }
-
 type cached struct {
 	touched  time.Time
 	address  *core.Address
@@ -112,6 +96,14 @@ func (c *Controller) Door(d uint8) (catalog.OID, bool) {
 	}
 
 	return "", false
+}
+
+func (c *Controller) realized() bool {
+	if c != nil && c.deviceID != 0 && c.deleted == nil {
+		return true
+	}
+
+	return false
 }
 
 func (c *Controller) AsObjects() []interface{} {
@@ -312,18 +304,6 @@ func (c *Controller) IsValid() bool {
 	return false
 }
 
-func (c *Controller) IsSaveable() bool {
-	if c == nil || c.deleted != nil || c.unconfigured {
-		return false
-	}
-
-	if c.name != "" && c.deviceID == 0 {
-		return false
-	}
-
-	return true
-}
-
 func (c *Controller) status() types.Status {
 	if c.deleted != nil {
 		return types.StatusDeleted
@@ -483,9 +463,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		}
 
 	case OID.Append(ControllerEndpointAddress):
-		if c.deleted != nil {
-			return nil, fmt.Errorf("Controller has been deleted")
-		} else if addr, err := core.ResolveAddr(value); err != nil {
+		if addr, err := core.ResolveAddr(value); err != nil {
 			return nil, err
 		} else if err := f("address", addr); err != nil {
 			return nil, err
@@ -504,9 +482,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		}
 
 	case OID.Append(ControllerDateTimeCurrent):
-		if c.deleted != nil {
-			return nil, fmt.Errorf("Controller has been deleted")
-		} else if tz, err := types.Timezone(value); err != nil {
+		if tz, err := types.Timezone(value); err != nil {
 			return nil, err
 		} else if err := f("timezone", tz); err != nil {
 			return nil, err
@@ -544,9 +520,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		}
 
 	case OID.Append(ControllerDoor1):
-		if c.deleted != nil {
-			return nil, fmt.Errorf("Controller has been deleted")
-		} else if err := f("door[1]", value); err != nil {
+		if err := f("door[1]", value); err != nil {
 			return nil, err
 		} else {
 			p := catalog.GetV(catalog.OID(c.Doors[1]), catalog.DoorName)
@@ -566,9 +540,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		}
 
 	case OID.Append(ControllerDoor2):
-		if c.deleted != nil {
-			return nil, fmt.Errorf("Controller has been deleted")
-		} else if err := f("door[2]", value); err != nil {
+		if err := f("door[2]", value); err != nil {
 			return nil, err
 		} else {
 			p := catalog.GetV(catalog.OID(c.Doors[2]), catalog.DoorName)
@@ -588,9 +560,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		}
 
 	case OID.Append(ControllerDoor3):
-		if c.deleted != nil {
-			return nil, fmt.Errorf("Controller has been deleted")
-		} else if err := f("door[3]", value); err != nil {
+		if err := f("door[3]", value); err != nil {
 			return nil, err
 		} else {
 			p := catalog.GetV(catalog.OID(c.Doors[3]), catalog.DoorName)
@@ -610,9 +580,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		}
 
 	case OID.Append(ControllerDoor4):
-		if c.deleted != nil {
-			return nil, fmt.Errorf("Controller has been deleted")
-		} else if err := f("door[4]", value); err != nil {
+		if err := f("door[4]", value); err != nil {
 			return nil, err
 		} else {
 			p := catalog.GetV(catalog.OID(c.Doors[4]), catalog.DoorName)
@@ -668,8 +636,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				dbc)
 		}
 
-		now := types.DateTime(time.Now())
-		c.deleted = &now
+		c.deleted = types.DateTimePtrNow()
 		objects = append(objects, catalog.NewObject(OID, "deleted"))
 		objects = append(objects, catalog.NewObject2(OID, ControllerDeleted, c.deleted))
 
@@ -716,12 +683,8 @@ func (c *Controller) refreshed() {
 	}
 }
 
-func (c *Controller) serialize() ([]byte, error) {
-	if c == nil || c.deleted != nil || c.unconfigured {
-		return nil, nil
-	}
-
-	if c.name == "" && c.deviceID == 0 {
+func (c Controller) serialize() ([]byte, error) {
+	if !c.IsValid() || c.deleted != nil || c.unconfigured {
 		return nil, nil
 	}
 

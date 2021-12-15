@@ -20,7 +20,7 @@ func (l LAN) clone() LAN {
 func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
 	devices := []interfaces.Controller{}
 	for _, c := range controllers {
-		if c.deviceID != 0 && c.deleted == nil {
+		if c.realized() {
 			devices = append(devices, c)
 		}
 	}
@@ -56,7 +56,7 @@ func (l *LAN) exec(controllers []*Controller, f func(l *LAN, c *Controller)) {
 	var wg sync.WaitGroup
 
 	for _, c := range controllers {
-		if c.deviceID != 0 && c.deleted == nil {
+		if c.realized() {
 			wg.Add(1)
 
 			controller := c
@@ -75,7 +75,7 @@ func (l *LAN) exec(controllers []*Controller, f func(l *LAN, c *Controller)) {
 func (l *LAN) compare(controllers []*Controller, permissions acl.ACL) error {
 	devices := []interfaces.Controller{}
 	for _, c := range controllers {
-		if c.deviceID != 0 && c.deleted == nil {
+		if c.realized() {
 			devices = append(devices, c)
 		}
 	}
@@ -86,7 +86,7 @@ func (l *LAN) compare(controllers []*Controller, permissions acl.ACL) error {
 func (l *LAN) update(controllers []*Controller, permissions acl.ACL) error {
 	devices := []interfaces.Controller{}
 	for _, c := range controllers {
-		if c.deviceID != 0 && c.deleted == nil {
+		if c.realized() {
 			devices = append(devices, c)
 		}
 	}
