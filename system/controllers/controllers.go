@@ -86,15 +86,14 @@ func (cc *Controllers) Load(blob json.RawMessage) error {
 	}
 
 	for _, c := range cc.Controllers {
-		if c.deviceID != nil && *c.deviceID != 0 {
-			oid := c.OID()
-			catalog.PutController(*c.deviceID, oid)
-			catalog.PutV(oid, ControllerName, c.name)
-			catalog.PutV(oid, ControllerDoor1, c.Doors[1])
-			catalog.PutV(oid, ControllerDoor2, c.Doors[2])
-			catalog.PutV(oid, ControllerDoor3, c.Doors[3])
-			catalog.PutV(oid, ControllerDoor4, c.Doors[4])
-		}
+		oid := c.OID()
+		catalog.PutController(c.deviceID, oid)
+		catalog.PutV(oid, ControllerName, c.name)
+		catalog.PutV(oid, ControllerDeviceID, c.deviceID)
+		catalog.PutV(oid, ControllerDoor1, c.Doors[1])
+		catalog.PutV(oid, ControllerDoor2, c.Doors[2])
+		catalog.PutV(oid, ControllerDoor3, c.Doors[3])
+		catalog.PutV(oid, ControllerDoor4, c.Doors[4])
 	}
 
 	return nil
@@ -202,11 +201,11 @@ func (cc *Controllers) Refresh() {
 			info(fmt.Sprintf("Adding unconfigured controller %v", d))
 
 			oid := catalog.NewController(d)
-			deviceID := d // because .. Go loop variable gotcha (the loop variable is mutable)
+			// deviceID := d // because .. Go loop variable gotcha (the loop variable is mutable)
 
 			cc.Controllers = append(cc.Controllers, &Controller{
 				oid:          oid,
-				deviceID:     &deviceID,
+				deviceID:     d,
 				created:      types.DateTime(time.Now()),
 				unconfigured: true,
 			})
@@ -252,7 +251,7 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 
 	devices := config.DeviceMap{}
 	for _, c := range controllers {
-		if c.deviceID != nil && *c.deviceID != 0 && c.deleted == nil {
+		if c.deviceID != 0 && c.deleted == nil {
 			device := config.Device{
 				Name:     c.name,
 				Address:  nil,
@@ -285,7 +284,7 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 				device.Doors[3] = d.Name
 			}
 
-			devices[*c.deviceID] = &device
+			devices[c.deviceID] = &device
 		}
 	}
 
@@ -338,13 +337,8 @@ func (cc *Controllers) Validate() error {
 }
 
 func (cc *Controllers) add(auth auth.OpAuth, c Controller) (*Controller, error) {
-	id := uint32(0)
-	if c.deviceID != nil {
-		id = *c.deviceID
-	}
-
 	record := c.clone()
-	record.oid = catalog.OID(catalog.NewController(id))
+	record.oid = catalog.OID(catalog.NewController(c.deviceID))
 	record.created = types.DateTime(time.Now())
 
 	if auth != nil {
@@ -371,14 +365,12 @@ func validate(cc Controllers) error {
 			continue
 		}
 
-		if c.deviceID != nil && *c.deviceID != 0 {
-			id := *c.deviceID
-
-			if _, ok := devices[id]; ok {
-				return fmt.Errorf("Duplicate controller ID (%v)", id)
+		if c.deviceID != 0 {
+			if _, ok := devices[c.deviceID]; ok {
+				return fmt.Errorf("Duplicate controller ID (%v)", c.deviceID)
 			}
 
-			devices[id] = string(OID)
+			devices[c.deviceID] = string(OID)
 		}
 	}
 

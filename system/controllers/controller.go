@@ -22,7 +22,7 @@ import (
 type Controller struct {
 	oid      catalog.OID
 	name     string
-	deviceID *uint32
+	deviceID uint32
 	IP       *core.Address
 	Doors    map[uint8]catalog.OID
 	timezone *string
@@ -32,21 +32,21 @@ type Controller struct {
 	unconfigured bool
 }
 
-type controller struct {
-	OID      catalog.OID
-	Name     string
-	DeviceID string
-	IP       ip
-	Doors    map[uint8]string
-
-	Status     types.Status
-	SystemTime datetime
-	Cards      cards
-	Events     *records
-	Deleted    bool
-
-	created time.Time
-}
+// type controller struct {
+// 	OID      catalog.OID
+// 	Name     string
+// 	DeviceID string
+// 	IP       ip
+// 	Doors    map[uint8]string
+//
+// 	Status     types.Status
+// 	SystemTime datetime
+// 	Cards      cards
+// 	Events     *records
+// 	Deleted    bool
+//
+// 	created time.Time
+// }
 
 type cached struct {
 	touched  time.Time
@@ -76,8 +76,8 @@ func (c *Controller) Name() string {
 }
 
 func (c *Controller) DeviceID() uint32 {
-	if c != nil && c.deviceID != nil {
-		return uint32(*c.deviceID)
+	if c != nil {
+		return c.deviceID
 	}
 
 	return 0
@@ -155,8 +155,8 @@ func (c *Controller) AsObjects() []interface{} {
 
 	doors := map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
 
-	if c.deviceID != nil && *c.deviceID != 0 {
-		deviceID = fmt.Sprintf("%v", *c.deviceID)
+	if c.deviceID != 0 {
+		deviceID = fmt.Sprintf("%v", c.deviceID)
 	}
 
 	if c.IP != nil {
@@ -170,7 +170,7 @@ func (c *Controller) AsObjects() []interface{} {
 		}
 	}
 
-	if c.deviceID != nil && *c.deviceID != 0 {
+	if c.deviceID != 0 {
 		//if cached, ok := cache.cache[*c.deviceID]; ok {
 		if cached := c.get(); cached != nil {
 			// ... set IP address field from cached value
@@ -258,25 +258,17 @@ func (c *Controller) AsObjects() []interface{} {
 }
 
 func (c *Controller) AsRuleEntity() interface{} {
-	type entity struct {
+	v := struct {
 		Name     string
 		DeviceID uint32
-	}
+	}{}
 
 	if c != nil {
-		deviceID := uint32(0)
-
-		if c.deviceID != nil {
-			deviceID = *c.deviceID
-		}
-
-		return &entity{
-			Name:     fmt.Sprintf("%v", c.name),
-			DeviceID: deviceID,
-		}
+		v.Name = c.name
+		v.DeviceID = c.deviceID
 	}
 
-	return &entity{}
+	return &v
 }
 
 func (c *Controller) Get(key string) interface{} {
@@ -313,7 +305,7 @@ func (c *Controller) String() string {
 }
 
 func (c *Controller) IsValid() bool {
-	if c != nil && (c.name != "" || (c.deviceID != nil && *c.deviceID != 0)) {
+	if c != nil && (c.name != "" || c.deviceID != 0) {
 		return true
 	}
 
@@ -325,7 +317,7 @@ func (c *Controller) IsSaveable() bool {
 		return false
 	}
 
-	if c.name != "" && (c.deviceID == nil || *c.deviceID == 0) {
+	if c.name != "" && c.deviceID == 0 {
 		return false
 	}
 
@@ -337,7 +329,7 @@ func (c *Controller) status() types.Status {
 		return types.StatusDeleted
 	}
 
-	if c.deviceID != nil && *c.deviceID != 0 {
+	if c.deviceID != 0 {
 		if cached := c.get(); cached != nil {
 			dt := time.Now().Sub(cached.touched)
 			switch {
@@ -451,10 +443,9 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					stringify(value, ""),
 					dbc)
 
-				cid := uint32(id)
-				c.deviceID = &cid
+				c.deviceID = uint32(id)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(OID, ".2", cid))
+				objects = append(objects, catalog.NewObject2(OID, ".2", c.deviceID))
 			}
 		} else if value == "" {
 			if p := stringify(c.deviceID, ""); p != "" {
@@ -486,7 +477,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					dbc)
 			}
 
-			c.deviceID = nil
+			c.deviceID = 0
 			c.unconfigured = false
 			objects = append(objects, catalog.NewObject2(OID, ".2", ""))
 		}
@@ -532,7 +523,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			c.timezone = &tzs
 			c.unconfigured = false
 
-			if c.deviceID != nil {
+			if c.deviceID != 0 {
 				if cached := c.get(); cached != nil {
 					if cached.datetime != nil {
 						tz := time.Local
@@ -641,7 +632,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		}
 	}
 
-	if c.name == "" && (c.deviceID == nil || *c.deviceID == 0) {
+	if c.name == "" && c.deviceID == 0 {
 		if auth != nil {
 			if err := auth.CanDeleteController(c); err != nil {
 				return nil, err
@@ -730,14 +721,14 @@ func (c *Controller) serialize() ([]byte, error) {
 		return nil, nil
 	}
 
-	if c.name == "" && (c.deviceID == nil || *c.deviceID == 0) {
+	if c.name == "" && c.deviceID == 0 {
 		return nil, nil
 	}
 
 	record := struct {
 		OID      catalog.OID           `json:"OID,omitempty"`
 		Name     string                `json:"name,omitempty"`
-		DeviceID *uint32               `json:"device-id,omitempty"`
+		DeviceID uint32                `json:"device-id,omitempty"`
 		Address  *core.Address         `json:"address,omitempty"`
 		Doors    map[uint8]catalog.OID `json:"doors"`
 		TimeZone *string               `json:"timezone,omitempty"`
@@ -765,7 +756,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 	record := struct {
 		OID      catalog.OID      `json:"OID"`
 		Name     string           `json:"name,omitempty"`
-		DeviceID *uint32          `json:"device-id,omitempty"`
+		DeviceID uint32           `json:"device-id,omitempty"`
 		Address  *core.Address    `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
 		TimeZone *string          `json:"timezone,omitempty"`
