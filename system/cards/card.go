@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
@@ -16,7 +17,7 @@ import (
 
 type Card struct {
 	OID    catalog.OID
-	Name   *types.Name
+	Name   string
 	Card   *types.Card
 	From   *types.Date
 	To     *types.Date
@@ -31,12 +32,12 @@ const BLANK = "'blank'"
 var created = types.DateTimeNow()
 
 func (c Card) String() string {
-	name := "-"
-	number := "-"
-
-	if c.Name != nil {
-		name = fmt.Sprintf("%v", c.Name)
+	name := strings.TrimSpace(c.Name)
+	if name == "" {
+		name = "-"
 	}
+
+	number := "-"
 
 	if c.Card != nil {
 		number = fmt.Sprintf("%v", c.Card)
@@ -47,7 +48,7 @@ func (c Card) String() string {
 
 func (c *Card) IsValid() bool {
 	if c != nil {
-		if c.Name != nil && *c.Name != "" {
+		if strings.TrimSpace(c.Name) != "" {
 			return true
 		}
 
@@ -190,8 +191,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				stringify(value, ""),
 				dbc)
 
-			v := types.Name(value)
-			c.Name = &v
+			c.Name = strings.TrimSpace(value)
 			objects = append(objects, catalog.NewObject2(c.OID, CardName, stringify(c.Name, "")))
 		}
 
@@ -324,7 +324,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		}
 	}
 
-	if (c.Name == nil || *c.Name == "") && (c.Card == nil || *c.Card == 0) {
+	if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
 		if auth != nil {
 			if err := auth.CanDeleteCard(clone); err != nil {
 				return nil, err
@@ -375,11 +375,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 }
 
 func (c Card) GetName() string {
-	if c.Name != nil {
-		return string(*c.Name)
-	}
-
-	return ""
+	return strings.TrimSpace(c.Name)
 }
 
 func (c Card) serialize() ([]byte, error) {
@@ -393,14 +389,11 @@ func (c Card) serialize() ([]byte, error) {
 		Created string        `json:"created"`
 	}{
 		OID:     c.OID,
+		Name:    strings.TrimSpace(c.Name),
 		From:    c.From,
 		To:      c.To,
 		Groups:  []catalog.OID{},
 		Created: c.created.Format("2006-01-02 15:04:05"),
-	}
-
-	if c.Name != nil {
-		record.Name = fmt.Sprintf("%v", c.Name)
 	}
 
 	if c.Card != nil {
@@ -439,14 +432,11 @@ func (c *Card) deserialize(bytes []byte) error {
 	}
 
 	c.OID = record.OID
+	c.Name = strings.TrimSpace(record.Name)
 	c.From = record.From
 	c.To = record.To
 	c.Groups = map[catalog.OID]bool{}
 	c.created = record.Created
-
-	if record.Name != "" {
-		c.Name = (*types.Name)(&record.Name)
-	}
 
 	if record.Card != 0 {
 		c.Card = (*types.Card)(&record.Card)
@@ -460,7 +450,6 @@ func (c *Card) deserialize(bytes []byte) error {
 }
 
 func (c *Card) clone() *Card {
-	name := c.Name.Copy()
 	card := c.Card.Copy()
 	var groups = map[catalog.OID]bool{}
 
@@ -470,7 +459,7 @@ func (c *Card) clone() *Card {
 
 	replicant := &Card{
 		OID:    c.OID,
-		Name:   name,
+		Name:   c.Name,
 		Card:   card,
 		From:   c.From,
 		To:     c.To,

@@ -111,7 +111,6 @@ func group(id string) types.Group {
 }
 
 func makeCard(oid catalog.OID, name string, card uint32, groups ...string) Card {
-	n := types.Name(name)
 	var c *types.Card
 
 	if card > 0 {
@@ -121,7 +120,7 @@ func makeCard(oid catalog.OID, name string, card uint32, groups ...string) Card 
 
 	cardholder := Card{
 		OID:    oid,
-		Name:   &n,
+		Name:   name,
 		Card:   c,
 		From:   date("2021-01-02"),
 		To:     date("2021-12-30"),
