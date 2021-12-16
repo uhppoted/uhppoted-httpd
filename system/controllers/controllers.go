@@ -25,7 +25,6 @@ import (
 
 type Controllers struct {
 	controllers []*Controller
-	lan         *LAN
 }
 
 const BLANK = "'blank'"
@@ -67,14 +66,6 @@ func (cc *Controllers) List() []Controller {
 	}
 
 	return list
-}
-
-func (cc *Controllers) Init(interfaces interfaces.Interfaces) {
-	if v, ok := interfaces.LAN(); ok {
-		cc.lan = &LAN{
-			v,
-		}
-	}
 }
 
 func (cc *Controllers) Load(blob json.RawMessage) error {
@@ -193,9 +184,19 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value stri
 	return objects, nil
 }
 
-func (cc *Controllers) Refresh() {
+func (cc *Controllers) Refresh(i interfaces.Interfaces) {
+	var lan LAN
+
+	if v, ok := i.LAN(); !ok {
+		return
+	} else {
+		lan = LAN{
+			v,
+		}
+	}
+
 	// ... add 'found' controllers to list
-	if found, err := cc.lan.search(cc.controllers); err != nil {
+	if found, err := lan.search(cc.controllers); err != nil {
 		warn(err)
 	} else {
 	loop:
@@ -221,7 +222,7 @@ func (cc *Controllers) Refresh() {
 	}
 
 	// ... refresh
-	cc.lan.refresh(cc.controllers)
+	lan.refresh(cc.controllers)
 
 	for _, c := range cc.controllers {
 		c.refreshed()
@@ -234,11 +235,7 @@ func (cc *Controllers) Clone() Controllers {
 
 	shadow := Controllers{
 		controllers: make([]*Controller, len(cc.controllers)),
-		lan:         &LAN{},
 	}
-
-	lan := cc.lan.clone()
-	shadow.lan = &lan
 
 	for k, v := range cc.controllers {
 		shadow.controllers[k] = v.clone()
@@ -323,17 +320,47 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 	return os.Rename(tmp.Name(), file)
 }
 
-func (cc *Controllers) Sync() {
-	cc.lan.synchTime(cc.controllers)
-	cc.lan.synchDoors(cc.controllers)
+func (cc *Controllers) Sync(i interfaces.Interfaces) {
+	var lan LAN
+
+	if v, ok := i.LAN(); !ok {
+		return
+	} else {
+		lan = LAN{
+			v,
+		}
+	}
+
+	lan.synchTime(cc.controllers)
+	lan.synchDoors(cc.controllers)
 }
 
-func (cc *Controllers) CompareACL(permissions acl.ACL) error {
-	return cc.lan.compare(cc.controllers, permissions)
+func (cc *Controllers) CompareACL(i interfaces.Interfaces, permissions acl.ACL) error {
+	var lan LAN
+
+	if v, ok := i.LAN(); !ok {
+		return fmt.Errorf("No active LAN subsystem")
+	} else {
+		lan = LAN{
+			v,
+		}
+	}
+
+	return lan.compare(cc.controllers, permissions)
 }
 
-func (cc *Controllers) UpdateACL(permissions acl.ACL) error {
-	return cc.lan.update(cc.controllers, permissions)
+func (cc *Controllers) UpdateACL(i interfaces.Interfaces, permissions acl.ACL) error {
+	var lan LAN
+
+	if v, ok := i.LAN(); !ok {
+		return fmt.Errorf("No active LAN subsystem")
+	} else {
+		lan = LAN{
+			v,
+		}
+	}
+
+	return lan.update(cc.controllers, permissions)
 }
 
 func (cc *Controllers) Validate() error {

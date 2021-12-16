@@ -14,14 +14,14 @@ func UpdateACL() {
 	if acl, err := permissions(); err != nil {
 		warn(err)
 	} else {
-		sys.controllers.UpdateACL(acl)
+		sys.controllers.UpdateACL(sys.interfaces.Interfaces, acl)
 	}
 }
 
 func CompareACL() {
 	if acl, err := permissions(); err != nil {
 		warn(err)
-	} else if err := sys.controllers.CompareACL(acl); err != nil {
+	} else if err := sys.controllers.CompareACL(sys.interfaces.Interfaces, acl); err != nil {
 		warn(err)
 	}
 }

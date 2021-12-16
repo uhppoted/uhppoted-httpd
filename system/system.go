@@ -236,8 +236,6 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	}
 	sys.debug = debug
 
-	sys.controllers.Init(sys.interfaces.Interfaces)
-
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
 		cfg.HTTPD.System.Windows.Uncertain,
 		cfg.HTTPD.System.Windows.Systime,
@@ -306,7 +304,7 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			s.controllers.Refresh()
+			s.controllers.Refresh(sys.interfaces.Interfaces)
 		},
 	})
 
@@ -333,7 +331,7 @@ func (s *system) updated() {
 	s.taskQ.Add(Task{
 		f: func() {
 			info("Updating controllers from configuration")
-			sys.controllers.Sync()
+			sys.controllers.Sync(sys.interfaces.Interfaces)
 
 			UpdateACL()
 		},
