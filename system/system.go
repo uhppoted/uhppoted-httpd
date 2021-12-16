@@ -241,12 +241,13 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		cfg.HTTPD.System.Windows.Systime,
 		cfg.HTTPD.System.Windows.CacheExpiry)
 
-	//	sys.controllers.Print()
-	//	sys.doors.Print()
-	//	sys.groups.Print()
-	//	sys.cards.Print()
-	//	sys.events.Print()
-	//	sys.logs.Print()
+	// sys.interfaces.Print()
+	// sys.controllers.Print()
+	// sys.doors.Print()
+	// sys.groups.Print()
+	// sys.cards.Print()
+	// sys.events.Print()
+	// sys.logs.Print()
 
 	go func() {
 		time.Sleep(2500 * time.Millisecond)

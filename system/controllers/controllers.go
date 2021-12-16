@@ -148,8 +148,15 @@ func (cc *Controllers) Sweep(retention time.Duration) {
 	}
 }
 
-func (cc *Controllers) Print() {
-	if b, err := json.MarshalIndent(cc, "", "  "); err == nil {
+func (cc Controllers) Print() {
+	serializable := []json.RawMessage{}
+	for _, c := range cc.controllers {
+		if bytes, err := c.serialize(); err == nil && bytes != nil {
+			serializable = append(serializable, bytes)
+		}
+	}
+
+	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- CONTROLLERS\n%s\n", string(b))
 	}
 }

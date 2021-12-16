@@ -150,7 +150,16 @@ func (cc *Cards) Validate() error {
 }
 
 func (cc *Cards) Print() {
-	if b, err := json.MarshalIndent(cc.cards, "", "  "); err == nil {
+	serializable := []json.RawMessage{}
+	for _, c := range cc.cards {
+		if c.IsValid() && !c.IsDeleted() {
+			if record, err := c.serialize(); err == nil && record != nil {
+				serializable = append(serializable, record)
+			}
+		}
+	}
+
+	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- CARDS\n%s\n", string(b))
 	}
 }

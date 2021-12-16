@@ -22,8 +22,8 @@
 ### IN PROGRESS
 
 - [ ] Genericize load/save
-      - [ ] Hide internal arrays
-            - [ ] Fix all the Print() implementations
+      - [x] Hide internal arrays
+            - [x] Fix all the Print()
       - [ ] Put subsystems into list for iterating
  
 - [ ] OIDs:

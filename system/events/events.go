@@ -98,7 +98,19 @@ func (ee *Events) Save() (json.RawMessage, error) {
 }
 
 func (ee *Events) Print() {
-	if b, err := json.MarshalIndent(&ee.events, "", "  "); err == nil {
+	serializable := []json.RawMessage{}
+	ee.events.Range(func(k, v interface{}) bool {
+		e := v.(Event)
+		if e.IsValid() && !e.IsDeleted() {
+			if record, err := e.serialize(); err == nil && record != nil {
+				serializable = append(serializable, record)
+			}
+		}
+
+		return true
+	})
+
+	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- EVENTS\n%s\n", string(b))
 	}
 }

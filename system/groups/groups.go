@@ -80,7 +80,16 @@ func (gg Groups) Save() (json.RawMessage, error) {
 }
 
 func (gg Groups) Print() {
-	if b, err := json.MarshalIndent(gg.groups, "", "  "); err == nil {
+	serializable := []json.RawMessage{}
+	for _, g := range gg.groups {
+		if g.IsValid() && !g.IsDeleted() {
+			if record, err := g.serialize(); err == nil && record != nil {
+				serializable = append(serializable, record)
+			}
+		}
+	}
+
+	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- GROUPS\n%s\n", string(b))
 	}
 }

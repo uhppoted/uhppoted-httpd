@@ -86,7 +86,16 @@ func (ii Interfaces) Save() (json.RawMessage, error) {
 }
 
 func (ii Interfaces) Print() {
-	if b, err := json.MarshalIndent(ii, "", "  "); err == nil {
+	serializable := []json.RawMessage{}
+	for _, l := range ii.lans {
+		if l.IsValid() && !l.IsDeleted() {
+			if record, err := l.serialize(); err == nil && record != nil {
+				serializable = append(serializable, record)
+			}
+		}
+	}
+
+	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- INTERFACES\n%s\n", string(b))
 	}
 }

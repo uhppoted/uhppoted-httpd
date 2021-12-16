@@ -123,7 +123,16 @@ func (ll Logs) Save() (json.RawMessage, error) {
 }
 
 func (ll Logs) Print() {
-	if b, err := json.MarshalIndent(ll.logs, "", "  "); err == nil {
+	serializable := []json.RawMessage{}
+	for _, l := range ll.logs {
+		if l.IsValid() && !l.IsDeleted() {
+			if record, err := l.serialize(); err == nil && record != nil {
+				serializable = append(serializable, record)
+			}
+		}
+	}
+
+	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- LOGS\n%s\n", string(b))
 	}
 }

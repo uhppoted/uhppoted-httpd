@@ -146,7 +146,16 @@ func (dd Doors) Find(name string) (Door, bool) {
 }
 
 func (dd Doors) Print() {
-	if b, err := json.MarshalIndent(dd.doors, "", "  "); err == nil {
+	serializable := []json.RawMessage{}
+	for _, d := range dd.doors {
+		if d.IsValid() && !d.IsDeleted() {
+			if record, err := d.serialize(); err == nil && record != nil {
+				serializable = append(serializable, record)
+			}
+		}
+	}
+
+	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- DOORS\n%s\n", string(b))
 	}
 }
