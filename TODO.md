@@ -21,10 +21,10 @@
 
 ### IN PROGRESS
 
-- [ ] Genericize load/save
+- [x] Genericize load/save
       - [x] Hide internal arrays
             - [x] Fix all the Print()
-      - [ ] Put subsystems into list for iterating
+      - [x] Put subsystems into list for iterating
  
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc

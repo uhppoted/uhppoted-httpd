@@ -190,32 +190,24 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	sys.events.file = cfg.HTTPD.System.Events
 	sys.logs.file = cfg.HTTPD.System.Logs
 
-	if err := load(sys.interfaces.file, sys.interfaces.tag, &sys.interfaces); err != nil {
-		return err
+	list := []struct {
+		serializable
+		file string
+		tag  string
+	}{
+		{&sys.interfaces, sys.interfaces.file, sys.interfaces.tag},
+		{&sys.controllers, sys.controllers.file, sys.controllers.tag},
+		{&sys.doors, sys.doors.file, sys.doors.tag},
+		{&sys.cards, sys.cards.file, sys.cards.tag},
+		{&sys.groups, sys.groups.file, sys.groups.tag},
+		{&sys.events, sys.events.file, sys.events.tag},
+		{&sys.logs, sys.logs.file, sys.logs.tag},
 	}
 
-	if err := load(sys.controllers.file, sys.controllers.tag, &sys.controllers); err != nil {
-		return err
-	}
-
-	if err := load(sys.doors.file, sys.doors.tag, &sys.doors); err != nil {
-		return err
-	}
-
-	if err := load(sys.cards.file, sys.cards.tag, &sys.cards); err != nil {
-		return err
-	}
-
-	if err := load(sys.groups.file, sys.groups.tag, &sys.groups); err != nil {
-		return err
-	}
-
-	if err := load(sys.events.file, sys.events.tag, &sys.events); err != nil {
-		return err
-	}
-
-	if err := load(sys.logs.file, sys.logs.tag, &sys.logs); err != nil {
-		return err
+	for _, v := range list {
+		if err := load(v.file, v.tag, v.serializable); err != nil {
+			return err
+		}
 	}
 
 	kb := ast.NewKnowledgeLibrary()
@@ -241,13 +233,9 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		cfg.HTTPD.System.Windows.Systime,
 		cfg.HTTPD.System.Windows.CacheExpiry)
 
-	// sys.interfaces.Print()
-	// sys.controllers.Print()
-	// sys.doors.Print()
-	// sys.groups.Print()
-	// sys.cards.Print()
-	// sys.events.Print()
-	// sys.logs.Print()
+	// for _, v := range list {
+	// 	v.Print()
+	// }
 
 	go func() {
 		time.Sleep(2500 * time.Millisecond)
