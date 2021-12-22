@@ -9,6 +9,18 @@ import * as logs from './logs.js'
 import { DB } from './db.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
+class Warning extends Error {
+  constructor (...params) {
+    super(...params)
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, Warning)
+    }
+
+    this.name = 'Warning'
+  }
+}
+
 HTMLTableSectionElement.prototype.sort = function (cb) {
   Array
     .prototype
@@ -20,43 +32,44 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
 
 const pages = {
   system: {
-    get: '/system',
+    get: ['/system'],
     url: '/system',
     refreshed: system.refreshed
   },
 
   controllers: {
+    get: ['/interfaces', '/controllers'],
     url: '/controllers',
     refreshed: system.refreshed
   },
 
   doors: {
-    get: '/doors',
+    get: ['/doors'],
     url: '/doors',
     refreshed: doors.refreshed
   },
 
   cards: {
-    get: '/cards',
+    get: ['/cards'],
     url: '/cards',
     refreshed: cards.refreshed
   },
 
   groups: {
-    get: '/groups',
+    get: ['/groups'],
     url: '/groups',
     refreshed: groups.refreshed
   },
 
   events: {
-    get: '/events?range=' + encodeURIComponent('0,15'),
+    get: ['/events?range=' + encodeURIComponent('0,15')],
     url: '/events',
     recordset: DB.events(),
     refreshed: events.refreshed
   },
 
   logs: {
-    get: '/logs?range=' + encodeURIComponent('0,15'),
+    get: ['/logs?range=' + encodeURIComponent('0,15')],
     url: '/logs',
     recordset: DB.logs(),
     refreshed: logs.refreshed
@@ -482,33 +495,45 @@ export function percolate (oid, f) {
   }
 }
 
-function get (url, refreshed) {
-  getAsJSON(url)
-    .then(response => {
-      unbusy()
+function get (urls, refreshed) {
+  const promises = []
 
-      if (response.redirected) {
-        window.location = response.url
-      } else {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              if (object && object.system && object.system.objects) {
-                DB.updated('objects', object.system.objects)
-              }
+  urls.forEach(url => {
+    promises.push(new Promise((resolve, reject) => {
+      getAsJSON(url)
+        .then(response => {
+          unbusy()
 
-              refreshed()
+          if (response.redirected) {
+            window.location = response.url
+          } else if (response.status === 200) {
+            return response.json()
+          } else {
+            response.text().then(message => {
+              reject(new Warning(message))
             })
-            break
+          }
+        })
+        .then((resolved, rejected) => {
+          if (resolved && resolved.system && resolved.system.objects) {
+            DB.updated('objects', resolved.system.objects)
+            resolve()
+          }
+        })
+    }))
+  })
 
-          default:
-            response.text().then(message => { warning(message) })
-        }
-      }
-    })
-    .catch(function (err) {
+  Promise.all(promises).then((resolved, rejected) => {
+    if (resolved) {
+      refreshed()
+    }
+  }).catch(err => {
+    if (err instanceof Warning) {
+      warning(err.message)
+    } else {
       console.error(err)
-    })
+    }
+  })
 }
 
 function rollback (recordset, row, refreshed) {
@@ -620,6 +645,9 @@ function getPage (tag) {
   switch (tag) {
     case 'system':
       return pages.system
+
+    case 'controllers':
+      return pages.controllers
 
     case 'doors':
       return pages.doors

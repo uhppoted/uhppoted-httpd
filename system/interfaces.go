@@ -7,6 +7,18 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
+func Interfaces() interface{} {
+	sys.RLock()
+
+	defer sys.RUnlock()
+
+	return struct {
+		Objects []interface{} `json:"objects"`
+	}{
+		Objects: sys.interfaces.AsObjects(),
+	}
+}
+
 func UpdateInterfaces(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()
 

@@ -18,6 +18,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd/doors"
 	"github.com/uhppoted/uhppoted-httpd/httpd/events"
 	"github.com/uhppoted/uhppoted-httpd/httpd/groups"
+	"github.com/uhppoted/uhppoted-httpd/httpd/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/httpd/logs"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
@@ -35,7 +36,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		path = "/" + path
 	}
 
-	// authorise unless images,CSS,etc
+	// Authorise unless images,CSS,etc
 	prefixes := []string{"/images/", "/css/", "/javascript/"}
 	files := []string{"/manifest.json"}
 	authorised := false
@@ -85,7 +86,11 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch path {
-	case "/system":
+	case "/interfaces":
+		interfaces.Fetch(w, r, d.timeout)
+		return
+
+	case "/controllers":
 		controllers.Fetch(w, r, d.timeout)
 		return
 

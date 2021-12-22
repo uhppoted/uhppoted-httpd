@@ -7,9 +7,12 @@
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [x] Rework 'update controllers after LAN edit' hack
-      - [ ] GET from /interfaces and /controllers
+      - [x] GET from /interfaces and /controllers
+      - [ ] Remove JS `system` tag stuff
+      - [ ] Rename 'system' in GET response to e.g. 'objects'
       - [ ] Commonalise httpd handlers
+      - [ ] (?) Automatically cancel contexts on CTRL-C (takes a while to shut down otherwise)
+      - [ ] GET /system, /doors , /cards, etc all return everything. Need finer grained access 
 
 - [ ] Fix DateTime mess
       - [ ] Do the 'uncertain/pending' thing for timezones
@@ -21,11 +24,6 @@
 
 ### IN PROGRESS
 
-- [x] Genericize load/save
-      - [x] Hide internal arrays
-            - [x] Fix all the Print()
-      - [x] Put subsystems into list for iterating
- 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
       - [ ] GetV => GetBool, GetInt, etc
@@ -146,7 +144,6 @@
         -- use hash of DB to identify changes
       
 - [ ] Security
-      - GET /system, /doors , /cards, etc all return everything. Need finer grained access 
       - Templates have access to everything - need finer grained access 
 
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
