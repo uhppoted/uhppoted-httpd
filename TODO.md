@@ -8,11 +8,11 @@
 
 - [ ] Separate LAN and controllers
       - [x] GET from /interfaces and /controllers
-      - [ ] Remove JS `system` tag stuff
+      - [x] Replace `system` page with `controllers`
+      - [ ] GET /system, /doors , /cards, etc all return everything. Need finer grained access 
       - [ ] Rename 'system' in GET response to e.g. 'objects'
       - [ ] Commonalise httpd handlers
       - [ ] (?) Automatically cancel contexts on CTRL-C (takes a while to shut down otherwise)
-      - [ ] GET /system, /doors , /cards, etc all return everything. Need finer grained access 
 
 - [ ] Fix DateTime mess
       - [ ] Do the 'uncertain/pending' thing for timezones

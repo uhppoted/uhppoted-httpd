@@ -31,12 +31,6 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
 }
 
 const pages = {
-  system: {
-    get: ['/system'],
-    url: '/system',
-    refreshed: system.refreshed
-  },
-
   controllers: {
     get: ['/interfaces', '/controllers'],
     url: '/controllers',
@@ -643,9 +637,6 @@ function post (page, records, reset, cleanup, refreshed) {
 
 function getPage (tag) {
   switch (tag) {
-    case 'system':
-      return pages.system
-
     case 'controllers':
       return pages.controllers
 
