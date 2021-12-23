@@ -54,11 +54,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 	list := squoosh(dbc.Objects())
 
-	return struct {
-		Objects []catalog.Object `json:"objects,omitempty"`
-	}{
-		Objects: list,
-	}, nil
+	return list, nil
 }
 
 func validate(c *controllers.Controllers) error {

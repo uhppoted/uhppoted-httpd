@@ -2,7 +2,6 @@ package system
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -50,9 +49,6 @@ func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 	sys.updated()
 
 	list := squoosh(dbc.Objects())
-	return struct {
-		Objects []catalog.Object `json:"objects,omitempty"`
-	}{
-		Objects: list,
-	}, nil
+
+	return list, nil
 }

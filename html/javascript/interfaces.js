@@ -206,8 +206,8 @@ function post (tag, records, reset, cleanup) {
         switch (response.status) {
           case 200:
             response.json().then(object => {
-              if (object && object.system && object.system.objects) {
-                DB.updated('objects', object.system.objects)
+              for (const k in object) {
+                DB.updated(k, object[k])
               }
 
               system.refreshed()

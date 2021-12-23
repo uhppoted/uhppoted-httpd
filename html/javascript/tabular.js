@@ -33,38 +33,38 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
 const pages = {
   controllers: {
     get: ['/interfaces', '/controllers', '/doors'],
-    url: '/controllers',
+    post: '/controllers',
     refreshed: system.refreshed
   },
 
   doors: {
     get: ['/doors', '/controllers'],
-    url: '/doors',
+    post: '/doors',
     refreshed: doors.refreshed
   },
 
   cards: {
     get: ['/cards', '/groups'],
-    url: '/cards',
+    post: '/cards',
     refreshed: cards.refreshed
   },
 
   groups: {
     get: ['/groups', '/doors'],
-    url: '/groups',
+    post: '/groups',
     refreshed: groups.refreshed
   },
 
   events: {
     get: ['/events?range=' + encodeURIComponent('0,15')],
-    url: '/events',
+    post: '/events',
     recordset: DB.events(),
     refreshed: events.refreshed
   },
 
   logs: {
     get: ['/logs?range=' + encodeURIComponent('0,15')],
-    url: '/logs',
+    post: '/logs',
     recordset: DB.logs(),
     refreshed: logs.refreshed
   }
@@ -597,7 +597,7 @@ function create (page) {
 function more (page) {
   if (page.recordset) {
     const N = page.recordset.size
-    const url = page.url + '?range=' + encodeURIComponent(`${N},+15`)
+    const url = page.post + '?range=' + encodeURIComponent(`${N},+15`)
 
     get(url, page.refreshed)
   }
@@ -606,7 +606,7 @@ function more (page) {
 function post (page, records, reset, cleanup, refreshed) {
   busy()
 
-  postAsJSON(page.url, { objects: records })
+  postAsJSON(page.post, { objects: records })
     .then(response => {
       if (response.redirected) {
         window.location = response.url
@@ -614,8 +614,8 @@ function post (page, records, reset, cleanup, refreshed) {
         switch (response.status) {
           case 200:
             response.json().then(object => {
-              if (object && object.system && object.system.objects) {
-                DB.updated('objects', object.system.objects)
+              for (const k in object) {
+                DB.updated(k, object[k])
               }
 
               page.refreshed()

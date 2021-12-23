@@ -78,9 +78,9 @@ func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, auth au
 		}
 
 		response := struct {
-			System interface{} `json:"system"`
+			Controllers interface{} `json:"controllers"`
 		}{
-			System: updated,
+			Controllers: updated,
 		}
 
 		b, err := json.Marshal(response)
@@ -129,12 +129,4 @@ func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, auth au
 			return
 		}
 	}
-
-	//	acl, err := db.ACL()
-	//	if err != nil {
-	//		warn(err)
-	//		return
-	//	}
-	//
-	//	system.Update(acl)
 }

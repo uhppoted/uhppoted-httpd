@@ -9,6 +9,7 @@
 - [ ] Separate LAN and controllers
       - [x] GET /system, /doors , /cards, etc all return everything. Need finer grained access 
       - [x] Rename 'system' in GET response to e.g. 'objects'
+      - [x] Rework POST to look like GET 
       - [ ] Commonalise httpd handlers
       - [ ] (?) Automatically cancel contexts on CTRL-C (takes a while to shut down otherwise)
 

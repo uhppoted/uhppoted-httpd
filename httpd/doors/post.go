@@ -78,9 +78,9 @@ func Post(w http.ResponseWriter, r *http.Request, timeout time.Duration, auth au
 		}
 
 		response := struct {
-			System interface{} `json:"system"`
+			Doors interface{} `json:"doors"`
 		}{
-			System: updated,
+			Doors: updated,
 		}
 
 		b, err := json.Marshal(response)
