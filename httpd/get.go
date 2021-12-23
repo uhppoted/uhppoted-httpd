@@ -135,7 +135,6 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 	page := map[string]interface{}{}
 
 	page["context"] = context
-	page["system"] = system.System()
 	page["schema"] = system.Schema()
 
 	info, err := os.Stat(translation)

@@ -7,6 +7,18 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
+func Groups() interface{} {
+	sys.RLock()
+
+	defer sys.RUnlock()
+
+	return struct {
+		Objects []interface{} `json:"objects"`
+	}{
+		Objects: sys.groups.AsObjects(),
+	}
+}
+
 func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()
 	defer sys.Unlock()

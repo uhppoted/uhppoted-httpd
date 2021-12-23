@@ -32,25 +32,25 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
 
 const pages = {
   controllers: {
-    get: ['/interfaces', '/controllers'],
+    get: ['/interfaces', '/controllers', '/doors'],
     url: '/controllers',
     refreshed: system.refreshed
   },
 
   doors: {
-    get: ['/doors'],
+    get: ['/doors', '/controllers'],
     url: '/doors',
     refreshed: doors.refreshed
   },
 
   cards: {
-    get: ['/cards'],
+    get: ['/cards', '/groups'],
     url: '/cards',
     refreshed: cards.refreshed
   },
 
   groups: {
-    get: ['/groups'],
+    get: ['/groups', '/doors'],
     url: '/groups',
     refreshed: groups.refreshed
   },

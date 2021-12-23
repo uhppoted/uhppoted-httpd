@@ -260,25 +260,6 @@ func Schema() interface{} {
 	return catalog.GetSchema()
 }
 
-func System() interface{} {
-	sys.RLock()
-
-	defer sys.RUnlock()
-
-	objects := []interface{}{}
-	objects = append(objects, sys.interfaces.AsObjects()...)
-	objects = append(objects, sys.controllers.AsObjects()...)
-	objects = append(objects, sys.doors.AsObjects()...)
-	objects = append(objects, sys.cards.AsObjects()...)
-	objects = append(objects, sys.groups.AsObjects()...)
-
-	return struct {
-		Objects []interface{} `json:"objects"`
-	}{
-		Objects: objects,
-	}
-}
-
 func Logs(start, count int) []interface{} {
 	sys.RLock()
 	defer sys.RUnlock()

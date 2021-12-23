@@ -9,6 +9,18 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
+func Doors() interface{} {
+	sys.RLock()
+
+	defer sys.RUnlock()
+
+	return struct {
+		Objects []interface{} `json:"objects"`
+	}{
+		Objects: sys.doors.AsObjects(),
+	}
+}
+
 func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
 	sys.Lock()
 
