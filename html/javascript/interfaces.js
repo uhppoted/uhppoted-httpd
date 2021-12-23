@@ -1,4 +1,4 @@
-import { busy, unbusy, warning, postAsJSON } from './uhppoted.js'
+import { post, mark, unmark } from './tabular.js'
 import * as system from './system.js'
 import { DB } from './db.js'
 import { schema } from './schema.js'
@@ -103,7 +103,13 @@ export function commit (element) {
     unmark('modified', e, flag)
   })
 
-  post('interfaces', records, reset, cleanup)
+  const page = {
+    get: ['/interfaces'],
+    post: '/interfaces',
+    refreshed: system.refreshed
+  }
+
+  post(page, records, reset, cleanup)
 }
 
 function modified (oid) {
@@ -168,22 +174,6 @@ function update (element, value, status) {
   }
 }
 
-function mark (clazz, ...elements) {
-  elements.forEach(e => {
-    if (e) {
-      e.classList.add(clazz)
-    }
-  })
-}
-
-function unmark (clazz, ...elements) {
-  elements.forEach(e => {
-    if (e) {
-      e.classList.remove(clazz)
-    }
-  })
-}
-
 function percolate (oid) {
   let oidx = oid
   while (oidx) {
@@ -193,39 +183,4 @@ function percolate (oid) {
       modified(oidx)
     }
   }
-}
-
-function post (tag, records, reset, cleanup) {
-  busy()
-
-  postAsJSON('/interfaces', { objects: records })
-    .then(response => {
-      if (response.redirected) {
-        window.location = response.url
-      } else {
-        switch (response.status) {
-          case 200:
-            response.json().then(object => {
-              for (const k in object) {
-                DB.updated(k, object[k])
-              }
-
-              system.refreshed()
-            })
-            break
-
-          default:
-            reset()
-            response.text().then(message => { warning(message) })
-        }
-      }
-    })
-    .catch(function (err) {
-      reset()
-      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
-    })
-    .finally(() => {
-      cleanup()
-      unbusy()
-    })
 }

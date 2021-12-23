@@ -591,7 +591,7 @@ function create (page) {
   const reset = function () {}
   const cleanup = function () {}
 
-  post(page, records, reset, cleanup, page.refreshed)
+  post(page, records, reset, cleanup)
 }
 
 function more (page) {
@@ -603,7 +603,8 @@ function more (page) {
   }
 }
 
-function post (page, records, reset, cleanup, refreshed) {
+// TODO remove 'export' when interfaces has been migrated to tabular.js
+export function post (page, records, reset, cleanup) {
   busy()
 
   postAsJSON(page.post, { objects: records })
