@@ -509,8 +509,11 @@ function get (urls, refreshed) {
           }
         })
         .then((resolved, rejected) => {
-          if (resolved && resolved.system && resolved.system.objects) {
-            DB.updated('objects', resolved.system.objects)
+          if (resolved) {
+            for (const k in resolved) {
+              DB.updated(k, resolved[k])
+            }
+
             resolve()
           }
         })

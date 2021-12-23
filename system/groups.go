@@ -9,14 +9,11 @@ import (
 
 func Groups() interface{} {
 	sys.RLock()
-
 	defer sys.RUnlock()
 
-	return struct {
-		Objects []interface{} `json:"objects"`
-	}{
-		Objects: sys.groups.AsObjects(),
-	}
+	objects := sys.groups.AsObjects()
+
+	return objects
 }
 
 func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {

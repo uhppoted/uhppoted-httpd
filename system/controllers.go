@@ -12,14 +12,11 @@ import (
 
 func Controllers() interface{} {
 	sys.RLock()
-
 	defer sys.RUnlock()
 
-	return struct {
-		Objects []interface{} `json:"objects"`
-	}{
-		Objects: sys.controllers.AsObjects(),
-	}
+	objects := sys.controllers.AsObjects()
+
+	return objects
 }
 
 func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {

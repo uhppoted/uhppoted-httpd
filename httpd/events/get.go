@@ -64,18 +64,10 @@ func Fetch(w http.ResponseWriter, rq *http.Request, timeout time.Duration) {
 	var response interface{}
 
 	go func() {
-		events := system.Events(start, count)
-
 		response = struct {
-			System struct {
-				Objects []interface{} `json:"objects"`
-			} `json:"system"`
+			Events interface{} `json:"events"`
 		}{
-			System: struct {
-				Objects []interface{} `json:"objects"`
-			}{
-				Objects: events,
-			},
+			Events: system.Events(start, count),
 		}
 
 		cancel()

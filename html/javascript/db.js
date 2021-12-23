@@ -29,7 +29,13 @@ class DBC {
     this.updated = function (tag, recordset) {
       if (recordset) {
         switch (tag) {
-          case 'objects':
+          case 'interfaces':
+          case 'controllers':
+          case 'doors':
+          case 'cards':
+          case 'groups':
+          case 'events':
+          case 'logs':
             recordset.forEach(o => object(o))
             break
         }

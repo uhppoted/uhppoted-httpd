@@ -31,11 +31,10 @@ func Fetch(w http.ResponseWriter, r *http.Request, timeout time.Duration) {
 	var response interface{}
 
 	go func() {
-
 		response = struct {
-			System interface{} `json:"system"`
+			Groups interface{} `json:"groups"`
 		}{
-			System: system.Groups(),
+			Groups: system.Groups(),
 		}
 
 		cancel()

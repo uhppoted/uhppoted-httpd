@@ -9,14 +9,11 @@ import (
 
 func Interfaces() interface{} {
 	sys.RLock()
-
 	defer sys.RUnlock()
 
-	return struct {
-		Objects []interface{} `json:"objects"`
-	}{
-		Objects: sys.interfaces.AsObjects(),
-	}
+	objects := sys.interfaces.AsObjects()
+
+	return objects
 }
 
 func UpdateInterfaces(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
