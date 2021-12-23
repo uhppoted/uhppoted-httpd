@@ -3,6 +3,7 @@ package httpd
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -87,31 +88,35 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 
 	switch path {
 	case "/interfaces":
-		interfaces.Fetch(w, r, d.timeout)
+		d.fetch(w, r, interfaces.Get)
 		return
 
 	case "/controllers":
-		controllers.Fetch(w, r, d.timeout)
+		d.fetch(w, r, controllers.Get)
 		return
 
 	case "/doors":
-		doors.Fetch(w, r, d.timeout)
+		d.fetch(w, r, doors.Get)
 		return
 
 	case "/cards":
-		cards.Fetch(w, r, d.timeout)
+		d.fetch(w, r, cards.Get)
 		return
 
 	case "/groups":
-		groups.Fetch(w, r, d.timeout)
+		d.fetch(w, r, groups.Get)
 		return
 
 	case "/events":
-		events.Fetch(w, r, d.timeout)
+		d.fetch(w, r, func() interface{} {
+			return events.Get(r)
+		})
 		return
 
 	case "/logs":
-		logs.Fetch(w, r, d.timeout)
+		d.fetch(w, r, func() interface{} {
+			return logs.Get(r)
+		})
 		return
 	}
 
@@ -196,5 +201,56 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 		gz.Close()
 	} else {
 		w.Write(b.Bytes())
+	}
+}
+
+func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, f func() interface{}) {
+	ctx, cancel := context.WithTimeout(context.Background(), d.timeout)
+
+	defer cancel()
+
+	acceptsGzip := false
+
+	for k, h := range r.Header {
+		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
+			for _, v := range h {
+				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
+					acceptsGzip = true
+				}
+			}
+		}
+	}
+
+	var response interface{}
+
+	go func() {
+		response = f()
+		cancel()
+	}()
+
+	<-ctx.Done()
+
+	if err := ctx.Err(); err != context.Canceled {
+		warn(err)
+		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
+		return
+	}
+
+	b, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Error generating response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if acceptsGzip && len(b) > GZIP_MINIMUM {
+		w.Header().Set("Content-Encoding", "gzip")
+
+		gz := gzip.NewWriter(w)
+		gz.Write(b)
+		gz.Close()
+	} else {
+		w.Write(b)
 	}
 }

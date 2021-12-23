@@ -3,10 +3,19 @@ package interfaces
 import (
 	"log"
 
+	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 const GZIP_MINIMUM = 16384
+
+func Get() interface{} {
+	return struct {
+		Interfaces interface{} `json:"interfaces"`
+	}{
+		Interfaces: system.Interfaces(),
+	}
+}
 
 func warn(err error) {
 	switch v := err.(type) {
