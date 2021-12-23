@@ -1,5 +1,4 @@
 import { post, mark, unmark } from './tabular.js'
-import * as system from './system.js'
 import { DB } from './db.js'
 import { schema } from './schema.js'
 
@@ -106,7 +105,7 @@ export function commit (element) {
   const page = {
     get: ['/interfaces'],
     post: '/interfaces',
-    refreshed: system.refreshed
+    refreshed: refreshed
   }
 
   post(page, records, reset, cleanup)

@@ -1,4 +1,3 @@
-import * as system from './system.js'
 import * as LAN from './interfaces.js'
 import * as controllers from './controllers.js'
 import * as doors from './doors.js'
@@ -34,7 +33,10 @@ const pages = {
   controllers: {
     get: ['/interfaces', '/controllers', '/doors'],
     post: '/controllers',
-    refreshed: system.refreshed
+    refreshed: function () {
+      LAN.refreshed()
+      controllers.refreshed()
+    }
   },
 
   doors: {
@@ -250,7 +252,10 @@ export function onRollbackAll (tag, event) {
 
   switch (tag) {
     case 'controllers':
-      f('controllers', 'controllers', system.refreshed)
+      f('controllers', 'controllers', function () {
+        LAN.refreshed()
+        controllers.refreshed()
+      })
       break
 
     case 'doors':
@@ -603,7 +608,7 @@ function more (page) {
   }
 }
 
-// TODO remove 'export' when interfaces has been migrated to tabular.js
+// NOTE: exported only for use by interfaces
 export function post (page, records, reset, cleanup) {
   busy()
 
