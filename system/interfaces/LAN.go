@@ -244,7 +244,6 @@ func (l *LAN) api(controllers []Controller) *uhppoted.UHPPOTED {
 				Name:     name,
 				DeviceID: id,
 				Address:  addr,
-				Rollover: 100000,
 				Doors:    []string{},
 				TimeZone: time.Local,
 			})

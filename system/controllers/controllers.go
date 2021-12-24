@@ -269,7 +269,6 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 				Address:  nil,
 				Doors:    []string{"", "", "", ""},
 				TimeZone: "",
-				Rollover: 100000,
 			}
 
 			if c.IP != nil {
