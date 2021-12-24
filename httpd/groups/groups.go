@@ -1,13 +1,9 @@
 package groups
 
 import (
-	"log"
-
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
-
-const GZIP_MINIMUM = 16384
 
 func Get() interface{} {
 	return struct {
@@ -17,12 +13,15 @@ func Get() interface{} {
 	}
 }
 
-func warn(err error) {
-	switch v := err.(type) {
-	case *types.HttpdError:
-		log.Printf("%-5s %v", "WARN", v.Detail)
-
-	default:
-		log.Printf("%-5s %v", "WARN", v)
+func Post(body map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+	updated, err := system.UpdateGroups(body, auth)
+	if err != nil {
+		return nil, err
 	}
+
+	return struct {
+		Groups interface{} `json:"groups"`
+	}{
+		Groups: updated,
+	}, nil
 }
