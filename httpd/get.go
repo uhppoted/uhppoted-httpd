@@ -36,8 +36,9 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "internal system error", http.StatusInternalServerError)
 		} else {
 			d.fetch(w, r, handler.get)
-			return
 		}
+
+		return
 	}
 
 	// ... GET <file>
@@ -183,6 +184,25 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 }
 
 func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, f func(*http.Request) interface{}) {
+	// ... authenticated and authorised?
+	if uid, role, ok := d.authenticated(r); !ok {
+		warn(fmt.Errorf("Unauthenticated GET request"))
+		http.Redirect(w, r, "/login.html", http.StatusFound)
+		return
+	} else if !d.authorisedX(uid, role, r.URL.Path) {
+		// Returns empty JSON object if not authorised for the resource because this request may be
+		// a legitimate part of the user interface.
+		if b, err := json.Marshal(struct{}{}); err != nil {
+			http.Error(w, "Error generating response", http.StatusInternalServerError)
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(b)
+		}
+
+		return
+	}
+
+	// ... ok
 	ctx, cancel := context.WithTimeout(context.Background(), d.timeout)
 
 	defer cancel()

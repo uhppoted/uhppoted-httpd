@@ -128,6 +128,48 @@ func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &cookie)
 }
 
+func (b *Basic) Authenticated(r *http.Request) (string, string, bool) {
+	cookie, err := r.Cookie(SessionCookie)
+	if err != nil {
+		warn(fmt.Errorf("No JWT cookie in request"))
+		return "", "", false
+	}
+
+	uid, role, err := b.auth.Authenticated(cookie.Value)
+	if err != nil {
+		warn(err)
+		return "", "", false
+	}
+
+	session, err := b.session(r)
+	if err != nil {
+		warn(err)
+		return "", "", false
+	}
+
+	if session == nil {
+		warn(fmt.Errorf("No extant session for request"))
+		return "", "", false
+	}
+
+	session.touched = time.Now()
+
+	return uid, role, true
+}
+
+func (b *Basic) AuthorisedX(uid, role, path string) error {
+	if path == "/login.html" {
+		return nil
+	}
+
+	if path == "/unauthorized.html" {
+		return nil
+	}
+
+	return b.auth.AuthorisedX(uid, role, path)
+
+}
+
 func (b *Basic) Authorized(w http.ResponseWriter, r *http.Request, path string) (string, string, bool) {
 	uid, role, ok := b.authorized(r, path)
 	if !ok {

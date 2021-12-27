@@ -16,6 +16,8 @@ type IAuth interface {
 	Authorize(uid, pwd string, sessionId uuid.UUID) (string, error)
 	Validate(uid, pwd string) error
 	Verify(tokenType TokenType, token string) error
+	Authenticated(token string) (string, string, error)
+	AuthorisedX(uid, role, resource string) error
 	Authorized(token, resource string) (string, string, error)
 	GetLoginId(token string) (*uuid.UUID, error)
 	GetSessionId(token string) (*uuid.UUID, error)

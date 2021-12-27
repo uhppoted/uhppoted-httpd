@@ -7,9 +7,11 @@
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [ ] Return empty list for GET <objects> if not authorised
-            - [ ] Include GET/POST in auth request
-            - [ ] (?) Lift `unauthorised` handling out of authorised
+      - [x] Return empty list for GET <objects> if not authorised
+      - [ ] Add fine-grained auth to GET requests
+      - [ ] Include GET/POST in auth request
+      - [ ] Homogenize `authorised` and `authorisedX`
+      - [ ] (?) Lift `unauthorised` handling out of authorised
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 
 - [ ] Fix DateTime mess

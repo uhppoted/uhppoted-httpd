@@ -218,6 +218,19 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 	d.auth.Authenticate(w, r)
 }
 
+func (d *dispatcher) authenticated(r *http.Request) (string, string, bool) {
+	return d.auth.Authenticated(r)
+}
+
+func (d *dispatcher) authorisedX(uid, role, path string) bool {
+	if err := d.auth.AuthorisedX(uid, role, path); err != nil {
+		warn(err)
+		return false
+	}
+
+	return true
+}
+
 func (d *dispatcher) authorized(w http.ResponseWriter, r *http.Request, path string) (string, string, bool) {
 	return d.auth.Authorized(w, r, path)
 }
