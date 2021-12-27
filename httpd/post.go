@@ -9,36 +9,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/httpd/cards"
-	"github.com/uhppoted/uhppoted-httpd/httpd/controllers"
-	"github.com/uhppoted/uhppoted-httpd/httpd/doors"
-	"github.com/uhppoted/uhppoted-httpd/httpd/groups"
-	"github.com/uhppoted/uhppoted-httpd/httpd/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
-
-func (d *dispatcher) vtable(path string) (string, string, func(map[string]interface{}, auth.OpAuth) (interface{}, error)) {
-	switch path {
-	case "/interfaces":
-		return "system", d.grule.system, interfaces.Post
-
-	case "/controllers":
-		return "system", d.grule.system, controllers.Post
-
-	case "/doors":
-		return "doors", d.grule.doors, doors.Post
-
-	case "/cards":
-		return "cards", d.grule.cards, cards.Post
-
-	case "/groups":
-		return "groups", d.grule.groups, groups.Post
-	}
-
-	return "", "", nil
-}
 
 func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
@@ -69,13 +42,15 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		"/doors",
 		"/cards",
 		"/groups":
-		tag, rules, f := d.vtable(path)
-		if auth, err := NewAuthorizator(uid, role, tag, rules); err != nil {
+		if handler := d.vtable(path); handler == nil || handler.post == nil {
+			warn(fmt.Errorf("No vtable entry for %v", path))
+			http.Error(w, "internal system error", http.StatusInternalServerError)
+		} else if auth, err := NewAuthorizator(uid, role, handler.tag, handler.rules); err != nil {
 			warn(err)
 			http.Error(w, "internal system error", http.StatusInternalServerError)
 		} else {
 			d.dispatch(w, r, func(m map[string]interface{}) (interface{}, error) {
-				return f(m, auth)
+				return handler.post(m, auth)
 			})
 		}
 		return

@@ -7,16 +7,10 @@
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [x] Commonalise httpd POST handlers
-            - [x] interfaces
-            - [x] controllers
-            - [x] doors
-            - [x] cards
-            - [x] groups
       - [ ] Return empty list for GET <objects> if not authorised
             - [ ] Include GET/POST in auth request
             - [ ] (?) Lift `unauthorised` handling out of authorised
-      - [ ] (?) Automatically cancel contexts on CTRL-C (takes a while to shut down otherwise)
+      - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 
 - [ ] Fix DateTime mess
       - [ ] Do the 'uncertain/pending' thing for timezones

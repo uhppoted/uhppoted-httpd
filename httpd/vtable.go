@@ -1,0 +1,97 @@
+package httpd
+
+import (
+	"net/http"
+
+	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/httpd/cards"
+	"github.com/uhppoted/uhppoted-httpd/httpd/controllers"
+	"github.com/uhppoted/uhppoted-httpd/httpd/doors"
+	"github.com/uhppoted/uhppoted-httpd/httpd/events"
+	"github.com/uhppoted/uhppoted-httpd/httpd/groups"
+	"github.com/uhppoted/uhppoted-httpd/httpd/interfaces"
+	"github.com/uhppoted/uhppoted-httpd/httpd/logs"
+)
+
+type handler struct {
+	tag   string
+	rules string
+	get   func(*http.Request) interface{}
+	post  func(map[string]interface{}, auth.OpAuth) (interface{}, error)
+}
+
+func (d *dispatcher) vtable(path string) *handler {
+	switch path {
+	case "/interfaces":
+		return &handler{
+			tag:   "system",
+			rules: d.grule.system,
+			get: func(r *http.Request) interface{} {
+				return interfaces.Get()
+			},
+			post: interfaces.Post,
+		}
+
+	case "/controllers":
+		return &handler{
+			tag:   "system",
+			rules: d.grule.system,
+			get: func(r *http.Request) interface{} {
+				return controllers.Get()
+			},
+			post: controllers.Post,
+		}
+
+	case "/doors":
+		return &handler{
+			tag:   "doors",
+			rules: d.grule.doors,
+			get: func(r *http.Request) interface{} {
+				return doors.Get()
+			},
+			post: doors.Post,
+		}
+
+	case "/cards":
+		return &handler{
+			tag:   "cards",
+			rules: d.grule.cards,
+			get: func(r *http.Request) interface{} {
+				return cards.Get()
+			},
+			post: cards.Post,
+		}
+
+	case "/groups":
+		return &handler{
+			tag:   "groups",
+			rules: d.grule.groups,
+			get: func(r *http.Request) interface{} {
+				return groups.Get()
+			},
+			post: groups.Post,
+		}
+
+	case "/events":
+		return &handler{
+			tag:   "events",
+			rules: "",
+			get: func(r *http.Request) interface{} {
+				return events.Get(r)
+			},
+			post: nil,
+		}
+
+	case "/logs":
+		return &handler{
+			tag:   "logs",
+			rules: "",
+			get: func(r *http.Request) interface{} {
+				return logs.Get(r)
+			},
+			post: nil,
+		}
+	}
+
+	return nil
+}

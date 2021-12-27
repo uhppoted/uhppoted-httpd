@@ -14,13 +14,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/uhppoted/uhppoted-httpd/httpd/cards"
-	"github.com/uhppoted/uhppoted-httpd/httpd/controllers"
-	"github.com/uhppoted/uhppoted-httpd/httpd/doors"
-	"github.com/uhppoted/uhppoted-httpd/httpd/events"
-	"github.com/uhppoted/uhppoted-httpd/httpd/groups"
-	"github.com/uhppoted/uhppoted-httpd/httpd/interfaces"
-	"github.com/uhppoted/uhppoted-httpd/httpd/logs"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
@@ -29,6 +22,25 @@ const GZIP_MINIMUM = 16384
 func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 
+	// ... GET <data>
+	switch path {
+	case "/interfaces",
+		"/controllers",
+		"/doors",
+		"/cards",
+		"/groups",
+		"/events",
+		"/logs":
+		if handler := d.vtable(path); handler == nil || handler.get == nil {
+			warn(fmt.Errorf("No vtable entry for %v", path))
+			http.Error(w, "internal system error", http.StatusInternalServerError)
+		} else {
+			d.fetch(w, r, handler.get)
+			return
+		}
+	}
+
+	// ... GET <file>
 	if path == "/" {
 		path = "/index.html"
 	}
@@ -84,40 +96,6 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-	}
-
-	switch path {
-	case "/interfaces":
-		d.fetch(w, r, interfaces.Get)
-		return
-
-	case "/controllers":
-		d.fetch(w, r, controllers.Get)
-		return
-
-	case "/doors":
-		d.fetch(w, r, doors.Get)
-		return
-
-	case "/cards":
-		d.fetch(w, r, cards.Get)
-		return
-
-	case "/groups":
-		d.fetch(w, r, groups.Get)
-		return
-
-	case "/events":
-		d.fetch(w, r, func() interface{} {
-			return events.Get(r)
-		})
-		return
-
-	case "/logs":
-		d.fetch(w, r, func() interface{} {
-			return logs.Get(r)
-		})
-		return
 	}
 
 	if strings.HasSuffix(path, ".html") {
@@ -204,7 +182,7 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 	}
 }
 
-func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, f func() interface{}) {
+func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, f func(*http.Request) interface{}) {
 	ctx, cancel := context.WithTimeout(context.Background(), d.timeout)
 
 	defer cancel()
@@ -224,7 +202,7 @@ func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, f func() inte
 	var response interface{}
 
 	go func() {
-		response = f()
+		response = f(r)
 		cancel()
 	}()
 
