@@ -53,7 +53,7 @@ func (d Door) String() string {
 	return fmt.Sprintf("%v", d.Name)
 }
 
-func (d *Door) AsObjects() []interface{} {
+func (d *Door) AsObjects(auth auth.OpAuth) []interface{} {
 	if d.deleted != nil {
 		return []interface{}{
 			catalog.NewObject2(d.OID, DoorDeleted, d.deleted),
@@ -129,20 +129,45 @@ func (d *Door) AsObjects() []interface{} {
 		}
 	}
 
-	objects := []interface{}{
-		catalog.NewObject(d.OID, ""),
-		catalog.NewObject2(d.OID, DoorStatus, d.status()),
-		catalog.NewObject2(d.OID, DoorCreated, created),
-		catalog.NewObject2(d.OID, DoorDeleted, d.deleted),
-		catalog.NewObject2(d.OID, DoorName, name),
-		catalog.NewObject2(d.OID, DoorDelay, types.Uint8(delay.delay)),
-		catalog.NewObject2(d.OID, DoorDelayStatus, delay.status),
-		catalog.NewObject2(d.OID, DoorDelayConfigured, delay.configured),
-		catalog.NewObject2(d.OID, DoorDelayError, delay.err),
-		catalog.NewObject2(d.OID, DoorControl, control.control),
-		catalog.NewObject2(d.OID, DoorControlStatus, control.status),
-		catalog.NewObject2(d.OID, DoorControlConfigured, control.configured),
-		catalog.NewObject2(d.OID, DoorControlError, control.err),
+	list := []struct {
+		field catalog.Suffix
+		value interface{}
+	}{
+		{DoorStatus, d.status()},
+		{DoorCreated, created},
+		{DoorDeleted, d.deleted},
+		{DoorName, name},
+		{DoorDelay, types.Uint8(delay.delay)},
+		{DoorDelayStatus, delay.status},
+		{DoorDelayConfigured, delay.configured},
+		{DoorDelayError, delay.err},
+		{DoorControl, control.control},
+		{DoorControlStatus, control.status},
+		{DoorControlConfigured, control.configured},
+		{DoorControlError, control.err},
+	}
+
+	f := func(d *Door, field string, value interface{}) bool {
+		if auth != nil {
+			if err := auth.CanView("doors", d, field, value); err != nil {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	objects := []interface{}{}
+
+	if f(d, "OID", d.OID) {
+		objects = append(objects, catalog.NewObject(d.OID, ""))
+	}
+
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(d, field, v.value) {
+			objects = append(objects, catalog.NewObject2(d.OID, v.field, v.value))
+		}
 	}
 
 	return objects

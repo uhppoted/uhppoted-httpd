@@ -1,17 +1,22 @@
 ## v0.7.x
 
 - [ ] Cookies
+      - [ ] Homogenize `authorised` and `authorisedX`
+      - [ ] (?) Lift `unauthorised` handling out of authorised
       - [ ] Make login cookie expire in 60s
       - [ ] Don't check login cookie except for login
       - [ ] (?) Clear cookie on logout
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [x] Return empty list for GET <objects> if not authorised
-      - [ ] Add fine-grained auth to GET requests
-      - [ ] Include GET/POST in auth request
-      - [ ] Homogenize `authorised` and `authorisedX`
-      - [ ] (?) Lift `unauthorised` handling out of authorised
+      - [ ] Add fine-grained auth skeleton for GET requests
+            - [ ] interfaces
+            - [ ] controllers
+            - [x] doors
+            - [ ] cards
+            - [ ] groups
+            - [ ] events
+            - [ ] logs
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 
 - [ ] Fix DateTime mess

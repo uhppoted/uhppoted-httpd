@@ -16,7 +16,7 @@ import (
 type handler struct {
 	tag   string
 	rules string
-	get   func(*http.Request) interface{}
+	get   func(*http.Request, auth.OpAuth) interface{}
 	post  func(map[string]interface{}, auth.OpAuth) (interface{}, error)
 }
 
@@ -26,7 +26,7 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "system",
 			rules: d.grule.system,
-			get: func(r *http.Request) interface{} {
+			get: func(r *http.Request, a auth.OpAuth) interface{} {
 				return interfaces.Get()
 			},
 			post: interfaces.Post,
@@ -36,7 +36,7 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "system",
 			rules: d.grule.system,
-			get: func(r *http.Request) interface{} {
+			get: func(r *http.Request, a auth.OpAuth) interface{} {
 				return controllers.Get()
 			},
 			post: controllers.Post,
@@ -46,8 +46,8 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "doors",
 			rules: d.grule.doors,
-			get: func(r *http.Request) interface{} {
-				return doors.Get()
+			get: func(r *http.Request, a auth.OpAuth) interface{} {
+				return doors.Get(a)
 			},
 			post: doors.Post,
 		}
@@ -56,7 +56,7 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "cards",
 			rules: d.grule.cards,
-			get: func(r *http.Request) interface{} {
+			get: func(r *http.Request, a auth.OpAuth) interface{} {
 				return cards.Get()
 			},
 			post: cards.Post,
@@ -66,7 +66,7 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "groups",
 			rules: d.grule.groups,
-			get: func(r *http.Request) interface{} {
+			get: func(r *http.Request, a auth.OpAuth) interface{} {
 				return groups.Get()
 			},
 			post: groups.Post,
@@ -76,7 +76,7 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "events",
 			rules: "",
-			get: func(r *http.Request) interface{} {
+			get: func(r *http.Request, a auth.OpAuth) interface{} {
 				return events.Get(r)
 			},
 			post: nil,
@@ -86,7 +86,7 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "logs",
 			rules: "",
-			get: func(r *http.Request) interface{} {
+			get: func(r *http.Request, a auth.OpAuth) interface{} {
 				return logs.Get(r)
 			},
 			post: nil,

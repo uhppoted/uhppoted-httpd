@@ -24,6 +24,10 @@ func (x *stub) UID() string {
 	return "stub"
 }
 
+func (x *stub) CanView(ruleset string, object auth.Operant, field string, value interface{}) error {
+	return nil
+}
+
 func (x *stub) CanUpdateInterface(lan auth.Operant, field string, value interface{}) error {
 	return fmt.Errorf("not authorised")
 }

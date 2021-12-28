@@ -29,6 +29,8 @@ type IAuth interface {
 type OpAuth interface {
 	UID() string
 
+	CanView(ruleset string, o Operant, field string, value interface{}) error
+
 	CanUpdateInterface(iface Operant, field string, value interface{}) error
 
 	CanAddController(controller Operant) error

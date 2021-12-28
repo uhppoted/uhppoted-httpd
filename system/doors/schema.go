@@ -19,3 +19,20 @@ const DoorControlStatus = catalog.DoorControlStatus
 const DoorControlConfigured = catalog.DoorControlConfigured
 const DoorControlError = catalog.DoorControlError
 const DoorControlModified = catalog.DoorControlModified
+
+var lookup = map[catalog.Suffix]string{
+	DoorStatus:            "status",
+	DoorCreated:           "created",
+	DoorDeleted:           "deleted",
+	DoorName:              "name",
+	DoorDelay:             "delay",
+	DoorDelayStatus:       "delay.status",
+	DoorDelayConfigured:   "delay.configured",
+	DoorDelayError:        "delay.error",
+	DoorDelayModified:     "delay.modified",
+	DoorControl:           "control",
+	DoorControlStatus:     "control.status",
+	DoorControlConfigured: "control.configured",
+	DoorControlError:      "control.error",
+	DoorControlModified:   "control.modified",
+}

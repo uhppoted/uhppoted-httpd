@@ -50,12 +50,12 @@ func (dd *Doors) ByName(name string) (Door, bool) {
 	return Door{}, false
 }
 
-func (dd *Doors) AsObjects() []interface{} {
+func (dd *Doors) AsObjects(auth auth.OpAuth) []interface{} {
 	objects := []interface{}{}
 
 	for _, d := range dd.doors {
 		if d.IsValid() || d.IsDeleted() {
-			if l := d.AsObjects(); l != nil {
+			if l := d.AsObjects(auth); l != nil {
 				objects = append(objects, l...)
 			}
 		}

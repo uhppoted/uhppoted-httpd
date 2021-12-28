@@ -35,7 +35,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 			warn(fmt.Errorf("No vtable entry for %v", path))
 			http.Error(w, "internal system error", http.StatusInternalServerError)
 		} else {
-			d.fetch(w, r, handler.get)
+			d.fetch(w, r, *handler)
 		}
 
 		return
@@ -183,13 +183,16 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 	}
 }
 
-func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, f func(*http.Request) interface{}) {
+func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, h handler) {
 	// ... authenticated and authorised?
-	if uid, role, ok := d.authenticated(r); !ok {
+	uid, role, ok := d.authenticated(r)
+	if !ok {
 		warn(fmt.Errorf("Unauthenticated GET request"))
 		http.Redirect(w, r, "/login.html", http.StatusFound)
 		return
-	} else if !d.authorisedX(uid, role, r.URL.Path) {
+	}
+
+	if !d.authorisedX(uid, role, r.URL.Path) {
 		// Returns empty JSON object if not authorised for the resource because this request may be
 		// a legitimate part of the user interface.
 		if b, err := json.Marshal(struct{}{}); err != nil {
@@ -199,6 +202,13 @@ func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, f func(*http.
 			w.Write(b)
 		}
 
+		return
+	}
+
+	auth, err := NewAuthorizator(uid, role, h.tag, h.rules)
+	if err != nil {
+		warn(err)
+		http.Error(w, "internal system error", http.StatusInternalServerError)
 		return
 	}
 
@@ -222,7 +232,7 @@ func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, f func(*http.
 	var response interface{}
 
 	go func() {
-		response = f(r)
+		response = h.get(r, auth)
 		cancel()
 	}()
 

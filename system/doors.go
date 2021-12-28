@@ -8,11 +8,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Doors() interface{} {
+func Doors(auth auth.OpAuth) interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	objects := sys.doors.AsObjects()
+	objects := sys.doors.AsObjects(auth)
 
 	return objects
 }

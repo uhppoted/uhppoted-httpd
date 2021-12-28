@@ -92,6 +92,34 @@ func (a *authorizator) UID() string {
 	return "?"
 }
 
+func (a *authorizator) CanView(ruleset string, object auth.Operant, field string, value interface{}) error {
+	msg := fmt.Errorf("Not authorized to view %v", object)
+	err := fmt.Errorf("Not authorized for operation %v field:%v value:%v", "view", field, value)
+
+	if a != nil && object != nil {
+		r := result{
+			Allow:  true,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"OBJECT": object.AsRuleEntity(),
+			"FIELD":  field,
+			"VALUE":  value,
+		}
+
+		if err := a.eval(ruleset, "view", &r, m); err != nil {
+			return types.Unauthorised(msg, err)
+		}
+
+		if !r.Allow || r.Refuse {
+			return types.Unauthorised(msg, err)
+		}
+	}
+
+	return nil
+}
+
 func (a *authorizator) CanUpdateInterface(lan auth.Operant, field string, value interface{}) error {
 	msg := fmt.Errorf("Not authorized to update interface %v", lan)
 	err := fmt.Errorf("Not authorized for operation %v field:%v value:%v", "update::interface", field, value)
