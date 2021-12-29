@@ -23,17 +23,6 @@ type LogEntry struct {
 	After     string      `json:"after,omitempty"`
 }
 
-const LogTimestamp = catalog.LogTimestamp
-const LogUID = catalog.LogUID
-const LogItem = catalog.LogItem
-const LogItemID = catalog.LogItemID
-const LogItemName = catalog.LogItemName
-const LogField = catalog.LogField
-const LogDetails = catalog.LogDetails
-
-const ControllerName = catalog.ControllerName
-const ControllerDeviceID = catalog.ControllerDeviceID
-
 func NewLogEntry(oid catalog.OID, timestamp time.Time, record audit.AuditRecord) LogEntry {
 	return LogEntry{
 		OID:       oid,
@@ -57,20 +46,58 @@ func (l LogEntry) IsDeleted() bool {
 	return false
 }
 
-func (l *LogEntry) AsObjects() []interface{} {
+func (l *LogEntry) AsObjects(auth auth.OpAuth) []interface{} {
+	type E = struct {
+		field catalog.Suffix
+		value interface{}
+	}
 
-	objects := []interface{}{
-		catalog.NewObject(l.OID, types.StatusOk),
-		catalog.NewObject2(l.OID, LogTimestamp, l.Timestamp.Format(time.RFC3339)),
-		catalog.NewObject2(l.OID, LogUID, l.UID),
-		catalog.NewObject2(l.OID, LogItem, l.Item),
-		catalog.NewObject2(l.OID, LogItemID, l.ItemID),
-		catalog.NewObject2(l.OID, LogItemName, l.ItemName),
-		catalog.NewObject2(l.OID, LogField, l.Field),
-		catalog.NewObject2(l.OID, LogDetails, l.Details),
+	list := []E{}
+
+	list = append(list, E{LogTimestamp, l.Timestamp.Format(time.RFC3339)})
+	list = append(list, E{LogUID, l.UID})
+	list = append(list, E{LogItem, l.Item})
+	list = append(list, E{LogItemID, l.ItemID})
+	list = append(list, E{LogItemName, l.ItemName})
+	list = append(list, E{LogField, l.Field})
+	list = append(list, E{LogDetails, l.Details})
+
+	f := func(l *LogEntry, field string, value interface{}) bool {
+		if auth != nil {
+			if err := auth.CanView("logs", l, field, value); err != nil {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	objects := []interface{}{}
+
+	if f(l, "OID", l.OID) {
+		objects = append(objects, catalog.NewObject(l.OID, types.StatusOk))
+	}
+
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(l, field, v.value) {
+			objects = append(objects, catalog.NewObject2(l.OID, v.field, v.value))
+		}
 	}
 
 	return objects
+}
+
+func (l *LogEntry) AsRuleEntity() interface{} {
+	entity := struct {
+		Timestamp string
+	}{}
+
+	if l != nil {
+		entity.Timestamp = l.Timestamp.Format("2006-01-02 15:04:05 MST")
+	}
+
+	return &entity
 }
 
 func (l *LogEntry) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {

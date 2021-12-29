@@ -9,14 +9,14 @@
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [ ] Add fine-grained auth skeleton for GET requests
+      - [x] Add fine-grained auth skeleton for GET requests
             - [x] interfaces
             - [x] controllers
             - [x] doors
             - [x] cards
             - [x] groups
             - [x] events
-            - [ ] logs
+            - [x] logs
       - [ ] Check CanView on return from POST
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 

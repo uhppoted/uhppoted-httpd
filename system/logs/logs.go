@@ -149,7 +149,7 @@ func (ll *Logs) Clone() *Logs {
 	return &shadow
 }
 
-func (ll *Logs) AsObjects(start, max int) []interface{} {
+func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []interface{} {
 	guard.RLock()
 	defer guard.RUnlock()
 
@@ -173,7 +173,7 @@ func (ll *Logs) AsObjects(start, max int) []interface{} {
 		k := keys[ix]
 		if l, ok := ll.logs[k]; ok {
 			if l.IsValid() || l.IsDeleted() {
-				if l := l.AsObjects(); l != nil {
+				if l := l.AsObjects(auth); l != nil {
 					objects = append(objects, l...)
 					count++
 				}

@@ -74,7 +74,7 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "logs",
 			rules: d.grule.logs,
-			get:   func(r *http.Request, a auth.OpAuth) interface{} { return logs.Get(r) },
+			get:   func(r *http.Request, auth auth.OpAuth) interface{} { return logs.Get(r, auth) },
 			post:  nil,
 		}
 	}

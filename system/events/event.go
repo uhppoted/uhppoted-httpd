@@ -210,6 +210,7 @@ func (e *Event) AsRuleEntity() interface{} {
 
 	return &entity
 }
+
 func (e *Event) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
