@@ -121,12 +121,12 @@ func (cc *Controllers) Save() (json.RawMessage, error) {
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
-func (cc *Controllers) AsObjects() []interface{} {
+func (cc *Controllers) AsObjects(auth auth.OpAuth) []interface{} {
 	objects := []interface{}{}
 
 	for _, c := range cc.controllers {
 		if c.IsValid() {
-			if l := c.AsObjects(); l != nil {
+			if l := c.AsObjects(auth); l != nil {
 				objects = append(objects, l...)
 			}
 		}

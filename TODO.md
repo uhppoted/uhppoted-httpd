@@ -11,12 +11,13 @@
 - [ ] Separate LAN and controllers
       - [ ] Add fine-grained auth skeleton for GET requests
             - [ ] interfaces
-            - [ ] controllers
+            - [x] controllers
             - [x] doors
-            - [ ] cards
+            - [x] cards
             - [x] groups
             - [ ] events
             - [ ] logs
+      - [ ] Check CanView on return from POST
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 
 - [ ] Fix DateTime mess

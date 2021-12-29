@@ -106,144 +106,167 @@ func (c *Controller) realized() bool {
 	return false
 }
 
-func (c *Controller) AsObjects() []interface{} {
-	OID := c.OID()
+func (c *Controller) AsObjects(auth auth.OpAuth) []interface{} {
+	type E = struct {
+		field catalog.Suffix
+		value interface{}
+	}
+
+	list := []E{}
 
 	if c.deleted != nil {
-		return []interface{}{
-			catalog.NewObject2(OID, ControllerDeleted, c.deleted),
+		list = append(list, E{ControllerDeleted, c.deleted})
+	} else {
+		type addr struct {
+			address    string
+			configured string
+			status     types.Status
 		}
-	}
 
-	type addr struct {
-		address    string
-		configured string
-		status     types.Status
-	}
-
-	type tinfo struct {
-		datetime string
-		system   string
-		status   types.Status
-	}
-
-	type cinfo struct {
-		cards  string
-		status types.Status
-	}
-
-	type einfo struct {
-		events string
-		status types.Status
-	}
-
-	created := c.created.Format("2006-01-02 15:04:05")
-	name := c.name
-	deviceID := ""
-	address := addr{}
-	datetime := tinfo{}
-	cards := cinfo{}
-	events := einfo{}
-
-	doors := map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
-
-	if c.deviceID != 0 {
-		deviceID = fmt.Sprintf("%v", c.deviceID)
-	}
-
-	if c.IP != nil {
-		address.address = fmt.Sprintf("%v", c.IP)
-		address.configured = fmt.Sprintf("%v", c.IP)
-	}
-
-	for _, i := range []uint8{1, 2, 3, 4} {
-		if d, ok := c.Doors[i]; ok {
-			doors[i] = d
+		type tinfo struct {
+			datetime string
+			system   string
+			status   types.Status
 		}
-	}
 
-	if c.deviceID != 0 {
-		//if cached, ok := cache.cache[*c.deviceID]; ok {
-		if cached := c.get(); cached != nil {
-			// ... set IP address field from cached value
-			if cached.address != nil {
-				address.address = fmt.Sprintf("%v", cached.address)
-				switch {
-				case c.IP == nil || (c.IP != nil && cached.address.Equal(c.IP)):
-					address.status = types.StatusOk
+		type cinfo struct {
+			cards  string
+			status types.Status
+		}
 
-				case c.IP != nil && !cached.address.Equal(c.IP):
-					address.status = types.StatusError
+		type einfo struct {
+			events string
+			status types.Status
+		}
 
-				default:
-					address.status = types.StatusUnknown
-				}
+		created := c.created.Format("2006-01-02 15:04:05")
+		name := c.name
+		deviceID := ""
+		address := addr{}
+		datetime := tinfo{}
+		cards := cinfo{}
+		events := einfo{}
+
+		doors := map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
+
+		if c.deviceID != 0 {
+			deviceID = fmt.Sprintf("%v", c.deviceID)
+		}
+
+		if c.IP != nil {
+			address.address = fmt.Sprintf("%v", c.IP)
+			address.configured = fmt.Sprintf("%v", c.IP)
+		}
+
+		for _, i := range []uint8{1, 2, 3, 4} {
+			if d, ok := c.Doors[i]; ok {
+				doors[i] = d
 			}
+		}
 
-			// ... set system date/time field from cached value
-			if cached.datetime != nil {
-				tz := time.Local
-				if c.timezone != nil {
-					if l, err := timezone(*c.timezone); err != nil {
-						warn(err)
-					} else {
-						tz = l
+		if c.deviceID != 0 {
+			//if cached, ok := cache.cache[*c.deviceID]; ok {
+			if cached := c.get(); cached != nil {
+				// ... set IP address field from cached value
+				if cached.address != nil {
+					address.address = fmt.Sprintf("%v", cached.address)
+					switch {
+					case c.IP == nil || (c.IP != nil && cached.address.Equal(c.IP)):
+						address.status = types.StatusOk
+
+					case c.IP != nil && !cached.address.Equal(c.IP):
+						address.status = types.StatusError
+
+					default:
+						address.status = types.StatusUnknown
 					}
 				}
 
-				now := time.Now().In(tz)
-				t := time.Time(*cached.datetime)
-				T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+				// ... set system date/time field from cached value
+				if cached.datetime != nil {
+					tz := time.Local
+					if c.timezone != nil {
+						if l, err := timezone(*c.timezone); err != nil {
+							warn(err)
+						} else {
+							tz = l
+						}
+					}
 
-				datetime.datetime = T.Format("2006-01-02 15:04:05 MST")
-				datetime.system = now.Format("2006-01-02 15:04:05 MST")
+					now := time.Now().In(tz)
+					t := time.Time(*cached.datetime)
+					T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 
-				delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-				if delta <= math.Abs(windows.systime.Seconds()) {
-					datetime.status = types.StatusOk
-				} else {
-					datetime.status = types.StatusError
+					datetime.datetime = T.Format("2006-01-02 15:04:05 MST")
+					datetime.system = now.Format("2006-01-02 15:04:05 MST")
+
+					delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+					if delta <= math.Abs(windows.systime.Seconds()) {
+						datetime.status = types.StatusOk
+					} else {
+						datetime.status = types.StatusError
+					}
 				}
-			}
 
-			// ... set ACL field from cached value
-			if cached.cards != nil {
-				cards.cards = fmt.Sprintf("%d", *cached.cards)
-				if cached.acl == types.StatusUnknown {
-					cards.status = types.StatusUncertain
-				} else {
-					cards.status = cached.acl
+				// ... set ACL field from cached value
+				if cached.cards != nil {
+					cards.cards = fmt.Sprintf("%d", *cached.cards)
+					if cached.acl == types.StatusUnknown {
+						cards.status = types.StatusUncertain
+					} else {
+						cards.status = cached.acl
+					}
 				}
-			}
 
-			// ... set events field from cached value
-			events.events = fmt.Sprintf("%v", (*records)(cached.events))
-			events.status = types.StatusOk
+				// ... set events field from cached value
+				events.events = fmt.Sprintf("%v", (*records)(cached.events))
+				events.status = types.StatusOk
+			}
 		}
+
+		list = append(list, E{ControllerStatus, c.status()})
+		list = append(list, E{ControllerCreated, created})
+		list = append(list, E{ControllerDeleted, c.deleted})
+		list = append(list, E{ControllerName, name})
+		list = append(list, E{ControllerDeviceID, deviceID})
+		list = append(list, E{ControllerEndpointStatus, address.status})
+		list = append(list, E{ControllerEndpointAddress, address.address})
+		list = append(list, E{ControllerEndpointConfigured, address.configured})
+		list = append(list, E{ControllerDateTimeStatus, datetime.status})
+		list = append(list, E{ControllerDateTimeCurrent, datetime.datetime})
+		list = append(list, E{ControllerDateTimeSystem, datetime.system})
+		list = append(list, E{ControllerCardsStatus, cards.status})
+		list = append(list, E{ControllerCardsCount, cards.cards})
+		list = append(list, E{ControllerEventsStatus, events.status})
+		list = append(list, E{ControllerEventsCount, events.events})
+		list = append(list, E{ControllerDoor1, doors[1]})
+		list = append(list, E{ControllerDoor2, doors[2]})
+		list = append(list, E{ControllerDoor3, doors[3]})
+		list = append(list, E{ControllerDoor4, doors[4]})
 	}
 
-	objects := []interface{}{
-		catalog.NewObject(OID, ""),
-		catalog.NewObject2(OID, ControllerStatus, c.status()),
-		catalog.NewObject2(OID, ControllerCreated, created),
-		catalog.NewObject2(OID, ControllerDeleted, c.deleted),
+	f := func(c *Controller, field string, value interface{}) bool {
+		if auth != nil {
+			if err := auth.CanView("system", c, field, value); err != nil {
+				return false
+			}
+		}
 
-		catalog.NewObject2(OID, ControllerName, name),
-		catalog.NewObject2(OID, ControllerDeviceID, deviceID),
-		catalog.NewObject2(OID, ControllerEndpointStatus, address.status),
-		catalog.NewObject2(OID, ControllerEndpointAddress, address.address),
-		catalog.NewObject2(OID, ControllerEndpointConfigured, address.configured),
-		catalog.NewObject2(OID, ControllerDateTimeStatus, datetime.status),
-		catalog.NewObject2(OID, ControllerDateTimeCurrent, datetime.datetime),
-		catalog.NewObject2(OID, ControllerDateTimeSystem, datetime.system),
-		catalog.NewObject2(OID, ControllerCardsStatus, cards.status),
-		catalog.NewObject2(OID, ControllerCardsCount, cards.cards),
-		catalog.NewObject2(OID, ControllerEventsStatus, events.status),
-		catalog.NewObject2(OID, ControllerEventsCount, events.events),
-		catalog.NewObject2(OID, ControllerDoor1, doors[1]),
-		catalog.NewObject2(OID, ControllerDoor2, doors[2]),
-		catalog.NewObject2(OID, ControllerDoor3, doors[3]),
-		catalog.NewObject2(OID, ControllerDoor4, doors[4]),
+		return true
+	}
+
+	OID := c.OID()
+	objects := []interface{}{}
+
+	if c.deleted == nil && f(c, "OID", OID) {
+		objects = append(objects, catalog.NewObject(OID, ""))
+	}
+
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(c, field, v.value) {
+			objects = append(objects, catalog.NewObject2(OID, v.field, v.value))
+		}
 	}
 
 	return objects

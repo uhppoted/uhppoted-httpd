@@ -10,13 +10,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Controllers() interface{} {
+func Controllers(auth auth.OpAuth) interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	objects := sys.controllers.AsObjects()
-
-	return objects
+	return sys.controllers.AsObjects(auth)
 }
 
 func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {

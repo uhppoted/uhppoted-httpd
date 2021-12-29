@@ -16,7 +16,7 @@ import (
 type handler struct {
 	tag   string
 	rules string
-	get   func(*http.Request, auth.OpAuth) interface{}
+	get   func(r *http.Request, a auth.OpAuth) interface{}
 	post  func(map[string]interface{}, auth.OpAuth) (interface{}, error)
 }
 
@@ -34,7 +34,7 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "system",
 			rules: d.grule.system,
-			get:   func(r *http.Request, a auth.OpAuth) interface{} { return controllers.Get() },
+			get:   func(r *http.Request, auth auth.OpAuth) interface{} { return controllers.Get(auth) },
 			post:  controllers.Post,
 		}
 
