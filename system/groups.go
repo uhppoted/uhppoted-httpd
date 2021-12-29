@@ -6,13 +6,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Groups() interface{} {
+func Groups(auth auth.OpAuth) interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	objects := sys.groups.AsObjects()
-
-	return objects
+	return sys.groups.AsObjects(auth)
 }
 
 func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {

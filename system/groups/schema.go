@@ -12,3 +12,12 @@ const GroupName = catalog.GroupName
 const GroupDoors = catalog.GroupDoors
 
 const DoorName = catalog.DoorName
+
+var lookup = map[catalog.Suffix]string{
+	GroupStatus:   "group.status",
+	GroupCreated:  "group.created",
+	GroupDeleted:  "group.deleted",
+	GroupModified: "group.modified",
+	GroupName:     "group.name",
+	GroupDoors:    "group.doors",
+}

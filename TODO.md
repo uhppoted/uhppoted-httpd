@@ -14,7 +14,7 @@
             - [ ] controllers
             - [x] doors
             - [ ] cards
-            - [ ] groups
+            - [x] groups
             - [ ] events
             - [ ] logs
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)

@@ -47,36 +47,61 @@ func (g Group) IsDeleted() bool {
 	return false
 }
 
-func (g *Group) AsObjects() []interface{} {
-	created := g.created.Format("2006-01-02 15:04:05")
-	name := g.Name
+func (g *Group) AsObjects(auth auth.OpAuth) []interface{} {
+	type E = struct {
+		field catalog.Suffix
+		value interface{}
+	}
+
+	list := []E{}
 
 	if g.deleted != nil {
-		return []interface{}{
-			catalog.NewObject2(g.OID, GroupDeleted, g.deleted),
+		list = append(list, E{GroupDeleted, g.deleted})
+	} else {
+		created := g.created.Format("2006-01-02 15:04:05")
+		name := g.Name
+
+		list = append(list, E{GroupStatus, g.status()})
+		list = append(list, E{GroupCreated, created})
+		list = append(list, E{GroupDeleted, g.deleted})
+		list = append(list, E{GroupName, name})
+
+		doors := catalog.GetDoors()
+		re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
+
+		for _, door := range doors {
+			d := fmt.Sprintf("%v", door)
+
+			if m := re.FindStringSubmatch(d); m != nil && len(m) > 2 {
+				did := m[2]
+				allowed := g.Doors[door]
+
+				list = append(list, E{GroupDoors.Append(did), allowed})
+				list = append(list, E{GroupDoors.Append(did + ".1"), door})
+			}
 		}
 	}
 
-	objects := []interface{}{
-		catalog.NewObject(g.OID, ""),
-		catalog.NewObject2(g.OID, GroupStatus, g.status()),
-		catalog.NewObject2(g.OID, GroupCreated, created),
-		catalog.NewObject2(g.OID, GroupDeleted, g.deleted),
-		catalog.NewObject2(g.OID, GroupName, name),
+	f := func(g *Group, field string, value interface{}) bool {
+		if auth != nil {
+			if err := auth.CanView("groups", g, field, value); err != nil {
+				return false
+			}
+		}
+
+		return true
 	}
 
-	doors := catalog.GetDoors()
-	re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
+	objects := []interface{}{}
 
-	for _, door := range doors {
-		d := fmt.Sprintf("%v", door)
+	if g.deleted == nil && f(g, "OID", g.OID) {
+		objects = append(objects, catalog.NewObject(g.OID, ""))
+	}
 
-		if m := re.FindStringSubmatch(d); m != nil && len(m) > 2 {
-			did := m[2]
-			allowed := g.Doors[door]
-
-			objects = append(objects, catalog.NewObject2(g.OID, GroupDoors.Append(did), allowed))
-			objects = append(objects, catalog.NewObject2(g.OID, GroupDoors.Append(did+".1"), door))
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(g, field, v.value) {
+			objects = append(objects, catalog.NewObject2(g.OID, v.field, v.value))
 		}
 	}
 

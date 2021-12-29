@@ -109,7 +109,7 @@ func (gg *Groups) Clone() Groups {
 	return shadow
 }
 
-func (gg *Groups) AsObjects() []interface{} {
+func (gg *Groups) AsObjects(auth auth.OpAuth) []interface{} {
 	guard.RLock()
 	defer guard.RUnlock()
 
@@ -117,7 +117,7 @@ func (gg *Groups) AsObjects() []interface{} {
 
 	for _, g := range gg.groups {
 		if g.IsValid() || g.IsDeleted() {
-			if l := g.AsObjects(); l != nil {
+			if l := g.AsObjects(auth); l != nil {
 				objects = append(objects, l...)
 			}
 		}

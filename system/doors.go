@@ -12,9 +12,7 @@ func Doors(auth auth.OpAuth) interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	objects := sys.doors.AsObjects(auth)
-
-	return objects
+	return sys.doors.AsObjects(auth)
 }
 
 func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {

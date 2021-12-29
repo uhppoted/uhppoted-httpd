@@ -47,6 +47,33 @@ func TestDoorAsObjects(t *testing.T) {
 	}
 }
 
+func TestDoorAsObjectsWithDeleted(t *testing.T) {
+	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	deleted := types.DateTimePtrNow()
+
+	d := Door{
+		OID:     "0.3.3",
+		Name:    "Le Door",
+		delay:   7,
+		mode:    core.NormallyOpen,
+		created: created,
+		deleted: deleted,
+	}
+
+	expected := []interface{}{
+		catalog.Object{
+			OID:   "0.3.3.0.2",
+			Value: deleted,
+		},
+	}
+
+	objects := d.AsObjects(nil)
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+}
+
 func TestDoorAsObjectsWithAuth(t *testing.T) {
 	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
@@ -76,7 +103,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 
 	auth := stub{
 		canView: func(ruleset string, object auth.Operant, field string, value interface{}) error {
-			if strings.HasPrefix(field, "delay") {
+			if strings.HasPrefix(field, "door.delay") {
 				return errors.New("test")
 			}
 
@@ -85,33 +112,6 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 	}
 
 	objects := d.AsObjects(&auth)
-
-	if !reflect.DeepEqual(objects, expected) {
-		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
-	}
-}
-
-func TestDoorAsObjectsWithDeleted(t *testing.T) {
-	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	deleted := types.DateTimePtrNow()
-
-	d := Door{
-		OID:     "0.3.3",
-		Name:    "Le Door",
-		delay:   7,
-		mode:    core.NormallyOpen,
-		created: created,
-		deleted: deleted,
-	}
-
-	expected := []interface{}{
-		catalog.Object{
-			OID:   "0.3.3.0.2",
-			Value: deleted,
-		},
-	}
-
-	objects := d.AsObjects(nil)
 
 	if !reflect.DeepEqual(objects, expected) {
 		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
