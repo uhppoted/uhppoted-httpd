@@ -65,15 +65,15 @@ func (d *dispatcher) vtable(path string) *handler {
 	case "/events":
 		return &handler{
 			tag:   "events",
-			rules: "",
-			get:   func(r *http.Request, a auth.OpAuth) interface{} { return events.Get(r) },
+			rules: d.grule.events,
+			get:   func(r *http.Request, auth auth.OpAuth) interface{} { return events.Get(r, auth) },
 			post:  nil,
 		}
 
 	case "/logs":
 		return &handler{
 			tag:   "logs",
-			rules: "",
+			rules: d.grule.logs,
 			get:   func(r *http.Request, a auth.OpAuth) interface{} { return logs.Get(r) },
 			post:  nil,
 		}

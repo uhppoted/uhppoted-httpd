@@ -88,28 +88,34 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		RequestTimeout:           conf.HTTPD.RequestTimeout,
 		DB: struct {
 			GRules struct {
+				ACL    string
 				System string
 				Cards  string
 				Doors  string
 				Groups string
+				Events string
+				Logs   string
 				Users  string
-				ACL    string
 			}
 		}{
 			GRules: struct {
+				ACL    string
 				System string
 				Cards  string
 				Doors  string
 				Groups string
+				Events string
+				Logs   string
 				Users  string
-				ACL    string
 			}{
+				ACL:    conf.HTTPD.DB.Rules.ACL,
 				System: conf.HTTPD.DB.Rules.System,
 				Cards:  conf.HTTPD.DB.Rules.Cards,
 				Doors:  conf.HTTPD.DB.Rules.Doors,
 				Groups: conf.HTTPD.DB.Rules.Groups,
+				Events: conf.HTTPD.DB.Rules.Events,
+				Logs:   conf.HTTPD.DB.Rules.Logs,
 				Users:  conf.HTTPD.DB.Rules.Users,
-				ACL:    conf.HTTPD.DB.Rules.ACL,
 			},
 		},
 	}

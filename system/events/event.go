@@ -125,19 +125,6 @@ func (r reason) String() string {
 	return ""
 }
 
-const EventDeviceID = catalog.EventDeviceID
-const EventIndex = catalog.EventIndex
-const EventTimestamp = catalog.EventTimestamp
-const EventType = catalog.EventType
-const EventDoor = catalog.EventDoor
-const EventDirection = catalog.EventDirection
-const EventCard = catalog.EventCard
-const EventGranted = catalog.EventGranted
-const EventReason = catalog.EventReason
-const EventDeviceName = catalog.EventDeviceName
-const EventDoorName = catalog.EventDoorName
-const EventCardName = catalog.EventCardName
-
 func NewEvent(oid catalog.OID, e uhppoted.Event, device, door, card string) Event {
 	return Event{
 		OID:        oid,
@@ -164,25 +151,65 @@ func (e Event) IsDeleted() bool {
 	return false
 }
 
-func (e *Event) AsObjects() []interface{} {
-	objects := []interface{}{
-		catalog.NewObject(e.OID, types.StatusOk),
-		catalog.NewObject2(e.OID, EventDeviceID, e.DeviceID),
-		catalog.NewObject2(e.OID, EventTimestamp, e.Timestamp),
-		catalog.NewObject2(e.OID, EventType, e.Type),
-		catalog.NewObject2(e.OID, EventDoor, e.Door),
-		catalog.NewObject2(e.OID, EventDirection, e.Direction),
-		catalog.NewObject2(e.OID, EventCard, e.Card),
-		catalog.NewObject2(e.OID, EventReason, e.Reason),
-		catalog.NewObject2(e.OID, EventGranted, e.Granted),
-		catalog.NewObject2(e.OID, EventDeviceName, e.DeviceName),
-		catalog.NewObject2(e.OID, EventDoorName, e.DoorName),
-		catalog.NewObject2(e.OID, EventCardName, e.CardName),
+func (e *Event) AsObjects(auth auth.OpAuth) []interface{} {
+	type E = struct {
+		field catalog.Suffix
+		value interface{}
+	}
+
+	list := []E{}
+
+	list = append(list, E{EventDeviceID, e.DeviceID})
+	list = append(list, E{EventTimestamp, e.Timestamp})
+	list = append(list, E{EventType, e.Type})
+	list = append(list, E{EventDoor, e.Door})
+	list = append(list, E{EventDirection, e.Direction})
+	list = append(list, E{EventCard, e.Card})
+	list = append(list, E{EventReason, e.Reason})
+	list = append(list, E{EventGranted, e.Granted})
+	list = append(list, E{EventDeviceName, e.DeviceName})
+	list = append(list, E{EventDoorName, e.DoorName})
+	list = append(list, E{EventCardName, e.CardName})
+
+	f := func(e *Event, field string, value interface{}) bool {
+		if auth != nil {
+			if err := auth.CanView("events", e, field, value); err != nil {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	objects := []interface{}{}
+
+	if f(e, "OID", e.OID) {
+		objects = append(objects, catalog.NewObject(e.OID, types.StatusOk))
+	}
+
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(e, field, v.value) {
+			objects = append(objects, catalog.NewObject2(e.OID, v.field, v.value))
+		}
 	}
 
 	return objects
 }
 
+func (e *Event) AsRuleEntity() interface{} {
+	entity := struct {
+		DeviceID uint32
+		Index    uint32
+	}{}
+
+	if e != nil {
+		entity.DeviceID = e.DeviceID
+		entity.Index = e.Index
+	}
+
+	return &entity
+}
 func (e *Event) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 

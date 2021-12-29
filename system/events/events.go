@@ -126,7 +126,7 @@ func (ee *Events) Clone() *Events {
 	return &shadow
 }
 
-func (ee *Events) AsObjects(start, max int) []interface{} {
+func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []interface{} {
 	objects := []interface{}{}
 	keys := []key{}
 
@@ -148,7 +148,7 @@ func (ee *Events) AsObjects(start, max int) []interface{} {
 		if v, ok := ee.events.Load(k); ok {
 			e := v.(Event)
 			if e.IsValid() || e.IsDeleted() {
-				if l := e.AsObjects(); l != nil {
+				if l := e.AsObjects(auth); l != nil {
 					objects = append(objects, l...)
 					count++
 				}

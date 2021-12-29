@@ -93,6 +93,8 @@ github.com/uhppoted/uhppoted-lib v0.7.2-0.20211202181631-a85ab239ddd8 h1:tTEZbYf
 github.com/uhppoted/uhppoted-lib v0.7.2-0.20211202181631-a85ab239ddd8/go.mod h1:3osV973tStk9IVahiFWXjiVbJvBbGnAE4Mu76qkE/aA=
 github.com/uhppoted/uhppoted-lib v0.7.2-0.20211224201334-8da3188434b1 h1:08BfT6dPVEKusDfTzSHaPOa8se8QHyN1KMcGAGncOVg=
 github.com/uhppoted/uhppoted-lib v0.7.2-0.20211224201334-8da3188434b1/go.mod h1:mHZ6NP2i5omGoZaDIfRnKJGavvzV3+dCqaSq6bINkjY=
+github.com/uhppoted/uhppoted-lib v0.7.2-0.20211229201504-7d13a97179b8 h1:mxUodLbdg67UjjR82xmcSYCopnnMbtK79h8jJdkZve4=
+github.com/uhppoted/uhppoted-lib v0.7.2-0.20211229201504-7d13a97179b8/go.mod h1:mHZ6NP2i5omGoZaDIfRnKJGavvzV3+dCqaSq6bINkjY=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=
 github.com/xanzy/ssh-agent v0.2.1/go.mod h1:mLlQY/MoOhWBj+gOGMQkOeiEvkx+8pJSI+0Bx9h2kr4=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

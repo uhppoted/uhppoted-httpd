@@ -5,16 +5,17 @@ import (
 	"sort"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
-func Events(start, count int) []interface{} {
+func Events(start, count int, auth auth.OpAuth) []interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	return sys.events.AsObjects(start, count)
+	return sys.events.AsObjects(start, count, auth)
 }
 
 func AppendEvents(list types.EventsList) {

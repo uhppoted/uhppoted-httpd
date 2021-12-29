@@ -8,13 +8,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 const GZIP_MINIMUM = 16384
 
-func Get(rq *http.Request) interface{} {
+func Get(rq *http.Request, auth auth.OpAuth) interface{} {
 	start := 0
 	count := math.MaxInt32
 
@@ -48,7 +49,7 @@ func Get(rq *http.Request) interface{} {
 	return struct {
 		Events interface{} `json:"events"`
 	}{
-		Events: system.Events(start, count),
+		Events: system.Events(start, count, auth),
 	}
 }
 

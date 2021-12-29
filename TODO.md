@@ -15,7 +15,7 @@
             - [x] doors
             - [x] cards
             - [x] groups
-            - [ ] events
+            - [x] events
             - [ ] logs
       - [ ] Check CanView on return from POST
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)

@@ -29,12 +29,14 @@ type HTTPD struct {
 	RequestTimeout           time.Duration
 	DB                       struct {
 		GRules struct {
+			ACL    string
 			System string
 			Cards  string
 			Doors  string
 			Groups string
+			Events string
+			Logs   string
 			Users  string
-			ACL    string
 		}
 	}
 }
@@ -48,6 +50,8 @@ type dispatcher struct {
 		cards  string
 		doors  string
 		groups string
+		events string
+		logs   string
 		users  string
 	}
 	timeout time.Duration
@@ -71,12 +75,16 @@ func (h *HTTPD) Run() {
 			cards  string
 			doors  string
 			groups string
+			events string
+			logs   string
 			users  string
 		}{
 			system: h.DB.GRules.System,
 			cards:  h.DB.GRules.Cards,
 			doors:  h.DB.GRules.Doors,
 			groups: h.DB.GRules.Groups,
+			events: h.DB.GRules.Events,
+			logs:   h.DB.GRules.Logs,
 			users:  h.DB.GRules.Users,
 		},
 		timeout: h.RequestTimeout,
