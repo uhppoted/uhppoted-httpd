@@ -30,7 +30,7 @@ func TestLogEntryAsObjects(t *testing.T) {
 
 	expected := []interface{}{
 		catalog.Object{OID: "0.7.3", Value: types.StatusOk},
-		catalog.Object{OID: "0.7.3.1", Value: "2021-02-28T12:34:56-08:00"},
+		catalog.Object{OID: "0.7.3.1", Value: timestamp.Format(time.RFC3339)},
 		catalog.Object{OID: "0.7.3.2", Value: "admin"},
 		catalog.Object{OID: "0.7.3.3", Value: "thing1"},
 		catalog.Object{OID: "0.7.3.4", Value: "12.34"},
@@ -64,7 +64,7 @@ func TestLogEntryAsObjectsWithAuth(t *testing.T) {
 
 	expected := []interface{}{
 		catalog.Object{OID: "0.7.3", Value: types.StatusOk},
-		catalog.Object{OID: "0.7.3.1", Value: "2021-02-28T12:34:56-08:00"},
+		catalog.Object{OID: "0.7.3.1", Value: timestamp.Format(time.RFC3339)},
 		//		catalog.Object{OID: "0.7.3.2", Value: "admin"},
 		catalog.Object{OID: "0.7.3.3", Value: "thing1"},
 		catalog.Object{OID: "0.7.3.4", Value: "12.34"},
