@@ -50,7 +50,7 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "cards",
 			rules: d.grule.cards,
-			get:   func(r *http.Request, a auth.OpAuth) interface{} { return cards.Get() },
+			get:   func(r *http.Request, auth auth.OpAuth) interface{} { return cards.Get(auth) },
 			post:  cards.Post,
 		}
 

@@ -68,42 +68,67 @@ func (c *Card) IsDeleted() bool {
 	return false
 }
 
-func (c *Card) AsObjects() []interface{} {
+func (c *Card) AsObjects(auth auth.OpAuth) []interface{} {
+	type E = struct {
+		field catalog.Suffix
+		value interface{}
+	}
+
+	list := []E{}
+
 	if c.deleted != nil {
-		return []interface{}{
-			catalog.NewObject2(c.OID, CardDeleted, c.deleted),
+		list = append(list, E{CardDeleted, c.deleted})
+	} else {
+		created := c.created.Format("2006-01-02 15:04:05")
+		name := c.Name
+		number := c.Card
+		from := c.From
+		to := c.To
+
+		list = append(list, E{CardStatus, c.status()})
+		list = append(list, E{CardCreated, created})
+		list = append(list, E{CardDeleted, c.deleted})
+		list = append(list, E{CardName, name})
+		list = append(list, E{CardNumber, number})
+		list = append(list, E{CardFrom, from})
+		list = append(list, E{CardTo, to})
+
+		groups := catalog.GetGroups()
+		re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
+
+		for _, group := range groups {
+			g := group
+
+			if m := re.FindStringSubmatch(string(g)); m != nil && len(m) > 2 {
+				gid := m[2]
+				member := c.Groups[g]
+
+				list = append(list, E{CardGroups.Append(gid), member})
+				list = append(list, E{CardGroups.Append(gid + ".1"), group})
+			}
 		}
 	}
 
-	created := c.created.Format("2006-01-02 15:04:05")
-	name := c.Name
-	number := c.Card
-	from := c.From
-	to := c.To
+	f := func(c *Card, field string, value interface{}) bool {
+		if auth != nil {
+			if err := auth.CanView("cards", c, field, value); err != nil {
+				return false
+			}
+		}
 
-	objects := []interface{}{
-		catalog.NewObject(c.OID, ""),
-		catalog.NewObject2(c.OID, CardStatus, c.status()),
-		catalog.NewObject2(c.OID, CardCreated, created),
-		catalog.NewObject2(c.OID, CardDeleted, c.deleted),
-		catalog.NewObject2(c.OID, CardName, name),
-		catalog.NewObject2(c.OID, CardNumber, number),
-		catalog.NewObject2(c.OID, CardFrom, from),
-		catalog.NewObject2(c.OID, CardTo, to),
+		return true
 	}
 
-	groups := catalog.GetGroups()
-	re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
+	objects := []interface{}{}
 
-	for _, group := range groups {
-		g := group
+	if c.deleted == nil && f(c, "OID", c.OID) {
+		objects = append(objects, catalog.NewObject(c.OID, ""))
+	}
 
-		if m := re.FindStringSubmatch(string(g)); m != nil && len(m) > 2 {
-			gid := m[2]
-			member := c.Groups[g]
-
-			objects = append(objects, catalog.NewObject2(c.OID, CardGroups.Append(gid), member))
-			objects = append(objects, catalog.NewObject2(c.OID, CardGroups.Append(gid+".1"), group))
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(c, field, v.value) {
+			objects = append(objects, catalog.NewObject2(c.OID, v.field, v.value))
 		}
 	}
 

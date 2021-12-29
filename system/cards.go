@@ -6,13 +6,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Cards() interface{} {
+func Cards(auth auth.OpAuth) interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	objects := sys.cards.AsObjects()
-
-	return objects
+	return sys.cards.AsObjects(auth)
 }
 
 func UpdateCards(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {

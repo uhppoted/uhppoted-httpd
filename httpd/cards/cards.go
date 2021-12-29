@@ -5,11 +5,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
-func Get() interface{} {
+func Get(auth auth.OpAuth) interface{} {
 	return struct {
 		Cards interface{} `json:"cards"`
 	}{
-		Cards: system.Cards(),
+		Cards: system.Cards(auth),
 	}
 }
 

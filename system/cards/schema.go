@@ -14,3 +14,15 @@ const CardFrom = catalog.CardFrom
 const CardTo = catalog.CardTo
 const CardGroups = catalog.CardGroups
 const GroupName = catalog.GroupName
+
+var lookup = map[catalog.Suffix]string{
+	CardStatus:   "card.status",
+	CardCreated:  "card.created",
+	CardDeleted:  "card.deleted",
+	CardModified: "card.modified",
+	CardName:     "card.name",
+	CardNumber:   "card.number",
+	CardFrom:     "card.from",
+	CardTo:       "card.to",
+	CardGroups:   "card.groups",
+}

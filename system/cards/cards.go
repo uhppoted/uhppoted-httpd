@@ -164,7 +164,7 @@ func (cc *Cards) Print() {
 	}
 }
 
-func (cc *Cards) AsObjects() []interface{} {
+func (cc *Cards) AsObjects(auth auth.OpAuth) []interface{} {
 	objects := []interface{}{}
 	guard.RLock()
 
@@ -172,7 +172,7 @@ func (cc *Cards) AsObjects() []interface{} {
 
 	for _, card := range cc.cards {
 		if card.IsValid() || card.IsDeleted() {
-			if l := card.AsObjects(); l != nil {
+			if l := card.AsObjects(auth); l != nil {
 				objects = append(objects, l...)
 			}
 		}
