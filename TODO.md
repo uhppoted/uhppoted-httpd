@@ -10,7 +10,7 @@
 
 - [ ] Separate LAN and controllers
       - [ ] Add fine-grained auth skeleton for GET requests
-            - [ ] interfaces
+            - [x] interfaces
             - [x] controllers
             - [x] doors
             - [x] cards

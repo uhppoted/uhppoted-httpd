@@ -25,3 +25,14 @@ const DoorDelay = catalog.DoorDelay
 const DoorDelayModified = catalog.DoorDelayModified
 const DoorControl = catalog.DoorControl
 const DoorControlModified = catalog.DoorControlModified
+
+var lookup = map[catalog.Suffix]string{
+	LANStatus:           "LAN.status",
+	LANCreated:          "LAN.created",
+	LANDeleted:          "LAN.deleted",
+	LANType:             "LAN.type",
+	LANName:             "LAN.name",
+	LANBindAddress:      "LAN.address.bind",
+	LANBroadcastAddress: "LAN.address.broadcast",
+	LANListenAddress:    "LAN.address.listen",
+}

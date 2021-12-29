@@ -70,23 +70,48 @@ func (l *LAN) IsDeleted() bool {
 	return false
 }
 
-func (l *LAN) AsObjects() []interface{} {
-	if l.deleted != nil {
-		return []interface{}{
-			catalog.NewObject2(l.OID, LANDeleted, l.deleted),
-		}
+func (l *LAN) AsObjects(auth auth.OpAuth) []interface{} {
+	type E = struct {
+		field catalog.Suffix
+		value interface{}
 	}
 
-	objects := []interface{}{
-		catalog.NewObject(l.OID, ""),
-		catalog.NewObject2(l.OID, LANStatus, l.status()),
-		catalog.NewObject2(l.OID, LANCreated, l.created),
-		catalog.NewObject2(l.OID, LANDeleted, l.deleted),
-		catalog.NewObject2(l.OID, LANType, "LAN"),
-		catalog.NewObject2(l.OID, LANName, l.Name),
-		catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress),
-		catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress),
-		catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress),
+	list := []E{}
+
+	if l.deleted != nil {
+		list = append(list, E{LANDeleted, l.deleted})
+	} else {
+		list = append(list, E{LANStatus, l.status()})
+		list = append(list, E{LANCreated, l.created})
+		list = append(list, E{LANDeleted, l.deleted})
+		list = append(list, E{LANType, "LAN"})
+		list = append(list, E{LANName, l.Name})
+		list = append(list, E{LANBindAddress, l.BindAddress})
+		list = append(list, E{LANBroadcastAddress, l.BroadcastAddress})
+		list = append(list, E{LANListenAddress, l.ListenAddress})
+	}
+
+	f := func(l *LAN, field string, value interface{}) bool {
+		if auth != nil {
+			if err := auth.CanView("system", l, field, value); err != nil {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	objects := []interface{}{}
+
+	if l.deleted == nil && f(l, "OID", l.OID) {
+		objects = append(objects, catalog.NewObject(l.OID, ""))
+	}
+
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(l, field, v.value) {
+			objects = append(objects, catalog.NewObject2(l.OID, v.field, v.value))
+		}
 	}
 
 	return objects

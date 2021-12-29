@@ -6,13 +6,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Interfaces() interface{} {
+func Interfaces(auth auth.OpAuth) interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	objects := sys.interfaces.AsObjects()
-
-	return objects
+	return sys.interfaces.AsObjects(auth)
 }
 
 func UpdateInterfaces(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {

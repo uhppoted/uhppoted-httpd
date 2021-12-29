@@ -26,7 +26,7 @@ func (d *dispatcher) vtable(path string) *handler {
 		return &handler{
 			tag:   "system",
 			rules: d.grule.system,
-			get:   func(r *http.Request, a auth.OpAuth) interface{} { return interfaces.Get() },
+			get:   func(r *http.Request, auth auth.OpAuth) interface{} { return interfaces.Get(auth) },
 			post:  interfaces.Post,
 		}
 
