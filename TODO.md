@@ -9,12 +9,12 @@
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [ ] Check CanView on return from POST
-            - [ ] interfaces
-            - [ ] controllers
-            - [ ] doors
-            - [ ] cards
-            - [ ] groups
+      - [x] Check CanView on return from POST
+            - [x] interfaces
+            - [x] controllers
+            - [x] doors
+            - [x] cards
+            - [x] groups
       - [ ] Genericize CanUpdateDoors etc - pass in ruleset
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 

@@ -164,8 +164,8 @@ func (cc *Cards) Print() {
 	}
 }
 
-func (cc *Cards) AsObjects(auth auth.OpAuth) []interface{} {
-	objects := []interface{}{}
+func (cc *Cards) AsObjects(auth auth.OpAuth) []catalog.Object {
+	objects := []catalog.Object{}
 	guard.RLock()
 
 	defer guard.RUnlock()

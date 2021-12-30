@@ -25,6 +25,11 @@ type Door struct {
 	deleted *types.DateTime
 }
 
+type kv = struct {
+	field catalog.Suffix
+	value interface{}
+}
+
 const BLANK = "'blank'"
 
 var created = types.DateTimeNow()
@@ -53,16 +58,11 @@ func (d Door) String() string {
 	return fmt.Sprintf("%v", d.Name)
 }
 
-func (d *Door) AsObjects(a auth.OpAuth) []interface{} {
-	type E = struct {
-		field catalog.Suffix
-		value interface{}
-	}
-
-	list := []E{}
+func (d *Door) AsObjects(auth auth.OpAuth) []catalog.Object {
+	list := []kv{}
 
 	if d.deleted != nil {
-		list = append(list, E{DoorDeleted, d.deleted})
+		list = append(list, kv{DoorDeleted, d.deleted})
 	} else {
 		created := d.created.Format("2006-01-02 15:04:05")
 		name := d.Name
@@ -133,44 +133,21 @@ func (d *Door) AsObjects(a auth.OpAuth) []interface{} {
 			}
 		}
 
-		list = append(list, E{DoorStatus, d.status()})
-		list = append(list, E{DoorCreated, created})
-		list = append(list, E{DoorDeleted, d.deleted})
-		list = append(list, E{DoorName, name})
-		list = append(list, E{DoorDelay, types.Uint8(delay.delay)})
-		list = append(list, E{DoorDelayStatus, delay.status})
-		list = append(list, E{DoorDelayConfigured, delay.configured})
-		list = append(list, E{DoorDelayError, delay.err})
-		list = append(list, E{DoorControl, control.control})
-		list = append(list, E{DoorControlStatus, control.status})
-		list = append(list, E{DoorControlConfigured, control.configured})
-		list = append(list, E{DoorControlError, control.err})
+		list = append(list, kv{DoorStatus, d.status()})
+		list = append(list, kv{DoorCreated, created})
+		list = append(list, kv{DoorDeleted, d.deleted})
+		list = append(list, kv{DoorName, name})
+		list = append(list, kv{DoorDelay, types.Uint8(delay.delay)})
+		list = append(list, kv{DoorDelayStatus, delay.status})
+		list = append(list, kv{DoorDelayConfigured, delay.configured})
+		list = append(list, kv{DoorDelayError, delay.err})
+		list = append(list, kv{DoorControl, control.control})
+		list = append(list, kv{DoorControlStatus, control.status})
+		list = append(list, kv{DoorControlConfigured, control.configured})
+		list = append(list, kv{DoorControlError, control.err})
 	}
 
-	f := func(d *Door, field string, value interface{}) bool {
-		if a != nil {
-			if err := a.CanView(auth.Doors, d, field, value); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
-	objects := []interface{}{}
-
-	if d.deleted == nil && f(d, "OID", d.OID) {
-		objects = append(objects, catalog.NewObject(d.OID, ""))
-	}
-
-	for _, v := range list {
-		field, _ := lookup[v.field]
-		if f(d, field, v.value) {
-			objects = append(objects, catalog.NewObject2(d.OID, v.field, v.value))
-		}
-	}
-
-	return objects
+	return d.toObjects(list, auth)
 }
 
 func (d *Door) AsRuleEntity() interface{} {
@@ -187,17 +164,7 @@ func (d *Door) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (d *Door) status() types.Status {
-	if d.deleted != nil {
-		return types.StatusDeleted
-	}
-
-	return types.StatusOk
-}
-
 func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	objects := []catalog.Object{}
-
 	f := func(field string, value interface{}) error {
 		if auth == nil {
 			return nil
@@ -207,13 +174,13 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 	}
 
 	if d == nil {
-		return objects, nil
+		return []catalog.Object{}, nil
 	} else if d.deleted != nil {
-		objects = append(objects, catalog.NewObject2(d.OID, DoorDeleted, d.deleted))
 
-		return objects, fmt.Errorf("Door has been deleted")
+		return d.toObjects([]kv{kv{DoorDeleted, d.deleted}}, auth), fmt.Errorf("Door has been deleted")
 	}
 
+	list := []kv{}
 	name := fmt.Sprintf("%v", d.Name)
 
 	switch oid {
@@ -223,7 +190,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		} else {
 			d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, BLANK), stringify(value, BLANK)), dbc)
 			d.Name = value
-			objects = append(objects, catalog.NewObject2(d.OID, DoorName, d.Name))
+			list = append(list, kv{DoorName, d.Name})
 		}
 
 	case d.OID.Append(DoorDelay):
@@ -235,10 +202,10 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			return nil, err
 		} else {
 			d.delay = uint8(v)
-			objects = append(objects, catalog.NewObject2(d.OID, DoorDelayStatus, types.StatusUncertain))
-			objects = append(objects, catalog.NewObject2(d.OID, DoorDelayConfigured, d.delay))
-			objects = append(objects, catalog.NewObject2(d.OID, DoorDelayError, ""))
-			objects = append(objects, catalog.NewObject2(d.OID, DoorDelayModified, true))
+			list = append(list, kv{DoorDelayStatus, types.StatusUncertain})
+			list = append(list, kv{DoorDelayConfigured, d.delay})
+			list = append(list, kv{DoorDelayError, ""})
+			list = append(list, kv{DoorDelayModified, true})
 
 			d.log(auth, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
 		}
@@ -259,10 +226,10 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
 			}
 
-			objects = append(objects, catalog.NewObject2(d.OID, DoorControlStatus, types.StatusUncertain))
-			objects = append(objects, catalog.NewObject2(d.OID, DoorControlConfigured, d.mode))
-			objects = append(objects, catalog.NewObject2(d.OID, DoorControlError, ""))
-			objects = append(objects, catalog.NewObject2(d.OID, DoorControlModified, true))
+			list = append(list, kv{DoorControlStatus, types.StatusUncertain})
+			list = append(list, kv{DoorControlConfigured, d.mode})
+			list = append(list, kv{DoorControlError, ""})
+			list = append(list, kv{DoorControlModified, true})
 
 			d.log(auth, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
 		}
@@ -279,13 +246,48 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		now := types.DateTime(time.Now())
 		d.deleted = &now
 
-		objects = append(objects, catalog.NewObject2(d.OID, DoorDeleted, d.deleted))
+		list = append(list, kv{DoorDeleted, d.deleted})
 		catalog.Delete(d.OID)
 	}
 
-	objects = append(objects, catalog.NewObject2(d.OID, DoorStatus, d.status()))
+	list = append(list, kv{DoorStatus, d.status()})
 
-	return objects, nil
+	return d.toObjects(list, auth), nil
+}
+
+func (d *Door) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+	f := func(d *Door, field string, value interface{}) bool {
+		if a != nil {
+			if err := a.CanView(auth.Doors, d, field, value); err != nil {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	objects := []catalog.Object{}
+
+	if d.deleted == nil && f(d, "OID", d.OID) {
+		objects = append(objects, catalog.NewObject(d.OID, ""))
+	}
+
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(d, field, v.value) {
+			objects = append(objects, catalog.NewObject2(d.OID, v.field, v.value))
+		}
+	}
+
+	return objects
+}
+
+func (d *Door) status() types.Status {
+	if d.deleted != nil {
+		return types.StatusDeleted
+	}
+
+	return types.StatusOk
 }
 
 func (d Door) serialize() ([]byte, error) {

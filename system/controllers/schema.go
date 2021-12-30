@@ -24,6 +24,7 @@ const ControllerDeviceID = catalog.ControllerDeviceID
 const ControllerEndpointStatus = catalog.ControllerEndpointStatus
 const ControllerEndpointAddress = catalog.ControllerEndpointAddress
 const ControllerEndpointConfigured = catalog.ControllerEndpointConfigured
+const ControllerDateTime = catalog.ControllerDateTime
 const ControllerDateTimeStatus = catalog.ControllerDateTimeStatus
 const ControllerDateTimeCurrent = catalog.ControllerDateTimeCurrent
 const ControllerDateTimeSystem = catalog.ControllerDateTimeSystem
@@ -46,6 +47,7 @@ var lookup = map[catalog.Suffix]string{
 	ControllerEndpointStatus:     "controller.endpoint.status",
 	ControllerEndpointAddress:    "controller.endpoint.address",
 	ControllerEndpointConfigured: "controller.endpoint.configured",
+	ControllerDateTime:           "controller.datetime",
 	ControllerDateTimeStatus:     "controller.datetime.status",
 	ControllerDateTimeCurrent:    "controller.datetime.current",
 	ControllerDateTimeSystem:     "controller.datetime.system",

@@ -109,11 +109,11 @@ func (gg *Groups) Clone() Groups {
 	return shadow
 }
 
-func (gg *Groups) AsObjects(auth auth.OpAuth) []interface{} {
+func (gg *Groups) AsObjects(auth auth.OpAuth) []catalog.Object {
 	guard.RLock()
 	defer guard.RUnlock()
 
-	objects := []interface{}{}
+	objects := []catalog.Object{}
 
 	for _, g := range gg.groups {
 		if g.IsValid() || g.IsDeleted() {

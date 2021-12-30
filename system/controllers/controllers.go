@@ -121,8 +121,8 @@ func (cc *Controllers) Save() (json.RawMessage, error) {
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
-func (cc *Controllers) AsObjects(auth auth.OpAuth) []interface{} {
-	objects := []interface{}{}
+func (cc *Controllers) AsObjects(auth auth.OpAuth) []catalog.Object {
+	objects := []catalog.Object{}
 
 	for _, c := range cc.controllers {
 		if c.IsValid() {

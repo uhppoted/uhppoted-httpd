@@ -78,12 +78,12 @@ func TestGroupAsObjects(t *testing.T) {
 		created: created,
 	}
 
-	expected := []interface{}{
-		catalog.Object{OID: "0.5.3", Value: ""},
-		catalog.Object{OID: "0.5.3.0.0", Value: types.StatusOk},
-		catalog.Object{OID: "0.5.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
-		catalog.Object{OID: "0.5.3.0.2", Value: (*types.DateTime)(nil)},
-		catalog.Object{OID: "0.5.3.1", Value: "Le Groupe"},
+	expected := []catalog.Object{
+		{OID: "0.5.3", Value: ""},
+		{OID: "0.5.3.0.0", Value: types.StatusOk},
+		{OID: "0.5.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.5.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.5.3.1", Value: "Le Groupe"},
 	}
 
 	objects := g.AsObjects(nil)
@@ -108,11 +108,8 @@ func TestGroupAsObjectsWithDeleted(t *testing.T) {
 		deleted: deleted,
 	}
 
-	expected := []interface{}{
-		catalog.Object{
-			OID:   "0.5.3.0.2",
-			Value: deleted,
-		},
+	expected := []catalog.Object{
+		{OID: "0.5.3.0.2", Value: deleted},
 	}
 
 	objects := g.AsObjects(nil)
@@ -135,12 +132,12 @@ func TestGroupAsObjectsWithAuth(t *testing.T) {
 		created: created,
 	}
 
-	expected := []interface{}{
-		catalog.Object{OID: "0.5.3", Value: ""},
-		catalog.Object{OID: "0.5.3.0.0", Value: types.StatusOk},
-		catalog.Object{OID: "0.5.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
-		catalog.Object{OID: "0.5.3.0.2", Value: (*types.DateTime)(nil)},
-		//	catalog.Object{OID: "0.5.3.1", Value: "Le Groupe"},
+	expected := []catalog.Object{
+		{OID: "0.5.3", Value: ""},
+		{OID: "0.5.3.0.0", Value: types.StatusOk},
+		{OID: "0.5.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.5.3.0.2", Value: (*types.DateTime)(nil)},
+		//	{OID: "0.5.3.1", Value: "Le Groupe"},
 	}
 
 	auth := stub{
@@ -162,8 +159,9 @@ func TestGroupAsObjectsWithAuth(t *testing.T) {
 
 func TestGroupSet(t *testing.T) {
 	expected := []catalog.Object{
-		catalog.Object{OID: "0.5.3.1", Value: "Ze Gruppe"},
-		catalog.Object{OID: "0.5.3.0.0", Value: types.StatusOk},
+		{OID: "0.5.3", Value: ""},
+		{OID: "0.5.3.1", Value: "Ze Gruppe"},
+		{OID: "0.5.3.0.0", Value: types.StatusOk},
 	}
 
 	g := Group{

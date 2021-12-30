@@ -46,6 +46,11 @@ type Controller interface {
 	Door(uint8) (catalog.OID, bool)
 }
 
+type kv = struct {
+	field catalog.Suffix
+	value interface{}
+}
+
 var created = types.DateTimeNow()
 
 func (l LAN) String() string {
@@ -70,51 +75,23 @@ func (l *LAN) IsDeleted() bool {
 	return false
 }
 
-func (l *LAN) AsObjects(a auth.OpAuth) []interface{} {
-	type E = struct {
-		field catalog.Suffix
-		value interface{}
-	}
-
-	list := []E{}
+func (l *LAN) AsObjects(auth auth.OpAuth) []catalog.Object {
+	list := []kv{}
 
 	if l.deleted != nil {
-		list = append(list, E{LANDeleted, l.deleted})
+		list = append(list, kv{LANDeleted, l.deleted})
 	} else {
-		list = append(list, E{LANStatus, l.status()})
-		list = append(list, E{LANCreated, l.created})
-		list = append(list, E{LANDeleted, l.deleted})
-		list = append(list, E{LANType, "LAN"})
-		list = append(list, E{LANName, l.Name})
-		list = append(list, E{LANBindAddress, l.BindAddress})
-		list = append(list, E{LANBroadcastAddress, l.BroadcastAddress})
-		list = append(list, E{LANListenAddress, l.ListenAddress})
+		list = append(list, kv{LANStatus, l.status()})
+		list = append(list, kv{LANCreated, l.created})
+		list = append(list, kv{LANDeleted, l.deleted})
+		list = append(list, kv{LANType, "LAN"})
+		list = append(list, kv{LANName, l.Name})
+		list = append(list, kv{LANBindAddress, l.BindAddress})
+		list = append(list, kv{LANBroadcastAddress, l.BroadcastAddress})
+		list = append(list, kv{LANListenAddress, l.ListenAddress})
 	}
 
-	f := func(l *LAN, field string, value interface{}) bool {
-		if a != nil {
-			if err := a.CanView(auth.Interfaces, l, field, value); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
-	objects := []interface{}{}
-
-	if l.deleted == nil && f(l, "OID", l.OID) {
-		objects = append(objects, catalog.NewObject(l.OID, ""))
-	}
-
-	for _, v := range list {
-		field, _ := lookup[v.field]
-		if f(l, field, v.value) {
-			objects = append(objects, catalog.NewObject2(l.OID, v.field, v.value))
-		}
-	}
-
-	return objects
+	return l.toObjects(list, auth)
 }
 
 func (l *LAN) AsRuleEntity() interface{} {
@@ -134,7 +111,13 @@ func (l *LAN) AsRuleEntity() interface{} {
 }
 
 func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	objects := []catalog.Object{}
+	if l == nil {
+		return []catalog.Object{}, nil
+	}
+
+	if l.deleted != nil {
+		return l.toObjects([]kv{{LANDeleted, l.deleted}}, auth), fmt.Errorf("LAN has been deleted")
+	}
 
 	f := func(field string, value interface{}) error {
 		if auth == nil {
@@ -144,13 +127,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 		return auth.CanUpdateInterface(l, field, value)
 	}
 
-	if l == nil {
-		return objects, nil
-	} else if l.deleted != nil {
-		objects = append(objects, catalog.NewObject2(l.OID, LANDeleted, l.deleted))
-
-		return objects, fmt.Errorf("LAN has been deleted")
-	}
+	list := []kv{}
 
 	switch oid {
 	case l.OID.Append(LANName):
@@ -166,7 +143,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 				stringify(value, BLANK),
 				dbc)
 			l.Name = value
-			objects = append(objects, catalog.NewObject2(l.OID, LANName, l.Name))
+			list = append(list, kv{LANName, l.Name})
 		}
 
 	case l.OID.Append(LANBindAddress):
@@ -186,7 +163,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 				stringify(value, BLANK),
 				dbc)
 			l.BindAddress = *addr
-			objects = append(objects, catalog.NewObject2(l.OID, LANBindAddress, l.BindAddress))
+			list = append(list, kv{LANBindAddress, l.BindAddress})
 		}
 
 	case l.OID.Append(LANBroadcastAddress):
@@ -206,7 +183,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 				stringify(value, BLANK),
 				dbc)
 			l.BroadcastAddress = *addr
-			objects = append(objects, catalog.NewObject2(l.OID, LANBroadcastAddress, l.BroadcastAddress))
+			list = append(list, kv{LANBroadcastAddress, l.BroadcastAddress})
 		}
 
 	case l.OID.Append(LANListenAddress):
@@ -226,15 +203,42 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 				stringify(value, BLANK),
 				dbc)
 			l.ListenAddress = *addr
-			objects = append(objects, catalog.NewObject2(l.OID, LANListenAddress, l.ListenAddress))
+			list = append(list, kv{LANListenAddress, l.ListenAddress})
 		}
 	}
 
 	if l.deleted == nil {
-		objects = append(objects, catalog.NewObject2(l.OID, LANStatus, l.status()))
+		list = append(list, kv{LANStatus, l.status()})
 	}
 
-	return objects, nil
+	return l.toObjects(list, auth), nil
+}
+
+func (l *LAN) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+	f := func(l *LAN, field string, value interface{}) bool {
+		if a != nil {
+			if err := a.CanView(auth.Interfaces, l, field, value); err != nil {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	objects := []catalog.Object{}
+
+	if l.deleted == nil && f(l, "OID", l.OID) {
+		objects = append(objects, catalog.NewObject(l.OID, ""))
+	}
+
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(l, field, v.value) {
+			objects = append(objects, catalog.NewObject2(l.OID, v.field, v.value))
+		}
+	}
+
+	return objects
 }
 
 func (l *LAN) status() types.Status {

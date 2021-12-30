@@ -309,6 +309,7 @@ const ControllerDeviceID Suffix = ".2"
 const ControllerEndpointStatus Suffix = ".3.0"
 const ControllerEndpointAddress Suffix = ".3.1"
 const ControllerEndpointConfigured Suffix = ".3.2"
+const ControllerDateTime Suffix = ".4" //TODO Fix when rationalizing the whole date/time/timezone mess
 const ControllerDateTimeStatus Suffix = ".4.0"
 const ControllerDateTimeCurrent Suffix = ".4.1"
 const ControllerDateTimeSystem Suffix = ".4.2"

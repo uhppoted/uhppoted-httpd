@@ -29,16 +29,16 @@ func TestLANAsObjects(t *testing.T) {
 		created: created,
 	}
 
-	expected := []interface{}{
-		catalog.Object{OID: "0.1.3", Value: ""},
-		catalog.Object{OID: "0.1.3.0.0", Value: types.StatusOk},
-		catalog.Object{OID: "0.1.3.0.1", Value: created},
-		catalog.Object{OID: "0.1.3.0.2", Value: (*types.DateTime)(nil)},
-		catalog.Object{OID: "0.1.3.0.4", Value: "LAN"},
-		catalog.Object{OID: "0.1.3.1", Value: "Le LAN"},
-		catalog.Object{OID: "0.1.3.3.1", Value: *bind},
-		catalog.Object{OID: "0.1.3.3.2", Value: *broadcast},
-		catalog.Object{OID: "0.1.3.3.3", Value: *listen},
+	expected := []catalog.Object{
+		{OID: "0.1.3", Value: ""},
+		{OID: "0.1.3.0.0", Value: types.StatusOk},
+		{OID: "0.1.3.0.1", Value: created},
+		{OID: "0.1.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.1.3.0.4", Value: "LAN"},
+		{OID: "0.1.3.1", Value: "Le LAN"},
+		{OID: "0.1.3.3.1", Value: *bind},
+		{OID: "0.1.3.3.2", Value: *broadcast},
+		{OID: "0.1.3.3.3", Value: *listen},
 	}
 
 	objects := l.AsObjects(nil)
@@ -66,11 +66,8 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 		deleted: deleted,
 	}
 
-	expected := []interface{}{
-		catalog.Object{
-			OID:   "0.1.3.0.2",
-			Value: deleted,
-		},
+	expected := []catalog.Object{
+		{OID: "0.1.3.0.2", Value: deleted},
 	}
 
 	objects := l.AsObjects(nil)
@@ -96,7 +93,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 		created: created,
 	}
 
-	expected := []interface{}{
+	expected := []catalog.Object{
 		catalog.Object{OID: "0.1.3", Value: ""},
 		catalog.Object{OID: "0.1.3.0.0", Value: types.StatusOk},
 		catalog.Object{OID: "0.1.3.0.1", Value: created},
@@ -127,6 +124,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 
 func TestLANSet(t *testing.T) {
 	expected := []catalog.Object{
+		catalog.Object{OID: "0.1.3", Value: ""},
 		catalog.Object{OID: "0.1.3.1", Value: "Ze LAN"},
 		catalog.Object{OID: "0.1.3.0.0", Value: types.StatusOk},
 	}

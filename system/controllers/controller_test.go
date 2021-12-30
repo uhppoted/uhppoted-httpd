@@ -34,27 +34,27 @@ func TestControllerAsObjects(t *testing.T) {
 		created: created,
 	}
 
-	expected := []interface{}{
-		catalog.Object{OID: "0.2.3", Value: ""},
-		catalog.Object{OID: "0.2.3.0.0", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.2.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
-		catalog.Object{OID: "0.2.3.0.2", Value: (*types.DateTime)(nil)},
-		catalog.Object{OID: "0.2.3.1", Value: name},
-		catalog.Object{OID: "0.2.3.2", Value: fmt.Sprintf("%v", deviceID)},
-		catalog.Object{OID: "0.2.3.3.0", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.2.3.3.1", Value: fmt.Sprintf("%v", address)},
-		catalog.Object{OID: "0.2.3.3.2", Value: fmt.Sprintf("%v", address)},
-		catalog.Object{OID: "0.2.3.4.0", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.2.3.4.1", Value: ""},
-		catalog.Object{OID: "0.2.3.4.2", Value: ""},
-		catalog.Object{OID: "0.2.3.5.0", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.2.3.5.1", Value: ""},
-		catalog.Object{OID: "0.2.3.6.0", Value: types.StatusOk},
-		catalog.Object{OID: "0.2.3.6.1", Value: ""},
-		catalog.Object{OID: "0.2.3.7.1", Value: catalog.OID("0.3.5")},
-		catalog.Object{OID: "0.2.3.7.2", Value: catalog.OID("0.3.7")},
-		catalog.Object{OID: "0.2.3.7.3", Value: catalog.OID("0.3.9")},
-		catalog.Object{OID: "0.2.3.7.4", Value: catalog.OID("0.3.11")},
+	expected := []catalog.Object{
+		{OID: "0.2.3", Value: ""},
+		{OID: "0.2.3.0.0", Value: types.StatusUnknown},
+		{OID: "0.2.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.2.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.2.3.1", Value: name},
+		{OID: "0.2.3.2", Value: fmt.Sprintf("%v", deviceID)},
+		{OID: "0.2.3.3.0", Value: types.StatusUnknown},
+		{OID: "0.2.3.3.1", Value: fmt.Sprintf("%v", address)},
+		{OID: "0.2.3.3.2", Value: fmt.Sprintf("%v", address)},
+		{OID: "0.2.3.4.0", Value: types.StatusUnknown},
+		{OID: "0.2.3.4.1", Value: ""},
+		{OID: "0.2.3.4.2", Value: ""},
+		{OID: "0.2.3.5.0", Value: types.StatusUnknown},
+		{OID: "0.2.3.5.1", Value: ""},
+		{OID: "0.2.3.6.0", Value: types.StatusOk},
+		{OID: "0.2.3.6.1", Value: ""},
+		{OID: "0.2.3.7.1", Value: catalog.OID("0.3.5")},
+		{OID: "0.2.3.7.2", Value: catalog.OID("0.3.7")},
+		{OID: "0.2.3.7.3", Value: catalog.OID("0.3.9")},
+		{OID: "0.2.3.7.4", Value: catalog.OID("0.3.11")},
 	}
 
 	objects := c.AsObjects(nil)
@@ -86,11 +86,8 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 		deleted: deleted,
 	}
 
-	expected := []interface{}{
-		catalog.Object{
-			OID:   "0.2.3.0.2",
-			Value: deleted,
-		},
+	expected := []catalog.Object{
+		{OID: "0.2.3.0.2", Value: deleted},
 	}
 
 	objects := c.AsObjects(nil)
@@ -120,27 +117,27 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 		created: created,
 	}
 
-	expected := []interface{}{
-		catalog.Object{OID: "0.2.3", Value: ""},
-		catalog.Object{OID: "0.2.3.0.0", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.2.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
-		catalog.Object{OID: "0.2.3.0.2", Value: (*types.DateTime)(nil)},
-		catalog.Object{OID: "0.2.3.1", Value: name},
-		// catalog.Object{OID: "0.2.3.2", Value: fmt.Sprintf("%v", deviceID)},
-		catalog.Object{OID: "0.2.3.3.0", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.2.3.3.1", Value: fmt.Sprintf("%v", address)},
-		catalog.Object{OID: "0.2.3.3.2", Value: fmt.Sprintf("%v", address)},
-		catalog.Object{OID: "0.2.3.4.0", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.2.3.4.1", Value: ""},
-		catalog.Object{OID: "0.2.3.4.2", Value: ""},
-		catalog.Object{OID: "0.2.3.5.0", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.2.3.5.1", Value: ""},
-		catalog.Object{OID: "0.2.3.6.0", Value: types.StatusOk},
-		catalog.Object{OID: "0.2.3.6.1", Value: ""},
-		catalog.Object{OID: "0.2.3.7.1", Value: catalog.OID("0.3.5")},
-		catalog.Object{OID: "0.2.3.7.2", Value: catalog.OID("0.3.7")},
-		catalog.Object{OID: "0.2.3.7.3", Value: catalog.OID("0.3.9")},
-		catalog.Object{OID: "0.2.3.7.4", Value: catalog.OID("0.3.11")},
+	expected := []catalog.Object{
+		{OID: "0.2.3", Value: ""},
+		{OID: "0.2.3.0.0", Value: types.StatusUnknown},
+		{OID: "0.2.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.2.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.2.3.1", Value: name},
+		// {OID: "0.2.3.2", Value: fmt.Sprintf("%v", deviceID)},
+		{OID: "0.2.3.3.0", Value: types.StatusUnknown},
+		{OID: "0.2.3.3.1", Value: fmt.Sprintf("%v", address)},
+		{OID: "0.2.3.3.2", Value: fmt.Sprintf("%v", address)},
+		{OID: "0.2.3.4.0", Value: types.StatusUnknown},
+		{OID: "0.2.3.4.1", Value: ""},
+		{OID: "0.2.3.4.2", Value: ""},
+		{OID: "0.2.3.5.0", Value: types.StatusUnknown},
+		{OID: "0.2.3.5.1", Value: ""},
+		{OID: "0.2.3.6.0", Value: types.StatusOk},
+		{OID: "0.2.3.6.1", Value: ""},
+		{OID: "0.2.3.7.1", Value: catalog.OID("0.3.5")},
+		{OID: "0.2.3.7.2", Value: catalog.OID("0.3.7")},
+		{OID: "0.2.3.7.3", Value: catalog.OID("0.3.9")},
+		{OID: "0.2.3.7.4", Value: catalog.OID("0.3.11")},
 	}
 
 	auth := stub{
@@ -162,8 +159,9 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 
 func TestControllerSet(t *testing.T) {
 	expected := []catalog.Object{
-		catalog.Object{OID: "0.2.3.1", Value: "Ze Kontroller"},
-		catalog.Object{OID: "0.2.3.0.0", Value: types.StatusUnknown},
+		{OID: "0.2.3", Value: ""},
+		{OID: "0.2.3.1", Value: "Ze Kontroller"},
+		{OID: "0.2.3.0.0", Value: types.StatusUnknown},
 	}
 
 	c := Controller{

@@ -24,20 +24,20 @@ func TestDoorAsObjects(t *testing.T) {
 		created: created,
 	}
 
-	expected := []interface{}{
-		catalog.Object{OID: "0.3.3", Value: ""},
-		catalog.Object{OID: "0.3.3.0.0", Value: types.StatusOk},
-		catalog.Object{OID: "0.3.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
-		catalog.Object{OID: "0.3.3.0.2", Value: (*types.DateTime)(nil)},
-		catalog.Object{OID: "0.3.3.1", Value: "Le Door"},
-		catalog.Object{OID: "0.3.3.2", Value: types.Uint8(0)},
-		catalog.Object{OID: "0.3.3.2.1", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.3.3.2.2", Value: uint8(7)},
-		catalog.Object{OID: "0.3.3.2.3", Value: ""},
-		catalog.Object{OID: "0.3.3.3", Value: core.ControlState(0)},
-		catalog.Object{OID: "0.3.3.3.1", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.3.3.3.2", Value: core.NormallyOpen},
-		catalog.Object{OID: "0.3.3.3.3", Value: ""},
+	expected := []catalog.Object{
+		{OID: "0.3.3", Value: ""},
+		{OID: "0.3.3.0.0", Value: types.StatusOk},
+		{OID: "0.3.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.3.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.3.3.1", Value: "Le Door"},
+		{OID: "0.3.3.2", Value: types.Uint8(0)},
+		{OID: "0.3.3.2.1", Value: types.StatusUnknown},
+		{OID: "0.3.3.2.2", Value: uint8(7)},
+		{OID: "0.3.3.2.3", Value: ""},
+		{OID: "0.3.3.3", Value: core.ControlState(0)},
+		{OID: "0.3.3.3.1", Value: types.StatusUnknown},
+		{OID: "0.3.3.3.2", Value: core.NormallyOpen},
+		{OID: "0.3.3.3.3", Value: ""},
 	}
 
 	objects := d.AsObjects(nil)
@@ -60,11 +60,8 @@ func TestDoorAsObjectsWithDeleted(t *testing.T) {
 		deleted: deleted,
 	}
 
-	expected := []interface{}{
-		catalog.Object{
-			OID:   "0.3.3.0.2",
-			Value: deleted,
-		},
+	expected := []catalog.Object{
+		{OID: "0.3.3.0.2", Value: deleted},
 	}
 
 	objects := d.AsObjects(nil)
@@ -85,20 +82,20 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		created: created,
 	}
 
-	expected := []interface{}{
-		catalog.Object{OID: "0.3.3", Value: ""},
-		catalog.Object{OID: "0.3.3.0.0", Value: types.StatusOk},
-		catalog.Object{OID: "0.3.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
-		catalog.Object{OID: "0.3.3.0.2", Value: (*types.DateTime)(nil)},
-		catalog.Object{OID: "0.3.3.1", Value: "Le Door"},
-		//		catalog.Object{OID: "0.3.3.2", Value: types.Uint8(0)},
-		//		catalog.Object{OID: "0.3.3.2.1", Value: types.StatusUnknown},
-		//		catalog.Object{OID: "0.3.3.2.2", Value: uint8(7)},
-		//		catalog.Object{OID: "0.3.3.2.3", Value: ""},
-		catalog.Object{OID: "0.3.3.3", Value: core.ControlState(0)},
-		catalog.Object{OID: "0.3.3.3.1", Value: types.StatusUnknown},
-		catalog.Object{OID: "0.3.3.3.2", Value: core.NormallyOpen},
-		catalog.Object{OID: "0.3.3.3.3", Value: ""},
+	expected := []catalog.Object{
+		{OID: "0.3.3", Value: ""},
+		{OID: "0.3.3.0.0", Value: types.StatusOk},
+		{OID: "0.3.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.3.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.3.3.1", Value: "Le Door"},
+		// {OID: "0.3.3.2", Value: types.Uint8(0)},
+		// {OID: "0.3.3.2.1", Value: types.StatusUnknown},
+		// {OID: "0.3.3.2.2", Value: uint8(7)},
+		// {OID: "0.3.3.2.3", Value: ""},
+		{OID: "0.3.3.3", Value: core.ControlState(0)},
+		{OID: "0.3.3.3.1", Value: types.StatusUnknown},
+		{OID: "0.3.3.3.2", Value: core.NormallyOpen},
+		{OID: "0.3.3.3.3", Value: ""},
 	}
 
 	auth := stub{
@@ -120,6 +117,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 
 func TestDoorSet(t *testing.T) {
 	expected := []catalog.Object{
+		catalog.Object{OID: "0.3.3", Value: ""},
 		catalog.Object{OID: "0.3.3.1", Value: "Eine Kleine Dooren"},
 		catalog.Object{OID: "0.3.3.0.0", Value: types.StatusOk},
 	}

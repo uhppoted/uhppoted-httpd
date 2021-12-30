@@ -28,15 +28,15 @@ func TestCardAsObjects(t *testing.T) {
 		created: created,
 	}
 
-	expected := []interface{}{
-		catalog.Object{OID: "0.4.3", Value: ""},
-		catalog.Object{OID: "0.4.3.0.0", Value: types.StatusOk},
-		catalog.Object{OID: "0.4.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
-		catalog.Object{OID: "0.4.3.0.2", Value: (*types.DateTime)(nil)},
-		catalog.Object{OID: "0.4.3.1", Value: "Le Card"},
-		catalog.Object{OID: "0.4.3.2", Value: &card},
-		catalog.Object{OID: "0.4.3.3", Value: &from},
-		catalog.Object{OID: "0.4.3.4", Value: &to},
+	expected := []catalog.Object{
+		{OID: "0.4.3", Value: ""},
+		{OID: "0.4.3.0.0", Value: types.StatusOk},
+		{OID: "0.4.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.4.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.4.3.1", Value: "Le Card"},
+		{OID: "0.4.3.2", Value: &card},
+		{OID: "0.4.3.3", Value: &from},
+		{OID: "0.4.3.4", Value: &to},
 	}
 
 	objects := c.AsObjects(nil)
@@ -63,11 +63,8 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 		deleted: deleted,
 	}
 
-	expected := []interface{}{
-		catalog.Object{
-			OID:   "0.4.3.0.2",
-			Value: deleted,
-		},
+	expected := []catalog.Object{
+		{OID: "0.4.3.0.2", Value: deleted},
 	}
 
 	objects := c.AsObjects(nil)
@@ -92,15 +89,15 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 		created: created,
 	}
 
-	expected := []interface{}{
-		catalog.Object{OID: "0.4.3", Value: ""},
-		catalog.Object{OID: "0.4.3.0.0", Value: types.StatusOk},
-		catalog.Object{OID: "0.4.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
-		catalog.Object{OID: "0.4.3.0.2", Value: (*types.DateTime)(nil)},
-		catalog.Object{OID: "0.4.3.1", Value: "Le Card"},
-		// catalog.Object{OID: "0.4.3.2", Value: &card},
-		catalog.Object{OID: "0.4.3.3", Value: &from},
-		catalog.Object{OID: "0.4.3.4", Value: &to},
+	expected := []catalog.Object{
+		{OID: "0.4.3", Value: ""},
+		{OID: "0.4.3.0.0", Value: types.StatusOk},
+		{OID: "0.4.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.4.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.4.3.1", Value: "Le Card"},
+		// {OID: "0.4.3.2", Value: &card},
+		{OID: "0.4.3.3", Value: &from},
+		{OID: "0.4.3.4", Value: &to},
 	}
 
 	auth := stub{
@@ -122,8 +119,9 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 
 func TestCardSet(t *testing.T) {
 	expected := []catalog.Object{
-		catalog.Object{OID: "0.4.3.1", Value: "Ze Kardt"},
-		catalog.Object{OID: "0.4.3.0.0", Value: types.StatusOk},
+		{OID: "0.4.3", Value: ""},
+		{OID: "0.4.3.1", Value: "Ze Kardt"},
+		{OID: "0.4.3.0.0", Value: types.StatusOk},
 	}
 
 	c := Card{

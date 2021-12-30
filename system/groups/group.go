@@ -23,6 +23,11 @@ type Group struct {
 	deleted *types.DateTime
 }
 
+type kv = struct {
+	field catalog.Suffix
+	value interface{}
+}
+
 const BLANK = "'blank'"
 
 var created = types.DateTimeNow()
@@ -47,24 +52,19 @@ func (g Group) IsDeleted() bool {
 	return false
 }
 
-func (g *Group) AsObjects(a auth.OpAuth) []interface{} {
-	type E = struct {
-		field catalog.Suffix
-		value interface{}
-	}
-
-	list := []E{}
+func (g *Group) AsObjects(auth auth.OpAuth) []catalog.Object {
+	list := []kv{}
 
 	if g.deleted != nil {
-		list = append(list, E{GroupDeleted, g.deleted})
+		list = append(list, kv{GroupDeleted, g.deleted})
 	} else {
 		created := g.created.Format("2006-01-02 15:04:05")
 		name := g.Name
 
-		list = append(list, E{GroupStatus, g.status()})
-		list = append(list, E{GroupCreated, created})
-		list = append(list, E{GroupDeleted, g.deleted})
-		list = append(list, E{GroupName, name})
+		list = append(list, kv{GroupStatus, g.status()})
+		list = append(list, kv{GroupCreated, created})
+		list = append(list, kv{GroupDeleted, g.deleted})
+		list = append(list, kv{GroupName, name})
 
 		doors := catalog.GetDoors()
 		re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
@@ -76,36 +76,13 @@ func (g *Group) AsObjects(a auth.OpAuth) []interface{} {
 				did := m[2]
 				allowed := g.Doors[door]
 
-				list = append(list, E{GroupDoors.Append(did), allowed})
-				list = append(list, E{GroupDoors.Append(did + ".1"), door})
+				list = append(list, kv{GroupDoors.Append(did), allowed})
+				list = append(list, kv{GroupDoors.Append(did + ".1"), door})
 			}
 		}
 	}
 
-	f := func(g *Group, field string, value interface{}) bool {
-		if a != nil {
-			if err := a.CanView(auth.Groups, g, field, value); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
-	objects := []interface{}{}
-
-	if g.deleted == nil && f(g, "OID", g.OID) {
-		objects = append(objects, catalog.NewObject(g.OID, ""))
-	}
-
-	for _, v := range list {
-		field, _ := lookup[v.field]
-		if f(g, field, v.value) {
-			objects = append(objects, catalog.NewObject2(g.OID, v.field, v.value))
-		}
-	}
-
-	return objects
+	return g.toObjects(list, auth)
 }
 
 func (g *Group) AsRuleEntity() interface{} {
@@ -143,8 +120,6 @@ func (g *Group) status() types.Status {
 }
 
 func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	objects := []catalog.Object{}
-
 	f := func(field string, value interface{}) error {
 		if auth != nil {
 			return auth.CanUpdateGroup(g, field, value)
@@ -154,13 +129,12 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 	}
 
 	if g == nil {
-		return objects, nil
+		return []catalog.Object{}, nil
 	} else if g.deleted != nil {
-		objects = append(objects, catalog.NewObject2(g.OID, GroupDeleted, g.deleted))
-
-		return objects, fmt.Errorf("Group has been deleted")
+		return g.toObjects([]kv{{GroupDeleted, g.deleted}}, auth), fmt.Errorf("Group has been deleted")
 	}
 
+	list := []kv{}
 	name := g.Name
 	switch {
 	case oid == g.OID.Append(GroupName):
@@ -169,7 +143,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 		} else {
 			g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, BLANK), stringify(value, BLANK)), dbc)
 			g.Name = value
-			objects = append(objects, catalog.NewObject2(g.OID, GroupName, g.Name))
+			list = append(list, kv{GroupName, g.Name})
 		}
 
 	case catalog.OID(g.OID.Append(GroupDoors)).Contains(oid):
@@ -188,7 +162,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 				}
 
 				g.Doors[k] = value == "true"
-				objects = append(objects, catalog.NewObject2(g.OID, GroupDoors.Append(did), g.Doors[k]))
+				list = append(list, kv{GroupDoors.Append(did), g.Doors[k]})
 			}
 		}
 	}
@@ -203,15 +177,41 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 		g.log(auth, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
 		now := types.DateTime(time.Now())
 		g.deleted = &now
-		objects = append(objects, catalog.NewObject(g.OID, "deleted"))
-		objects = append(objects, catalog.NewObject2(g.OID, GroupDeleted, g.deleted))
+		list = append(list, kv{GroupDeleted, g.deleted})
 
 		catalog.Delete(g.OID)
 	}
 
-	objects = append(objects, catalog.NewObject2(g.OID, GroupStatus, g.status()))
+	list = append(list, kv{GroupStatus, g.status()})
 
-	return objects, nil
+	return g.toObjects(list, auth), nil
+}
+
+func (g *Group) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+	f := func(g *Group, field string, value interface{}) bool {
+		if a != nil {
+			if err := a.CanView(auth.Groups, g, field, value); err != nil {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	objects := []catalog.Object{}
+
+	if g.deleted == nil && f(g, "OID", g.OID) {
+		objects = append(objects, catalog.NewObject(g.OID, ""))
+	}
+
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(g, field, v.value) {
+			objects = append(objects, catalog.NewObject2(g.OID, v.field, v.value))
+		}
+	}
+
+	return objects
 }
 
 func (g Group) serialize() ([]byte, error) {

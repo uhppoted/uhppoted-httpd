@@ -27,6 +27,11 @@ type Card struct {
 	deleted *types.DateTime
 }
 
+type kv = struct {
+	field catalog.Suffix
+	value interface{}
+}
+
 const BLANK = "'blank'"
 
 var created = types.DateTimeNow()
@@ -44,6 +49,10 @@ func (c Card) String() string {
 	}
 
 	return fmt.Sprintf("%v (%v)", number, name)
+}
+
+func (c Card) GetName() string {
+	return strings.TrimSpace(c.Name)
 }
 
 func (c *Card) IsValid() bool {
@@ -68,16 +77,11 @@ func (c *Card) IsDeleted() bool {
 	return false
 }
 
-func (c *Card) AsObjects(a auth.OpAuth) []interface{} {
-	type E = struct {
-		field catalog.Suffix
-		value interface{}
-	}
-
-	list := []E{}
+func (c *Card) AsObjects(auth auth.OpAuth) []catalog.Object {
+	list := []kv{}
 
 	if c.deleted != nil {
-		list = append(list, E{CardDeleted, c.deleted})
+		list = append(list, kv{CardDeleted, c.deleted})
 	} else {
 		created := c.created.Format("2006-01-02 15:04:05")
 		name := c.Name
@@ -85,13 +89,13 @@ func (c *Card) AsObjects(a auth.OpAuth) []interface{} {
 		from := c.From
 		to := c.To
 
-		list = append(list, E{CardStatus, c.status()})
-		list = append(list, E{CardCreated, created})
-		list = append(list, E{CardDeleted, c.deleted})
-		list = append(list, E{CardName, name})
-		list = append(list, E{CardNumber, number})
-		list = append(list, E{CardFrom, from})
-		list = append(list, E{CardTo, to})
+		list = append(list, kv{CardStatus, c.status()})
+		list = append(list, kv{CardCreated, created})
+		list = append(list, kv{CardDeleted, c.deleted})
+		list = append(list, kv{CardName, name})
+		list = append(list, kv{CardNumber, number})
+		list = append(list, kv{CardFrom, from})
+		list = append(list, kv{CardTo, to})
 
 		groups := catalog.GetGroups()
 		re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
@@ -103,36 +107,13 @@ func (c *Card) AsObjects(a auth.OpAuth) []interface{} {
 				gid := m[2]
 				member := c.Groups[g]
 
-				list = append(list, E{CardGroups.Append(gid), member})
-				list = append(list, E{CardGroups.Append(gid + ".1"), group})
+				list = append(list, kv{CardGroups.Append(gid), member})
+				list = append(list, kv{CardGroups.Append(gid + ".1"), group})
 			}
 		}
 	}
 
-	f := func(c *Card, field string, value interface{}) bool {
-		if a != nil {
-			if err := a.CanView(auth.Cards, c, field, value); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
-	objects := []interface{}{}
-
-	if c.deleted == nil && f(c, "OID", c.OID) {
-		objects = append(objects, catalog.NewObject(c.OID, ""))
-	}
-
-	for _, v := range list {
-		field, _ := lookup[v.field]
-		if f(c, field, v.value) {
-			objects = append(objects, catalog.NewObject2(c.OID, v.field, v.value))
-		}
-	}
-
-	return objects
+	return c.toObjects(list, auth)
 }
 
 func (c *Card) AsRuleEntity() interface{} {
@@ -173,17 +154,7 @@ func (c *Card) AsRuleEntity() interface{} {
 	return &entity{}
 }
 
-func (c *Card) status() types.Status {
-	if c.deleted != nil {
-		return types.StatusDeleted
-	}
-
-	return types.StatusOk
-}
-
 func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	objects := []catalog.Object{}
-
 	f := func(field string, value interface{}) error {
 		if auth == nil {
 			return nil
@@ -193,13 +164,12 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 	}
 
 	if c == nil {
-		return objects, nil
+		return []catalog.Object{}, nil
 	} else if c.deleted != nil {
-		objects = append(objects, catalog.NewObject2(c.OID, CardDeleted, c.deleted))
-
-		return objects, fmt.Errorf("Card has been deleted")
+		return c.toObjects([]kv{{CardDeleted, c.deleted}}, auth), fmt.Errorf("Card has been deleted")
 	}
 
+	list := []kv{}
 	clone := c.clone()
 
 	switch {
@@ -217,7 +187,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				dbc)
 
 			c.Name = strings.TrimSpace(value)
-			objects = append(objects, catalog.NewObject2(c.OID, CardName, stringify(c.Name, "")))
+			list = append(list, kv{CardName, stringify(c.Name, "")})
 		}
 
 	case oid == c.OID.Append(CardNumber):
@@ -238,7 +208,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 
 				v := types.Card(n)
 				c.Card = &v
-				objects = append(objects, catalog.NewObject2(c.OID, CardNumber, c.Card))
+				list = append(list, kv{CardNumber, c.Card})
 			}
 		} else if value == "" {
 			if err := f("number", 0); err != nil {
@@ -265,7 +235,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				}
 
 				c.Card = nil
-				objects = append(objects, catalog.NewObject2(c.OID, CardNumber, ""))
+				list = append(list, kv{CardNumber, ""})
 			}
 		}
 
@@ -287,7 +257,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				dbc)
 
 			c.From = from
-			objects = append(objects, catalog.NewObject2(c.OID, CardFrom, c.From))
+			list = append(list, kv{CardFrom, c.From})
 		}
 
 	case oid == c.OID.Append(CardTo):
@@ -308,7 +278,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				dbc)
 
 			c.To = to
-			objects = append(objects, catalog.NewObject2(c.OID, CardTo, c.To))
+			list = append(list, kv{CardTo, c.To})
 		}
 
 	case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
@@ -344,7 +314,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				}
 
 				c.Groups[k] = value == "true"
-				objects = append(objects, catalog.NewObject2(c.OID, CardGroups.Append(gid), c.Groups[k]))
+				list = append(list, kv{CardGroups.Append(gid), c.Groups[k]})
 			}
 		}
 	}
@@ -388,19 +358,49 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		now := types.DateTime(time.Now())
 		c.deleted = &now
 
-		objects = append(objects, catalog.NewObject(c.OID, "deleted"))
-		objects = append(objects, catalog.NewObject2(c.OID, CardDeleted, c.deleted))
+		list = append(list, kv{CardDeleted, c.deleted})
 
 		catalog.Delete(c.OID)
 	}
 
-	objects = append(objects, catalog.NewObject2(c.OID, CardStatus, c.status()))
+	list = append(list, kv{CardStatus, c.status()})
 
-	return objects, nil
+	return c.toObjects(list, auth), nil
 }
 
-func (c Card) GetName() string {
-	return strings.TrimSpace(c.Name)
+func (c *Card) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+	f := func(c *Card, field string, value interface{}) bool {
+		if a != nil {
+			if err := a.CanView(auth.Cards, c, field, value); err != nil {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	objects := []catalog.Object{}
+
+	if c.deleted == nil && f(c, "OID", c.OID) {
+		objects = append(objects, catalog.NewObject(c.OID, ""))
+	}
+
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(c, field, v.value) {
+			objects = append(objects, catalog.NewObject2(c.OID, v.field, v.value))
+		}
+	}
+
+	return objects
+}
+
+func (c *Card) status() types.Status {
+	if c.deleted != nil {
+		return types.StatusDeleted
+	}
+
+	return types.StatusOk
 }
 
 func (c Card) serialize() ([]byte, error) {

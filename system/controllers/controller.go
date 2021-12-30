@@ -32,6 +32,11 @@ type Controller struct {
 	unconfigured bool
 }
 
+type kv = struct {
+	field catalog.Suffix
+	value interface{}
+}
+
 type cached struct {
 	touched  time.Time
 	address  *core.Address
@@ -106,16 +111,11 @@ func (c *Controller) realized() bool {
 	return false
 }
 
-func (c *Controller) AsObjects(a auth.OpAuth) []interface{} {
-	type E = struct {
-		field catalog.Suffix
-		value interface{}
-	}
-
-	list := []E{}
+func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
+	list := []kv{}
 
 	if c.deleted != nil {
-		list = append(list, E{ControllerDeleted, c.deleted})
+		list = append(list, kv{ControllerDeleted, c.deleted})
 	} else {
 		type addr struct {
 			address    string
@@ -224,52 +224,28 @@ func (c *Controller) AsObjects(a auth.OpAuth) []interface{} {
 			}
 		}
 
-		list = append(list, E{ControllerStatus, c.status()})
-		list = append(list, E{ControllerCreated, created})
-		list = append(list, E{ControllerDeleted, c.deleted})
-		list = append(list, E{ControllerName, name})
-		list = append(list, E{ControllerDeviceID, deviceID})
-		list = append(list, E{ControllerEndpointStatus, address.status})
-		list = append(list, E{ControllerEndpointAddress, address.address})
-		list = append(list, E{ControllerEndpointConfigured, address.configured})
-		list = append(list, E{ControllerDateTimeStatus, datetime.status})
-		list = append(list, E{ControllerDateTimeCurrent, datetime.datetime})
-		list = append(list, E{ControllerDateTimeSystem, datetime.system})
-		list = append(list, E{ControllerCardsStatus, cards.status})
-		list = append(list, E{ControllerCardsCount, cards.cards})
-		list = append(list, E{ControllerEventsStatus, events.status})
-		list = append(list, E{ControllerEventsCount, events.events})
-		list = append(list, E{ControllerDoor1, doors[1]})
-		list = append(list, E{ControllerDoor2, doors[2]})
-		list = append(list, E{ControllerDoor3, doors[3]})
-		list = append(list, E{ControllerDoor4, doors[4]})
+		list = append(list, kv{ControllerStatus, c.status()})
+		list = append(list, kv{ControllerCreated, created})
+		list = append(list, kv{ControllerDeleted, c.deleted})
+		list = append(list, kv{ControllerName, name})
+		list = append(list, kv{ControllerDeviceID, deviceID})
+		list = append(list, kv{ControllerEndpointStatus, address.status})
+		list = append(list, kv{ControllerEndpointAddress, address.address})
+		list = append(list, kv{ControllerEndpointConfigured, address.configured})
+		list = append(list, kv{ControllerDateTimeStatus, datetime.status})
+		list = append(list, kv{ControllerDateTimeCurrent, datetime.datetime})
+		list = append(list, kv{ControllerDateTimeSystem, datetime.system})
+		list = append(list, kv{ControllerCardsStatus, cards.status})
+		list = append(list, kv{ControllerCardsCount, cards.cards})
+		list = append(list, kv{ControllerEventsStatus, events.status})
+		list = append(list, kv{ControllerEventsCount, events.events})
+		list = append(list, kv{ControllerDoor1, doors[1]})
+		list = append(list, kv{ControllerDoor2, doors[2]})
+		list = append(list, kv{ControllerDoor3, doors[3]})
+		list = append(list, kv{ControllerDoor4, doors[4]})
 	}
 
-	f := func(c *Controller, field string, value interface{}) bool {
-		if a != nil {
-			if err := a.CanView(auth.Controllers, c, field, value); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
-	OID := c.OID()
-	objects := []interface{}{}
-
-	if c.deleted == nil && f(c, "OID", OID) {
-		objects = append(objects, catalog.NewObject(OID, ""))
-	}
-
-	for _, v := range list {
-		field, _ := lookup[v.field]
-		if f(c, field, v.value) {
-			objects = append(objects, catalog.NewObject2(OID, v.field, v.value))
-		}
-	}
-
-	return objects
+	return c.toObjects(list, auth)
 }
 
 func (c *Controller) AsRuleEntity() interface{} {
@@ -393,8 +369,13 @@ func (c *Controller) get() *cached {
 }
 
 func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	OID := c.OID()
-	objects := []catalog.Object{}
+	if c == nil {
+		return []catalog.Object{}, nil
+	}
+
+	if c.deleted != nil {
+		return c.toObjects([]kv{{ControllerDeleted, c.deleted}}, auth), fmt.Errorf("Controller has been deleted")
+	}
 
 	f := func(field string, value interface{}) error {
 		if auth == nil {
@@ -404,15 +385,10 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		return auth.CanUpdateController(c, field, value)
 	}
 
-	if c == nil {
-		return objects, nil
-	} else if c.deleted != nil {
-		objects = append(objects, catalog.NewObject2(c.oid, ControllerDeleted, c.deleted))
-
-		return objects, fmt.Errorf("Controller has been deleted")
-	}
-
+	OID := c.OID()
+	list := []kv{}
 	clone := c.clone()
+
 	switch oid {
 	case OID.Append(ControllerName):
 		if err := f("name", value); err != nil {
@@ -429,7 +405,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 			c.name = strings.TrimSpace(value)
 			c.unconfigured = false
-			objects = append(objects, catalog.NewObject2(OID, ControllerName, c.name))
+			list = append(list, kv{ControllerName, c.name})
 		}
 
 	case OID.Append(ControllerDeviceID):
@@ -448,7 +424,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 				c.deviceID = uint32(id)
 				c.unconfigured = false
-				objects = append(objects, catalog.NewObject2(OID, ".2", c.deviceID))
+				list = append(list, kv{ControllerDeviceID, c.deviceID})
 			}
 		} else if value == "" {
 			if p := stringify(c.deviceID, ""); p != "" {
@@ -482,7 +458,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 			c.deviceID = 0
 			c.unconfigured = false
-			objects = append(objects, catalog.NewObject2(OID, ".2", ""))
+			list = append(list, kv{ControllerDeviceID, ""})
 		}
 
 	case OID.Append(ControllerEndpointAddress):
@@ -501,7 +477,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				dbc)
 			c.IP = addr
 			c.unconfigured = false
-			objects = append(objects, catalog.NewObject2(OID, ".3", c.IP))
+			list = append(list, kv{".3", c.IP})
 		}
 
 	case OID.Append(ControllerDateTimeCurrent):
@@ -536,7 +512,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 						t := time.Time(*cached.datetime)
 						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-						objects = append(objects, catalog.NewObject2(OID, ".4", dt.Format("2006-01-02 15:04 MST")))
+						list = append(list, kv{ControllerDateTime, dt.Format("2006-01-02 15:04 MST")})
 					}
 				}
 			}
@@ -559,7 +535,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 			c.Doors[1] = catalog.OID(value)
 			c.unconfigured = false
-			objects = append(objects, catalog.NewObject2(OID, ControllerDoor1, c.Doors[1]))
+			list = append(list, kv{ControllerDoor1, c.Doors[1]})
 		}
 
 	case OID.Append(ControllerDoor2):
@@ -579,7 +555,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 			c.Doors[2] = catalog.OID(value)
 			c.unconfigured = false
-			objects = append(objects, catalog.NewObject2(OID, ControllerDoor2, c.Doors[2]))
+			list = append(list, kv{ControllerDoor2, c.Doors[2]})
 		}
 
 	case OID.Append(ControllerDoor3):
@@ -599,7 +575,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 			c.Doors[3] = catalog.OID(value)
 			c.unconfigured = false
-			objects = append(objects, catalog.NewObject2(OID, ControllerDoor3, c.Doors[3]))
+			list = append(list, kv{ControllerDoor3, c.Doors[3]})
 		}
 
 	case OID.Append(ControllerDoor4):
@@ -619,7 +595,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 			c.Doors[4] = catalog.OID(value)
 			c.unconfigured = false
-			objects = append(objects, catalog.NewObject2(OID, ControllerDoor4, c.Doors[4]))
+			list = append(list, kv{ControllerDoor4, c.Doors[4]})
 		}
 	}
 
@@ -660,15 +636,42 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		}
 
 		c.deleted = types.DateTimePtrNow()
-		objects = append(objects, catalog.NewObject(OID, "deleted"))
-		objects = append(objects, catalog.NewObject2(OID, ControllerDeleted, c.deleted))
+		list = append(list, kv{ControllerDeleted, c.deleted})
 
 		catalog.Delete(OID)
 	}
 
-	objects = append(objects, catalog.NewObject2(OID, ControllerStatus, c.status()))
+	list = append(list, kv{ControllerStatus, c.status()})
 
-	return objects, nil
+	return c.toObjects(list, auth), nil
+}
+
+func (c *Controller) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+	f := func(c *Controller, field string, value interface{}) bool {
+		if a != nil {
+			if err := a.CanView(auth.Controllers, c, field, value); err != nil {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	OID := c.OID()
+	objects := []catalog.Object{}
+
+	if c.deleted == nil && f(c, "OID", OID) {
+		objects = append(objects, catalog.NewObject(OID, ""))
+	}
+
+	for _, v := range list {
+		field, _ := lookup[v.field]
+		if f(c, field, v.value) {
+			objects = append(objects, catalog.NewObject2(OID, v.field, v.value))
+		}
+	}
+
+	return objects
 }
 
 func (c *Controller) refreshed() {

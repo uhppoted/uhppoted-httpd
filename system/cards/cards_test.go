@@ -145,8 +145,9 @@ func TestCardUpdate(t *testing.T) {
 	final := makeCards(makeCard(hagrid.OID, "Hagrid", 1234567))
 
 	expected := []catalog.Object{
-		catalog.Object{OID: "0.4.1.2", Value: 1234567},
-		catalog.Object{OID: "0.4.1.0.0", Value: types.StatusOk},
+		{OID: "0.4.1", Value: ""},
+		{OID: "0.4.1.2", Value: 1234567},
+		{OID: "0.4.1.0.0", Value: types.StatusOk},
 	}
 
 	objects, err := cards.UpdateByOID(nil, hagrid.OID.Append(CardNumber), "1234567", nil)
@@ -201,8 +202,9 @@ func TestCardUpdateWithAuditTrail(t *testing.T) {
 		db       *Cards
 	}{
 		returned: []catalog.Object{
-			catalog.Object{OID: "0.4.1.2", Value: 1234567},
-			catalog.Object{OID: "0.4.1.0.0", Value: types.StatusOk},
+			{OID: "0.4.1", Value: ""},
+			{OID: "0.4.1.2", Value: 1234567},
+			{OID: "0.4.1.0.0", Value: types.StatusOk},
 		},
 
 		logs: []audit.AuditRecord{
@@ -283,8 +285,9 @@ func TestCardUpdateAddGroup(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(makeCard(hagrid.OID, "Hagrid", 6514231, fmt.Sprintf("%v", group)))
 	expected := []catalog.Object{
-		catalog.Object{OID: "0.4.1.5.10", Value: true},
-		catalog.Object{OID: "0.4.1.0.0", Value: types.StatusOk},
+		{OID: "0.4.1", Value: ""},
+		{OID: "0.4.1.5.10", Value: true},
+		{OID: "0.4.1.0.0", Value: types.StatusOk},
 	}
 
 	objects, err := cards.UpdateByOID(nil, catalog.OID("0.4.1.5.10"), "true", nil)
@@ -309,8 +312,9 @@ func TestCardUpdateRemoveGroup(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid2)
 	expected := []catalog.Object{
-		catalog.Object{OID: "0.4.1.5.10", Value: false},
-		catalog.Object{OID: "0.4.1.0.0", Value: types.StatusOk},
+		{OID: "0.4.1", Value: ""},
+		{OID: "0.4.1.5.10", Value: false},
+		{OID: "0.4.1.0.0", Value: types.StatusOk},
 	}
 
 	objects, err := cards.UpdateByOID(nil, catalog.OID("0.4.1.5.10"), "false", nil)
