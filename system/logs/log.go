@@ -46,7 +46,7 @@ func (l LogEntry) IsDeleted() bool {
 	return false
 }
 
-func (l *LogEntry) AsObjects(auth auth.OpAuth) []interface{} {
+func (l *LogEntry) AsObjects(a auth.OpAuth) []interface{} {
 	type E = struct {
 		field catalog.Suffix
 		value interface{}
@@ -63,8 +63,8 @@ func (l *LogEntry) AsObjects(auth auth.OpAuth) []interface{} {
 	list = append(list, E{LogDetails, l.Details})
 
 	f := func(l *LogEntry, field string, value interface{}) bool {
-		if auth != nil {
-			if err := auth.CanView("logs", l, field, value); err != nil {
+		if a != nil {
+			if err := a.CanView(auth.Logs, l, field, value); err != nil {
 				return false
 			}
 		}

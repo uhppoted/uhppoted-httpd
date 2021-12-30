@@ -106,7 +106,7 @@ func (c *Controller) realized() bool {
 	return false
 }
 
-func (c *Controller) AsObjects(auth auth.OpAuth) []interface{} {
+func (c *Controller) AsObjects(a auth.OpAuth) []interface{} {
 	type E = struct {
 		field catalog.Suffix
 		value interface{}
@@ -246,8 +246,8 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []interface{} {
 	}
 
 	f := func(c *Controller, field string, value interface{}) bool {
-		if auth != nil {
-			if err := auth.CanView("system", c, field, value); err != nil {
+		if a != nil {
+			if err := a.CanView(auth.Controllers, c, field, value); err != nil {
 				return false
 			}
 		}

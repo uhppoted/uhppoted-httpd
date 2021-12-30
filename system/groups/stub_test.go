@@ -5,14 +5,14 @@ import (
 )
 
 type stub struct {
-	canView func(string, auth.Operant, string, interface{}) error
+	canView func(auth.RuleSet, auth.Operant, string, interface{}) error
 }
 
 func (x *stub) UID() string {
 	return "stub"
 }
 
-func (x *stub) CanView(ruleset string, object auth.Operant, field string, value interface{}) error {
+func (x *stub) CanView(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
 	if x.canView != nil {
 		return x.canView(ruleset, object, field, value)
 	}

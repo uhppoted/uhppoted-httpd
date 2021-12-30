@@ -47,7 +47,7 @@ func (g Group) IsDeleted() bool {
 	return false
 }
 
-func (g *Group) AsObjects(auth auth.OpAuth) []interface{} {
+func (g *Group) AsObjects(a auth.OpAuth) []interface{} {
 	type E = struct {
 		field catalog.Suffix
 		value interface{}
@@ -83,8 +83,8 @@ func (g *Group) AsObjects(auth auth.OpAuth) []interface{} {
 	}
 
 	f := func(g *Group, field string, value interface{}) bool {
-		if auth != nil {
-			if err := auth.CanView("groups", g, field, value); err != nil {
+		if a != nil {
+			if err := a.CanView(auth.Groups, g, field, value); err != nil {
 				return false
 			}
 		}

@@ -33,6 +33,16 @@ type result struct {
 	Refuse bool
 }
 
+var rulesets = map[auth.RuleSet]string{
+	auth.Interfaces:  "system",
+	auth.Controllers: "system",
+	auth.Doors:       "doors",
+	auth.Cards:       "cards",
+	auth.Groups:      "groups",
+	auth.Events:      "events",
+	auth.Logs:        "logs",
+}
+
 func (op *card) HasGroup(g string) bool {
 	for _, p := range op.Groups {
 		if p == g {
@@ -92,12 +102,12 @@ func (a *authorizator) UID() string {
 	return "?"
 }
 
-func (a *authorizator) CanView(ruleset string, object auth.Operant, field string, value interface{}) error {
+func (a *authorizator) CanView(r auth.RuleSet, object auth.Operant, field string, value interface{}) error {
 	msg := fmt.Errorf("Not authorized to view %v", object)
 	err := fmt.Errorf("Not authorized for operation %v field:%v value:%v", "view", field, value)
 
 	if a != nil && object != nil {
-		r := result{
+		rs := result{
 			Allow:  true,
 			Refuse: false,
 		}
@@ -108,11 +118,11 @@ func (a *authorizator) CanView(ruleset string, object auth.Operant, field string
 			"VALUE":  value,
 		}
 
-		if err := a.eval(ruleset, "view", &r, m); err != nil {
+		if err := a.eval(rulesets[r], "view", &rs, m); err != nil {
 			return types.Unauthorised(msg, err)
 		}
 
-		if !r.Allow || r.Refuse {
+		if !rs.Allow || rs.Refuse {
 			return types.Unauthorised(msg, err)
 		}
 	}

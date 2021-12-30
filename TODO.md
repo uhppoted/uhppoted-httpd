@@ -9,15 +9,13 @@
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [x] Add fine-grained auth skeleton for GET requests
-            - [x] interfaces
-            - [x] controllers
-            - [x] doors
-            - [x] cards
-            - [x] groups
-            - [x] events
-            - [x] logs
       - [ ] Check CanView on return from POST
+            - [ ] interfaces
+            - [ ] controllers
+            - [ ] doors
+            - [ ] cards
+            - [ ] groups
+      - [ ] Genericize CanUpdateDoors etc - pass in ruleset
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 
 - [ ] Fix DateTime mess

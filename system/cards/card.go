@@ -68,7 +68,7 @@ func (c *Card) IsDeleted() bool {
 	return false
 }
 
-func (c *Card) AsObjects(auth auth.OpAuth) []interface{} {
+func (c *Card) AsObjects(a auth.OpAuth) []interface{} {
 	type E = struct {
 		field catalog.Suffix
 		value interface{}
@@ -110,8 +110,8 @@ func (c *Card) AsObjects(auth auth.OpAuth) []interface{} {
 	}
 
 	f := func(c *Card, field string, value interface{}) bool {
-		if auth != nil {
-			if err := auth.CanView("cards", c, field, value); err != nil {
+		if a != nil {
+			if err := a.CanView(auth.Cards, c, field, value); err != nil {
 				return false
 			}
 		}

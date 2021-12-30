@@ -70,7 +70,7 @@ func (l *LAN) IsDeleted() bool {
 	return false
 }
 
-func (l *LAN) AsObjects(auth auth.OpAuth) []interface{} {
+func (l *LAN) AsObjects(a auth.OpAuth) []interface{} {
 	type E = struct {
 		field catalog.Suffix
 		value interface{}
@@ -92,8 +92,8 @@ func (l *LAN) AsObjects(auth auth.OpAuth) []interface{} {
 	}
 
 	f := func(l *LAN, field string, value interface{}) bool {
-		if auth != nil {
-			if err := auth.CanView("system", l, field, value); err != nil {
+		if a != nil {
+			if err := a.CanView(auth.Interfaces, l, field, value); err != nil {
 				return false
 			}
 		}

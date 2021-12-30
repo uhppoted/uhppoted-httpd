@@ -53,7 +53,7 @@ func (d Door) String() string {
 	return fmt.Sprintf("%v", d.Name)
 }
 
-func (d *Door) AsObjects(auth auth.OpAuth) []interface{} {
+func (d *Door) AsObjects(a auth.OpAuth) []interface{} {
 	type E = struct {
 		field catalog.Suffix
 		value interface{}
@@ -148,8 +148,8 @@ func (d *Door) AsObjects(auth auth.OpAuth) []interface{} {
 	}
 
 	f := func(d *Door, field string, value interface{}) bool {
-		if auth != nil {
-			if err := auth.CanView("doors", d, field, value); err != nil {
+		if a != nil {
+			if err := a.CanView(auth.Doors, d, field, value); err != nil {
 				return false
 			}
 		}

@@ -16,7 +16,7 @@ var hagrid = makeCard("0.4.1", "Hagrid", 6514231)
 var dobby = makeCard("0.4.2", "Dobby", 1234567, "G05")
 
 type stub struct {
-	canView       func(string, auth.Operant, string, interface{}) error
+	canView       func(auth.RuleSet, auth.Operant, string, interface{}) error
 	canUpdateCard func(auth.Operant, string, interface{}) error
 	write         func(e audit.AuditRecord)
 }
@@ -25,7 +25,7 @@ func (x *stub) UID() string {
 	return "stub"
 }
 
-func (x *stub) CanView(ruleset string, object auth.Operant, field string, value interface{}) error {
+func (x *stub) CanView(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
 	if x.canView != nil {
 		return x.canView(ruleset, object, field, value)
 	}

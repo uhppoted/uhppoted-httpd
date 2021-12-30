@@ -104,7 +104,7 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 	}
 
 	auth := stub{
-		canView: func(ruleset string, object auth.Operant, field string, value interface{}) error {
+		canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
 			if strings.HasPrefix(field, "card.number") {
 				return errors.New("test")
 			}

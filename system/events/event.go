@@ -151,7 +151,7 @@ func (e Event) IsDeleted() bool {
 	return false
 }
 
-func (e *Event) AsObjects(auth auth.OpAuth) []interface{} {
+func (e *Event) AsObjects(a auth.OpAuth) []interface{} {
 	type E = struct {
 		field catalog.Suffix
 		value interface{}
@@ -172,8 +172,8 @@ func (e *Event) AsObjects(auth auth.OpAuth) []interface{} {
 	list = append(list, E{EventCardName, e.CardName})
 
 	f := func(e *Event, field string, value interface{}) bool {
-		if auth != nil {
-			if err := auth.CanView("events", e, field, value); err != nil {
+		if a != nil {
+			if err := a.CanView(auth.Events, e, field, value); err != nil {
 				return false
 			}
 		}

@@ -11,6 +11,22 @@ const (
 	Session                  // 1
 )
 
+type RuleSet int
+
+const (
+	Interfaces = iota + 1
+	Controllers
+	Doors
+	Cards
+	Groups
+	Events
+	Logs
+)
+
+func (r RuleSet) String() string {
+	return [...]string{"interfaces", "controllers", "doors", "cards", "groups", "events", "logs"}[r]
+}
+
 type IAuth interface {
 	Preauthenticate(loginId uuid.UUID) (string, error)
 	Authorize(uid, pwd string, sessionId uuid.UUID) (string, error)
@@ -29,7 +45,7 @@ type IAuth interface {
 type OpAuth interface {
 	UID() string
 
-	CanView(ruleset string, o Operant, field string, value interface{}) error
+	CanView(r RuleSet, o Operant, field string, value interface{}) error
 
 	CanUpdateInterface(iface Operant, field string, value interface{}) error
 
