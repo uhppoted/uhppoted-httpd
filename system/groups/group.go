@@ -85,7 +85,7 @@ func (g *Group) AsObjects(auth auth.OpAuth) []catalog.Object {
 	return g.toObjects(list, auth)
 }
 
-func (g *Group) AsRuleEntity() interface{} {
+func (g *Group) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		Name  string
 		Doors map[string]bool
@@ -108,7 +108,7 @@ func (g *Group) AsRuleEntity() interface{} {
 		}
 	}
 
-	return &entity
+	return "group", &entity
 }
 
 func (g *Group) status() types.Status {
@@ -119,19 +119,21 @@ func (g *Group) status() types.Status {
 	return types.StatusOk
 }
 
-func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	if g == nil {
+		return []catalog.Object{}, nil
+	}
+
+	if g.deleted != nil {
+		return g.toObjects([]kv{{GroupDeleted, g.deleted}}, a), fmt.Errorf("Group has been deleted")
+	}
+
 	f := func(field string, value interface{}) error {
-		if auth != nil {
-			return auth.CanUpdateGroup(g, field, value)
+		if a != nil {
+			return a.CanUpdate(auth.Groups, g, field, value)
 		}
 
 		return nil
-	}
-
-	if g == nil {
-		return []catalog.Object{}, nil
-	} else if g.deleted != nil {
-		return g.toObjects([]kv{{GroupDeleted, g.deleted}}, auth), fmt.Errorf("Group has been deleted")
 	}
 
 	list := []kv{}
@@ -141,7 +143,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			g.log(auth, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, BLANK), stringify(value, BLANK)), dbc)
+			g.log(a, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, BLANK), stringify(value, BLANK)), dbc)
 			g.Name = value
 			list = append(list, kv{GroupName, g.Name})
 		}
@@ -156,9 +158,9 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 				return nil, err
 			} else {
 				if value == "true" {
-					g.log(auth, "update", g.OID, "door", fmt.Sprintf("Granted access to %v", door), dbc)
+					g.log(a, "update", g.OID, "door", fmt.Sprintf("Granted access to %v", door), dbc)
 				} else {
-					g.log(auth, "update", g.OID, "door", fmt.Sprintf("Revoked access to %v", door), dbc)
+					g.log(a, "update", g.OID, "door", fmt.Sprintf("Revoked access to %v", door), dbc)
 				}
 
 				g.Doors[k] = value == "true"
@@ -168,13 +170,13 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 	}
 
 	if !g.IsValid() {
-		if auth != nil {
-			if err := auth.CanDeleteGroup(g); err != nil {
+		if a != nil {
+			if err := a.CanDeleteGroup(g); err != nil {
 				return nil, err
 			}
 		}
 
-		g.log(auth, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
+		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
 		now := types.DateTime(time.Now())
 		g.deleted = &now
 		list = append(list, kv{GroupDeleted, g.deleted})
@@ -184,7 +186,7 @@ func (g *Group) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC)
 
 	list = append(list, kv{GroupStatus, g.status()})
 
-	return g.toObjects(list, auth), nil
+	return g.toObjects(list, a), nil
 }
 
 func (g *Group) toObjects(list []kv, a auth.OpAuth) []catalog.Object {

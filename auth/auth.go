@@ -46,28 +46,23 @@ type OpAuth interface {
 	UID() string
 
 	CanView(r RuleSet, o Operant, field string, value interface{}) error
-
-	CanUpdateInterface(iface Operant, field string, value interface{}) error
+	CanUpdate(r RuleSet, o Operant, field string, value interface{}) error
 
 	CanAddController(controller Operant) error
-	CanUpdateController(controller Operant, field string, value interface{}) error
 	CanDeleteController(controller Operant) error
 
 	CanAddCard(card Operant) error
-	CanUpdateCard(card Operant, field string, value interface{}) error
 	CanDeleteCard(card Operant) error
 
-	CanUpdateDoor(door Operant, field string, value interface{}) error
 	CanAddDoor(door Operant) error
 	CanDeleteDoor(door Operant) error
 
 	CanAddGroup(group Operant) error
-	CanUpdateGroup(group Operant, field string, value interface{}) error
 	CanDeleteGroup(group Operant) error
 }
 
 type Operant interface {
-	AsRuleEntity() interface{}
+	AsRuleEntity() (string, interface{})
 }
 
 func NewAuthProvider(config string, loginExpiry, sessionExpiry string) (IAuth, error) {

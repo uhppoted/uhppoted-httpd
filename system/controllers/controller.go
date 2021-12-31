@@ -248,7 +248,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 	return c.toObjects(list, auth)
 }
 
-func (c *Controller) AsRuleEntity() interface{} {
+func (c *Controller) AsRuleEntity() (string, interface{}) {
 	v := struct {
 		Name     string
 		DeviceID uint32
@@ -259,7 +259,7 @@ func (c *Controller) AsRuleEntity() interface{} {
 		v.DeviceID = c.deviceID
 	}
 
-	return &v
+	return "controller", &v
 }
 
 func (c *Controller) Get(key string) interface{} {
@@ -368,21 +368,21 @@ func (c *Controller) get() *cached {
 	return &e
 }
 
-func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	if c == nil {
 		return []catalog.Object{}, nil
 	}
 
 	if c.deleted != nil {
-		return c.toObjects([]kv{{ControllerDeleted, c.deleted}}, auth), fmt.Errorf("Controller has been deleted")
+		return c.toObjects([]kv{{ControllerDeleted, c.deleted}}, a), fmt.Errorf("Controller has been deleted")
 	}
 
 	f := func(field string, value interface{}) error {
-		if auth == nil {
-			return nil
+		if a != nil {
+			return a.CanUpdate(auth.Controllers, c, field, value)
 		}
 
-		return auth.CanUpdateController(c, field, value)
+		return nil
 	}
 
 	OID := c.OID()
@@ -394,7 +394,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			c.log(auth,
+			c.log(a,
 				"update",
 				OID,
 				"name",
@@ -413,7 +413,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			return nil, err
 		} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 			if id, err := strconv.ParseUint(value, 10, 32); err == nil {
-				c.log(auth,
+				c.log(a,
 					"update",
 					OID,
 					"device-id",
@@ -428,7 +428,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 			}
 		} else if value == "" {
 			if p := stringify(c.deviceID, ""); p != "" {
-				c.log(auth,
+				c.log(a,
 					"update",
 					OID,
 					"device-id",
@@ -437,7 +437,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					"",
 					dbc)
 			} else if p = stringify(c.name, ""); p != "" {
-				c.log(auth,
+				c.log(a,
 					"update",
 					OID,
 					"device-id",
@@ -446,7 +446,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 					"",
 					dbc)
 			} else {
-				c.log(auth,
+				c.log(a,
 					"update",
 					OID,
 					"device-id",
@@ -467,7 +467,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		} else if err := f("address", addr); err != nil {
 			return nil, err
 		} else {
-			c.log(auth,
+			c.log(a,
 				"update",
 				OID,
 				"address",
@@ -486,7 +486,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		} else if err := f("timezone", tz); err != nil {
 			return nil, err
 		} else {
-			c.log(auth,
+			c.log(a,
 				"update",
 				OID,
 				"timezone",
@@ -524,7 +524,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		} else {
 			p := catalog.GetV(catalog.OID(c.Doors[1]), catalog.DoorName)
 			q := catalog.GetV(catalog.OID(value), catalog.DoorName)
-			c.log(auth,
+			c.log(a,
 				"update",
 				OID,
 				"door:1",
@@ -544,7 +544,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		} else {
 			p := catalog.GetV(catalog.OID(c.Doors[2]), catalog.DoorName)
 			q := catalog.GetV(catalog.OID(value), catalog.DoorName)
-			c.log(auth,
+			c.log(a,
 				"update",
 				OID,
 				"door:2",
@@ -564,7 +564,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		} else {
 			p := catalog.GetV(catalog.OID(c.Doors[3]), catalog.DoorName)
 			q := catalog.GetV(catalog.OID(value), catalog.DoorName)
-			c.log(auth,
+			c.log(a,
 				"update",
 				OID,
 				"door:3",
@@ -584,7 +584,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 		} else {
 			p := catalog.GetV(catalog.OID(c.Doors[4]), catalog.DoorName)
 			q := catalog.GetV(catalog.OID(value), catalog.DoorName)
-			c.log(auth,
+			c.log(a,
 				"update",
 				OID,
 				"door:4",
@@ -600,14 +600,14 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 	}
 
 	if c.name == "" && c.deviceID == 0 {
-		if auth != nil {
-			if err := auth.CanDeleteController(c); err != nil {
+		if a != nil {
+			if err := a.CanDeleteController(c); err != nil {
 				return nil, err
 			}
 		}
 
 		if p := stringify(clone.name, ""); p != "" {
-			clone.log(auth,
+			clone.log(a,
 				"delete",
 				OID,
 				"device-id",
@@ -616,7 +616,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				"",
 				dbc)
 		} else if p = stringify(clone.deviceID, ""); p != "" {
-			clone.log(auth,
+			clone.log(a,
 				"delete",
 				OID,
 				"device-id",
@@ -625,7 +625,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 				"",
 				dbc)
 		} else {
-			clone.log(auth,
+			clone.log(a,
 				"delete",
 				OID,
 				"device-id",
@@ -643,7 +643,7 @@ func (c *Controller) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db
 
 	list = append(list, kv{ControllerStatus, c.status()})
 
-	return c.toObjects(list, auth), nil
+	return c.toObjects(list, a), nil
 }
 
 func (c *Controller) toObjects(list []kv, a auth.OpAuth) []catalog.Object {

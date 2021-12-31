@@ -33,15 +33,18 @@ func (x *stub) CanView(ruleset auth.RuleSet, object auth.Operant, field string, 
 	return nil
 }
 
-func (x *stub) CanUpdateInterface(lan auth.Operant, field string, value interface{}) error {
+func (x *stub) CanUpdate(ruleset auth.RuleSet, operant auth.Operant, field string, value interface{}) error {
+	switch ruleset {
+	case auth.Cards:
+		if x.canUpdateCard != nil {
+			return x.canUpdateCard(operant, field, value)
+		}
+	}
+
 	return fmt.Errorf("not authorised")
 }
 
 func (x *stub) CanAddController(controller auth.Operant) error {
-	return fmt.Errorf("not authorised")
-}
-
-func (x *stub) CanUpdateController(controller auth.Operant, field string, value interface{}) error {
 	return fmt.Errorf("not authorised")
 }
 
@@ -53,14 +56,6 @@ func (x *stub) CanAddCard(card auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 
-func (x *stub) CanUpdateCard(card auth.Operant, field string, value interface{}) error {
-	if x.canUpdateCard != nil {
-		return x.canUpdateCard(card, field, value)
-	}
-
-	return fmt.Errorf("not authorised")
-}
-
 func (x *stub) CanDeleteCard(card auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
@@ -69,19 +64,11 @@ func (x *stub) CanAddDoor(door auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 
-func (x *stub) CanUpdateDoor(door auth.Operant, field string, value interface{}) error {
-	return fmt.Errorf("not authorised")
-}
-
 func (x *stub) CanDeleteDoor(door auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 
 func (x *stub) CanAddGroup(group auth.Operant) error {
-	return fmt.Errorf("not authorised")
-}
-
-func (x *stub) CanUpdateGroup(group auth.Operant, field string, value interface{}) error {
 	return fmt.Errorf("not authorised")
 }
 

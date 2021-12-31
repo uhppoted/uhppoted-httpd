@@ -9,16 +9,18 @@
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [x] Check CanView on return from POST
+      - [x] Genericize CanUpdate
             - [x] interfaces
             - [x] controllers
             - [x] doors
             - [x] cards
             - [x] groups
-      - [ ] Genericize CanUpdateDoors etc - pass in ruleset
+      - [ ] Genericize CanAdd
+      - [ ] Genericize CanDelete
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 
 - [ ] Fix DateTime mess
+      - [ ] Controller schema for DateTime
       - [ ] Do the 'uncertain/pending' thing for timezones
       - [ ] MAYBE: treat empty DateTime as the null value
       - [ ] MAYBE: change Format(), etc to not take pointer receiver

@@ -88,7 +88,7 @@ func (l *LogEntry) AsObjects(a auth.OpAuth) []interface{} {
 	return objects
 }
 
-func (l *LogEntry) AsRuleEntity() interface{} {
+func (l *LogEntry) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		Timestamp string
 	}{}
@@ -97,7 +97,7 @@ func (l *LogEntry) AsRuleEntity() interface{} {
 		entity.Timestamp = l.Timestamp.Format("2006-01-02 15:04:05 MST")
 	}
 
-	return &entity
+	return "log", &entity
 }
 
 func (l *LogEntry) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {

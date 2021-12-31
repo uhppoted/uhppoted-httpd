@@ -94,37 +94,35 @@ func (l *LAN) AsObjects(auth auth.OpAuth) []catalog.Object {
 	return l.toObjects(list, auth)
 }
 
-func (l *LAN) AsRuleEntity() interface{} {
-	type entity struct {
+func (l *LAN) AsRuleEntity() (string, interface{}) {
+	entity := struct {
 		Type string
 		Name string
-	}
+	}{}
 
 	if l != nil {
-		return &entity{
-			Type: "LAN",
-			Name: fmt.Sprintf("%v", l.Name),
-		}
+		entity.Type = "LAN"
+		entity.Name = fmt.Sprintf("%v", l.Name)
 	}
 
-	return &entity{}
+	return "lan", &entity
 }
 
-func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (l *LAN) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	if l == nil {
 		return []catalog.Object{}, nil
 	}
 
 	if l.deleted != nil {
-		return l.toObjects([]kv{{LANDeleted, l.deleted}}, auth), fmt.Errorf("LAN has been deleted")
+		return l.toObjects([]kv{{LANDeleted, l.deleted}}, a), fmt.Errorf("LAN has been deleted")
 	}
 
 	f := func(field string, value interface{}) error {
-		if auth == nil {
-			return nil
+		if a != nil {
+			return a.CanUpdate(auth.Interfaces, l, field, value)
 		}
 
-		return auth.CanUpdateInterface(l, field, value)
+		return nil
 	}
 
 	list := []kv{}
@@ -134,7 +132,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			l.log(auth,
+			l.log(a,
 				"update",
 				l.OID,
 				"name",
@@ -154,7 +152,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 		} else if err := f("bind", addr); err != nil {
 			return nil, err
 		} else {
-			l.log(auth,
+			l.log(a,
 				"update",
 				l.OID,
 				"bind",
@@ -174,7 +172,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 		} else if err := f("broadcast", addr); err != nil {
 			return nil, err
 		} else {
-			l.log(auth,
+			l.log(a,
 				"update",
 				l.OID,
 				"broadcast",
@@ -194,7 +192,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 		} else if err = f("listen", addr); err != nil {
 			return nil, err
 		} else {
-			l.log(auth,
+			l.log(a,
 				"update",
 				l.OID,
 				"listen",
@@ -211,7 +209,7 @@ func (l *LAN) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) (
 		list = append(list, kv{LANStatus, l.status()})
 	}
 
-	return l.toObjects(list, auth), nil
+	return l.toObjects(list, a), nil
 }
 
 func (l *LAN) toObjects(list []kv, a auth.OpAuth) []catalog.Object {

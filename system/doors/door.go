@@ -150,34 +150,32 @@ func (d *Door) AsObjects(auth auth.OpAuth) []catalog.Object {
 	return d.toObjects(list, auth)
 }
 
-func (d *Door) AsRuleEntity() interface{} {
-	type entity struct {
+func (d *Door) AsRuleEntity() (string, interface{}) {
+	entity := struct {
 		Name string
-	}
+	}{}
 
 	if d != nil {
-		return &entity{
-			Name: fmt.Sprintf("%v", d.Name),
-		}
+		entity.Name = fmt.Sprintf("%v", d.Name)
 	}
 
-	return &entity{}
+	return "door", &entity
 }
 
-func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	f := func(field string, value interface{}) error {
-		if auth == nil {
+		if a == nil {
 			return nil
 		}
 
-		return auth.CanUpdateDoor(d, field, value)
+		return a.CanUpdate(auth.Doors, d, field, value)
 	}
 
 	if d == nil {
 		return []catalog.Object{}, nil
 	} else if d.deleted != nil {
 
-		return d.toObjects([]kv{kv{DoorDeleted, d.deleted}}, auth), fmt.Errorf("Door has been deleted")
+		return d.toObjects([]kv{kv{DoorDeleted, d.deleted}}, a), fmt.Errorf("Door has been deleted")
 	}
 
 	list := []kv{}
@@ -188,7 +186,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			d.log(auth, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, BLANK), stringify(value, BLANK)), dbc)
+			d.log(a, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, BLANK), stringify(value, BLANK)), dbc)
 			d.Name = value
 			list = append(list, kv{DoorName, d.Name})
 		}
@@ -207,7 +205,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			list = append(list, kv{DoorDelayError, ""})
 			list = append(list, kv{DoorDelayModified, true})
 
-			d.log(auth, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
+			d.log(a, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
 		}
 
 	case d.OID.Append(DoorControl):
@@ -231,18 +229,18 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			list = append(list, kv{DoorControlError, ""})
 			list = append(list, kv{DoorControlModified, true})
 
-			d.log(auth, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
+			d.log(a, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
 		}
 	}
 
 	if !d.IsValid() {
-		if auth != nil {
-			if err := auth.CanDeleteDoor(d); err != nil {
+		if a != nil {
+			if err := a.CanDeleteDoor(d); err != nil {
 				return nil, err
 			}
 		}
 
-		d.log(auth, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
+		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
 		now := types.DateTime(time.Now())
 		d.deleted = &now
 
@@ -252,7 +250,7 @@ func (d *Door) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 
 	list = append(list, kv{DoorStatus, d.status()})
 
-	return d.toObjects(list, auth), nil
+	return d.toObjects(list, a), nil
 }
 
 func (d *Door) toObjects(list []kv, a auth.OpAuth) []catalog.Object {

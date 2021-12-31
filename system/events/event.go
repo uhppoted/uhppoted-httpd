@@ -197,7 +197,7 @@ func (e *Event) AsObjects(a auth.OpAuth) []interface{} {
 	return objects
 }
 
-func (e *Event) AsRuleEntity() interface{} {
+func (e *Event) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		DeviceID uint32
 		Index    uint32
@@ -208,7 +208,7 @@ func (e *Event) AsRuleEntity() interface{} {
 		entity.Index = e.Index
 	}
 
-	return &entity
+	return "event", &entity
 }
 
 func (e *Event) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {

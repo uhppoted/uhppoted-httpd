@@ -116,14 +116,14 @@ func (c *Card) AsObjects(auth auth.OpAuth) []catalog.Object {
 	return c.toObjects(list, auth)
 }
 
-func (c *Card) AsRuleEntity() interface{} {
-	type entity struct {
+func (c *Card) AsRuleEntity() (string, interface{}) {
+	entity := struct {
 		Name   string
 		Number uint32
 		From   string
 		To     string
 		Groups []string
-	}
+	}{}
 
 	if c != nil {
 		name := fmt.Sprintf("%v", c.Name)
@@ -142,31 +142,31 @@ func (c *Card) AsRuleEntity() interface{} {
 			}
 		}
 
-		return &entity{
-			Name:   name,
-			Number: number,
-			From:   from,
-			To:     to,
-			Groups: groups,
-		}
+		entity.Name = name
+		entity.Number = number
+		entity.From = from
+		entity.To = to
+		entity.Groups = groups
 	}
 
-	return &entity{}
+	return "card", &entity
 }
 
-func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	f := func(field string, value interface{}) error {
-		if auth == nil {
-			return nil
-		}
-
-		return auth.CanUpdateCard(c, field, value)
-	}
-
+func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
 	if c == nil {
 		return []catalog.Object{}, nil
-	} else if c.deleted != nil {
-		return c.toObjects([]kv{{CardDeleted, c.deleted}}, auth), fmt.Errorf("Card has been deleted")
+	}
+
+	if c.deleted != nil {
+		return c.toObjects([]kv{{CardDeleted, c.deleted}}, a), fmt.Errorf("Card has been deleted")
+	}
+
+	f := func(field string, value interface{}) error {
+		if a != nil {
+			return a.CanUpdate(auth.Cards, c, field, value)
+		}
+
+		return nil
 	}
 
 	list := []kv{}
@@ -177,7 +177,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			c.log(auth,
+			c.log(a,
 				"update",
 				c.OID,
 				"name",
@@ -197,7 +197,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 			} else if err := f("number", n); err != nil {
 				return nil, err
 			} else {
-				c.log(auth,
+				c.log(a,
 					"update",
 					c.OID,
 					"card",
@@ -215,7 +215,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				return nil, err
 			} else {
 				if p := stringify(c.Name, ""); p != "" {
-					c.log(auth,
+					c.log(a,
 						"update",
 						c.OID,
 						"number",
@@ -224,7 +224,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 						stringify(p, ""),
 						dbc)
 				} else {
-					c.log(auth,
+					c.log(a,
 						"update",
 						c.OID,
 						"number",
@@ -247,7 +247,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		} else if from == nil {
 			return nil, fmt.Errorf("invalid 'from' date (%v)", value)
 		} else {
-			c.log(auth,
+			c.log(a,
 				"update",
 				c.OID,
 				"from",
@@ -268,7 +268,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 		} else if to == nil {
 			return nil, fmt.Errorf("invalid 'to' date (%v)", value)
 		} else {
-			c.log(auth,
+			c.log(a,
 				"update",
 				c.OID,
 				"to",
@@ -294,7 +294,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				group := catalog.GetV(catalog.OID(k), GroupName)
 
 				if value == "true" {
-					c.log(auth,
+					c.log(a,
 						"update",
 						c.OID,
 						"group",
@@ -303,7 +303,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 						"",
 						dbc)
 				} else {
-					c.log(auth,
+					c.log(a,
 						"update",
 						c.OID,
 						"group",
@@ -320,14 +320,14 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 	}
 
 	if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
-		if auth != nil {
-			if err := auth.CanDeleteCard(clone); err != nil {
+		if a != nil {
+			if err := a.CanDeleteCard(clone); err != nil {
 				return nil, err
 			}
 		}
 
 		if p := stringify(clone.Card, ""); p != "" {
-			c.log(auth,
+			c.log(a,
 				"delete",
 				c.OID,
 				"card",
@@ -336,7 +336,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				"",
 				dbc)
 		} else if p = stringify(clone.Name, ""); p != "" {
-			c.log(auth,
+			c.log(a,
 				"delete",
 				c.OID,
 				"card",
@@ -345,7 +345,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 				"",
 				dbc)
 		} else {
-			c.log(auth,
+			c.log(a,
 				"delete",
 				c.OID,
 				"card",
@@ -365,7 +365,7 @@ func (c *Card) set(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) 
 
 	list = append(list, kv{CardStatus, c.status()})
 
-	return c.toObjects(list, auth), nil
+	return c.toObjects(list, a), nil
 }
 
 func (c *Card) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
