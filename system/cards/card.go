@@ -321,7 +321,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 
 	if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
 		if a != nil {
-			if err := a.CanDeleteCard(clone); err != nil {
+			if err := a.CanDelete(auth.Cards, clone); err != nil {
 				return nil, err
 			}
 		}

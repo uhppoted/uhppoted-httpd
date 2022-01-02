@@ -48,19 +48,7 @@ func (x *stub) CanUpdate(ruleset auth.RuleSet, operant auth.Operant, field strin
 	return fmt.Errorf("not authorised")
 }
 
-func (x *stub) CanDeleteController(controller auth.Operant) error {
-	return fmt.Errorf("not authorised")
-}
-
-func (x *stub) CanDeleteCard(card auth.Operant) error {
-	return fmt.Errorf("not authorised")
-}
-
-func (x *stub) CanDeleteDoor(door auth.Operant) error {
-	return fmt.Errorf("not authorised")
-}
-
-func (x *stub) CanDeleteGroup(group auth.Operant) error {
+func (x *stub) CanDelete(ruleset auth.RuleSet, operant auth.Operant) error {
 	return fmt.Errorf("not authorised")
 }
 

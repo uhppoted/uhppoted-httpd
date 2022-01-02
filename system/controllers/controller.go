@@ -601,7 +601,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 
 	if c.name == "" && c.deviceID == 0 {
 		if a != nil {
-			if err := a.CanDeleteController(c); err != nil {
+			if err := a.CanDelete(auth.Controllers, c); err != nil {
 				return nil, err
 			}
 		}

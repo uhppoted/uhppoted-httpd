@@ -10,11 +10,8 @@
 
 - [ ] Separate LAN and controllers
       - [x] Genericize CanAdd
-            - [x] controllers
-            - [x] doors
-            - [x] cards
-            - [x] groups
-      - [ ] Genericize CanDelete
+      - [x] Genericize CanDelete
+      - [ ] Move authorisator ruleset to initialisation and reload in eval
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 
 - [ ] Fix DateTime mess

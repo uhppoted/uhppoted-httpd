@@ -193,6 +193,35 @@ func (a *authorizator) CanUpdate(r auth.RuleSet, operant auth.Operant, field str
 	return types.Unauthorised(msg, err)
 }
 
+func (a *authorizator) CanDelete(r auth.RuleSet, operant auth.Operant) error {
+	msg := fmt.Errorf("Not authorized to delete %v", operant)
+	err := fmt.Errorf("Not authorized to delete %v", operant)
+
+	if a != nil && operant != nil {
+		tag, object := operant.AsRuleEntity()
+		op := fmt.Sprintf("delete::%v", tag)
+
+		rs := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		m := map[string]interface{}{
+			"OBJECT": object,
+		}
+
+		if err := a.eval(rulesets[r], op, &rs, m); err != nil {
+			return types.Unauthorised(msg, err)
+		}
+
+		if rs.Allow && !rs.Refuse {
+			return nil
+		}
+	}
+
+	return types.Unauthorised(msg, err)
+}
+
 func (a *authorizator) CanDeleteController(controller auth.Operant) error {
 	msg := fmt.Errorf("Not authorized to delete controller")
 	err := fmt.Errorf("Not authorized for operation %s", "delete::controller")
@@ -236,36 +265,6 @@ func (a *authorizator) CanDeleteCard(card auth.Operant) error {
 	}
 
 	return a.evaluate(ruleset, op, card, m, msg)
-}
-
-func (a *authorizator) CanDeleteDoor(door auth.Operant) error {
-	msg := fmt.Errorf("Not authorized to delete door")
-	err := fmt.Errorf("Not authorized for operation %s", "delete::door")
-
-	if a != nil && door != nil {
-		_, object := door.AsRuleEntity()
-
-		r := result{
-			Allow:  false,
-			Refuse: false,
-		}
-
-		m := map[string]interface{}{
-			"DOOR": object,
-		}
-
-		if err := a.eval("doors", "delete::door", &r, m); err != nil {
-			return types.Unauthorised(msg, err)
-		}
-
-		if r.Allow && !r.Refuse {
-			return nil
-		}
-
-		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("delete::door %s", toString(door)))
-	}
-
-	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanDeleteGroup(group auth.Operant) error {

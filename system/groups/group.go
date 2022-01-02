@@ -171,7 +171,7 @@ func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([
 
 	if !g.IsValid() {
 		if a != nil {
-			if err := a.CanDeleteGroup(g); err != nil {
+			if err := a.CanDelete(auth.Groups, g); err != nil {
 				return nil, err
 			}
 		}

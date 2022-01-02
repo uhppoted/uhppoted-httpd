@@ -235,7 +235,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 
 	if !d.IsValid() {
 		if a != nil {
-			if err := a.CanDeleteDoor(d); err != nil {
+			if err := a.CanDelete(auth.Doors, d); err != nil {
 				return nil, err
 			}
 		}
