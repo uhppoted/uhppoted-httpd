@@ -20,11 +20,11 @@ func (x *stub) CanView(ruleset auth.RuleSet, object auth.Operant, field string, 
 	return nil
 }
 
-func (x *stub) CanUpdate(ruleset auth.RuleSet, operant auth.Operant, field string, value interface{}) error {
+func (x *stub) CanAdd(ruleset auth.RuleSet, operant auth.Operant) error {
 	return nil
 }
 
-func (x *stub) CanAddController(controller auth.Operant) error {
+func (x *stub) CanUpdate(ruleset auth.RuleSet, operant auth.Operant, field string, value interface{}) error {
 	return nil
 }
 
@@ -32,23 +32,11 @@ func (x *stub) CanDeleteController(controller auth.Operant) error {
 	return nil
 }
 
-func (x *stub) CanAddCard(card auth.Operant) error {
-	return nil
-}
-
 func (x *stub) CanDeleteCard(card auth.Operant) error {
 	return nil
 }
 
-func (x *stub) CanAddDoor(door auth.Operant) error {
-	return nil
-}
-
 func (x *stub) CanDeleteDoor(door auth.Operant) error {
-	return nil
-}
-
-func (x *stub) CanAddGroup(group auth.Operant) error {
 	return nil
 }
 

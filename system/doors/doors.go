@@ -194,15 +194,15 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 	return objects, nil
 }
 
-func (dd *Doors) add(auth auth.OpAuth, d Door) (*Door, error) {
+func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
 	oid := catalog.NewDoor()
 
 	record := d.clone()
 	record.OID = oid
 	record.created = types.DateTime(time.Now())
 
-	if auth != nil {
-		if err := auth.CanAddDoor(&record); err != nil {
+	if a != nil {
+		if err := a.CanAdd(auth.Doors, &record); err != nil {
 			return nil, err
 		}
 	}

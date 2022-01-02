@@ -180,15 +180,15 @@ func (gg *Groups) Sweep(retention time.Duration) {
 	}
 }
 
-func (gg *Groups) add(auth auth.OpAuth, g Group) (*Group, error) {
+func (gg *Groups) add(a auth.OpAuth, g Group) (*Group, error) {
 	oid := catalog.NewGroup()
 
 	record := g.clone()
 	record.OID = oid
 	record.created = types.DateTime(time.Now())
 
-	if auth != nil {
-		if err := auth.CanAddGroup(&record); err != nil {
+	if a != nil {
+		if err := a.CanAdd(auth.Groups, &record); err != nil {
 			return nil, err
 		}
 	}

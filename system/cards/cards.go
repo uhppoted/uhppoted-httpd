@@ -204,7 +204,7 @@ func (cc *Cards) Lookup(card uint32) *Card {
 	return nil
 }
 
-func (cc *Cards) add(auth auth.OpAuth, c Card) (*Card, error) {
+func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
 	oid := catalog.NewCard()
 	if _, ok := cc.cards[oid]; ok {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
@@ -214,8 +214,8 @@ func (cc *Cards) add(auth auth.OpAuth, c Card) (*Card, error) {
 	card.OID = oid
 	card.created = types.DateTime(time.Now())
 
-	if auth != nil {
-		if err := auth.CanAddCard(card); err != nil {
+	if a != nil {
+		if err := a.CanAdd(auth.Cards, card); err != nil {
 			return nil, err
 		}
 	}

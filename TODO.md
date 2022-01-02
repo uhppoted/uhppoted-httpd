@@ -9,13 +9,11 @@
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [x] Genericize CanUpdate
-            - [x] interfaces
+      - [x] Genericize CanAdd
             - [x] controllers
             - [x] doors
             - [x] cards
             - [x] groups
-      - [ ] Genericize CanAdd
       - [ ] Genericize CanDelete
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 

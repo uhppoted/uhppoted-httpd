@@ -133,6 +133,35 @@ func (a *authorizator) CanView(r auth.RuleSet, operant auth.Operant, field strin
 	return nil
 }
 
+func (a *authorizator) CanAdd(r auth.RuleSet, operant auth.Operant) error {
+	msg := fmt.Errorf("Not authorized to add %v", operant)
+	err := fmt.Errorf("Not authorized to add %v", operant)
+
+	if a != nil && operant != nil {
+		tag, object := operant.AsRuleEntity()
+		op := fmt.Sprintf("add::%v", tag)
+
+		m := map[string]interface{}{
+			"OBJECT": object,
+		}
+
+		rs := result{
+			Allow:  false,
+			Refuse: false,
+		}
+
+		if err := a.eval(rulesets[r], op, &rs, m); err != nil {
+			return types.Unauthorised(msg, err)
+		}
+
+		if rs.Allow && !rs.Refuse {
+			return nil
+		}
+	}
+
+	return types.Unauthorised(msg, err)
+}
+
 func (a *authorizator) CanUpdate(r auth.RuleSet, operant auth.Operant, field string, value interface{}) error {
 	msg := fmt.Errorf("Not authorized to update %v", operant)
 	err := fmt.Errorf("Not authorized to update %v field:%v value:%v", operant, field, value)
@@ -159,38 +188,6 @@ func (a *authorizator) CanUpdate(r auth.RuleSet, operant auth.Operant, field str
 		if rs.Allow && !rs.Refuse {
 			return nil
 		}
-	}
-
-	return types.Unauthorised(msg, err)
-}
-
-func (a *authorizator) CanAddController(controller auth.Operant) error {
-	msg := fmt.Errorf("Not authorized to add controller")
-	err := fmt.Errorf("Not authorized for operation %s", "add::controller")
-
-	if a != nil && controller != nil {
-		_, object := controller.AsRuleEntity()
-
-		r := result{
-			Allow:  false,
-			Refuse: false,
-		}
-
-		m := map[string]interface{}{
-			"CONTROLLER": object,
-			"FIELD":      "",
-			"VALUE":      "",
-		}
-
-		if err := a.eval("system", "add::controller", &r, m); err != nil {
-			return types.Unauthorised(msg, err)
-		}
-
-		if r.Allow && !r.Refuse {
-			return nil
-		}
-
-		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::controller %s", toString(controller)))
 	}
 
 	return types.Unauthorised(msg, err)
@@ -228,36 +225,6 @@ func (a *authorizator) CanDeleteController(controller auth.Operant) error {
 	return types.Unauthorised(msg, err)
 }
 
-func (a *authorizator) CanAddCard(card auth.Operant) error {
-	msg := fmt.Errorf("Not authorized to add card")
-	err := fmt.Errorf("Not authorized for operation %s", "add::card")
-
-	if a != nil && card != nil {
-		_, object := card.AsRuleEntity()
-
-		r := result{
-			Allow:  false,
-			Refuse: false,
-		}
-
-		m := map[string]interface{}{
-			"CARD": object,
-		}
-
-		if err := a.eval("cards", "add::card", &r, m); err != nil {
-			return types.Unauthorised(msg, err)
-		}
-
-		if r.Allow && !r.Refuse {
-			return nil
-		}
-
-		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::card %s", toString(card)))
-	}
-
-	return types.Unauthorised(msg, err)
-}
-
 func (a *authorizator) CanDeleteCard(card auth.Operant) error {
 	ruleset := "cards"
 	op := "delete::card"
@@ -269,36 +236,6 @@ func (a *authorizator) CanDeleteCard(card auth.Operant) error {
 	}
 
 	return a.evaluate(ruleset, op, card, m, msg)
-}
-
-func (a *authorizator) CanAddDoor(door auth.Operant) error {
-	msg := fmt.Errorf("Not authorized to add door")
-	err := fmt.Errorf("Not authorized for operation %s", "add::door")
-
-	if a != nil && door != nil {
-		_, object := door.AsRuleEntity()
-
-		r := result{
-			Allow:  false,
-			Refuse: false,
-		}
-
-		m := map[string]interface{}{
-			"DOOR": object,
-		}
-
-		if err := a.eval("doors", "add::door", &r, m); err != nil {
-			return types.Unauthorised(msg, err)
-		}
-
-		if r.Allow && !r.Refuse {
-			return nil
-		}
-
-		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("add::door %s", toString(door)))
-	}
-
-	return types.Unauthorised(msg, err)
 }
 
 func (a *authorizator) CanDeleteDoor(door auth.Operant) error {
@@ -329,19 +266,6 @@ func (a *authorizator) CanDeleteDoor(door auth.Operant) error {
 	}
 
 	return types.Unauthorised(msg, err)
-}
-
-func (a *authorizator) CanAddGroup(group auth.Operant) error {
-	ruleset := "groups"
-	op := "add::group"
-	msg := fmt.Errorf("Not authorized to add group")
-	_, object := group.AsRuleEntity()
-
-	m := map[string]interface{}{
-		"GROUP": object,
-	}
-
-	return a.evaluate(ruleset, op, group, m, msg)
 }
 
 func (a *authorizator) CanDeleteGroup(group auth.Operant) error {

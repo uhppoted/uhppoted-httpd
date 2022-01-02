@@ -377,13 +377,13 @@ func (cc *Controllers) Validate() error {
 	return nil
 }
 
-func (cc *Controllers) add(auth auth.OpAuth, c Controller) (*Controller, error) {
+func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	record := c.clone()
 	record.oid = catalog.OID(catalog.NewController(c.deviceID))
 	record.created = types.DateTime(time.Now())
 
-	if auth != nil {
-		if err := auth.CanAddController(record); err != nil {
+	if a != nil {
+		if err := a.CanAdd(auth.Controllers, record); err != nil {
 			return nil, err
 		}
 	}

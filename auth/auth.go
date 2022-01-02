@@ -46,18 +46,12 @@ type OpAuth interface {
 	UID() string
 
 	CanView(r RuleSet, o Operant, field string, value interface{}) error
+	CanAdd(r RuleSet, o Operant) error
 	CanUpdate(r RuleSet, o Operant, field string, value interface{}) error
 
-	CanAddController(controller Operant) error
 	CanDeleteController(controller Operant) error
-
-	CanAddCard(card Operant) error
 	CanDeleteCard(card Operant) error
-
-	CanAddDoor(door Operant) error
 	CanDeleteDoor(door Operant) error
-
-	CanAddGroup(group Operant) error
 	CanDeleteGroup(group Operant) error
 }
 
