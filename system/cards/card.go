@@ -163,7 +163,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 
 	f := func(field string, value interface{}) error {
 		if a != nil {
-			return a.CanUpdate(auth.Cards, c, field, value)
+			return a.CanUpdate(c, field, value, auth.Cards)
 		}
 
 		return nil
@@ -321,7 +321,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 
 	if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
 		if a != nil {
-			if err := a.CanDelete(auth.Cards, clone); err != nil {
+			if err := a.CanDelete(clone, auth.Cards); err != nil {
 				return nil, err
 			}
 		}
@@ -371,7 +371,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 func (c *Card) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 	f := func(c *Card, field string, value interface{}) bool {
 		if a != nil {
-			if err := a.CanView(auth.Cards, c, field, value); err != nil {
+			if err := a.CanView(c, field, value, auth.Cards); err != nil {
 				return false
 			}
 		}

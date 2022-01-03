@@ -130,7 +130,7 @@ func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([
 
 	f := func(field string, value interface{}) error {
 		if a != nil {
-			return a.CanUpdate(auth.Groups, g, field, value)
+			return a.CanUpdate(g, field, value, auth.Groups)
 		}
 
 		return nil
@@ -171,7 +171,7 @@ func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([
 
 	if !g.IsValid() {
 		if a != nil {
-			if err := a.CanDelete(auth.Groups, g); err != nil {
+			if err := a.CanDelete(g, auth.Groups); err != nil {
 				return nil, err
 			}
 		}
@@ -192,7 +192,7 @@ func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([
 func (g *Group) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 	f := func(g *Group, field string, value interface{}) bool {
 		if a != nil {
-			if err := a.CanView(auth.Groups, g, field, value); err != nil {
+			if err := a.CanView(g, field, value, auth.Groups); err != nil {
 				return false
 			}
 		}

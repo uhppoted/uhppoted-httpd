@@ -45,10 +45,10 @@ type IAuth interface {
 type OpAuth interface {
 	UID() string
 
-	CanView(r RuleSet, o Operant, field string, value interface{}) error
-	CanAdd(r RuleSet, o Operant) error
-	CanUpdate(r RuleSet, o Operant, field string, value interface{}) error
-	CanDelete(r RuleSet, o Operant) error
+	CanView(o Operant, field string, value interface{}, rulesets ...RuleSet) error
+	CanAdd(o Operant, rulesets ...RuleSet) error
+	CanUpdate(o Operant, field string, value interface{}, rulesets ...RuleSet) error
+	CanDelete(o Operant, rulesets ...RuleSet) error
 }
 
 type Operant interface {

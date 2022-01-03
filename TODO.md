@@ -10,7 +10,7 @@
 
 - [ ] Separate LAN and controllers
       - [x] Move authorisator ruleset to initialisation and reload in eval
-      - [ ] Reorder parameters in CanXXX to allow for multiple rulesets if necessary
+      - [x] Reorder parameters in CanXXX to allow for multiple rulesets if necessary
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 
 - [ ] Fix DateTime mess

@@ -64,7 +64,7 @@ func (l *LogEntry) AsObjects(a auth.OpAuth) []interface{} {
 
 	f := func(l *LogEntry, field string, value interface{}) bool {
 		if a != nil {
-			if err := a.CanView(auth.Logs, l, field, value); err != nil {
+			if err := a.CanView(l, field, value, auth.Logs); err != nil {
 				return false
 			}
 		}

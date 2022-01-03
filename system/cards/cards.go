@@ -215,7 +215,7 @@ func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
 	card.created = types.DateTime(time.Now())
 
 	if a != nil {
-		if err := a.CanAdd(auth.Cards, card); err != nil {
+		if err := a.CanAdd(card, auth.Cards); err != nil {
 			return nil, err
 		}
 	}

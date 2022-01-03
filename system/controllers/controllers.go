@@ -383,7 +383,7 @@ func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	record.created = types.DateTime(time.Now())
 
 	if a != nil {
-		if err := a.CanAdd(auth.Controllers, record); err != nil {
+		if err := a.CanAdd(record, auth.Controllers); err != nil {
 			return nil, err
 		}
 	}

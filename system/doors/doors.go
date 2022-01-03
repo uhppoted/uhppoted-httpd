@@ -202,7 +202,7 @@ func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
 	record.created = types.DateTime(time.Now())
 
 	if a != nil {
-		if err := a.CanAdd(auth.Doors, &record); err != nil {
+		if err := a.CanAdd(&record, auth.Doors); err != nil {
 			return nil, err
 		}
 	}

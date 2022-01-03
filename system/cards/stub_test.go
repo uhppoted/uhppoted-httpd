@@ -25,30 +25,32 @@ func (x *stub) UID() string {
 	return "stub"
 }
 
-func (x *stub) CanView(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
-	if x.canView != nil {
-		return x.canView(ruleset, object, field, value)
+func (x *stub) CanView(object auth.Operant, field string, value interface{}, rulesets ...auth.RuleSet) error {
+	if x.canView != nil && len(rulesets) > 0 {
+		return x.canView(rulesets[0], object, field, value)
 	}
 
 	return nil
 }
 
-func (x *stub) CanAdd(ruleset auth.RuleSet, operant auth.Operant) error {
+func (x *stub) CanAdd(operant auth.Operant, rulesets ...auth.RuleSet) error {
 	return fmt.Errorf("not authorised")
 }
 
-func (x *stub) CanUpdate(ruleset auth.RuleSet, operant auth.Operant, field string, value interface{}) error {
-	switch ruleset {
-	case auth.Cards:
-		if x.canUpdateCard != nil {
-			return x.canUpdateCard(operant, field, value)
+func (x *stub) CanUpdate(operant auth.Operant, field string, value interface{}, rulesets ...auth.RuleSet) error {
+	if len(rulesets) > 0 {
+		switch rulesets[0] {
+		case auth.Cards:
+			if x.canUpdateCard != nil {
+				return x.canUpdateCard(operant, field, value)
+			}
 		}
 	}
 
 	return fmt.Errorf("not authorised")
 }
 
-func (x *stub) CanDelete(ruleset auth.RuleSet, operant auth.Operant) error {
+func (x *stub) CanDelete(operant auth.Operant, rulesets ...auth.RuleSet) error {
 	return fmt.Errorf("not authorised")
 }
 

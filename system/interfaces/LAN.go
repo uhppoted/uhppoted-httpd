@@ -119,7 +119,7 @@ func (l *LAN) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]c
 
 	f := func(field string, value interface{}) error {
 		if a != nil {
-			return a.CanUpdate(auth.Interfaces, l, field, value)
+			return a.CanUpdate(l, field, value, auth.Interfaces)
 		}
 
 		return nil
@@ -215,7 +215,7 @@ func (l *LAN) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]c
 func (l *LAN) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 	f := func(l *LAN, field string, value interface{}) bool {
 		if a != nil {
-			if err := a.CanView(auth.Interfaces, l, field, value); err != nil {
+			if err := a.CanView(l, field, value, auth.Interfaces); err != nil {
 				return false
 			}
 		}

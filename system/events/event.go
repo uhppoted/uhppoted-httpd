@@ -173,7 +173,7 @@ func (e *Event) AsObjects(a auth.OpAuth) []interface{} {
 
 	f := func(e *Event, field string, value interface{}) bool {
 		if a != nil {
-			if err := a.CanView(auth.Events, e, field, value); err != nil {
+			if err := a.CanView(e, field, value, auth.Events); err != nil {
 				return false
 			}
 		}

@@ -379,7 +379,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 
 	f := func(field string, value interface{}) error {
 		if a != nil {
-			return a.CanUpdate(auth.Controllers, c, field, value)
+			return a.CanUpdate(c, field, value, auth.Controllers)
 		}
 
 		return nil
@@ -601,7 +601,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 
 	if c.name == "" && c.deviceID == 0 {
 		if a != nil {
-			if err := a.CanDelete(auth.Controllers, c); err != nil {
+			if err := a.CanDelete(c, auth.Controllers); err != nil {
 				return nil, err
 			}
 		}
@@ -649,7 +649,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 func (c *Controller) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 	f := func(c *Controller, field string, value interface{}) bool {
 		if a != nil {
-			if err := a.CanView(auth.Controllers, c, field, value); err != nil {
+			if err := a.CanView(c, field, value, auth.Controllers); err != nil {
 				return false
 			}
 		}

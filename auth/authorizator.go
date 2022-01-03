@@ -77,7 +77,7 @@ func (a *authorizator) UID() string {
 	return "?"
 }
 
-func (a *authorizator) CanView(ruleset RuleSet, operant Operant, field string, value interface{}) error {
+func (a *authorizator) CanView(operant Operant, field string, value interface{}, rulesets ...RuleSet) error {
 	msg := fmt.Errorf("Not authorized to view %v", operant)
 	err := fmt.Errorf("Not authorized to view %v field:%v value:%v", operant, field, value)
 
@@ -96,8 +96,10 @@ func (a *authorizator) CanView(ruleset RuleSet, operant Operant, field string, v
 			Refuse: false,
 		}
 
-		if err := a.eval(ruleset, op, &rs, m); err != nil {
-			return types.Unauthorised(msg, err)
+		for _, r := range rulesets {
+			if err := a.eval(r, op, &rs, m); err != nil {
+				return types.Unauthorised(msg, err)
+			}
 		}
 
 		if !rs.Allow || rs.Refuse {
@@ -108,7 +110,7 @@ func (a *authorizator) CanView(ruleset RuleSet, operant Operant, field string, v
 	return nil
 }
 
-func (a *authorizator) CanAdd(ruleset RuleSet, operant Operant) error {
+func (a *authorizator) CanAdd(operant Operant, rulesets ...RuleSet) error {
 	msg := fmt.Errorf("Not authorized to add %v", operant)
 	err := fmt.Errorf("Not authorized to add %v", operant)
 
@@ -125,8 +127,10 @@ func (a *authorizator) CanAdd(ruleset RuleSet, operant Operant) error {
 			Refuse: false,
 		}
 
-		if err := a.eval(ruleset, op, &rs, m); err != nil {
-			return types.Unauthorised(msg, err)
+		for _, r := range rulesets {
+			if err := a.eval(r, op, &rs, m); err != nil {
+				return types.Unauthorised(msg, err)
+			}
 		}
 
 		if rs.Allow && !rs.Refuse {
@@ -137,7 +141,7 @@ func (a *authorizator) CanAdd(ruleset RuleSet, operant Operant) error {
 	return types.Unauthorised(msg, err)
 }
 
-func (a *authorizator) CanUpdate(ruleset RuleSet, operant Operant, field string, value interface{}) error {
+func (a *authorizator) CanUpdate(operant Operant, field string, value interface{}, rulesets ...RuleSet) error {
 	msg := fmt.Errorf("Not authorized to update %v", operant)
 	err := fmt.Errorf("Not authorized to update %v field:%v value:%v", operant, field, value)
 
@@ -156,8 +160,10 @@ func (a *authorizator) CanUpdate(ruleset RuleSet, operant Operant, field string,
 			Refuse: false,
 		}
 
-		if err = a.eval(ruleset, op, &rs, m); err != nil {
-			return types.Unauthorised(msg, err)
+		for _, r := range rulesets {
+			if err = a.eval(r, op, &rs, m); err != nil {
+				return types.Unauthorised(msg, err)
+			}
 		}
 
 		if rs.Allow && !rs.Refuse {
@@ -168,7 +174,7 @@ func (a *authorizator) CanUpdate(ruleset RuleSet, operant Operant, field string,
 	return types.Unauthorised(msg, err)
 }
 
-func (a *authorizator) CanDelete(ruleset RuleSet, operant Operant) error {
+func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
 	msg := fmt.Errorf("Not authorized to delete %v", operant)
 	err := fmt.Errorf("Not authorized to delete %v", operant)
 
@@ -185,8 +191,10 @@ func (a *authorizator) CanDelete(ruleset RuleSet, operant Operant) error {
 			"OBJECT": object,
 		}
 
-		if err := a.eval(ruleset, op, &rs, m); err != nil {
-			return types.Unauthorised(msg, err)
+		for _, r := range rulesets {
+			if err := a.eval(r, op, &rs, m); err != nil {
+				return types.Unauthorised(msg, err)
+			}
 		}
 
 		if rs.Allow && !rs.Refuse {

@@ -168,7 +168,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			return nil
 		}
 
-		return a.CanUpdate(auth.Doors, d, field, value)
+		return a.CanUpdate(d, field, value, auth.Doors)
 	}
 
 	if d == nil {
@@ -235,7 +235,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 
 	if !d.IsValid() {
 		if a != nil {
-			if err := a.CanDelete(auth.Doors, d); err != nil {
+			if err := a.CanDelete(d, auth.Doors); err != nil {
 				return nil, err
 			}
 		}
@@ -256,7 +256,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 func (d *Door) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 	f := func(d *Door, field string, value interface{}) bool {
 		if a != nil {
-			if err := a.CanView(auth.Doors, d, field, value); err != nil {
+			if err := a.CanView(d, field, value, auth.Doors); err != nil {
 				return false
 			}
 		}
