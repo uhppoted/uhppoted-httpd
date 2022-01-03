@@ -14,6 +14,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
@@ -205,12 +206,7 @@ func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, h handler) {
 		return
 	}
 
-	auth, err := NewAuthorizator(uid, role, h.tag, h.rules)
-	if err != nil {
-		warn(err)
-		http.Error(w, "internal system error", http.StatusInternalServerError)
-		return
-	}
+	auth := auth.NewAuthorizator(uid, role)
 
 	// ... ok
 	ctx, cancel := context.WithTimeout(context.Background(), d.timeout)

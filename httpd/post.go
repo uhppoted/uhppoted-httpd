@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -45,10 +46,8 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		if handler := d.vtable(path); handler == nil || handler.post == nil {
 			warn(fmt.Errorf("No vtable entry for %v", path))
 			http.Error(w, "internal system error", http.StatusInternalServerError)
-		} else if auth, err := NewAuthorizator(uid, role, handler.tag, handler.rules); err != nil {
-			warn(err)
-			http.Error(w, "internal system error", http.StatusInternalServerError)
 		} else {
+			auth := auth.NewAuthorizator(uid, role)
 			d.dispatch(w, r, func(m map[string]interface{}) (interface{}, error) {
 				return handler.post(m, auth)
 			})

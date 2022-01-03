@@ -76,6 +76,17 @@ func (cmd *Run) Execute(args ...interface{}) error {
 
 	audit.SetAuditFile(conf.HTTPD.Audit.File)
 
+	provider.Init(map[provider.RuleSet]string{
+		provider.Interfaces:  conf.HTTPD.DB.Rules.System,
+		provider.Controllers: conf.HTTPD.DB.Rules.System,
+		provider.Doors:       conf.HTTPD.DB.Rules.Doors,
+		provider.Cards:       conf.HTTPD.DB.Rules.Cards,
+		provider.Groups:      conf.HTTPD.DB.Rules.Groups,
+		provider.Events:      conf.HTTPD.DB.Rules.Events,
+		provider.Logs:        conf.HTTPD.DB.Rules.Logs,
+		// provider.Users:        conf.HTTPD.DB.Rules.Users,
+	})
+
 	h := httpd.HTTPD{
 		Dir:                      "html",
 		AuthProvider:             authentication,
@@ -86,38 +97,6 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		TLSKey:                   conf.HTTPD.TLSKey,
 		RequireClientCertificate: conf.HTTPD.RequireClientCertificate,
 		RequestTimeout:           conf.HTTPD.RequestTimeout,
-		DB: struct {
-			GRules struct {
-				ACL    string
-				System string
-				Cards  string
-				Doors  string
-				Groups string
-				Events string
-				Logs   string
-				Users  string
-			}
-		}{
-			GRules: struct {
-				ACL    string
-				System string
-				Cards  string
-				Doors  string
-				Groups string
-				Events string
-				Logs   string
-				Users  string
-			}{
-				ACL:    conf.HTTPD.DB.Rules.ACL,
-				System: conf.HTTPD.DB.Rules.System,
-				Cards:  conf.HTTPD.DB.Rules.Cards,
-				Doors:  conf.HTTPD.DB.Rules.Doors,
-				Groups: conf.HTTPD.DB.Rules.Groups,
-				Events: conf.HTTPD.DB.Rules.Events,
-				Logs:   conf.HTTPD.DB.Rules.Logs,
-				Users:  conf.HTTPD.DB.Rules.Users,
-			},
-		},
 	}
 
 	if err := system.Init(*conf, cmd.configuration, cmd.debug); err != nil {

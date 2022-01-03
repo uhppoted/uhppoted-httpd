@@ -14,7 +14,7 @@ const (
 type RuleSet int
 
 const (
-	Interfaces = iota + 1
+	Interfaces = iota
 	Controllers
 	Doors
 	Cards

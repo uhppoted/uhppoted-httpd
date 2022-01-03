@@ -9,9 +9,8 @@
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Separate LAN and controllers
-      - [x] Genericize CanAdd
-      - [x] Genericize CanDelete
-      - [ ] Move authorisator ruleset to initialisation and reload in eval
+      - [x] Move authorisator ruleset to initialisation and reload in eval
+      - [ ] Reorder parameters in CanXXX to allow for multiple rulesets if necessary
       - [ ] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
 
 - [ ] Fix DateTime mess

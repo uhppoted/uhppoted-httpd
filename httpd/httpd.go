@@ -27,33 +27,12 @@ type HTTPD struct {
 	TLSKey                   string
 	RequireClientCertificate bool
 	RequestTimeout           time.Duration
-	DB                       struct {
-		GRules struct {
-			ACL    string
-			System string
-			Cards  string
-			Doors  string
-			Groups string
-			Events string
-			Logs   string
-			Users  string
-		}
-	}
 }
 
 type dispatcher struct {
-	root  string
-	fs    http.Handler
-	auth  auth.IAuth
-	grule struct {
-		system string
-		cards  string
-		doors  string
-		groups string
-		events string
-		logs   string
-		users  string
-	}
+	root    string
+	fs      http.Handler
+	auth    auth.IAuth
 	timeout time.Duration
 }
 
@@ -67,26 +46,9 @@ func (h *HTTPD) Run() {
 	}
 
 	d := dispatcher{
-		root: h.Dir,
-		fs:   http.FileServer(fs),
-		auth: h.AuthProvider,
-		grule: struct {
-			system string
-			cards  string
-			doors  string
-			groups string
-			events string
-			logs   string
-			users  string
-		}{
-			system: h.DB.GRules.System,
-			cards:  h.DB.GRules.Cards,
-			doors:  h.DB.GRules.Doors,
-			groups: h.DB.GRules.Groups,
-			events: h.DB.GRules.Events,
-			logs:   h.DB.GRules.Logs,
-			users:  h.DB.GRules.Users,
-		},
+		root:    h.Dir,
+		fs:      http.FileServer(fs),
+		auth:    h.AuthProvider,
 		timeout: h.RequestTimeout,
 	}
 
