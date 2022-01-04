@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/hyperjumptech/grule-rule-engine/ast"
@@ -42,16 +43,28 @@ func (op *card) HasGroup(g string) bool {
 	return false
 }
 
-var grules = map[RuleSet]struct {
+type ruleset struct {
 	kb      *ast.KnowledgeLibrary
 	file    string
 	touched time.Time
-}{}
+}
+
+var grules = struct {
+	rulesetx map[RuleSet]ruleset
+	guard    sync.RWMutex
+}{
+	rulesetx: map[RuleSet]ruleset{},
+}
+
+//var	guard   sync.RWMutex
 
 func Init(rules map[RuleSet]string) {
+	grules.guard.Lock()
+	defer grules.guard.Unlock()
+
 	for k, v := range rules {
 		if f := strings.TrimSpace(v); f != "" {
-			grules[k] = struct {
+			grules.rulesetx[k] = struct {
 				kb      *ast.KnowledgeLibrary
 				file    string
 				touched time.Time
@@ -267,43 +280,45 @@ func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]
 	return nil
 }
 
-func getKB(ruleset RuleSet) (*ast.KnowledgeLibrary, error) {
+func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
+	grules.guard.RLock()
+	v, ok := grules.rulesetx[r]
+	grules.guard.RUnlock()
 
-	if v, ok := grules[ruleset]; !ok {
-		return nil, fmt.Errorf("No rules knowledgebase for ruleset '%v'", ruleset)
-	} else {
-		var touched time.Time
-		var tag = fmt.Sprintf("%v", ruleset)
-
-		if info, err := os.Stat(v.file); err != nil {
-			return nil, fmt.Errorf("Error loading %v auth ruleset (%v)", tag, err)
-		} else {
-			touched = info.ModTime()
-		}
-
-		if v.kb != nil && !v.touched.Before(touched) {
-			return v.kb, nil
-		}
-
-		kb := ast.NewKnowledgeLibrary()
-		if err := builder.NewRuleBuilder(kb).BuildRuleFromResource(tag, "0.0.0", pkg.NewFileResource(v.file)); err != nil {
-			return nil, fmt.Errorf("Error loading %v auth ruleset (%v)", tag, err)
-		}
-
-		grules[ruleset] = struct {
-			kb      *ast.KnowledgeLibrary
-			file    string
-			touched time.Time
-		}{
-			kb:      kb,
-			file:    v.file,
-			touched: touched,
-		}
-
-		log.Printf("INFO  loaded '%v' grule file from %v", tag, v.file)
-
-		return kb, nil
+	if !ok {
+		return nil, fmt.Errorf("No rules knowledgebase for ruleset '%v'", r)
 	}
+
+	var touched time.Time
+	var tag = fmt.Sprintf("%v", r)
+
+	if info, err := os.Stat(v.file); err != nil {
+		return nil, fmt.Errorf("Error loading %v auth ruleset (%v)", tag, err)
+	} else {
+		touched = info.ModTime()
+	}
+
+	if v.kb != nil && !v.touched.Before(touched) {
+		return v.kb, nil
+	}
+
+	kb := ast.NewKnowledgeLibrary()
+	if err := builder.NewRuleBuilder(kb).BuildRuleFromResource(tag, "0.0.0", pkg.NewFileResource(v.file)); err != nil {
+		return nil, fmt.Errorf("Error loading %v auth ruleset (%v)", tag, err)
+	}
+
+	grules.guard.Lock()
+	defer grules.guard.Unlock()
+
+	grules.rulesetx[r] = ruleset{
+		kb:      kb,
+		file:    v.file,
+		touched: touched,
+	}
+
+	log.Printf("INFO  loaded '%v' grule file from %v", tag, v.file)
+
+	return kb, nil
 }
 
 func toString(entity interface{}) string {

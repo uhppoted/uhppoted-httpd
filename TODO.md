@@ -8,9 +8,9 @@
       - [ ] (?) Clear cookie on logout
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
-- [ ] Separate LAN and controllers
+- [x] Separate LAN and controllers
       - [x] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
-      - [ ] Make authorizator rule map concurrency safe
+      - [x] Make authorizator rule map concurrency safe
 ```
 fatal error: 2022/01/04 11:55:44 INFO  loaded 'interfaces' grule file from /usr/local/etc/com.github.uhppoted/httpd/system.grl
 concurrent map writes
