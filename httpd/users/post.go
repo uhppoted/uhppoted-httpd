@@ -1,139 +1,55 @@
 package users
 
 import (
-	"compress/gzip"
-	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"strings"
-	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Password(w http.ResponseWriter, r *http.Request, timeout time.Duration, auth auth.IAuth) {
+func Post(body map[string]interface{}, r *http.Request, auth auth.IAuth) (interface{}, error) {
 	var uid string
 	var old string
 	var pwd string
-	var contentType string
-	var acceptsGzip bool
 
-	for k, h := range r.Header {
-		if strings.TrimSpace(strings.ToLower(k)) == "content-type" {
-			for _, v := range h {
-				contentType = strings.TrimSpace(strings.ToLower(v))
-			}
+	f := func(k string) (string, error) {
+		if v, ok := body[k]; !ok {
+			return "", fmt.Errorf("Invalid user ID or password")
+		} else if u, ok := v.([]string); ok && len(u) > 0 {
+			return u[0], nil
+		} else if u, ok := v.(string); ok {
+			return u, nil
 		}
 
-		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
-			for _, v := range h {
-				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
-					acceptsGzip = true
-				}
-			}
-		}
+		return "", fmt.Errorf("Invalid user ID or password")
 	}
 
-	switch contentType {
-	case "application/x-www-form-urlencoded":
-		uid = r.FormValue("uid")
-		old = r.FormValue("old")
-		pwd = r.FormValue("pwd")
+	if v, err := f("uid"); err != nil {
+		return nil, err
+	} else {
+		uid = v
+	}
 
-	case "application/json":
-		blob, err := io.ReadAll(r.Body)
-		if err != nil {
-			warn(err)
-			http.Error(w, "Error reading request", http.StatusInternalServerError)
-			return
-		}
+	if v, err := f("old"); err != nil {
+		return nil, err
+	} else {
+		old = v
+	}
 
-		body := struct {
-			UID string `json:"uid"`
-			Old string `json:"old"`
-			Pwd string `json:"pwd"`
-		}{}
-
-		if err := json.Unmarshal(blob, &body); err != nil {
-			warn(err)
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
-			return
-		}
-
-		uid = body.Old
-		old = body.Old
-		pwd = body.Pwd
+	if v, err := f("pwd"); err != nil {
+		return nil, err
+	} else {
+		pwd = v
 	}
 
 	// ... validate
 	if err := auth.Verify(uid, old, r); err != nil {
-		warn(err)
-		http.Error(w, "Invalid user ID or password", http.StatusBadRequest)
-		return
+		return nil, fmt.Errorf("Invalid user ID or password")
 	}
 
-	// ... update users
-	ch := make(chan error)
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-
-	defer cancel()
-
-	go func() {
-		if err := auth.SetPassword(uid, pwd, r); err != nil {
-			ch <- err
-			return
-		}
-
-		response := struct {
-		}{}
-
-		b, err := json.Marshal(response)
-		if err != nil {
-			ch <- &types.HttpdError{
-				Status: http.StatusInternalServerError,
-				Err:    fmt.Errorf("Internal error generating response"),
-				Detail: fmt.Errorf("Error marshalling response: %w", err),
-			}
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-
-		if acceptsGzip && len(b) > GZIP_MINIMUM {
-			w.Header().Set("Content-Encoding", "gzip")
-
-			gz := gzip.NewWriter(w)
-			gz.Write(b)
-			gz.Close()
-		} else {
-			w.Write(b)
-		}
-
-		ch <- nil
-	}()
-
-	select {
-	case <-ctx.Done():
-		warn(ctx.Err())
-		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
-		return
-
-	case err := <-ch:
-		if err != nil {
-			warn(err)
-
-			switch e := err.(type) {
-			case *types.HttpdError:
-				http.Error(w, e.Error(), e.Status)
-
-			default:
-				http.Error(w, e.Error(), http.StatusInternalServerError)
-			}
-
-			return
-		}
+	if err := auth.SetPassword(uid, pwd, r); err != nil {
+		return nil, err
 	}
+
+	return struct{}{}, nil
 }

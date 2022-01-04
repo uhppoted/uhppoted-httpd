@@ -30,7 +30,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		"/doors",
 		"/cards",
 		"/groups",
-		"/events",
+		//	"/events",
 		"/logs":
 		if handler := d.vtable(path); handler == nil || handler.get == nil {
 			warn(fmt.Errorf("No vtable entry for %v", path))
@@ -39,6 +39,11 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 			d.fetch(w, r, *handler)
 		}
 
+		return
+
+	case "/events":
+		handler := d.vtable(path)
+		d.fetchx(w, r, *handler)
 		return
 	}
 
@@ -208,9 +213,84 @@ func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, h handler) {
 
 	auth := auth.NewAuthorizator(uid, role)
 
-	// ... ok
-	ctx, cancel := context.WithTimeout(context.Background(), d.timeout)
+	// ... parse header
+	acceptsGzip := false
 
+	for k, h := range r.Header {
+		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
+			for _, v := range h {
+				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
+					acceptsGzip = true
+				}
+			}
+		}
+	}
+
+	// ... ok
+	ctx, cancel := context.WithTimeout(d.context, d.timeout)
+
+	defer cancel()
+
+	var response interface{}
+
+	go func() {
+		response = h.get(r, auth)
+		cancel()
+	}()
+
+	<-ctx.Done()
+
+	if err := ctx.Err(); err != context.Canceled {
+		warn(err)
+		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
+		return
+	}
+
+	b, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Error generating response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if acceptsGzip && len(b) > GZIP_MINIMUM {
+		w.Header().Set("Content-Encoding", "gzip")
+
+		gz := gzip.NewWriter(w)
+		gz.Write(b)
+		gz.Close()
+	} else {
+		w.Write(b)
+	}
+}
+
+func (d *dispatcher) fetchx(w http.ResponseWriter, r *http.Request, h handler) {
+	// ... authenticated and authorised?
+	uid, role, ok := d.authenticated(r)
+	if !ok {
+		warn(fmt.Errorf("Unauthenticated GET request"))
+		http.Redirect(w, r, "/login.html", http.StatusFound)
+		return
+	}
+
+	if !d.authorisedX(uid, role, r.URL.Path) {
+		// Returns empty JSON object if not authorised for the resource because this request may be
+		// a legitimate part of the user interface.
+		if b, err := json.Marshal(struct{}{}); err != nil {
+			http.Error(w, "Error generating response", http.StatusInternalServerError)
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(b)
+		}
+
+		return
+	}
+
+	auth := auth.NewAuthorizator(uid, role)
+
+	// ... ok
+	ctx, cancel := context.WithTimeout(d.context, d.timeout)
 	defer cancel()
 
 	acceptsGzip := false
@@ -228,13 +308,17 @@ func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, h handler) {
 	var response interface{}
 
 	go func() {
-		response = h.get(r, auth)
-		cancel()
+		fmt.Printf(">>>>>>>>>>>>> %v\n", auth)
+		//		response = h.get(r, auth)
+		//		cancel()
 	}()
 
 	<-ctx.Done()
 
+	fmt.Printf(">>>>>>>>>>>>> %v\n", "done")
+
 	if err := ctx.Err(); err != context.Canceled {
+		fmt.Printf(">>>>>>>>>>>>> %v\n", "cancelled")
 		warn(err)
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 		return

@@ -33,6 +33,7 @@ type dispatcher struct {
 	root    string
 	fs      http.Handler
 	auth    auth.IAuth
+	context context.Context
 	timeout time.Duration
 }
 
@@ -45,10 +46,14 @@ func (h *HTTPD) Run() {
 		FileSystem: http.Dir(h.Dir),
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	d := dispatcher{
 		root:    h.Dir,
 		fs:      http.FileServer(fs),
 		auth:    h.AuthProvider,
+		context: ctx,
 		timeout: h.RequestTimeout,
 	}
 
@@ -103,7 +108,10 @@ func (h *HTTPD) Run() {
 	go func() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
+
 		<-sigint
+
+		cancel()
 
 		if srv != nil {
 			if err := srv.Shutdown(context.Background()); err != nil {

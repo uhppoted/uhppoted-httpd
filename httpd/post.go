@@ -34,7 +34,9 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 
 	switch path {
 	case "/password":
-		users.Password(w, r, d.timeout, d.auth)
+		d.dispatch(w, r, func(m map[string]interface{}) (interface{}, error) {
+			return users.Post(m, r, d.auth)
+		})
 		return
 
 	case
@@ -62,7 +64,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 
 func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request, f func(map[string]interface{}) (interface{}, error)) {
 	ch := make(chan error)
-	ctx, cancel := context.WithTimeout(context.Background(), d.timeout)
+	ctx, cancel := context.WithTimeout(d.context, d.timeout)
 
 	defer cancel()
 
@@ -86,32 +88,48 @@ func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request, f func(map
 			}
 		}
 
-		if contentType != "application/json" {
+		body := map[string]interface{}{}
+
+		switch contentType {
+		case "application/x-www-form-urlencoded":
+			if err := r.ParseForm(); err != nil {
+				ch <- &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Invalid reading request"),
+					Detail: err,
+				}
+				return
+			}
+
+			for k, v := range r.Form {
+				body[k] = v
+			}
+
+		case "application/json":
+			blob, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				ch <- &types.HttpdError{
+					Status: http.StatusInternalServerError,
+					Err:    fmt.Errorf("Invalid reading request"),
+					Detail: err,
+				}
+				return
+			}
+
+			if err := json.Unmarshal(blob, &body); err != nil {
+				ch <- &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Invalid request body"),
+					Detail: fmt.Errorf("Error unmarshalling request (%s): %w", string(blob), err),
+				}
+				return
+			}
+
+		default:
 			ch <- &types.HttpdError{
 				Status: http.StatusBadRequest,
 				Err:    fmt.Errorf("Invalid request"),
 				Detail: fmt.Errorf("Invalid request content-type (%v)", contentType),
-			}
-			return
-		}
-
-		blob, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			ch <- &types.HttpdError{
-				Status: http.StatusInternalServerError,
-				Err:    fmt.Errorf("Invalid reading request"),
-				Detail: err,
-			}
-			return
-		}
-
-		body := map[string]interface{}{}
-
-		if err := json.Unmarshal(blob, &body); err != nil {
-			ch <- &types.HttpdError{
-				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Invalid request body"),
-				Detail: fmt.Errorf("Error unmarshalling request (%s): %w", string(blob), err),
 			}
 			return
 		}
