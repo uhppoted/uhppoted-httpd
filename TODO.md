@@ -1,28 +1,19 @@
 ## v0.7.x
 
 - [ ] Cookies
+      -- allow   unauthenticated GET access to login.html, CSS, images
+      -- allow   unauthenticated HEAD access to /login
+      -- allow   unauthenticated+login cookie POST access to /login
+      -- require authenticated + authorisation for GET access to data and /well-known pages
+      -- require authenticated+authorisation for POST access to everything else
+      -- touch session when authenticated
+
       - [ ] Homogenize `authorised` and `authorisedX`
       - [ ] (?) Lift `unauthorised` handling out of authorised
       - [ ] Make login cookie expire in 60s
       - [ ] Don't check login cookie except for login
       - [ ] (?) Clear cookie on logout
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
-
-- [x] Separate LAN and controllers
-      - [x] (?) Automatically interrupt contexts on CTRL-C (takes a while to shut down otherwise)
-      - [x] Make authorizator rule map concurrency safe
-```
-fatal error: 2022/01/04 11:55:44 INFO  loaded 'interfaces' grule file from /usr/local/etc/com.github.uhppoted/httpd/system.grl
-concurrent map writes
-
-goroutine 80 [running]:
-runtime.throw({0x16fee91, 0x0})
-  /usr/local/go/src/runtime/panic.go:1198 +0x71 fp=0xc0006155f8 sp=0xc0006155c8 pc=0x1034a51
-runtime.mapassign_fast64(0x162da20, 0xc000276330, 0x1)
-  /usr/local/go/src/runtime/map_fast64.go:176 +0x2b4 fp=0xc000615630 sp=0xc0006155f8 pc=0x1012ab4
-github.com/uhppoted/uhppoted-httpd/auth.getKB(0xc000615800)
-```
-
 
 - [ ] Fix DateTime mess
       - [ ] Controller schema for DateTime
