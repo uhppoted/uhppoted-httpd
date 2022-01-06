@@ -19,7 +19,10 @@ const ControllerEndpointAddress = catalog.ControllerEndpointAddress
 const ControllerDateTimeCurrent = catalog.ControllerDateTimeCurrent
 const ControllerCardsCount = catalog.ControllerCardsCount
 const ControllerCardsStatus = catalog.ControllerCardsStatus
-const ControllerEventsCount = catalog.ControllerEventsCount
+const ControllerEventsStatus = catalog.ControllerEventsStatus
+const ControllerEventsFirst = catalog.ControllerEventsFirst
+const ControllerEventsLast = catalog.ControllerEventsLast
+const ControllerEventsCurrent = catalog.ControllerEventsCurrent
 
 const DoorDelay = catalog.DoorDelay
 const DoorDelayModified = catalog.DoorDelayModified

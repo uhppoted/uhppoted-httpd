@@ -42,8 +42,13 @@ type cached struct {
 	address  *core.Address
 	datetime *types.DateTime
 	cards    *uint32
-	events   *uint32
-	acl      types.Status
+	events   struct {
+		status  types.Status
+		first   uint32
+		last    uint32
+		current uint32
+	}
+	acl types.Status
 }
 
 var created = types.DateTimeNow()
@@ -135,8 +140,10 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 		}
 
 		type einfo struct {
-			events string
-			status types.Status
+			first   uint32
+			last    uint32
+			current uint32
+			status  types.Status
 		}
 
 		created := c.created.Format("2006-01-02 15:04:05")
@@ -165,7 +172,6 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 		}
 
 		if c.deviceID != 0 {
-			//if cached, ok := cache.cache[*c.deviceID]; ok {
 			if cached := c.get(); cached != nil {
 				// ... set IP address field from cached value
 				if cached.address != nil {
@@ -219,8 +225,10 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 				}
 
 				// ... set events field from cached value
-				events.events = fmt.Sprintf("%v", (*records)(cached.events))
-				events.status = types.StatusOk
+				events.status = cached.events.status
+				events.first = cached.events.first
+				events.last = cached.events.last
+				events.current = cached.events.current
 			}
 		}
 
@@ -238,7 +246,19 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 		list = append(list, kv{ControllerCardsStatus, cards.status})
 		list = append(list, kv{ControllerCardsCount, cards.cards})
 		list = append(list, kv{ControllerEventsStatus, events.status})
-		list = append(list, kv{ControllerEventsCount, events.events})
+
+		if events.first != 0 {
+			list = append(list, kv{ControllerEventsFirst, events.first})
+		}
+
+		if events.last != 0 {
+			list = append(list, kv{ControllerEventsLast, events.last})
+		}
+
+		if events.current != 0 {
+			list = append(list, kv{ControllerEventsCurrent, events.current})
+		}
+
 		list = append(list, kv{ControllerDoor1, doors[1]})
 		list = append(list, kv{ControllerDoor2, doors[2]})
 		list = append(list, kv{ControllerDoor3, doors[3]})
@@ -329,6 +349,11 @@ func (c *Controller) get() *cached {
 		acl: types.StatusUnknown,
 	}
 
+	e.events.status = types.StatusUnknown
+	e.events.first = 0
+	e.events.last = 0
+	e.events.current = 0
+
 	if v := catalog.GetV(c.oid, ControllerTouched); v != nil {
 		if touched, ok := v.(time.Time); ok {
 			e.touched = touched
@@ -353,9 +378,27 @@ func (c *Controller) get() *cached {
 		}
 	}
 
-	if v := catalog.GetV(c.oid, ControllerEventsCount); v != nil {
-		if events, ok := v.(*uint32); ok {
-			e.events = events
+	if v := catalog.GetV(c.oid, ControllerEventsStatus); v != nil {
+		if status, ok := v.(types.Status); ok {
+			e.events.status = status
+		}
+	}
+
+	if v := catalog.GetV(c.oid, ControllerEventsFirst); v != nil {
+		if index, ok := v.(uint32); ok {
+			e.events.first = index
+		}
+	}
+
+	if v := catalog.GetV(c.oid, ControllerEventsLast); v != nil {
+		if index, ok := v.(uint32); ok {
+			e.events.last = index
+		}
+	}
+
+	if v := catalog.GetV(c.oid, ControllerEventsCurrent); v != nil {
+		if index, ok := v.(uint32); ok {
+			e.events.current = index
 		}
 	}
 
@@ -690,7 +733,10 @@ func (c *Controller) refreshed() {
 		catalog.PutV(c.OID(), ControllerDateTimeCurrent, nil)
 		catalog.PutV(c.OID(), ControllerCardsCount, nil)
 		catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusUnknown)
-		catalog.PutV(c.OID(), ControllerEventsCount, nil)
+		catalog.PutV(c.OID(), ControllerEventsStatus, types.StatusUnknown)
+		catalog.PutV(c.OID(), ControllerEventsFirst, 0)
+		catalog.PutV(c.OID(), ControllerEventsLast, 0)
+		catalog.PutV(c.OID(), ControllerEventsCurrent, 0)
 
 		for _, d := range []uint8{1, 2, 3, 4} {
 			if door, ok := c.Door(d); ok {

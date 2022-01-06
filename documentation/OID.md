@@ -44,7 +44,9 @@
 |    |      |        |- 0.2.1.5.1: <count>                                   #       number of card
 |    |      |- 0.2.1.6:  <events>                                            #    controller events
 |    |      |        |- 0.2.1.6.0: <status>                                  #       events status
-|    |      |        |- 0.2.1.6.1: <count>                                   #       number of events
+|    |      |        |- 0.2.1.6.1: <first>                                   #       index of first event
+|    |      |        |- 0.2.1.6.2: <last>                                    #       index of last event
+|    |      |        |- 0.2.1.6.3: <current>                                 #       index of current event
 |    |      |- 0.2.1.7:  <doors>                                             #    doors
 |    |      |        |- 0.2.1.7.1: <door1>                                   #       door 1 OID
 |    |      |        |- 0.2.1.7.2: <door2>                                   #       door 2 OID

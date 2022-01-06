@@ -43,7 +43,9 @@ export const schema = {
     },
     events: {
       status: '.6.0',
-      count: '.6.1'
+      first: '.6.1',
+      last: '.6.2',
+      current: '.6.3'
     },
     door1: '.7.1',
     door2: '.7.2',

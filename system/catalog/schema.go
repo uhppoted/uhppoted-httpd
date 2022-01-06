@@ -49,8 +49,10 @@ type Controllers struct {
 		Count  Suffix `json:"count"`
 	} `json:"cards"`
 	Events struct {
-		Status Suffix `json:"status"`
-		Count  Suffix `json:"count"`
+		Status  Suffix `json:"status"`
+		First   Suffix `json:"first"`
+		Last    Suffix `json:"last"`
+		Current Suffix `json:"current"`
 	} `json:"events"`
 	EventsStatus Suffix `json:"events-status"`
 	Door1        Suffix `json:"door1"`
@@ -185,11 +187,15 @@ var schema = Schema{
 			Count:  ControllerCardsCount,
 		},
 		Events: struct {
-			Status Suffix `json:"status"`
-			Count  Suffix `json:"count"`
+			Status  Suffix `json:"status"`
+			First   Suffix `json:"first"`
+			Last    Suffix `json:"last"`
+			Current Suffix `json:"current"`
 		}{
-			Status: ControllerEventsStatus,
-			Count:  ControllerEventsCount,
+			Status:  ControllerEventsStatus,
+			First:   ControllerEventsFirst,
+			Last:    ControllerEventsLast,
+			Current: ControllerEventsCurrent,
 		},
 
 		Door1: ControllerDoor1,
@@ -316,7 +322,9 @@ const ControllerDateTimeSystem Suffix = ".4.2"
 const ControllerCardsStatus Suffix = ".5.0"
 const ControllerCardsCount Suffix = ".5.1"
 const ControllerEventsStatus Suffix = ".6.0"
-const ControllerEventsCount Suffix = ".6.1"
+const ControllerEventsFirst Suffix = ".6.1"
+const ControllerEventsLast Suffix = ".6.2"
+const ControllerEventsCurrent Suffix = ".6.3"
 const ControllerDoor1 Suffix = ".7.1"
 const ControllerDoor2 Suffix = ".7.2"
 const ControllerDoor3 Suffix = ".7.3"

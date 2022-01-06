@@ -6,8 +6,8 @@ CMD     = ./bin/uhppoted-httpd
 
 .PHONY: debug
 .PHONY: reset
-.PHONY: bump
-.PHONY: build-all
+.PHONY: update
+.PHONY: update-release
 
 all: test      \
 	 benchmark \
@@ -16,6 +16,24 @@ all: test      \
 clean:
 	go clean
 	rm -rf bin
+
+update:
+	go get -u github.com/uhppoted/uhppote-core@master
+	go get -u github.com/uhppoted/uhppoted-lib@master
+	go get -u github.com/cristalhq/jwt/v3
+	go get -u github.com/google/uuid
+	go get -u golang.org/x/sys
+	go get -u github.com/hyperjumptech/grule-rule-engine
+	go mod tidy
+
+update-release:
+	go get -u github.com/uhppoted/uhppote-core
+	go get -u github.com/uhppoted/uhppoted-lib
+	go get -u github.com/cristalhq/jwt/v3
+	go get -u github.com/google/uuid
+	go get -u golang.org/x/sys
+	go get -u github.com/hyperjumptech/grule-rule-engine
+	go mod tidy
 
 format: 
 	go fmt ./...
@@ -56,17 +74,10 @@ build-all: vet
 	env GOOS=darwin  GOARCH=amd64       go build -o dist/$(DIST)/darwin  ./...
 	env GOOS=windows GOARCH=amd64       go build -o dist/$(DIST)/windows ./...
 
-release: build-all
+release: update-release build-all
 	find . -name ".DS_Store" -delete
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 	cd dist; zip --recurse-paths $(DIST).zip $(DIST)
-
-bump:
-	go get -u github.com/uhppoted/uhppote-core
-	go get -u github.com/uhppoted/uhppoted-lib
-	go get -u github.com/cristalhq/jwt/v3
-	go get -u github.com/google/uuid
-	go get -u golang.org/x/sys
 
 debug: format
 	go build -o bin ./...

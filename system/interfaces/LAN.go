@@ -334,12 +334,14 @@ func (l *LAN) Refresh(c Controller) {
 		l.store(c, *cards)
 	}
 
-	if events, err := api.GetEventRange(uhppoted.GetEventRangeRequest{DeviceID: deviceID}); err != nil {
+	if first, last, current, err := api.GetEventIndices(c.DeviceID()); err != nil {
 		log.Printf("%v", err)
-	} else if events == nil {
-		log.Printf("Got %v response to get-event-range request for %v", events, deviceID)
 	} else {
-		l.store(c, *events)
+		catalog.PutV(c.OID(), ControllerTouched, time.Now())
+		catalog.PutV(c.OID(), ControllerEventsStatus, types.StatusOk)
+		catalog.PutV(c.OID(), ControllerEventsFirst, first)
+		catalog.PutV(c.OID(), ControllerEventsLast, last)
+		catalog.PutV(c.OID(), ControllerEventsCurrent, current)
 	}
 
 	for _, d := range []uint8{1, 2, 3, 4} {
@@ -362,12 +364,12 @@ func (l *LAN) Refresh(c Controller) {
 		}
 	}
 
-	if recent, err := api.GetEvents(uhppoted.GetEventsRequest{DeviceID: deviceID, Max: 5}); err != nil {
+	if events, err := api.GetEvents(c.DeviceID(), 5); err != nil {
 		log.Printf("%v", err)
 	} else if l.ch != nil {
 		l.ch <- types.EventsList{
-			DeviceID: uint32(recent.DeviceID),
-			Events:   recent.Events,
+			DeviceID: c.DeviceID(),
+			Events:   events,
 		}
 	}
 }
@@ -567,11 +569,6 @@ func (l *LAN) store(c Controller, info interface{}) {
 		catalog.PutV(c.OID(), ControllerTouched, time.Now())
 		catalog.PutV(c.OID(), ControllerCardsCount, cards)
 
-	case uhppoted.GetEventRangeResponse:
-		events := v.Events.Last
-		catalog.PutV(c.OID(), ControllerTouched, time.Now())
-		catalog.PutV(c.OID(), ControllerEventsCount, events)
-
 	case uhppoted.GetDoorDelayResponse:
 		if door, ok := c.Door(v.Door); ok {
 			catalog.PutV(door, DoorDelay, v.Delay)
@@ -590,6 +587,7 @@ func (l *LAN) store(c Controller, info interface{}) {
 		}
 	}
 }
+
 func (l LAN) serialize() ([]byte, error) {
 	record := struct {
 		OID              catalog.OID        `json:"OID"`

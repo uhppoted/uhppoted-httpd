@@ -264,8 +264,16 @@ function controllers (o) {
       v.events.status = o.value
       break
 
-    case `${base}${schema.controllers.events.count}`:
-      v.events.events = o.value
+    case `${base}${schema.controllers.events.first}`:
+      v.events.first = o.value
+      break
+
+    case `${base}${schema.controllers.events.last}`:
+      v.events.last = o.value
+      break
+
+    case `${base}${schema.controllers.events.current}`:
+      v.events.current = o.value
       break
 
     case `${base}${schema.controllers.door1}`:

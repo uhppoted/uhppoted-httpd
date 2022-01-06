@@ -30,7 +30,9 @@ const ControllerDateTimeCurrent = catalog.ControllerDateTimeCurrent
 const ControllerDateTimeSystem = catalog.ControllerDateTimeSystem
 const ControllerCardsStatus = catalog.ControllerCardsStatus
 const ControllerCardsCount = catalog.ControllerCardsCount
-const ControllerEventsCount = catalog.ControllerEventsCount
+const ControllerEventsFirst = catalog.ControllerEventsFirst
+const ControllerEventsLast = catalog.ControllerEventsLast
+const ControllerEventsCurrent = catalog.ControllerEventsCurrent
 const ControllerEventsStatus = catalog.ControllerEventsStatus
 const ControllerDoor1 = catalog.ControllerDoor1
 const ControllerDoor2 = catalog.ControllerDoor2
@@ -53,7 +55,9 @@ var lookup = map[catalog.Suffix]string{
 	ControllerDateTimeSystem:     "controller.datetime.system",
 	ControllerCardsStatus:        "controller.cards.status",
 	ControllerCardsCount:         "controller.cards.count",
-	ControllerEventsCount:        "controller.events.count",
+	ControllerEventsFirst:        "controller.events.first",
+	ControllerEventsLast:         "controller.events.last",
+	ControllerEventsCurrent:      "controller.events.current",
 	ControllerEventsStatus:       "controller.events.status",
 	ControllerDoor1:              "controller.door.1",
 	ControllerDoor2:              "controller.door.2",

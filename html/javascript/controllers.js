@@ -29,7 +29,7 @@ function updateFromDB (oid, record) {
   const address = row.querySelector(`[data-oid="${oid}${schema.controllers.endpoint.address}"]`)
   const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime.current}"]`)
   const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards.count}"]`)
-  const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.count}"]`)
+  const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.last}"]`)
   const door1 = row.querySelector(`[data-oid="${oid}${schema.controllers.door1}"]`)
   const door2 = row.querySelector(`[data-oid="${oid}${schema.controllers.door2}"]`)
   const door3 = row.querySelector(`[data-oid="${oid}${schema.controllers.door3}"]`)
@@ -74,7 +74,7 @@ function updateFromDB (oid, record) {
   update(address, record.address.address, record.address.status)
   update(datetime, record.datetime.datetime, record.datetime.status)
   update(cards, record.cards.cards, record.cards.status)
-  update(events, record.events.events)
+  update(events, record.events.last)
   update(door1, record.doors[1])
   update(door2, record.doors[2])
   update(door3, record.doors[3])
@@ -132,7 +132,7 @@ function add (oid, record) {
       { suffix: 'IP', oid: `${oid}${schema.controllers.endpoint.address}`, selector: 'td input.IP', flag: 'td img.IP' },
       { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime.current}`, selector: 'td input.datetime', flag: 'td img.datetime' },
       { suffix: 'cards', oid: `${oid}${schema.controllers.cards.count}`, selector: 'td input.cards', flag: 'td img.cards' },
-      { suffix: 'events', oid: `${oid}${schema.controllers.events.count}`, selector: 'td input.events', flag: 'td img.events' },
+      { suffix: 'events', oid: `${oid}${schema.controllers.events.last}`, selector: 'td input.events', flag: 'td img.events' },
       { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td select.door1', flag: 'td img.door1' },
       { suffix: 'door-2', oid: `${oid}${schema.controllers.door2}`, selector: 'td select.door2', flag: 'td img.door2' },
       { suffix: 'door-3', oid: `${oid}${schema.controllers.door3}`, selector: 'td select.door3', flag: 'td img.door3' },

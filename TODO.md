@@ -1,5 +1,10 @@
 ## v0.7.x
 
+- [ ] Update events handling
+  - [x] Replace EventsCount with first, last and current (because 'count' is not valid)
+  - [ ] Unit test for AsObjects with events in cache
+  - [ ] Remove LAN.store
+
 - [ ] Cookies
       -- allow   unauthenticated GET access to login.html, CSS, images
       -- allow   unauthenticated HEAD access to /login

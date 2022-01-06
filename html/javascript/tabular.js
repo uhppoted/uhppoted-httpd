@@ -604,7 +604,7 @@ function more (page) {
     const N = page.recordset.size
     const url = page.post + '?range=' + encodeURIComponent(`${N},+15`)
 
-    get(url, page.refreshed)
+    get([url], page.refreshed)
   }
 }
 
