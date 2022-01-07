@@ -1,17 +1,25 @@
 ## v0.7.x
 
 - [ ] Update events handling
-  - [x] Replace EventsCount with first, last and current (because 'count' is not valid)
-  - [ ] Unit test for AsObjects with events in cache
-  - [ ] Remove LAN.store
+      - [x] Replace EventsCount with first, last and current (because 'count' is not even remotely valid)
+      - [ ] Rethink Controller.AsObjects events
+      - [ ] Remove LAN.store
+
+- [ ] Restyle floating user block shadow in dark mode
 
 - [ ] Cookies
-      -- allow   unauthenticated GET access to login.html, CSS, images
-      -- allow   unauthenticated HEAD access to /login
-      -- allow   unauthenticated+login cookie POST access to /login
-      -- require authenticated + authorisation for GET access to data and /well-known pages
+      - [x] GET: allow unauthenticated/authorized access to CSS, images, etc
+      - [x] GET: allow unauthenticated access to login.html and unauthorized.html
+      - [x] GET: require authenticated + authorisation for access to data
+      - [x] GET: require authenticated + authorisation for access to everything else
+      - [x] GET: return 'Not Found' for arbitrary stuff
+      -- allow unauthenticated HEAD access to /login
+      -- allow unauthenticated+login cookie POST access to /login
       -- require authenticated+authorisation for POST access to everything else
       -- touch session when authenticated
+      -- clean up GET
+      -- clean up auth.Basic
+      -- clean up auth.Local
 
       - [ ] Homogenize `authorised` and `authorisedX`
       - [ ] (?) Lift `unauthorised` handling out of authorised

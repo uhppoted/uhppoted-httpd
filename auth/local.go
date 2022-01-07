@@ -112,7 +112,7 @@ func (r *resource) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	path, err := regexp.Compile(x.Path)
+	path, err := regexp.Compile(fmt.Sprintf("^%v$", x.Path))
 	if err != nil {
 		return err
 	}

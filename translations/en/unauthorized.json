@@ -1,6 +1,7 @@
 {
     "Unauthorized": {
         "Message": "Sadly, you don't have permission to view that page",
-        "Home": "(back to the home page)"
+        "Home": "(back to the home page)",
+        "Login": "(back to the login page)"
     }
 }

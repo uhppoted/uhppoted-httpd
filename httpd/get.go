@@ -21,7 +21,34 @@ import (
 const GZIP_MINIMUM = 16384
 
 func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
+	// ... normalise path
 	path := r.URL.Path
+
+	if path == "/" {
+		path = "/index.html"
+	}
+
+	if !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+
+	// ... GET <ancillary file>
+	prefixes := []string{"/images/", "/css/", "/javascript/"}
+	files := []string{"/manifest.json"}
+
+	for _, p := range prefixes {
+		if strings.HasPrefix(path, p) {
+			d.fs.ServeHTTP(w, r)
+			return
+		}
+	}
+
+	for _, f := range files {
+		if path == f {
+			d.fs.ServeHTTP(w, r)
+			return
+		}
+	}
 
 	// ... GET <data>
 	switch path {
@@ -42,38 +69,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ... GET <file>
-	if path == "/" {
-		path = "/index.html"
-	}
-
-	if !strings.HasPrefix(path, "/") {
-		path = "/" + path
-	}
-
-	// Authorise unless images,CSS,etc
-	prefixes := []string{"/images/", "/css/", "/javascript/"}
-	files := []string{"/manifest.json"}
-	authorised := false
-
-	for _, p := range prefixes {
-		if strings.HasPrefix(path, p) {
-			authorised = true
-		}
-	}
-
-	for _, f := range files {
-		if path == f {
-			authorised = true
-		}
-	}
-
-	if !authorised {
-		if _, _, ok := d.authorized(w, r, path); !ok {
-			return
-		}
-	}
-
+	// ... GET <other>
 	acceptsGzip := false
 
 	for k, h := range r.Header {
@@ -100,6 +96,32 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// ... GET login.html, unauthorized.html
+	files = []string{"/login.html", "/unauthorized.html"}
+	for _, f := range files {
+		if path == f {
+			file := filepath.Clean(filepath.Join(d.root, path[1:]))
+			context := map[string]interface{}{
+				"Theme": theme,
+			}
+
+			d.translate(file, context, w, acceptsGzip)
+			return
+		}
+	}
+
+	// ... require authorisation for all other HTML files
+	uid, role, authenticated := d.authenticated(r)
+	if !authenticated {
+		http.Redirect(w, r, "/login.html", http.StatusFound)
+		return
+	}
+
+	if ok := d.authorisedX(uid, role, path); !ok {
+		http.Redirect(w, r, "/unauthorized.html", http.StatusFound)
+		return
+	}
+
 	if strings.HasSuffix(path, ".html") {
 		file := filepath.Clean(filepath.Join(d.root, path[1:]))
 		context := map[string]interface{}{
@@ -111,7 +133,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	d.fs.ServeHTTP(w, r)
+	http.Error(w, fmt.Sprintf("No resource matching %v", r.URL.Path), http.StatusNotFound)
 }
 
 func (d *dispatcher) translate(filename string, context map[string]interface{}, w http.ResponseWriter, acceptsGzip bool) {
