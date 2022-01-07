@@ -80,7 +80,7 @@ func TestLocalDeserialize(t *testing.T) {
 		},
 		resources: []resource{
 			resource{
-				Path:       regexp.MustCompile("[a-z]+[0-9]+"),
+				Path:       regexp.MustCompile("^[a-z]+[0-9]+$"),
 				Authorised: regexp.MustCompile("[0-9]+[a-z]*"),
 			},
 		},
