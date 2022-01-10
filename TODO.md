@@ -24,15 +24,17 @@
       -- clean up auth.Local
       - [x] Commonalize httpd.unauthenticated()
       - [x] Commonalize httpd.unauthorized()
+      - [ ] Remove authorised resource check in basic.Verify and basic.SetPassword
+            (muddled - check is responsibility of GET/POST handler)
 
       - [ ] Prevent e.g. CSS/../events.html from poking a hole in the auth framework
             - [x] GET
             - [x] HEAD
             - [x] POST
-            - [ ] Pass cookie from request to authenticate and authorise
+            - [ ] Rather just pass cookie from request to auth provider
       - [ ] Regenerate session keys every N minutes
-      - [ ] Homogenize `authorised` and `authorisedX`
-      - [ ] (?) Lift `unauthorised` handling out of authorised
+      - [x] Homogenize `authorised` and `authorisedX`
+      - [ ] (?) Lift `unauthorised` handling out of auth provider
       - [ ] Make login cookie expire in 60s
       - [ ] Don't check login cookie except for login
       - [ ] (?) Clear cookie on logout

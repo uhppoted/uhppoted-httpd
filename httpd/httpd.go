@@ -201,7 +201,7 @@ func (d *dispatcher) authenticated(r *http.Request) (string, string, bool) {
 }
 
 func (d *dispatcher) authorised(uid, role, path string) bool {
-	if err := d.auth.AuthorisedX(uid, role, path); err != nil {
+	if err := d.auth.Authorised(uid, role, path); err != nil {
 		warn(err)
 		return false
 	}

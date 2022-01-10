@@ -157,34 +157,8 @@ func (b *Basic) Authenticated(r *http.Request) (string, string, bool) {
 	return uid, role, true
 }
 
-func (b *Basic) AuthorisedX(uid, role, path string) error {
-	if path == "/login.html" {
-		return nil
-	}
-
-	if path == "/unauthorized.html" {
-		return nil
-	}
-
+func (b *Basic) Authorised(uid, role, path string) error {
 	return b.auth.AuthorisedX(uid, role, path)
-
-}
-
-func (b *Basic) Authorized(w http.ResponseWriter, r *http.Request, path string) (string, string, bool) {
-	uid, role, ok := b.authorized(r, path)
-	if !ok {
-		if !b.authenticated(r) {
-			b.unauthenticated(w, r)
-		} else if s, err := b.session(r); err != nil || s == nil {
-			b.unauthenticated(w, r)
-		} else {
-			b.unauthorized(w, r)
-		}
-
-		return "", "", false
-	}
-
-	return uid, role, true
 }
 
 func (b *Basic) Verify(uid, pwd string, r *http.Request) error {

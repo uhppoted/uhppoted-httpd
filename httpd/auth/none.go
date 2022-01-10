@@ -21,12 +21,8 @@ func (n *None) Authenticated(r *http.Request) (string, string, bool) {
 	return "-", "-", true
 }
 
-func (n *None) AuthorisedX(uid, role, path string) error {
+func (n *None) Authorised(uid, role, path string) error {
 	return nil
-}
-
-func (n *None) Authorized(w http.ResponseWriter, r *http.Request, path string) (string, string, bool) {
-	return "-", "-", true
 }
 
 func (n *None) Verify(uid, pwd string, r *http.Request) error {

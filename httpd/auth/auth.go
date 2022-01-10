@@ -29,8 +29,7 @@ type IAuth interface {
 	Verify(uid, pwd string, r *http.Request) error
 	Authenticate(w http.ResponseWriter, r *http.Request)
 	Authenticated(r *http.Request) (string, string, bool)
-	AuthorisedX(uid, role, path string) error
-	Authorized(w http.ResponseWriter, r *http.Request, path string) (string, string, bool)
+	Authorised(uid, role, path string) error
 	Logout(w http.ResponseWriter, r *http.Request)
 	Session(r *http.Request) (*session, error)
 
