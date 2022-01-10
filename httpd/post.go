@@ -15,8 +15,13 @@ import (
 )
 
 func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
+	path, err := resolve(r.URL)
+	if err != nil {
+		http.Error(w, "invalid URL", http.StatusBadRequest)
+		return
+	}
 
+	// ... allow unauthenticated access to /authenticate and /logout
 	if path == "/authenticate" {
 		d.authenticate(w, r)
 		return
@@ -27,8 +32,15 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uid, role, ok := d.authorized(w, r, path)
-	if !ok {
+	// ... require auth for everything else
+	uid, role, authenticated := d.authenticated(r)
+	if !authenticated {
+		d.unauthenticated(r, w)
+		return
+	}
+
+	if ok := d.authorised(uid, role, path); !ok {
+		d.unauthorised(r, w)
 		return
 	}
 

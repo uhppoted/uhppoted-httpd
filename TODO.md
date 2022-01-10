@@ -7,20 +7,30 @@
 
 - [ ] Restyle floating user block shadow in dark mode
 
-- [ ] Cookies
-      - [x] GET: allow unauthenticated/authorized access to CSS, images, etc
-      - [x] GET: allow unauthenticated access to login.html and unauthorized.html
-      - [x] GET: require authenticated + authorisation for access to data
-      - [x] GET: require authenticated + authorisation for access to everything else
-      - [x] GET: return 'Not Found' for arbitrary stuff
-      -- allow unauthenticated HEAD access to /login
-      -- allow unauthenticated+login cookie POST access to /login
-      -- require authenticated+authorisation for POST access to everything else
+- [ ] Auth
+      - [x] GET   allow unauthenticated/authorized access to CSS, images, etc
+      - [x] GET   allow unauthenticated access to login.html and unauthorized.html
+      - [x] GET   require authenticated + authorisation for access to data
+      - [x] GET   require authenticated + authorisation for access to everything else
+      - [x] GET   return 'Not Found' for arbitrary stuff
+      - [x] HEAD  restrict to /authenticate
+      - [x] POST  allow unauthenticated access to /authenticate
+      - [x] POST  allow unauthenticated access to /logout because httpd may have restarted, invalidating sessions
+      - [x] POST  require authenticated+authorisation for access to everything else
+      - [ ] POST  require allow login cookie for /authenticate
       -- touch session when authenticated
       -- clean up GET
       -- clean up auth.Basic
       -- clean up auth.Local
+      - [x] Commonalize httpd.unauthenticated()
+      - [x] Commonalize httpd.unauthorized()
 
+      - [ ] Prevent e.g. CSS/../events.html from poking a hole in the auth framework
+            - [x] GET
+            - [x] HEAD
+            - [x] POST
+            - [ ] Pass cookie from request to authenticate and authorise
+      - [ ] Regenerate session keys every N minutes
       - [ ] Homogenize `authorised` and `authorisedX`
       - [ ] (?) Lift `unauthorised` handling out of authorised
       - [ ] Make login cookie expire in 60s

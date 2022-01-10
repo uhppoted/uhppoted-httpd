@@ -175,9 +175,9 @@ func (d *dispatcher) sweep() {
 
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if url, err := url.QueryUnescape(fmt.Sprintf("%v", r.URL)); err == nil {
-		debug(fmt.Sprintf("%v", url))
+		debug(fmt.Sprintf("%-4v %v", r.Method, url))
 	} else {
-		debug(fmt.Sprintf("%v", r.URL))
+		debug(fmt.Sprintf("%-4v %v", r.Method, r.URL))
 	}
 
 	switch strings.ToUpper(r.Method) {
@@ -200,7 +200,7 @@ func (d *dispatcher) authenticated(r *http.Request) (string, string, bool) {
 	return d.auth.Authenticated(r)
 }
 
-func (d *dispatcher) authorisedX(uid, role, path string) bool {
+func (d *dispatcher) authorised(uid, role, path string) bool {
 	if err := d.auth.AuthorisedX(uid, role, path); err != nil {
 		warn(err)
 		return false
@@ -209,20 +209,25 @@ func (d *dispatcher) authorisedX(uid, role, path string) bool {
 	return true
 }
 
-func (d *dispatcher) authorized(w http.ResponseWriter, r *http.Request, path string) (string, string, bool) {
-	return d.auth.Authorized(w, r, path)
+func (d *dispatcher) unauthenticated(r *http.Request, w http.ResponseWriter) {
+	http.Redirect(w, r, "/login.html", http.StatusFound)
 }
 
-func (d *dispatcher) user(r *http.Request) string {
-	if s, err := d.auth.Session(r); err == nil && s != nil {
-		return s.User
-	}
-
-	return ""
+func (d *dispatcher) unauthorised(r *http.Request, w http.ResponseWriter) {
+	http.Redirect(w, r, "/unauthorized.html", http.StatusFound)
 }
 
 func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
 	d.auth.Logout(w, r)
+}
+
+func resolve(u *url.URL) (string, error) {
+	base, err := url.Parse("/")
+	if err != nil {
+		return "", err
+	}
+
+	return base.ResolveReference(u).EscapedPath(), nil
 }
 
 func debug(message string) {

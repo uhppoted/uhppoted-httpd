@@ -5,12 +5,16 @@ import (
 )
 
 func (d *dispatcher) head(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
+	path, err := resolve(r.URL)
+	if err != nil {
+		http.Error(w, "invalid URL", http.StatusBadRequest)
+		return
+	}
 
 	if path == "/authenticate" {
 		d.authenticate(w, r)
 		return
 	}
 
-	return
+	http.Error(w, "invalid URL", http.StatusNotFound)
 }

@@ -22,7 +22,11 @@ const GZIP_MINIMUM = 16384
 
 func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	// ... normalise path
-	path := r.URL.Path
+	path, err := resolve(r.URL)
+	if err != nil {
+		http.Error(w, "invalid URL", http.StatusBadRequest)
+		return
+	}
 
 	if path == "/" {
 		path = "/index.html"
@@ -113,19 +117,19 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	// ... require authorisation for all other HTML files
 	uid, role, authenticated := d.authenticated(r)
 	if !authenticated {
-		http.Redirect(w, r, "/login.html", http.StatusFound)
+		d.unauthenticated(r, w)
 		return
 	}
 
-	if ok := d.authorisedX(uid, role, path); !ok {
-		http.Redirect(w, r, "/unauthorized.html", http.StatusFound)
+	if ok := d.authorised(uid, role, path); !ok {
+		d.unauthorised(r, w)
 		return
 	}
 
 	if strings.HasSuffix(path, ".html") {
 		file := filepath.Clean(filepath.Join(d.root, path[1:]))
 		context := map[string]interface{}{
-			"User":  d.user(r),
+			"User":  uid,
 			"Theme": theme,
 		}
 
@@ -207,17 +211,22 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 }
 
 func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, h handler) {
-	// ... authenticated and authorised?
-	uid, role, ok := d.authenticated(r)
-	if !ok {
-		warn(fmt.Errorf("Unauthenticated GET request"))
-		http.Redirect(w, r, "/login.html", http.StatusFound)
+	path, err := resolve(r.URL)
+	if err != nil {
+		http.Error(w, "invalid URL", http.StatusBadRequest)
 		return
 	}
 
-	if !d.authorisedX(uid, role, r.URL.Path) {
-		// Returns empty JSON object if not authorised for the resource because this request may be
-		// a legitimate part of the user interface.
+	// ... authenticated and authorised?
+	uid, role, ok := d.authenticated(r)
+	if !ok {
+		d.unauthenticated(r, w)
+		return
+	}
+
+	// Returns empty JSON object if not authorised for the resource because this request may be
+	// a legitimate part of the user interface.
+	if ok := d.authorised(uid, role, path); !ok {
 		if b, err := json.Marshal(struct{}{}); err != nil {
 			http.Error(w, "Error generating response", http.StatusInternalServerError)
 		} else {
