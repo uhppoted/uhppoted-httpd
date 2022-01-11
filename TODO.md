@@ -20,8 +20,7 @@
       - [x] Commonalize httpd.unauthenticated()
       - [x] Commonalize httpd.unauthorized()
       - [x] Remove authorised resource check in basic.Verify (muddled responsibility)
-      - [ ] Remove authorised resource check in basic.SetPassword
-            (muddled - check is responsibility of GET/POST handler)
+      - [x] Remove authorised resource check in basic.SetPassword (muddled responsibility)
       -- touch session when authenticated
       -- clean up GET
       -- clean up auth.Basic
@@ -31,15 +30,17 @@
             - [x] GET
             - [x] HEAD
             - [x] POST
-            - [x] Pass login cookie from request to auth provider
-            - [ ] Rather just pass session cookie from request to auth provider
-            - [ ] Use resolved path in auth provider
-                  - i.e. don't pass http.Request to auth provider
+            - [x] Auth provider should take login cookie not request
+            - [ ] Auth provider should take session cookie not request
+            - [ ] Use resolved path in auth provider i.e. don't pass http.Request to auth provider
+                  - [ ] Authenticated
+                  - [ ] Logout
+                  - [ ] Session
       - [ ] Regenerate session keys every N minutes
       - [x] Homogenize `authorised` and `authorisedX`
       - [ ] (?) Lift `unauthorised` handling out of auth provider
       - [ ] Make login cookie expire in 60s
-      - [ ] Don't check login cookie except for login
+      - [x] Don't check login cookie except for login
       - [ ] (?) Clear cookie on logout
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 

@@ -34,7 +34,7 @@ func (n *None) Verify(uid, pwd string) error {
 	return nil
 }
 
-func (n *None) SetPassword(uid, pwd string, r *http.Request) error {
+func (n *None) SetPassword(uid, pwd, role string) error {
 	return nil
 }
 

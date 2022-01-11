@@ -2,12 +2,11 @@ package users
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
-func Post(body map[string]interface{}, r *http.Request, auth auth.IAuth) (interface{}, error) {
+func Post(body map[string]interface{}, role string, auth auth.IAuth) (interface{}, error) {
 	var uid string
 	var old string
 	var pwd string
@@ -47,7 +46,7 @@ func Post(body map[string]interface{}, r *http.Request, auth auth.IAuth) (interf
 		return nil, fmt.Errorf("Invalid user ID or password")
 	}
 
-	if err := auth.SetPassword(uid, pwd, r); err != nil {
+	if err := auth.SetPassword(uid, pwd, role); err != nil {
 		return nil, err
 	}
 

@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Basic struct {
@@ -127,16 +126,7 @@ func (b *Basic) Verify(uid, pwd string) error {
 	return b.auth.Validate(uid, pwd)
 }
 
-func (b *Basic) SetPassword(uid, pwd string, r *http.Request) error {
-	path := r.URL.Path
-
-	id, role, ok := b.authorized(r, path)
-	if !ok {
-		return types.Unauthorised(fmt.Errorf("Not authorised"), fmt.Errorf("'%v' not authorised for '%v'", uid, path))
-	} else if uid != id {
-		return fmt.Errorf("UID '%v' does not match login ID '%v'", uid, id)
-	}
-
+func (b *Basic) SetPassword(uid, pwd, role string) error {
 	if err := b.auth.Store(uid, pwd, role); err != nil {
 		return err
 	}

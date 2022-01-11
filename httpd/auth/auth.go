@@ -34,7 +34,7 @@ type IAuth interface {
 	Session(r *http.Request) (*session, error)
 
 	Verify(uid, pwd string) error
-	SetPassword(uid, pwd string, r *http.Request) error
+	SetPassword(uid, pwd, role string) error
 
 	Sweep()
 }

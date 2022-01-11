@@ -48,7 +48,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	switch path {
 	case "/password":
 		d.dispatch(w, r, func(m map[string]interface{}) (interface{}, error) {
-			return users.Post(m, r, d.auth)
+			return users.Post(m, role, d.auth)
 		})
 		return
 
