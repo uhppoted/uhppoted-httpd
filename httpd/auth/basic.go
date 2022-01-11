@@ -123,20 +123,8 @@ func (b *Basic) Authorised(uid, role, path string) error {
 	return b.auth.AuthorisedX(uid, role, path)
 }
 
-func (b *Basic) Verify(uid, pwd string, r *http.Request) error {
-	path := r.URL.Path
-
-	if id, _, ok := b.authorized(r, path); !ok {
-		return types.Unauthorised(fmt.Errorf("Not authorised"), fmt.Errorf("'%v' not authorised for '%v'", uid, path))
-	} else if uid != id {
-		return fmt.Errorf("UID '%v' does not match login ID '%v'", uid, id)
-	}
-
-	if err := b.auth.Validate(uid, pwd); err != nil {
-		return err
-	}
-
-	return nil
+func (b *Basic) Verify(uid, pwd string) error {
+	return b.auth.Validate(uid, pwd)
 }
 
 func (b *Basic) SetPassword(uid, pwd string, r *http.Request) error {

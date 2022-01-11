@@ -19,7 +19,8 @@
       - [x] POST require login cookie for /authenticate
       - [x] Commonalize httpd.unauthenticated()
       - [x] Commonalize httpd.unauthorized()
-      - [ ] Remove authorised resource check in basic.Verify and basic.SetPassword
+      - [x] Remove authorised resource check in basic.Verify (muddled responsibility)
+      - [ ] Remove authorised resource check in basic.SetPassword
             (muddled - check is responsibility of GET/POST handler)
       -- touch session when authenticated
       -- clean up GET

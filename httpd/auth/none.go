@@ -30,7 +30,7 @@ func (n *None) Authorised(uid, role, path string) error {
 	return nil
 }
 
-func (n *None) Verify(uid, pwd string, r *http.Request) error {
+func (n *None) Verify(uid, pwd string) error {
 	return nil
 }
 

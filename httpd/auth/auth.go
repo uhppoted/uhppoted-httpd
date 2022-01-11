@@ -26,7 +26,6 @@ type session struct {
 }
 
 type IAuth interface {
-	Verify(uid, pwd string, r *http.Request) error
 	Preauthenticate() (*http.Cookie, error)
 	Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie, error)
 	Authenticated(r *http.Request) (string, string, bool)
@@ -34,6 +33,7 @@ type IAuth interface {
 	Logout(w http.ResponseWriter, r *http.Request)
 	Session(r *http.Request) (*session, error)
 
+	Verify(uid, pwd string) error
 	SetPassword(uid, pwd string, r *http.Request) error
 
 	Sweep()

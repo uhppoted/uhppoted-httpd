@@ -43,7 +43,7 @@ func Post(body map[string]interface{}, r *http.Request, auth auth.IAuth) (interf
 	}
 
 	// ... validate
-	if err := auth.Verify(uid, old, r); err != nil {
+	if err := auth.Verify(uid, old); err != nil {
 		return nil, fmt.Errorf("Invalid user ID or password")
 	}
 
