@@ -9,7 +9,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/uhppoted/uhppoted-httpd/auth"
+	iauth "github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -61,7 +62,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 			warn(fmt.Errorf("No vtable entry for %v", path))
 			http.Error(w, "internal system error", http.StatusInternalServerError)
 		} else {
-			auth := auth.NewAuthorizator(uid, role)
+			auth := iauth.NewAuthorizator(uid, role)
 			d.dispatch(w, r, func(m map[string]interface{}) (interface{}, error) {
 				return handler.post(m, auth)
 			})
@@ -71,6 +72,71 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.Error(w, "API not implemented", http.StatusNotImplemented)
 		return
+	}
+}
+
+func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
+	var contentType string
+	var uid string
+	var pwd string
+
+	for k, h := range r.Header {
+		if strings.TrimSpace(strings.ToLower(k)) == "content-type" {
+			for _, v := range h {
+				contentType = strings.TrimSpace(strings.ToLower(v))
+			}
+		}
+	}
+
+	switch contentType {
+	case "application/x-www-form-urlencoded":
+		uid = r.FormValue("uid")
+		pwd = r.FormValue("pwd")
+
+	case "application/json":
+		blob, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			warn(err)
+			http.Error(w, "Error reading request", http.StatusInternalServerError)
+			return
+		}
+
+		body := struct {
+			UserId   string `json:"uid"`
+			Password string `json:"pwd"`
+		}{}
+
+		if err := json.Unmarshal(blob, &body); err != nil {
+			warn(err)
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		uid = body.UserId
+		pwd = body.Password
+	}
+
+	loginCookie, err := r.Cookie(auth.LoginCookie)
+	if err != nil {
+		warn(err)
+		d.unauthenticated(r, w)
+		return
+	}
+
+	if loginCookie == nil {
+		warn(fmt.Errorf("Missing login cookie"))
+		http.Error(w, "Missing login cookie", http.StatusBadRequest)
+		return
+	}
+
+	sessionCookie, err := d.auth.Authenticate(uid, pwd, loginCookie)
+	if err != nil {
+		warn(err)
+		d.unauthenticated(r, w)
+	}
+
+	if sessionCookie != nil {
+		http.SetCookie(w, sessionCookie)
 	}
 }
 

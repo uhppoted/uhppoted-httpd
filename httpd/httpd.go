@@ -192,10 +192,6 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
-	d.auth.Authenticate(w, r)
-}
-
 func (d *dispatcher) authenticated(r *http.Request) (string, string, bool) {
 	return d.auth.Authenticated(r)
 }

@@ -2,36 +2,38 @@
 
 - [ ] Update events handling
       - [x] Replace EventsCount with first, last and current (because 'count' is not even remotely valid)
-      - [ ] Rethink Controller.AsObjects events
       - [ ] Remove LAN.store
 
 - [ ] Restyle floating user block shadow in dark mode
 
 - [ ] Auth
-      - [x] GET   allow unauthenticated/authorized access to CSS, images, etc
-      - [x] GET   allow unauthenticated access to login.html and unauthorized.html
-      - [x] GET   require authenticated + authorisation for access to data
-      - [x] GET   require authenticated + authorisation for access to everything else
-      - [x] GET   return 'Not Found' for arbitrary stuff
-      - [x] HEAD  restrict to /authenticate
-      - [x] POST  allow unauthenticated access to /authenticate
-      - [x] POST  allow unauthenticated access to /logout because httpd may have restarted, invalidating sessions
-      - [x] POST  require authenticated+authorisation for access to everything else
-      - [ ] POST  require allow login cookie for /authenticate
-      -- touch session when authenticated
-      -- clean up GET
-      -- clean up auth.Basic
-      -- clean up auth.Local
+      - [x] GET  allow unauthenticated/authorized access to CSS, images, etc
+      - [x] GET  allow unauthenticated access to login.html and unauthorized.html
+      - [x] GET  require authenticated + authorisation for access to data
+      - [x] GET  require authenticated + authorisation for access to everything else
+      - [x] GET  return 'Not Found' for arbitrary stuff
+      - [x] HEAD restrict to /authenticate
+      - [x] POST allow unauthenticated access to /authenticate
+      - [x] POST allow unauthenticated access to /logout because httpd may have restarted, invalidating sessions
+      - [x] POST require authenticated+authorisation for access to everything else
+      - [x] POST require login cookie for /authenticate
       - [x] Commonalize httpd.unauthenticated()
       - [x] Commonalize httpd.unauthorized()
       - [ ] Remove authorised resource check in basic.Verify and basic.SetPassword
             (muddled - check is responsibility of GET/POST handler)
+      -- touch session when authenticated
+      -- clean up GET
+      -- clean up auth.Basic
+      -- clean up auth.Local
 
       - [ ] Prevent e.g. CSS/../events.html from poking a hole in the auth framework
             - [x] GET
             - [x] HEAD
             - [x] POST
-            - [ ] Rather just pass cookie from request to auth provider
+            - [x] Pass login cookie from request to auth provider
+            - [ ] Rather just pass session cookie from request to auth provider
+            - [ ] Use resolved path in auth provider
+                  - i.e. don't pass http.Request to auth provider
       - [ ] Regenerate session keys every N minutes
       - [x] Homogenize `authorised` and `authorisedX`
       - [ ] (?) Lift `unauthorised` handling out of auth provider

@@ -27,7 +27,8 @@ type session struct {
 
 type IAuth interface {
 	Verify(uid, pwd string, r *http.Request) error
-	Authenticate(w http.ResponseWriter, r *http.Request)
+	Preauthenticate() (*http.Cookie, error)
+	Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie, error)
 	Authenticated(r *http.Request) (string, string, bool)
 	Authorised(uid, role, path string) error
 	Logout(w http.ResponseWriter, r *http.Request)

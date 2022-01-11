@@ -14,7 +14,12 @@ func NewNoneAuthenticator() *None {
 	return &None{}
 }
 
-func (n *None) Authenticate(w http.ResponseWriter, r *http.Request) {
+func (n *None) Preauthenticate() (*http.Cookie, error) {
+	return nil, nil
+}
+
+func (n *None) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie, error) {
+	return nil, nil
 }
 
 func (n *None) Authenticated(r *http.Request) (string, string, bool) {

@@ -1,11 +1,8 @@
 package auth
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,96 +17,30 @@ type Basic struct {
 	logins       map[uuid.UUID]*login
 	sessions     map[uuid.UUID]*session
 	stale        time.Duration
-	urls         map[string]struct{}
 }
 
-func NewBasicAuthenticator(auth auth.IAuth, cookieMaxAge int, stale time.Duration, urls []string) *Basic {
+func NewBasicAuthenticator(auth auth.IAuth, cookieMaxAge int, stale time.Duration) *Basic {
 	a := Basic{
 		auth:         auth,
 		cookieMaxAge: cookieMaxAge,
 		logins:       map[uuid.UUID]*login{},
 		sessions:     map[uuid.UUID]*session{},
 		stale:        stale,
-		urls:         map[string]struct{}{},
-	}
-
-	for _, u := range urls {
-		a.urls[u] = struct{}{}
 	}
 
 	return &a
 }
 
-// NOTE TO SELF: the uhppoted-httpd-login cookie is a single use expiring cookie
-//               intended to (eventually) support opaque login credentials
-func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
-	// HEAD request refreshes uhppoted-httpd-login cookie
-	if strings.ToUpper(r.Method) == http.MethodHead {
-		if err := b.setLoginCookie(w); err != nil {
-			warn(err)
-			return
-		}
+func (b *Basic) Preauthenticate() (*http.Cookie, error) {
+	loginId := uuid.New()
 
-		return
-	}
-
-	// POST request validates uhppoted-httpd-login cookie and credentials
-	if err := b.validateLoginCookie(r); err != nil {
-		warn(err)
-		b.unauthenticated(w, r)
-		return
-	}
-
-	var sessionId = uuid.New()
-	var uid string
-	var pwd string
-	var contentType string
-
-	for k, h := range r.Header {
-		if strings.TrimSpace(strings.ToLower(k)) == "content-type" {
-			for _, v := range h {
-				contentType = strings.TrimSpace(strings.ToLower(v))
-			}
-		}
-	}
-
-	switch contentType {
-	case "application/x-www-form-urlencoded":
-		uid = r.FormValue("uid")
-		pwd = r.FormValue("pwd")
-
-	case "application/json":
-		blob, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			warn(err)
-			http.Error(w, "Error reading request", http.StatusInternalServerError)
-			return
-		}
-
-		body := struct {
-			UserId   string `json:"uid"`
-			Password string `json:"pwd"`
-		}{}
-
-		if err := json.Unmarshal(blob, &body); err != nil {
-			warn(err)
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
-			return
-		}
-
-		uid = body.UserId
-		pwd = body.Password
-	}
-
-	token, err := b.auth.Authorize(uid, pwd, sessionId)
+	token, err := b.auth.Preauthenticate(loginId)
 	if err != nil {
-		warn(err)
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		return
+		return nil, err
 	}
 
 	cookie := http.Cookie{
-		Name:     SessionCookie,
+		Name:     LoginCookie,
 		Value:    token,
 		Path:     "/",
 		MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),
@@ -118,14 +49,45 @@ func (b *Basic) Authenticate(w http.ResponseWriter, r *http.Request) {
 		//	Secure:   true,
 	}
 
-	b.sessions[sessionId] = &session{
-		id:      sessionId,
+	b.logins[loginId] = &login{
+		id:      loginId,
 		touched: time.Now(),
-
-		User: uid,
 	}
 
-	http.SetCookie(w, &cookie)
+	return &cookie, nil
+}
+
+// NOTE TO SELF: the uhppoted-httpd-login cookie is a single use expiring cookie
+//               intended to (eventually) support opaque login credentials
+func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie, error) {
+	if err := b.validateLoginCookie(cookie); err != nil {
+		return nil, err
+	}
+
+	var sessionId = uuid.New()
+
+	if token, err := b.auth.Authorize(uid, pwd, sessionId); err != nil {
+		return nil, err
+	} else {
+		cookie := http.Cookie{
+			Name:     SessionCookie,
+			Value:    token,
+			Path:     "/",
+			MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+			//	Secure:   true,
+		}
+
+		b.sessions[sessionId] = &session{
+			id:      sessionId,
+			touched: time.Now(),
+
+			User: uid,
+		}
+
+		return &cookie, nil
+	}
 }
 
 func (b *Basic) Authenticated(r *http.Request) (string, string, bool) {
@@ -240,14 +202,6 @@ func (b *Basic) authenticated(r *http.Request) bool {
 }
 
 func (b *Basic) authorized(r *http.Request, path string) (string, string, bool) {
-	if path == "/login.html" {
-		return "", "", true
-	}
-
-	if path == "/unauthorized.html" {
-		return "", "", true
-	}
-
 	cookie, err := r.Cookie(SessionCookie)
 	if err != nil {
 		warn(fmt.Errorf("No JWT cookie in request"))
@@ -276,18 +230,9 @@ func (b *Basic) authorized(r *http.Request, path string) (string, string, bool) 
 	return uid, role, true
 }
 
-func (b *Basic) unauthenticated(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/login.html", http.StatusFound)
-}
-
-func (b *Basic) unauthorized(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/unauthorized.html", http.StatusFound)
-}
-
-func (b *Basic) validateLoginCookie(r *http.Request) error {
-	cookie, err := r.Cookie(LoginCookie)
-	if err != nil {
-		return err
+func (b *Basic) validateLoginCookie(cookie *http.Cookie) error {
+	if cookie == nil {
+		return fmt.Errorf("Invalid login cookie")
 	}
 
 	if err := b.auth.Verify(auth.Login, cookie.Value); err != nil {
@@ -304,40 +249,10 @@ func (b *Basic) validateLoginCookie(r *http.Request) error {
 	}
 
 	if _, ok := b.logins[*lid]; !ok {
-		if _, ok := b.urls[r.URL.Path]; !ok {
-			return fmt.Errorf("No extant login for login ID '%v'", *lid)
-		}
+		return fmt.Errorf("No extant login for login ID '%v'", *lid)
 	}
 
 	delete(b.logins, *lid)
-
-	return nil
-}
-
-func (b *Basic) setLoginCookie(w http.ResponseWriter) error {
-	loginId := uuid.New()
-	token, err := b.auth.Preauthenticate(loginId)
-	if err != nil {
-		http.Error(w, "Invalid login token", http.StatusInternalServerError)
-		return nil
-	}
-
-	cookie := http.Cookie{
-		Name:     LoginCookie,
-		Value:    token,
-		Path:     "/",
-		MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-		//	Secure:   true,
-	}
-
-	b.logins[loginId] = &login{
-		id:      loginId,
-		touched: time.Now(),
-	}
-
-	http.SetCookie(w, &cookie)
 
 	return nil
 }
