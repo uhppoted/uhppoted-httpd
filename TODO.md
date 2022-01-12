@@ -8,12 +8,13 @@
 - [ ] Restyle floating user block shadow in dark mode
 
 - [ ] Auth
+      - [x] Make default login cookie expiration 60s
+      - [ ] Clear login cookie on login
+
       - [ ] Clean up GET
       - [ ] Clean up auth.Local
       - [ ] Regenerate session keys every N minutes
       - [ ] (?) Lift `unauthorised` handling out of auth provider
-      - [ ] Make login cookie expire in 60s
-      - [ ] Clear login cookie on login
       - [ ] (?) Clear session cookie on logout
             https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
