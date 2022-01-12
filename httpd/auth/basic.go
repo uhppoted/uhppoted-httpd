@@ -42,7 +42,7 @@ func (b *Basic) Preauthenticate() (*http.Cookie, error) {
 		Name:     LoginCookie,
 		Value:    token,
 		Path:     "/",
-		MaxAge:   300 * int(time.Hour.Seconds()),  // 5 minutes
+		MaxAge:   300 * int(time.Hour.Seconds()), // 5 minutes
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 		//	Secure:   true,

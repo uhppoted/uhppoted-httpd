@@ -24,7 +24,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 
 	// ... allow unauthenticated access to /authenticate and /logout
 	if path == "/authenticate" {
-		d.authenticate(w, r)
+		d.login(w, r)
 		return
 	}
 
@@ -75,7 +75,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
+func (d *dispatcher) login(w http.ResponseWriter, r *http.Request) {
 	var contentType string
 	var uid string
 	var pwd string
@@ -133,11 +133,24 @@ func (d *dispatcher) authenticate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		warn(err)
 		d.unauthenticated(r, w)
+		return
 	}
 
 	if sessionCookie != nil {
 		http.SetCookie(w, sessionCookie)
 	}
+
+	clear(auth.LoginCookie, w)
+}
+
+func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
+	if cookie, err := r.Cookie(auth.SessionCookie); err == nil {
+		d.auth.Logout(cookie)
+	}
+
+	clear(auth.SessionCookie, w)
+
+	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
 func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request, f func(map[string]interface{}) (interface{}, error)) {

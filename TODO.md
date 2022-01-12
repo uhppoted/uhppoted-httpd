@@ -9,14 +9,14 @@
 
 - [ ] Auth
       - [x] Make default login cookie expiration 60s
-      - [ ] Clear login cookie on login
+      - [x] Clear login cookie on login
+      - [x] Clear session cookie on logout
+      - [x] Clear session cookie on unauthenticated
 
       - [ ] Clean up GET
       - [ ] Clean up auth.Local
       - [ ] Regenerate session keys every N minutes
       - [ ] (?) Lift `unauthorised` handling out of auth provider
-      - [ ] (?) Clear session cookie on logout
-            https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
       - [x] GET  allow unauthenticated/authorized access to CSS, images, etc
       - [x] GET  allow unauthenticated access to login.html and unauthorized.html
