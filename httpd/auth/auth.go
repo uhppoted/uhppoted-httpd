@@ -28,10 +28,9 @@ type session struct {
 type IAuth interface {
 	Preauthenticate() (*http.Cookie, error)
 	Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie, error)
-	Authenticated(r *http.Request) (string, string, bool)
+	Authenticated(cookie *http.Cookie) (string, string, error)
 	Authorised(uid, role, path string) error
-	Logout(w http.ResponseWriter, r *http.Request)
-	Session(r *http.Request) (*session, error)
+	Logout(cookie *http.Cookie)
 
 	Verify(uid, pwd string) error
 	SetPassword(uid, pwd, role string) error

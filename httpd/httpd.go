@@ -193,7 +193,19 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) authenticated(r *http.Request) (string, string, bool) {
-	return d.auth.Authenticated(r)
+	cookie, err := r.Cookie(auth.SessionCookie)
+	if err != nil {
+		warn(fmt.Errorf("No session cookie in request"))
+		return "", "", false
+	}
+
+	uid, role, err := d.auth.Authenticated(cookie)
+	if err != nil {
+		warn(err)
+		return "", "", false
+	}
+
+	return uid, role, true
 }
 
 func (d *dispatcher) authorised(uid, role, path string) bool {
@@ -214,7 +226,11 @@ func (d *dispatcher) unauthorised(r *http.Request, w http.ResponseWriter) {
 }
 
 func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
-	d.auth.Logout(w, r)
+	if cookie, err := r.Cookie(auth.SessionCookie); err == nil {
+		d.auth.Logout(cookie)
+	}
+
+	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
 func resolve(u *url.URL) (string, error) {

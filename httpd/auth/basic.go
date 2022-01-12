@@ -89,38 +89,58 @@ func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie
 	}
 }
 
-func (b *Basic) Authenticated(r *http.Request) (string, string, bool) {
-	cookie, err := r.Cookie(SessionCookie)
-	if err != nil {
-		warn(fmt.Errorf("No JWT cookie in request"))
-		return "", "", false
-	}
-
+func (b *Basic) Authenticated(cookie *http.Cookie) (string, string, error) {
 	uid, role, err := b.auth.Authenticated(cookie.Value)
 	if err != nil {
-		warn(err)
-		return "", "", false
+		return "", "", err
 	}
 
-	session, err := b.session(r)
+	session, err := b.session(cookie)
 	if err != nil {
-		warn(err)
-		return "", "", false
+		return "", "", err
 	}
 
 	if session == nil {
-		warn(fmt.Errorf("No extant session for request"))
-		return "", "", false
+		return "", "", fmt.Errorf("No extant session for request")
 	}
 
 	session.touched = time.Now()
 
-	return uid, role, true
+	return uid, role, nil
 }
 
 func (b *Basic) Authorised(uid, role, path string) error {
 	return b.auth.AuthorisedX(uid, role, path)
 }
+
+// func (b *Basic) authorized(r *http.Request, path string) (string, string, bool) {
+// 	cookie, err := r.Cookie(SessionCookie)
+// 	if err != nil {
+// 		warn(fmt.Errorf("No JWT cookie in request"))
+// 		return "", "", false
+// 	}
+//
+// 	uid, role, err := b.auth.Authorized(cookie.Value, path)
+// 	if err != nil {
+// 		warn(err)
+// 		return "", "", false
+// 	}
+//
+// 	session, err := b.session(cookie)
+// 	if err != nil {
+// 		warn(err)
+// 		return "", "", false
+// 	}
+//
+// 	if session == nil {
+// 		warn(fmt.Errorf("No extant session for request"))
+// 		return "", "", false
+// 	}
+//
+// 	session.touched = time.Now()
+//
+// 	return uid, role, true
+// }
 
 func (b *Basic) Verify(uid, pwd string) error {
 	return b.auth.Validate(uid, pwd)
@@ -134,16 +154,10 @@ func (b *Basic) SetPassword(uid, pwd, role string) error {
 	return b.auth.Save()
 }
 
-func (b *Basic) Logout(w http.ResponseWriter, r *http.Request) {
-	if s, _ := b.session(r); s != nil {
+func (b *Basic) Logout(cookie *http.Cookie) {
+	if s, _ := b.session(cookie); s != nil {
 		delete(b.sessions, s.id)
 	}
-
-	http.Redirect(w, r, "/index.html", http.StatusFound)
-}
-
-func (b *Basic) Session(r *http.Request) (*session, error) {
-	return b.session(r)
 }
 
 func (b *Basic) Sweep() {
@@ -162,50 +176,6 @@ func (b *Basic) Sweep() {
 			delete(b.sessions, k)
 		}
 	}
-}
-
-func (b *Basic) authenticated(r *http.Request) bool {
-	cookie, err := r.Cookie(SessionCookie)
-	if err != nil {
-		warn(err)
-		return false
-	}
-
-	if err = b.auth.Verify(auth.Session, cookie.Value); err != nil {
-		warn(err)
-		return false
-	}
-
-	return true
-}
-
-func (b *Basic) authorized(r *http.Request, path string) (string, string, bool) {
-	cookie, err := r.Cookie(SessionCookie)
-	if err != nil {
-		warn(fmt.Errorf("No JWT cookie in request"))
-		return "", "", false
-	}
-
-	uid, role, err := b.auth.Authorized(cookie.Value, path)
-	if err != nil {
-		warn(err)
-		return "", "", false
-	}
-
-	session, err := b.session(r)
-	if err != nil {
-		warn(err)
-		return "", "", false
-	}
-
-	if session == nil {
-		warn(fmt.Errorf("No extant session for request"))
-		return "", "", false
-	}
-
-	session.touched = time.Now()
-
-	return uid, role, true
 }
 
 func (b *Basic) validateLoginCookie(cookie *http.Cookie) error {
@@ -235,12 +205,7 @@ func (b *Basic) validateLoginCookie(cookie *http.Cookie) error {
 	return nil
 }
 
-func (b *Basic) session(r *http.Request) (*session, error) {
-	cookie, err := r.Cookie(SessionCookie)
-	if err != nil {
-		return nil, err
-	}
-
+func (b *Basic) session(cookie *http.Cookie) (*session, error) {
 	sid, err := b.auth.GetSessionId(cookie.Value)
 	if err != nil {
 		return nil, err

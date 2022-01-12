@@ -2,11 +2,21 @@
 
 - [ ] Update events handling
       - [x] Replace EventsCount with first, last and current (because 'count' is not even remotely valid)
+      - [ ] (MAYBE) Rethink not sending 0s for events.first, events.last and events.current
       - [ ] Remove LAN.store
 
 - [ ] Restyle floating user block shadow in dark mode
 
 - [ ] Auth
+      - [ ] Clean up GET
+      - [ ] Clean up auth.Local
+      - [ ] Regenerate session keys every N minutes
+      - [ ] (?) Lift `unauthorised` handling out of auth provider
+      - [ ] Make login cookie expire in 60s
+      - [ ] Clear login cookie on login
+      - [ ] (?) Clear session cookie on logout
+            https://stackoverflow.com/questions/27671061/how-to-delete-cookie
+
       - [x] GET  allow unauthenticated/authorized access to CSS, images, etc
       - [x] GET  allow unauthenticated access to login.html and unauthorized.html
       - [x] GET  require authenticated + authorisation for access to data
@@ -21,28 +31,22 @@
       - [x] Commonalize httpd.unauthorized()
       - [x] Remove authorised resource check in basic.Verify (muddled responsibility)
       - [x] Remove authorised resource check in basic.SetPassword (muddled responsibility)
-      -- touch session when authenticated
-      -- clean up GET
-      -- clean up auth.Basic
-      -- clean up auth.Local
+      - [x] Clean up auth.Basic
+      - [x] Touch session when authenticated
 
-      - [ ] Prevent e.g. CSS/../events.html from poking a hole in the auth framework
+      - [x] Prevent e.g. CSS/../events.html from poking a hole in the auth framework
             - [x] GET
             - [x] HEAD
             - [x] POST
             - [x] Auth provider should take login cookie not request
-            - [ ] Auth provider should take session cookie not request
-            - [ ] Use resolved path in auth provider i.e. don't pass http.Request to auth provider
-                  - [ ] Authenticated
-                  - [ ] Logout
-                  - [ ] Session
-      - [ ] Regenerate session keys every N minutes
+            - [x] Auth provider should take session cookie not request
+            - [x] Use resolved path in auth provider i.e. don't pass http.Request to auth provider
+                  - [x] Authenticated
+                  - [x] Logout
+                  - [x] Session
+
       - [x] Homogenize `authorised` and `authorisedX`
-      - [ ] (?) Lift `unauthorised` handling out of auth provider
-      - [ ] Make login cookie expire in 60s
       - [x] Don't check login cookie except for login
-      - [ ] (?) Clear cookie on logout
-            https://stackoverflow.com/questions/27671061/how-to-delete-cookie
 
 - [ ] Fix DateTime mess
       - [ ] Controller schema for DateTime

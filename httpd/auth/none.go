@@ -22,8 +22,8 @@ func (n *None) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie,
 	return nil, nil
 }
 
-func (n *None) Authenticated(r *http.Request) (string, string, bool) {
-	return "-", "-", true
+func (n *None) Authenticated(cookie *http.Cookie) (string, string, error) {
+	return "-", "-", nil
 }
 
 func (n *None) Authorised(uid, role, path string) error {
@@ -38,11 +38,7 @@ func (n *None) SetPassword(uid, pwd, role string) error {
 	return nil
 }
 
-func (n *None) Logout(w http.ResponseWriter, r *http.Request) {
-}
-
-func (n *None) Session(r *http.Request) (*session, error) {
-	return nil, nil
+func (n *None) Logout(cookie *http.Cookie) {
 }
 
 func (n *None) Sweep() {
