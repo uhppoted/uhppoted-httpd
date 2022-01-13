@@ -90,57 +90,27 @@ func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie
 }
 
 func (b *Basic) Authenticated(cookie *http.Cookie) (string, string, error) {
-	uid, role, err := b.auth.Authenticated(cookie.Value)
+	uid, role, sid, err := b.auth.Authenticated(cookie.Value)
 	if err != nil {
 		return "", "", err
 	}
 
-	session, err := b.session(cookie)
-	if err != nil {
-		return "", "", err
-	}
-
-	if session == nil {
+	if sid == nil {
+		return "", "", fmt.Errorf("Invalid session ID (%v)", sid)
+	} else if session, ok := b.sessions[*sid]; !ok {
+		return "", "", fmt.Errorf("No extant session for session ID '%v'", *sid)
+	} else if session == nil {
 		return "", "", fmt.Errorf("No extant session for request")
+	} else {
+		session.touched = time.Now()
 	}
-
-	session.touched = time.Now()
 
 	return uid, role, nil
 }
 
 func (b *Basic) Authorised(uid, role, path string) error {
-	return b.auth.AuthorisedX(uid, role, path)
+	return b.auth.Authorised(uid, role, path)
 }
-
-// func (b *Basic) authorized(r *http.Request, path string) (string, string, bool) {
-// 	cookie, err := r.Cookie(SessionCookie)
-// 	if err != nil {
-// 		warn(fmt.Errorf("No JWT cookie in request"))
-// 		return "", "", false
-// 	}
-//
-// 	uid, role, err := b.auth.Authorized(cookie.Value, path)
-// 	if err != nil {
-// 		warn(err)
-// 		return "", "", false
-// 	}
-//
-// 	session, err := b.session(cookie)
-// 	if err != nil {
-// 		warn(err)
-// 		return "", "", false
-// 	}
-//
-// 	if session == nil {
-// 		warn(fmt.Errorf("No extant session for request"))
-// 		return "", "", false
-// 	}
-//
-// 	session.touched = time.Now()
-//
-// 	return uid, role, true
-// }
 
 func (b *Basic) Verify(uid, pwd string) error {
 	return b.auth.Validate(uid, pwd)
@@ -183,11 +153,7 @@ func (b *Basic) validateLoginCookie(cookie *http.Cookie) error {
 		return fmt.Errorf("Invalid login cookie")
 	}
 
-	if err := b.auth.Verify(auth.Login, cookie.Value); err != nil {
-		return err
-	}
-
-	lid, err := b.auth.GetLoginId(cookie.Value)
+	lid, err := b.auth.Verify(auth.Login, cookie.Value)
 	if err != nil {
 		return err
 	}
@@ -206,7 +172,11 @@ func (b *Basic) validateLoginCookie(cookie *http.Cookie) error {
 }
 
 func (b *Basic) session(cookie *http.Cookie) (*session, error) {
-	sid, err := b.auth.GetSessionId(cookie.Value)
+	if cookie == nil {
+		return nil, fmt.Errorf("Invalid session cookie")
+	}
+
+	sid, err := b.auth.Verify(auth.Session, cookie.Value)
 	if err != nil {
 		return nil, err
 	}

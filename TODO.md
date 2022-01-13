@@ -9,8 +9,9 @@
 
 - [ ] Auth
       - [x] Clean up GET
-      - [ ] Clean up auth.Local
-      - [ ] (?) Lift `unauthorised` handling out of auth provider
+      - [x] Clean up auth.Local
+      - [x] auth.Basic.Authenticated redundantly checks token in both authenticated and session
+      - [x] Lift `unauthorised` handling out of auth provider
       - [ ] Regenerate session keys every N minutes
 
       - [x] Make default login cookie expiration 60s
