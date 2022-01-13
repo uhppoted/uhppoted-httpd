@@ -36,7 +36,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		path = "/" + path
 	}
 
-	// ... GET <ancillary file>
+	// ... GET <ancillary files>
 	prefixes := []string{"/images/", "/css/", "/javascript/"}
 	files := []string{"/manifest.json"}
 
@@ -63,18 +63,19 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		"/groups",
 		"/events",
 		"/logs":
-		if handler := d.vtable(path); handler == nil || handler.get == nil {
-			warn(fmt.Errorf("No vtable entry for %v", path))
-			http.Error(w, "internal system error", http.StatusInternalServerError)
-		} else {
-			d.fetch(w, r, *handler)
+		if handler := d.vtable(path); handler != nil && handler.get != nil {
+			d.fetch(r, w, *handler)
 		}
 
 		return
 	}
 
-	// ... GET <other>
+	// ... parse headers, etc
+	file := filepath.Clean(filepath.Join(d.root, path[1:]))
 	acceptsGzip := false
+	context := map[string]interface{}{
+		"Theme": "default",
+	}
 
 	for k, h := range r.Header {
 		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
@@ -86,7 +87,6 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	theme := "default"
 	if cookie, err := r.Cookie(SettingsCookie); err == nil {
 		re := regexp.MustCompile("(.*?):(.+)")
 		tokens := strings.Split(cookie.Value, ",")
@@ -94,7 +94,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 			match := re.FindStringSubmatch(token)
 			if len(match) > 2 {
 				if strings.TrimSpace(match[1]) == "theme" {
-					theme = strings.TrimSpace(match[2])
+					context["Theme"] = strings.TrimSpace(match[2])
 				}
 			}
 		}
@@ -104,17 +104,12 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	files = []string{"/login.html", "/unauthorized.html"}
 	for _, f := range files {
 		if path == f {
-			file := filepath.Clean(filepath.Join(d.root, path[1:]))
-			context := map[string]interface{}{
-				"Theme": theme,
-			}
-
 			d.translate(file, context, w, acceptsGzip)
 			return
 		}
 	}
 
-	// ... require authorisation for all other HTML files
+	// ... require authorisation for all other files
 	uid, role, authenticated := d.authenticated(r)
 	if !authenticated {
 		d.unauthenticated(r, w)
@@ -126,13 +121,9 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if strings.HasSuffix(path, ".html") {
-		file := filepath.Clean(filepath.Join(d.root, path[1:]))
-		context := map[string]interface{}{
-			"User":  uid,
-			"Theme": theme,
-		}
+	context["User"] = uid
 
+	if strings.HasSuffix(path, ".html") {
 		d.translate(file, context, w, acceptsGzip)
 		return
 	}
@@ -210,7 +201,7 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 	}
 }
 
-func (d *dispatcher) fetch(w http.ResponseWriter, r *http.Request, h handler) {
+func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 	path, err := resolve(r.URL)
 	if err != nil {
 		http.Error(w, "invalid URL", http.StatusBadRequest)

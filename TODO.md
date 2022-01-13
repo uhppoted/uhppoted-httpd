@@ -8,21 +8,20 @@
 - [ ] Restyle floating user block shadow in dark mode
 
 - [ ] Auth
+      - [x] Clean up GET
+      - [ ] Clean up auth.Local
+      - [ ] (?) Lift `unauthorised` handling out of auth provider
+      - [ ] Regenerate session keys every N minutes
+
       - [x] Make default login cookie expiration 60s
       - [x] Clear login cookie on login
       - [x] Clear session cookie on logout
       - [x] Clear session cookie on unauthenticated
-
-      - [ ] Clean up GET
-      - [ ] Clean up auth.Local
-      - [ ] Regenerate session keys every N minutes
-      - [ ] (?) Lift `unauthorised` handling out of auth provider
-
-      - [x] GET  allow unauthenticated/authorized access to CSS, images, etc
-      - [x] GET  allow unauthenticated access to login.html and unauthorized.html
-      - [x] GET  require authenticated + authorisation for access to data
-      - [x] GET  require authenticated + authorisation for access to everything else
-      - [x] GET  return 'Not Found' for arbitrary stuff
+      - [x] GET allow unauthenticated/authorized access to CSS, images, etc
+      - [x] GET allow unauthenticated access to login.html and unauthorized.html
+      - [x] GET require authenticated + authorisation for access to data
+      - [x] GET require authenticated + authorisation for access to everything else
+      - [x] GET return 'Not Found' for arbitrary stuff
       - [x] HEAD restrict to /authenticate
       - [x] POST allow unauthenticated access to /authenticate
       - [x] POST allow unauthenticated access to /logout because httpd may have restarted, invalidating sessions
@@ -34,7 +33,6 @@
       - [x] Remove authorised resource check in basic.SetPassword (muddled responsibility)
       - [x] Clean up auth.Basic
       - [x] Touch session when authenticated
-
       - [x] Prevent e.g. CSS/../events.html from poking a hole in the auth framework
             - [x] GET
             - [x] HEAD
@@ -45,7 +43,6 @@
                   - [x] Authenticated
                   - [x] Logout
                   - [x] Session
-
       - [x] Homogenize `authorised` and `authorisedX`
       - [x] Don't check login cookie except for login
 
