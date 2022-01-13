@@ -13,9 +13,11 @@ $nav-background: darken($solarize-base02, 5%);
 $footer-background: $solarize-base01;
 $footer-text: $solarize-base03;
 
-$user-avatar-background: darken($solarize-base02, 10%);
+$user-avatar-background: lighten($solarize-base02, 3%);
 $user-avatar-text: $solarize-base1;
-$user-menu-background: darken($solarize-base02, 10%);
+$user-avatar-shadow: 3px 3px 3px darken($solarize-base02, 10%);
+$user-menu-background: lighten($solarize-base02, 1%);
+$user-menu-shadow: 3px 3px 3px darken($solarize-base02, 10%);
 $user-menu-item: $solarize-base00;
 $user-menu-item-highlight: $solarize-base2;
 $user-menu-item-highlight-background: $solarize-base1;

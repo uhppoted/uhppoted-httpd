@@ -5,15 +5,15 @@
       - [ ] (MAYBE) Rethink not sending 0s for events.first, events.last and events.current
       - [ ] Remove LAN.store
 
-- [ ] Restyle floating user block shadow in dark mode
+- [x] Restyle floating user block shadow in dark mode
 
 - [ ] Auth
+      - [ ] Regenerate session keys every N minutes
+
       - [x] Clean up GET
       - [x] Clean up auth.Local
       - [x] auth.Basic.Authenticated redundantly checks token in both authenticated and session
       - [x] Lift `unauthorised` handling out of auth provider
-      - [ ] Regenerate session keys every N minutes
-
       - [x] Make default login cookie expiration 60s
       - [x] Clear login cookie on login
       - [x] Clear session cookie on logout
