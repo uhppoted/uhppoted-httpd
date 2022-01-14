@@ -1,13 +1,12 @@
 ## v0.7.x
 
 - [ ] Update events handling
-      - [x] Replace EventsCount with first, last and current (because 'count' is not even remotely valid)
-      - [ ] (MAYBE) Rethink not sending 0s for events.first, events.last and events.current
+      - [ ] Rethink not sending 0 for events.first, events.last and events.current
+            - (?) Maybe make Uint32 i.e. 0 is ""
       - [ ] Remove LAN.store
 
-- [x] Restyle floating user block shadow in dark mode
-
 - [ ] Auth
+      - [x] Rework auth.Local.claims to use JSON encoded login and session fields
       - [ ] Regenerate session keys every N minutes
 
       - [x] Clean up GET

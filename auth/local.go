@@ -35,21 +35,21 @@ type Local struct {
 
 type salt []byte
 
+type claims struct {
+	jwt.StandardClaims
+	Login   *login   `json:"login,omitempty"`
+	Session *session `json:"session,omitempty"`
+}
+
 type login struct {
 	LoginId uuid.UUID `json:"login.id,omitempty"`
 	Salt    []byte    `json:"login.salt,omitempty"`
 }
 
 type session struct {
-	SessionId uuid.UUID `json:"session.id,omitempty"`
-	Role      string    `json:"session.role,omitempty"`
-}
-
-type claims struct {
-	jwt.StandardClaims
-	LoggedInAs string `json:"uid,omitempty"`
-	login
-	session
+	LoggedInAs string    `json:"uid,omitempty"`
+	SessionId  uuid.UUID `json:"session.id,omitempty"`
+	Role       string    `json:"session.role,omitempty"`
 }
 
 type user struct {
@@ -183,7 +183,7 @@ func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
 			Audience:  []string{"login"},
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))),
 		},
-		login: login{
+		Login: &login{
 			LoginId: loginId,
 			Salt:    salt,
 		},
@@ -235,10 +235,10 @@ func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) 
 			Audience:  []string{"admin"},
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))),
 		},
-		LoggedInAs: uid,
-		session: session{
-			SessionId: sessionId,
-			Role:      u.Role,
+		Session: &session{
+			LoggedInAs: uid,
+			SessionId:  sessionId,
+			Role:       u.Role,
 		},
 	}
 
@@ -333,15 +333,19 @@ func (p *Local) Verify(tokenType TokenType, cookie string) (*uuid.UUID, error) {
 	case Login:
 		if !claims.IsForAudience("login") {
 			return nil, fmt.Errorf("Invalid audience in JWT claims")
+		} else if claims.Login == nil {
+			return nil, fmt.Errorf("Invalid login token")
 		} else {
-			return &claims.login.LoginId, nil
+			return &claims.Login.LoginId, nil
 		}
 
 	case Session:
 		if !claims.IsForAudience("admin") {
 			return nil, fmt.Errorf("Invalid audience in JWT claims")
+		} else if claims.Session == nil {
+			return nil, fmt.Errorf("Invalid session token")
 		} else {
-			return &claims.session.SessionId, nil
+			return &claims.Session.SessionId, nil
 		}
 	}
 
@@ -380,7 +384,11 @@ func (p *Local) Authenticated(cookie string) (string, string, *uuid.UUID, error)
 		return "", "", nil, fmt.Errorf("JWT token expired")
 	}
 
-	return claims.LoggedInAs, claims.Role, &claims.session.SessionId, nil
+	if claims.Session == nil {
+		return "", "", nil, fmt.Errorf("Invalid session token")
+	}
+
+	return claims.Session.LoggedInAs, claims.Session.Role, &claims.Session.SessionId, nil
 }
 
 func (p *Local) Authorised(uid, role, resource string) error {
