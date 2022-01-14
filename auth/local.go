@@ -19,10 +19,11 @@ import (
 	"github.com/google/uuid"
 )
 
+const KEY_LENGTH = 32 // 256 bits
 const SALT_LENGTH = 32
 
 type Local struct {
-	key       string
+	key       []byte
 	users     map[string]*user
 	resources []resource
 
@@ -132,6 +133,7 @@ func (r *resource) UnmarshalJSON(bytes []byte) error {
 
 func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
 	provider := Local{
+		key:  make([]byte, KEY_LENGTH),
 		file: file,
 	}
 
@@ -151,16 +153,22 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 		provider.sessionExpiry = t
 	}
 
+	if _, err := io.ReadFull(rand.Reader, provider.key); err != nil {
+		return nil, err
+	}
+
 	provider.watch(file)
+
+	fmt.Printf(">>>>>>>>>>>>>>>> KEY: %X\n", provider.key)
 
 	return &provider, nil
 }
 
 func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
-	p.guard.Lock()
-	secret := []byte(p.key)
+	secret := p.copyKey()
 	expiry := p.loginExpiry
-	p.guard.Unlock()
+
+	fmt.Printf(">>>>>>>>>>>>>>>> SECRET/LOGIN: %X\n", secret)
 
 	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
 	if err != nil {
@@ -199,11 +207,11 @@ func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
 
 func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) {
 	p.guard.Lock()
-
-	secret := []byte(p.key)
 	users := p.users
 	expiry := p.sessionExpiry
 	p.guard.Unlock()
+
+	secret := p.copyKey()
 
 	u, ok := users[uid]
 	if !ok {
@@ -302,9 +310,7 @@ func (p *Local) Store(uid, pwd, role string) error {
 }
 
 func (p *Local) Verify(tokenType TokenType, cookie string) (*uuid.UUID, error) {
-	p.guard.Lock()
-	secret := []byte(p.key)
-	p.guard.Unlock()
+	secret := p.copyKey()
 
 	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
 	if err != nil {
@@ -353,9 +359,7 @@ func (p *Local) Verify(tokenType TokenType, cookie string) (*uuid.UUID, error) {
 }
 
 func (p *Local) Authenticated(cookie string) (string, string, *uuid.UUID, error) {
-	p.guard.Lock()
-	secret := []byte(p.key)
-	p.guard.Unlock()
+	secret := p.copyKey()
 
 	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
 	if err != nil {
@@ -443,11 +447,9 @@ func (p *Local) serialize() ([]byte, error) {
 	defer p.guard.Unlock()
 
 	serializable := struct {
-		Key       string           `json:"key"`
 		Users     map[string]*user `json:"users"`
 		Resources []resource       `json:"resources"`
 	}{
-		Key:       p.key,
 		Users:     p.users,
 		Resources: p.resources,
 	}
@@ -457,11 +459,9 @@ func (p *Local) serialize() ([]byte, error) {
 
 func (p *Local) deserialize(bytes []byte) error {
 	serializable := struct {
-		Key       string           `json:"key"`
 		Users     map[string]*user `json:"users"`
 		Resources []resource       `json:"resources"`
 	}{
-		Key:       "",
 		Users:     map[string]*user{},
 		Resources: []resource{},
 	}
@@ -472,7 +472,6 @@ func (p *Local) deserialize(bytes []byte) error {
 		return err
 	}
 
-	p.key = serializable.Key
 	p.users = serializable.Users
 	p.resources = serializable.Resources
 
@@ -519,4 +518,15 @@ func (p *Local) watch(filepath string) {
 			}
 		}
 	}()
+}
+
+func (p *Local) copyKey() []byte {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	k := make([]byte, KEY_LENGTH)
+
+	copy(k, p.key)
+
+	return k
 }

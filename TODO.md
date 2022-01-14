@@ -5,9 +5,17 @@
             - (?) Maybe make Uint32 i.e. 0 is ""
       - [ ] Remove LAN.store
 
+- [ ] Restyle highlighted fields in _dark_ mode (e.g. after editing controller name)
+
 - [ ] Auth
       - [x] Rework auth.Local.claims to use JSON encoded login and session fields
       - [ ] Regenerate session keys every N minutes
+            - [x] Replace fixed serialized key with generated key
+            - [ ] Replaced single key with key list
+            - [ ] Try with every key in list
+            - [ ] Refresh session cookie when necessary
+            - [ ] Unit test the copy code in Local.Authorise 
+                  (not entirely sure the `guard` is doing what it is supposed to)
 
       - [x] Clean up GET
       - [x] Clean up auth.Local
@@ -264,4 +272,3 @@
 # REFERENCES
 
 - https://stackoverflow.com/questions/40328932/javascript-es6-promise-for-loop
-

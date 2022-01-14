@@ -8,7 +8,7 @@ import (
 
 func TestLocalSerialize(t *testing.T) {
 	l := Local{
-		key: "qwerty",
+		key: []byte("qwerty"),
 		users: map[string]*user{
 			"hagrid": &user{
 				Salt:     salt([]byte{0xef, 0xcd, 0x34, 0x12}),
@@ -25,7 +25,6 @@ func TestLocalSerialize(t *testing.T) {
 	}
 
 	expected := `{
-  "key": "qwerty",
   "users": {
     "hagrid": {
       "salt": "efcd3412",
@@ -53,7 +52,6 @@ func TestLocalSerialize(t *testing.T) {
 
 func TestLocalDeserialize(t *testing.T) {
 	json := `{
-  "key": "qwerty",
   "users": {
     "hagrid": {
       "salt": "efcd3412",
@@ -70,7 +68,7 @@ func TestLocalDeserialize(t *testing.T) {
 }`
 
 	expected := Local{
-		key: "qwerty",
+		key: []byte("qwerty"),
 		users: map[string]*user{
 			"hagrid": &user{
 				Salt:     salt([]byte{0xef, 0xcd, 0x34, 0x12}),
@@ -86,15 +84,17 @@ func TestLocalDeserialize(t *testing.T) {
 		},
 	}
 
-	var local Local
+	local := Local{
+		key: []byte("qwerty"),
+	}
 
 	if err := local.deserialize([]byte(json)); err != nil {
 		t.Fatalf("Unexpected error unmarshalling auth.Local (%v)", err)
 	}
 
 	// ... check this way because reflect.DeepEqual copies guard value
-	if local.key != expected.key {
-		t.Errorf("Incorrectly deserialized:\n   expected:%#v\n   got:     %#v", &expected, &local)
+	if !reflect.DeepEqual(local.key, expected.key) {
+		t.Errorf("Incorrectly deserialized:\n   expected:%x\n   got:     %x", expected.key, local.key)
 	}
 
 	if !reflect.DeepEqual(local.users, expected.users) {
@@ -103,5 +103,49 @@ func TestLocalDeserialize(t *testing.T) {
 
 	if !reflect.DeepEqual(local.resources, expected.resources) {
 		t.Errorf("Incorrectly deserialized:\n   expected:%#v\n   got:     %#v", &expected, &local)
+	}
+}
+
+func TestLocalCopyKey(t *testing.T) {
+	tests := []struct {
+		key      []byte
+		expected []byte
+	}{
+		{
+			key: []byte(""),
+			expected: []byte{
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+		},
+		{
+			key: []byte("qwerty"),
+			expected: []byte{
+				0x71, 0x77, 0x65, 0x72, 0x74, 0x79, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+		},
+		{
+			key: []byte("abcdefghijklmnopqrstuvwxyz123456"),
+			expected: []byte{
+				0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
+				0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36},
+		},
+		{
+			key: []byte("abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJK"),
+			expected: []byte{
+				0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
+				0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36},
+		},
+	}
+
+	for _, v := range tests {
+		p := Local{
+			key: v.key,
+		}
+
+		secret := p.copyKey()
+
+		if !reflect.DeepEqual(secret, v.expected) {
+			t.Errorf("copyKey returned incorrect key\n   expected:%x\n   got:     %x", v.expected, secret)
+		}
 	}
 }
