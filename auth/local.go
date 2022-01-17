@@ -19,11 +19,12 @@ import (
 	"github.com/google/uuid"
 )
 
+const KEYS = 2        // Number of historical session secrets
 const KEY_LENGTH = 32 // 256 bits
 const SALT_LENGTH = 32
 
 type Local struct {
-	key       []byte
+	keys      [][]byte
 	users     map[string]*user
 	resources []resource
 
@@ -64,77 +65,12 @@ type resource struct {
 	Authorised *regexp.Regexp `json:"authorised"`
 }
 
-func (s *salt) MarshalJSON() ([]byte, error) {
-	bytes := []byte{}
-
-	if s != nil {
-		bytes = []byte(*s)
-	}
-
-	return json.Marshal(hex.EncodeToString(bytes[:]))
-}
-
-func (s *salt) UnmarshalJSON(bytes []byte) error {
-	re := regexp.MustCompile(`^"([0-9a-fA-F]*)"$`)
-	match := re.FindSubmatch(bytes)
-
-	if len(match) < 2 {
-		return fmt.Errorf("Invalid salt '%s'", string(bytes))
-	}
-
-	b, err := hex.DecodeString(string(match[1]))
-	if err != nil {
-		return err
-	}
-
-	*s = b
-
-	return nil
-}
-
-func (r resource) MarshalJSON() ([]byte, error) {
-	object := struct {
-		Path       string `json:"path"`
-		Authorised string `json:"authorised"`
-	}{
-		Path:       fmt.Sprintf("%v", r.Path),
-		Authorised: fmt.Sprintf("%v", r.Authorised),
-	}
-
-	return json.Marshal(object)
-}
-
-func (r *resource) UnmarshalJSON(bytes []byte) error {
-	x := struct {
-		Path       string `json:"path"`
-		Authorised string `json:"authorised"`
-	}{}
-
-	err := json.Unmarshal(bytes, &x)
-	if err != nil {
-		return err
-	}
-
-	path, err := regexp.Compile(fmt.Sprintf("^%v$", x.Path))
-	if err != nil {
-		return err
-	}
-
-	authorised, err := regexp.Compile(x.Authorised)
-	if err != nil {
-		return err
-	}
-
-	r.Path = path
-	r.Authorised = authorised
-
-	return nil
-}
-
 func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
 	provider := Local{
-		key:  make([]byte, KEY_LENGTH),
-		file: file,
+		keys:          make([][]byte, KEYS),
+		loginExpiry:   1 * time.Minute,
+		sessionExpiry: 60 * time.Minute,
+		file:          file,
 	}
 
 	if err := provider.load(file); err != nil {
@@ -153,13 +89,23 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 		provider.sessionExpiry = t
 	}
 
-	if _, err := io.ReadFull(rand.Reader, provider.key); err != nil {
+	if key, err := genKey(); err != nil {
 		return nil, err
+	} else {
+		provider.keys[0] = key
 	}
 
 	provider.watch(file)
 
-	fmt.Printf(">>>>>>>>>>>>>>>> KEY: %X\n", provider.key)
+	tick := time.Tick(15 * time.Minute)
+	go func() {
+		for {
+			select {
+			case <-tick:
+				provider.regenerate()
+			}
+		}
+	}()
 
 	return &provider, nil
 }
@@ -167,8 +113,6 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
 	secret := p.copyKey()
 	expiry := p.loginExpiry
-
-	fmt.Printf(">>>>>>>>>>>>>>>> SECRET/LOGIN: %X\n", secret)
 
 	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
 	if err != nil {
@@ -310,19 +254,8 @@ func (p *Local) Store(uid, pwd, role string) error {
 }
 
 func (p *Local) Verify(tokenType TokenType, cookie string) (*uuid.UUID, error) {
-	secret := p.copyKey()
-
-	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
+	token, err := p.getToken(cookie)
 	if err != nil {
-		return nil, err
-	}
-
-	token, err := jwt.ParseAndVerifyString(cookie, verifier)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := verifier.Verify(token.Payload(), token.Signature()); err != nil {
 		return nil, err
 	}
 
@@ -359,19 +292,8 @@ func (p *Local) Verify(tokenType TokenType, cookie string) (*uuid.UUID, error) {
 }
 
 func (p *Local) Authenticated(cookie string) (string, string, *uuid.UUID, error) {
-	secret := p.copyKey()
-
-	verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
+	token, err := p.getToken(cookie)
 	if err != nil {
-		return "", "", nil, err
-	}
-
-	token, err := jwt.ParseAndVerifyString(cookie, verifier)
-	if err != nil {
-		return "", "", nil, err
-	}
-
-	if err := verifier.Verify(token.Payload(), token.Signature()); err != nil {
 		return "", "", nil, err
 	}
 
@@ -520,13 +442,137 @@ func (p *Local) watch(filepath string) {
 	}()
 }
 
+func (p *Local) getToken(cookie string) (*jwt.Token, error) {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	secrets := p.keys
+
+	for _, secret := range secrets {
+		verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
+		if err != nil {
+			return nil, err
+		}
+
+		token, err := jwt.ParseAndVerifyString(cookie, verifier)
+		if err != nil {
+			log.Printf("%-5v %-5v Invalid token (%v)", "WARN", "AUTH", err)
+			continue
+		}
+
+		if err := verifier.Verify(token.Payload(), token.Signature()); err != nil {
+			return nil, err
+		}
+
+		return token, nil
+	}
+
+	return nil, fmt.Errorf("Invalid cookie")
+}
+
+func genKey() ([]byte, error) {
+	key := make([]byte, KEY_LENGTH)
+
+	if _, err := io.ReadFull(rand.Reader, key); err != nil {
+		return nil, err
+	}
+
+	return key, nil
+}
+
 func (p *Local) copyKey() []byte {
 	p.guard.Lock()
 	defer p.guard.Unlock()
 
-	k := make([]byte, KEY_LENGTH)
+	key := make([]byte, KEY_LENGTH)
 
-	copy(k, p.key)
+	copy(key, p.keys[0])
 
-	return k
+	return key
+}
+
+func (p *Local) regenerate() {
+	key, err := genKey()
+	if err != nil {
+		log.Printf("%-5v Failed to regenerate session secret (%v)", "ERROR", err)
+		return
+	}
+
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	for i := 1; i < len(p.keys); i++ {
+		p.keys[i] = p.keys[i-1]
+	}
+
+	p.keys[0] = key
+
+	log.Printf("%-5v Regenerated session secret", "INFO")
+}
+
+func (s *salt) MarshalJSON() ([]byte, error) {
+	bytes := []byte{}
+
+	if s != nil {
+		bytes = []byte(*s)
+	}
+
+	return json.Marshal(hex.EncodeToString(bytes[:]))
+}
+
+func (s *salt) UnmarshalJSON(bytes []byte) error {
+	re := regexp.MustCompile(`^"([0-9a-fA-F]*)"$`)
+	match := re.FindSubmatch(bytes)
+
+	if len(match) < 2 {
+		return fmt.Errorf("Invalid salt '%s'", string(bytes))
+	}
+
+	b, err := hex.DecodeString(string(match[1]))
+	if err != nil {
+		return err
+	}
+
+	*s = b
+
+	return nil
+}
+
+func (r resource) MarshalJSON() ([]byte, error) {
+	object := struct {
+		Path       string `json:"path"`
+		Authorised string `json:"authorised"`
+	}{
+		Path:       fmt.Sprintf("%v", r.Path),
+		Authorised: fmt.Sprintf("%v", r.Authorised),
+	}
+
+	return json.Marshal(object)
+}
+
+func (r *resource) UnmarshalJSON(bytes []byte) error {
+	x := struct {
+		Path       string `json:"path"`
+		Authorised string `json:"authorised"`
+	}{}
+
+	err := json.Unmarshal(bytes, &x)
+	if err != nil {
+		return err
+	}
+
+	path, err := regexp.Compile(fmt.Sprintf("^%v$", x.Path))
+	if err != nil {
+		return err
+	}
+
+	authorised, err := regexp.Compile(x.Authorised)
+	if err != nil {
+		return err
+	}
+
+	r.Path = path
+	r.Authorised = authorised
+
+	return nil
 }

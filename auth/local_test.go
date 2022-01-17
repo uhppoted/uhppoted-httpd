@@ -8,7 +8,7 @@ import (
 
 func TestLocalSerialize(t *testing.T) {
 	l := Local{
-		key: []byte("qwerty"),
+		keys: [][]byte{[]byte("qwerty")},
 		users: map[string]*user{
 			"hagrid": &user{
 				Salt:     salt([]byte{0xef, 0xcd, 0x34, 0x12}),
@@ -68,7 +68,7 @@ func TestLocalDeserialize(t *testing.T) {
 }`
 
 	expected := Local{
-		key: []byte("qwerty"),
+		keys: [][]byte{[]byte("qwerty")},
 		users: map[string]*user{
 			"hagrid": &user{
 				Salt:     salt([]byte{0xef, 0xcd, 0x34, 0x12}),
@@ -85,7 +85,7 @@ func TestLocalDeserialize(t *testing.T) {
 	}
 
 	local := Local{
-		key: []byte("qwerty"),
+		keys: [][]byte{[]byte("qwerty")},
 	}
 
 	if err := local.deserialize([]byte(json)); err != nil {
@@ -93,8 +93,8 @@ func TestLocalDeserialize(t *testing.T) {
 	}
 
 	// ... check this way because reflect.DeepEqual copies guard value
-	if !reflect.DeepEqual(local.key, expected.key) {
-		t.Errorf("Incorrectly deserialized:\n   expected:%x\n   got:     %x", expected.key, local.key)
+	if !reflect.DeepEqual(local.keys, expected.keys) {
+		t.Errorf("Incorrectly deserialized:\n   expected:%x\n   got:     %x", expected.keys, local.keys)
 	}
 
 	if !reflect.DeepEqual(local.users, expected.users) {
@@ -139,7 +139,7 @@ func TestLocalCopyKey(t *testing.T) {
 
 	for _, v := range tests {
 		p := Local{
-			key: v.key,
+			keys: [][]byte{v.key},
 		}
 
 		secret := p.copyKey()
