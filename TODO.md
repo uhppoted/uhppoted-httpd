@@ -8,14 +8,20 @@
 - [ ] Restyle highlighted fields in _dark_ mode (e.g. after editing controller name)
 
 - [ ] Auth
-      - [ ] Regenerate session keys every N minutes
+      - [x] Regenerate session keys every N minutes
             - [x] Replace fixed serialized key with generated key
             - [x] Regenerate session key
             - [x] Replace single key with key list
             - [x] Verify/Authenticated with every key in list
-            - [ ] Refresh session cookie when necessary
+            - [x] Refresh session cookie when necessary
+            - [x] SessionCookie not valid after a restart
+```
+2022/01/18 12:07:56 DEBUG GET  /doors
+2022/01/18 12:07:56 WARN  jwt: key is nil
+```
       - [ ] (?) Replace auth.Basic `sweep` with inline check on touched
             - still need to sweep logins though
+      - [ ] Move CSS/images/javascript out of GET handler (use FS a la pwa-httpd)
 
       - [x] Rework auth.Local.claims to use JSON encoded login and session fields
       - [x] Clean up GET

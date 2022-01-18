@@ -34,7 +34,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ... require auth for everything else
-	uid, role, authenticated := d.authenticated(r)
+	uid, role, authenticated := d.authenticated(r, w)
 	if !authenticated {
 		d.unauthenticated(r, w)
 		return

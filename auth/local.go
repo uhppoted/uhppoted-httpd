@@ -149,7 +149,7 @@ func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
 	return token.String(), nil
 }
 
-func (p *Local) Authorize(uid, pwd string, sessionId uuid.UUID) (string, error) {
+func (p *Local) Authenticate(uid, pwd string, sessionId uuid.UUID) (string, error) {
 	p.guard.Lock()
 	users := p.users
 	expiry := p.sessionExpiry
@@ -254,7 +254,7 @@ func (p *Local) Store(uid, pwd, role string) error {
 }
 
 func (p *Local) Verify(tokenType TokenType, cookie string) (*uuid.UUID, error) {
-	token, err := p.getToken(cookie)
+	token, _, err := p.getToken(cookie)
 	if err != nil {
 		return nil, err
 	}
@@ -291,30 +291,46 @@ func (p *Local) Verify(tokenType TokenType, cookie string) (*uuid.UUID, error) {
 	return nil, nil
 }
 
-func (p *Local) Authenticated(cookie string) (string, string, *uuid.UUID, error) {
-	token, err := p.getToken(cookie)
+func (p *Local) Authenticated(cookie string) (string, string, *uuid.UUID, string, error) {
+	token, keyID, err := p.getToken(cookie)
 	if err != nil {
-		return "", "", nil, err
+		return "", "", nil, "", err
 	}
 
 	var claims claims
 	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
-		return "", "", nil, err
+		return "", "", nil, "", err
 	}
 
 	if !claims.IsForAudience("admin") {
-		return "", "", nil, fmt.Errorf("Invalid audience in JWT claims")
+		return "", "", nil, "", fmt.Errorf("Invalid audience in JWT claims")
 	}
 
 	if !claims.IsValidAt(time.Now()) {
-		return "", "", nil, fmt.Errorf("JWT token expired")
+		return "", "", nil, "", fmt.Errorf("JWT token expired")
 	}
 
 	if claims.Session == nil {
-		return "", "", nil, fmt.Errorf("Invalid session token")
+		return "", "", nil, "", fmt.Errorf("Invalid session token")
 	}
 
-	return claims.Session.LoggedInAs, claims.Session.Role, &claims.Session.SessionId, nil
+	if keyID > 1 {
+		secret := p.copyKey()
+
+		signer, err := jwt.NewSignerHS(jwt.HS256, secret)
+		if err != nil {
+			return "", "", nil, "", err
+		}
+
+		token2, err := jwt.NewBuilder(signer).Build(claims)
+		if err != nil {
+			return "", "", nil, "", err
+		}
+
+		return claims.Session.LoggedInAs, claims.Session.Role, &claims.Session.SessionId, token2.String(), nil
+	}
+
+	return claims.Session.LoggedInAs, claims.Session.Role, &claims.Session.SessionId, "", nil
 }
 
 func (p *Local) Authorised(uid, role, resource string) error {
@@ -442,32 +458,39 @@ func (p *Local) watch(filepath string) {
 	}()
 }
 
-func (p *Local) getToken(cookie string) (*jwt.Token, error) {
+func (p *Local) getToken(cookie string) (*jwt.Token, int, error) {
 	p.guard.Lock()
 	defer p.guard.Unlock()
 
 	secrets := p.keys
 
-	for _, secret := range secrets {
+	for ix, secret := range secrets {
+		// NOTE: jwt.NewVerifier returns an error if the secret is nil so this is just a courtesy
+		//       thing to avoid a "jwt: key is nil" warning in the log when the HTTPD server has
+		//       been restarted and the browser does a refresh with a no longer valid session
+		//       cookie.
+		if secret == nil {
+			continue
+		}
+
 		verifier, err := jwt.NewVerifierHS(jwt.HS256, secret)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		token, err := jwt.ParseAndVerifyString(cookie, verifier)
 		if err != nil {
-			log.Printf("%-5v %-5v Invalid token (%v)", "WARN", "AUTH", err)
 			continue
 		}
 
 		if err := verifier.Verify(token.Payload(), token.Signature()); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
-		return token, nil
+		return token, ix + 1, nil
 	}
 
-	return nil, fmt.Errorf("Invalid cookie")
+	return nil, 0, fmt.Errorf("JWT signature is not valid")
 }
 
 func genKey() ([]byte, error) {

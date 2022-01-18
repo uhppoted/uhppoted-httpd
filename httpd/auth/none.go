@@ -22,8 +22,8 @@ func (n *None) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie,
 	return nil, nil
 }
 
-func (n *None) Authenticated(cookie *http.Cookie) (string, string, error) {
-	return "-", "-", nil
+func (n *None) Authenticated(cookie *http.Cookie) (string, string, *http.Cookie, error) {
+	return "-", "-", nil, nil
 }
 
 func (n *None) Authorised(uid, role, path string) error {

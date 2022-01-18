@@ -110,7 +110,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ... require authorisation for all other files
-	uid, role, authenticated := d.authenticated(r)
+	uid, role, authenticated := d.authenticated(r, w)
 	if !authenticated {
 		d.unauthenticated(r, w)
 		return
@@ -209,7 +209,7 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 	}
 
 	// ... authenticated and authorised?
-	uid, role, ok := d.authenticated(r)
+	uid, role, ok := d.authenticated(r, w)
 	if !ok {
 		d.unauthenticated(r, w)
 		return

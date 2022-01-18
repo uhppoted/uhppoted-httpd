@@ -65,7 +65,7 @@ func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie
 
 	var sessionId = uuid.New()
 
-	if token, err := b.auth.Authorize(uid, pwd, sessionId); err != nil {
+	if token, err := b.auth.Authenticate(uid, pwd, sessionId); err != nil {
 		return nil, err
 	} else {
 		cookie := http.Cookie{
@@ -89,23 +89,37 @@ func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie
 	}
 }
 
-func (b *Basic) Authenticated(cookie *http.Cookie) (string, string, error) {
-	uid, role, sid, err := b.auth.Authenticated(cookie.Value)
+func (b *Basic) Authenticated(cookie *http.Cookie) (string, string, *http.Cookie, error) {
+	uid, role, sid, token, err := b.auth.Authenticated(cookie.Value)
 	if err != nil {
-		return "", "", err
+		return "", "", nil, err
 	}
 
 	if sid == nil {
-		return "", "", fmt.Errorf("Invalid session ID (%v)", sid)
+		return "", "", nil, fmt.Errorf("Invalid session ID (%v)", sid)
 	} else if session, ok := b.sessions[*sid]; !ok {
-		return "", "", fmt.Errorf("No extant session for session ID '%v'", *sid)
+		return "", "", nil, fmt.Errorf("No extant session for session ID '%v'", *sid)
 	} else if session == nil {
-		return "", "", fmt.Errorf("No extant session for request")
+		return "", "", nil, fmt.Errorf("No extant session for request")
 	} else {
 		session.touched = time.Now()
 	}
 
-	return uid, role, nil
+	if token != "" {
+		cookie := http.Cookie{
+			Name:     SessionCookie,
+			Value:    token,
+			Path:     "/",
+			MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+			//	Secure:   true,
+		}
+
+		return uid, role, &cookie, nil
+	}
+
+	return uid, role, nil, nil
 }
 
 func (b *Basic) Authorised(uid, role, path string) error {

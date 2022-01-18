@@ -29,10 +29,10 @@ func (r RuleSet) String() string {
 
 type IAuth interface {
 	Preauthenticate(loginId uuid.UUID) (string, error)
-	Authorize(uid, pwd string, sessionId uuid.UUID) (string, error)
+	Authenticate(uid, pwd string, sessionId uuid.UUID) (string, error)
 	Validate(uid, pwd string) error
 	Verify(tokenType TokenType, token string) (*uuid.UUID, error)
-	Authenticated(token string) (string, string, *uuid.UUID, error)
+	Authenticated(token string) (string, string, *uuid.UUID, string, error)
 	Authorised(uid, role, resource string) error
 
 	Store(uid, pwd, role string) error

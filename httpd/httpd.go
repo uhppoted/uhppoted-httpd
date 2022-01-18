@@ -192,17 +192,21 @@ func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (d *dispatcher) authenticated(r *http.Request) (string, string, bool) {
+func (d *dispatcher) authenticated(r *http.Request, w http.ResponseWriter) (string, string, bool) {
 	cookie, err := r.Cookie(auth.SessionCookie)
 	if err != nil {
 		warn(fmt.Errorf("No session cookie in request"))
 		return "", "", false
 	}
 
-	uid, role, err := d.auth.Authenticated(cookie)
+	uid, role, cookie2, err := d.auth.Authenticated(cookie)
 	if err != nil {
 		warn(err)
 		return "", "", false
+	}
+
+	if cookie2 != nil {
+		http.SetCookie(w, cookie2)
 	}
 
 	return uid, role, true

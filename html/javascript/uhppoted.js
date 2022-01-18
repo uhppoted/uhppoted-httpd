@@ -22,6 +22,10 @@ export function setRefresh (f) {
   refreshTimer = setInterval(f, 15000)
 }
 
+export function onIdle () {
+  onSignOut()
+}
+
 export function onMenu (event, show) {
   if (show) {
     document.querySelector('#user div.menu').style.display = 'block'
@@ -191,10 +195,6 @@ export async function postAsJSON (url = '', data = {}) {
       connected(false)
       throw err
     })
-}
-
-export function onIdle () {
-  onSignOut()
 }
 
 export function resetIdle () {
