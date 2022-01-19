@@ -9,7 +9,7 @@
 
 - [ ] Auth
       - [x] Move static file handling out of httpd.get
-      - [ ] Separate handlers for GET login/unauthorised/etc
+      - [x] Separate handlers for GET login/unauthorised/etc
       - [ ] Separate handlers for GET /<data>
       - [ ] Unit test httpdFileSystem for
             - dot file hiding

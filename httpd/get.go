@@ -54,32 +54,9 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 
 	// ... parse headers, etc
 	file := filepath.Clean(filepath.Join(d.root, path[1:]))
-	acceptsGzip := false
+	acceptsGzip := parseHeader(r)
 	context := map[string]interface{}{
-		"Theme": "default",
-	}
-
-	for k, h := range r.Header {
-		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
-			for _, v := range h {
-				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
-					acceptsGzip = true
-				}
-			}
-		}
-	}
-
-	if cookie, err := r.Cookie(SettingsCookie); err == nil {
-		re := regexp.MustCompile("(.*?):(.+)")
-		tokens := strings.Split(cookie.Value, ",")
-		for _, token := range tokens {
-			match := re.FindStringSubmatch(token)
-			if len(match) > 2 {
-				if strings.TrimSpace(match[1]) == "theme" {
-					context["Theme"] = strings.TrimSpace(match[2])
-				}
-			}
-		}
+		"Theme": parseSettings(r),
 	}
 
 	// ... GET login.html, unauthorized.html
@@ -111,6 +88,25 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Error(w, fmt.Sprintf("No resource matching %v", r.URL.Path), http.StatusNotFound)
+}
+
+func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
+	// ... parse headers, etc
+	acceptsGzip := parseHeader(r)
+	context := map[string]interface{}{
+		"Theme": parseSettings(r),
+	}
+
+	// ... normalise path
+	path, err := resolve(r.URL)
+	if err != nil {
+		http.Error(w, "invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	file := filepath.Clean(filepath.Join(d.root, path[1:]))
+
+	d.translate(file, context, w, acceptsGzip)
 }
 
 func (d *dispatcher) translate(filename string, context map[string]interface{}, w http.ResponseWriter, acceptsGzip bool) {
@@ -190,6 +186,8 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 		return
 	}
 
+	acceptsGzip := parseHeader(r)
+
 	// ... authenticated and authorised?
 	uid, role, ok := d.authenticated(r, w)
 	if !ok {
@@ -211,19 +209,6 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 	}
 
 	auth := auth.NewAuthorizator(uid, role)
-
-	// ... parse header
-	acceptsGzip := false
-
-	for k, h := range r.Header {
-		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
-			for _, v := range h {
-				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
-					acceptsGzip = true
-				}
-			}
-		}
-	}
 
 	// ... ok
 	ctx, cancel := context.WithTimeout(d.context, d.timeout)
@@ -262,4 +247,39 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 	} else {
 		w.Write(b)
 	}
+}
+
+func parseHeader(r *http.Request) bool {
+	acceptsGzip := false
+
+	for k, h := range r.Header {
+		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
+			for _, v := range h {
+				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
+					acceptsGzip = true
+				}
+			}
+		}
+	}
+
+	return acceptsGzip
+}
+
+func parseSettings(r *http.Request) string {
+	theme := "default"
+
+	if cookie, err := r.Cookie(SettingsCookie); err == nil {
+		re := regexp.MustCompile("(.*?):(.+)")
+		tokens := strings.Split(cookie.Value, ",")
+		for _, token := range tokens {
+			match := re.FindStringSubmatch(token)
+			if len(match) > 2 {
+				if strings.TrimSpace(match[1]) == "theme" {
+					theme = strings.TrimSpace(match[2])
+				}
+			}
+		}
+	}
+
+	return theme
 }
