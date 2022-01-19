@@ -21,22 +21,12 @@ import (
 const GZIP_MINIMUM = 16384
 
 func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
-	// ... normalise path
 	path, err := resolve(r.URL)
 	if err != nil {
 		http.Error(w, "invalid URL", http.StatusBadRequest)
 		return
 	}
 
-	if path == "/" {
-		path = "/index.html"
-	}
-
-	if !strings.HasPrefix(path, "/") {
-		path = "/" + path
-	}
-
-	// ... GET <data>
 	switch path {
 	case "/interfaces",
 		"/controllers",
@@ -52,42 +42,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ... parse headers, etc
-	file := filepath.Clean(filepath.Join(d.root, path[1:]))
-	acceptsGzip := parseHeader(r)
-	context := map[string]interface{}{
-		"Theme": parseSettings(r),
-	}
-
-	// ... GET login.html, unauthorized.html
-	files := []string{"/login.html", "/unauthorized.html"}
-	for _, f := range files {
-		if path == f {
-			d.translate(file, context, w, acceptsGzip)
-			return
-		}
-	}
-
-	// ... require authorisation for all other files
-	uid, role, authenticated := d.authenticated(r, w)
-	if !authenticated {
-		d.unauthenticated(r, w)
-		return
-	}
-
-	if ok := d.authorised(uid, role, path); !ok {
-		d.unauthorised(r, w)
-		return
-	}
-
-	context["User"] = uid
-
-	if strings.HasSuffix(path, ".html") {
-		d.translate(file, context, w, acceptsGzip)
-		return
-	}
-
-	http.Error(w, fmt.Sprintf("No resource matching %v", r.URL.Path), http.StatusNotFound)
+	d.getWithAuth(w, r)
 }
 
 func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
@@ -105,6 +60,50 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	file := filepath.Clean(filepath.Join(d.root, path[1:]))
+
+	d.translate(file, context, w, acceptsGzip)
+}
+
+func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
+	// ... normalise path
+	path, err := resolve(r.URL)
+	if err != nil {
+		http.Error(w, "invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	if path == "/" {
+		path = "/index.html"
+	}
+
+	if !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+
+	if !strings.HasSuffix(path, ".html") {
+		http.Error(w, fmt.Sprintf("No resource matching %v", r.URL.Path), http.StatusNotFound)
+		return
+	}
+
+	// ... authenticated and authorized?
+	uid, role, authenticated := d.authenticated(r, w)
+	if !authenticated {
+		d.unauthenticated(r, w)
+		return
+	}
+
+	if ok := d.authorised(uid, role, path); !ok {
+		d.unauthorised(r, w)
+		return
+	}
+
+	// ... good to go
+	file := filepath.Clean(filepath.Join(d.root, path[1:]))
+	acceptsGzip := parseHeader(r)
+	context := map[string]interface{}{
+		"Theme": parseSettings(r),
+		"User":  uid,
+	}
 
 	d.translate(file, context, w, acceptsGzip)
 }

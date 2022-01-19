@@ -9,8 +9,10 @@
 
 - [ ] Auth
       - [x] Move static file handling out of httpd.get
-      - [x] Separate handlers for GET login/unauthorised/etc
-      - [ ] Separate handlers for GET /<data>
+      - [x] Separate handler for GET login/unauthorised/etc
+      - [x] Separate handler for GET *.html
+      - [ ] (?) Separate GET+POST+HEAD dispatcher for /<data>
+      - [ ] (?) Use ServeMux (for all the sanitization that comes with it)
       - [ ] Unit test httpdFileSystem for
             - dot file hiding
             - path escaping

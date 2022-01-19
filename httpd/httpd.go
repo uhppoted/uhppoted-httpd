@@ -132,6 +132,15 @@ func (h *HTTPD) Run() {
 	http.Handle("/manifest.json", http.FileServer(fs))
 	http.HandleFunc("/login.html", d.getNoAuth)
 	http.HandleFunc("/unauthorized.html", d.getNoAuth)
+	http.HandleFunc("/index.html", d.getWithAuth)
+	http.HandleFunc("/overview.html", d.getWithAuth)
+	http.HandleFunc("/controllers.html", d.getWithAuth)
+	http.HandleFunc("/password.html", d.getWithAuth)
+	http.HandleFunc("/doors.html", d.getWithAuth)
+	http.HandleFunc("/cards.html", d.getWithAuth)
+	http.HandleFunc("/groups.html", d.getWithAuth)
+	http.HandleFunc("/events.html", d.getWithAuth)
+	http.HandleFunc("/logs.html", d.getWithAuth)
 	http.Handle("/", &d)
 
 	if srv != nil {
