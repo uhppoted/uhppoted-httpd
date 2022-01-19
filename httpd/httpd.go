@@ -31,7 +31,6 @@ type HTTPD struct {
 
 type dispatcher struct {
 	root    string
-	fs      http.Handler
 	auth    auth.IAuth
 	context context.Context
 	timeout time.Duration
@@ -42,16 +41,11 @@ const (
 )
 
 func (h *HTTPD) Run() {
-	fs := httpdFileSystem{
-		FileSystem: http.Dir(h.Dir),
-	}
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	d := dispatcher{
 		root:    h.Dir,
-		fs:      http.FileServer(fs),
 		auth:    h.AuthProvider,
 		context: ctx,
 		timeout: h.RequestTimeout,
@@ -128,6 +122,14 @@ func (h *HTTPD) Run() {
 		close(shutdown)
 	}()
 
+	fs := httpdFileSystem{
+		FileSystem: http.Dir(h.Dir),
+	}
+
+	http.Handle("/css/", http.FileServer(fs))
+	http.Handle("/images/", http.FileServer(fs))
+	http.Handle("/javascript/", http.FileServer(fs))
+	http.Handle("/manifest.json", http.FileServer(fs))
 	http.Handle("/", &d)
 
 	if srv != nil {

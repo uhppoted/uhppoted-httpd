@@ -36,24 +36,6 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		path = "/" + path
 	}
 
-	// ... GET <ancillary files>
-	prefixes := []string{"/images/", "/css/", "/javascript/"}
-	files := []string{"/manifest.json"}
-
-	for _, p := range prefixes {
-		if strings.HasPrefix(path, p) {
-			d.fs.ServeHTTP(w, r)
-			return
-		}
-	}
-
-	for _, f := range files {
-		if path == f {
-			d.fs.ServeHTTP(w, r)
-			return
-		}
-	}
-
 	// ... GET <data>
 	switch path {
 	case "/interfaces",
@@ -101,7 +83,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ... GET login.html, unauthorized.html
-	files = []string{"/login.html", "/unauthorized.html"}
+	files := []string{"/login.html", "/unauthorized.html"}
 	for _, f := range files {
 		if path == f {
 			d.translate(file, context, w, acceptsGzip)
