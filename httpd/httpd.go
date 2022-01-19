@@ -130,6 +130,7 @@ func (h *HTTPD) Run() {
 	http.Handle("/images/", http.FileServer(fs))
 	http.Handle("/javascript/", http.FileServer(fs))
 	http.Handle("/manifest.json", http.FileServer(fs))
+
 	http.HandleFunc("/login.html", d.getNoAuth)
 	http.HandleFunc("/unauthorized.html", d.getNoAuth)
 	http.HandleFunc("/index.html", d.getWithAuth)
@@ -141,6 +142,7 @@ func (h *HTTPD) Run() {
 	http.HandleFunc("/groups.html", d.getWithAuth)
 	http.HandleFunc("/events.html", d.getWithAuth)
 	http.HandleFunc("/logs.html", d.getWithAuth)
+
 	http.Handle("/", &d)
 
 	if srv != nil {

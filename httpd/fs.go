@@ -15,7 +15,7 @@ type httpdFile struct {
 }
 
 func (f httpdFile) Readdir(n int) (fis []os.FileInfo, err error) {
-	return
+	return nil, os.ErrPermission
 }
 
 func (fs httpdFileSystem) Open(name string) (http.File, error) {
