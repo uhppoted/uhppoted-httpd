@@ -585,7 +585,7 @@ func (p *Local) sweep() {
 
 	for _, k := range list {
 		delete(p.sessions, k)
-		log.Printf("%-5v Deleted idle session v", "INFO", k)
+		log.Printf("%-5v Deleted idle session %v", "INFO", k)
 	}
 }
 

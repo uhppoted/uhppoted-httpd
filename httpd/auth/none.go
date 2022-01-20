@@ -40,6 +40,3 @@ func (n *None) SetPassword(uid, pwd, role string) error {
 
 func (n *None) Logout(cookie *http.Cookie) {
 }
-
-func (n *None) Sweep() {
-}

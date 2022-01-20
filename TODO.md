@@ -18,8 +18,8 @@
             - dot file hiding
             - path escaping
       - [ ] Remove auth.Basic session `sweep`
-            - [ ] Invalidate session ID in auth.Local on logout
-            - [ ] Remove session stuff from auth.Basic
+            - [x] Invalidate session ID in auth.Local on logout
+            - [x] Remove session stuff from auth.Basic
             - [ ] Keep session ID internal to auth.Local
             - [ ] Make auth.Local constants internal
 

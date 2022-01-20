@@ -163,7 +163,6 @@ func (h *HTTPD) Run() {
 		}()
 	}
 
-	ticker := time.NewTicker(5 * time.Second)
 	done := make(chan struct{})
 
 	go func() {
@@ -171,21 +170,13 @@ func (h *HTTPD) Run() {
 			select {
 			case <-done:
 				return
-
-			case <-ticker.C:
-				d.sweep()
 			}
 		}
 	}()
 
 	<-shutdown
 
-	ticker.Stop()
 	close(done)
-}
-
-func (d *dispatcher) sweep() {
-	d.auth.Sweep()
 }
 
 func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {

@@ -27,8 +27,6 @@ type IAuth interface {
 
 	Verify(uid, pwd string) error
 	SetPassword(uid, pwd, role string) error
-
-	Sweep()
 }
 
 func warn(err error) {
