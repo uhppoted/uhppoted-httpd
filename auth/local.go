@@ -35,6 +35,7 @@ type Local struct {
 	sessionExpiry time.Duration
 	file          string
 
+	logins   map[uuid.UUID]time.Time
 	sessions map[uuid.UUID]time.Time
 
 	guard sync.Mutex
@@ -76,6 +77,7 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 		loginExpiry:   1 * time.Minute,
 		sessionExpiry: 60 * time.Minute,
 		file:          file,
+		logins:        map[uuid.UUID]time.Time{},
 		sessions:      map[uuid.UUID]time.Time{},
 	}
 
@@ -160,6 +162,8 @@ func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
 		return "", err
 	}
 
+	p.logins[loginId] = time.Now()
+
 	return token.String(), nil
 }
 
@@ -240,7 +244,7 @@ func (p *Local) Validate(uid, pwd string) error {
 	return nil
 }
 
-func (p *Local) Invalidate(cookie string) error {
+func (p *Local) Invalidate(tokenType TokenType, cookie string) error {
 	token, _, err := p.getToken(cookie)
 	if err != nil {
 		return err
@@ -251,7 +255,13 @@ func (p *Local) Invalidate(cookie string) error {
 		return err
 	}
 
-	delete(p.sessions, claims.Session.SessionId)
+	switch tokenType {
+	case Login:
+		delete(p.logins, claims.Login.LoginId)
+
+	case Session:
+		delete(p.sessions, claims.Session.SessionId)
+	}
 
 	return nil
 }
@@ -285,65 +295,67 @@ func (p *Local) Store(uid, pwd, role string) error {
 	return nil
 }
 
-func (p *Local) Verify(tokenType TokenType, cookie string) (*uuid.UUID, error) {
+func (p *Local) Verify(tokenType TokenType, cookie string) error {
 	token, _, err := p.getToken(cookie)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	var claims claims
 	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
-		return nil, err
+		return err
 	}
 
 	if !claims.IsValidAt(time.Now()) {
-		return nil, fmt.Errorf("JWT token expired")
+		return fmt.Errorf("JWT token expired")
 	}
 
 	switch tokenType {
 	case Login:
 		if !claims.IsForAudience("login") {
-			return nil, fmt.Errorf("Invalid audience in JWT claims")
+			return fmt.Errorf("Invalid audience in JWT claims")
 		} else if claims.Login == nil {
-			return nil, fmt.Errorf("Invalid login token")
+			return fmt.Errorf("Invalid login token")
+		} else if _, ok := p.logins[claims.Login.LoginId]; !ok {
+			return fmt.Errorf("No extant login token for %v", claims.Login.LoginId)
 		} else {
-			return &claims.Login.LoginId, nil
+			return nil
 		}
 
 	case Session:
 		if !claims.IsForAudience("admin") {
-			return nil, fmt.Errorf("Invalid audience in JWT claims")
+			return fmt.Errorf("Invalid audience in JWT claims")
 		} else if claims.Session == nil {
-			return nil, fmt.Errorf("Invalid session token")
+			return fmt.Errorf("Invalid session token")
 		} else {
-			return &claims.Session.SessionId, nil
+			return nil
 		}
 	}
 
-	return nil, nil
+	return nil
 }
 
-func (p *Local) Authenticated(cookie string) (string, string, *uuid.UUID, string, error) {
+func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 	token, keyID, err := p.getToken(cookie)
 	if err != nil {
-		return "", "", nil, "", err
+		return "", "", "", err
 	}
 
 	var claims claims
 	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
-		return "", "", nil, "", err
+		return "", "", "", err
 	}
 
 	if !claims.IsForAudience("admin") {
-		return "", "", nil, "", fmt.Errorf("Invalid audience in JWT claims")
+		return "", "", "", fmt.Errorf("Invalid audience in JWT claims")
 	}
 
 	if !claims.IsValidAt(time.Now()) {
-		return "", "", nil, "", fmt.Errorf("JWT token expired")
+		return "", "", "", fmt.Errorf("JWT token expired")
 	}
 
 	if claims.Session == nil {
-		return "", "", nil, "", fmt.Errorf("Invalid session token")
+		return "", "", "", fmt.Errorf("Invalid session token")
 	}
 
 	if keyID > 1 {
@@ -351,15 +363,15 @@ func (p *Local) Authenticated(cookie string) (string, string, *uuid.UUID, string
 
 		signer, err := jwt.NewSignerHS(jwt.HS256, secret)
 		if err != nil {
-			return "", "", nil, "", err
+			return "", "", "", err
 		}
 
 		token2, err := jwt.NewBuilder(signer).Build(claims)
 		if err != nil {
-			return "", "", nil, "", err
+			return "", "", "", err
 		}
 
-		return claims.Session.LoggedInAs, claims.Session.Role, &claims.Session.SessionId, token2.String(), nil
+		return claims.Session.LoggedInAs, claims.Session.Role, token2.String(), nil
 	}
 
 	// .. extant session? i.e. not idle/logged out
@@ -370,14 +382,14 @@ func (p *Local) Authenticated(cookie string) (string, string, *uuid.UUID, string
 	defer p.guard.Unlock()
 
 	if touched, ok := p.sessions[sid]; !ok {
-		return "", "", nil, "", fmt.Errorf("No extant session for session ID '%v'", sid)
+		return "", "", "", fmt.Errorf("No extant session for session ID '%v'", sid)
 	} else if touched.Before(cutoff) {
-		return "", "", nil, "", fmt.Errorf("Session '%v' expired", sid)
+		return "", "", "", fmt.Errorf("Session '%v' expired", sid)
 	} else {
 		p.sessions[sid] = time.Now()
 	}
 
-	return claims.Session.LoggedInAs, claims.Session.Role, &claims.Session.SessionId, "", nil
+	return claims.Session.LoggedInAs, claims.Session.Role, "", nil
 }
 
 func (p *Local) Authorised(uid, role, resource string) error {
@@ -575,17 +587,35 @@ func (p *Local) sweep() {
 	defer p.guard.Unlock()
 
 	cutoff := time.Now().Add(-2 * IDLETIME)
-	list := []uuid.UUID{}
 
-	for k, touched := range p.sessions {
-		if touched.Before(cutoff) {
-			list = append(list, k)
+    // ... logins
+	{
+		list := []uuid.UUID{}
+		for k, touched := range p.logins {
+			if touched.Before(cutoff) {
+				list = append(list, k)
+			}
+		}
+
+		for _, k := range list {
+			delete(p.logins, k)
+			log.Printf("%-5v Deleted idle login %v", "INFO", k)
 		}
 	}
 
-	for _, k := range list {
-		delete(p.sessions, k)
-		log.Printf("%-5v Deleted idle session %v", "INFO", k)
+    // ... sessions
+	{
+		list := []uuid.UUID{}
+		for k, touched := range p.sessions {
+			if touched.Before(cutoff) {
+				list = append(list, k)
+			}
+		}
+
+		for _, k := range list {
+			delete(p.sessions, k)
+			log.Printf("%-5v Deleted idle session %v", "INFO", k)
+		}
 	}
 }
 

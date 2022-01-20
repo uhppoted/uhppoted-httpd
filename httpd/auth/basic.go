@@ -53,9 +53,15 @@ func (b *Basic) Preauthenticate() (*http.Cookie, error) {
 // NOTE TO SELF: the uhppoted-httpd-login cookie is a single use expiring cookie
 //               intended to (eventually) support opaque login credentials
 func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie, error) {
-	if err := b.validateLoginCookie(cookie); err != nil {
+	if cookie == nil {
+		return nil, fmt.Errorf("Invalid login cookie")
+	}
+
+	if err := b.auth.Verify(auth.Login, cookie.Value); err != nil {
 		return nil, err
 	}
+
+	b.auth.Invalidate(auth.Login, cookie.Value)
 
 	var sessionId = uuid.New()
 
@@ -77,7 +83,7 @@ func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie
 }
 
 func (b *Basic) Authenticated(cookie *http.Cookie) (string, string, *http.Cookie, error) {
-	uid, role, _, token, err := b.auth.Authenticated(cookie.Value)
+	uid, role, token, err := b.auth.Authenticated(cookie.Value)
 	if err != nil {
 		return "", "", nil, err
 	}
@@ -116,24 +122,7 @@ func (b *Basic) SetPassword(uid, pwd, role string) error {
 }
 
 func (b *Basic) Logout(cookie *http.Cookie) {
-	if err := b.auth.Invalidate(cookie.Value); err != nil {
+	if err := b.auth.Invalidate(auth.Session, cookie.Value); err != nil {
 		warn(err)
 	}
-}
-
-func (b *Basic) validateLoginCookie(cookie *http.Cookie) error {
-	if cookie == nil {
-		return fmt.Errorf("Invalid login cookie")
-	}
-
-	lid, err := b.auth.Verify(auth.Login, cookie.Value)
-	if err != nil {
-		return err
-	}
-
-	if lid == nil {
-		return fmt.Errorf("Invalid login ID (%v)", lid)
-	}
-
-	return nil
 }

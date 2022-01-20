@@ -31,10 +31,10 @@ type IAuth interface {
 	Preauthenticate(loginId uuid.UUID) (string, error)
 	Authenticate(uid, pwd string, sessionId uuid.UUID) (string, error)
 	Validate(uid, pwd string) error
-	Verify(tokenType TokenType, token string) (*uuid.UUID, error)
-	Authenticated(token string) (string, string, *uuid.UUID, string, error)
+	Verify(tokenType TokenType, token string) error
+	Authenticated(token string) (string, string, string, error)
 	Authorised(uid, role, resource string) error
-	Invalidate(token string) error
+	Invalidate(tokenType TokenType, token string) error
 
 	Store(uid, pwd, role string) error
 	Save() error

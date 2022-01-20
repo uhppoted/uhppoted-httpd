@@ -20,8 +20,10 @@
       - [ ] Remove auth.Basic session `sweep`
             - [x] Invalidate session ID in auth.Local on logout
             - [x] Remove session stuff from auth.Basic
-            - [ ] Keep session ID internal to auth.Local
+            - [ ] Make login ID and session ID entirely internal to auth.Local
             - [ ] Make auth.Local constants internal
+            - [ ] Move token type into claims
+            - [ ] Unify login and session maps
 
       - [x] Regenerate session keys every N minutes
             - [x] Replace fixed serialized key with generated key
@@ -29,7 +31,7 @@
             - [x] Replace single key with key list
             - [x] Verify/Authenticated with every key in list
             - [x] Refresh session cookie when necessary
-            - [x] Spurious _jwt: key is nil_ warnig because SessionCookie not valid after a restart
+            - [x] Spurious _jwt: key is nil_ warning because SessionCookie not valid after a restart
       - [x] Rework auth.Local.claims to use JSON encoded login and session fields
       - [x] Clean up GET
       - [x] Clean up auth.Local
