@@ -34,6 +34,7 @@ type IAuth interface {
 	Verify(tokenType TokenType, token string) (*uuid.UUID, error)
 	Authenticated(token string) (string, string, *uuid.UUID, string, error)
 	Authorised(uid, role, resource string) error
+	Invalidate(token string) error
 
 	Store(uid, pwd, role string) error
 	Save() error

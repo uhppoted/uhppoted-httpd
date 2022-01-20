@@ -7,17 +7,21 @@
 
 - [ ] Restyle highlighted fields in _dark_ mode (e.g. after editing controller name)
 
-- [ ] Auth
+- [ ] Clean up HTTP server
       - [x] Move static file handling out of httpd.get
       - [x] Separate handler for GET login/unauthorised/etc
       - [x] Separate handler for GET *.html
       - [ ] (?) Separate GET+POST+HEAD dispatcher for /<data>
       - [ ] (?) Use ServeMux (for all the sanitization that comes with it)
+      - [ ] Update httpdFileSystem to use FS 
       - [ ] Unit test httpdFileSystem for
             - dot file hiding
             - path escaping
-      - [ ] (?) Replace auth.Basic `sweep` with inline check on touched
-            - (??) still need to sweep logins though
+      - [ ] Remove auth.Basic session `sweep`
+            - [ ] Invalidate session ID in auth.Local on logout
+            - [ ] Remove session stuff from auth.Basic
+            - [ ] Keep session ID internal to auth.Local
+            - [ ] Make auth.Local constants internal
 
       - [x] Regenerate session keys every N minutes
             - [x] Replace fixed serialized key with generated key

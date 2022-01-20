@@ -19,9 +19,12 @@ import (
 	"github.com/google/uuid"
 )
 
-const KEYS = 2        // Number of historical session secrets
-const KEY_LENGTH = 32 // 256 bits
-const SALT_LENGTH = 32
+const KEYS = 2                    // Number of historical session secrets
+const KEY_LENGTH = 32             // 256 bits
+const SALT_LENGTH = 32            // 256 bits
+var REGENERATE = 15 * time.Minute // Interval at which the internal secret keys are regenerated
+var IDLETIME = 10 * time.Minute   // Interval after which an untouched session is marked 'idle'
+var SWEEP = 60 * time.Second      // Interval at which the session list is 'swept'
 
 type Local struct {
 	keys      [][]byte
@@ -31,6 +34,8 @@ type Local struct {
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
 	file          string
+
+	sessions map[uuid.UUID]time.Time
 
 	guard sync.Mutex
 }
@@ -71,6 +76,7 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 		loginExpiry:   1 * time.Minute,
 		sessionExpiry: 60 * time.Minute,
 		file:          file,
+		sessions:      map[uuid.UUID]time.Time{},
 	}
 
 	if err := provider.load(file); err != nil {
@@ -97,12 +103,20 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 
 	provider.watch(file)
 
-	tick := time.Tick(15 * time.Minute)
+	regen := time.Tick(REGENERATE)
+	sweep := time.Tick(SWEEP)
 	go func() {
 		for {
 			select {
-			case <-tick:
-				provider.regenerate()
+			case <-regen:
+				go func() {
+					provider.regenerate()
+				}()
+
+			case <-sweep:
+				go func() {
+					provider.sweep()
+				}()
 			}
 		}
 	}()
@@ -199,6 +213,8 @@ func (p *Local) Authenticate(uid, pwd string, sessionId uuid.UUID) (string, erro
 		return "", err
 	}
 
+	p.sessions[sessionId] = time.Now()
+
 	return token.String(), nil
 }
 
@@ -220,6 +236,22 @@ func (p *Local) Validate(uid, pwd string) error {
 	if hash != u.Password {
 		return fmt.Errorf("invalid user ID or password")
 	}
+
+	return nil
+}
+
+func (p *Local) Invalidate(cookie string) error {
+	token, _, err := p.getToken(cookie)
+	if err != nil {
+		return err
+	}
+
+	var claims claims
+	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
+		return err
+	}
+
+	delete(p.sessions, claims.Session.SessionId)
 
 	return nil
 }
@@ -328,6 +360,21 @@ func (p *Local) Authenticated(cookie string) (string, string, *uuid.UUID, string
 		}
 
 		return claims.Session.LoggedInAs, claims.Session.Role, &claims.Session.SessionId, token2.String(), nil
+	}
+
+	// .. extant session? i.e. not idle/logged out
+	sid := claims.Session.SessionId
+	cutoff := time.Now().Add(-IDLETIME)
+
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	if touched, ok := p.sessions[sid]; !ok {
+		return "", "", nil, "", fmt.Errorf("No extant session for session ID '%v'", sid)
+	} else if touched.Before(cutoff) {
+		return "", "", nil, "", fmt.Errorf("Session '%v' expired", sid)
+	} else {
+		p.sessions[sid] = time.Now()
 	}
 
 	return claims.Session.LoggedInAs, claims.Session.Role, &claims.Session.SessionId, "", nil
@@ -493,16 +540,6 @@ func (p *Local) getToken(cookie string) (*jwt.Token, int, error) {
 	return nil, 0, fmt.Errorf("JWT signature is not valid")
 }
 
-func genKey() ([]byte, error) {
-	key := make([]byte, KEY_LENGTH)
-
-	if _, err := io.ReadFull(rand.Reader, key); err != nil {
-		return nil, err
-	}
-
-	return key, nil
-}
-
 func (p *Local) copyKey() []byte {
 	p.guard.Lock()
 	defer p.guard.Unlock()
@@ -531,6 +568,35 @@ func (p *Local) regenerate() {
 	p.keys[0] = key
 
 	log.Printf("%-5v Regenerated session secret", "INFO")
+}
+
+func (p *Local) sweep() {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	cutoff := time.Now().Add(-2 * IDLETIME)
+	list := []uuid.UUID{}
+
+	for k, touched := range p.sessions {
+		if touched.Before(cutoff) {
+			list = append(list, k)
+		}
+	}
+
+	for _, k := range list {
+		delete(p.sessions, k)
+		log.Printf("%-5v Deleted idle session v", "INFO", k)
+	}
+}
+
+func genKey() ([]byte, error) {
+	key := make([]byte, KEY_LENGTH)
+
+	if _, err := io.ReadFull(rand.Reader, key); err != nil {
+		return nil, err
+	}
+
+	return key, nil
 }
 
 func (s *salt) MarshalJSON() ([]byte, error) {

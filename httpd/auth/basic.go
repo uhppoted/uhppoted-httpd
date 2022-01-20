@@ -10,6 +10,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 )
 
+const (
+	LoginCookie   = "uhppoted-httpd-login"
+	SessionCookie = "uhppoted-httpd-session"
+)
+
 type Basic struct {
 	auth         auth.IAuth
 	cookieMaxAge int
@@ -81,8 +86,6 @@ func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie
 		b.sessions[sessionId] = &session{
 			id:      sessionId,
 			touched: time.Now(),
-
-			User: uid,
 		}
 
 		return &cookie, nil
@@ -98,7 +101,7 @@ func (b *Basic) Authenticated(cookie *http.Cookie) (string, string, *http.Cookie
 	if sid == nil {
 		return "", "", nil, fmt.Errorf("Invalid session ID (%v)", sid)
 	} else if session, ok := b.sessions[*sid]; !ok {
-		return "", "", nil, fmt.Errorf("No extant session for session ID '%v'", *sid)
+		return "", "", nil, fmt.Errorf(">>>>> DEBUG/1 No extant session for session ID '%v'", *sid)
 	} else if session == nil {
 		return "", "", nil, fmt.Errorf("No extant session for request")
 	} else {
@@ -139,6 +142,10 @@ func (b *Basic) SetPassword(uid, pwd, role string) error {
 }
 
 func (b *Basic) Logout(cookie *http.Cookie) {
+	if err := b.auth.Invalidate(cookie.Value); err != nil {
+		warn(err)
+	}
+
 	if s, _ := b.session(cookie); s != nil {
 		delete(b.sessions, s.id)
 	}
@@ -201,7 +208,7 @@ func (b *Basic) session(cookie *http.Cookie) (*session, error) {
 
 	s, ok := b.sessions[*sid]
 	if !ok {
-		return nil, fmt.Errorf("No extant session for session ID '%v'", *sid)
+		return nil, fmt.Errorf(">>>>> DEBUG/2 No extant session for session ID '%v'", *sid)
 	}
 
 	return s, nil
