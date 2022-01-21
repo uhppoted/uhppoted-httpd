@@ -49,3 +49,13 @@ $content-table-rollback: darken($solarize-red, 10%);
 
 $content-svg-filter-commit:   none;
 $content-svg-filter-rollback: none;
+
+input::selection {
+  background: $solarize-base2;
+}
+
+input::-moz-selection { 
+  background: $solarize-base2;
+}
+
+

@@ -5,7 +5,7 @@
             - (?) Maybe make Uint32 i.e. 0 is ""
       - [ ] Remove LAN.store
 
-- [ ] Restyle highlighted fields in _dark_ mode (e.g. after editing controller name)
+- [x] Restyle highlighted fields in _dark_ mode (e.g. after editing controller name)
 
 - [ ] Clean up HTTP server
       - [ ] (?) Separate GET+POST+HEAD dispatcher for /<data>
