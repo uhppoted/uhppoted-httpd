@@ -23,7 +23,7 @@ export function setRefresh (f) {
 }
 
 export function onIdle () {
-  // onSignOut()
+  onSignOut()
 }
 
 export function onMenu (event, show) {

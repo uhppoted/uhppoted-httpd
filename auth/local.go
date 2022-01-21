@@ -126,7 +126,7 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 	return &provider, nil
 }
 
-func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
+func (p *Local) Preauthenticate() (string, error) {
 	secret := p.copyKey()
 	expiry := p.loginExpiry
 
@@ -136,6 +136,11 @@ func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
 	}
 
 	UUID, err := uuid.NewUUID()
+	if err != nil {
+		return "", err
+	}
+
+	loginId, err := uuid.NewUUID()
 	if err != nil {
 		return "", err
 	}
@@ -167,7 +172,7 @@ func (p *Local) Preauthenticate(loginId uuid.UUID) (string, error) {
 	return token.String(), nil
 }
 
-func (p *Local) Authenticate(uid, pwd string, sessionId uuid.UUID) (string, error) {
+func (p *Local) Authenticate(uid, pwd string) (string, error) {
 	p.guard.Lock()
 	users := p.users
 	expiry := p.sessionExpiry
@@ -195,6 +200,11 @@ func (p *Local) Authenticate(uid, pwd string, sessionId uuid.UUID) (string, erro
 	}
 
 	UUID, err := uuid.NewUUID()
+	if err != nil {
+		return "", err
+	}
+
+	sessionId, err := uuid.NewUUID()
 	if err != nil {
 		return "", err
 	}
@@ -588,7 +598,7 @@ func (p *Local) sweep() {
 
 	cutoff := time.Now().Add(-2 * IDLETIME)
 
-    // ... logins
+	// ... logins
 	{
 		list := []uuid.UUID{}
 		for k, touched := range p.logins {
@@ -603,7 +613,7 @@ func (p *Local) sweep() {
 		}
 	}
 
-    // ... sessions
+	// ... sessions
 	{
 		list := []uuid.UUID{}
 		for k, touched := range p.sessions {

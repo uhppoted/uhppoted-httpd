@@ -1,8 +1,6 @@
 package auth
 
-import (
-	"github.com/google/uuid"
-)
+import ()
 
 type TokenType int
 
@@ -28,8 +26,8 @@ func (r RuleSet) String() string {
 }
 
 type IAuth interface {
-	Preauthenticate(loginId uuid.UUID) (string, error)
-	Authenticate(uid, pwd string, sessionId uuid.UUID) (string, error)
+	Preauthenticate() (string, error)
+	Authenticate(uid, pwd string) (string, error)
 	Validate(uid, pwd string) error
 	Verify(tokenType TokenType, token string) error
 	Authenticated(token string) (string, string, string, error)

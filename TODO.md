@@ -20,10 +20,11 @@
       - [ ] Remove auth.Basic session `sweep`
             - [x] Invalidate session ID in auth.Local on logout
             - [x] Remove session stuff from auth.Basic
-            - [ ] Make login ID and session ID entirely internal to auth.Local
-            - [ ] Make auth.Local constants internal
+            - [x] Remove 'stale time' from HTTPD config
+            - [x] Make login ID and session ID entirely internal to auth.Local
             - [ ] Move token type into claims
             - [ ] Unify login and session maps
+            - [ ] Make auth.Local constants internal
 
       - [x] Regenerate session keys every N minutes
             - [x] Replace fixed serialized key with generated key

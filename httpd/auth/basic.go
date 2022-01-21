@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/uhppoted/uhppoted-httpd/auth"
 )
 
@@ -30,9 +28,8 @@ func NewBasicAuthenticator(auth auth.IAuth, cookieMaxAge int) *Basic {
 }
 
 func (b *Basic) Preauthenticate() (*http.Cookie, error) {
-	loginId := uuid.New()
 
-	token, err := b.auth.Preauthenticate(loginId)
+	token, err := b.auth.Preauthenticate()
 	if err != nil {
 		return nil, err
 	}
@@ -63,9 +60,7 @@ func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie
 
 	b.auth.Invalidate(auth.Login, cookie.Value)
 
-	var sessionId = uuid.New()
-
-	if token, err := b.auth.Authenticate(uid, pwd, sessionId); err != nil {
+	if token, err := b.auth.Authenticate(uid, pwd); err != nil {
 		return nil, err
 	} else {
 		cookie := http.Cookie{
