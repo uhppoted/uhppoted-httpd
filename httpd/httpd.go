@@ -122,8 +122,8 @@ func (h *HTTPD) Run() {
 		close(shutdown)
 	}()
 
-	fs := httpdFileSystem{
-		FileSystem: http.Dir(h.Dir),
+	fs := filesystem{
+		http.Dir(h.Dir),
 	}
 
 	http.Handle("/css/", http.FileServer(fs))

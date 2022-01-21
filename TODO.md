@@ -8,16 +8,13 @@
 - [ ] Restyle highlighted fields in _dark_ mode (e.g. after editing controller name)
 
 - [ ] Clean up HTTP server
+      - [ ] (?) Separate GET+POST+HEAD dispatcher for /<data>
+      - [ ] (?) Use ServeMux (for all the sanitization that comes with it)
+
       - [x] Move static file handling out of httpd.get
       - [x] Separate handler for GET login/unauthorised/etc
       - [x] Separate handler for GET *.html
-      - [ ] Update httpdFileSystem to use FS 
-      - [ ] (?) Separate GET+POST+HEAD dispatcher for /<data>
-      - [ ] (?) Use ServeMux (for all the sanitization that comes with it)
-      - [ ] Unit test httpdFileSystem for
-            - dot file hiding
-            - path escaping
-
+      - [x] Unit test httpd.filesystem
       - [x] Remove auth.Basic session `sweep`
             - [x] Invalidate session ID in auth.Local on logout
             - [x] Remove session stuff from auth.Basic

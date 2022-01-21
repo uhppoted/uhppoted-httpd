@@ -6,19 +6,11 @@ import (
 	"strings"
 )
 
-type httpdFileSystem struct {
+type filesystem struct {
 	http.FileSystem
 }
 
-type httpdFile struct {
-	http.File
-}
-
-func (f httpdFile) Readdir(n int) (fis []os.FileInfo, err error) {
-	return nil, os.ErrPermission
-}
-
-func (fs httpdFileSystem) Open(name string) (http.File, error) {
+func (fs filesystem) Open(name string) (http.File, error) {
 	parts := strings.Split(name, "/")
 	for _, part := range parts {
 		if strings.HasPrefix(part, ".") {
@@ -26,10 +18,18 @@ func (fs httpdFileSystem) Open(name string) (http.File, error) {
 		}
 	}
 
-	file, err := fs.FileSystem.Open(name)
+	f, err := fs.FileSystem.Open(name)
 	if err != nil {
 		return nil, err
 	}
 
-	return httpdFile{file}, err
+	return file{f}, err
+}
+
+type file struct {
+	http.File
+}
+
+func (f file) Readdir(N int) (fis []os.FileInfo, err error) {
+	return nil, os.ErrPermission
 }
