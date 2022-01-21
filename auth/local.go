@@ -19,12 +19,22 @@ import (
 	"github.com/google/uuid"
 )
 
-const KEYS = 2                    // Number of historical session secrets
-const KEY_LENGTH = 32             // 256 bits
-const SALT_LENGTH = 32            // 256 bits
-var REGENERATE = 15 * time.Minute // Interval at which the internal secret keys are regenerated
-var IDLETIME = 10 * time.Minute   // Interval after which an untouched session is marked 'idle'
-var SWEEP = 60 * time.Second      // Interval at which the session list is 'swept'
+var constants = struct {
+	KEYS        int           // Number of historical session secrets
+	KEY_LENGTH  int           // bytes
+	SALT_LENGTH int           // bytes
+	REGENERATE  time.Duration // Interval at which the internal secret keys are regenerated
+	IDLETIME    time.Duration // Interval after which an untouched session is marked 'idle'
+	SWEEP       time.Duration // Interval at which the session list is 'swept'
+
+}{
+	KEYS:        2,                // 2 historical session secrets
+	KEY_LENGTH:  256 / 8,          // 256 bits
+	SALT_LENGTH: 256 / 8,          // 256 bits
+	REGENERATE:  15 * time.Minute, // Regenerate secret keys at 15 minute intervals
+	IDLETIME:    1 * time.Minute,  // Mark untouched sessions and logins as idle after 10 minutes
+	SWEEP:       60 * time.Second, // Sweep session and login caches every minute
+}
 
 type Local struct {
 	keys      [][]byte
@@ -73,7 +83,7 @@ type resource struct {
 
 func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
 	provider := Local{
-		keys:          make([][]byte, KEYS),
+		keys:          make([][]byte, constants.KEYS),
 		loginExpiry:   1 * time.Minute,
 		sessionExpiry: 60 * time.Minute,
 		file:          file,
@@ -105,8 +115,8 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 
 	provider.watch(file)
 
-	regen := time.Tick(REGENERATE)
-	sweep := time.Tick(SWEEP)
+	regen := time.Tick(constants.REGENERATE)
+	sweep := time.Tick(constants.SWEEP)
 	go func() {
 		for {
 			select {
@@ -145,7 +155,7 @@ func (p *Local) Preauthenticate() (string, error) {
 		return "", err
 	}
 
-	salt := make([]byte, SALT_LENGTH)
+	salt := make([]byte, constants.SALT_LENGTH)
 	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
 		return "", err
 	}
@@ -255,23 +265,23 @@ func (p *Local) Validate(uid, pwd string) error {
 }
 
 func (p *Local) Invalidate(tokenType TokenType, cookie string) error {
-	token, _, err := p.getToken(cookie)
-	if err != nil {
-		return err
-	}
-
-	var claims claims
-	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
-		return err
-	}
-
-	switch tokenType {
-	case Login:
-		delete(p.logins, claims.Login.LoginId)
-
-	case Session:
-		delete(p.sessions, claims.Session.SessionId)
-	}
+	//	token, _, err := p.getToken(cookie)
+	//	if err != nil {
+	//		return err
+	//	}
+	//
+	//	var claims claims
+	//	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
+	//		return err
+	//	}
+	//
+	//	switch tokenType {
+	//	case Login:
+	//		delete(p.logins, claims.Login.LoginId)
+	//
+	//	case Session:
+	//		delete(p.sessions, claims.Session.SessionId)
+	//	}
 
 	return nil
 }
@@ -328,6 +338,8 @@ func (p *Local) Verify(tokenType TokenType, cookie string) error {
 			return fmt.Errorf("Invalid login token")
 		} else if _, ok := p.logins[claims.Login.LoginId]; !ok {
 			return fmt.Errorf("No extant login token for %v", claims.Login.LoginId)
+		} else if err := p.extant(Login, claims.Login.LoginId); err != nil {
+			return err
 		} else {
 			return nil
 		}
@@ -337,6 +349,8 @@ func (p *Local) Verify(tokenType TokenType, cookie string) error {
 			return fmt.Errorf("Invalid audience in JWT claims")
 		} else if claims.Session == nil {
 			return fmt.Errorf("Invalid session token")
+		} else if err := p.extant(Session, claims.Session.SessionId); err != nil {
+			return err
 		} else {
 			return nil
 		}
@@ -368,38 +382,29 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 		return "", "", "", fmt.Errorf("Invalid session token")
 	}
 
-	if keyID > 1 {
-		secret := p.copyKey()
-
-		signer, err := jwt.NewSignerHS(jwt.HS256, secret)
-		if err != nil {
-			return "", "", "", err
-		}
-
-		token2, err := jwt.NewBuilder(signer).Build(claims)
-		if err != nil {
-			return "", "", "", err
-		}
-
-		return claims.Session.LoggedInAs, claims.Session.Role, token2.String(), nil
+	if err := p.extant(Session, claims.Session.SessionId); err != nil {
+		return "", "", "", err
 	}
 
-	// .. extant session? i.e. not idle/logged out
-	sid := claims.Session.SessionId
-	cutoff := time.Now().Add(-IDLETIME)
+	p.sessions[claims.Session.SessionId] = time.Now()
 
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	if touched, ok := p.sessions[sid]; !ok {
-		return "", "", "", fmt.Errorf("No extant session for session ID '%v'", sid)
-	} else if touched.Before(cutoff) {
-		return "", "", "", fmt.Errorf("Session '%v' expired", sid)
-	} else {
-		p.sessions[sid] = time.Now()
+	if keyID == 1 {
+		return claims.Session.LoggedInAs, claims.Session.Role, "", nil
 	}
 
-	return claims.Session.LoggedInAs, claims.Session.Role, "", nil
+	secret := p.copyKey()
+
+	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	token2, err := jwt.NewBuilder(signer).Build(claims)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	return claims.Session.LoggedInAs, claims.Session.Role, token2.String(), nil
 }
 
 func (p *Local) Authorised(uid, role, resource string) error {
@@ -566,7 +571,7 @@ func (p *Local) copyKey() []byte {
 	p.guard.Lock()
 	defer p.guard.Unlock()
 
-	key := make([]byte, KEY_LENGTH)
+	key := make([]byte, constants.KEY_LENGTH)
 
 	copy(key, p.keys[0])
 
@@ -592,45 +597,63 @@ func (p *Local) regenerate() {
 	log.Printf("%-5v Regenerated session secret", "INFO")
 }
 
+func (p *Local) extant(tokenType TokenType, id uuid.UUID) error {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	cutoff := time.Now().Add(-constants.IDLETIME)
+
+	switch tokenType {
+	case Login:
+
+		if touched, ok := p.logins[id]; !ok {
+			return fmt.Errorf("No extant login for login ID '%v'", id)
+		} else if touched.Before(cutoff) {
+			return fmt.Errorf("Login '%v' expired", id)
+		}
+
+	case Session:
+		if touched, ok := p.sessions[id]; !ok {
+			return fmt.Errorf("No extant session for session ID '%v'", id)
+		} else if touched.Before(cutoff) {
+			return fmt.Errorf("Session '%v' expired", id)
+		}
+	}
+
+	return nil
+}
+
 func (p *Local) sweep() {
 	p.guard.Lock()
 	defer p.guard.Unlock()
 
-	cutoff := time.Now().Add(-2 * IDLETIME)
-
-	// ... logins
-	{
-		list := []uuid.UUID{}
-		for k, touched := range p.logins {
-			if touched.Before(cutoff) {
-				list = append(list, k)
-			}
-		}
-
-		for _, k := range list {
-			delete(p.logins, k)
-			log.Printf("%-5v Deleted idle login %v", "INFO", k)
-		}
+	caches := []struct {
+		cache  map[uuid.UUID]time.Time
+		format string
+	}{
+		{p.logins, "%-5v Deleted idle login %v"},
+		{p.sessions, "%-5v Deleted idle session %v"},
 	}
 
-	// ... sessions
-	{
+	cutoff := time.Now().Add(-2 * constants.IDLETIME)
+
+	for _, c := range caches {
 		list := []uuid.UUID{}
-		for k, touched := range p.sessions {
+		for k, touched := range c.cache {
 			if touched.Before(cutoff) {
 				list = append(list, k)
 			}
 		}
 
 		for _, k := range list {
-			delete(p.sessions, k)
-			log.Printf("%-5v Deleted idle session %v", "INFO", k)
+			delete(c.cache, k)
+			log.Printf(c.format, "INFO", k)
 		}
 	}
 }
 
 func genKey() ([]byte, error) {
-	key := make([]byte, KEY_LENGTH)
+	key := make([]byte, constants.KEY_LENGTH)
 
 	if _, err := io.ReadFull(rand.Reader, key); err != nil {
 		return nil, err

@@ -11,21 +11,19 @@
       - [x] Move static file handling out of httpd.get
       - [x] Separate handler for GET login/unauthorised/etc
       - [x] Separate handler for GET *.html
+      - [ ] Update httpdFileSystem to use FS 
       - [ ] (?) Separate GET+POST+HEAD dispatcher for /<data>
       - [ ] (?) Use ServeMux (for all the sanitization that comes with it)
-      - [ ] Update httpdFileSystem to use FS 
       - [ ] Unit test httpdFileSystem for
             - dot file hiding
             - path escaping
-      - [ ] Remove auth.Basic session `sweep`
+
+      - [x] Remove auth.Basic session `sweep`
             - [x] Invalidate session ID in auth.Local on logout
             - [x] Remove session stuff from auth.Basic
             - [x] Remove 'stale time' from HTTPD config
             - [x] Make login ID and session ID entirely internal to auth.Local
-            - [ ] Move token type into claims
-            - [ ] Unify login and session maps
-            - [ ] Make auth.Local constants internal
-
+            - [x] Make auth.Local constants internal
       - [x] Regenerate session keys every N minutes
             - [x] Replace fixed serialized key with generated key
             - [x] Regenerate session key
