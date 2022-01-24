@@ -3,9 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <title>uhppoted-httpd: SYSTEM</title>
-    <link rel="manifest"   href="manifest.json">
-    <link rel="icon"       href="images/favicon.svg">
-    <link rel="stylesheet" href="css/{{$.context.Theme}}/system.css" type="text/css">
+    <link rel="manifest"   href="/manifest.json">
+    <link rel="icon"       href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/system.css" type="text/css">
     <meta charset="UTF-8">
   </head>
 
@@ -35,7 +35,7 @@
               </td>
             </tr>
             <tr>
-              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Bind }}" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
+              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Bind }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
               <td>bind:</td>
               <td><input type="text" class="bind" placeholder="-" 
                           onchange="onEdited('interface', event)" 
@@ -44,7 +44,7 @@
                           data-value="" /></td>
             </tr>
             <tr>
-              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
+              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
               <td>broadcast:</td>
               <td><input type="text" class="broadcast" placeholder="-" 
                           onchange="onEdited('interface', event)" 
@@ -53,7 +53,7 @@
                           data-value="" /></td>
             </tr>
             <tr>
-              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Listen }}" class="flag" src="images/{{$.context.Theme}}/block.svg" /></td>
+              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Listen }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
               <td>listen:</td>
               <td><input type="text" class="listen" value="" placeholder="-"
                           onchange="onEdited('interface', event)" 
@@ -64,16 +64,16 @@
           </table>
 
           <div id="controls" data-oid="{{ .schema.Controllers.OID }}">
-            <img id="commitall"   class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controllers', event, 'controllers')" />
-            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('controllers', event, 'controllers')" />
+            <img id="commitall"   class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controllers', event, 'controllers')" />
+            <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('controllers', event, 'controllers')" />
             <div id="message" class="message">
               <div>
                 <span class="warning" id="warning"></span>
                 <button class="dismiss" onclick="dismiss()">&#9746;</button>
               </div>
             </div>
-            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('controller')" />
-            <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('controllers', event)" />
+            <img id="add"     class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('controller')" />
+            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('controllers', event)" />
           </div>
 
           <div id="controllers" class="tabular">
@@ -96,7 +96,7 @@
 
             <template id="controller">
                 <td class="rowheader" style="display:flex; flex-direction:row;">
-                  <img class="flag name" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag name" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field name" 
                          type="text" 
                          value="" 
@@ -106,15 +106,15 @@
                          data-original="" 
                          data-value="" />
                   <span class="control commit"   onclick="onCommit('controller', event)"   data-record="" data-enabled="false">
-                    <img src="./images/{{$.context.Theme}}/check-solid.svg" />
+                    <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                   </span>
                   <span class="control rollback" onclick="onRollback('controller', event)" data-record="" data-enabled="false">
-                    <img src="./images/{{$.context.Theme}}/times-solid.svg" />
+                    <img src="/images/{{$.context.Theme}}/times-solid.svg" />
                   </span>
                 </td>
 
                 <td class="ID">
-                  <img class="flag ID" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag ID" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field ID"
                          type="number" 
                          min="0"
@@ -127,7 +127,7 @@
                 </td>
 
                 <td>
-                  <img class="flag IP" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag IP" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field IP"
                          type="text" 
                          value=""
@@ -141,7 +141,7 @@
                 </td>
 
                 <td>
-                  <img class="flag datetime" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag datetime" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field datetime"
                          type="text" 
                          value=""
@@ -155,7 +155,7 @@
                 </td>
 
                 <td>
-                  <img class="flag cards" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag cards" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field cards"
                          type="number" 
                          min="0"
@@ -170,7 +170,7 @@
                 </td>
 
                 <td>
-                  <img class="flag events" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag events" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field events"
                          type="number" 
                          min="0"
@@ -184,7 +184,7 @@
                 </td>
 
                 <td>
-                  <img class="flag door1" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag door1" src="/images/{{$.context.Theme}}/corner.svg" />
                   <select class="field door1"
                           type="text" 
                           value=""
@@ -198,7 +198,7 @@
                 </td>
 
                 <td>
-                  <img class="flag door2" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag door2" src="/images/{{$.context.Theme}}/corner.svg" />
                   <select class="field door2"
                           type="text" 
                           value=""
@@ -213,7 +213,7 @@
                 </td>
 
                 <td>
-                  <img class="flag door3" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag door3" src="/images/{{$.context.Theme}}/corner.svg" />
                   <select class="field door3"
                           type="text" 
                           value=""
@@ -228,7 +228,7 @@
                 </td>
 
                 <td>
-                  <img class="flag door4" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag door4" src="/images/{{$.context.Theme}}/corner.svg" />
                   <select class="field door4"
                           type="text" 
                           value=""
@@ -265,7 +265,7 @@
              onMenu, 
              onSignOut, 
              onReload, 
-             setRefresh } from "./javascript/uhppoted.js"
+             setRefresh } from "/javascript/uhppoted.js"
 
     import { onEdited, 
              onEnter, 
@@ -275,7 +275,7 @@
              onRollback, 
              onRollbackAll, 
              onNew, 
-             onRefresh } from "./javascript/tabular.js"
+             onRefresh } from "/javascript/tabular.js"
 
     window.retheme = retheme
     window.dismiss = dismiss

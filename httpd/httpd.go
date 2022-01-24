@@ -131,19 +131,16 @@ func (h *HTTPD) Run() {
 	http.Handle("/javascript/", http.FileServer(fs))
 	http.Handle("/manifest.json", http.FileServer(fs))
 
-	http.HandleFunc("/login.html", d.getNoAuth)
-	http.HandleFunc("/unauthorized.html", d.getNoAuth)
-	http.HandleFunc("/usr/", d.getNoAuth)
-
-	http.HandleFunc("/index.html", d.getWithAuth)
-	http.HandleFunc("/overview.html", d.getWithAuth)
-	http.HandleFunc("/controllers.html", d.getWithAuth)
-	http.HandleFunc("/password.html", d.getWithAuth)
-	http.HandleFunc("/doors.html", d.getWithAuth)
-	http.HandleFunc("/cards.html", d.getWithAuth)
-	http.HandleFunc("/groups.html", d.getWithAuth)
-	http.HandleFunc("/events.html", d.getWithAuth)
-	http.HandleFunc("/logs.html", d.getWithAuth)
+	http.HandleFunc("/sys/login.html", d.getNoAuth)
+	http.HandleFunc("/sys/unauthorized.html", d.getNoAuth)
+	http.HandleFunc("/sys/overview.html", d.getWithAuth)
+	http.HandleFunc("/sys/controllers.html", d.getWithAuth)
+	http.HandleFunc("/sys/password.html", d.getWithAuth)
+	http.HandleFunc("/sys/doors.html", d.getWithAuth)
+	http.HandleFunc("/sys/cards.html", d.getWithAuth)
+	http.HandleFunc("/sys/groups.html", d.getWithAuth)
+	http.HandleFunc("/sys/events.html", d.getWithAuth)
+	http.HandleFunc("/sys/logs.html", d.getWithAuth)
 
 	http.HandleFunc("/authenticate", d.dispatch)
 	http.HandleFunc("/logout", d.dispatch)
@@ -157,6 +154,8 @@ func (h *HTTPD) Run() {
 	http.HandleFunc("/logs", d.dispatch)
 
 	http.HandleFunc("/", d.getWithAuth)
+	http.HandleFunc("/usr/", d.getNoAuth)
+	http.HandleFunc("/index.html", d.getNoAuth)
 
 	if srv != nil {
 		go func() {
@@ -243,11 +242,11 @@ func (d *dispatcher) authorised(uid, role, path string) bool {
 func (d *dispatcher) unauthenticated(r *http.Request, w http.ResponseWriter) {
 	clear(auth.SessionCookie, w)
 
-	http.Redirect(w, r, "/login.html", http.StatusFound)
+	http.Redirect(w, r, "/sys/login.html", http.StatusFound)
 }
 
 func (d *dispatcher) unauthorised(r *http.Request, w http.ResponseWriter) {
-	http.Redirect(w, r, "/unauthorized.html", http.StatusFound)
+	http.Redirect(w, r, "/sys/unauthorized.html", http.StatusFound)
 }
 
 // cf. https://stackoverflow.com/questions/27671061/how-to-delete-cookie

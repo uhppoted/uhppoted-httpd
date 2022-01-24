@@ -51,6 +51,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
+	println(">>>>>>>>>>>>>> getNoAuth " + r.Method + "  " + r.URL.Path)
 	if strings.ToUpper(r.Method) != http.MethodGet {
 		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
 		return
@@ -75,6 +76,7 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
+	println(">>>>>>>>>>>>>> getWithAuth " + r.Method + "  " + r.URL.Path)
 	if strings.ToUpper(r.Method) != http.MethodGet {
 		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
 		return

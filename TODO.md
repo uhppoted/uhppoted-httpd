@@ -12,7 +12,7 @@
       - [x] GET for everything else
       - [x] /usr
       - [x] /other.html
-      - [ ] Move uhppoted HTML files to /sys
+      - [x] /sys: move uhppoted HTML files to /sys
       - [ ] (?) Use ServeMux (for all the sanitization that comes with it)
 
       - [x] Move static file handling out of httpd.get

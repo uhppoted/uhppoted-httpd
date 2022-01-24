@@ -4,9 +4,9 @@
   <head>
     <meta charset="UTF-8">
     <title>uhppoted-httpd: Login</title>
-    <link rel="manifest"   href="manifest.json">
-    <link rel="icon"       href="images/favicon.svg">
-    <link rel="stylesheet" href="css/{{$.context.Theme}}/unauthorized.css" type="text/css">
+    <link rel="manifest"   href="/manifest.json">
+    <link rel="icon"       href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/unauthorized.css" type="text/css">
   </head>
 
   <body> 
@@ -14,7 +14,7 @@
       
       <!-- HEADER -->
       <header>
-        <img id="logo" src="images/{{$.context.Theme}}/logo.png"  />
+        <img id="logo" src="/images/{{$.context.Theme}}/logo.png"  />
       </header>
 
       <!-- NAV -->
@@ -30,7 +30,7 @@
               <a href="/index.html">{{.Unauthorized.Home}}</a>
             </div>
             <div>
-              <a href="/login.html">{{.Unauthorized.Login}}</a>
+              <a href="/sys/login.html">{{.Unauthorized.Login}}</a>
             </div>
           </div>
         </div>

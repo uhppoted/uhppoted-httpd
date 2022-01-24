@@ -3,9 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <title>uhppoted-httpd: GROUPS</title>
-    <link rel="manifest"   href="manifest.json">
-    <link rel="icon"       href="images/favicon.svg">
-    <link rel="stylesheet" href="css/{{$.context.Theme}}/groups.css" type="text/css">
+    <link rel="manifest"   href="/manifest.json">
+    <link rel="icon"       href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/groups.css" type="text/css">
     <meta charset="UTF-8">
   </head>
 
@@ -20,16 +20,16 @@
       <main>
         <div id="container">
           <div id="controls" data-oid="{{ .schema.Groups.OID }}">
-            <img id="commitall" class='button' src="images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('groups', event, 'groups')" draggable="false" />
-            <img id="rollbackall" class='button' src="images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('groups', event)"  draggable="false"  />
+            <img id="commitall" class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('groups', event, 'groups')" draggable="false" />
+            <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('groups', event)"  draggable="false"  />
             <div id="message" class="message">
               <div>
                 <span class="warning" id="warning"></span>
                 <button class="dismiss" onclick="dismiss()">&#9746;</button>
               </div>
             </div>
-            <img id="add"     class='button' src="images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('group')" />
-            <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('groups', event)" />
+            <img id="add"     class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('group')" />
+            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('groups', event)" />
           </div>
 
           <div id="groups" class="tabular">
@@ -46,7 +46,7 @@
 
             <template id="group">
                 <td class="rowheader" style="display:flex; flex-direction:row;">
-                  <img class="flag name" src="images/{{$.context.Theme}}/corner.svg" />
+                  <img class="flag name" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field name" 
                          type="text" 
                          value="" 
@@ -57,10 +57,10 @@
                          data-original="" 
                          data-value="" />
                   <span class="control commit"   onclick="onCommit('group', event)"   data-record="" data-enabled="false">
-                    <img src="./images/{{$.context.Theme}}/check-solid.svg" />
+                    <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                   </span>
                   <span class="control rollback" onclick="onRollback('group', event)" data-record="" data-enabled="false">
-                    <img src="./images/{{$.context.Theme}}/times-solid.svg" />
+                    <img src="/images/{{$.context.Theme}}/times-solid.svg" />
                   </span>
                 </td>
 
@@ -69,7 +69,7 @@
             </template>
 
             <template id="door">
-                <img class="flag" src="images/{{$.context.Theme}}/corner.svg" />
+                <img class="flag" src="/images/{{$.context.Theme}}/corner.svg" />
                 <label class="door">
                   <input class="field"
                          type="checkbox" 
@@ -77,8 +77,8 @@
                          data-record="" 
                          data-original="" 
                          data-value="" />
-                  <img class="no"  src="images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
-                  <img class="yes" src="images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
+                  <img class="no"  src="/images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
+                  <img class="yes" src="/images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
                 </label>
             </template>
 
@@ -96,7 +96,7 @@
   <!-- SCRIPTS -->
 
   <script type="module">
-    import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload, setRefresh } from "./javascript/uhppoted.js"
+    import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload, setRefresh } from "/javascript/uhppoted.js"
     import { onEdited, 
              onEnter, 
              onTick, 
@@ -105,7 +105,7 @@
              onRollback, 
              onRollbackAll, 
              onNew, 
-             onRefresh } from "./javascript/tabular.js"
+             onRefresh } from "/javascript/tabular.js"
 
     window.retheme = retheme
     window.dismiss = dismiss

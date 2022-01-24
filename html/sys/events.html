@@ -2,10 +2,10 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <title>uhppoted-httpd: LOGS</title>
-    <link rel="manifest"   href="manifest.json">
-    <link rel="icon"       href="images/favicon.svg">
-    <link rel="stylesheet" href="css/{{$.context.Theme}}/logs.css" type="text/css">
+    <title>uhppoted-httpd: EVENTS</title>
+    <link rel="manifest"   href="/manifest.json">
+    <link rel="icon"       href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/events.css" type="text/css">
     <meta charset="UTF-8">
   </head>
 
@@ -14,7 +14,7 @@
 
       {{template "user"   .}}
       {{template "header" .}}
-      {{template "nav"    "logs"}}
+      {{template "nav"    "events"}}
 
       <!-- MAIN -->
       <main>
@@ -26,32 +26,36 @@
                 <button class="dismiss" onclick="dismiss()">&#9746;</button>
               </div>
             </div>
-            <img id="refresh" class='button' src="images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('logs', event)" />
+            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('events', event)" />
           </div>
 
-          <div id="logs" class="tabular">
+          <div id="events" class="tabular">
             <table>
               <thead>
                 <tr>
                   <th class="colheader rowheader timestamp">Timestamp</th>
-                  <th class="colheader uid">User ID</th>
-                  <th class="colheader module" colspan="4">Item</th>
-                  <th class="colheader details">Details</th>
+                  <th class="colheader deviceID" colspan="2">Device</th>
+                  <th class="colheader">Event</th>
+                  <th class="colheader" colspan="3">Door</th>
+                  <th class="colheader" colspan="2">Card</th>
+                  <th class="colheader">Access</th>
+                  <th class="colheader">Reason</th>
+                  <th class="colheader padding"></th>
                 </tr>
               </thead>
               <tbody></tbody>
               <tfoot>
                 <tr>
                   <td class="ellipsis" colspan="11">
-                    <img id="more" class='button' src="images/{{$.context.Theme}}/ellipsis-h-solid.svg" onclick="onMore('logs', event)" />
+                    <img id="more" class='button' src="/images/{{$.context.Theme}}/ellipsis-h-solid.svg" onclick="onMore('events', event)" />
                   </td>
                   <td class="padding"></td>
                 </tr>
               </tfoot>
             </table>
 
-            <template id="entry">
-                <td class="rowheader">
+            <template id="event">
+                <td class="rowheader" style="display:flex; flex-direction:row;">
                   <input class="field timestamp" 
                          type="text" 
                          value="" 
@@ -63,7 +67,18 @@
                 </td>
 
                 <td>
-                  <input class="field uid" 
+                  <input class="field deviceID" 
+                         type="number" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field device" 
                          type="text" 
                          value="" 
                          placeholder="-" 
@@ -74,17 +89,7 @@
                 </td>
 
                 <td>
-                  <input class="field item" 
-                         type="text" 
-                         value="" 
-                         placeholder="-" 
-                         data-record="" 
-                         data-original="" 
-                         data-value="" 
-                         readonly />
-
-                <td>
-                  <input class="field item-id" 
+                  <input class="field eventType" 
                          type="text" 
                          value="" 
                          placeholder="-" 
@@ -95,7 +100,7 @@
                 </td>
 
                 <td>
-                  <input class="field item-name" 
+                  <input class="field direction" 
                          type="text" 
                          value="" 
                          placeholder="-" 
@@ -106,7 +111,7 @@
                 </td>
 
                 <td>
-                  <input class="field item-field" 
+                  <input class="field doorid" 
                          type="text" 
                          value="" 
                          placeholder="-" 
@@ -117,7 +122,7 @@
                 </td>
 
                 <td>
-                  <input class="field details" 
+                  <input class="field door" 
                          type="text" 
                          value="" 
                          placeholder="-" 
@@ -126,6 +131,53 @@
                          data-value="" 
                          readonly />
                 </td>
+
+                <td>
+                  <input class="field cardno" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field card" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field access" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field reason" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <!-- 'padding' column (CSS: tr::last-child) -->
+                <td class="padding"></td>
             </template>
 
           </div>
@@ -142,7 +194,7 @@
   <!-- SCRIPTS -->
 
   <script type="module">
-    import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload, setRefresh } from "./javascript/uhppoted.js"
+    import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload, setRefresh } from "/javascript/uhppoted.js"
     import { onEdited, 
              onEnter, 
              onTick, 
@@ -152,7 +204,7 @@
              onRollback, 
              onRollbackAll, 
              onNew, 
-             onRefresh } from "./javascript/tabular.js"
+             onRefresh } from "/javascript/tabular.js"
 
     window.retheme = retheme
     window.dismiss = dismiss
@@ -172,7 +224,7 @@
     window.onRefresh = onRefresh
 
     const refresh = function() {
-      onRefresh('logs')      
+      onRefresh('events')      
     }
 
     resetIdle()
