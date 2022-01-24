@@ -41,6 +41,7 @@ const (
 )
 
 func (h *HTTPD) Run() {
+	// ... initialisation
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -51,12 +52,52 @@ func (h *HTTPD) Run() {
 		timeout: h.RequestTimeout,
 	}
 
+	fs := filesystem{
+		http.FS(os.DirFS(h.Dir)),
+	}
+
+	// ... setup routing
+	mux := http.NewServeMux()
+
+	mux.Handle("/css/", http.FileServer(fs))
+	mux.Handle("/images/", http.FileServer(fs))
+	mux.Handle("/javascript/", http.FileServer(fs))
+	mux.Handle("/manifest.json", http.FileServer(fs))
+
+	mux.HandleFunc("/sys/login.html", d.getNoAuth)
+	mux.HandleFunc("/sys/unauthorized.html", d.getNoAuth)
+	mux.HandleFunc("/sys/overview.html", d.getWithAuth)
+	mux.HandleFunc("/sys/controllers.html", d.getWithAuth)
+	mux.HandleFunc("/sys/password.html", d.getWithAuth)
+	mux.HandleFunc("/sys/doors.html", d.getWithAuth)
+	mux.HandleFunc("/sys/cards.html", d.getWithAuth)
+	mux.HandleFunc("/sys/groups.html", d.getWithAuth)
+	mux.HandleFunc("/sys/events.html", d.getWithAuth)
+	mux.HandleFunc("/sys/logs.html", d.getWithAuth)
+
+	mux.HandleFunc("/authenticate", d.dispatch)
+	mux.HandleFunc("/logout", d.dispatch)
+	mux.HandleFunc("/password", d.dispatch)
+	mux.HandleFunc("/interfaces", d.dispatch)
+	mux.HandleFunc("/controllers", d.dispatch)
+	mux.HandleFunc("/doors", d.dispatch)
+	mux.HandleFunc("/cards", d.dispatch)
+	mux.HandleFunc("/groups", d.dispatch)
+	mux.HandleFunc("/events", d.dispatch)
+	mux.HandleFunc("/logs", d.dispatch)
+
+	mux.HandleFunc("/", d.getWithAuth)
+	mux.HandleFunc("/usr/", d.getNoAuth)
+	mux.HandleFunc("/index.html", d.getNoAuth)
+
+	// ... instantiate servers
 	var srv *http.Server
 	var srvs *http.Server
 
 	if h.HTTPEnabled {
 		srv = &http.Server{
-			Addr: ":8080",
+			Addr:    ":8080",
+			Handler: mux,
 		}
 	}
 
@@ -94,9 +135,11 @@ func (h *HTTPD) Run() {
 		srvs = &http.Server{
 			Addr:      ":8443",
 			TLSConfig: &tlsConfig,
+			Handler:   mux,
 		}
 	}
 
+	// ... listen and serve
 	shutdown := make(chan struct{})
 
 	go func() {
@@ -121,41 +164,6 @@ func (h *HTTPD) Run() {
 
 		close(shutdown)
 	}()
-
-	fs := filesystem{
-		http.FS(os.DirFS(h.Dir)), // http.Dir(h.Dir),
-	}
-
-	http.Handle("/css/", http.FileServer(fs))
-	http.Handle("/images/", http.FileServer(fs))
-	http.Handle("/javascript/", http.FileServer(fs))
-	http.Handle("/manifest.json", http.FileServer(fs))
-
-	http.HandleFunc("/sys/login.html", d.getNoAuth)
-	http.HandleFunc("/sys/unauthorized.html", d.getNoAuth)
-	http.HandleFunc("/sys/overview.html", d.getWithAuth)
-	http.HandleFunc("/sys/controllers.html", d.getWithAuth)
-	http.HandleFunc("/sys/password.html", d.getWithAuth)
-	http.HandleFunc("/sys/doors.html", d.getWithAuth)
-	http.HandleFunc("/sys/cards.html", d.getWithAuth)
-	http.HandleFunc("/sys/groups.html", d.getWithAuth)
-	http.HandleFunc("/sys/events.html", d.getWithAuth)
-	http.HandleFunc("/sys/logs.html", d.getWithAuth)
-
-	http.HandleFunc("/authenticate", d.dispatch)
-	http.HandleFunc("/logout", d.dispatch)
-	http.HandleFunc("/password", d.dispatch)
-	http.HandleFunc("/interfaces", d.dispatch)
-	http.HandleFunc("/controllers", d.dispatch)
-	http.HandleFunc("/doors", d.dispatch)
-	http.HandleFunc("/cards", d.dispatch)
-	http.HandleFunc("/groups", d.dispatch)
-	http.HandleFunc("/events", d.dispatch)
-	http.HandleFunc("/logs", d.dispatch)
-
-	http.HandleFunc("/", d.getWithAuth)
-	http.HandleFunc("/usr/", d.getNoAuth)
-	http.HandleFunc("/index.html", d.getNoAuth)
 
 	if srv != nil {
 		go func() {
