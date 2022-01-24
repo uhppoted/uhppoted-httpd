@@ -123,7 +123,7 @@ func (h *HTTPD) Run() {
 	}()
 
 	fs := filesystem{
-		http.Dir(h.Dir),
+		http.FS(os.DirFS(h.Dir)), // http.Dir(h.Dir),
 	}
 
 	http.Handle("/css/", http.FileServer(fs))
@@ -133,6 +133,8 @@ func (h *HTTPD) Run() {
 
 	http.HandleFunc("/login.html", d.getNoAuth)
 	http.HandleFunc("/unauthorized.html", d.getNoAuth)
+	http.HandleFunc("/usr/", d.getNoAuth)
+
 	http.HandleFunc("/index.html", d.getWithAuth)
 	http.HandleFunc("/overview.html", d.getWithAuth)
 	http.HandleFunc("/controllers.html", d.getWithAuth)
