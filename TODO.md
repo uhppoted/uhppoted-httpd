@@ -1,8 +1,8 @@
 ## v0.7.x
 
-- [ ] Update events handling
+- [x] Update events handling
       - [x] Rather send "" 0 values for events.first, events.last and events.current
-      - [ ] Remove LAN.store
+      - [x] Remove LAN.store
 
 - [x] Restyle highlighted fields in _dark_ mode (e.g. after editing controller name)
 
