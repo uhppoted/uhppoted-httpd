@@ -145,7 +145,18 @@ func (h *HTTPD) Run() {
 	http.HandleFunc("/events.html", d.getWithAuth)
 	http.HandleFunc("/logs.html", d.getWithAuth)
 
-	http.Handle("/", &d)
+	http.HandleFunc("/authenticate", d.dispatch)
+	http.HandleFunc("/logout", d.dispatch)
+	http.HandleFunc("/password", d.dispatch)
+	http.HandleFunc("/interfaces", d.dispatch)
+	http.HandleFunc("/controllers", d.dispatch)
+	http.HandleFunc("/doors", d.dispatch)
+	http.HandleFunc("/cards", d.dispatch)
+	http.HandleFunc("/groups", d.dispatch)
+	http.HandleFunc("/events", d.dispatch)
+	http.HandleFunc("/logs", d.dispatch)
+
+	http.HandleFunc("/", d.getWithAuth)
 
 	if srv != nil {
 		go func() {
@@ -181,7 +192,7 @@ func (h *HTTPD) Run() {
 	close(done)
 }
 
-func (d *dispatcher) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request) {
 	if url, err := url.QueryUnescape(fmt.Sprintf("%v", r.URL)); err == nil {
 		debug(fmt.Sprintf("%-4v %v", r.Method, url))
 	} else {

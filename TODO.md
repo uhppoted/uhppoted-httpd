@@ -8,11 +8,11 @@
 - [x] Restyle highlighted fields in _dark_ mode (e.g. after editing controller name)
 
 - [ ] Clean up HTTP server
-      - [ ] GET+POST+HEAD dispatch for /<data>
-      - [ ] GET for everything else
+      - [x] GET+POST+HEAD dispatch for /<data>
+      - [x] GET for everything else
       - [x] /usr
       - [x] /other.html
-      - [ ] (?) Move uhppoted HTML files to /sys
+      - [ ] Move uhppoted HTML files to /sys
       - [ ] (?) Use ServeMux (for all the sanitization that comes with it)
 
       - [x] Move static file handling out of httpd.get

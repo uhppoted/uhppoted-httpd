@@ -21,6 +21,11 @@ import (
 const GZIP_MINIMUM = 16384
 
 func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
+	if strings.ToUpper(r.Method) != http.MethodGet {
+		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
+		return
+	}
+
 	path, err := resolve(r.URL)
 	if err != nil {
 		http.Error(w, "invalid URL", http.StatusBadRequest)
@@ -46,6 +51,11 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
+	if strings.ToUpper(r.Method) != http.MethodGet {
+		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
+		return
+	}
+
 	// ... parse headers, etc
 	acceptsGzip := parseHeader(r)
 	context := map[string]interface{}{
@@ -65,6 +75,11 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
+	if strings.ToUpper(r.Method) != http.MethodGet {
+		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
+		return
+	}
+
 	// ... normalise path
 	path, err := resolve(r.URL)
 	if err != nil {

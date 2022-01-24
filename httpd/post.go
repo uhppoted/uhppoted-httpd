@@ -47,7 +47,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 
 	switch path {
 	case "/password":
-		d.dispatch(w, r, func(m map[string]interface{}) (interface{}, error) {
+		d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
 			return users.Post(m, role, d.auth)
 		})
 		return
@@ -63,7 +63,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "internal system error", http.StatusInternalServerError)
 		} else {
 			auth := iauth.NewAuthorizator(uid, role)
-			d.dispatch(w, r, func(m map[string]interface{}) (interface{}, error) {
+			d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
 				return handler.post(m, auth)
 			})
 		}
@@ -153,7 +153,7 @@ func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
-func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request, f func(map[string]interface{}) (interface{}, error)) {
+func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[string]interface{}) (interface{}, error)) {
 	ch := make(chan error)
 	ctx, cancel := context.WithTimeout(d.context, d.timeout)
 
