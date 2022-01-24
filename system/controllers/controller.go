@@ -44,9 +44,9 @@ type cached struct {
 	cards    *uint32
 	events   struct {
 		status  types.Status
-		first   uint32
-		last    uint32
-		current uint32
+		first   types.Uint32
+		last    types.Uint32
+		current types.Uint32
 	}
 	acl types.Status
 }
@@ -140,9 +140,9 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 		}
 
 		type einfo struct {
-			first   uint32
-			last    uint32
-			current uint32
+			first   types.Uint32
+			last    types.Uint32
+			current types.Uint32
 			status  types.Status
 		}
 
@@ -246,19 +246,9 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 		list = append(list, kv{ControllerCardsStatus, cards.status})
 		list = append(list, kv{ControllerCardsCount, cards.cards})
 		list = append(list, kv{ControllerEventsStatus, events.status})
-
-		if events.first != 0 {
-			list = append(list, kv{ControllerEventsFirst, events.first})
-		}
-
-		if events.last != 0 {
-			list = append(list, kv{ControllerEventsLast, events.last})
-		}
-
-		if events.current != 0 {
-			list = append(list, kv{ControllerEventsCurrent, events.current})
-		}
-
+		list = append(list, kv{ControllerEventsFirst, events.first})
+		list = append(list, kv{ControllerEventsLast, events.last})
+		list = append(list, kv{ControllerEventsCurrent, events.current})
 		list = append(list, kv{ControllerDoor1, doors[1]})
 		list = append(list, kv{ControllerDoor2, doors[2]})
 		list = append(list, kv{ControllerDoor3, doors[3]})
@@ -386,19 +376,19 @@ func (c *Controller) get() *cached {
 
 	if v := catalog.GetV(c.oid, ControllerEventsFirst); v != nil {
 		if index, ok := v.(uint32); ok {
-			e.events.first = index
+			e.events.first = types.Uint32(index)
 		}
 	}
 
 	if v := catalog.GetV(c.oid, ControllerEventsLast); v != nil {
 		if index, ok := v.(uint32); ok {
-			e.events.last = index
+			e.events.last = types.Uint32(index)
 		}
 	}
 
 	if v := catalog.GetV(c.oid, ControllerEventsCurrent); v != nil {
 		if index, ok := v.(uint32); ok {
-			e.events.current = index
+			e.events.current = types.Uint32(index)
 		}
 	}
 

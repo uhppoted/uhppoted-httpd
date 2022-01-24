@@ -1,8 +1,7 @@
 ## v0.7.x
 
 - [ ] Update events handling
-      - [ ] Rethink not sending 0 for events.first, events.last and events.current
-            - (?) Maybe make Uint32 i.e. 0 is ""
+      - [x] Rather send "" 0 values for events.first, events.last and events.current
       - [ ] Remove LAN.store
 
 - [x] Restyle highlighted fields in _dark_ mode (e.g. after editing controller name)
