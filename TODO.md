@@ -13,14 +13,27 @@
 
 - [ ] Fix DateTime mess
       - [x] Do the 'uncertain/pending' thing for timezones
+      - [x] Add `datetime.modified` to controller.cached
       - [ ] (?) Input + datalist for timezone (https://demo.agektmr.com/datalist)
-      - [ ] (?) Controller schema for DateTime
+      - [ ] Ewwwwww :-(
+```
+                if cached.datetime.timezone != nil {
+                    tz := time.Local
+                    if c.datetime.timezone != nil {
+                        if l, err := timezone(*c.datetime.timezone); err != nil {
+                            warn(err)
+                        } else {
+                            tz = l
+                        }
+                    }
+
+```
       - [ ] (?) Treat empty DateTime as the null value
       - [ ] (?) Change Format(), etc to not take pointer receiver
       - [ ] (?) Define FormatDateTime() method that *does* take pointer
       - [ ] (?) Refactor DateTime out to use core implementation only
       - [ ] (?) Implement Ptr() for the repetitive assign to variable to take address thing
-      - Thoroughly rethink the whole timezone thing
+      - (Thoroughly rethink the whole timezone thing)
 
 ### IN PROGRESS
 
@@ -30,7 +43,8 @@
       - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
 
 - [ ] 'users' page
-- [ ] Set initial user + password
+- [ ] daemonize/undaemonize
+      - [ ] set initial user + password
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 

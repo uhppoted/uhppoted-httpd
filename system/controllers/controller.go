@@ -40,9 +40,12 @@ type kv = struct {
 type cached struct {
 	touched  time.Time
 	address  *core.Address
-	datetime *types.DateTime
-	cards    *uint32
-	events   struct {
+	datetime struct {
+		datetime *types.DateTime
+		modified bool
+	}
+	cards  *uint32
+	events struct {
 		status  types.Status
 		first   types.Uint32
 		last    types.Uint32
@@ -189,7 +192,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 				}
 
 				// ... get system date/time field from cached value
-				if cached.datetime != nil {
+				if cached.datetime.datetime != nil {
 					tz := time.Local
 					if c.timezone != nil {
 						if l, err := timezone(*c.timezone); err != nil {
@@ -200,23 +203,15 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 					}
 
 					now := time.Now().In(tz)
-					t := time.Time(*cached.datetime)
+					t := time.Time(*cached.datetime.datetime)
 					T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
-					modified := false
 					delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-
-					// TODO get datetime.modified from cached
-					if v := catalog.GetV(c.OID(), ControllerDateTimeModified); v != nil {
-						if b, ok := v.(bool); ok {
-							modified = b
-						}
-					}
 
 					datetime.datetime = T.Format("2006-01-02 15:04:05 MST")
 					datetime.system = now.Format("2006-01-02 15:04:05 MST")
 
 					switch {
-					case modified:
+					case cached.datetime.modified:
 						datetime.status = types.StatusUncertain
 
 					case delta <= math.Abs(windows.systime.Seconds()):
@@ -370,7 +365,13 @@ func (c *Controller) get() *cached {
 
 	if v := catalog.GetV(c.oid, ControllerDateTimeCurrent); v != nil {
 		if datetime, ok := v.(types.DateTime); ok {
-			e.datetime = &datetime
+			e.datetime.datetime = &datetime
+		}
+	}
+
+	if v := catalog.GetV(c.OID(), ControllerDateTimeModified); v != nil {
+		if b, ok := v.(bool); ok {
+			e.datetime.modified = b
 		}
 	}
 
@@ -525,7 +526,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 
 			if c.deviceID != 0 {
 				if cached := c.get(); cached != nil {
-					if cached.datetime != nil {
+					if cached.datetime.datetime != nil {
 						tz := time.Local
 						if c.timezone != nil {
 							if l, err := timezone(*c.timezone); err != nil {
@@ -535,7 +536,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 							}
 						}
 
-						t := time.Time(*cached.datetime)
+						t := time.Time(*cached.datetime.datetime)
 						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 						list = append(list, kv{ControllerDateTimeStatus, types.StatusUncertain})
 						list = append(list, kv{ControllerDateTime, dt.Format("2006-01-02 15:04 MST")})
