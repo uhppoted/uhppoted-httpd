@@ -15,7 +15,7 @@ import (
 	"strings"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
 const GZIP_MINIMUM = 16384
@@ -129,7 +129,7 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 	page := map[string]interface{}{}
 
 	page["context"] = context
-	page["schema"] = system.Schema()
+	page["schema"] = catalog.GetSchema()
 
 	info, err := os.Stat(translation)
 	if err != nil && !os.IsNotExist(err) {

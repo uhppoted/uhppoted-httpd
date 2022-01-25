@@ -1,7 +1,15 @@
 ## v0.7.x
 
+- [x] Finish structuring catalog.schema
+      - [x] interfaces
+      - [x] controllers
+      - [x] doors
+      - [x] cards
+      - [x] groups
+      - [x] events
+      - [x] logs
+      - [ ] (?) Generate schema.js from catalog.Schema
 - [ ] Clean up the log function mess in controller
-- [ ] Finish structuring catalog.schema
 
 - [ ] Fix DateTime mess
       - [x] Do the 'uncertain/pending' thing for timezones

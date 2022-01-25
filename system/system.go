@@ -256,10 +256,6 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	return nil
 }
 
-func Schema() interface{} {
-	return catalog.GetSchema()
-}
-
 func (s *system) refresh() {
 	if s == nil {
 		return

@@ -55,27 +55,32 @@ type Controllers struct {
 		Last    Suffix `json:"last"`
 		Current Suffix `json:"current"`
 	} `json:"events"`
-	EventsStatus Suffix `json:"events-status"`
-	Door1        Suffix `json:"door1"`
-	Door2        Suffix `json:"door2"`
-	Door3        Suffix `json:"door3"`
-	Door4        Suffix `json:"door4"`
+	Doors struct {
+		Door1 Suffix `json:"1"`
+		Door2 Suffix `json:"2"`
+		Door3 Suffix `json:"3"`
+		Door4 Suffix `json:"4"`
+	} `json:"doors"`
 }
 
 type Doors struct {
 	OID OID `json:"OID"`
 	Metadata
-	Name              Suffix `json:"name"`
-	Delay             Suffix `json:"delay"`
-	DelayStatus       Suffix `json:"delay-status"`
-	DelayConfigured   Suffix `json:"delay-configured"`
-	DelayError        Suffix `json:"delay-error"`
-	DelayModified     Suffix `json:"delay-modified"`
-	Control           Suffix `json:"control"`
-	ControlStatus     Suffix `json:"control-status"`
-	ControlConfigured Suffix `json:"control-configured"`
-	ControlError      Suffix `json:"control-error"`
-	ControlModified   Suffix `json:"control-modified"`
+	Name  Suffix `json:"name"`
+	Delay struct {
+		Delay      Suffix `json:"delay"`
+		Status     Suffix `json:"status"`
+		Configured Suffix `json:"configured"`
+		Error      Suffix `json:"error"`
+		Modified   Suffix `json:"modified"`
+	} `json:"delay"`
+	Control struct {
+		Control    Suffix `json:"control"`
+		Status     Suffix `json:"status"`
+		Configured Suffix `json:"configured"`
+		Error      Suffix `json:"error"`
+		Modified   Suffix `json:"modified"`
+	} `json:"control"`
 }
 
 type Cards struct {
@@ -200,11 +205,17 @@ var schema = Schema{
 			Last:    ControllerEventsLast,
 			Current: ControllerEventsCurrent,
 		},
-
-		Door1: ControllerDoor1,
-		Door2: ControllerDoor2,
-		Door3: ControllerDoor3,
-		Door4: ControllerDoor4,
+		Doors: struct {
+			Door1 Suffix `json:"1"`
+			Door2 Suffix `json:"2"`
+			Door3 Suffix `json:"3"`
+			Door4 Suffix `json:"4"`
+		}{
+			Door1: ControllerDoor1,
+			Door2: ControllerDoor2,
+			Door3: ControllerDoor3,
+			Door4: ControllerDoor4,
+		},
 	},
 
 	Doors: Doors{
@@ -216,17 +227,33 @@ var schema = Schema{
 			Modified: Modified,
 			Type:     Type,
 		},
-		Name:              DoorName,
-		Delay:             DoorDelay,
-		DelayStatus:       DoorDelayStatus,
-		DelayConfigured:   DoorDelayConfigured,
-		DelayError:        DoorDelayError,
-		DelayModified:     DoorDelayModified,
-		Control:           DoorControl,
-		ControlStatus:     DoorControlStatus,
-		ControlConfigured: DoorControlConfigured,
-		ControlError:      DoorControlError,
-		ControlModified:   DoorControlModified,
+		Name: DoorName,
+		Delay: struct {
+			Delay      Suffix `json:"delay"`
+			Status     Suffix `json:"status"`
+			Configured Suffix `json:"configured"`
+			Error      Suffix `json:"error"`
+			Modified   Suffix `json:"modified"`
+		}{
+			Delay:      DoorDelay,
+			Status:     DoorDelayStatus,
+			Configured: DoorDelayConfigured,
+			Error:      DoorDelayError,
+			Modified:   DoorDelayModified,
+		},
+		Control: struct {
+			Control    Suffix `json:"control"`
+			Status     Suffix `json:"status"`
+			Configured Suffix `json:"configured"`
+			Error      Suffix `json:"error"`
+			Modified   Suffix `json:"modified"`
+		}{
+			Control:    DoorControl,
+			Status:     DoorControlStatus,
+			Configured: DoorControlConfigured,
+			Error:      DoorControlError,
+			Modified:   DoorControlModified,
+		},
 	},
 
 	Cards: Cards{
