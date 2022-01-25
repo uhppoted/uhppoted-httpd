@@ -28,6 +28,7 @@ const ControllerDateTime = catalog.ControllerDateTime
 const ControllerDateTimeStatus = catalog.ControllerDateTimeStatus
 const ControllerDateTimeCurrent = catalog.ControllerDateTimeCurrent
 const ControllerDateTimeSystem = catalog.ControllerDateTimeSystem
+const ControllerDateTimeModified = catalog.ControllerDateTimeModified
 const ControllerCardsStatus = catalog.ControllerCardsStatus
 const ControllerCardsCount = catalog.ControllerCardsCount
 const ControllerEventsFirst = catalog.ControllerEventsFirst
@@ -53,6 +54,7 @@ var lookup = map[catalog.Suffix]string{
 	ControllerDateTimeStatus:     "controller.datetime.status",
 	ControllerDateTimeCurrent:    "controller.datetime.current",
 	ControllerDateTimeSystem:     "controller.datetime.system",
+	ControllerDateTimeModified:   "controller.datetime.modified",
 	ControllerCardsStatus:        "controller.cards.status",
 	ControllerCardsCount:         "controller.cards.count",
 	ControllerEventsFirst:        "controller.events.first",

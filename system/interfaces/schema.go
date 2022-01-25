@@ -17,6 +17,7 @@ const LANListenAddress = catalog.LANListenAddress
 const ControllerTouched = catalog.Touched
 const ControllerEndpointAddress = catalog.ControllerEndpointAddress
 const ControllerDateTimeCurrent = catalog.ControllerDateTimeCurrent
+const ControllerDateTimeModified = catalog.ControllerDateTimeModified
 const ControllerCardsCount = catalog.ControllerCardsCount
 const ControllerCardsStatus = catalog.ControllerCardsStatus
 const ControllerEventsStatus = catalog.ControllerEventsStatus

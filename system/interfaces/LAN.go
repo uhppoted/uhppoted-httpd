@@ -379,19 +379,29 @@ func (l *LAN) Refresh(c Controller) {
 
 func (l *LAN) SynchTime(c Controller) {
 	api := l.api([]Controller{c})
-	deviceID := c.DeviceID()
+	deviceID := uhppoted.DeviceID(c.DeviceID())
 	location := c.TimeZone()
 	now := time.Now().In(location)
 	datetime := core.DateTime(now)
 
 	request := uhppoted.SetTimeRequest{
-		DeviceID: uhppoted.DeviceID(deviceID),
+		DeviceID: deviceID,
 		DateTime: datetime,
 	}
 
 	if response, err := api.SetTime(request); err != nil {
 		log.Printf("ERROR %v", err)
 	} else if response != nil {
+		catalog.PutV(c.OID(), ControllerDateTimeModified, false)
+
+		if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: deviceID}); err != nil {
+			log.Printf("%v", err)
+		} else if status == nil {
+			log.Printf("Got %v response to get-status request for %v", status, deviceID)
+		} else {
+			catalog.PutV(c.OID(), ControllerDateTimeCurrent, types.DateTime(status.Status.SystemDateTime))
+		}
+
 		log.Printf("INFO  synchronized device-time %v %v", response.DeviceID, response.DateTime)
 	}
 }

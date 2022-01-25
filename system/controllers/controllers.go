@@ -89,6 +89,7 @@ func (cc *Controllers) Load(blob json.RawMessage) error {
 		catalog.PutController(c.deviceID, oid)
 		catalog.PutV(oid, ControllerName, c.name)
 		catalog.PutV(oid, ControllerDeviceID, c.deviceID)
+		catalog.PutV(oid, ControllerDateTimeModified, false)
 		catalog.PutV(oid, ControllerDoor1, c.Doors[1])
 		catalog.PutV(oid, ControllerDoor2, c.Doors[2])
 		catalog.PutV(oid, ControllerDoor3, c.Doors[3])

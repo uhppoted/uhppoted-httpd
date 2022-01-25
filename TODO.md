@@ -1,82 +1,18 @@
 ## v0.7.x
 
-- [x] Update events handling
-      - [x] Rather send "" 0 values for events.first, events.last and events.current
-      - [x] Remove LAN.store
-
-- [x] Restyle highlighted fields in _dark_ mode (e.g. after editing controller name)
-
-- [x] Clean up HTTP server
-      - [x] GET+POST+HEAD dispatch for /<data>
-      - [x] GET for everything else
-      - [x] /usr
-      - [x] /other.html
-      - [x] /sys: move uhppoted HTML files to /sys
-      - [x] Use ServeMux for all the sanitization that comes with it
-
-      - [x] Move static file handling out of httpd.get
-      - [x] Separate handler for GET login/unauthorised/etc
-      - [x] Separate handler for GET *.html
-      - [x] Unit test httpd.filesystem
-      - [x] Remove auth.Basic session `sweep`
-            - [x] Invalidate session ID in auth.Local on logout
-            - [x] Remove session stuff from auth.Basic
-            - [x] Remove 'stale time' from HTTPD config
-            - [x] Make login ID and session ID entirely internal to auth.Local
-            - [x] Make auth.Local constants internal
-      - [x] Regenerate session keys every N minutes
-            - [x] Replace fixed serialized key with generated key
-            - [x] Regenerate session key
-            - [x] Replace single key with key list
-            - [x] Verify/Authenticated with every key in list
-            - [x] Refresh session cookie when necessary
-            - [x] Spurious _jwt: key is nil_ warning because SessionCookie not valid after a restart
-      - [x] Rework auth.Local.claims to use JSON encoded login and session fields
-      - [x] Clean up GET
-      - [x] Clean up auth.Local
-      - [x] auth.Basic.Authenticated redundantly checks token in both authenticated and session
-      - [x] Lift `unauthorised` handling out of auth provider
-      - [x] Make default login cookie expiration 60s
-      - [x] Clear login cookie on login
-      - [x] Clear session cookie on logout
-      - [x] Clear session cookie on unauthenticated
-      - [x] GET allow unauthenticated/authorized access to CSS, images, etc
-      - [x] GET allow unauthenticated access to login.html and unauthorized.html
-      - [x] GET require authenticated + authorisation for access to data
-      - [x] GET require authenticated + authorisation for access to everything else
-      - [x] GET return 'Not Found' for arbitrary stuff
-      - [x] HEAD restrict to /authenticate
-      - [x] POST allow unauthenticated access to /authenticate
-      - [x] POST allow unauthenticated access to /logout because httpd may have restarted, invalidating sessions
-      - [x] POST require authenticated+authorisation for access to everything else
-      - [x] POST require login cookie for /authenticate
-      - [x] Commonalize httpd.unauthenticated()
-      - [x] Commonalize httpd.unauthorized()
-      - [x] Remove authorised resource check in basic.Verify (muddled responsibility)
-      - [x] Remove authorised resource check in basic.SetPassword (muddled responsibility)
-      - [x] Clean up auth.Basic
-      - [x] Touch session when authenticated
-      - [x] Prevent e.g. CSS/../events.html from poking a hole in the auth framework
-            - [x] GET
-            - [x] HEAD
-            - [x] POST
-            - [x] Auth provider should take login cookie not request
-            - [x] Auth provider should take session cookie not request
-            - [x] Use resolved path in auth provider i.e. don't pass http.Request to auth provider
-                  - [x] Authenticated
-                  - [x] Logout
-                  - [x] Session
-      - [x] Homogenize `authorised` and `authorisedX`
-      - [x] Don't check login cookie except for login
+- [ ] Clean up the log function mess in controller
+- [ ] Finish structuring catalog.schema
 
 - [ ] Fix DateTime mess
-      - [ ] Controller schema for DateTime
-      - [ ] Do the 'uncertain/pending' thing for timezones
-      - [ ] MAYBE: treat empty DateTime as the null value
-      - [ ] MAYBE: change Format(), etc to not take pointer receiver
-      - [ ] MAYBE: define FormatDateTime() method that *does* take pointer
-      - [ ] Refactor DateTime out to use core implementation only
-      - [ ] Implement Ptr() for the repetitive assign to variable to take address thing
+      - [x] Do the 'uncertain/pending' thing for timezones
+      - [ ] (?) Input + datalist for timezone (https://demo.agektmr.com/datalist)
+      - [ ] (?) Controller schema for DateTime
+      - [ ] (?) Treat empty DateTime as the null value
+      - [ ] (?) Change Format(), etc to not take pointer receiver
+      - [ ] (?) Define FormatDateTime() method that *does* take pointer
+      - [ ] (?) Refactor DateTime out to use core implementation only
+      - [ ] (?) Implement Ptr() for the repetitive assign to variable to take address thing
+      - Thoroughly rethink the whole timezone thing
 
 ### IN PROGRESS
 
@@ -126,8 +62,6 @@
       - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
             - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
             - 'natural' number type :-)
-      - Input + datalist for timezone ?????
-        - https://demo.agektmr.com/datalist/
 
       - Export to uhppoted.conf
         - 'export' command line argument 
@@ -150,8 +84,6 @@
       - use uhppoted-lib::healthcheck
 
 #### Other
-- [ ] (?) _heartbeat_ for online/offline
-
 - [ ] Fix Firefox layout
       - spacing/padding/margins
 
@@ -199,24 +131,19 @@
       - simultaneous editing (?) 
         -- use hash of DB to identify changes
       
-- [ ] Security
-      - Templates have access to everything - need finer grained access 
-
 - [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
 - [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
 
 - [ ] Fonts
 - [ ] User settings
       - automatic logout enabled/timeout
-      - change password
 - [ ] Logo 
       - https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible
       - https://jn3008.tumblr.com/post/618100274778783744
-- [ ] Hamburger menu (?)
-- [ ] Thoroughly rethink the whole timezone thing
 
 ## TODO
 
+- [ ] Hamburger menu (?)
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)

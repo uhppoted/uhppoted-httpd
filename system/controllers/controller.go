@@ -173,7 +173,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 
 		if c.deviceID != 0 {
 			if cached := c.get(); cached != nil {
-				// ... set IP address field from cached value
+				// ... get IP address field from cached value
 				if cached.address != nil {
 					address.address = fmt.Sprintf("%v", cached.address)
 					switch {
@@ -188,7 +188,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 					}
 				}
 
-				// ... set system date/time field from cached value
+				// ... get system date/time field from cached value
 				if cached.datetime != nil {
 					tz := time.Local
 					if c.timezone != nil {
@@ -202,19 +202,31 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 					now := time.Now().In(tz)
 					t := time.Time(*cached.datetime)
 					T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+					modified := false
+					delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+
+					// TODO get datetime.modified from cached
+					if v := catalog.GetV(c.OID(), ControllerDateTimeModified); v != nil {
+						if b, ok := v.(bool); ok {
+							modified = b
+						}
+					}
 
 					datetime.datetime = T.Format("2006-01-02 15:04:05 MST")
 					datetime.system = now.Format("2006-01-02 15:04:05 MST")
 
-					delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
-					if delta <= math.Abs(windows.systime.Seconds()) {
+					switch {
+					case modified:
+						datetime.status = types.StatusUncertain
+
+					case delta <= math.Abs(windows.systime.Seconds()):
 						datetime.status = types.StatusOk
-					} else {
+					default:
 						datetime.status = types.StatusError
 					}
 				}
 
-				// ... set ACL field from cached value
+				// ... get ACL field from cached value
 				if cached.cards != nil {
 					cards.cards = fmt.Sprintf("%d", *cached.cards)
 					if cached.acl == types.StatusUnknown {
@@ -224,7 +236,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 					}
 				}
 
-				// ... set events field from cached value
+				// ... get events field from cached value
 				events.status = cached.events.status
 				events.first = cached.events.first
 				events.last = cached.events.last
@@ -461,32 +473,11 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 			}
 		} else if value == "" {
 			if p := stringify(c.deviceID, ""); p != "" {
-				c.log(a,
-					"update",
-					OID,
-					"device-id",
-					fmt.Sprintf("Cleared device ID %v", p),
-					p,
-					"",
-					dbc)
+				c.log(a, "update", OID, "device-id", fmt.Sprintf("Cleared device ID %v", p), p, "", dbc)
 			} else if p = stringify(c.name, ""); p != "" {
-				c.log(a,
-					"update",
-					OID,
-					"device-id",
-					fmt.Sprintf("Cleared device ID for %v", p),
-					"",
-					"",
-					dbc)
+				c.log(a, "update", OID, "device-id", fmt.Sprintf("Cleared device ID for %v", p), "", "", dbc)
 			} else {
-				c.log(a,
-					"update",
-					OID,
-					"device-id",
-					fmt.Sprintf("Cleared device ID"),
-					"",
-					"",
-					dbc)
+				c.log(a, "update", OID, "device-id", fmt.Sprintf("Cleared device ID"), "", "", dbc)
 			}
 
 			c.deviceID = 0
@@ -527,6 +518,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 				stringify(c.timezone, ""),
 				stringify(tz.String(), ""),
 				dbc)
+
 			tzs := tz.String()
 			c.timezone = &tzs
 			c.unconfigured = false
@@ -545,7 +537,9 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 
 						t := time.Time(*cached.datetime)
 						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+						list = append(list, kv{ControllerDateTimeStatus, types.StatusUncertain})
 						list = append(list, kv{ControllerDateTime, dt.Format("2006-01-02 15:04 MST")})
+						list = append(list, kv{ControllerDateTimeModified, true})
 					}
 				}
 			}
