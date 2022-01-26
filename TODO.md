@@ -7,11 +7,13 @@
 
 - [ ] Fix DateTime mess
       - [ ] Combobox for datetime
-            - [ ] remove button
-            - [ ] remove unused aria stuff
+            - [x] remove button
             - [ ] rename combobox.js to datetime.js
             - [ ] initialise options with reasonable values
-            - (?) datalist (https://demo.agektmr.com/datalist)
+                   - (?) datalist (https://demo.agektmr.com/datalist)
+            - [ ] remove unused aria stuff
+            - [ ] move combobox.css to sass
+            - [ ] style combox for dark mode
             - (?) datetime-local
       - [ ] Ewwwwww :-(
 ```

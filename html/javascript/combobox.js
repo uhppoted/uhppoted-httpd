@@ -1,18 +1,17 @@
 class Combobox {
-  constructor (input, button, list) {
+  constructor (input, list) {
     this.input = input
-    this.buttonNode = button
-    this.listboxNode = list
+    this.list = list
 
-    this.comboboxHasVisualFocus = false
-    this.listboxHasVisualFocus = false
+    this.inputHasFocus = false
+    this.listHasFocus = false
     this.hasHover = false
 
     this.allOptions = []
+    this.filteredOptions = []
     this.option = null
     this.firstOption = null
     this.lastOption = null
-    this.filteredOptions = []
 
     // ... setup input field
     this.input.addEventListener('keydown', this.onComboboxKeyDown.bind(this))
@@ -22,29 +21,26 @@ class Combobox {
     this.input.addEventListener('blur', this.onComboboxBlur.bind(this))
 
     // ... setup options list
-    this.listboxNode.addEventListener('mouseover', this.onListboxMouseover.bind(this))
-    this.listboxNode.addEventListener('mouseout', this.onListboxMouseout.bind(this))
+    this.list.addEventListener('mouseover', this.onMouseOver.bind(this))
+    this.list.addEventListener('mouseout', this.onMouseOut.bind(this))
 
-    const nodes = this.listboxNode.getElementsByTagName('LI')
+    const nodes = this.list.getElementsByTagName('LI')
     for (let i=0; i<nodes.length; i++) {
       const option = nodes[i]
 
       this.allOptions.push(option)
 
       option.addEventListener('click', this.onOptionClick.bind(this))
-      option.addEventListener('mouseover', this.onOptionMouseover.bind(this))
-      option.addEventListener('mouseout', this.onOptionMouseout.bind(this))
+      option.addEventListener('mouseover', this.onMouseOver.bind(this))
+      option.addEventListener('mouseout', this.onMouseOut.bind(this))
     }
-
-    // ... attach onclick handler to 'open' button
-    this.buttonNode.addEventListener('click', this.onButtonClick.bind(this))
   }
 
   initialise () {
   }
 
   setActiveDescendant (option) {
-    if (option && this.listboxHasVisualFocus) {
+    if (option && this.listHasFocus) {
       this.input.setAttribute('aria-activedescendant', option.id)
     } else {
       this.input.setAttribute('aria-activedescendant', '')
@@ -67,27 +63,27 @@ class Combobox {
     }
   }
 
-  setVisualFocusCombobox () {
-    this.listboxNode.classList.remove('focus')
+  setFocusCombobox () {
+    this.list.classList.remove('focus')
     this.input.parentNode.classList.add('focus') // set the focus class to the parent for easier styling
-    this.comboboxHasVisualFocus = true
-    this.listboxHasVisualFocus = false
+    this.inputHasFocus = true
+    this.listHasFocus = false
     this.setActiveDescendant(false)
   }
 
   setVisualFocusListbox () {
     this.input.parentNode.classList.remove('focus')
-    this.comboboxHasVisualFocus = false
-    this.listboxHasVisualFocus = true
-    this.listboxNode.classList.add('focus')
+    this.inputHasFocus = false
+    this.listHasFocus = true
+    this.list.classList.add('focus')
     this.setActiveDescendant(this.option)
   }
 
   removeVisualFocusAll () {
     this.input.parentNode.classList.remove('focus')
-    this.comboboxHasVisualFocus = false
-    this.listboxHasVisualFocus = false
-    this.listboxNode.classList.remove('focus')
+    this.inputHasFocus = false
+    this.listHasFocus = false
+    this.list.classList.remove('focus')
     this.option = null
     this.setActiveDescendant(false)
   }
@@ -99,10 +95,10 @@ class Combobox {
       const opt = this.filteredOptions[i]
       if (opt === option) {
         opt.setAttribute('aria-selected', 'true')
-        if (this.listboxNode.scrollTop + this.listboxNode.offsetHeight < opt.offsetTop + opt.offsetHeight) {
-          this.listboxNode.scrollTop = opt.offsetTop + opt.offsetHeight - this.listboxNode.offsetHeight
-        } else if (this.listboxNode.scrollTop > opt.offsetTop + 2) {
-          this.listboxNode.scrollTop = opt.offsetTop
+        if (this.list.scrollTop + this.list.offsetHeight < opt.offsetTop + opt.offsetHeight) {
+          this.list.scrollTop = opt.offsetTop + opt.offsetHeight - this.list.offsetHeight
+        } else if (this.list.scrollTop > opt.offsetTop + 2) {
+          this.list.scrollTop = opt.offsetTop
         }
       } else {
         opt.removeAttribute('aria-selected')
@@ -127,17 +123,16 @@ class Combobox {
   }
 
   // list display functions
-
   doesOptionHaveFocus () {
     return this.input.getAttribute('aria-activedescendant') !== ''
   }
 
   isOpen () {
-    return this.listboxNode.style.display === 'block'
+    return this.list.style.display === 'block'
   }
 
   isClosed () {
-    return this.listboxNode.style.display !== 'block'
+    return this.list.style.display !== 'block'
   }
 
   hasOptions () {
@@ -145,9 +140,8 @@ class Combobox {
   }
 
   open () {
-    this.listboxNode.style.display = 'block'
+    this.list.style.display = 'block'
     this.input.setAttribute('aria-expanded', 'true')
-    this.buttonNode.setAttribute('aria-expanded', 'true')
   }
 
   close (force) {
@@ -155,17 +149,15 @@ class Combobox {
       force = false
     }
 
-    if (force || (!this.comboboxHasVisualFocus && !this.listboxHasVisualFocus && !this.hasHover)) {
+    if (force || (!this.inputHasFocus && !this.listHasFocus && !this.hasHover)) {
       this.setCurrentOptionStyle(false)
-      this.listboxNode.style.display = 'none'
+      this.list.style.display = 'none'
       this.input.setAttribute('aria-expanded', 'false')
-      this.buttonNode.setAttribute('aria-expanded', 'false')
       this.setActiveDescendant(false)
     }
   }
 
-  /* combobox Events */
-
+  // input field events
   onComboboxKeyDown (event) {
     let flag = false
     const altKey = event.altKey
@@ -176,11 +168,11 @@ class Combobox {
 
     switch (event.key) {
       case 'Enter':
-        if (this.listboxHasVisualFocus) {
+        if (this.listHasFocus) {
           this.setValue(this.option.textContent)
         }
         this.close(true)
-        this.setVisualFocusCombobox()
+        this.setFocusCombobox()
         flag = true
         break
 
@@ -191,7 +183,7 @@ class Combobox {
             this.open()
           } else {
             this.open()
-            if (this.listboxHasVisualFocus) {
+            if (this.listHasFocus) {
               this.setOption(this.getNextOption(this.option), true)
               this.setVisualFocusListbox()
             } else {
@@ -206,7 +198,7 @@ class Combobox {
       case 'Up':
       case 'ArrowUp':
         if (this.hasOptions()) {
-          if (this.listboxHasVisualFocus) {
+          if (this.listHasFocus) {
             this.setOption(this.getPreviousOption(this.option), true)
           } else {
             this.open()
@@ -223,7 +215,7 @@ class Combobox {
       case 'Escape':
         if (this.isOpen()) {
           this.close(true)
-          this.setVisualFocusCombobox()
+          this.setFocusCombobox()
         } else {
           this.setValue('')
           this.input.value = ''
@@ -234,7 +226,7 @@ class Combobox {
 
       case 'Tab':
         this.close(true)
-        if (this.listboxHasVisualFocus) {
+        if (this.listHasFocus) {
           if (this.option) {
             this.setValue(this.option.textContent)
           }
@@ -252,9 +244,6 @@ class Combobox {
         flag = true
       }
         break
-
-      default:
-        break
     }
 
     if (flag) {
@@ -270,7 +259,7 @@ class Combobox {
 
     switch (event.key) {
       case 'Backspace':
-        this.setVisualFocusCombobox()
+        this.setFocusCombobox()
         this.setCurrentOptionStyle(false)
         this.option = null
 
@@ -286,7 +275,7 @@ class Combobox {
       case 'End':
         this.option = null
         this.setCurrentOptionStyle(false)
-        this.setVisualFocusCombobox()
+        this.setFocusCombobox()
 
         event.stopPropagation()
         event.preventDefault()
@@ -303,37 +292,16 @@ class Combobox {
   }
 
   onComboboxFocus () {
-    this.setVisualFocusCombobox()
+    this.setFocusCombobox()
     this.option = null
     this.setCurrentOptionStyle(null)
   }
 
   onComboboxBlur () {
-    this.comboboxHasVisualFocus = false
+    this.inputHasFocus = false
     this.setCurrentOptionStyle(null)
     this.removeVisualFocusAll()
-    setTimeout(this.close.bind(this, false), 300)
-  }
-
-  onButtonClick () {
-    if (this.isOpen()) {
-      this.close(true)
-    } else {
-      this.open()
-    }
-
-    this.input.focus()
-    this.setVisualFocusCombobox()
-  }
-
-  // list events
-  onListboxMouseover () {
-    this.hasHover = true
-  }
-
-  onListboxMouseout () {
-    this.hasHover = false
-    setTimeout(this.close.bind(this, false), 300)
+    setTimeout(this.close.bind(this, false), 100)
   }
 
   // option events
@@ -345,22 +313,21 @@ class Combobox {
     this.input.dispatchEvent(new Event('change', { bubbles: false, cancelable: true }))
   }
 
-  onOptionMouseover () {
+  // mouse events
+  onMouseOver () {
     this.hasHover = true
-    this.open()
   }
 
-  onOptionMouseout () {
+  onMouseOut () {
     this.hasHover = false
-    setTimeout(this.close.bind(this, false), 300)
+    setTimeout(this.close.bind(this, false), 100)
   }
 }
 
 export function initialise (combobox) {
   const input = combobox.querySelector('input')
-  const button = combobox.querySelector('button')
   const list = combobox.querySelector('ul')
-  const cb = new Combobox(input, button, list)
+  const cb = new Combobox(input, list)
 
   cb.initialise()
 }
