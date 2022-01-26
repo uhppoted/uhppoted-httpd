@@ -7,14 +7,16 @@
 
 - [ ] Fix DateTime mess
       - [ ] Combobox for datetime
-            - [x] remove button
-            - [ ] rename combobox.js to datetime.js
-            - [ ] initialise options with reasonable values
+            - [ ] Initialise options with reasonable values
                    - (?) datalist (https://demo.agektmr.com/datalist)
             - [ ] remove unused aria stuff
-            - [ ] move combobox.css to sass
-            - [ ] style combox for dark mode
+            - [ ] Fix keydown/keyup from input field
+            - [ ] Move combobox.css to sass
+            - [ ] Style combox for dark mode
             - (?) datetime-local
+            - [x] Remove button
+            - [x] Rename combobox.js to datetime.js
+
       - [ ] Ewwwwww :-(
 ```
                 if cached.datetime.timezone != nil {

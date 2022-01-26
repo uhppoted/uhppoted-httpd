@@ -14,18 +14,18 @@ class Combobox {
     this.lastOption = null
 
     // ... setup input field
-    this.input.addEventListener('keydown', this.onComboboxKeyDown.bind(this))
-    this.input.addEventListener('keyup', this.onComboboxKeyUp.bind(this))
-    this.input.addEventListener('click', this.onComboboxClick.bind(this))
-    this.input.addEventListener('focus', this.onComboboxFocus.bind(this))
-    this.input.addEventListener('blur', this.onComboboxBlur.bind(this))
+    this.input.addEventListener('keydown', this.onInputKeyDown.bind(this))
+    this.input.addEventListener('keyup', this.onInputKeyUp.bind(this))
+    this.input.addEventListener('click', this.onInputClick.bind(this))
+    this.input.addEventListener('focus', this.onInputFocus.bind(this))
+    this.input.addEventListener('blur', this.onInputBlur.bind(this))
 
     // ... setup options list
     this.list.addEventListener('mouseover', this.onMouseOver.bind(this))
     this.list.addEventListener('mouseout', this.onMouseOut.bind(this))
 
     const nodes = this.list.getElementsByTagName('LI')
-    for (let i=0; i<nodes.length; i++) {
+    for (let i = 0; i < nodes.length; i++) {
       const option = nodes[i]
 
       this.allOptions.push(option)
@@ -158,7 +158,7 @@ class Combobox {
   }
 
   // input field events
-  onComboboxKeyDown (event) {
+  onInputKeyDown (event) {
     let flag = false
     const altKey = event.altKey
 
@@ -252,7 +252,7 @@ class Combobox {
     }
   }
 
-  onComboboxKeyUp (event) {
+  onInputKeyUp (event) {
     if (event.key === 'Escape' || event.key === 'Esc') {
       return
     }
@@ -283,7 +283,7 @@ class Combobox {
     }
   }
 
-  onComboboxClick () {
+  onInputClick () {
     if (this.isOpen()) {
       this.close(true)
     } else {
@@ -291,13 +291,13 @@ class Combobox {
     }
   }
 
-  onComboboxFocus () {
+  onInputFocus () {
     this.setFocusCombobox()
     this.option = null
     this.setCurrentOptionStyle(null)
   }
 
-  onComboboxBlur () {
+  onInputBlur () {
     this.inputHasFocus = false
     this.setCurrentOptionStyle(null)
     this.removeVisualFocusAll()

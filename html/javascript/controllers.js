@@ -1,7 +1,7 @@
 import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
-import * as combobox from './combobox.js'
+import * as combobox from './datetime.js'
 
 export function refreshed () {
   const list = [...DB.controllers.values()]
