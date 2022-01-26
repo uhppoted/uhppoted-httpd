@@ -25,7 +25,7 @@ type Controller struct {
 	deviceID uint32
 	IP       *core.Address
 	Doors    map[uint8]catalog.OID
-	timezone *string
+	timezone string
 
 	created      types.DateTime
 	deleted      *types.DateTime
@@ -90,12 +90,8 @@ func (c *Controller) EndPoint() *net.UDPAddr {
 
 func (c *Controller) TimeZone() *time.Location {
 	location := time.Local
-
-	if c.timezone != nil {
-		timezone := *c.timezone
-		if tz, err := types.Timezone(timezone); err == nil && tz != nil {
-			location = tz
-		}
+	if tz, err := types.Timezone(c.timezone); err == nil && tz != nil {
+		location = tz
 	}
 
 	return location
@@ -193,15 +189,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 
 				// ... get system date/time field from cached value
 				if cached.datetime.datetime != nil {
-					tz := time.Local
-					if c.timezone != nil {
-						if l, err := timezone(*c.timezone); err != nil {
-							warn(err)
-						} else {
-							tz = l
-						}
-					}
-
+					tz := timezone(c.timezone)
 					now := time.Now().In(tz)
 					t := time.Time(*cached.datetime.datetime)
 					T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
@@ -520,22 +508,13 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 				stringify(tz.String(), ""),
 				dbc)
 
-			tzs := tz.String()
-			c.timezone = &tzs
+			c.timezone = tz.String()
 			c.unconfigured = false
 
 			if c.deviceID != 0 {
 				if cached := c.get(); cached != nil {
 					if cached.datetime.datetime != nil {
-						tz := time.Local
-						if c.timezone != nil {
-							if l, err := timezone(*c.timezone); err != nil {
-								warn(err)
-							} else {
-								tz = l
-							}
-						}
-
+						tz := timezone(c.timezone)
 						t := time.Time(*cached.datetime.datetime)
 						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 						list = append(list, kv{ControllerDateTimeStatus, types.StatusUncertain})
@@ -751,7 +730,7 @@ func (c Controller) serialize() ([]byte, error) {
 		DeviceID uint32                `json:"device-id,omitempty"`
 		Address  *core.Address         `json:"address,omitempty"`
 		Doors    map[uint8]catalog.OID `json:"doors"`
-		TimeZone *string               `json:"timezone,omitempty"`
+		TimeZone string                `json:"timezone,omitempty"`
 		Created  types.DateTime        `json:"created"`
 	}{
 		OID:      c.OID(),
@@ -779,7 +758,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 		DeviceID uint32           `json:"device-id,omitempty"`
 		Address  *core.Address    `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
-		TimeZone *string          `json:"timezone,omitempty"`
+		TimeZone string           `json:"timezone,omitempty"`
 		Created  types.DateTime   `json:"created,omitempty"`
 	}{
 		Created: created,

@@ -9,33 +9,23 @@
       - [ ] Combobox for datetime
             - [ ] Initialise options with reasonable values
                    - (?) datalist (https://demo.agektmr.com/datalist)
-            - [ ] remove unused aria stuff
+            - [ ] Remove unused aria stuff
             - [ ] Fix keydown/keyup from input field
             - [ ] Move combobox.css to sass
-            - [ ] Style combox for dark mode
+            - [ ] Fix list style
+            - [ ] Let list overflow table
+            - [ ] Style for dark mode
             - (?) datetime-local
             - [x] Remove button
             - [x] Rename combobox.js to datetime.js
 
-      - [ ] Ewwwwww :-(
-```
-                if cached.datetime.timezone != nil {
-                    tz := time.Local
-                    if c.datetime.timezone != nil {
-                        if l, err := timezone(*c.datetime.timezone); err != nil {
-                            warn(err)
-                        } else {
-                            tz = l
-                        }
-                    }
-
-```
       - [ ] (?) Treat empty DateTime as the null value
       - [ ] (?) Change Format(), etc to not take pointer receiver
       - [ ] (?) Define FormatDateTime() method that *does* take pointer
       - [ ] (?) Refactor DateTime out to use core implementation only
       - [ ] (?) Implement Ptr() for the repetitive assign to variable to take address thing
-      - (Thoroughly rethink the whole timezone thing)
+      - (thoroughly relook at the whole timezone thing)
+      - [x] Let timezone(..) just return Local instead of getting all complicated about it
       - [x] Do the 'uncertain/pending' thing for timezones
       - [x] Add `datetime.modified` to controller.cached
 

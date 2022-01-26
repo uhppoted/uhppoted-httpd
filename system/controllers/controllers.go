@@ -269,15 +269,11 @@ func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.
 				Name:     c.name,
 				Address:  nil,
 				Doors:    []string{"", "", "", ""},
-				TimeZone: "",
+				TimeZone: c.timezone,
 			}
 
 			if c.IP != nil {
 				device.Address = (*net.UDPAddr)(c.IP)
-			}
-
-			if c.timezone != nil {
-				device.TimeZone = *c.timezone
 			}
 
 			if d, ok := doors[c.Doors[1]]; ok {
