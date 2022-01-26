@@ -1,6 +1,7 @@
 import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
+import * as combobox from './combobox.js'
 
 export function refreshed () {
   const list = [...DB.controllers.values()]
@@ -152,6 +153,9 @@ function add (oid, record) {
 
       flag.id = 'F' + f.oid
     })
+
+    // .. initialise date/time picker
+    combobox.initialise(row.querySelector('td.combobox'))
 
     return row
   }

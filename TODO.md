@@ -1,20 +1,18 @@
 ## v0.7.x
 
-- [x] Finish structuring catalog.schema
-      - [x] interfaces
-      - [x] controllers
-      - [x] doors
-      - [x] cards
-      - [x] groups
-      - [x] events
-      - [x] logs
+- [ ] Finish structuring catalog.schema
       - [ ] (?) Generate schema.js from catalog.Schema
+
 - [ ] Clean up the log function mess in controller
 
 - [ ] Fix DateTime mess
-      - [x] Do the 'uncertain/pending' thing for timezones
-      - [x] Add `datetime.modified` to controller.cached
-      - [ ] (?) Input + datalist for timezone (https://demo.agektmr.com/datalist)
+      - [ ] Combobox for datetime
+            - [ ] remove button
+            - [ ] remove unused aria stuff
+            - [ ] rename combobox.js to datetime.js
+            - [ ] initialise options with reasonable values
+            - (?) datalist (https://demo.agektmr.com/datalist)
+            - (?) datetime-local
       - [ ] Ewwwwww :-(
 ```
                 if cached.datetime.timezone != nil {
@@ -34,6 +32,8 @@
       - [ ] (?) Refactor DateTime out to use core implementation only
       - [ ] (?) Implement Ptr() for the repetitive assign to variable to take address thing
       - (Thoroughly rethink the whole timezone thing)
+      - [x] Do the 'uncertain/pending' thing for timezones
+      - [x] Add `datetime.modified` to controller.cached
 
 ### IN PROGRESS
 
