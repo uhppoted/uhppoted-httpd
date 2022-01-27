@@ -1,3 +1,12 @@
+const timezones = [
+  'UTC',
+  'GMT',
+  'PST',
+  'PST8PDT',
+  'Africa/Cairo',
+  'Etc/GMT-2'
+]
+
 class Combobox {
   constructor (input, list) {
     this.input = input
@@ -24,16 +33,30 @@ class Combobox {
     this.list.addEventListener('mouseover', this.onMouseOver.bind(this))
     this.list.addEventListener('mouseout', this.onMouseOut.bind(this))
 
-    const nodes = this.list.getElementsByTagName('LI')
-    for (let i = 0; i < nodes.length; i++) {
-      const option = nodes[i]
+    const now = new Date()
+    timezones.forEach(tz => {
+          const text = now.toLocaleString('default', { timeZone: tz }) + ' ' + tz
+          const li = document.createElement('li')
 
-      this.allOptions.push(option)
+          li.appendChild(document.createTextNode(text))
+          li.addEventListener('click', this.onOptionClick.bind(this))
+          li.addEventListener('mouseover', this.onMouseOver.bind(this))
+          li.addEventListener('mouseout', this.onMouseOut.bind(this))
+          
+          this.allOptions.push(li)
+          this.list.appendChild(li)
+    })
 
-      option.addEventListener('click', this.onOptionClick.bind(this))
-      option.addEventListener('mouseover', this.onMouseOver.bind(this))
-      option.addEventListener('mouseout', this.onMouseOut.bind(this))
-    }
+    // const nodes = this.list.getElementsByTagName('li')
+    // for (let i = 0; i < nodes.length; i++) {
+    //   const option = nodes[i]
+
+    //   this.allOptions.push(option)
+
+    //   option.addEventListener('click', this.onOptionClick.bind(this))
+    //   option.addEventListener('mouseover', this.onMouseOver.bind(this))
+    //   option.addEventListener('mouseout', this.onMouseOut.bind(this))
+    // }
   }
 
   initialise () {
@@ -88,8 +111,7 @@ class Combobox {
     this.setActiveDescendant(false)
   }
 
-  // ComboboxAutocomplete Events
-
+  // autocomplete Events
   setCurrentOptionStyle (option) {
     for (let i = 0; i < this.filteredOptions.length; i++) {
       const opt = this.filteredOptions[i]
@@ -330,4 +352,33 @@ export function initialise (combobox) {
   const cb = new Combobox(input, list)
 
   cb.initialise()
+
+  // console.log(new Date().toLocaleString('default', { timeZone: 'UTC' }));
+  // console.log(new Date().toLocaleString('default', { timeZone: 'PST' }));
+  // console.log(new Date().toLocaleString('default', { timeZone: 'GMT' }));
+  // console.log(new Date().toLocaleString('default', { timeZone: 'Africa/Maseru' }));
+  // console.log(new Date().toLocaleString('default', { timeZone: 'Etc/GMT-2' }));
+  // console.log(new Date().toLocaleString('default', { timeZone: 'PST8PDT' }));
 }
+
+// function format (timestamp) {
+//   const dt = Date.parse(timestamp)
+//   const fmt = function (v) {
+//     return v < 10 ? '0' + v.toString() : v.toString()
+//   }
+// 
+//   if (!isNaN(dt)) {
+//     const date = new Date(dt)
+//     const year = date.getFullYear()
+//     const month = fmt(date.getMonth() + 1)
+//     const day = fmt(date.getDate())
+//     const hour = fmt(date.getHours())
+//     const minute = fmt(date.getMinutes())
+//     const second = fmt(date.getSeconds())
+// 
+//     return `${year}-${month}-${day} ${hour}:${minute}:${second}`
+//   }
+// 
+//   return ''
+// }
+

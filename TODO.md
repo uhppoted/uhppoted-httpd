@@ -7,8 +7,11 @@
 
 - [ ] Fix DateTime mess
       - [ ] Combobox for datetime
-            - [ ] Initialise options with reasonable values
+            - [ ] Initialise options with suggested values
                    - (?) datalist (https://demo.agektmr.com/datalist)
+                   - https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+                   - https://devhints.io/wip/intl-datetime
+                   - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
             - [ ] Remove unused aria stuff
             - [ ] Let list overflow table
                   - https://css-tricks.com/popping-hidden-overflow/
