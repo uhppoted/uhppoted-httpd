@@ -10,10 +10,21 @@
             - [ ] Initialise options with reasonable values
                    - (?) datalist (https://demo.agektmr.com/datalist)
             - [ ] Remove unused aria stuff
+            - [ ] Let list overflow table
+                  - https://css-tricks.com/popping-hidden-overflow/
+```
+<div style="position:fixed; top:400px; left:400px; width:100%; height:100px;">
+  <ul role="listbox">
+    <li role="option">2022-01-26 10:47:36 PST</li>
+    <li role="option">2022-01-26 18:47:36 UTC</li>
+    <li role="option">2022-01-26 18:47:36 GMT</li>
+  </ul>
+</div>
+```
             - [ ] Fix keydown/keyup from input field
+            - [ ] (?) Use shadow DOM
             - [ ] Move combobox.css to sass
             - [ ] Fix list style
-            - [ ] Let list overflow table
             - [ ] Style for dark mode
             - (?) datetime-local
             - [x] Remove button
