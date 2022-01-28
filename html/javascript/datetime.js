@@ -146,7 +146,7 @@ class Combobox {
   open () {
     const rect = this.input.getBoundingClientRect()
 
-    this.list.style.top = `${rect.y+rect.height}px`
+    this.list.style.top = `${rect.y + rect.height}px`
     this.list.style.left = `${rect.x}px`
     this.list.style.display = 'block'
 

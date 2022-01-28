@@ -1,0 +1,40 @@
+.combobox {
+}
+
+.combobox ul {
+  display: none;
+  background: #eee8d5;
+  width:fit-content; 
+  max-height:32em;
+  margin-top: 4px;
+  margin-left: 4px;
+  padding-left: 1px;
+  padding-top: 2px;
+  padding-bottom: 4px;
+  
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow:auto;
+  z-index: 2;
+
+  list-style: none;
+  box-sizing: border-box;
+  border: 1px solid #93a1a1;
+  border-radius: 2px;
+  font-size: 0.95em;
+}
+
+.combobox ul li {
+  display: block;
+  padding-left: 0.4em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  padding-right: 8px;
+  text-align: left;
+  color: #666666;
+}
+
+.combobox ul li:hover {
+  background-color: #def;
+}
