@@ -50,7 +50,6 @@ created by net/http.(*Server).Serve
 
 - [ ] Fix DateTime mess
       - [ ] Combobox for datetime
-            - [ ] Remove unused aria stuff
             - [ ] Style for dark mode
             - [ ] Initialise options with suggested values
                    - (?) datalist (https://demo.agektmr.com/datalist)
@@ -59,6 +58,7 @@ created by net/http.(*Server).Serve
             - [ ] Make timezones a map between displayed and actual e.g. GMT+2 -> Etc/GMT+2
             - [ ] Fix keydown/keyup from input field
             - [ ] Fix list style
+            - [x] Remove unused aria stuff
             - [x] Move combobox.css to sass
             - [x] Let list overflow table (https://css-tricks.com/popping-hidden-overflow)
             - [x] Remove button

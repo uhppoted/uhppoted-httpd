@@ -44,14 +44,6 @@ class Combobox {
   initialise () {
   }
 
-  setActiveDescendant (option) {
-    if (option && this.listHasFocus) {
-      this.input.setAttribute('aria-activedescendant', option.id)
-    } else {
-      this.input.setAttribute('aria-activedescendant', '')
-    }
-  }
-
   setValue (value) {
     this.input.value = value
   }
@@ -64,7 +56,6 @@ class Combobox {
     if (option) {
       this.option = option
       this.setCurrentOptionStyle(this.option)
-      this.setActiveDescendant(this.option)
     }
   }
 
@@ -73,7 +64,6 @@ class Combobox {
     this.input.parentNode.classList.add('focus') // set the focus class to the parent for easier styling
     this.inputHasFocus = true
     this.listHasFocus = false
-    this.setActiveDescendant(false)
   }
 
   setVisualFocusListbox () {
@@ -81,7 +71,6 @@ class Combobox {
     this.inputHasFocus = false
     this.listHasFocus = true
     this.list.classList.add('focus')
-    this.setActiveDescendant(this.option)
   }
 
   removeVisualFocusAll () {
@@ -90,7 +79,6 @@ class Combobox {
     this.listHasFocus = false
     this.list.classList.remove('focus')
     this.option = null
-    this.setActiveDescendant(false)
   }
 
   // autocomplete Events
@@ -98,14 +86,11 @@ class Combobox {
     for (let i = 0; i < this.filteredOptions.length; i++) {
       const opt = this.filteredOptions[i]
       if (opt === option) {
-        opt.setAttribute('aria-selected', 'true')
         if (this.list.scrollTop + this.list.offsetHeight < opt.offsetTop + opt.offsetHeight) {
           this.list.scrollTop = opt.offsetTop + opt.offsetHeight - this.list.offsetHeight
         } else if (this.list.scrollTop > opt.offsetTop + 2) {
           this.list.scrollTop = opt.offsetTop
         }
-      } else {
-        opt.removeAttribute('aria-selected')
       }
     }
   }
@@ -126,11 +111,6 @@ class Combobox {
     return this.firstOption
   }
 
-  // list display functions
-  doesOptionHaveFocus () {
-    return this.input.getAttribute('aria-activedescendant') !== ''
-  }
-
   isOpen () {
     return this.list.style.display === 'block'
   }
@@ -149,8 +129,6 @@ class Combobox {
     this.list.style.top = `${rect.y + rect.height}px`
     this.list.style.left = `${rect.x}px`
     this.list.style.display = 'block'
-
-    this.input.setAttribute('aria-expanded', 'true')
   }
 
   close (force) {
@@ -161,8 +139,6 @@ class Combobox {
     if (force || (!this.inputHasFocus && !this.listHasFocus && !this.hasHover)) {
       this.setCurrentOptionStyle(false)
       this.list.style.display = 'none'
-      this.input.setAttribute('aria-expanded', 'false')
-      this.setActiveDescendant(false)
     }
   }
 
