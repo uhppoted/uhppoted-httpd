@@ -1,5 +1,6 @@
 ## v0.7.x
 
+- [x] Add -trimpath to `go build`
 - [x] `concurrent map read and map write`
 ```
       2022/01/28 11:08:58 DEBUG GET  /doors
