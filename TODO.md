@@ -12,26 +12,17 @@
                    - https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
                    - https://devhints.io/wip/intl-datetime
                    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
+            - [ ] Make timezones a map between displayed and actual e.g. GMT+2 -> Etc/GMT+2
             - [ ] Remove unused aria stuff
-            - [ ] Let list overflow table
-                  - https://css-tricks.com/popping-hidden-overflow/
-```
-<div style="position:fixed; top:400px; left:400px; width:100%; height:100px;">
-  <ul role="listbox">
-    <li role="option">2022-01-26 10:47:36 PST</li>
-    <li role="option">2022-01-26 18:47:36 UTC</li>
-    <li role="option">2022-01-26 18:47:36 GMT</li>
-  </ul>
-</div>
-```
             - [ ] Fix keydown/keyup from input field
             - [ ] (?) Use shadow DOM
             - [ ] Move combobox.css to sass
             - [ ] Fix list style
             - [ ] Style for dark mode
-            - (?) datetime-local
+            - [x] Let list overflow table (https://css-tricks.com/popping-hidden-overflow)
             - [x] Remove button
             - [x] Rename combobox.js to datetime.js
+            - (?) datetime-local
 
       - [ ] (?) Treat empty DateTime as the null value
       - [ ] (?) Change Format(), etc to not take pointer receiver

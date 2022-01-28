@@ -49,6 +49,7 @@ tr td input {
   border-radius: 3px;
   padding: 2px 4px 2px 4px;
   outline: none;
+  text-overflow: ellipsis;
   -moz-appearance:textfield;
 }
 

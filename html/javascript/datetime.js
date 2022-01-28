@@ -1,11 +1,4 @@
-const timezones = [
-  'UTC',
-  'GMT',
-  'PST',
-  'PST8PDT',
-  'Africa/Cairo',
-  'Etc/GMT-2'
-]
+import { timezones } from './timezones.js'
 
 class Combobox {
   constructor (input, list) {
@@ -35,28 +28,17 @@ class Combobox {
 
     const now = new Date()
     timezones.forEach(tz => {
-          const text = now.toLocaleString('default', { timeZone: tz }) + ' ' + tz
-          const li = document.createElement('li')
+      const text = now.toLocaleString('default', { timeZone: tz }) + ' ' + tz
+      const li = document.createElement('li')
 
-          li.appendChild(document.createTextNode(text))
-          li.addEventListener('click', this.onOptionClick.bind(this))
-          li.addEventListener('mouseover', this.onMouseOver.bind(this))
-          li.addEventListener('mouseout', this.onMouseOut.bind(this))
-          
-          this.allOptions.push(li)
-          this.list.appendChild(li)
+      li.appendChild(document.createTextNode(text))
+      li.addEventListener('click', this.onOptionClick.bind(this))
+      li.addEventListener('mouseover', this.onMouseOver.bind(this))
+      li.addEventListener('mouseout', this.onMouseOut.bind(this))
+
+      this.allOptions.push(li)
+      this.list.appendChild(li)
     })
-
-    // const nodes = this.list.getElementsByTagName('li')
-    // for (let i = 0; i < nodes.length; i++) {
-    //   const option = nodes[i]
-
-    //   this.allOptions.push(option)
-
-    //   option.addEventListener('click', this.onOptionClick.bind(this))
-    //   option.addEventListener('mouseover', this.onMouseOver.bind(this))
-    //   option.addEventListener('mouseout', this.onMouseOut.bind(this))
-    // }
   }
 
   initialise () {
@@ -162,7 +144,12 @@ class Combobox {
   }
 
   open () {
+    const rect = this.input.getBoundingClientRect()
+
+    this.list.style.top = `${rect.y+rect.height}px`
+    this.list.style.left = `${rect.x}px`
     this.list.style.display = 'block'
+
     this.input.setAttribute('aria-expanded', 'true')
   }
 
@@ -366,7 +353,7 @@ export function initialise (combobox) {
 //   const fmt = function (v) {
 //     return v < 10 ? '0' + v.toString() : v.toString()
 //   }
-// 
+//
 //   if (!isNaN(dt)) {
 //     const date = new Date(dt)
 //     const year = date.getFullYear()
@@ -375,10 +362,9 @@ export function initialise (combobox) {
 //     const hour = fmt(date.getHours())
 //     const minute = fmt(date.getMinutes())
 //     const second = fmt(date.getSeconds())
-// 
+//
 //     return `${year}-${month}-${day} ${hour}:${minute}:${second}`
 //   }
-// 
+//
 //   return ''
 // }
-
