@@ -1,47 +1,19 @@
 ## v0.7.x
 
-- [ ] **PANIC**
+- [x] `concurrent map read and map write`
 ```
-2022/01/28 11:08:58 DEBUG GET  /doors
-fatal error: concurrent map read and map write
+      2022/01/28 11:08:58 DEBUG GET  /doors
+      fatal error: concurrent map read and map write
 
-goroutine 2399 [running]:
-runtime.throw({0x171c322, 0x2fbff7f0})
-  /usr/local/go/src/runtime/panic.go:1198 +0x71 fp=0xc0002e7480 sp=0xc0002e7450 pc=0x1034a51
-runtime.mapaccess2(0xc0752da3afbff7f0, 0x2c61fae59bb, 0x1cb39e0)
-  /usr/local/go/src/runtime/map.go:469 +0x205 fp=0xc0002e74c0 sp=0xc0002e7480 pc=0x100fb05
-github.com/uhppoted/uhppoted-httpd/auth.(*Local).extant(0xc0002009a0, 0x1, {0x11, 0x28, 0x7f, 0x7a, 0x80, 0x6d, 0x11, 0xec, ...})
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/auth/local.go:616 +0x114 fp=0xc0002e7570 sp=0xc0002e74c0 pc=0x1533f14
-github.com/uhppoted/uhppoted-httpd/auth.(*Local).Authenticated(0xc0002009a0, {0xc0001f8036, 0x1737bf0})
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/auth/local.go:385 +0x10e fp=0xc0002e7670 sp=0xc0002e7570 pc=0x153222e
-github.com/uhppoted/uhppoted-httpd/httpd/auth.(*Basic).Authenticated(0xc000126d80, 0x1713f27)
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/httpd/auth/basic.go:81 +0x49 fp=0xc0002e7778 sp=0xc0002e7670 pc=0x156cbc9
-github.com/uhppoted/uhppoted-httpd/httpd.(*dispatcher).authenticated(0xc0002bdbc0, 0x1209e07, {0x17dc5b0, 0xc00018a000})
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/httpd/httpd.go:228 +0xeb fp=0xc0002e77f0 sp=0xc0002e7778 pc=0x15bbdab
-github.com/uhppoted/uhppoted-httpd/httpd.(*dispatcher).fetch(0xc0002bdbc0, 0xc00040c100, {0x17dc5b0, 0xc00018a000}, {0x17375d0, 0x1737608})
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/httpd/get.go:206 +0xd5 fp=0xc0002e7950 sp=0xc0002e77f0 pc=0x15b90f5
-github.com/uhppoted/uhppoted-httpd/httpd.(*dispatcher).get(0xc000454740, {0x17dc5b0, 0xc00018a000}, 0xc00040c100)
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/httpd/get.go:44 +0x1ca fp=0xc0002e7998 sp=0xc0002e7950 pc=0x15b7a6a
-github.com/uhppoted/uhppoted-httpd/httpd.(*dispatcher).dispatch(0xc0002e7a30, {0x17dc5b0, 0xc00018a000}, 0xc00040c100)
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/httpd/httpd.go:213 +0x292 fp=0xc0002e7a18 sp=0xc0002e7998 pc=0x15bbbf2
-github.com/uhppoted/uhppoted-httpd/httpd.(*dispatcher).dispatch-fm({0x17dc5b0, 0xc00018a000}, 0x0)
-  /Users/tonyseebregts/Development/uhppote/uhppoted/uhppoted-httpd/httpd/httpd.go:202 +0x3c fp=0xc0002e7a48 sp=0xc0002e7a18 pc=0x15bec3c
-net/http.HandlerFunc.ServeHTTP(0x0, {0x17dc5b0, 0xc00018a000}, 0x0)
-  /usr/local/go/src/net/http/server.go:2046 +0x2f fp=0xc0002e7a70 sp=0xc0002e7a48 pc=0x12e196f
-net/http.(*ServeMux).ServeHTTP(0x0, {0x17dc5b0, 0xc00018a000}, 0xc00040c100)
-  /usr/local/go/src/net/http/server.go:2424 +0x149 fp=0xc0002e7ac0 sp=0xc0002e7a70 pc=0x12e3269
-net/http.serverHandler.ServeHTTP({0xc000948f90}, {0x17dc5b0, 0xc00018a000}, 0xc00040c100)
-  /usr/local/go/src/net/http/server.go:2878 +0x43b fp=0xc0002e7b80 sp=0xc0002e7ac0 pc=0x12e4edb
-net/http.(*conn).serve(0xc0001b8460, {0x17e05e0, 0xc00011b290})
-  /usr/local/go/src/net/http/server.go:1929 +0xb08 fp=0xc0002e7fb8 sp=0xc0002e7b80 pc=0x12e0a48
-net/http.(*Server).Serve·dwrap·82()
-  /usr/local/go/src/net/http/server.go:3033 +0x2e fp=0xc0002e7fe0 sp=0xc0002e7fb8 pc=0x12e582e
-runtime.goexit()
-  /usr/local/go/src/runtime/asm_amd64.s:1581 +0x1 fp=0xc0002e7fe8 sp=0xc0002e7fe0 pc=0x1064fe1
-created by net/http.(*Server).Serve
-  /usr/local/go/src/net/http/server.go:3033 +0x4e8
-
+      goroutine 2399 [running]:
+      runtime.throw({0x171c322, 0x2fbff7f0})
+        /usr/local/go/src/runtime/panic.go:1198 +0x71 fp=0xc0002e7480 sp=0xc0002e7450 pc=0x1034a51
+      runtime.mapaccess2(0xc0752da3afbff7f0, 0x2c61fae59bb, 0x1cb39e0)
+        /usr/local/go/src/runtime/map.go:469 +0x205 fp=0xc0002e74c0 sp=0xc0002e7480 pc=0x100fb05
+      github.com/uhppoted/uhppoted-httpd/auth.(*Local).extant(0xc0002009a0, 0x1, {0x11, 0x28, 0x7f, 0x7a, 0x80, 0x6d, 0x11, 0xec, ...})
 ```
+      - [ ] Move Local.user/keys/resources to guarded struct
+      - [ ] Unit tests for guarded structs
 
 - [ ] Finish structuring catalog.schema
       - [ ] (?) Generate schema.js from catalog.Schema
@@ -57,7 +29,7 @@ created by net/http.(*Server).Serve
                    - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
             - [ ] Make timezones a map between displayed and actual e.g. GMT+2 -> Etc/GMT+2
             - [ ] Fix keydown/keyup from input field
-            - [ ] Fix list style
+            - [ ] Tweak list style
             - [x] Remove unused aria stuff
             - [x] Move combobox.css to sass
             - [x] Let list overflow table (https://css-tricks.com/popping-hidden-overflow)

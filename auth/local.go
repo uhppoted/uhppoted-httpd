@@ -40,15 +40,19 @@ type Local struct {
 	keys      [][]byte
 	users     map[string]*user
 	resources []resource
+	guard     sync.Mutex
 
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
 	file          string
 
-	logins   map[uuid.UUID]time.Time
-	sessions map[uuid.UUID]time.Time
+	logins   sessions
+	sessions sessions
+}
 
+type sessions struct {
 	guard sync.Mutex
+	list  map[uuid.UUID]time.Time
 }
 
 type salt []byte
@@ -87,8 +91,14 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 		loginExpiry:   1 * time.Minute,
 		sessionExpiry: 60 * time.Minute,
 		file:          file,
-		logins:        map[uuid.UUID]time.Time{},
-		sessions:      map[uuid.UUID]time.Time{},
+
+		logins: sessions{
+			list: map[uuid.UUID]time.Time{},
+		},
+
+		sessions: sessions{
+			list: map[uuid.UUID]time.Time{},
+		},
 	}
 
 	if err := provider.load(file); err != nil {
@@ -177,7 +187,7 @@ func (p *Local) Preauthenticate() (string, error) {
 		return "", err
 	}
 
-	p.logins[loginId] = time.Now()
+	p.touched(Login, loginId)
 
 	return token.String(), nil
 }
@@ -237,7 +247,7 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 		return "", err
 	}
 
-	p.sessions[sessionId] = time.Now()
+	p.touched(Session, sessionId)
 
 	return token.String(), nil
 }
@@ -265,23 +275,23 @@ func (p *Local) Validate(uid, pwd string) error {
 }
 
 func (p *Local) Invalidate(tokenType TokenType, cookie string) error {
-	//	token, _, err := p.getToken(cookie)
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	var claims claims
-	//	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
-	//		return err
-	//	}
-	//
-	//	switch tokenType {
-	//	case Login:
-	//		delete(p.logins, claims.Login.LoginId)
-	//
-	//	case Session:
-	//		delete(p.sessions, claims.Session.SessionId)
-	//	}
+	token, _, err := p.getToken(cookie)
+	if err != nil {
+		return err
+	}
+
+	var claims claims
+	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
+		return err
+	}
+
+	switch tokenType {
+	case Login:
+		p.logins.delete(claims.Login.LoginId)
+
+	case Session:
+		p.sessions.delete(claims.Session.SessionId)
+	}
 
 	return nil
 }
@@ -336,8 +346,6 @@ func (p *Local) Verify(tokenType TokenType, cookie string) error {
 			return fmt.Errorf("Invalid audience in JWT claims")
 		} else if claims.Login == nil {
 			return fmt.Errorf("Invalid login token")
-		} else if _, ok := p.logins[claims.Login.LoginId]; !ok {
-			return fmt.Errorf("No extant login token for %v", claims.Login.LoginId)
 		} else if err := p.extant(Login, claims.Login.LoginId); err != nil {
 			return err
 		} else {
@@ -386,7 +394,7 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 		return "", "", "", err
 	}
 
-	p.sessions[claims.Session.SessionId] = time.Now()
+	p.touched(Session, claims.Session.SessionId)
 
 	if keyID == 1 {
 		return claims.Session.LoggedInAs, claims.Session.Role, "", nil
@@ -478,11 +486,12 @@ func (p *Local) deserialize(bytes []byte) error {
 		Resources: []resource{},
 	}
 
-	p.guard.Lock()
-	defer p.guard.Unlock()
 	if err := json.Unmarshal(bytes, &serializable); err != nil {
 		return err
 	}
+
+	p.guard.Lock()
+	defer p.guard.Unlock()
 
 	p.users = serializable.Users
 	p.resources = serializable.Resources
@@ -598,57 +607,53 @@ func (p *Local) regenerate() {
 }
 
 func (p *Local) extant(tokenType TokenType, id uuid.UUID) error {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	cutoff := time.Now().Add(-constants.IDLETIME)
-
 	switch tokenType {
 	case Login:
-
-		if touched, ok := p.logins[id]; !ok {
-			return fmt.Errorf("No extant login for login ID '%v'", id)
-		} else if touched.Before(cutoff) {
-			return fmt.Errorf("Login '%v' expired", id)
-		}
+		return p.logins.extant(id)
 
 	case Session:
-		if touched, ok := p.sessions[id]; !ok {
-			return fmt.Errorf("No extant session for session ID '%v'", id)
-		} else if touched.Before(cutoff) {
-			return fmt.Errorf("Session '%v' expired", id)
-		}
+		return p.sessions.extant(id)
 	}
 
 	return nil
 }
 
-func (p *Local) sweep() {
-	p.guard.Lock()
-	defer p.guard.Unlock()
+func (p *Local) touched(tt TokenType, uuid uuid.UUID) {
+	switch tt {
+	case Login:
+		p.logins.touched(uuid)
+	case Session:
+		p.sessions.touched(uuid)
+	}
+}
 
+func (p *Local) sweep() {
 	caches := []struct {
-		cache  map[uuid.UUID]time.Time
+		cache  *sessions
 		format string
 	}{
-		{p.logins, "%-5v Deleted idle login %v"},
-		{p.sessions, "%-5v Deleted idle session %v"},
+		{&p.logins, "%-5v Deleted idle login %v"},
+		{&p.sessions, "%-5v Deleted idle session %v"},
 	}
 
 	cutoff := time.Now().Add(-2 * constants.IDLETIME)
 
 	for _, c := range caches {
+		c.cache.guard.Lock()
+
 		list := []uuid.UUID{}
-		for k, touched := range c.cache {
+		for k, touched := range c.cache.list {
 			if touched.Before(cutoff) {
 				list = append(list, k)
 			}
 		}
 
 		for _, k := range list {
-			delete(c.cache, k)
+			delete(c.cache.list, k)
 			log.Printf(c.format, "INFO", k)
 		}
+
+		c.cache.guard.Unlock()
 	}
 }
 
@@ -660,6 +665,35 @@ func genKey() ([]byte, error) {
 	}
 
 	return key, nil
+}
+
+func (ss *sessions) touched(uuid uuid.UUID) {
+	ss.guard.Lock()
+	defer ss.guard.Unlock()
+
+	ss.list[uuid] = time.Now()
+}
+
+func (ss *sessions) extant(uuid uuid.UUID) error {
+	cutoff := time.Now().Add(-constants.IDLETIME)
+
+	ss.guard.Lock()
+	defer ss.guard.Unlock()
+
+	if touched, ok := ss.list[uuid]; !ok {
+		return fmt.Errorf("No extant session for ID '%v'", uuid)
+	} else if touched.Before(cutoff) {
+		return fmt.Errorf("Session '%v' expired", uuid)
+	}
+
+	return nil
+}
+
+func (ss *sessions) delete(uuid uuid.UUID) {
+	ss.guard.Lock()
+	defer ss.guard.Unlock()
+
+	delete(ss.list, uuid)
 }
 
 func (s *salt) MarshalJSON() ([]byte, error) {
