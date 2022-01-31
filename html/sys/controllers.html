@@ -93,7 +93,7 @@
               <tbody></tbody>
               <tfoot></tfoot>
             </table>
-
+            
             <template id="controller">
                 <td class="rowheader" style="display:flex; flex-direction:row;">
                   <img class="flag name" src="/images/{{$.context.Theme}}/corner.svg" />
@@ -116,7 +116,8 @@
                 <td class="ID">
                   <img class="flag ID" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field ID"
-                         type="number" 
+                         type="text" 
+                         list="fruits" 
                          min="0"
                          value=""
                          placeholder="-"

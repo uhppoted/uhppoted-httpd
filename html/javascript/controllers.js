@@ -2,6 +2,9 @@ import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 import * as combobox from './datetime.js'
+// import { timezones } from './timezones.js'
+
+const dropdowns = new Map()
 
 export function refreshed () {
   const list = [...DB.controllers.values()]
@@ -84,6 +87,13 @@ function updateFromDB (oid, record) {
   address.dataset.original = record.address.configured
   datetime.dataset.original = record.datetime.expected
 
+  // .. initialise date/time picker
+  const cb = dropdowns.get(`${oid}${schema.controllers.datetime.current}`)
+
+  if (cb) {
+    combobox.set(cb, Date.parse(record.datetime.datetime))
+  }
+
   return row
 }
 
@@ -155,8 +165,11 @@ function add (oid, record) {
     })
 
     // .. initialise date/time picker
-    combobox.initialise(row.querySelector('td.combobox'))
+    const cb = combobox.initialise(row.querySelector('td.combobox'))
+
+    dropdowns.set(`${oid}${schema.controllers.datetime.current}`, cb)
 
     return row
   }
 }
+

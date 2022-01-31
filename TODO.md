@@ -1,18 +1,6 @@
 ## v0.7.x
 
-- [x] Add -trimpath to `go build`
 - [x] `concurrent map read and map write`
-```
-      2022/01/28 11:08:58 DEBUG GET  /doors
-      fatal error: concurrent map read and map write
-
-      goroutine 2399 [running]:
-      runtime.throw({0x171c322, 0x2fbff7f0})
-        /usr/local/go/src/runtime/panic.go:1198 +0x71 fp=0xc0002e7480 sp=0xc0002e7450 pc=0x1034a51
-      runtime.mapaccess2(0xc0752da3afbff7f0, 0x2c61fae59bb, 0x1cb39e0)
-        /usr/local/go/src/runtime/map.go:469 +0x205 fp=0xc0002e74c0 sp=0xc0002e7480 pc=0x100fb05
-      github.com/uhppoted/uhppoted-httpd/auth.(*Local).extant(0xc0002009a0, 0x1, {0x11, 0x28, 0x7f, 0x7a, 0x80, 0x6d, 0x11, 0xec, ...})
-```
       - [ ] Move Local.user/keys/resources to guarded struct
       - [ ] Unit tests for guarded structs
 
@@ -24,13 +12,12 @@
 - [ ] Fix DateTime mess
       - [ ] Combobox for datetime
             - [ ] Style for dark mode
-            - [ ] Initialise options with suggested values
-                   - (?) datalist (https://demo.agektmr.com/datalist)
-                   - https://devhints.io/wip/intl-datetime
-                   - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
-            - [ ] Make timezones a map between displayed and actual e.g. GMT+2 -> Etc/GMT+2
-            - [ ] Fix keydown/keyup from input field
             - [ ] Tweak list style
+            - [ ] Initialise options with suggested values
+                  - [ ] 'local' option without timezone
+                  - [ ] Rework timezones as a Map of timezone to formatter
+                  - [ ] Make timezones a map between displayed and actual e.g. GMT+2 -> Etc/GMT+2
+            - [ ] Fix keydown/keyup from input field
             - [x] Remove unused aria stuff
             - [x] Move combobox.css to sass
             - [x] Let list overflow table (https://css-tricks.com/popping-hidden-overflow)
@@ -250,3 +237,5 @@
 # REFERENCES
 
 - https://stackoverflow.com/questions/40328932/javascript-es6-promise-for-loop
+- [datalist](https://demo.agektmr.com/datalist)
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat

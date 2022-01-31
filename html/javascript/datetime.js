@@ -25,23 +25,43 @@ class Combobox {
     // ... setup options list
     this.list.addEventListener('mouseover', this.onMouseOver.bind(this))
     this.list.addEventListener('mouseout', this.onMouseOut.bind(this))
-
-    const now = new Date()
-    timezones.forEach(tz => {
-      const text = now.toLocaleString('default', { timeZone: tz }) + ' ' + tz
-      const li = document.createElement('li')
-
-      li.appendChild(document.createTextNode(text))
-      li.addEventListener('click', this.onOptionClick.bind(this))
-      li.addEventListener('mouseover', this.onMouseOver.bind(this))
-      li.addEventListener('mouseout', this.onMouseOut.bind(this))
-
-      this.allOptions.push(li)
-      this.list.appendChild(li)
-    })
   }
 
-  initialise () {
+  initialise (dt) {
+    const options = [...(this.list.children)]
+
+    for (let option of options) {
+      this.list.removeChild(option)
+    }
+
+    if (dt && !Number.isNaN(dt)) {
+      const now = new Date(dt)
+
+      timezones.forEach(tz => {
+        const fmt = new Intl.DateTimeFormat('en-ca-iso8601' , {
+                          timeZone: tz,
+                          timeZoneName: 'short',
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: 'numeric',
+                          minute: '2-digit',
+                          second: '2-digit',
+                          hour12: false,
+                        })
+
+        const text = fmt.format(now).replaceAll(',','')
+        const li = document.createElement('li')
+
+        li.appendChild(document.createTextNode(text))
+        li.addEventListener('click', this.onOptionClick.bind(this))
+        li.addEventListener('mouseover', this.onMouseOver.bind(this))
+        li.addEventListener('mouseout', this.onMouseOut.bind(this))
+
+        this.allOptions.push(li)
+        this.list.appendChild(li)
+      })
+    }
   }
 
   setValue (value) {
@@ -314,33 +334,10 @@ export function initialise (combobox) {
   const list = combobox.querySelector('ul')
   const cb = new Combobox(input, list)
 
-  cb.initialise()
-
-  // console.log(new Date().toLocaleString('default', { timeZone: 'UTC' }));
-  // console.log(new Date().toLocaleString('default', { timeZone: 'PST' }));
-  // console.log(new Date().toLocaleString('default', { timeZone: 'GMT' }));
-  // console.log(new Date().toLocaleString('default', { timeZone: 'Africa/Maseru' }));
-  // console.log(new Date().toLocaleString('default', { timeZone: 'Etc/GMT-2' }));
-  // console.log(new Date().toLocaleString('default', { timeZone: 'PST8PDT' }));
+  return cb
 }
 
-// function format (timestamp) {
-//   const dt = Date.parse(timestamp)
-//   const fmt = function (v) {
-//     return v < 10 ? '0' + v.toString() : v.toString()
-//   }
-//
-//   if (!isNaN(dt)) {
-//     const date = new Date(dt)
-//     const year = date.getFullYear()
-//     const month = fmt(date.getMonth() + 1)
-//     const day = fmt(date.getDate())
-//     const hour = fmt(date.getHours())
-//     const minute = fmt(date.getMinutes())
-//     const second = fmt(date.getSeconds())
-//
-//     return `${year}-${month}-${day} ${hour}:${minute}:${second}`
-//   }
-//
-//   return ''
-// }
+export function set (cb, dt) {
+  cb.initialise(dt)
+}
+
