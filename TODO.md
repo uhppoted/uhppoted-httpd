@@ -15,8 +15,7 @@
             - [ ] Tweak list style
             - [ ] Initialise options with suggested values
                   - [ ] 'local' option without timezone
-                  - [ ] Rework timezones as a Map of timezone to formatter
-                  - [ ] Make timezones a map between displayed and actual e.g. GMT+2 -> Etc/GMT+2
+                  - [ ] Fix timezones formattter and deduplicate
             - [ ] Fix keydown/keyup from input field
             - [x] Remove unused aria stuff
             - [x] Move combobox.css to sass

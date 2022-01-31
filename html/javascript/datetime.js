@@ -30,27 +30,15 @@ class Combobox {
   initialise (dt) {
     const options = [...(this.list.children)]
 
-    for (let option of options) {
+    for (const option of options) {
       this.list.removeChild(option)
     }
 
     if (dt && !Number.isNaN(dt)) {
       const now = new Date(dt)
 
-      timezones.forEach(tz => {
-        const fmt = new Intl.DateTimeFormat('en-ca-iso8601' , {
-                          timeZone: tz,
-                          timeZoneName: 'short',
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: 'numeric',
-                          minute: '2-digit',
-                          second: '2-digit',
-                          hour12: false,
-                        })
-
-        const text = fmt.format(now).replaceAll(',','')
+      timezones.forEach((format, tz) => {
+        const text = format(now, tz)
         const li = document.createElement('li')
 
         li.appendChild(document.createTextNode(text))
@@ -340,4 +328,3 @@ export function initialise (combobox) {
 export function set (cb, dt) {
   cb.initialise(dt)
 }
-
