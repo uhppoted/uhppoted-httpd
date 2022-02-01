@@ -13,10 +13,8 @@
       - [ ] Combobox for datetime
             - [ ] Style for dark mode
             - [ ] Tweak list style
-            - [ ] Initialise options with suggested values
-                  - [ ] 'local' option without timezone
-                  - [ ] Fix timezones formattter and deduplicate
             - [ ] Fix keydown/keyup from input field
+            - [x] Initialise options with suggested values
             - [x] Remove unused aria stuff
             - [x] Move combobox.css to sass
             - [x] Let list overflow table (https://css-tricks.com/popping-hidden-overflow)

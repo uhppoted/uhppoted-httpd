@@ -28,26 +28,26 @@ class Combobox {
   }
 
   initialise (dt) {
-    const options = [...(this.list.children)]
-
-    for (const option of options) {
-      this.list.removeChild(option)
-    }
-
     if (dt && !Number.isNaN(dt)) {
       const now = new Date(dt)
+      const options = new Set([...timezones.entries()].map(([tz, f]) => { return f(now, tz) }).sort())
 
-      timezones.forEach((format, tz) => {
-        const text = format(now, tz)
+      for (const e of [...(this.list.children)]) {
+        this.list.removeChild(e)
+      }
+
+      this.allOptions.length = 0
+
+      options.forEach(o => {
         const li = document.createElement('li')
 
-        li.appendChild(document.createTextNode(text))
+        li.appendChild(document.createTextNode(o))
         li.addEventListener('click', this.onOptionClick.bind(this))
         li.addEventListener('mouseover', this.onMouseOver.bind(this))
         li.addEventListener('mouseout', this.onMouseOut.bind(this))
 
-        this.allOptions.push(li)
         this.list.appendChild(li)
+        this.allOptions.push(li)
       })
     }
   }
