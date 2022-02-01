@@ -9,11 +9,10 @@ class Combobox {
     this.listHasFocus = false
     this.hasHover = false
 
-    this.allOptions = []
-    this.filteredOptions = []
+    this.options = []
     this.option = null
-    this.firstOption = null
-    this.lastOption = null
+    this.first = null
+    this.last = null
 
     // ... setup input field
     this.input.addEventListener('keydown', this.onInputKeyDown.bind(this))
@@ -36,7 +35,9 @@ class Combobox {
         this.list.removeChild(e)
       }
 
-      this.allOptions.length = 0
+      this.options.length = 0
+      this.first = null
+      this.last = null
 
       options.forEach(o => {
         const li = document.createElement('li')
@@ -47,8 +48,13 @@ class Combobox {
         li.addEventListener('mouseout', this.onMouseOut.bind(this))
 
         this.list.appendChild(li)
-        this.allOptions.push(li)
+        this.options.push(li)
       })
+
+      if (this.options.length > 0) {
+        this.first = this.options[0]
+        this.last = this.options[this.options.length - 1]
+      }
     }
   }
 
@@ -56,11 +62,7 @@ class Combobox {
     this.input.value = value
   }
 
-  setOption (option, flag) {
-    if (typeof flag !== 'boolean') {
-      flag = false
-    }
-
+  setOption (option) {
     if (option) {
       this.option = option
       this.setCurrentOptionStyle(this.option)
@@ -89,34 +91,37 @@ class Combobox {
     this.option = null
   }
 
-  // autocomplete Events
   setCurrentOptionStyle (option) {
-    for (let i = 0; i < this.filteredOptions.length; i++) {
-      const opt = this.filteredOptions[i]
+    for (let i = 0; i < this.options.length; i++) {
+      const opt = this.options[i]
       if (opt === option) {
+        opt.classList.add('selected')
         if (this.list.scrollTop + this.list.offsetHeight < opt.offsetTop + opt.offsetHeight) {
           this.list.scrollTop = opt.offsetTop + opt.offsetHeight - this.list.offsetHeight
         } else if (this.list.scrollTop > opt.offsetTop + 2) {
           this.list.scrollTop = opt.offsetTop
         }
+      } else {
+        opt.classList.remove('selected')
       }
     }
   }
 
   getPreviousOption (currentOption) {
-    if (currentOption !== this.firstOption) {
-      const index = this.filteredOptions.indexOf(currentOption)
-      return this.filteredOptions[index - 1]
+    if (currentOption !== this.first) {
+      const index = this.options.indexOf(currentOption)
+      return this.options[index - 1]
     }
-    return this.lastOption
+    return this.last
   }
 
   getNextOption (currentOption) {
-    if (currentOption !== this.lastOption) {
-      const index = this.filteredOptions.indexOf(currentOption)
-      return this.filteredOptions[index + 1]
+    if (currentOption !== this.last) {
+      const index = this.options.indexOf(currentOption)
+      return this.options[index + 1]
     }
-    return this.firstOption
+
+    return this.first
   }
 
   isOpen () {
@@ -128,7 +133,7 @@ class Combobox {
   }
 
   hasOptions () {
-    return this.filteredOptions.length
+    return this.options.length
   }
 
   open () {
@@ -171,16 +176,16 @@ class Combobox {
 
       case 'Down':
       case 'ArrowDown':
-        if (this.filteredOptions.length > 0) {
+        if (this.options.length > 0) {
           if (altKey) {
             this.open()
           } else {
             this.open()
             if (this.listHasFocus) {
-              this.setOption(this.getNextOption(this.option), true)
+              this.setOption(this.getNextOption(this.option))
               this.setVisualFocusListbox()
             } else {
-              this.setOption(this.firstOption, true)
+              this.setOption(this.first)
               this.setVisualFocusListbox()
             }
           }
@@ -192,11 +197,11 @@ class Combobox {
       case 'ArrowUp':
         if (this.hasOptions()) {
           if (this.listHasFocus) {
-            this.setOption(this.getPreviousOption(this.option), true)
+            this.setOption(this.getPreviousOption(this.option))
           } else {
             this.open()
             if (!altKey) {
-              this.setOption(this.lastOption, true)
+              this.setOption(this.last)
               this.setVisualFocusListbox()
             }
           }

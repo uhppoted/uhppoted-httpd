@@ -13,7 +13,7 @@
       - [ ] Combobox for datetime
             - [ ] Style for dark mode
             - [ ] Tweak list style
-            - [ ] Fix keydown/keyup from input field
+            - [x] Fix keydown/keyup from input field
             - [x] Initialise options with suggested values
             - [x] Remove unused aria stuff
             - [x] Move combobox.css to sass

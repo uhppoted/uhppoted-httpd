@@ -25,6 +25,9 @@
   font-size: 0.95em;
 }
 
+.combobox ul:focus {
+}
+
 .combobox ul li {
   display: block;
   padding-left: 0.4em;
@@ -33,6 +36,10 @@
   padding-right: 8px;
   text-align: left;
   color: #666666;
+}
+
+.combobox ul li.selected {
+  background-color: #def;
 }
 
 .combobox ul li:hover {
