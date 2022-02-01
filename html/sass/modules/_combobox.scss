@@ -3,7 +3,7 @@
 
 .combobox ul {
   display: none;
-  background: #eee8d5;
+  background: $combobox-background;
   width:fit-content; 
   max-height:32em;
   margin-top: 4px;
@@ -20,7 +20,7 @@
 
   list-style: none;
   box-sizing: border-box;
-  border: 1px solid #93a1a1;
+  border: $combobox-border;
   border-radius: 2px;
   font-size: 0.95em;
 }
@@ -35,13 +35,13 @@
   padding-bottom: 0.2em;
   padding-right: 8px;
   text-align: left;
-  color: #666666;
+  color: $combobox-li-colour;
 }
 
 .combobox ul li.selected {
-  background-color: #def;
+  background-color: $combobox-li-selected;
 }
 
 .combobox ul li:hover {
-  background-color: #def;
+  background-color: $combobox-li-selected;
 }

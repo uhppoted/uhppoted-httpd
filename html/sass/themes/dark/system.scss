@@ -1,5 +1,8 @@
 @charset 'UTF-8';
 
+@import '../../base/_solarize';
+@import '../../base/_default';
+ 
 @import '_uhppoted';
 @import '_tabular';
 @import '_common';
@@ -8,4 +11,3 @@
 tr.controller td input[data-status="error"] {
   font-weight: normal; 
 }
-

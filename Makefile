@@ -86,7 +86,8 @@ debug: format
 
 # NOTE: sass --watch doesn't seem to consistently pick up changes in themed partials
 sass:
-	find html/sass -name "*.scss" | entr sass --no-source-map html/sass/stylesheets:html/css/default html/sass/themes/light:html/css/light html/sass/themes/dark:html/css/dark
+	find html/sass -name "*.scss" | entr sass --no-source-map html/sass/themes/light:html/css/light html/sass/themes/dark:html/css/dark
+	# find html/sass -name "*.scss" | entr sass --no-source-map html/sass/stylesheets:html/css/default html/sass/themes/light:html/css/light html/sass/themes/dark:html/css/dark
 
 version: build
 	$(CMD) version

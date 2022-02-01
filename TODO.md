@@ -10,9 +10,9 @@
 - [ ] Clean up the log function mess in controller
 
 - [ ] Fix DateTime mess
-      - [ ] Combobox for datetime
-            - [ ] Style for dark mode
-            - [ ] Tweak list style
+      - [x] Combobox for datetime
+            - [x] Style for dark mode
+            - [x] Tweak list style
             - [x] Fix keydown/keyup from input field
             - [x] Initialise options with suggested values
             - [x] Remove unused aria stuff
