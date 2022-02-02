@@ -8,13 +8,19 @@ import (
 )
 
 func TestDateTimeString(t *testing.T) {
-	datetime := DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local))
+	var zero = DateTime{}
+	var datetime = DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local))
+	//	var null *DateTime
 
 	tests := []struct {
-		dt       DateTime
+		dt       interface{}
 		expected string
 	}{
 		{datetime, "2021-02-28 12:34:56"},
+		{&datetime, "2021-02-28 12:34:56"},
+		{zero, "0001-01-01 00:00:00"},
+		{&zero, "0001-01-01 00:00:00"},
+		//		{null, "2021-02-28 12:34:56"},
 	}
 
 	for _, v := range tests {

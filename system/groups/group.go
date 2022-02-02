@@ -58,11 +58,10 @@ func (g *Group) AsObjects(auth auth.OpAuth) []catalog.Object {
 	if g.deleted != nil {
 		list = append(list, kv{GroupDeleted, g.deleted})
 	} else {
-		created := g.created.Format("2006-01-02 15:04:05")
 		name := g.Name
 
 		list = append(list, kv{GroupStatus, g.status()})
-		list = append(list, kv{GroupCreated, created})
+		list = append(list, kv{GroupCreated, g.created})
 		list = append(list, kv{GroupDeleted, g.deleted})
 		list = append(list, kv{GroupName, name})
 
@@ -217,15 +216,15 @@ func (g *Group) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 
 func (g Group) serialize() ([]byte, error) {
 	record := struct {
-		OID     catalog.OID   `json:"OID"`
-		Name    string        `json:"name,omitempty"`
-		Doors   []catalog.OID `json:"doors"`
-		Created string        `json:"created"`
+		OID     catalog.OID    `json:"OID"`
+		Name    string         `json:"name,omitempty"`
+		Doors   []catalog.OID  `json:"doors"`
+		Created types.DateTime `json:"created"`
 	}{
 		OID:     g.OID,
 		Name:    g.Name,
 		Doors:   []catalog.OID{},
-		Created: g.created.Format("2006-01-02 15:04:05"),
+		Created: g.created,
 	}
 
 	doors := catalog.GetDoors()

@@ -27,7 +27,7 @@ func TestDoorAsObjects(t *testing.T) {
 	expected := []catalog.Object{
 		{OID: "0.3.3", Value: ""},
 		{OID: "0.3.3.0.0", Value: types.StatusOk},
-		{OID: "0.3.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.3.3.0.1", Value: created},
 		{OID: "0.3.3.0.2", Value: (*types.DateTime)(nil)},
 		{OID: "0.3.3.1", Value: "Le Door"},
 		{OID: "0.3.3.2", Value: types.Uint8(0)},
@@ -85,7 +85,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 	expected := []catalog.Object{
 		{OID: "0.3.3", Value: ""},
 		{OID: "0.3.3.0.0", Value: types.StatusOk},
-		{OID: "0.3.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.3.3.0.1", Value: created},
 		{OID: "0.3.3.0.2", Value: (*types.DateTime)(nil)},
 		{OID: "0.3.3.1", Value: "Le Door"},
 		// {OID: "0.3.3.2", Value: types.Uint8(0)},

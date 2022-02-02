@@ -9,12 +9,16 @@
 
 - [ ] Clean up the log function mess in controller
 
-- [ ] Fix DateTime mess
-      - [ ] (?) Treat empty DateTime as the null value
-      - [ ] (?) Change Format(), etc to not take pointer receiver
-      - [ ] (?) Define FormatDateTime() method that *does* take pointer
+- [ ] Fix DateTime confusion
+      - [ ] DateTimeNow should not set nanoseconds
       - [ ] (?) Refactor DateTime out to use core implementation only
-      - [ ] (?) SystemDateTime for date/time with timezone
+      - [ ] Basic problem is fmt.Printf("%v") -> can't handle both concrete and pointers
+            - Pointer only seems to be used controller.cached and `deleted`
+            - [ ] Make _Deleted_ type (or just use *time.Time and handle the AsObjects serialisation)
+            - (?) Make _SysDateTime_ type (or IntlDateTime)
+      - [ ] Date should not set time fields
+            - check before/after stuff
+      - [x] Remove DateTime.Format
       - [x] Implement Ptr() for the repetitive assign to variable to take address thing
       - [x] Combobox for datetime
       - [x] Let timezone(..) just return Local instead of getting all complicated about it

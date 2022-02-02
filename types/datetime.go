@@ -14,27 +14,9 @@ func DateTimeNow() DateTime {
 }
 
 func DateTimePtrNow() *DateTime {
-	now := DateTime(time.Now())
+	now := DateTimeNow()
 
 	return &now
-}
-
-func (d *DateTime) Copy() *DateTime {
-	if d == nil {
-		return nil
-	}
-
-	datetime := *d
-
-	return &datetime
-}
-
-func (d *DateTime) IsValid() bool {
-	if d != nil {
-		return true
-	}
-
-	return false
 }
 
 func (d *DateTime) Before(t time.Time) bool {
@@ -68,14 +50,6 @@ func (d *DateTime) UnmarshalJSON(bytes []byte) error {
 	*d = DateTime(datetime)
 
 	return nil
-}
-
-func (d *DateTime) Format(layout string) string {
-	if d != nil {
-		return time.Time(*d).Format(layout)
-	}
-
-	return ""
 }
 
 func (d DateTime) String() string {

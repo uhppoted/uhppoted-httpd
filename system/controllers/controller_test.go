@@ -37,7 +37,7 @@ func TestControllerAsObjects(t *testing.T) {
 	expected := []catalog.Object{
 		{OID: "0.2.3", Value: ""},
 		{OID: "0.2.3.0.0", Value: types.StatusUnknown},
-		{OID: "0.2.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.2.3.0.1", Value: created},
 		{OID: "0.2.3.0.2", Value: (*types.DateTime)(nil)},
 		{OID: "0.2.3.1", Value: name},
 		{OID: "0.2.3.2", Value: fmt.Sprintf("%v", deviceID)},
@@ -122,7 +122,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 	expected := []catalog.Object{
 		{OID: "0.2.3", Value: ""},
 		{OID: "0.2.3.0.0", Value: types.StatusUnknown},
-		{OID: "0.2.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.2.3.0.1", Value: created},
 		{OID: "0.2.3.0.2", Value: (*types.DateTime)(nil)},
 		{OID: "0.2.3.1", Value: name},
 		// {OID: "0.2.3.2", Value: fmt.Sprintf("%v", deviceID)},

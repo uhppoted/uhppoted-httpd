@@ -31,7 +31,7 @@ func TestCardAsObjects(t *testing.T) {
 	expected := []catalog.Object{
 		{OID: "0.4.3", Value: ""},
 		{OID: "0.4.3.0.0", Value: types.StatusOk},
-		{OID: "0.4.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.4.3.0.1", Value: created},
 		{OID: "0.4.3.0.2", Value: (*types.DateTime)(nil)},
 		{OID: "0.4.3.1", Value: "Le Card"},
 		{OID: "0.4.3.2", Value: &card},
@@ -92,7 +92,7 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 	expected := []catalog.Object{
 		{OID: "0.4.3", Value: ""},
 		{OID: "0.4.3.0.0", Value: types.StatusOk},
-		{OID: "0.4.3.0.1", Value: created.Format("2006-01-02 15:04:05")},
+		{OID: "0.4.3.0.1", Value: created},
 		{OID: "0.4.3.0.2", Value: (*types.DateTime)(nil)},
 		{OID: "0.4.3.1", Value: "Le Card"},
 		// {OID: "0.4.3.2", Value: &card},

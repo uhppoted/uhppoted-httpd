@@ -145,7 +145,6 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 			status  types.Status
 		}
 
-		created := c.created.Format("2006-01-02 15:04:05")
 		name := c.name
 		deviceID := ""
 		address := addr{}
@@ -228,7 +227,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 		}
 
 		list = append(list, kv{ControllerStatus, c.status()})
-		list = append(list, kv{ControllerCreated, created})
+		list = append(list, kv{ControllerCreated, c.created})
 		list = append(list, kv{ControllerDeleted, c.deleted})
 		list = append(list, kv{ControllerName, name})
 		list = append(list, kv{ControllerDeviceID, deviceID})

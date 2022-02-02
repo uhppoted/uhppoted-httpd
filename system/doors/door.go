@@ -64,7 +64,6 @@ func (d *Door) AsObjects(auth auth.OpAuth) []catalog.Object {
 	if d.deleted != nil {
 		list = append(list, kv{DoorDeleted, d.deleted})
 	} else {
-		created := d.created.Format("2006-01-02 15:04:05")
 		name := d.Name
 
 		delay := struct {
@@ -134,7 +133,7 @@ func (d *Door) AsObjects(auth auth.OpAuth) []catalog.Object {
 		}
 
 		list = append(list, kv{DoorStatus, d.status()})
-		list = append(list, kv{DoorCreated, created})
+		list = append(list, kv{DoorCreated, d.created})
 		list = append(list, kv{DoorDeleted, d.deleted})
 		list = append(list, kv{DoorName, name})
 		list = append(list, kv{DoorDelay, types.Uint8(delay.delay)})
@@ -293,13 +292,13 @@ func (d Door) serialize() ([]byte, error) {
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
-		Created string            `json:"created"`
+		Created types.DateTime    `json:"created"`
 	}{
 		OID:     d.OID,
 		Name:    d.Name,
 		Delay:   d.delay,
 		Mode:    d.mode,
-		Created: d.created.Format("2006-01-02 15:04:05"),
+		Created: d.created,
 	}
 
 	return json.Marshal(record)

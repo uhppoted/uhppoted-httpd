@@ -83,14 +83,13 @@ func (c *Card) AsObjects(auth auth.OpAuth) []catalog.Object {
 	if c.deleted != nil {
 		list = append(list, kv{CardDeleted, c.deleted})
 	} else {
-		created := c.created.Format("2006-01-02 15:04:05")
 		name := c.Name
 		number := c.Card
 		from := c.From
 		to := c.To
 
 		list = append(list, kv{CardStatus, c.status()})
-		list = append(list, kv{CardCreated, created})
+		list = append(list, kv{CardCreated, c.created})
 		list = append(list, kv{CardDeleted, c.deleted})
 		list = append(list, kv{CardName, name})
 		list = append(list, kv{CardNumber, number})
@@ -403,20 +402,20 @@ func (c *Card) status() types.Status {
 
 func (c Card) serialize() ([]byte, error) {
 	record := struct {
-		OID     catalog.OID   `json:"OID"`
-		Name    string        `json:"name,omitempty"`
-		Card    uint32        `json:"card,omitempty"`
-		From    *types.Date   `json:"from,omitempty"`
-		To      *types.Date   `json:"to,omitempty"`
-		Groups  []catalog.OID `json:"groups"`
-		Created string        `json:"created"`
+		OID     catalog.OID    `json:"OID"`
+		Name    string         `json:"name,omitempty"`
+		Card    uint32         `json:"card,omitempty"`
+		From    *types.Date    `json:"from,omitempty"`
+		To      *types.Date    `json:"to,omitempty"`
+		Groups  []catalog.OID  `json:"groups"`
+		Created types.DateTime `json:"created"`
 	}{
 		OID:     c.OID,
 		Name:    strings.TrimSpace(c.Name),
 		From:    c.From,
 		To:      c.To,
 		Groups:  []catalog.OID{},
-		Created: c.created.Format("2006-01-02 15:04:05"),
+		Created: c.created,
 	}
 
 	if c.Card != nil {
