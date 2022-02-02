@@ -10,25 +10,12 @@
 - [ ] Clean up the log function mess in controller
 
 - [ ] Fix DateTime mess
-      - [x] Combobox for datetime
-            - [x] Style for dark mode
-            - [x] Tweak list style
-            - [x] Fix keydown/keyup from input field
-            - [x] Initialise options with suggested values
-            - [x] Remove unused aria stuff
-            - [x] Move combobox.css to sass
-            - [x] Let list overflow table (https://css-tricks.com/popping-hidden-overflow)
-            - [x] Remove button
-            - [x] Rename combobox.js to datetime.js
-            - (?) datetime-local
-            - (?) Use shadow DOM
-
       - [ ] (?) Treat empty DateTime as the null value
       - [ ] (?) Change Format(), etc to not take pointer receiver
       - [ ] (?) Define FormatDateTime() method that *does* take pointer
       - [ ] (?) Refactor DateTime out to use core implementation only
       - [ ] (?) Implement Ptr() for the repetitive assign to variable to take address thing
-      - (thoroughly relook at the whole timezone thing)
+      - [x] Combobox for datetime
       - [x] Let timezone(..) just return Local instead of getting all complicated about it
       - [x] Do the 'uncertain/pending' thing for timezones
       - [x] Add `datetime.modified` to controller.cached
@@ -164,6 +151,7 @@
 ## TODO
 
 - [ ] Hamburger menu (?)
+- [ ] Use shadow DOM for datetime combobox
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)

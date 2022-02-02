@@ -6,67 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	core "github.com/uhppoted/uhppote-core/types"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
-
-type datetime struct {
-	Expected *types.DateTime
-	DateTime *types.DateTime
-	Status   types.Status
-}
-
-func (dt datetime) String() string {
-	if dt.DateTime == nil || dt.Status == types.StatusUnknown {
-		return ""
-	}
-
-	return dt.DateTime.Format("2006-01-02 15:04 MST")
-}
-
-// func (dt datetime) MarshalJSON() ([]byte, error) {
-// 	object := struct {
-// 		DateTime string `json:"DateTime"`
-// 		Status   string `json:"Status"`
-// 		Expected string `json:"Expected"`
-// 	}{
-// 		DateTime: dt.String(),
-// 		Status:   dt.Status.String(),
-// 		Expected: dt.Expected.Format("2006-01-02 15:04 MST"),
-// 	}
-//
-// 	return json.Marshal(object)
-// }
-
-type ip struct {
-	Configured *core.Address
-	Address    *core.Address
-	Status     types.Status
-}
-
-type cards struct {
-	Records records
-	Status  types.Status
-}
-
-func (c cards) String() string {
-	if c.Status == types.StatusUnknown {
-		return ""
-	}
-
-	return fmt.Sprintf("%v", c.Records)
-}
-
-type records uint32
-
-func (r *records) String() string {
-	if r != nil {
-		return fmt.Sprintf("%v", uint32(*r))
-	}
-
-	return ""
-}
 
 // Ref. https://github.com/golang/go/issues/12388
 func timezone(s string) *time.Location {
