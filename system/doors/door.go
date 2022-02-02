@@ -241,8 +241,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 		}
 
 		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
-		now := types.DateTime(time.Now())
-		d.deleted = &now
+		d.deleted = types.DateTimePtrNow()
 
 		list = append(list, kv{DoorDeleted, d.deleted})
 		catalog.Delete(d.OID)

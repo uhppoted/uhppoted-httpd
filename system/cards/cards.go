@@ -212,7 +212,7 @@ func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
 
 	card := c.clone()
 	card.OID = oid
-	card.created = types.DateTime(time.Now())
+	card.created = types.DateTimeNow()
 
 	if a != nil {
 		if err := a.CanAdd(card, auth.Cards); err != nil {

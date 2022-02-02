@@ -355,9 +355,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 				dbc)
 		}
 
-		now := types.DateTime(time.Now())
-		c.deleted = &now
-
+		c.deleted = types.DateTimePtrNow()
 		list = append(list, kv{CardDeleted, c.deleted})
 
 		catalog.Delete(c.OID)

@@ -13,11 +13,11 @@ func DateTimeNow() DateTime {
 	return DateTime(time.Now())
 }
 
-// func DateTimePtrNow() *DateTime {
-// 	now := DateTime(time.Now())
+func DateTimePtrNow() *DateTime {
+	now := DateTime(time.Now())
 
-// 	return &now
-// }
+	return &now
+}
 
 func (d *DateTime) Copy() *DateTime {
 	if d == nil {
@@ -46,7 +46,7 @@ func (d DateTime) Add(dt time.Duration) DateTime {
 }
 
 func (d DateTime) MarshalJSON() ([]byte, error) {
-	return json.Marshal(d.Format("2006-01-02 15:04:05 MST"))
+	return json.Marshal(time.Time(d).Format("2006-01-02 15:04:05 MST"))
 }
 
 func (d *DateTime) UnmarshalJSON(bytes []byte) error {

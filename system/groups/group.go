@@ -177,8 +177,7 @@ func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([
 		}
 
 		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
-		now := types.DateTime(time.Now())
-		g.deleted = &now
+		g.deleted = types.DateTimePtrNow()
 		list = append(list, kv{GroupDeleted, g.deleted})
 
 		catalog.Delete(g.OID)

@@ -199,7 +199,7 @@ func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
 
 	record := d.clone()
 	record.OID = oid
-	record.created = types.DateTime(time.Now())
+	record.created = types.DateTimeNow()
 
 	if a != nil {
 		if err := a.CanAdd(&record, auth.Doors); err != nil {

@@ -185,7 +185,7 @@ func (gg *Groups) add(a auth.OpAuth, g Group) (*Group, error) {
 
 	record := g.clone()
 	record.OID = oid
-	record.created = types.DateTime(time.Now())
+	record.created = types.DateTimeNow()
 
 	if a != nil {
 		if err := a.CanAdd(&record, auth.Groups); err != nil {

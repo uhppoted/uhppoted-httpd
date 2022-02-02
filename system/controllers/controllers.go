@@ -223,7 +223,7 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 			cc.controllers = append(cc.controllers, &Controller{
 				oid:          oid,
 				deviceID:     d,
-				created:      types.DateTime(time.Now()),
+				created:      types.DateTimeNow(),
 				unconfigured: true,
 			})
 		}
@@ -377,7 +377,7 @@ func (cc *Controllers) Validate() error {
 func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	record := c.clone()
 	record.oid = catalog.OID(catalog.NewController(c.deviceID))
-	record.created = types.DateTime(time.Now())
+	record.created = types.DateTimeNow()
 
 	if a != nil {
 		if err := a.CanAdd(record, auth.Controllers); err != nil {

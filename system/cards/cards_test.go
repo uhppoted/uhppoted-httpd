@@ -38,7 +38,7 @@ func TestCardAdd(t *testing.T) {
 
 	expected := []catalog.Object{
 		catalog.Object{OID: "0.4.2", Value: "new"},
-		catalog.Object{OID: "0.4.2.0.1", Value: types.DateTime(time.Now())},
+		catalog.Object{OID: "0.4.2.0.1", Value: types.DateTimeNow()},
 	}
 
 	cards := makeCards(hagrid)
@@ -90,7 +90,7 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 	}{
 		returned: []catalog.Object{
 			catalog.Object{OID: "0.4.2", Value: "new"},
-			catalog.Object{OID: "0.4.2.0.1", Value: types.DateTime(time.Now())},
+			catalog.Object{OID: "0.4.2.0.1", Value: types.DateTimeNow()},
 		},
 
 		logs: []audit.AuditRecord{

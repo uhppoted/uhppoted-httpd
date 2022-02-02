@@ -14,7 +14,8 @@
       - [ ] (?) Change Format(), etc to not take pointer receiver
       - [ ] (?) Define FormatDateTime() method that *does* take pointer
       - [ ] (?) Refactor DateTime out to use core implementation only
-      - [ ] (?) Implement Ptr() for the repetitive assign to variable to take address thing
+      - [ ] (?) SystemDateTime for date/time with timezone
+      - [x] Implement Ptr() for the repetitive assign to variable to take address thing
       - [x] Combobox for datetime
       - [x] Let timezone(..) just return Local instead of getting all complicated about it
       - [x] Do the 'uncertain/pending' thing for timezones
