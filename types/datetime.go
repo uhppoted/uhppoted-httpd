@@ -13,11 +13,11 @@ func DateTimeNow() DateTime {
 	return DateTime(time.Now())
 }
 
-func DateTimePtrNow() *DateTime {
-	now := DateTime(time.Now())
+// func DateTimePtrNow() *DateTime {
+// 	now := DateTime(time.Now())
 
-	return &now
-}
+// 	return &now
+// }
 
 func (d *DateTime) Copy() *DateTime {
 	if d == nil {
