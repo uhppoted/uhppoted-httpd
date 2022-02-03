@@ -8,18 +8,20 @@ import (
 
 func TestLocalSerialize(t *testing.T) {
 	l := Local{
-		keys: [][]byte{[]byte("qwerty")},
-		users: map[string]*user{
-			"hagrid": &user{
-				Salt:     salt([]byte{0xef, 0xcd, 0x34, 0x12}),
-				Password: "dragon",
-				Role:     "grounds keeper",
+		private: private{
+			keys: [][]byte{[]byte("qwerty")},
+			users: map[string]*user{
+				"hagrid": &user{
+					Salt:     salt([]byte{0xef, 0xcd, 0x34, 0x12}),
+					Password: "dragon",
+					Role:     "grounds keeper",
+				},
 			},
-		},
-		resources: []resource{
-			resource{
-				Path:       regexp.MustCompile("[a-z]+[0-9]+"),
-				Authorised: regexp.MustCompile("[0-9]+[a-z]*"),
+			resources: []resource{
+				resource{
+					Path:       regexp.MustCompile("[a-z]+[0-9]+"),
+					Authorised: regexp.MustCompile("[0-9]+[a-z]*"),
+				},
 			},
 		},
 	}
@@ -68,24 +70,28 @@ func TestLocalDeserialize(t *testing.T) {
 }`
 
 	expected := Local{
-		keys: [][]byte{[]byte("qwerty")},
-		users: map[string]*user{
-			"hagrid": &user{
-				Salt:     salt([]byte{0xef, 0xcd, 0x34, 0x12}),
-				Password: "dragon",
-				Role:     "grounds keeper",
+		private: private{
+			keys: [][]byte{[]byte("qwerty")},
+			users: map[string]*user{
+				"hagrid": &user{
+					Salt:     salt([]byte{0xef, 0xcd, 0x34, 0x12}),
+					Password: "dragon",
+					Role:     "grounds keeper",
+				},
 			},
-		},
-		resources: []resource{
-			resource{
-				Path:       regexp.MustCompile("^[a-z]+[0-9]+$"),
-				Authorised: regexp.MustCompile("[0-9]+[a-z]*"),
+			resources: []resource{
+				resource{
+					Path:       regexp.MustCompile("^[a-z]+[0-9]+$"),
+					Authorised: regexp.MustCompile("[0-9]+[a-z]*"),
+				},
 			},
 		},
 	}
 
 	local := Local{
-		keys: [][]byte{[]byte("qwerty")},
+		private: private{
+			keys: [][]byte{[]byte("qwerty")},
+		},
 	}
 
 	if err := local.deserialize([]byte(json)); err != nil {
@@ -93,15 +99,15 @@ func TestLocalDeserialize(t *testing.T) {
 	}
 
 	// ... check this way because reflect.DeepEqual copies guard value
-	if !reflect.DeepEqual(local.keys, expected.keys) {
-		t.Errorf("Incorrectly deserialized:\n   expected:%x\n   got:     %x", expected.keys, local.keys)
+	if !reflect.DeepEqual(local.private.keys, expected.private.keys) {
+		t.Errorf("Incorrectly deserialized:\n   expected:%x\n   got:     %x", expected.private.keys, local.private.keys)
 	}
 
-	if !reflect.DeepEqual(local.users, expected.users) {
+	if !reflect.DeepEqual(local.private.users, expected.private.users) {
 		t.Errorf("Incorrectly deserialized:\n   expected:%#v\n   got:     %#v", &expected, &local)
 	}
 
-	if !reflect.DeepEqual(local.resources, expected.resources) {
+	if !reflect.DeepEqual(local.private.resources, expected.private.resources) {
 		t.Errorf("Incorrectly deserialized:\n   expected:%#v\n   got:     %#v", &expected, &local)
 	}
 }
@@ -139,10 +145,12 @@ func TestLocalCopyKey(t *testing.T) {
 
 	for _, v := range tests {
 		p := Local{
-			keys: [][]byte{v.key},
+			private: private{
+				keys: [][]byte{v.key},
+			},
 		}
 
-		secret := p.copyKey()
+		secret := p.private.Key()
 
 		if !reflect.DeepEqual(secret, v.expected) {
 			t.Errorf("copyKey returned incorrect key\n   expected:%x\n   got:     %x", v.expected, secret)

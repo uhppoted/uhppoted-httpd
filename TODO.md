@@ -1,7 +1,9 @@
 ## v0.7.x
 
+- [ ] `auth.grl` no longer used ??
+
 - [x] `concurrent map read and map write`
-      - [ ] Move Local.user/keys/resources to guarded struct
+      - [x] Move Local.user/keys/resources to guarded struct
       - [ ] Unit tests for guarded structs
 
 - [ ] Finish structuring catalog.schema

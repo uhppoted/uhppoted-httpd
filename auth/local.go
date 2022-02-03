@@ -37,11 +37,7 @@ var constants = struct {
 }
 
 type Local struct {
-	keys      [][]byte
-	users     map[string]*user
-	resources []resource
-	guard     sync.Mutex
-
+	private       private
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
 	file          string
@@ -68,6 +64,13 @@ type login struct {
 	Salt    []byte    `json:"login.salt,omitempty"`
 }
 
+type private struct {
+	keys      [][]byte
+	users     map[string]*user
+	resources []resource
+	guard     sync.Mutex
+}
+
 type session struct {
 	LoggedInAs string    `json:"uid,omitempty"`
 	SessionId  uuid.UUID `json:"session.id,omitempty"`
@@ -87,10 +90,9 @@ type resource struct {
 
 func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
 	provider := Local{
-		keys:          make([][]byte, constants.KEYS),
-		loginExpiry:   1 * time.Minute,
-		sessionExpiry: 60 * time.Minute,
-		file:          file,
+		private: private{
+			keys: make([][]byte, constants.KEYS),
+		},
 
 		logins: sessions{
 			list: map[uuid.UUID]time.Time{},
@@ -99,6 +101,10 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 		sessions: sessions{
 			list: map[uuid.UUID]time.Time{},
 		},
+
+		sessionExpiry: 60 * time.Minute,
+		loginExpiry:   1 * time.Minute,
+		file:          file,
 	}
 
 	if err := provider.load(file); err != nil {
@@ -120,7 +126,7 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 	if key, err := genKey(); err != nil {
 		return nil, err
 	} else {
-		provider.keys[0] = key
+		provider.private.keys[0] = key
 	}
 
 	provider.watch(file)
@@ -147,7 +153,7 @@ func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Loca
 }
 
 func (p *Local) Preauthenticate() (string, error) {
-	secret := p.copyKey()
+	secret := p.private.Key()
 	expiry := p.loginExpiry
 
 	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
@@ -193,12 +199,9 @@ func (p *Local) Preauthenticate() (string, error) {
 }
 
 func (p *Local) Authenticate(uid, pwd string) (string, error) {
-	p.guard.Lock()
-	users := p.users
+	users := p.private.Users()
+	secret := p.private.Key()
 	expiry := p.sessionExpiry
-	p.guard.Unlock()
-
-	secret := p.copyKey()
 
 	u, ok := users[uid]
 	if !ok {
@@ -253,10 +256,7 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 }
 
 func (p *Local) Validate(uid, pwd string) error {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	users := p.users
+	users := p.private.users
 	u, ok := users[uid]
 	if !ok {
 		return fmt.Errorf("invalid user ID or password")
@@ -301,26 +301,20 @@ func (p *Local) Store(uid, pwd, role string) error {
 		return fmt.Errorf("Invalid user ID or password")
 	}
 
-	p.guard.Lock()
-	defer p.guard.Unlock()
+	k := strings.TrimSpace(uid)
 
 	salt := make([]byte, 16)
 	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
 		return err
 	}
 
-	k := strings.TrimSpace(uid)
 	h := sha256.New()
 	h.Write(salt)
 	h.Write([]byte(pwd))
 
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
 
-	p.users[k] = &user{
-		Salt:     salt,
-		Password: hash,
-		Role:     role,
-	}
+	p.private.Store(k, role, salt, hash)
 
 	return nil
 }
@@ -400,7 +394,7 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 		return claims.Session.LoggedInAs, claims.Session.Role, "", nil
 	}
 
-	secret := p.copyKey()
+	secret := p.private.Key()
 
 	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
 	if err != nil {
@@ -416,7 +410,9 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 }
 
 func (p *Local) Authorised(uid, role, resource string) error {
-	for _, r := range p.resources {
+	resources := p.private.Resources()
+
+	for _, r := range resources {
 		if r.Path.Match([]byte(resource)) && r.Authorised.Match([]byte(role)) {
 			return nil
 		}
@@ -463,15 +459,15 @@ func (p *Local) Save() error {
 }
 
 func (p *Local) serialize() ([]byte, error) {
-	p.guard.Lock()
-	defer p.guard.Unlock()
+	users := p.private.Users()
+	resources := p.private.Resources()
 
 	serializable := struct {
 		Users     map[string]*user `json:"users"`
 		Resources []resource       `json:"resources"`
 	}{
-		Users:     p.users,
-		Resources: p.resources,
+		Users:     users,
+		Resources: resources,
 	}
 
 	return json.MarshalIndent(serializable, "", "  ")
@@ -490,11 +486,11 @@ func (p *Local) deserialize(bytes []byte) error {
 		return err
 	}
 
-	p.guard.Lock()
-	defer p.guard.Unlock()
+	p.private.guard.Lock()
+	defer p.private.guard.Unlock()
 
-	p.users = serializable.Users
-	p.resources = serializable.Resources
+	p.private.users = serializable.Users
+	p.private.resources = serializable.Resources
 
 	return nil
 }
@@ -542,10 +538,7 @@ func (p *Local) watch(filepath string) {
 }
 
 func (p *Local) getToken(cookie string) (*jwt.Token, int, error) {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	secrets := p.keys
+	secrets := p.private.Keys()
 
 	for ix, secret := range secrets {
 		// NOTE: jwt.NewVerifier returns an error if the secret is nil so this is just a courtesy
@@ -576,7 +569,69 @@ func (p *Local) getToken(cookie string) (*jwt.Token, int, error) {
 	return nil, 0, fmt.Errorf("JWT signature is not valid")
 }
 
-func (p *Local) copyKey() []byte {
+func (p *private) Users() map[string]*user {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	users := map[string]*user{}
+	for k, v := range p.users {
+		users[k] = v
+	}
+
+	return users
+}
+
+func (p *private) Resources() []resource {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	resources := []resource{}
+	for _, v := range p.resources {
+		resources = append(resources, v)
+	}
+
+	return resources
+}
+
+func (p *private) Store(uid string, role string, salt []byte, hash string) {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	p.users[uid] = &user{
+		Salt:     salt,
+		Password: hash,
+		Role:     role,
+	}
+}
+
+func (p *private) Keys() [][]byte {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	keys := make([][]byte, len(p.keys))
+
+	for _, k := range p.keys {
+		key := make([]byte, constants.KEY_LENGTH)
+
+		copy(key, k)
+		keys = append(keys, key)
+	}
+
+	return keys
+}
+
+func (p *private) Push(key []byte) {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	for i := 1; i < len(p.keys); i++ {
+		p.keys[i] = p.keys[i-1]
+	}
+
+	p.keys[0] = key
+}
+
+func (p *private) Key() []byte {
 	p.guard.Lock()
 	defer p.guard.Unlock()
 
@@ -594,14 +649,7 @@ func (p *Local) regenerate() {
 		return
 	}
 
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	for i := 1; i < len(p.keys); i++ {
-		p.keys[i] = p.keys[i-1]
-	}
-
-	p.keys[0] = key
+	p.private.Push(key)
 
 	log.Printf("%-5v Regenerated session secret", "INFO")
 }
