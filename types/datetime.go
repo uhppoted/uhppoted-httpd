@@ -10,7 +10,7 @@ import (
 type DateTime core.DateTime
 
 func DateTimeNow() DateTime {
-	return DateTime(time.Now())
+	return DateTime(time.Now().Truncate(1 * time.Second))
 }
 
 func DateTimePtrNow() *DateTime {

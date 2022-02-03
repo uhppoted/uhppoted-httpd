@@ -7,6 +7,20 @@ import (
 	"time"
 )
 
+func TestDateTimeNow(t *testing.T) {
+	now := DateTimeNow()
+	time.Sleep(100 * time.Millisecond)
+	then := DateTimeNow()
+
+	if time.Time(now).Nanosecond() != 0 {
+		t.Errorf("DateTimeNow returned non-zero nanoseconds (%v)", now)
+	}
+
+	if time.Time(then).Nanosecond() != 0 {
+		t.Errorf("DateTimeNow returned non-zero nanoseconds (%v)", then)
+	}
+}
+
 func TestDateTimeString(t *testing.T) {
 	var zero = DateTime{}
 	var datetime = DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local))

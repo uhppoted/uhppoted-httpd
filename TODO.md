@@ -10,7 +10,7 @@
 - [ ] Clean up the log function mess in controller
 
 - [ ] Fix DateTime confusion
-      - [ ] DateTimeNow should not set nanoseconds
+      - [x] DateTimeNow should round/truncate to seconds
       - [ ] (?) Refactor DateTime out to use core implementation only
       - [ ] Basic problem is fmt.Printf("%v") -> can't handle both concrete and pointers
             - Pointer only seems to be used controller.cached and `deleted`
