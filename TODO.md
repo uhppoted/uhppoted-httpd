@@ -10,14 +10,14 @@
 - [ ] Clean up the log function mess in controller
 
 - [ ] Fix DateTime confusion
-      - [x] DateTimeNow should round/truncate to seconds
+      - [ ] Date should not set time fields
+            - check before/after stuff
       - [ ] (?) Refactor DateTime out to use core implementation only
       - [ ] Basic problem is fmt.Printf("%v") -> can't handle both concrete and pointers
             - Pointer only seems to be used controller.cached and `deleted`
             - [ ] Make _Deleted_ type (or just use *time.Time and handle the AsObjects serialisation)
             - (?) Make _SysDateTime_ type (or IntlDateTime)
-      - [ ] Date should not set time fields
-            - check before/after stuff
+      - [x] DateTimeNow should round/truncate to seconds
       - [x] Remove DateTime.Format
       - [x] Implement Ptr() for the repetitive assign to variable to take address thing
       - [x] Combobox for datetime

@@ -24,7 +24,6 @@ func TestDateTimeNow(t *testing.T) {
 func TestDateTimeString(t *testing.T) {
 	var zero = DateTime{}
 	var datetime = DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local))
-	//	var null *DateTime
 
 	tests := []struct {
 		dt       interface{}
@@ -34,7 +33,6 @@ func TestDateTimeString(t *testing.T) {
 		{&datetime, "2021-02-28 12:34:56"},
 		{zero, "0001-01-01 00:00:00"},
 		{&zero, "0001-01-01 00:00:00"},
-		//		{null, "2021-02-28 12:34:56"},
 	}
 
 	for _, v := range tests {
@@ -46,6 +44,26 @@ func TestDateTimeString(t *testing.T) {
 	}
 }
 
+func TestDateTimeMarshalJSON(t *testing.T) {
+	utc := time.Date(2021, time.February, 28, 12, 34, 56, 789, time.UTC)
+	local := time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local)
+
+	tests := []struct {
+		datetime DateTime
+		expected string
+	}{
+		{DateTime(utc), `"2021-02-28 12:34:56 UTC"`},
+		{DateTime(local), local.Format(`"2006-01-02 15:04:05 MST"`)},
+	}
+
+	for _, v := range tests {
+		if b, err := json.Marshal(v.datetime); err != nil {
+			t.Errorf("Error marshalling %v (%v)", v.datetime, err)
+		} else if string(b) != v.expected {
+			t.Errorf("DateTime %v incorrectly marshalled - expected:%v, got:%v", v.datetime, v.expected, string(b))
+		}
+	}
+}
 func TestDateTimeUnmarshalJSON(t *testing.T) {
 	utc := DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.UTC))
 	local := DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local))
@@ -76,7 +94,7 @@ func TestDateTimeUnmarshalJSON(t *testing.T) {
 
 func TestDateTimeAdd(t *testing.T) {
 	datetime := DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local))
-	expected := DateTime(time.Date(2021, time.February, 28, 15, 34, 56, 789, time.Local))
+	expected := DateTime(time.Date(2021, time.February, 28, 15, 34, 56, 789, time.Local).Truncate(1 * time.Second))
 
 	datetime = datetime.Add(3 * time.Hour)
 
@@ -84,4 +102,13 @@ func TestDateTimeAdd(t *testing.T) {
 		t.Errorf("Incorrect date/time - expected:%v, got:%v", expected, datetime)
 	}
 
+}
+
+func TestDateTimeBeforeIgnoresSubseconds(t *testing.T) {
+	datetime := DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 345, time.Local))
+	reference := time.Date(2021, time.February, 28, 12, 34, 56, 678, time.Local)
+
+	if datetime.Before(reference) {
+		t.Errorf("Expected DateTime.Before to ignore subsecond differences")
+	}
 }
