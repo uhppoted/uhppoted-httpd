@@ -4,6 +4,7 @@
 
 - [x] `concurrent map read and map write`
       - [x] Move Local.user/keys/resources to guarded struct
+      - [ ] Cache keys/users/copied things
       - [ ] Unit tests for guarded structs
 
 - [ ] Finish structuring catalog.schema

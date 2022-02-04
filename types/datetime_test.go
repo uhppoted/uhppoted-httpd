@@ -31,8 +31,8 @@ func TestDateTimeString(t *testing.T) {
 	}{
 		{datetime, "2021-02-28 12:34:56"},
 		{&datetime, "2021-02-28 12:34:56"},
-		{zero, "0001-01-01 00:00:00"},
-		{&zero, "0001-01-01 00:00:00"},
+		{zero, ""},
+		{&zero, ""},
 	}
 
 	for _, v := range tests {
@@ -47,6 +47,7 @@ func TestDateTimeString(t *testing.T) {
 func TestDateTimeMarshalJSON(t *testing.T) {
 	utc := time.Date(2021, time.February, 28, 12, 34, 56, 789, time.UTC)
 	local := time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local)
+	zero := DateTime{}
 
 	tests := []struct {
 		datetime DateTime
@@ -54,6 +55,7 @@ func TestDateTimeMarshalJSON(t *testing.T) {
 	}{
 		{DateTime(utc), `"2021-02-28 12:34:56 UTC"`},
 		{DateTime(local), local.Format(`"2006-01-02 15:04:05 MST"`)},
+		{zero, `""`},
 	}
 
 	for _, v := range tests {
@@ -67,6 +69,7 @@ func TestDateTimeMarshalJSON(t *testing.T) {
 func TestDateTimeUnmarshalJSON(t *testing.T) {
 	utc := DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.UTC))
 	local := DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 789, time.Local))
+	zero := DateTime{}
 
 	tests := []struct {
 		json     string
@@ -74,6 +77,7 @@ func TestDateTimeUnmarshalJSON(t *testing.T) {
 	}{
 		{`"2021-02-28 12:34:56 UTC"`, utc},
 		{`"2021-02-28 12:34:56"`, local},
+		{`""`, zero},
 	}
 
 	for _, v := range tests {

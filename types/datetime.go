@@ -32,6 +32,10 @@ func (d DateTime) Add(dt time.Duration) DateTime {
 }
 
 func (d DateTime) MarshalJSON() ([]byte, error) {
+	if time.Time(d).IsZero() {
+		return json.Marshal("")
+	}
+
 	return json.Marshal(time.Time(d).Format("2006-01-02 15:04:05 MST"))
 }
 
@@ -41,6 +45,11 @@ func (d *DateTime) UnmarshalJSON(bytes []byte) error {
 	err := json.Unmarshal(bytes, &s)
 	if err != nil {
 		return err
+	}
+
+	if s == "" {
+		*d = DateTime{}
+		return nil
 	}
 
 	datetime, err := time.ParseInLocation("2006-01-02 15:04:05", s, time.Local)
@@ -57,5 +66,9 @@ func (d *DateTime) UnmarshalJSON(bytes []byte) error {
 }
 
 func (d DateTime) String() string {
+	if time.Time(d).IsZero() {
+		return ""
+	}
+
 	return time.Time(d).Format("2006-01-02 15:04:05")
 }
