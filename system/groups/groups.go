@@ -173,7 +173,7 @@ func (gg *Groups) Sweep(retention time.Duration) {
 	if gg != nil {
 		cutoff := time.Now().Add(-retention)
 		for i, v := range gg.groups {
-			if v.deleted != nil && v.deleted.Before(cutoff) {
+			if v.IsDeleted() && v.deleted.Before(cutoff) {
 				delete(gg.groups, i)
 			}
 		}
@@ -200,7 +200,7 @@ func validate(gg Groups) error {
 	names := map[string]string{}
 
 	for k, g := range gg.groups {
-		if g.deleted != nil {
+		if g.IsDeleted() {
 			continue
 		}
 

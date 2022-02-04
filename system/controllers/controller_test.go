@@ -38,7 +38,7 @@ func TestControllerAsObjects(t *testing.T) {
 		{OID: "0.2.3", Value: ""},
 		{OID: "0.2.3.0.0", Value: types.StatusUnknown},
 		{OID: "0.2.3.0.1", Value: created},
-		{OID: "0.2.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.2.3.0.2", Value: types.DateTime{}},
 		{OID: "0.2.3.1", Value: name},
 		{OID: "0.2.3.2", Value: fmt.Sprintf("%v", deviceID)},
 		{OID: "0.2.3.3.0", Value: types.StatusUnknown},
@@ -68,7 +68,7 @@ func TestControllerAsObjects(t *testing.T) {
 
 func TestControllerAsObjectsWithDeleted(t *testing.T) {
 	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	deleted := types.DateTimePtrNow()
+	deleted := types.DateTimeNow()
 	name := "Le Thing"
 	deviceID := uint32(12345678)
 	address, _ := core.ResolveAddr("192.168.1.101")
@@ -123,7 +123,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.2.3", Value: ""},
 		{OID: "0.2.3.0.0", Value: types.StatusUnknown},
 		{OID: "0.2.3.0.1", Value: created},
-		{OID: "0.2.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.2.3.0.2", Value: types.DateTime{}},
 		{OID: "0.2.3.1", Value: name},
 		// {OID: "0.2.3.2", Value: fmt.Sprintf("%v", deviceID)},
 		{OID: "0.2.3.3.0", Value: types.StatusUnknown},
@@ -192,7 +192,7 @@ func TestControllerSetWithDeleted(t *testing.T) {
 		oid:  "0.2.3",
 		name: "Le Controlleur",
 
-		deleted: types.DateTimePtrNow(),
+		deleted: types.DateTimeNow(),
 	}
 
 	expected := []catalog.Object{

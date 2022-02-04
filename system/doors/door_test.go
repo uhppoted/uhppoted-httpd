@@ -28,7 +28,7 @@ func TestDoorAsObjects(t *testing.T) {
 		{OID: "0.3.3", Value: ""},
 		{OID: "0.3.3.0.0", Value: types.StatusOk},
 		{OID: "0.3.3.0.1", Value: created},
-		{OID: "0.3.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.3.3.0.2", Value: types.DateTime{}},
 		{OID: "0.3.3.1", Value: "Le Door"},
 		{OID: "0.3.3.2", Value: types.Uint8(0)},
 		{OID: "0.3.3.2.1", Value: types.StatusUnknown},
@@ -49,7 +49,7 @@ func TestDoorAsObjects(t *testing.T) {
 
 func TestDoorAsObjectsWithDeleted(t *testing.T) {
 	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	deleted := types.DateTimePtrNow()
+	deleted := types.DateTimeNow()
 
 	d := Door{
 		OID:     "0.3.3",
@@ -86,7 +86,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.3.3", Value: ""},
 		{OID: "0.3.3.0.0", Value: types.StatusOk},
 		{OID: "0.3.3.0.1", Value: created},
-		{OID: "0.3.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.3.3.0.2", Value: types.DateTime{}},
 		{OID: "0.3.3.1", Value: "Le Door"},
 		// {OID: "0.3.3.2", Value: types.Uint8(0)},
 		// {OID: "0.3.3.2.1", Value: types.StatusUnknown},
@@ -150,7 +150,7 @@ func TestDoorSetWithDeleted(t *testing.T) {
 		delay: 7,
 		mode:  core.NormallyOpen,
 
-		deleted: types.DateTimePtrNow(),
+		deleted: types.DateTimeNow(),
 	}
 
 	expected := []catalog.Object{

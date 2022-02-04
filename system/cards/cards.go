@@ -185,7 +185,7 @@ func (cc *Cards) Sweep(retention time.Duration) {
 	if cc != nil {
 		cutoff := time.Now().Add(-retention)
 		for i, v := range cc.cards {
-			if v.deleted != nil && v.deleted.Before(cutoff) {
+			if !v.deleted.IsZero() && v.deleted.Before(cutoff) {
 				delete(cc.cards, i)
 			}
 		}

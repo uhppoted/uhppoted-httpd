@@ -20,7 +20,7 @@ type Group struct {
 	Doors map[catalog.OID]bool `json:"doors"`
 
 	created types.DateTime
-	deleted *types.DateTime
+	deleted types.DateTime
 }
 
 type kv = struct {
@@ -45,17 +45,13 @@ func (g Group) IsValid() bool {
 }
 
 func (g Group) IsDeleted() bool {
-	if g.deleted != nil {
-		return true
-	}
-
-	return false
+	return !g.deleted.IsZero()
 }
 
 func (g *Group) AsObjects(auth auth.OpAuth) []catalog.Object {
 	list := []kv{}
 
-	if g.deleted != nil {
+	if g.IsDeleted() {
 		list = append(list, kv{GroupDeleted, g.deleted})
 	} else {
 		name := g.Name
@@ -111,7 +107,7 @@ func (g *Group) AsRuleEntity() (string, interface{}) {
 }
 
 func (g *Group) status() types.Status {
-	if g.deleted != nil {
+	if g.IsDeleted() {
 		return types.StatusDeleted
 	}
 
@@ -123,7 +119,7 @@ func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([
 		return []catalog.Object{}, nil
 	}
 
-	if g.deleted != nil {
+	if g.IsDeleted() {
 		return g.toObjects([]kv{{GroupDeleted, g.deleted}}, a), fmt.Errorf("Group has been deleted")
 	}
 
@@ -176,7 +172,7 @@ func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([
 		}
 
 		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
-		g.deleted = types.DateTimePtrNow()
+		g.deleted = types.DateTimeNow()
 		list = append(list, kv{GroupDeleted, g.deleted})
 
 		catalog.Delete(g.OID)
@@ -200,7 +196,7 @@ func (g *Group) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 
 	objects := []catalog.Object{}
 
-	if g.deleted == nil && f(g, "OID", g.OID) {
+	if !g.IsDeleted() && f(g, "OID", g.OID) {
 		objects = append(objects, catalog.NewObject(g.OID, ""))
 	}
 

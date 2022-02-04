@@ -28,7 +28,7 @@ type Controller struct {
 	timezone string
 
 	created      types.DateTime
-	deleted      *types.DateTime
+	deleted      types.DateTime
 	unconfigured bool
 }
 
@@ -55,6 +55,10 @@ type cached struct {
 }
 
 var created = types.DateTimeNow()
+
+func (c Controller) IsDeleted() bool {
+	return !c.deleted.IsZero()
+}
 
 func (c *Controller) OID() catalog.OID {
 	if c != nil {
@@ -108,7 +112,7 @@ func (c *Controller) Door(d uint8) (catalog.OID, bool) {
 }
 
 func (c *Controller) realized() bool {
-	if c != nil && c.deviceID != 0 && c.deleted == nil {
+	if c != nil && c.deviceID != 0 && !c.IsDeleted() {
 		return true
 	}
 
@@ -118,7 +122,7 @@ func (c *Controller) realized() bool {
 func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 	list := []kv{}
 
-	if c.deleted != nil {
+	if c.IsDeleted() {
 		list = append(list, kv{ControllerDeleted, c.deleted})
 	} else {
 		type addr struct {
@@ -308,7 +312,7 @@ func (c *Controller) IsValid() bool {
 }
 
 func (c *Controller) status() types.Status {
-	if c.deleted != nil {
+	if c.IsDeleted() {
 		return types.StatusDeleted
 	}
 
@@ -406,7 +410,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 		return []catalog.Object{}, nil
 	}
 
-	if c.deleted != nil {
+	if c.IsDeleted() {
 		return c.toObjects([]kv{{ControllerDeleted, c.deleted}}, a), fmt.Errorf("Controller has been deleted")
 	}
 
@@ -641,7 +645,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 				dbc)
 		}
 
-		c.deleted = types.DateTimePtrNow()
+		c.deleted = types.DateTimeNow()
 		list = append(list, kv{ControllerDeleted, c.deleted})
 
 		catalog.Delete(OID)
@@ -666,7 +670,7 @@ func (c *Controller) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 	OID := c.OID()
 	objects := []catalog.Object{}
 
-	if c.deleted == nil && f(c, "OID", OID) {
+	if !c.IsDeleted() && f(c, "OID", OID) {
 		objects = append(objects, catalog.NewObject(OID, ""))
 	}
 
@@ -711,7 +715,7 @@ func (c *Controller) refreshed() {
 		log.Printf("Controller %v cached values expired", c)
 
 		if c.unconfigured {
-			c.deleted = types.DateTimePtrNow()
+			c.deleted = types.DateTimeNow()
 			catalog.Delete(c.OID())
 			log.Printf("'unconfigured' controller %v removed", c)
 		}
@@ -719,7 +723,7 @@ func (c *Controller) refreshed() {
 }
 
 func (c Controller) serialize() ([]byte, error) {
-	if !c.IsValid() || c.deleted != nil || c.unconfigured {
+	if !c.IsValid() || c.IsDeleted() || c.unconfigured {
 		return nil, nil
 	}
 

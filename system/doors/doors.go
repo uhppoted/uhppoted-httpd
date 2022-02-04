@@ -120,7 +120,7 @@ func (dd *Doors) Sweep(retention time.Duration) {
 	if dd != nil {
 		cutoff := time.Now().Add(-retention)
 		for i, v := range dd.doors {
-			if v.deleted != nil && v.deleted.Before(cutoff) {
+			if v.IsDeleted() && v.deleted.Before(cutoff) {
 				delete(dd.doors, i)
 			}
 		}
@@ -238,7 +238,7 @@ func validate(dd Doors) error {
 	names := map[string]string{}
 
 	for k, d := range dd.doors {
-		if d.deleted != nil {
+		if d.IsDeleted() {
 			continue
 		}
 

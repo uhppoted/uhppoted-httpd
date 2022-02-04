@@ -32,7 +32,7 @@ func TestCardAsObjects(t *testing.T) {
 		{OID: "0.4.3", Value: ""},
 		{OID: "0.4.3.0.0", Value: types.StatusOk},
 		{OID: "0.4.3.0.1", Value: created},
-		{OID: "0.4.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.4.3.0.2", Value: types.DateTime{}},
 		{OID: "0.4.3.1", Value: "Le Card"},
 		{OID: "0.4.3.2", Value: &card},
 		{OID: "0.4.3.3", Value: &from},
@@ -48,7 +48,7 @@ func TestCardAsObjects(t *testing.T) {
 
 func TestCardAsObjectsWithDeleted(t *testing.T) {
 	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	deleted := types.DateTimePtrNow()
+	deleted := types.DateTimeNow()
 	card := types.Card(8165537)
 	from := types.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
 	to := types.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
@@ -93,7 +93,7 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.4.3", Value: ""},
 		{OID: "0.4.3.0.0", Value: types.StatusOk},
 		{OID: "0.4.3.0.1", Value: created},
-		{OID: "0.4.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.4.3.0.2", Value: types.DateTime{}},
 		{OID: "0.4.3.1", Value: "Le Card"},
 		// {OID: "0.4.3.2", Value: &card},
 		{OID: "0.4.3.3", Value: &from},
@@ -148,7 +148,7 @@ func TestCardSetWithDeleted(t *testing.T) {
 		OID:  "0.4.3",
 		Name: "Le Carte",
 
-		deleted: types.DateTimePtrNow(),
+		deleted: types.DateTimeNow(),
 	}
 
 	expected := []catalog.Object{

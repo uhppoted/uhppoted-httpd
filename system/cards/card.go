@@ -24,7 +24,7 @@ type Card struct {
 	Groups map[catalog.OID]bool
 
 	created types.DateTime
-	deleted *types.DateTime
+	deleted types.DateTime
 }
 
 type kv = struct {
@@ -69,18 +69,14 @@ func (c *Card) IsValid() bool {
 	return false
 }
 
-func (c *Card) IsDeleted() bool {
-	if c != nil && c.deleted != nil {
-		return true
-	}
-
-	return false
+func (c Card) IsDeleted() bool {
+	return !c.deleted.IsZero()
 }
 
 func (c *Card) AsObjects(auth auth.OpAuth) []catalog.Object {
 	list := []kv{}
 
-	if c.deleted != nil {
+	if c.IsDeleted() {
 		list = append(list, kv{CardDeleted, c.deleted})
 	} else {
 		name := c.Name
@@ -156,7 +152,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 		return []catalog.Object{}, nil
 	}
 
-	if c.deleted != nil {
+	if c.IsDeleted() {
 		return c.toObjects([]kv{{CardDeleted, c.deleted}}, a), fmt.Errorf("Card has been deleted")
 	}
 
@@ -354,7 +350,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 				dbc)
 		}
 
-		c.deleted = types.DateTimePtrNow()
+		c.deleted = types.DateTimeNow()
 		list = append(list, kv{CardDeleted, c.deleted})
 
 		catalog.Delete(c.OID)
@@ -378,7 +374,7 @@ func (c *Card) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 
 	objects := []catalog.Object{}
 
-	if c.deleted == nil && f(c, "OID", c.OID) {
+	if !c.IsDeleted() && f(c, "OID", c.OID) {
 		objects = append(objects, catalog.NewObject(c.OID, ""))
 	}
 
@@ -393,7 +389,7 @@ func (c *Card) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 }
 
 func (c *Card) status() types.Status {
-	if c.deleted != nil {
+	if c.IsDeleted() {
 		return types.StatusDeleted
 	}
 

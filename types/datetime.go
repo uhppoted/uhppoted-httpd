@@ -19,6 +19,10 @@ func DateTimePtrNow() *DateTime {
 	return &now
 }
 
+func (d DateTime) IsZero() bool {
+	return time.Time(d).IsZero()
+}
+
 // Because time.Truncate does not in any way behave like your would expect it to :-(
 func (d DateTime) Before(t time.Time) bool {
 	p := time.Time(d).UnixMilli() / 1000
@@ -32,7 +36,7 @@ func (d DateTime) Add(dt time.Duration) DateTime {
 }
 
 func (d DateTime) MarshalJSON() ([]byte, error) {
-	if time.Time(d).IsZero() {
+	if d.IsZero() {
 		return json.Marshal("")
 	}
 
@@ -66,7 +70,7 @@ func (d *DateTime) UnmarshalJSON(bytes []byte) error {
 }
 
 func (d DateTime) String() string {
-	if time.Time(d).IsZero() {
+	if d.IsZero() {
 		return ""
 	}
 

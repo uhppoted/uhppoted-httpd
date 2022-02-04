@@ -171,7 +171,7 @@ func validate(ii Interfaces) error {
 	names := map[string]string{}
 
 	for k, l := range ii.lans {
-		if l.deleted != nil {
+		if l.IsDeleted() {
 			continue
 		}
 

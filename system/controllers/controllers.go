@@ -143,7 +143,7 @@ func (cc *Controllers) Sweep(retention time.Duration) {
 
 	cutoff := time.Now().Add(-retention)
 	for i, v := range cc.controllers {
-		if v.deleted != nil && v.deleted.Before(cutoff) {
+		if v.IsDeleted() && v.deleted.Before(cutoff) {
 			cc.controllers = append(cc.controllers[:i], cc.controllers[i+1:]...)
 		}
 	}
@@ -210,7 +210,7 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 	loop:
 		for _, d := range found {
 			for _, c := range cc.controllers {
-				if c.DeviceID() == d && c.deleted == nil {
+				if c.DeviceID() == d && !c.IsDeleted() {
 					continue loop
 				}
 			}
@@ -399,7 +399,7 @@ func validate(cc Controllers) error {
 			return fmt.Errorf("Invalid controller OID (%v)", OID)
 		}
 
-		if c.deleted != nil {
+		if c.IsDeleted() {
 			continue
 		}
 

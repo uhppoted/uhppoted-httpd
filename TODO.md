@@ -17,8 +17,13 @@
             - check before/after stuff
       - [ ] (?) Refactor DateTime out to use core implementation only
       - [ ] Basic problem is fmt.Printf("%v") -> can't handle both concrete and pointers
+            - Migrate `deleted` to DateTime with IsZero
+              - [x] LAN
+              - [x] controllers
+              - [x] door
+              - [x] card
+              - [x] group
             - Pointer only seems to be used controller.cached and `deleted`
-            - [ ] Make _Deleted_ type (or just use *time.Time and handle the AsObjects serialisation)
             - (?) Make _SysDateTime_ type (or IntlDateTime)
       - [x] DateTimeNow should round/truncate to seconds
       - [x] Remove DateTime.Format

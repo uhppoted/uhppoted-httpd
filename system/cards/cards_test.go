@@ -359,7 +359,7 @@ func TestCardDelete(t *testing.T) {
 		t.Fatalf("Unexpected error validating cards with deleted card (%v)", err)
 	}
 
-	if cards.cards[dobby.OID].deleted == nil {
+	if !cards.cards[dobby.OID].IsDeleted() {
 		t.Errorf("Failed to mark card %v as 'deleted'", dobby.Card)
 	}
 }

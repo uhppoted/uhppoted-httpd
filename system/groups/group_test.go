@@ -24,7 +24,6 @@ func TestGroupDeserialize(t *testing.T) {
 			"0.3.7": true,
 		},
 		created: created,
-		deleted: nil,
 	}
 
 	var g Group
@@ -50,7 +49,6 @@ func TestGroupDeserializeWithDefaultCreated(t *testing.T) {
 			"0.3.7": true,
 		},
 		created: created.Add(1 * time.Minute),
-		deleted: nil,
 	}
 
 	var g Group
@@ -82,7 +80,7 @@ func TestGroupAsObjects(t *testing.T) {
 		{OID: "0.5.3", Value: ""},
 		{OID: "0.5.3.0.0", Value: types.StatusOk},
 		{OID: "0.5.3.0.1", Value: created},
-		{OID: "0.5.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.5.3.0.2", Value: types.DateTime{}},
 		{OID: "0.5.3.1", Value: "Le Groupe"},
 	}
 
@@ -95,7 +93,7 @@ func TestGroupAsObjects(t *testing.T) {
 
 func TestGroupAsObjectsWithDeleted(t *testing.T) {
 	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	deleted := types.DateTimePtrNow()
+	deleted := types.DateTimeNow()
 
 	g := Group{
 		OID:  "0.5.3",
@@ -136,7 +134,7 @@ func TestGroupAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.5.3", Value: ""},
 		{OID: "0.5.3.0.0", Value: types.StatusOk},
 		{OID: "0.5.3.0.1", Value: created},
-		{OID: "0.5.3.0.2", Value: (*types.DateTime)(nil)},
+		{OID: "0.5.3.0.2", Value: types.DateTime{}},
 		//	{OID: "0.5.3.1", Value: "Le Groupe"},
 	}
 
@@ -196,7 +194,7 @@ func TestGroupSetWithDeleted(t *testing.T) {
 			"0.3.7": true,
 		},
 
-		deleted: types.DateTimePtrNow(),
+		deleted: types.DateTimeNow(),
 	}
 
 	expected := []catalog.Object{

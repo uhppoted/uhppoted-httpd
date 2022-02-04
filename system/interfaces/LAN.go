@@ -33,7 +33,7 @@ type LAN struct {
 
 	ch           chan types.EventsList
 	created      types.DateTime
-	deleted      *types.DateTime
+	deleted      types.DateTime
 	unconfigured bool
 }
 
@@ -67,18 +67,14 @@ func (l *LAN) IsValid() bool {
 	return false
 }
 
-func (l *LAN) IsDeleted() bool {
-	if l != nil && l.deleted != nil {
-		return true
-	}
-
-	return false
+func (l LAN) IsDeleted() bool {
+	return !l.deleted.IsZero()
 }
 
 func (l *LAN) AsObjects(auth auth.OpAuth) []catalog.Object {
 	list := []kv{}
 
-	if l.deleted != nil {
+	if l.IsDeleted() {
 		list = append(list, kv{LANDeleted, l.deleted})
 	} else {
 		list = append(list, kv{LANStatus, l.status()})
@@ -113,7 +109,7 @@ func (l *LAN) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]c
 		return []catalog.Object{}, nil
 	}
 
-	if l.deleted != nil {
+	if l.IsDeleted() {
 		return l.toObjects([]kv{{LANDeleted, l.deleted}}, a), fmt.Errorf("LAN has been deleted")
 	}
 
@@ -145,7 +141,7 @@ func (l *LAN) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]c
 		}
 
 	case l.OID.Append(LANBindAddress):
-		if l.deleted != nil {
+		if l.IsDeleted() {
 			return nil, fmt.Errorf("LAN has been deleted")
 		} else if addr, err := core.ResolveBindAddr(value); err != nil {
 			return nil, err
@@ -165,7 +161,7 @@ func (l *LAN) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]c
 		}
 
 	case l.OID.Append(LANBroadcastAddress):
-		if l.deleted != nil {
+		if l.IsDeleted() {
 			return nil, fmt.Errorf("LAN has been deleted")
 		} else if addr, err := core.ResolveBroadcastAddr(value); err != nil {
 			return nil, err
@@ -185,7 +181,7 @@ func (l *LAN) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]c
 		}
 
 	case l.OID.Append(LANListenAddress):
-		if l.deleted != nil {
+		if l.IsDeleted() {
 			return nil, fmt.Errorf("LAN has been deleted")
 		} else if addr, err := core.ResolveListenAddr(value); err != nil {
 			return nil, err
@@ -205,7 +201,7 @@ func (l *LAN) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]c
 		}
 	}
 
-	if l.deleted == nil {
+	if !l.IsDeleted() {
 		list = append(list, kv{LANStatus, l.status()})
 	}
 
@@ -225,7 +221,7 @@ func (l *LAN) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 
 	objects := []catalog.Object{}
 
-	if l.deleted == nil && f(l, "OID", l.OID) {
+	if !l.IsDeleted() && f(l, "OID", l.OID) {
 		objects = append(objects, catalog.NewObject(l.OID, ""))
 	}
 

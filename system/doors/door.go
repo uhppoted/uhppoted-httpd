@@ -22,7 +22,7 @@ type Door struct {
 	delay   uint8
 	mode    core.ControlState
 	created types.DateTime
-	deleted *types.DateTime
+	deleted types.DateTime
 }
 
 type kv = struct {
@@ -47,11 +47,7 @@ func (d *Door) IsValid() bool {
 }
 
 func (d *Door) IsDeleted() bool {
-	if d != nil && d.deleted != nil {
-		return true
-	}
-
-	return false
+	return !d.deleted.IsZero()
 }
 
 func (d Door) String() string {
@@ -61,7 +57,7 @@ func (d Door) String() string {
 func (d *Door) AsObjects(auth auth.OpAuth) []catalog.Object {
 	list := []kv{}
 
-	if d.deleted != nil {
+	if d.IsDeleted() {
 		list = append(list, kv{DoorDeleted, d.deleted})
 	} else {
 		name := d.Name
@@ -172,8 +168,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 
 	if d == nil {
 		return []catalog.Object{}, nil
-	} else if d.deleted != nil {
-
+	} else if d.IsDeleted() {
 		return d.toObjects([]kv{kv{DoorDeleted, d.deleted}}, a), fmt.Errorf("Door has been deleted")
 	}
 
@@ -240,7 +235,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 		}
 
 		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
-		d.deleted = types.DateTimePtrNow()
+		d.deleted = types.DateTimeNow()
 
 		list = append(list, kv{DoorDeleted, d.deleted})
 		catalog.Delete(d.OID)
@@ -264,7 +259,7 @@ func (d *Door) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 
 	objects := []catalog.Object{}
 
-	if d.deleted == nil && f(d, "OID", d.OID) {
+	if !d.IsDeleted() && f(d, "OID", d.OID) {
 		objects = append(objects, catalog.NewObject(d.OID, ""))
 	}
 
@@ -279,7 +274,7 @@ func (d *Door) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 }
 
 func (d *Door) status() types.Status {
-	if d.deleted != nil {
+	if d.IsDeleted() {
 		return types.StatusDeleted
 	}
 
