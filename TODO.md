@@ -1,7 +1,7 @@
 ## v0.7.x
 
 - [ ] `auth.grl` no longer used ??
-- [ ] Fix 'eye open' icon on set password page
+- [x] Fix 'eye open' icon on set password page
 
 - [x] `concurrent map read and map write`
       - [x] Move Local.user/keys/resources to guarded struct
