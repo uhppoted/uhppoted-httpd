@@ -13,18 +13,16 @@
 - [ ] Clean up the log function mess in controller
 
 - [ ] Fix DateTime confusion
+      - [ ] Fix controller date/time set after pointer rework
       - [ ] Date should not set time fields
             - check before/after stuff
       - [ ] (?) Refactor DateTime out to use core implementation only
-      - [ ] Basic problem is fmt.Printf("%v") -> can't handle both concrete and pointers
-            - Migrate `deleted` to DateTime with IsZero
+      - [x] Migrate `deleted` to DateTime with IsZero (because fmt.Printf("%v") -> can't handle both concrete and pointers)
               - [x] LAN
               - [x] controllers
               - [x] door
               - [x] card
               - [x] group
-            - Pointer only seems to be used controller.cached and `deleted`
-            - (?) Make _SysDateTime_ type (or IntlDateTime)
       - [x] DateTimeNow should round/truncate to seconds
       - [x] Remove DateTime.Format
       - [x] Implement Ptr() for the repetitive assign to variable to take address thing

@@ -41,7 +41,7 @@ type cached struct {
 	touched  time.Time
 	address  *core.Address
 	datetime struct {
-		datetime *types.DateTime
+		datetime types.DateTime
 		modified bool
 	}
 	cards  *uint32
@@ -191,10 +191,10 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 				}
 
 				// ... get system date/time field from cached value
-				if cached.datetime.datetime != nil {
+				if !cached.datetime.datetime.IsZero() {
 					tz := timezone(c.timezone)
 					now := time.Now().In(tz)
-					t := time.Time(*cached.datetime.datetime)
+					t := time.Time(cached.datetime.datetime)
 					T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 					delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
 
@@ -356,7 +356,7 @@ func (c *Controller) get() *cached {
 
 	if v := catalog.GetV(c.oid, ControllerDateTimeCurrent); v != nil {
 		if datetime, ok := v.(types.DateTime); ok {
-			e.datetime.datetime = &datetime
+			e.datetime.datetime = datetime
 		}
 	}
 
@@ -516,9 +516,9 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 
 			if c.deviceID != 0 {
 				if cached := c.get(); cached != nil {
-					if cached.datetime.datetime != nil {
+					if !cached.datetime.datetime.IsZero() {
 						tz := timezone(c.timezone)
-						t := time.Time(*cached.datetime.datetime)
+						t := time.Time(cached.datetime.datetime)
 						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 						list = append(list, kv{ControllerDateTimeStatus, types.StatusUncertain})
 						list = append(list, kv{ControllerDateTime, dt.Format("2006-01-02 15:04 MST")})
