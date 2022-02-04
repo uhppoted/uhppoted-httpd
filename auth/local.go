@@ -46,9 +46,22 @@ type Local struct {
 	sessions sessions
 }
 
+type private struct {
+	keys      [][]byte
+	users     map[string]*user
+	resources []resource
+	guard     sync.Mutex
+
+	cached struct {
+		key       []byte
+		users     map[string]*user
+		resources []resource
+	}
+}
+
 type sessions struct {
-	guard sync.Mutex
 	list  map[uuid.UUID]time.Time
+	guard sync.Mutex
 }
 
 type salt []byte
@@ -64,19 +77,6 @@ type login struct {
 	Salt    []byte    `json:"login.salt,omitempty"`
 }
 
-type private struct {
-	keys      [][]byte
-	users     map[string]*user
-	resources []resource
-	guard     sync.Mutex
-}
-
-type session struct {
-	LoggedInAs string    `json:"uid,omitempty"`
-	SessionId  uuid.UUID `json:"session.id,omitempty"`
-	Role       string    `json:"session.role,omitempty"`
-}
-
 type user struct {
 	Salt     salt   `json:"salt"`
 	Password string `json:"password"`
@@ -86,6 +86,12 @@ type user struct {
 type resource struct {
 	Path       *regexp.Regexp `json:"path"`
 	Authorised *regexp.Regexp `json:"authorised"`
+}
+
+type session struct {
+	LoggedInAs string    `json:"uid,omitempty"`
+	SessionId  uuid.UUID `json:"session.id,omitempty"`
+	Role       string    `json:"session.role,omitempty"`
 }
 
 func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
@@ -256,7 +262,7 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 }
 
 func (p *Local) Validate(uid, pwd string) error {
-	users := p.private.users
+	users := p.private.Users()
 	u, ok := users[uid]
 	if !ok {
 		return fmt.Errorf("invalid user ID or password")
@@ -491,6 +497,8 @@ func (p *Local) deserialize(bytes []byte) error {
 
 	p.private.users = serializable.Users
 	p.private.resources = serializable.Resources
+	p.private.cached.users = nil
+	p.private.cached.resources = nil
 
 	return nil
 }
@@ -569,79 +577,6 @@ func (p *Local) getToken(cookie string) (*jwt.Token, int, error) {
 	return nil, 0, fmt.Errorf("JWT signature is not valid")
 }
 
-func (p *private) Users() map[string]*user {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	users := map[string]*user{}
-	for k, v := range p.users {
-		users[k] = v
-	}
-
-	return users
-}
-
-func (p *private) Resources() []resource {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	resources := []resource{}
-	for _, v := range p.resources {
-		resources = append(resources, v)
-	}
-
-	return resources
-}
-
-func (p *private) Store(uid string, role string, salt []byte, hash string) {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	p.users[uid] = &user{
-		Salt:     salt,
-		Password: hash,
-		Role:     role,
-	}
-}
-
-func (p *private) Keys() [][]byte {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	keys := make([][]byte, len(p.keys))
-
-	for _, k := range p.keys {
-		key := make([]byte, constants.KEY_LENGTH)
-
-		copy(key, k)
-		keys = append(keys, key)
-	}
-
-	return keys
-}
-
-func (p *private) Push(key []byte) {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	for i := 1; i < len(p.keys); i++ {
-		p.keys[i] = p.keys[i-1]
-	}
-
-	p.keys[0] = key
-}
-
-func (p *private) Key() []byte {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	key := make([]byte, constants.KEY_LENGTH)
-
-	copy(key, p.keys[0])
-
-	return key
-}
-
 func (p *Local) regenerate() {
 	key, err := genKey()
 	if err != nil {
@@ -713,6 +648,87 @@ func genKey() ([]byte, error) {
 	}
 
 	return key, nil
+}
+
+func (p *private) Users() map[string]*user {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	if p.cached.users == nil {
+		p.cached.users = map[string]*user{}
+		for k, v := range p.users {
+			p.cached.users[k] = v
+		}
+	}
+
+	return p.cached.users
+}
+
+func (p *private) Resources() []resource {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	if p.cached.resources == nil {
+		p.cached.resources = []resource{}
+		for _, v := range p.resources {
+			p.cached.resources = append(p.cached.resources, v)
+		}
+	}
+
+	return p.cached.resources
+}
+
+func (p *private) Store(uid string, role string, salt []byte, hash string) {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	p.users[uid] = &user{
+		Salt:     salt,
+		Password: hash,
+		Role:     role,
+	}
+
+	p.cached.users = nil
+}
+
+func (p *private) Keys() [][]byte {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	keys := make([][]byte, len(p.keys))
+
+	for _, k := range p.keys {
+		key := make([]byte, constants.KEY_LENGTH)
+
+		copy(key, k)
+		keys = append(keys, key)
+	}
+
+	return keys
+}
+
+func (p *private) Push(key []byte) {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	for i := 1; i < len(p.keys); i++ {
+		p.keys[i] = p.keys[i-1]
+	}
+
+	p.keys[0] = key
+	p.cached.key = nil
+}
+
+func (p *private) Key() []byte {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
+	if p.cached.key == nil {
+		p.cached.key = make([]byte, constants.KEY_LENGTH)
+		copy(p.cached.key, p.keys[0])
+	}
+
+	return p.cached.key
 }
 
 func (ss *sessions) touched(uuid uuid.UUID) {
