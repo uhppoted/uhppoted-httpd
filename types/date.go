@@ -10,11 +10,10 @@ import (
 type Date core.Date
 
 func ParseDate(s string) (*Date, error) {
-	if t, err := time.Parse("2006-01-02", s); err == nil {
-		d := Date(t)
-		return &d, nil
-	} else {
+	if date, err := time.ParseInLocation("2006-01-02", s, time.Local); err != nil {
 		return nil, err
+	} else {
+		return (*Date)(&date), nil
 	}
 }
 
@@ -29,15 +28,19 @@ func (d *Date) Copy() *Date {
 }
 
 func (d *Date) IsValid() bool {
-	if d != nil {
-		return true
+	if d == nil || time.Time(*d).IsZero() {
+		return false
 	}
 
-	return false
+	return true
 }
 
 func (d Date) MarshalJSON() ([]byte, error) {
-	return json.Marshal(d.Format("2006-01-02"))
+	if time.Time(d).IsZero() {
+		return json.Marshal("")
+	} else {
+		return json.Marshal(d.Format("2006-01-02"))
+	}
 }
 
 func (d *Date) UnmarshalJSON(bytes []byte) error {
@@ -67,9 +70,13 @@ func (d *Date) Format(layout string) string {
 }
 
 func (d *Date) String() string {
-	if d != nil {
-		return time.Time(*d).Format("2006-01-02")
+	if d == nil {
+		return ""
 	}
 
-	return ""
+	if time.Time(*d).IsZero() {
+		return ""
+	}
+
+	return time.Time(*d).Format("2006-01-02")
 }

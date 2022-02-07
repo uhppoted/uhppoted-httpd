@@ -9,10 +9,14 @@
 
 - [ ] Clean up the log function mess in controller
 
-- [ ] Fix DateTime confusion
+- [ ] Cleanup types.Date
+      - [x] Unit test - should not set time fields
+      - [ ] Use IsZero() rather than pointer
+      - [ ] Check before/after stuff
+      - [ ] Refactor out to use uhppote-core implementation
+
+- [x] Fix DateTime confusion
       - [x] Refactor DateTime out to use core implementation only
-      - [ ] Date should not set time fields
-            - check before/after stuff
       - [x] Migrate `deleted` to DateTime with IsZero (because fmt.Printf("%v") -> can't handle both concrete and pointers)
       - [x] DateTimeNow should round/truncate to seconds
       - [x] Remove DateTime.Format
