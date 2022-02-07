@@ -7,10 +7,11 @@ import (
 	"sync"
 	"time"
 
+	core "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Groups struct {
@@ -185,7 +186,7 @@ func (gg *Groups) add(a auth.OpAuth, g Group) (*Group, error) {
 
 	record := g.clone()
 	record.OID = oid
-	record.created = types.DateTimeNow()
+	record.created = core.DateTimeNow()
 
 	if a != nil {
 		if err := a.CanAdd(&record, auth.Groups); err != nil {

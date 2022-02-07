@@ -10,7 +10,7 @@
 - [ ] Clean up the log function mess in controller
 
 - [ ] Fix DateTime confusion
-      - [ ] (?) Refactor DateTime out to use core implementation only
+      - [x] Refactor DateTime out to use core implementation only
       - [ ] Date should not set time fields
             - check before/after stuff
       - [x] Migrate `deleted` to DateTime with IsZero (because fmt.Printf("%v") -> can't handle both concrete and pointers)

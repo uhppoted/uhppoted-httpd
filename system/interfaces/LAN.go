@@ -12,6 +12,7 @@ import (
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
@@ -32,8 +33,8 @@ type LAN struct {
 	Debug            bool
 
 	ch           chan types.EventsList
-	created      types.DateTime
-	deleted      types.DateTime
+	created      core.DateTime
+	deleted      core.DateTime
 	unconfigured bool
 }
 
@@ -51,7 +52,7 @@ type kv = struct {
 	value interface{}
 }
 
-var created = types.DateTimeNow()
+var created = core.DateTimeNow()
 
 func (l LAN) String() string {
 	return fmt.Sprintf("%v", l.Name)
@@ -321,7 +322,7 @@ func (l *LAN) Refresh(c Controller) {
 		log.Printf("Got %v response to get-status request for %v", status, deviceID)
 	} else {
 		catalog.PutV(c.OID(), ControllerTouched, time.Now())
-		catalog.PutV(c.OID(), ControllerDateTimeCurrent, types.DateTime(status.Status.SystemDateTime))
+		catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
 	}
 
 	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: deviceID}); err != nil {
@@ -395,7 +396,7 @@ func (l *LAN) SynchTime(c Controller) {
 		} else if status == nil {
 			log.Printf("Got %v response to get-status request for %v", status, deviceID)
 		} else {
-			catalog.PutV(c.OID(), ControllerDateTimeCurrent, types.DateTime(status.Status.SystemDateTime))
+			catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
 		}
 
 		log.Printf("INFO  synchronized device-time %v %v", response.DeviceID, response.DateTime)
@@ -572,14 +573,14 @@ func (l LAN) serialize() ([]byte, error) {
 		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
 		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
-		Created          types.DateTime     `json:"created,omitempty"`
+		Created          core.DateTime      `json:"created,omitempty"`
 	}{
 		OID:              l.OID,
 		Name:             l.Name,
 		BindAddress:      l.BindAddress,
 		BroadcastAddress: l.BroadcastAddress,
 		ListenAddress:    l.ListenAddress,
-		Created:          types.DateTime(l.created),
+		Created:          l.created,
 	}
 
 	return json.MarshalIndent(record, "", "  ")
@@ -594,7 +595,7 @@ func (l *LAN) deserialize(bytes []byte) error {
 		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
 		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
-		Created          types.DateTime     `json:"created,omitempty"`
+		Created          core.DateTime      `json:"created,omitempty"`
 	}{
 		Created: created,
 	}

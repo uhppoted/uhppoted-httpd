@@ -7,13 +7,15 @@ import (
 	"testing"
 	"time"
 
+	core "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func TestGroupDeserialize(t *testing.T) {
-	created = types.DateTime(time.Date(2022, time.April, 1, 0, 0, 0, 0, time.Local))
+	created = core.DateTime(time.Date(2022, time.April, 1, 0, 0, 0, 0, time.Local))
 
 	encoded := `{ "OID":"0.5.3", "name":"Le Groupe", "doors":["0.3.3","0.3.7"], "created":"2022-04-01 00:00:00" }`
 	expected := Group{
@@ -38,7 +40,7 @@ func TestGroupDeserialize(t *testing.T) {
 }
 
 func TestGroupDeserializeWithDefaultCreated(t *testing.T) {
-	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	encoded := `{ "OID":"0.5.3", "name":"Le Groupe", "doors":["0.3.3","0.3.7"] }`
 	expected := Group{
@@ -64,7 +66,7 @@ func TestGroupDeserializeWithDefaultCreated(t *testing.T) {
 }
 
 func TestGroupAsObjects(t *testing.T) {
-	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	g := Group{
 		OID:  "0.5.3",
@@ -80,7 +82,7 @@ func TestGroupAsObjects(t *testing.T) {
 		{OID: "0.5.3", Value: ""},
 		{OID: "0.5.3.0.0", Value: types.StatusOk},
 		{OID: "0.5.3.0.1", Value: created},
-		{OID: "0.5.3.0.2", Value: types.DateTime{}},
+		{OID: "0.5.3.0.2", Value: core.DateTime{}},
 		{OID: "0.5.3.1", Value: "Le Groupe"},
 	}
 
@@ -92,8 +94,8 @@ func TestGroupAsObjects(t *testing.T) {
 }
 
 func TestGroupAsObjectsWithDeleted(t *testing.T) {
-	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	deleted := types.DateTimeNow()
+	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	deleted := core.DateTimeNow()
 
 	g := Group{
 		OID:  "0.5.3",
@@ -118,7 +120,7 @@ func TestGroupAsObjectsWithDeleted(t *testing.T) {
 }
 
 func TestGroupAsObjectsWithAuth(t *testing.T) {
-	created = types.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	g := Group{
 		OID:  "0.5.3",
@@ -134,7 +136,7 @@ func TestGroupAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.5.3", Value: ""},
 		{OID: "0.5.3.0.0", Value: types.StatusOk},
 		{OID: "0.5.3.0.1", Value: created},
-		{OID: "0.5.3.0.2", Value: types.DateTime{}},
+		{OID: "0.5.3.0.2", Value: core.DateTime{}},
 		//	{OID: "0.5.3.1", Value: "Le Groupe"},
 	}
 
@@ -194,7 +196,7 @@ func TestGroupSetWithDeleted(t *testing.T) {
 			"0.3.7": true,
 		},
 
-		deleted: types.DateTimeNow(),
+		deleted: core.DateTimeNow(),
 	}
 
 	expected := []catalog.Object{

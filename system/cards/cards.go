@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	core "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -212,7 +214,7 @@ func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
 
 	card := c.clone()
 	card.OID = oid
-	card.created = types.DateTimeNow()
+	card.created = core.DateTimeNow()
 
 	if a != nil {
 		if err := a.CanAdd(card, auth.Cards); err != nil {

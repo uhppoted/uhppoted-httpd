@@ -12,6 +12,7 @@ import (
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -27,8 +28,8 @@ type Controller struct {
 	Doors    map[uint8]catalog.OID
 	timezone string
 
-	created      types.DateTime
-	deleted      types.DateTime
+	created      core.DateTime
+	deleted      core.DateTime
 	unconfigured bool
 }
 
@@ -41,7 +42,7 @@ type cached struct {
 	touched  time.Time
 	address  *core.Address
 	datetime struct {
-		datetime types.DateTime
+		datetime core.DateTime
 		modified bool
 	}
 	cards  *uint32
@@ -54,7 +55,7 @@ type cached struct {
 	acl types.Status
 }
 
-var created = types.DateTimeNow()
+var created = core.DateTimeNow()
 
 func (c Controller) IsDeleted() bool {
 	return !c.deleted.IsZero()
@@ -355,7 +356,7 @@ func (c *Controller) get() *cached {
 	}
 
 	if v := catalog.GetV(c.oid, ControllerDateTimeCurrent); v != nil {
-		if datetime, ok := v.(types.DateTime); ok {
+		if datetime, ok := v.(core.DateTime); ok {
 			e.datetime.datetime = datetime
 		}
 	}
@@ -645,7 +646,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 				dbc)
 		}
 
-		c.deleted = types.DateTimeNow()
+		c.deleted = core.DateTimeNow()
 		list = append(list, kv{ControllerDeleted, c.deleted})
 
 		catalog.Delete(OID)
@@ -715,7 +716,7 @@ func (c *Controller) refreshed() {
 		log.Printf("Controller %v cached values expired", c)
 
 		if c.unconfigured {
-			c.deleted = types.DateTimeNow()
+			c.deleted = core.DateTimeNow()
 			catalog.Delete(c.OID())
 			log.Printf("'unconfigured' controller %v removed", c)
 		}
@@ -734,7 +735,7 @@ func (c Controller) serialize() ([]byte, error) {
 		Address  *core.Address         `json:"address,omitempty"`
 		Doors    map[uint8]catalog.OID `json:"doors"`
 		TimeZone string                `json:"timezone,omitempty"`
-		Created  types.DateTime        `json:"created"`
+		Created  core.DateTime         `json:"created"`
 	}{
 		OID:      c.OID(),
 		Name:     c.name,
@@ -762,7 +763,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 		Address  *core.Address    `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
 		TimeZone string           `json:"timezone,omitempty"`
-		Created  types.DateTime   `json:"created,omitempty"`
+		Created  core.DateTime    `json:"created,omitempty"`
 	}{
 		Created: created,
 	}

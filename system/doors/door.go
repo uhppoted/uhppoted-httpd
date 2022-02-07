@@ -8,6 +8,7 @@ import (
 	"time"
 
 	core "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -21,8 +22,8 @@ type Door struct {
 
 	delay   uint8
 	mode    core.ControlState
-	created types.DateTime
-	deleted types.DateTime
+	created core.DateTime
+	deleted core.DateTime
 }
 
 type kv = struct {
@@ -32,7 +33,7 @@ type kv = struct {
 
 const BLANK = "'blank'"
 
-var created = types.DateTimeNow()
+var created = core.DateTimeNow()
 
 func (d *Door) IsValid() bool {
 	if d != nil {
@@ -235,7 +236,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 		}
 
 		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
-		d.deleted = types.DateTimeNow()
+		d.deleted = core.DateTimeNow()
 
 		list = append(list, kv{DoorDeleted, d.deleted})
 		catalog.Delete(d.OID)
@@ -287,7 +288,7 @@ func (d Door) serialize() ([]byte, error) {
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
-		Created types.DateTime    `json:"created"`
+		Created core.DateTime     `json:"created"`
 	}{
 		OID:     d.OID,
 		Name:    d.Name,
@@ -307,7 +308,7 @@ func (d *Door) deserialize(bytes []byte) error {
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
-		Created types.DateTime    `json:"created,omitempty"`
+		Created core.DateTime     `json:"created,omitempty"`
 	}{
 		Delay:   5,
 		Mode:    core.Controlled,

@@ -9,10 +9,11 @@ import (
 	"sync"
 	"time"
 
+	core "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Doors struct {
@@ -199,7 +200,7 @@ func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
 
 	record := d.clone()
 	record.OID = oid
-	record.created = types.DateTimeNow()
+	record.created = core.DateTimeNow()
 
 	if a != nil {
 		if err := a.CanAdd(&record, auth.Doors); err != nil {

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	core "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -11,19 +13,19 @@ import (
 )
 
 type Event struct {
-	OID        catalog.OID    `json:"OID"`
-	DeviceID   uint32         `json:"device-id"`
-	Index      uint32         `json:"index"`
-	Timestamp  types.DateTime `json:"timestamp"`
-	Type       eventType      `json:"event-type"`
-	Door       uint8          `json:"door"`
-	Direction  direction      `json:"direction"`
-	Card       uint32         `json:"card"`
-	Granted    bool           `json:"granted"`
-	Reason     reason         `json:"reason"`
-	DeviceName string         `json:"device-name"`
-	DoorName   string         `json:"door-name"`
-	CardName   string         `json:"card-name"`
+	OID        catalog.OID   `json:"OID"`
+	DeviceID   uint32        `json:"device-id"`
+	Index      uint32        `json:"index"`
+	Timestamp  core.DateTime `json:"timestamp"`
+	Type       eventType     `json:"event-type"`
+	Door       uint8         `json:"door"`
+	Direction  direction     `json:"direction"`
+	Card       uint32        `json:"card"`
+	Granted    bool          `json:"granted"`
+	Reason     reason        `json:"reason"`
+	DeviceName string        `json:"device-name"`
+	DoorName   string        `json:"door-name"`
+	CardName   string        `json:"card-name"`
 }
 
 type eventType uint8
@@ -130,7 +132,7 @@ func NewEvent(oid catalog.OID, e uhppoted.Event, device, door, card string) Even
 		OID:        oid,
 		DeviceID:   e.DeviceID,
 		Index:      e.Index,
-		Timestamp:  types.DateTime(e.Timestamp),
+		Timestamp:  e.Timestamp,
 		Type:       eventType(e.Type),
 		Door:       e.Door,
 		Direction:  direction(e.Direction),
@@ -219,19 +221,19 @@ func (e *Event) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 
 func (e Event) serialize() ([]byte, error) {
 	record := struct {
-		OID        catalog.OID    `json:"OID"`
-		DeviceID   uint32         `json:"device-id,omitempty"`
-		Index      uint32         `json:"index"`
-		Timestamp  types.DateTime `json:"timestamp"`
-		Type       eventType      `json:"event-type"`
-		Door       uint8          `json:"door"`
-		Direction  direction      `json:"direction"`
-		Card       uint32         `json:"card"`
-		Granted    bool           `json:"granted"`
-		Reason     reason         `json:"reason"`
-		DeviceName string         `json:"device-name,omitempty"`
-		DoorName   string         `json:"door-name,omitempty"`
-		CardName   string         `json:"card-name,omitempty"`
+		OID        catalog.OID   `json:"OID"`
+		DeviceID   uint32        `json:"device-id,omitempty"`
+		Index      uint32        `json:"index"`
+		Timestamp  core.DateTime `json:"timestamp"`
+		Type       eventType     `json:"event-type"`
+		Door       uint8         `json:"door"`
+		Direction  direction     `json:"direction"`
+		Card       uint32        `json:"card"`
+		Granted    bool          `json:"granted"`
+		Reason     reason        `json:"reason"`
+		DeviceName string        `json:"device-name,omitempty"`
+		DoorName   string        `json:"door-name,omitempty"`
+		CardName   string        `json:"card-name,omitempty"`
 	}{
 		OID:        e.OID,
 		DeviceID:   e.DeviceID,
@@ -253,19 +255,19 @@ func (e Event) serialize() ([]byte, error) {
 
 func (e *Event) deserialize(bytes []byte) error {
 	record := struct {
-		OID        catalog.OID    `json:"OID"`
-		DeviceID   uint32         `json:"device-id"`
-		Index      uint32         `json:"index"`
-		Timestamp  types.DateTime `json:"timestamp"`
-		Type       eventType      `json:"event-type"`
-		Door       uint8          `json:"door"`
-		Direction  direction      `json:"direction"`
-		Card       uint32         `json:"card"`
-		Granted    bool           `json:"granted"`
-		Reason     reason         `json:"reason"`
-		DeviceName string         `json:"device-name"`
-		DoorName   string         `json:"door-name"`
-		CardName   string         `json:"card-name"`
+		OID        catalog.OID   `json:"OID"`
+		DeviceID   uint32        `json:"device-id"`
+		Index      uint32        `json:"index"`
+		Timestamp  core.DateTime `json:"timestamp"`
+		Type       eventType     `json:"event-type"`
+		Door       uint8         `json:"door"`
+		Direction  direction     `json:"direction"`
+		Card       uint32        `json:"card"`
+		Granted    bool          `json:"granted"`
+		Reason     reason        `json:"reason"`
+		DeviceName string        `json:"device-name"`
+		DoorName   string        `json:"door-name"`
+		CardName   string        `json:"card-name"`
 	}{}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
