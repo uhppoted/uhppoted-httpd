@@ -21,8 +21,8 @@ type Card struct {
 	OID    catalog.OID
 	Name   string
 	Card   *types.Card
-	From   *types.Date
-	To     *types.Date
+	From   types.Date
+	To     types.Date
 	Groups map[catalog.OID]bool
 
 	created core.DateTime
@@ -241,7 +241,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			return nil, err
 		} else if from, err := types.ParseDate(value); err != nil {
 			return nil, err
-		} else if from == nil {
+		} else if !from.IsValid() {
 			return nil, fmt.Errorf("invalid 'from' date (%v)", value)
 		} else {
 			c.log(a,
@@ -262,7 +262,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			return nil, err
 		} else if to, err := types.ParseDate(value); err != nil {
 			return nil, err
-		} else if to == nil {
+		} else if to.IsValid() {
 			return nil, fmt.Errorf("invalid 'to' date (%v)", value)
 		} else {
 			c.log(a,
@@ -403,8 +403,8 @@ func (c Card) serialize() ([]byte, error) {
 		OID     catalog.OID   `json:"OID"`
 		Name    string        `json:"name,omitempty"`
 		Card    uint32        `json:"card,omitempty"`
-		From    *types.Date   `json:"from,omitempty"`
-		To      *types.Date   `json:"to,omitempty"`
+		From    types.Date    `json:"from,omitempty"`
+		To      types.Date    `json:"to,omitempty"`
 		Groups  []catalog.OID `json:"groups"`
 		Created core.DateTime `json:"created"`
 	}{
@@ -438,8 +438,8 @@ func (c *Card) deserialize(bytes []byte) error {
 		OID     catalog.OID   `json:"OID"`
 		Name    string        `json:"name,omitempty"`
 		Card    uint32        `json:"card,omitempty"`
-		From    *types.Date   `json:"from,omitempty"`
-		To      *types.Date   `json:"to,omitempty"`
+		From    types.Date    `json:"from,omitempty"`
+		To      types.Date    `json:"to,omitempty"`
 		Groups  []catalog.OID `json:"groups"`
 		Created core.DateTime `json:"created"`
 	}{

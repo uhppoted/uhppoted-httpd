@@ -58,11 +58,10 @@ func (x *stub) Write(e audit.AuditRecord) {
 	x.write(e)
 }
 
-func date(s string) *types.Date {
+func date(s string) types.Date {
 	date, _ := time.ParseInLocation("2006-01-02", s, time.Local)
-	d := types.Date(date)
 
-	return &d
+	return types.Date(date)
 }
 
 func makeCards(list ...Card) *Cards {

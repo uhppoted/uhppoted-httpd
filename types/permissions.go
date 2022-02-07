@@ -12,5 +12,5 @@ type Permissions struct {
 }
 
 func (p Permissions) String() string {
-	return fmt.Sprintf("%-10v %v %v %v", p.CardNumber, p.From.Format("2006-01-02"), p.To.Format("2006-01-02"), p.Doors)
+	return fmt.Sprintf("%-10v %v %v %v", p.CardNumber, p.From, p.To, p.Doors)
 }

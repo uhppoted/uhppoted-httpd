@@ -46,8 +46,8 @@ func permissions() (acl.ACL, error) {
 		for _, c := range cards {
 			if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
 				card := uint32(*c.Card)
-				from := core.Date(*c.From)
-				to := core.Date(*c.To)
+				from := core.Date(c.From)
+				to := core.Date(c.To)
 
 				l[card] = core.Card{
 					CardNumber: card,

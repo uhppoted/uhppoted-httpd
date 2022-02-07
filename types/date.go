@@ -9,11 +9,11 @@ import (
 
 type Date core.Date
 
-func ParseDate(s string) (*Date, error) {
+func ParseDate(s string) (Date, error) {
 	if date, err := time.ParseInLocation("2006-01-02", s, time.Local); err != nil {
-		return nil, err
+		return Date{}, err
 	} else {
-		return (*Date)(&date), nil
+		return Date(date), nil
 	}
 }
 
@@ -27,19 +27,15 @@ func (d *Date) Copy() *Date {
 	return &date
 }
 
-func (d *Date) IsValid() bool {
-	if d == nil || time.Time(*d).IsZero() {
-		return false
-	}
-
-	return true
+func (d Date) IsValid() bool {
+	return !time.Time(d).IsZero()
 }
 
 func (d Date) MarshalJSON() ([]byte, error) {
 	if time.Time(d).IsZero() {
 		return json.Marshal("")
 	} else {
-		return json.Marshal(d.Format("2006-01-02"))
+		return json.Marshal(time.Time(d).Format("2006-01-02"))
 	}
 }
 
@@ -61,22 +57,18 @@ func (d *Date) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
-func (d *Date) Format(layout string) string {
-	if d != nil {
-		return time.Time(*d).Format(layout)
-	}
+//func (d *Date) Format(layout string) string {
+//	if d != nil {
+//		return time.Time(*d).Format(layout)
+//	}
+//
+//	return ""
+//}
 
-	return ""
-}
-
-func (d *Date) String() string {
-	if d == nil {
+func (d Date) String() string {
+	if !d.IsValid() {
 		return ""
 	}
 
-	if time.Time(*d).IsZero() {
-		return ""
-	}
-
-	return time.Time(*d).Format("2006-01-02")
+	return time.Time(d).Format("2006-01-02")
 }

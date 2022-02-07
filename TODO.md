@@ -1,19 +1,17 @@
 ## v0.7.x
 
-- [ ] `auth.grl` no longer used ??
+- [x] `auth.grl` no longer used ??
 
 - [x] `concurrent map read and map write`
       - [x] Move Local.user/keys/resources to guarded struct
       - [x] Cache keys/users/resources
-      - [ ] Unit tests for guarded structs
 
 - [ ] Clean up the log function mess in controller
 
 - [ ] Cleanup types.Date
-      - [x] Unit test - should not set time fields
-      - [ ] Use IsZero() rather than pointer
-      - [ ] Check before/after stuff
       - [ ] Refactor out to use uhppote-core implementation
+      - [x] Unit test - should not set time fields
+      - [x] Use IsZero() rather than pointer
 
 - [x] Fix DateTime confusion
       - [x] Refactor DateTime out to use core implementation only

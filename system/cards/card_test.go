@@ -25,8 +25,8 @@ func TestCardAsObjects(t *testing.T) {
 		OID:     "0.4.3",
 		Name:    "Le Card",
 		Card:    &card,
-		From:    &from,
-		To:      &to,
+		From:    from,
+		To:      to,
 		created: created,
 	}
 
@@ -37,8 +37,8 @@ func TestCardAsObjects(t *testing.T) {
 		{OID: "0.4.3.0.2", Value: core.DateTime{}},
 		{OID: "0.4.3.1", Value: "Le Card"},
 		{OID: "0.4.3.2", Value: &card},
-		{OID: "0.4.3.3", Value: &from},
-		{OID: "0.4.3.4", Value: &to},
+		{OID: "0.4.3.3", Value: from},
+		{OID: "0.4.3.4", Value: to},
 	}
 
 	objects := c.AsObjects(nil)
@@ -59,8 +59,8 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 		OID:     "0.4.3",
 		Name:    "Le Card",
 		Card:    &card,
-		From:    &from,
-		To:      &to,
+		From:    from,
+		To:      to,
 		created: created,
 		deleted: deleted,
 	}
@@ -86,8 +86,8 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 		OID:     "0.4.3",
 		Name:    "Le Card",
 		Card:    &card,
-		From:    &from,
-		To:      &to,
+		From:    from,
+		To:      to,
 		created: created,
 	}
 
@@ -98,8 +98,8 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.4.3.0.2", Value: core.DateTime{}},
 		{OID: "0.4.3.1", Value: "Le Card"},
 		// {OID: "0.4.3.2", Value: &card},
-		{OID: "0.4.3.3", Value: &from},
-		{OID: "0.4.3.4", Value: &to},
+		{OID: "0.4.3.3", Value: from},
+		{OID: "0.4.3.4", Value: to},
 	}
 
 	auth := stub{
