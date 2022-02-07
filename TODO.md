@@ -1,29 +1,19 @@
 ## v0.7.x
 
 - [ ] `auth.grl` no longer used ??
-- [x] Fix 'eye open' icon on set password page
 
 - [x] `concurrent map read and map write`
       - [x] Move Local.user/keys/resources to guarded struct
       - [x] Cache keys/users/resources
       - [ ] Unit tests for guarded structs
 
-- [ ] Finish structuring catalog.schema
-      - [ ] (?) Generate schema.js from catalog.Schema
-
 - [ ] Clean up the log function mess in controller
 
 - [ ] Fix DateTime confusion
-      - [ ] Fix controller date/time set after pointer rework
+      - [ ] (?) Refactor DateTime out to use core implementation only
       - [ ] Date should not set time fields
             - check before/after stuff
-      - [ ] (?) Refactor DateTime out to use core implementation only
       - [x] Migrate `deleted` to DateTime with IsZero (because fmt.Printf("%v") -> can't handle both concrete and pointers)
-              - [x] LAN
-              - [x] controllers
-              - [x] door
-              - [x] card
-              - [x] group
       - [x] DateTimeNow should round/truncate to seconds
       - [x] Remove DateTime.Format
       - [x] Implement Ptr() for the repetitive assign to variable to take address thing
@@ -103,6 +93,9 @@
       - use uhppoted-lib::healthcheck
 
 #### Other
+- [ ] Finish structuring catalog.schema
+      - [ ] (?) Generate schema.js from catalog.Schema
+
 - [ ] Fix Firefox layout
       - spacing/padding/margins
 
