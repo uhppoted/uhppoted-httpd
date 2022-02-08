@@ -1,6 +1,6 @@
 ## v0.7.x
 
-- [ ] Fix auth.json serialization
+- [x] Fix auth.json serialization
 ```
  "resources": [
     { 
@@ -12,7 +12,6 @@
       "authorised": ".*"
     },
 ```
-
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc

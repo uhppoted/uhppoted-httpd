@@ -811,7 +811,15 @@ func (r *resource) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
-	path, err := regexp.Compile(fmt.Sprintf("^%v$", x.Path))
+	if !strings.HasPrefix(x.Path, "^") {
+		x.Path = "^" + x.Path
+	}
+
+	if !strings.HasSuffix(x.Path, "$") {
+		x.Path = x.Path + "$"
+	}
+
+	path, err := regexp.Compile(x.Path)
 	if err != nil {
 		return err
 	}
