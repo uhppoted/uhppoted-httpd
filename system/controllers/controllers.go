@@ -167,6 +167,11 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value stri
 		return nil, nil
 	}
 
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
+	}
+
 	for _, c := range cc.controllers {
 		if c != nil && c.OID().Contains(oid) {
 			return c.set(auth, oid, value, dbc)
@@ -182,10 +187,12 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value stri
 			return nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
 			OID := c.OID()
-			c.log(auth, "add", OID, "controller", fmt.Sprintf("Added 'new' controller"), "", "", dbc)
+
 			objects = append(objects, catalog.NewObject(OID, "new"))
 			objects = append(objects, catalog.NewObject2(OID, ControllerStatus, "new"))
 			objects = append(objects, catalog.NewObject2(OID, ControllerCreated, c.created))
+
+			c.log(uid, "add", OID, "controller", fmt.Sprintf("Added 'new' controller"), "", "", dbc)
 		}
 	}
 

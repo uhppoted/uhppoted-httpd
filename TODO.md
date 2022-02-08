@@ -1,6 +1,6 @@
 ## v0.7.x
 
-- [ ] Clean up the log function mess in controller
+- [x] Clean up the log function mess in controller
 
 - [x] Cleanup types.Date
       - [x] Refactor out to use uhppote-core implementation
