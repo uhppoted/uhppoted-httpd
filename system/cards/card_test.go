@@ -18,8 +18,8 @@ import (
 func TestCardAsObjects(t *testing.T) {
 	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	card := types.Card(8165537)
-	from := types.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
-	to := types.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
+	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
+	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
 	c := Card{
 		OID:     "0.4.3",
@@ -52,8 +52,8 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	deleted := core.DateTimeNow()
 	card := types.Card(8165537)
-	from := types.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
-	to := types.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
+	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
+	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
 	c := Card{
 		OID:     "0.4.3",
@@ -79,8 +79,8 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 func TestCardAsObjectsWithAuth(t *testing.T) {
 	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	card := types.Card(8165537)
-	from := types.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
-	to := types.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
+	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
+	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
 	c := Card{
 		OID:     "0.4.3",

@@ -1,28 +1,11 @@
 ## v0.7.x
 
-- [x] `auth.grl` no longer used ??
-
-- [x] `concurrent map read and map write`
-      - [x] Move Local.user/keys/resources to guarded struct
-      - [x] Cache keys/users/resources
-
 - [ ] Clean up the log function mess in controller
 
-- [ ] Cleanup types.Date
-      - [ ] Refactor out to use uhppote-core implementation
+- [x] Cleanup types.Date
+      - [x] Refactor out to use uhppote-core implementation
       - [x] Unit test - should not set time fields
       - [x] Use IsZero() rather than pointer
-
-- [x] Fix DateTime confusion
-      - [x] Refactor DateTime out to use core implementation only
-      - [x] Migrate `deleted` to DateTime with IsZero (because fmt.Printf("%v") -> can't handle both concrete and pointers)
-      - [x] DateTimeNow should round/truncate to seconds
-      - [x] Remove DateTime.Format
-      - [x] Implement Ptr() for the repetitive assign to variable to take address thing
-      - [x] Combobox for datetime
-      - [x] Let timezone(..) just return Local instead of getting all complicated about it
-      - [x] Do the 'uncertain/pending' thing for timezones
-      - [x] Add `datetime.modified` to controller.cached
 
 ### IN PROGRESS
 

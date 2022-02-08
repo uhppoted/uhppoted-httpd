@@ -2,12 +2,14 @@ package types
 
 import (
 	"fmt"
+
+	core "github.com/uhppoted/uhppote-core/types"
 )
 
 type Permissions struct {
 	CardNumber uint32
-	From       Date
-	To         Date
+	From       core.Date
+	To         core.Date
 	Doors      []string
 }
 

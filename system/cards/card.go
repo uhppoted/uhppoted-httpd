@@ -21,8 +21,8 @@ type Card struct {
 	OID    catalog.OID
 	Name   string
 	Card   *types.Card
-	From   types.Date
-	To     types.Date
+	From   core.Date
+	To     core.Date
 	Groups map[catalog.OID]bool
 
 	created core.DateTime
@@ -239,7 +239,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 	case oid == c.OID.Append(CardFrom):
 		if err := f("from", value); err != nil {
 			return nil, err
-		} else if from, err := types.ParseDate(value); err != nil {
+		} else if from, err := core.DateFromString(value); err != nil {
 			return nil, err
 		} else if !from.IsValid() {
 			return nil, fmt.Errorf("invalid 'from' date (%v)", value)
@@ -260,7 +260,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 	case oid == c.OID.Append(CardTo):
 		if err := f("to", value); err != nil {
 			return nil, err
-		} else if to, err := types.ParseDate(value); err != nil {
+		} else if to, err := core.DateFromString(value); err != nil {
 			return nil, err
 		} else if to.IsValid() {
 			return nil, fmt.Errorf("invalid 'to' date (%v)", value)
@@ -403,8 +403,8 @@ func (c Card) serialize() ([]byte, error) {
 		OID     catalog.OID   `json:"OID"`
 		Name    string        `json:"name,omitempty"`
 		Card    uint32        `json:"card,omitempty"`
-		From    types.Date    `json:"from,omitempty"`
-		To      types.Date    `json:"to,omitempty"`
+		From    core.Date     `json:"from,omitempty"`
+		To      core.Date     `json:"to,omitempty"`
 		Groups  []catalog.OID `json:"groups"`
 		Created core.DateTime `json:"created"`
 	}{
@@ -438,8 +438,8 @@ func (c *Card) deserialize(bytes []byte) error {
 		OID     catalog.OID   `json:"OID"`
 		Name    string        `json:"name,omitempty"`
 		Card    uint32        `json:"card,omitempty"`
-		From    types.Date    `json:"from,omitempty"`
-		To      types.Date    `json:"to,omitempty"`
+		From    core.Date     `json:"from,omitempty"`
+		To      core.Date     `json:"to,omitempty"`
 		Groups  []catalog.OID `json:"groups"`
 		Created core.DateTime `json:"created"`
 	}{

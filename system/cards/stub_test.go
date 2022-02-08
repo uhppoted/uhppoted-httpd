@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	core "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -58,10 +60,10 @@ func (x *stub) Write(e audit.AuditRecord) {
 	x.write(e)
 }
 
-func date(s string) types.Date {
+func date(s string) core.Date {
 	date, _ := time.ParseInLocation("2006-01-02", s, time.Local)
 
-	return types.Date(date)
+	return core.Date(date)
 }
 
 func makeCards(list ...Card) *Cards {
