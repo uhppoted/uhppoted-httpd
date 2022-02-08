@@ -1,5 +1,28 @@
 ## v0.7.x
 
+- [ ] Fix auth.json serialization
+```
+ "resources": [
+    { 
+      "path": "^^^^^/index.html$$$$$",
+      "authorised": ".*"
+    },
+    { 
+      "path": "^^^^^/favicon.ico$$$$$",
+      "authorised": ".*"
+    },
+```
+
+
+- [ ] OIDs:
+      - [ ] catalog.Objects type to streamline e.g. append, trim, etc
+      - [ ] GetV => GetBool, GetInt, etc
+      - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
+
+- [ ] 'users' page
+      - [x] Page skeleton
+      - [ ] GET system/users
+
 - [x] Clean up the log function mess in controller
 
 - [x] Cleanup types.Date
@@ -9,12 +32,6 @@
 
 ### IN PROGRESS
 
-- [ ] OIDs:
-      - [ ] catalog.Objects type to streamline e.g. append, trim, etc
-      - [ ] GetV => GetBool, GetInt, etc
-      - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
-
-- [ ] 'users' page
 - [ ] daemonize/undaemonize
       - [ ] set initial user + password
 - [ ] Rename 'address' to 'endpoint'

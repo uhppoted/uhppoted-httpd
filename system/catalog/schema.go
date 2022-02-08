@@ -8,6 +8,7 @@ type Schema struct {
 	Groups      Groups      `json:"groups"`
 	Events      Events      `json:"events"`
 	Logs        Logs        `json:"logs"`
+	Users       Users       `json:"users"`
 }
 
 type Metadata struct {
@@ -133,6 +134,13 @@ type Logs struct {
 	ItemName  Suffix `json:"item-name"`
 	Field     Suffix `json:"field"`
 	Details   Suffix `json:"details"`
+}
+
+type Users struct {
+	OID OID `json:"OID"`
+	Metadata
+	Name   Suffix `json:"name"`
+	Groups Suffix `json:"groups"`
 }
 
 func GetSchema() Schema {
@@ -317,6 +325,18 @@ var schema = Schema{
 		Field:     LogField,
 		Details:   LogDetails,
 	},
+
+	Users: Users{
+		OID: UsersOID,
+		Metadata: Metadata{
+			Status:   Status,
+			Created:  Created,
+			Deleted:  Deleted,
+			Modified: Modified,
+			Type:     Type,
+		},
+		Name: UserName,
+	},
 }
 
 const InterfacesOID OID = "0.1"
@@ -326,6 +346,7 @@ const CardsOID OID = "0.4"
 const GroupsOID OID = "0.5"
 const EventsOID OID = "0.6"
 const LogsOID OID = "0.7"
+const UsersOID OID = "0.8"
 
 const Status Suffix = ".0.0"
 const Created Suffix = ".0.1"
@@ -361,8 +382,6 @@ const ControllerDoor2 Suffix = ".7.2"
 const ControllerDoor3 Suffix = ".7.3"
 const ControllerDoor4 Suffix = ".7.4"
 
-// const DoorControllerID Suffix = ".0.4.3"
-// const DoorControllerDoor Suffix = ".0.4.4"
 const DoorName Suffix = ".1"
 const DoorDelay Suffix = ".2"
 const DoorDelayStatus Suffix = ".2.1"
@@ -410,3 +429,5 @@ const LogItemID Suffix = ".4"
 const LogItemName Suffix = ".5"
 const LogField Suffix = ".6"
 const LogDetails Suffix = ".7"
+
+const UserName Suffix = ".1"

@@ -143,4 +143,15 @@
 |    |      |- 0.7.1.5: <name>                                               #       item name
 |    |      |- 0.7.1.6: <field>                                              #       item field
 |    |      |- 0.7.1.7: <details>                                            #       item details
+|
+|- 0.8                                                                       # users
+|    |- 0.8.1                                                                # user #1
+|    |      |- 0.8.1.0: <metadata>                                           #    metadata
+|    |      |        |- 0.8.1.0.0: <status>                                  #       current status
+|    |      |        |- 0.8.1.0.1: <created>                                 #       created date/time
+|    |      |        |- 0.8.1.0.2: <deleted>                                 #       deleted date/time
+|    |      |        |- 0.8.1.0.3: <modified>                                #       modified timestamp
+|    |      |- 0.8.1.1: <name>                                               #       Name
+|    |- ...
+|
 

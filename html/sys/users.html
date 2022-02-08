@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>uhppoted-httpd: USERS</title>
+    <link rel="manifest"   href="/manifest.json">
+    <link rel="icon"       href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/users.css" type="text/css">
+    <meta charset="UTF-8">
+  </head>
+
+  <body> 
+    <div id="content">
+
+      {{template "user"   .}}
+      {{template "header" .}}
+      {{template "nav"    "users"}}
+
+      <!-- MAIN -->
+      <main>
+        <div id="container">
+          <div id="controls" data-oid="{{ .schema.Users.OID }}">
+            <img id="commitall" class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('users', event, 'users')" draggable="false" />
+            <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('users', event)"  draggable="false"  />
+            <div id="message" class="message">
+              <div>
+                <span class="warning" id="warning"></span>
+                <button class="dismiss" onclick="dismiss()">&#9746;</button>
+              </div>
+            </div>
+            <img id="add"     class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('user')" />
+            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('users', event)" />
+          </div>
+
+          <div id="users" class="tabular">
+            <table>
+              <thead>
+                <tr>
+                  <th class="name    colheader rowheader">User</th>
+                  <th class="padding colheader"></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+
+            <template id="user">
+                <td class="rowheader" style="display:flex; flex-direction:row;">
+                  <img class="flag name" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field name" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         onchange="onEdited('user', event)" 
+                         onkeydown="onEnter('user', event)" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" />
+                  <span class="control commit"   onclick="onCommit('user', event)"   data-record="" data-enabled="false">
+                    <img src="/images/{{$.context.Theme}}/check-solid.svg" />
+                  </span>
+                  <span class="control rollback" onclick="onRollback('user', event)" data-record="" data-enabled="false">
+                    <img src="/images/{{$.context.Theme}}/times-solid.svg" />
+                  </span>
+                </td>
+
+                <!-- 'padding' column (CSS: tr::last-child) -->
+                <td class="padding"></td>
+            </template>
+
+            <template id="group">
+                <img class="flag" src="/images/{{$.context.Theme}}/corner.svg" />
+                <label class="group">
+                  <input class="field"
+                         type="checkbox" 
+                         onclick="onTick('user', event)"
+                         data-record="" 
+                         data-original="" 
+                         data-value="" />
+                  <img class="no"  src="/images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
+                  <img class="yes" src="/images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
+                </label>
+            </template>
+
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer>
+        <p>v0.0.0</p>
+      </footer>
+    </div>
+  </body>
+
+  <!-- SCRIPTS -->
+
+  <script type="module">
+    import { retheme, dismiss, resetIdle, onMenu, onSignOut, onReload, setRefresh } from "/javascript/uhppoted.js"
+    import { onEdited, 
+             onEnter, 
+             onTick, 
+             onCommit, 
+             onCommitAll, 
+             onRollback, 
+             onRollbackAll, 
+             onNew, 
+             onRefresh } from "/javascript/tabular.js"
+
+    window.retheme = retheme
+    window.dismiss = dismiss
+    window.onMenuX = onMenu
+    window.onSignOut = onSignOut
+    window.onReload = onReload
+
+    window.onEdited = onEdited
+    window.onEnter = onEnter
+    window.onTick = onTick
+    window.onCommit = onCommit
+    window.onCommitAll = onCommitAll
+    window.onRollback = onRollback
+    window.onRollbackAll = onRollbackAll
+    window.onNew = onNew
+    window.onRefresh = onRefresh
+
+    const refresh = function() {
+      onRefresh('users')      
+    }
+
+    resetIdle()
+    refresh()
+    setRefresh(refresh)
+  </script>
+
+  <!-- global information initialised by Go template -->
+  <script>
+    var constants = {
+      theme: {{$.context.Theme}}
+    }
+
+    function onMenu(event, state) {
+      if (window.onMenuX) {
+        window.onMenuX(event, state)
+      } else {
+        console.debug('onMenu is not defined')
+      }
+    }
+  </script>
+
+</html>
