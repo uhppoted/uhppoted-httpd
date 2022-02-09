@@ -533,8 +533,8 @@ func stringify(i interface{}, defval string) string {
 		}
 
 	default:
-		if i != nil {
-			s = fmt.Sprintf("%v", i)
+		if v != nil {
+			s = fmt.Sprintf("%v", v)
 		}
 	}
 

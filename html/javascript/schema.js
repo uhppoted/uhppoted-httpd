@@ -139,5 +139,18 @@ export const schema = {
     details: '.7',
 
     regex: /^(0\.7\.[1-9][0-9]*).*$/
+  },
+
+  users: {
+    base: '0.8',
+
+    name: '.1',
+    uid: '.2',
+    role: '.3',
+    password: '.4',
+    created: '.0.1',
+    deleted: '.0.2',
+
+    regex: /^(0\.8\.[1-9][0-9]*).*$/
   }
 }

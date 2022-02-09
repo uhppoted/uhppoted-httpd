@@ -19,6 +19,7 @@ const (
 	Groups
 	Events
 	Logs
+	Users
 )
 
 func (r RuleSet) String() string {

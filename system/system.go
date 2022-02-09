@@ -27,6 +27,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/grule"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/system/logs"
+	"github.com/uhppoted/uhppoted-httpd/system/users"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -100,6 +101,15 @@ var sys = system{
 		tag:  "logs",
 	},
 
+	users: struct {
+		users.Users
+		file string
+		tag  string
+	}{
+		Users: users.NewUsers(),
+		tag:   "users",
+	},
+
 	taskQ:     NewTaskQ(),
 	retention: 6 * time.Hour,
 }
@@ -150,6 +160,12 @@ type system struct {
 		tag  string
 	}
 
+	users struct {
+		users.Users
+		file string
+		tag  string
+	}
+
 	rules     grule.Rules
 	taskQ     TaskQ
 	retention time.Duration // time after which 'deleted' items are permanently removed
@@ -189,6 +205,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	sys.groups.file = cfg.HTTPD.System.Groups
 	sys.events.file = cfg.HTTPD.System.Events
 	sys.logs.file = cfg.HTTPD.System.Logs
+	sys.users.file = cfg.HTTPD.System.Users
 
 	list := []struct {
 		serializable
@@ -202,6 +219,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		{&sys.groups, sys.groups.file, sys.groups.tag},
 		{&sys.events, sys.events.file, sys.events.tag},
 		{&sys.logs, sys.logs.file, sys.logs.tag},
+		{&sys.users, sys.users.file, sys.users.tag},
 	}
 
 	for _, v := range list {
@@ -305,6 +323,7 @@ func (s *system) sweep() {
 	s.doors.Sweep(s.retention)
 	s.cards.Sweep(s.retention)
 	s.groups.Sweep(s.retention)
+	s.users.Sweep(s.retention)
 }
 
 func unpack(m map[string]interface{}) ([]object, error) {

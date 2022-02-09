@@ -1,38 +1,26 @@
 ## v0.7.x
 
-- [x] Fix auth.json serialization
-```
- "resources": [
-    { 
-      "path": "^^^^^/index.html$$$$$",
-      "authorised": ".*"
-    },
-    { 
-      "path": "^^^^^/favicon.ico$$$$$",
-      "authorised": ".*"
-    },
-```
-
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, etc
       - [ ] GetV => GetBool, GetInt, etc
       - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
+      - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] 'users' page
       - [x] Page skeleton
-      - [ ] GET system/users
+      - [x] GET system/users
+      - [ ] Implement editing
+      - [ ] Handle password
+      - [ ] Disable menu item if not e.g. admin
 
-- [x] Clean up the log function mess in controller
-
-- [x] Cleanup types.Date
-      - [x] Refactor out to use uhppote-core implementation
-      - [x] Unit test - should not set time fields
-      - [x] Use IsZero() rather than pointer
+- [ ] Commonalise all the stringifys
+- [ ] System XXX.validate should not return HttpdError
+- [ ] Make vtable'able subsystem an interface
 
 ### IN PROGRESS
 
 - [ ] daemonize/undaemonize
-      - [ ] set initial user + password
+      - [ ] set initial 'admin' user + generated password
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 

@@ -85,6 +85,7 @@ func (h *HTTPD) Run() {
 	mux.HandleFunc("/groups", d.dispatch)
 	mux.HandleFunc("/events", d.dispatch)
 	mux.HandleFunc("/logs", d.dispatch)
+	mux.HandleFunc("/users", d.dispatch)
 
 	mux.HandleFunc("/", d.getWithAuth)
 	mux.HandleFunc("/usr/", d.getNoAuth)

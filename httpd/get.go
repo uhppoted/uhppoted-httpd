@@ -39,7 +39,8 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		"/cards",
 		"/groups",
 		"/events",
-		"/logs":
+		"/logs",
+		"/users":
 		if handler := d.vtable(path); handler != nil && handler.get != nil {
 			d.fetch(r, w, *handler)
 		}

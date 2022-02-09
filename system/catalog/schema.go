@@ -139,8 +139,10 @@ type Logs struct {
 type Users struct {
 	OID OID `json:"OID"`
 	Metadata
-	Name   Suffix `json:"name"`
-	Groups Suffix `json:"groups"`
+	Name     Suffix `json:"name"`
+	UID      Suffix `json:"uid"`
+	Role     Suffix `json:"role"`
+	Password Suffix `json:"password"`
 }
 
 func GetSchema() Schema {
@@ -431,3 +433,6 @@ const LogField Suffix = ".6"
 const LogDetails Suffix = ".7"
 
 const UserName Suffix = ".1"
+const UserUID Suffix = ".2"
+const UserRole Suffix = ".3"
+const UserPassword Suffix = ".4"

@@ -13,6 +13,7 @@ var catalog = struct {
 	groups      map[OID]struct{}
 	events      map[OID]struct{}
 	logs        map[OID]struct{}
+	users       map[OID]struct{}
 }{
 	interfaces:  map[OID]struct{}{},
 	controllers: map[OID]controller{},
@@ -21,6 +22,7 @@ var catalog = struct {
 	groups:      map[OID]struct{}{},
 	events:      map[OID]struct{}{},
 	logs:        map[OID]struct{}{},
+	users:       map[OID]struct{}{},
 }
 
 var guard sync.Mutex
@@ -103,6 +105,13 @@ func PutLogEntry(oid OID) {
 	defer guard.Unlock()
 
 	catalog.logs[oid] = struct{}{}
+}
+
+func PutUser(oid OID) {
+	guard.Lock()
+	defer guard.Unlock()
+
+	catalog.users[oid] = struct{}{}
 }
 
 func NewController(deviceID uint32) OID {
@@ -236,6 +245,27 @@ loop:
 		}
 
 		catalog.logs[oid] = struct{}{}
+
+		return oid
+	}
+}
+
+func NewUser() OID {
+	guard.Lock()
+	defer guard.Unlock()
+
+	item := 0
+loop:
+	for {
+		item += 1
+		oid := OID(fmt.Sprintf("%v.%d", UsersOID, item))
+		for v, _ := range catalog.users {
+			if v == oid {
+				continue loop
+			}
+		}
+
+		catalog.users[oid] = struct{}{}
 
 		return oid
 	}

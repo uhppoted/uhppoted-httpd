@@ -5,6 +5,7 @@ import * as cards from './cards.js'
 import * as groups from './groups.js'
 import * as events from './events.js'
 import * as logs from './logs.js'
+import * as users from './users.js'
 import { DB } from './db.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
@@ -69,6 +70,12 @@ const pages = {
     post: '/logs',
     recordset: DB.logs(),
     refreshed: logs.refreshed
+  },
+
+  users: {
+    get: ['/users'],
+    post: '/users',
+    refreshed: users.refreshed
   }
 }
 
@@ -663,6 +670,9 @@ function getPage (tag) {
 
     case 'logs':
       return pages.logs
+
+    case 'users':
+      return pages.users
   }
 
   return null

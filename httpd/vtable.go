@@ -11,6 +11,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd/groups"
 	"github.com/uhppoted/uhppoted-httpd/httpd/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/httpd/logs"
+	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 )
 
 type handler struct {
@@ -59,6 +60,12 @@ func (d *dispatcher) vtable(path string) *handler {
 	case "/logs":
 		return &handler{
 			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return logs.Get(r, auth) },
+			post: nil,
+		}
+
+	case "/users":
+		return &handler{
+			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return users.Get(auth) },
 			post: nil,
 		}
 	}

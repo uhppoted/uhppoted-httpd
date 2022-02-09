@@ -36,7 +36,10 @@
             <table>
               <thead>
                 <tr>
-                  <th class="name    colheader rowheader">User</th>
+                  <th class="name    colheader rowheader">Name</th>
+                  <th class="uid     colheader">User&nbsp;ID</th>
+                  <th class="role    colheader">Role</th>
+                  <th class="pwd     colheader">Password</th>
                   <th class="padding colheader"></th>
                 </tr>
               </thead>
@@ -64,23 +67,46 @@
                   </span>
                 </td>
 
+                <td>
+                  <img class="flag uid" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field uid"
+                         type="text" 
+                         placeholder="-"
+                         onchange="onEdited('user', event)" 
+                         onkeydown="onEnter('user', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" />
+                </td>
+
+                <td>
+                  <img class="flag role" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field role"
+                         type="text" 
+                         placeholder="-"
+                         onchange="onEdited('user', event)" 
+                         onkeydown="onEnter('user', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" />
+                </td>
+
+                <td>
+                  <img class="flag password" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field password"
+                         type="password" 
+                         placeholder="-"
+                         onchange="onEdited('user', event)" 
+                         onkeydown="onEnter('user', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" />
+                </td>
+                
                 <!-- 'padding' column (CSS: tr::last-child) -->
                 <td class="padding"></td>
             </template>
 
-            <template id="group">
-                <img class="flag" src="/images/{{$.context.Theme}}/corner.svg" />
-                <label class="group">
-                  <input class="field"
-                         type="checkbox" 
-                         onclick="onTick('user', event)"
-                         data-record="" 
-                         data-original="" 
-                         data-value="" />
-                  <img class="no"  src="/images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
-                  <img class="yes" src="/images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
-                </label>
-            </template>
 
           </div>
         </div>

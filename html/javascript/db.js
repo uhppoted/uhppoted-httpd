@@ -23,6 +23,10 @@ class DBC {
         first: null,
         last: null,
         logs: new Map()
+      },
+
+      users: {
+        users: new Map()
       }
     }
 
@@ -36,6 +40,7 @@ class DBC {
           case 'groups':
           case 'events':
           case 'logs':
+          case 'users':
             recordset.forEach(o => object(o))
             break
         }
@@ -63,6 +68,10 @@ class DBC {
 
           case 'groups':
             this.groups.delete(oid)
+            break
+
+          case 'users':
+            this.users.users.delete(oid)
             break
         }
       }
@@ -92,6 +101,10 @@ class DBC {
       return this.tables.logs.last
     }
 
+    this.users = function () {
+      return this.tables.users.users
+    }
+
     this.sweep = function () {
       sweep()
     }
@@ -119,6 +132,8 @@ function object (o) {
     events(o)
   } else if (oid.startsWith(schema.logs.base)) {
     logs(o)
+  } else if (oid.startsWith(schema.users.base)) {
+    users(o)
   }
 }
 
@@ -680,6 +695,62 @@ function logs (o) {
 
     case `${base}${schema.logs.details}`:
       v.item.details = o.value
+      break
+  }
+}
+
+function users (o) {
+  const oid = o.OID
+
+  const match = oid.match(schema.users.regex)
+
+  if (!match || match.length < 2) {
+    return
+  }
+
+  const base = match[1]
+
+  if (!DB.tables.users.users.has(base)) {
+    DB.tables.users.users.set(base, {
+      OID: oid,
+      name: '',
+      uid: '',
+      role: '',
+      password: '',
+      details: '',
+      created: '',
+      deleted: '',
+      touched: new Date()
+    })
+  }
+
+  const v = DB.tables.users.users.get(base)
+
+  v.touched = new Date()
+
+  switch (oid) {
+    case `${base}${schema.users.name}`:
+      v.name = o.value
+      break
+
+    case `${base}${schema.users.uid}`:
+      v.uid = o.value
+      break
+
+    case `${base}${schema.users.role}`:
+      v.role = o.value
+      break
+
+    case `${base}${schema.users.password}`:
+      v.password = o.value
+      break
+
+    case `${base}${schema.users.created}`:
+      v.created = o.value
+      break
+
+    case `${base}${schema.users.deleted}`:
+      v.deleted = o.value
       break
   }
 }
