@@ -163,47 +163,27 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 				stringify(u.Role, ""),
 				dbc)
 		}
+	}
 
-		//     if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
-		//         if a != nil {
-		//             if err := a.CanDelete(clone, auth.Cards); err != nil {
-		//                 return nil, err
-		//             }
-		//         }
+	if strings.TrimSpace(u.Name) == "" && strings.TrimSpace(u.UID) == "" {
+		if a != nil {
+			if err := a.CanDelete(clone, auth.Users); err != nil {
+				return nil, err
+			}
+		}
 
-		//         if p := stringify(clone.Card, ""); p != "" {
-		//             c.log(a,
-		//                 "delete",
-		//                 c.OID,
-		//                 "card",
-		//                 fmt.Sprintf("Deleted card %v", p),
-		//                 "",
-		//                 "",
-		//                 dbc)
-		//         } else if p = stringify(clone.Name, ""); p != "" {
-		//             c.log(a,
-		//                 "delete",
-		//                 c.OID,
-		//                 "card",
-		//                 fmt.Sprintf("Deleted card for %v", p),
-		//                 "",
-		//                 "",
-		//                 dbc)
-		//         } else {
-		//             c.log(a,
-		//                 "delete",
-		//                 c.OID,
-		//                 "card",
-		//                 "Deleted card",
-		//                 "",
-		//                 "",
-		//                 dbc)
-		//         }
+		if p := stringify(clone.UID, ""); p != "" {
+			u.log(a, "delete", u.OID, "user", fmt.Sprintf("Deleted UID %v", p), "", "", dbc)
+		} else if p = stringify(clone.Name, ""); p != "" {
+			u.log(a, "delete", u.OID, "user", fmt.Sprintf("Deleted user %v", p), "", "", dbc)
+		} else {
+			u.log(a, "delete", u.OID, "user", "Deleted user", "", "", dbc)
+		}
 
-		//         c.deleted = core.DateTimeNow()
-		//         list = append(list, kv{CardDeleted, c.deleted})
+		u.deleted = core.DateTimeNow()
+		list = append(list, kv{UserDeleted, u.deleted})
 
-		//         catalog.Delete(c.OID)
+		catalog.Delete(u.OID)
 	}
 
 	list = append(list, kv{UserStatus, u.status()})

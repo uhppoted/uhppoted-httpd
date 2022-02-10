@@ -1,7 +1,7 @@
 ## v0.7.x
 
 - [ ] OIDs:
-      - [ ] catalog.Objects type to streamline e.g. append, trim, etc
+      - [ ] catalog.Objects type to streamline e.g. append, trim, squoosh, etc
       - [ ] GetV => GetBool, GetInt, etc
       - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
       - [ ] Cleanup the oh-so-duplicated catalog code
@@ -10,8 +10,8 @@
       - [x] Page skeleton
       - [x] GET system/users
       - [x] Implement editing
-      - [ ] _add_
-      - [ ] _delete_
+      - [x] _add_
+      - [x] _delete_
       - [ ] Handle password
       - [ ] Update auth.Local UIDs and roles
             - [ ] Disallow blank uid (uninitialised user)
@@ -30,7 +30,6 @@
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
-        - https://w3c.github.io/aria-practices/examples/combobox/combobox-select-only.html
         - https://stackoverflow.com/questions/3518002/how-can-i-set-the-default-value-for-an-html-select-element
   - [ ] 'door' select chooses first item if list changes while select is open
 

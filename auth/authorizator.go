@@ -201,6 +201,7 @@ func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
 
 		m := map[string]interface{}{
 			"OBJECT": object,
+			"FIELD":  "",
 		}
 
 		for _, r := range rulesets {
