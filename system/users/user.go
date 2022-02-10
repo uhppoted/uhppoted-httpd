@@ -163,6 +163,17 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 				stringify(u.Role, ""),
 				dbc)
 		}
+
+	case oid == u.OID.Append(UserPassword):
+		if err := f("password", value); err != nil {
+			return nil, err
+		} else if err := dbc.SetPassword(u.UID, value, u.Role); err != nil {
+			return nil, err
+		} else {
+			list = append(list, kv{UserPassword, ""})
+
+			u.log(a, "update", u.OID, "password", "Updated password", "", "", dbc)
+		}
 	}
 
 	if strings.TrimSpace(u.Name) == "" && strings.TrimSpace(u.UID) == "" {
