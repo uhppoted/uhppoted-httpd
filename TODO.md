@@ -10,10 +10,11 @@
       - [x] Page skeleton
       - [x] GET system/users
       - [x] Implement editing
-      - [ ] add
-      - [ ] delete
+      - [ ] _add_
+      - [ ] _delete_
       - [ ] Handle password
       - [ ] Update auth.Local UIDs and roles
+            - [ ] Disallow blank uid (uninitialised user)
       - [ ] Disable menu item if not e.g. admin
 
 - [ ] Commonalise all the stringifys

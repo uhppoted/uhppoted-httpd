@@ -720,6 +720,7 @@ function users (o) {
       details: '',
       created: '',
       deleted: '',
+      status: o.value,
       touched: new Date()
     })
   }
@@ -729,6 +730,18 @@ function users (o) {
   v.touched = new Date()
 
   switch (oid) {
+    case `${base}${schema.users.status}`:
+      v.status = o.value
+      break
+
+    case `${base}${schema.users.created}`:
+      v.created = o.value
+      break
+
+    case `${base}${schema.users.deleted}`:
+      v.deleted = o.value
+      break
+
     case `${base}${schema.users.name}`:
       v.name = o.value
       break
@@ -743,14 +756,6 @@ function users (o) {
 
     case `${base}${schema.users.password}`:
       v.password = o.value
-      break
-
-    case `${base}${schema.users.created}`:
-      v.created = o.value
-      break
-
-    case `${base}${schema.users.deleted}`:
-      v.deleted = o.value
       break
   }
 }

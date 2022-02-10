@@ -131,6 +131,7 @@ func (a *authorizator) CanAdd(operant Operant, rulesets ...RuleSet) error {
 
 		m := map[string]interface{}{
 			"OBJECT": object,
+			"FIELD":  "",
 		}
 
 		rs := result{

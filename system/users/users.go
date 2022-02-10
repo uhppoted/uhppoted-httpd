@@ -209,7 +209,9 @@ func validate(uu Users) error {
 			}
 		}
 
-		users[u.UID] = u.OID
+		if u.UID != "" {
+			users[u.UID] = u.OID
+		}
 	}
 
 	return nil

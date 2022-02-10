@@ -320,6 +320,10 @@ export function onNew (tag, event) {
     case 'group':
       create(pages.groups)
       break
+
+    case 'user':
+      create(pages.users)
+      break
   }
 }
 

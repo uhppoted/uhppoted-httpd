@@ -35,7 +35,7 @@ const BLANK = "'blank'"
 var created = core.DateTimeNow()
 
 func (u User) IsValid() bool {
-	if u.UID != "" {
+	if strings.TrimSpace(u.Name) != "" || strings.TrimSpace(u.UID) != "" {
 		return true
 	}
 
@@ -57,7 +57,7 @@ func (u User) String() string {
 		return uid
 	}
 
-	return "?"
+	return ""
 }
 
 func (u User) AsObjects(auth auth.OpAuth) []catalog.Object {

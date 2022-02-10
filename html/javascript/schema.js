@@ -144,12 +144,15 @@ export const schema = {
   users: {
     base: '0.8',
 
+    status: '.0.0',
+    created: '.0.1',
+    deleted: '.0.2',
+    modified: '.0.3',
+
     name: '.1',
     uid: '.2',
     role: '.3',
     password: '.4',
-    created: '.0.1',
-    deleted: '.0.2',
 
     regex: /^(0\.8\.[1-9][0-9]*).*$/
   }
