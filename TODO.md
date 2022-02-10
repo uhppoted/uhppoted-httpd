@@ -13,8 +13,12 @@
       - [x] _add_
       - [x] _delete_
       - [ ] Handle password
+            - [ ] Fix IAuth naming conflict
+            - [ ] Add auth provider to system/DBC
       - [ ] Update auth.Local UIDs and roles
-            - [ ] Disallow blank uid (uninitialised user)
+            - [ ] Ignore blank uid (uninitialised user) 
+                  i.e. not error but not usable
+            - (?) Could be just a file watcher on users.json
       - [ ] Disable menu item if not e.g. admin
 
 - [ ] Commonalise all the stringifys

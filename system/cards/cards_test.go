@@ -31,6 +31,10 @@ func (d *dbc) Objects() []catalog.Object {
 func (d *dbc) Commit() {
 }
 
+func (d *dbc) SetPassword(uid, pwd, role string) error {
+	return nil
+}
+
 func TestCardAdd(t *testing.T) {
 	placeholder := Card{
 		OID:    catalog.OID("0.4.2"),
