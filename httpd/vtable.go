@@ -66,7 +66,7 @@ func (d *dispatcher) vtable(path string) *handler {
 	case "/users":
 		return &handler{
 			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return users.Get(auth) },
-			post: nil,
+			post: users.Post,
 		}
 	}
 

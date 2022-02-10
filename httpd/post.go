@@ -48,7 +48,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	switch path {
 	case "/password":
 		d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
-			return users.Post(m, role, d.auth)
+			return users.Password(m, role, d.auth)
 		})
 		return
 
@@ -57,7 +57,8 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		"/controllers",
 		"/doors",
 		"/cards",
-		"/groups":
+		"/groups",
+		"/users":
 		if handler := d.vtable(path); handler == nil || handler.post == nil {
 			warn(fmt.Errorf("No vtable entry for %v", path))
 			http.Error(w, "internal system error", http.StatusInternalServerError)

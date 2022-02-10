@@ -9,8 +9,11 @@
 - [ ] 'users' page
       - [x] Page skeleton
       - [x] GET system/users
-      - [ ] Implement editing
+      - [x] Implement editing
+      - [ ] add
+      - [ ] delete
       - [ ] Handle password
+      - [ ] Update auth.Local UIDs and roles
       - [ ] Disable menu item if not e.g. admin
 
 - [ ] Commonalise all the stringifys

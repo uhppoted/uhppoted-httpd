@@ -3,8 +3,6 @@ package users
 import (
 	"encoding/json"
 	"fmt"
-	//	"regexp"
-	//	"strconv"
 	"strings"
 	"time"
 
@@ -32,7 +30,7 @@ type kv = struct {
 	value interface{}
 }
 
-// const BLANK = "'blank'"
+const BLANK = "'blank'"
 
 var created = core.DateTimeNow()
 
@@ -48,20 +46,19 @@ func (u User) IsDeleted() bool {
 	return !u.deleted.IsZero()
 }
 
-// func (c Card) String() string {
-//     name := strings.TrimSpace(c.Name)
-//     if name == "" {
-//         name = "-"
-//     }
+func (u User) String() string {
+	name := strings.TrimSpace(u.Name)
+	if name != "" {
+		return name
+	}
 
-//     number := "-"
+	uid := strings.TrimSpace(u.UID)
+	if uid != "" {
+		return uid
+	}
 
-//     if c.Card != nil {
-//         number = fmt.Sprintf("%v", c.Card)
-//     }
-
-//     return fmt.Sprintf("%v (%v)", number, name)
-// }
+	return "?"
+}
 
 func (u User) AsObjects(auth auth.OpAuth) []catalog.Object {
 	list := []kv{}
@@ -96,215 +93,120 @@ func (u User) AsRuleEntity() (string, interface{}) {
 }
 
 func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	//     if c == nil {
-	//         return []catalog.Object{}, nil
-	//     }
+	if u == nil {
+		return []catalog.Object{}, nil
+	}
 
-	//     if c.IsDeleted() {
-	//         return c.toObjects([]kv{{CardDeleted, c.deleted}}, a), fmt.Errorf("Card has been deleted")
-	//     }
+	if u.IsDeleted() {
+		return u.toObjects([]kv{{UserDeleted, u.deleted}}, a), fmt.Errorf("User has been deleted")
+	}
 
-	//     f := func(field string, value interface{}) error {
-	//         if a != nil {
-	//             return a.CanUpdate(c, field, value, auth.Cards)
-	//         }
+	f := func(field string, value interface{}) error {
+		if a != nil {
+			return a.CanUpdate(u, field, value, auth.Users)
+		}
 
-	//         return nil
-	//     }
+		return nil
+	}
 
 	list := []kv{}
-	//     clone := c.clone()
+	clone := u.clone()
 
-	//     switch {
-	//     case oid == c.OID.Append(CardName):
-	//         if err := f("name", value); err != nil {
-	//             return nil, err
-	//         } else {
-	//             c.log(a,
-	//                 "update",
-	//                 c.OID,
-	//                 "name",
-	//                 fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, BLANK), stringify(value, BLANK)),
-	//                 stringify(c.Name, ""),
-	//                 stringify(value, ""),
-	//                 dbc)
+	switch {
+	case oid == u.OID.Append(UserName):
+		if err := f("name", value); err != nil {
+			return nil, err
+		} else {
+			u.Name = strings.TrimSpace(value)
+			list = append(list, kv{UserName, stringify(u.Name, "")})
 
-	//             c.Name = strings.TrimSpace(value)
-	//             list = append(list, kv{CardName, stringify(c.Name, "")})
-	//         }
+			u.log(a,
+				"update",
+				u.OID,
+				"name",
+				fmt.Sprintf("Updated name from %v to %v", stringify(clone.Name, BLANK), stringify(u.Name, BLANK)),
+				stringify(u.Name, ""),
+				stringify(value, ""),
+				dbc)
+		}
 
-	//     case oid == c.OID.Append(CardNumber):
-	//         if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
-	//             if n, err := strconv.ParseUint(value, 10, 32); err != nil {
-	//                 return nil, err
-	//             } else if err := f("number", n); err != nil {
-	//                 return nil, err
-	//             } else {
-	//                 c.log(a,
-	//                     "update",
-	//                     c.OID,
-	//                     "card",
-	//                     fmt.Sprintf("Updated card number from %v to %v", c.Card, value),
-	//                     stringify(c.Card, ""),
-	//                     stringify(value, ""),
-	//                     dbc)
+	case oid == u.OID.Append(UserUID):
+		if err := f("uid", value); err != nil {
+			return nil, err
+		} else {
+			u.UID = strings.TrimSpace(value)
+			list = append(list, kv{UserUID, stringify(u.UID, "")})
 
-	//                 v := types.Card(n)
-	//                 c.Card = &v
-	//                 list = append(list, kv{CardNumber, c.Card})
-	//             }
-	//         } else if value == "" {
-	//             if err := f("number", 0); err != nil {
-	//                 return nil, err
-	//             } else {
-	//                 if p := stringify(c.Name, ""); p != "" {
-	//                     c.log(a,
-	//                         "update",
-	//                         c.OID,
-	//                         "number",
-	//                         fmt.Sprintf("Cleared card number %v for %v", c.Card, p),
-	//                         stringify(c.Card, ""),
-	//                         stringify(p, ""),
-	//                         dbc)
-	//                 } else {
-	//                     c.log(a,
-	//                         "update",
-	//                         c.OID,
-	//                         "number",
-	//                         fmt.Sprintf("Cleared card number %v", c.Card),
-	//                         stringify(c.Card, ""),
-	//                         "",
-	//                         dbc)
-	//                 }
+			u.log(a,
+				"update",
+				u.OID,
+				"uid",
+				fmt.Sprintf("Updated UID from %v to %v", stringify(clone.UID, BLANK), stringify(u.UID, BLANK)),
+				stringify(clone.UID, ""),
+				stringify(u.UID, ""),
+				dbc)
+		}
 
-	//                 c.Card = nil
-	//                 list = append(list, kv{CardNumber, ""})
-	//             }
-	//         }
+	case oid == u.OID.Append(UserRole):
+		if err := f("role", value); err != nil {
+			return nil, err
+		} else {
+			u.Role = strings.TrimSpace(value)
+			list = append(list, kv{UserRole, stringify(u.Role, "")})
 
-	//     case oid == c.OID.Append(CardFrom):
-	//         if err := f("from", value); err != nil {
-	//             return nil, err
-	//         } else if from, err := core.DateFromString(value); err != nil {
-	//             return nil, err
-	//         } else if !from.IsValid() {
-	//             return nil, fmt.Errorf("invalid 'from' date (%v)", value)
-	//         } else {
-	//             c.log(a,
-	//                 "update",
-	//                 c.OID,
-	//                 "from",
-	//                 fmt.Sprintf("Updated VALID FROM date from %v to %v", c.From, value),
-	//                 stringify(c.From, ""),
-	//                 stringify(value, ""),
-	//                 dbc)
+			u.log(a,
+				"update",
+				u.OID,
+				"role",
+				fmt.Sprintf("Updated role from %v to %v", stringify(clone.Role, BLANK), stringify(u.Role, BLANK)),
+				stringify(clone.Role, ""),
+				stringify(u.Role, ""),
+				dbc)
+		}
 
-	//             c.From = from
-	//             list = append(list, kv{CardFrom, c.From})
-	//         }
+		//     if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
+		//         if a != nil {
+		//             if err := a.CanDelete(clone, auth.Cards); err != nil {
+		//                 return nil, err
+		//             }
+		//         }
 
-	//     case oid == c.OID.Append(CardTo):
-	//         if err := f("to", value); err != nil {
-	//             return nil, err
-	//         } else if to, err := core.DateFromString(value); err != nil {
-	//             return nil, err
-	//         } else if to.IsValid() {
-	//             return nil, fmt.Errorf("invalid 'to' date (%v)", value)
-	//         } else {
-	//             c.log(a,
-	//                 "update",
-	//                 c.OID,
-	//                 "to",
-	//                 fmt.Sprintf("Updated VALID UNTIL date from %v to %v", c.From, value),
-	//                 stringify(c.From, ""),
-	//                 stringify(value, ""),
-	//                 dbc)
+		//         if p := stringify(clone.Card, ""); p != "" {
+		//             c.log(a,
+		//                 "delete",
+		//                 c.OID,
+		//                 "card",
+		//                 fmt.Sprintf("Deleted card %v", p),
+		//                 "",
+		//                 "",
+		//                 dbc)
+		//         } else if p = stringify(clone.Name, ""); p != "" {
+		//             c.log(a,
+		//                 "delete",
+		//                 c.OID,
+		//                 "card",
+		//                 fmt.Sprintf("Deleted card for %v", p),
+		//                 "",
+		//                 "",
+		//                 dbc)
+		//         } else {
+		//             c.log(a,
+		//                 "delete",
+		//                 c.OID,
+		//                 "card",
+		//                 "Deleted card",
+		//                 "",
+		//                 "",
+		//                 dbc)
+		//         }
 
-	//             c.To = to
-	//             list = append(list, kv{CardTo, c.To})
-	//         }
+		//         c.deleted = core.DateTimeNow()
+		//         list = append(list, kv{CardDeleted, c.deleted})
 
-	//     case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
-	//         if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
-	//             gid := m[1]
-	//             k := catalog.GroupsOID.AppendS(gid)
+		//         catalog.Delete(c.OID)
+	}
 
-	//             if err := f("group", value); err != nil {
-	//                 return nil, err
-	//             } else if !catalog.HasGroup(catalog.OID(k)) {
-	//                 return nil, fmt.Errorf("invalid group OID (%v)", k)
-	//             } else {
-	//                 group := catalog.GetV(catalog.OID(k), GroupName)
-
-	//                 if value == "true" {
-	//                     c.log(a,
-	//                         "update",
-	//                         c.OID,
-	//                         "group",
-	//                         fmt.Sprintf("Granted access to %v", group),
-	//                         "",
-	//                         "",
-	//                         dbc)
-	//                 } else {
-	//                     c.log(a,
-	//                         "update",
-	//                         c.OID,
-	//                         "group",
-	//                         fmt.Sprintf("Revoked access to %v", group),
-	//                         "",
-	//                         "",
-	//                         dbc)
-	//                 }
-
-	//                 c.Groups[k] = value == "true"
-	//                 list = append(list, kv{CardGroups.Append(gid), c.Groups[k]})
-	//             }
-	//         }
-	//     }
-
-	//     if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
-	//         if a != nil {
-	//             if err := a.CanDelete(clone, auth.Cards); err != nil {
-	//                 return nil, err
-	//             }
-	//         }
-
-	//         if p := stringify(clone.Card, ""); p != "" {
-	//             c.log(a,
-	//                 "delete",
-	//                 c.OID,
-	//                 "card",
-	//                 fmt.Sprintf("Deleted card %v", p),
-	//                 "",
-	//                 "",
-	//                 dbc)
-	//         } else if p = stringify(clone.Name, ""); p != "" {
-	//             c.log(a,
-	//                 "delete",
-	//                 c.OID,
-	//                 "card",
-	//                 fmt.Sprintf("Deleted card for %v", p),
-	//                 "",
-	//                 "",
-	//                 dbc)
-	//         } else {
-	//             c.log(a,
-	//                 "delete",
-	//                 c.OID,
-	//                 "card",
-	//                 "Deleted card",
-	//                 "",
-	//                 "",
-	//                 dbc)
-	//         }
-
-	//         c.deleted = core.DateTimeNow()
-	//         list = append(list, kv{CardDeleted, c.deleted})
-
-	//         catalog.Delete(c.OID)
-	//     }
-
-	//     list = append(list, kv{CardStatus, c.status()})
+	list = append(list, kv{UserStatus, u.status()})
 
 	return u.toObjects(list, a), nil
 }

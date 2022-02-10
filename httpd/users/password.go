@@ -6,7 +6,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
-func Post(body map[string]interface{}, role string, auth auth.IAuth) (interface{}, error) {
+func Password(body map[string]interface{}, role string, auth auth.IAuth) (interface{}, error) {
 	var uid string
 	var old string
 	var pwd string

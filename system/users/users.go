@@ -114,18 +114,11 @@ func (uu *Users) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 		} else if u == nil {
 			return nil, fmt.Errorf("Failed to add 'new' user")
 		} else {
-			u.log(auth,
-				"add",
-				u.OID,
-				"card",
-				"Added 'new' user",
-				"",
-				"",
-				dbc)
-
 			uu.users[u.OID] = u
 			objects = append(objects, catalog.NewObject(u.OID, "new"))
 			objects = append(objects, catalog.NewObject2(u.OID, UserCreated, u.created))
+
+			u.log(auth, "add", u.OID, "card", "Added 'new' user", "", "", dbc)
 		}
 	}
 

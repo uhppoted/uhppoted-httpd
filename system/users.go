@@ -1,11 +1,9 @@
 package system
 
 import (
-	"fmt"
-
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	//	"github.com/uhppoted/uhppoted-httpd/system/db"
-	//	"github.com/uhppoted/uhppoted-httpd/types"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func Users(auth auth.OpAuth) interface{} {
@@ -16,40 +14,38 @@ func Users(auth auth.OpAuth) interface{} {
 }
 
 func UpdateUsers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
-	// sys.Lock()
+	sys.Lock()
+	defer sys.Unlock()
 
-	// defer sys.Unlock()
+	objects, err := unpack(m)
+	if err != nil {
+		return nil, err
+	}
 
-	// objects, err := unpack(m)
-	// if err != nil {
-	//     return nil, err
-	// }
+	dbc := db.NewDBC(sys.trail)
+	shadow := sys.users.Users.Clone()
 
-	// dbc := db.NewDBC(sys.trail)
-	// shadow := sys.cards.Cards.Clone()
+	for _, o := range objects {
+		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
+			return nil, err
+		} else {
+			dbc.Stash(updated)
+		}
+	}
 
-	// for _, o := range objects {
-	//     if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
-	//         return nil, err
-	//     } else {
-	//         dbc.Stash(updated)
-	//     }
-	// }
+	if err := shadow.Validate(); err != nil {
+		return nil, types.BadRequest(err, err)
+	}
 
-	// if err := shadow.Validate(); err != nil {
-	//     return nil, types.BadRequest(err, err)
-	// }
+	if err := save(sys.users.file, sys.users.tag, &shadow); err != nil {
+		return nil, err
+	}
 
-	// if err := save(sys.cards.file, sys.cards.tag, &shadow); err != nil {
-	//     return nil, err
-	// }
+	dbc.Commit()
+	sys.users.Users = shadow
+	sys.updated()
 
-	// dbc.Commit()
-	// sys.cards.Cards = shadow
-	// sys.updated()
+	list := squoosh(dbc.Objects())
 
-	// list := squoosh(dbc.Objects())
-
-	// return list, nil
-	return nil, fmt.Errorf("NOT IMPLEMENTED")
+	return list, nil
 }

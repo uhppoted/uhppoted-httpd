@@ -50,13 +50,11 @@ type ruleset struct {
 }
 
 var grules = struct {
-	rulesetx map[RuleSet]ruleset
-	guard    sync.RWMutex
+	ruleset map[RuleSet]ruleset
+	guard   sync.RWMutex
 }{
-	rulesetx: map[RuleSet]ruleset{},
+	ruleset: map[RuleSet]ruleset{},
 }
-
-//var	guard   sync.RWMutex
 
 func Init(rules map[RuleSet]string) {
 	grules.guard.Lock()
@@ -64,7 +62,7 @@ func Init(rules map[RuleSet]string) {
 
 	for k, v := range rules {
 		if f := strings.TrimSpace(v); f != "" {
-			grules.rulesetx[k] = struct {
+			grules.ruleset[k] = struct {
 				kb      *ast.KnowledgeLibrary
 				file    string
 				touched time.Time
@@ -282,7 +280,7 @@ func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]
 
 func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
 	grules.guard.RLock()
-	v, ok := grules.rulesetx[r]
+	v, ok := grules.ruleset[r]
 	grules.guard.RUnlock()
 
 	if !ok {
@@ -310,7 +308,7 @@ func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
 	grules.guard.Lock()
 	defer grules.guard.Unlock()
 
-	grules.rulesetx[r] = ruleset{
+	grules.ruleset[r] = ruleset{
 		kb:      kb,
 		file:    v.file,
 		touched: touched,

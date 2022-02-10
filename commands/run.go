@@ -84,7 +84,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		provider.Groups:      conf.HTTPD.DB.Rules.Groups,
 		provider.Events:      conf.HTTPD.DB.Rules.Events,
 		provider.Logs:        conf.HTTPD.DB.Rules.Logs,
-		// provider.Users:        conf.HTTPD.DB.Rules.Users,
+		provider.Users:       conf.HTTPD.DB.Rules.Users,
 	})
 
 	h := httpd.HTTPD{

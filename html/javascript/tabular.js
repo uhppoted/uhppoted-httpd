@@ -100,6 +100,10 @@ export function onEdited (tag, event) {
     case 'group':
       set(event.target, event.target.value)
       break
+
+    case 'user':
+      set(event.target, event.target.value)
+      break
   }
 }
 
@@ -134,6 +138,10 @@ export function onEnter (tag, event) {
         break
 
       case 'group':
+        set(event.target, event.target.value)
+        break
+
+      case 'user':
         set(event.target, event.target.value)
         break
     }
@@ -188,6 +196,10 @@ export function onCommit (tag, event) {
     case 'group':
       commit(pages.groups, row)
       break
+
+    case 'user':
+      commit(pages.users, row)
+      break
   }
 }
 
@@ -219,6 +231,10 @@ export function onCommitAll (tag, event, table) {
     case 'groups':
       commit(pages.groups, ...list)
       break
+
+    case 'users':
+      commit(pages.users, ...list)
+      break
   }
 }
 
@@ -245,6 +261,10 @@ export function onRollback (tag, event) {
 
     case 'group':
       rollback('groups', row, groups.refreshed)
+      break
+
+    case 'user':
+      rollback('users', row, groups.refreshed)
       break
   }
 }
@@ -275,6 +295,10 @@ export function onRollbackAll (tag, event) {
 
     case 'groups':
       f('groups', 'groups', groups.refreshed)
+      break
+
+    case 'users':
+      f('users', 'users', users.refreshed)
       break
   }
 }
