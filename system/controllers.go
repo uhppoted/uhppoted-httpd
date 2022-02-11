@@ -10,9 +10,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Controllers(auth auth.OpAuth) interface{} {
+func Controllers(uid, role string) interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
+
+	auth := auth.NewAuthorizator(uid, role)
 
 	return sys.controllers.AsObjects(auth)
 }

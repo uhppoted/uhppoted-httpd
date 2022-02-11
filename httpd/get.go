@@ -14,7 +14,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
@@ -223,8 +222,6 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 		return
 	}
 
-	auth := auth.NewAuthorizator(uid, role)
-
 	// ... ok
 	ctx, cancel := context.WithTimeout(d.context, d.timeout)
 
@@ -233,7 +230,7 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 	var response interface{}
 
 	go func() {
-		response = h.get(r, auth)
+		response = h.get(uid, role, r)
 		cancel()
 	}()
 

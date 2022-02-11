@@ -3,7 +3,6 @@ package httpd
 import (
 	"net/http"
 
-	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/cards"
 	"github.com/uhppoted/uhppoted-httpd/httpd/controllers"
 	"github.com/uhppoted/uhppoted-httpd/httpd/doors"
@@ -15,57 +14,57 @@ import (
 )
 
 type handler struct {
-	get  func(r *http.Request, a auth.OpAuth) interface{}
-	post func(map[string]interface{}, auth.OpAuth) (interface{}, error)
+	get  func(uid, role string, r *http.Request) interface{}
+	post func(uid, role string, objects map[string]interface{}) (interface{}, error)
 }
 
 func (d *dispatcher) vtable(path string) *handler {
 	switch path {
 	case "/interfaces":
 		return &handler{
-			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return interfaces.Get(auth) },
+			get:  func(uid, role string, r *http.Request) interface{} { return interfaces.Get(uid, role) },
 			post: interfaces.Post,
 		}
 
 	case "/controllers":
 		return &handler{
-			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return controllers.Get(auth) },
+			get:  func(uid, role string, r *http.Request) interface{} { return controllers.Get(uid, role) },
 			post: controllers.Post,
 		}
 
 	case "/doors":
 		return &handler{
-			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return doors.Get(auth) },
+			get:  func(uid, role string, r *http.Request) interface{} { return doors.Get(uid, role) },
 			post: doors.Post,
 		}
 
 	case "/cards":
 		return &handler{
-			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return cards.Get(auth) },
+			get:  func(uid, role string, r *http.Request) interface{} { return cards.Get(uid, role) },
 			post: cards.Post,
 		}
 
 	case "/groups":
 		return &handler{
-			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return groups.Get(auth) },
+			get:  func(uid, role string, r *http.Request) interface{} { return groups.Get(uid, role) },
 			post: groups.Post,
 		}
 
 	case "/events":
 		return &handler{
-			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return events.Get(r, auth) },
+			get:  func(uid, role string, r *http.Request) interface{} { return events.Get(uid, role, r) },
 			post: nil,
 		}
 
 	case "/logs":
 		return &handler{
-			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return logs.Get(r, auth) },
+			get:  func(uid, role string, r *http.Request) interface{} { return logs.Get(uid, role, r) },
 			post: nil,
 		}
 
 	case "/users":
 		return &handler{
-			get:  func(r *http.Request, auth auth.OpAuth) interface{} { return users.Get(auth) },
+			get:  func(uid, role string, r *http.Request) interface{} { return users.Get(uid, role) },
 			post: users.Post,
 		}
 	}

@@ -11,9 +11,11 @@ import (
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
-func Events(start, count int, auth auth.OpAuth) []interface{} {
+func Events(uid, role string, start, count int) []interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
+
+	auth := auth.NewAuthorizator(uid, role)
 
 	return sys.events.AsObjects(start, count, auth)
 }

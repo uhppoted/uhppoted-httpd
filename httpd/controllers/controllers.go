@@ -5,15 +5,17 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
-func Get(auth auth.OpAuth) interface{} {
+func Get(uid, role string) interface{} {
 	return struct {
 		Controllers interface{} `json:"controllers"`
 	}{
-		Controllers: system.Controllers(auth),
+		Controllers: system.Controllers(uid, role),
 	}
 }
 
-func Post(body map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+func Post(uid, role string, body map[string]interface{}) (interface{}, error) {
+	auth := auth.NewAuthorizator(uid, role)
+
 	updated, err := system.UpdateControllers(body, auth)
 	if err != nil {
 		return nil, err

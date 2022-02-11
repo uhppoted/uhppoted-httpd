@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"strings"
 
-	iauth "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -63,9 +62,8 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 			warn(fmt.Errorf("No vtable entry for %v", path))
 			http.Error(w, "internal system error", http.StatusInternalServerError)
 		} else {
-			auth := iauth.NewAuthorizator(uid, role)
 			d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
-				return handler.post(m, auth)
+				return handler.post(uid, role, m)
 			})
 		}
 		return

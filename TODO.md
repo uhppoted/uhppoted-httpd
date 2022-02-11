@@ -13,8 +13,10 @@
       - [x] _add_
       - [x] _delete_
       - [ ] Handle password
-            - [ ] Fix IAuth naming conflict
-            - [ ] Add auth provider to system/DBC
+      - [ ] Move auth to sys
+      - [ ] Fix IAuth naming conflict
+      - [ ] Add auth provider to system/DBC
+      - [ ] Move resource checking to Basic
       - [ ] Update auth.Local UIDs and roles
             - [ ] Ignore blank uid (uninitialised user) 
                   i.e. not error but not usable

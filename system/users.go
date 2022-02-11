@@ -6,14 +6,16 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Users(auth auth.OpAuth) interface{} {
+func Users(uid, role string) interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
+
+	auth := auth.NewAuthorizator(uid, role)
 
 	return sys.users.AsObjects(auth)
 }
 
-func UpdateUsers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error) {
 	sys.Lock()
 	defer sys.Unlock()
 
@@ -22,6 +24,7 @@ func UpdateUsers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, err
 	}
 
+	auth := auth.NewAuthorizator(uid, role)
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.users.Users.Clone()
 

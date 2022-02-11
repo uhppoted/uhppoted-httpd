@@ -6,14 +6,16 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Groups(auth auth.OpAuth) interface{} {
+func Groups(uid, role string) interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
+
+	auth := auth.NewAuthorizator(uid, role)
 
 	return sys.groups.AsObjects(auth)
 }
 
-func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+func UpdateGroups(uid, role string, m map[string]interface{}) (interface{}, error) {
 	sys.Lock()
 	defer sys.Unlock()
 
@@ -22,6 +24,7 @@ func UpdateGroups(m map[string]interface{}, auth auth.OpAuth) (interface{}, erro
 		return nil, err
 	}
 
+	auth := auth.NewAuthorizator(uid, role)
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.groups.Clone()
 

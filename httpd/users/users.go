@@ -3,23 +3,22 @@ package users
 import (
 	"log"
 
-	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 const GZIP_MINIMUM = 16384
 
-func Get(auth auth.OpAuth) interface{} {
+func Get(uid, role string) interface{} {
 	return struct {
 		Users interface{} `json:"users"`
 	}{
-		Users: system.Users(auth),
+		Users: system.Users(uid, role),
 	}
 }
 
-func Post(body map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
-	updated, err := system.UpdateUsers(body, auth)
+func Post(uid, role string, body map[string]interface{}) (interface{}, error) {
+	updated, err := system.UpdateUsers(uid, role, body)
 	if err != nil {
 		return nil, err
 	}

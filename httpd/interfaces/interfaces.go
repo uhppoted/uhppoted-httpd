@@ -1,20 +1,19 @@
 package interfaces
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
-func Get(auth auth.OpAuth) interface{} {
+func Get(uid, role string) interface{} {
 	return struct {
 		Interfaces interface{} `json:"interfaces"`
 	}{
-		Interfaces: system.Interfaces(auth),
+		Interfaces: system.Interfaces(uid, role),
 	}
 }
 
-func Post(body map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
-	updated, err := system.UpdateInterfaces(body, auth)
+func Post(uid, role string, body map[string]interface{}) (interface{}, error) {
+	updated, err := system.UpdateInterfaces(uid, role, body)
 	if err != nil {
 		return nil, err
 	}

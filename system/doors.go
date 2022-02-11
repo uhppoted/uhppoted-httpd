@@ -8,16 +8,17 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Doors(auth auth.OpAuth) interface{} {
+func Doors(uid, role string) interface{} {
 	sys.RLock()
 	defer sys.RUnlock()
+
+	auth := auth.NewAuthorizator(uid, role)
 
 	return sys.doors.AsObjects(auth)
 }
 
-func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error) {
 	sys.Lock()
-
 	defer sys.Unlock()
 
 	objects, err := unpack(m)
@@ -25,6 +26,7 @@ func UpdateDoors(m map[string]interface{}, auth auth.OpAuth) (interface{}, error
 		return nil, err
 	}
 
+	auth := auth.NewAuthorizator(uid, role)
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.doors.Clone()
 

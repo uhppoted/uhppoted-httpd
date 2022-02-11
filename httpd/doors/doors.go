@@ -1,20 +1,19 @@
 package doors
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
-func Get(auth auth.OpAuth) interface{} {
+func Get(uid, role string) interface{} {
 	return struct {
 		Doors interface{} `json:"doors"`
 	}{
-		Doors: system.Doors(auth),
+		Doors: system.Doors(uid, role),
 	}
 }
 
-func Post(body map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
-	if updated, err := system.UpdateDoors(body, auth); err != nil {
+func Post(uid, role string, body map[string]interface{}) (interface{}, error) {
+	if updated, err := system.UpdateDoors(uid, role, body); err != nil {
 		return nil, err
 	} else {
 		return struct {
