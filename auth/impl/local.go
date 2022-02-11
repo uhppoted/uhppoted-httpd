@@ -1,4 +1,4 @@
-package auth
+package local
 
 import (
 	"crypto/rand"
@@ -16,6 +16,9 @@ import (
 
 	"github.com/cristalhq/jwt/v3"
 	"github.com/google/uuid"
+
+	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
 var constants = struct {
@@ -93,7 +96,7 @@ type session struct {
 	Role       string    `json:"session.role,omitempty"`
 }
 
-func NewLocalAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
+func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
 	provider := Local{
 		private: private{
 			keys: make([][]byte, constants.KEYS),
@@ -198,27 +201,39 @@ func (p *Local) Preauthenticate() (string, error) {
 		return "", err
 	}
 
-	p.touched(Login, loginId)
+	p.touched(auth.Login, loginId)
 
 	return token.String(), nil
 }
 
 func (p *Local) Authenticate(uid, pwd string) (string, error) {
-	users := p.private.Users()
 	secret := p.private.Key()
 	expiry := p.sessionExpiry
 
-	u, ok := users[uid]
-	if !ok {
-		return "", fmt.Errorf("Invalid login credentials")
+	var salt []byte
+	var password string
+	var role string
+
+	if u, ok := system.User(uid); ok && u != nil {
+		salt, password = u.Password()
+		role = u.Role()
+	} else {
+		users := p.private.Users()
+		if u, ok := users[uid]; !ok {
+			return "", fmt.Errorf("Invalid login credentials")
+		} else {
+			salt = u.Salt
+			password = u.Password
+			role = u.Role
+		}
 	}
 
 	h := sha256.New()
-	h.Write(u.Salt)
+	h.Write(salt)
 	h.Write([]byte(pwd))
 
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
-	if hash != u.Password {
+	if hash != password {
 		return "", fmt.Errorf("Invalid login credentials")
 	}
 
@@ -246,7 +261,7 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 		Session: &session{
 			LoggedInAs: uid,
 			SessionId:  sessionId,
-			Role:       u.Role,
+			Role:       role,
 		},
 	}
 
@@ -255,31 +270,40 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 		return "", err
 	}
 
-	p.touched(Session, sessionId)
+	p.touched(auth.Session, sessionId)
 
 	return token.String(), nil
 }
 
 func (p *Local) Validate(uid, pwd string) error {
-	users := p.private.Users()
-	u, ok := users[uid]
-	if !ok {
-		return fmt.Errorf("invalid user ID or password")
+	var salt []byte
+	var password string
+
+	if u, ok := system.User(uid); ok && u != nil {
+		salt, password = u.Password()
+	} else {
+		users := p.private.Users()
+		if u, ok := users[uid]; !ok {
+			return fmt.Errorf("invalid user ID or password")
+		} else {
+			salt = u.Salt
+			password = u.Password
+		}
 	}
 
 	h := sha256.New()
-	h.Write(u.Salt)
+	h.Write(salt)
 	h.Write([]byte(pwd))
 
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
-	if hash != u.Password {
+	if hash != password {
 		return fmt.Errorf("invalid user ID or password")
 	}
 
 	return nil
 }
 
-func (p *Local) Invalidate(tokenType TokenType, cookie string) error {
+func (p *Local) Invalidate(tokenType auth.TokenType, cookie string) error {
 	token, _, err := p.getToken(cookie)
 	if err != nil {
 		return err
@@ -291,17 +315,17 @@ func (p *Local) Invalidate(tokenType TokenType, cookie string) error {
 	}
 
 	switch tokenType {
-	case Login:
+	case auth.Login:
 		p.logins.delete(claims.Login.LoginId)
 
-	case Session:
+	case auth.Session:
 		p.sessions.delete(claims.Session.SessionId)
 	}
 
 	return nil
 }
 
-func (p *Local) Verify(tokenType TokenType, cookie string) error {
+func (p *Local) Verify(tokenType auth.TokenType, cookie string) error {
 	token, _, err := p.getToken(cookie)
 	if err != nil {
 		return err
@@ -317,23 +341,23 @@ func (p *Local) Verify(tokenType TokenType, cookie string) error {
 	}
 
 	switch tokenType {
-	case Login:
+	case auth.Login:
 		if !claims.IsForAudience("login") {
 			return fmt.Errorf("Invalid audience in JWT claims")
 		} else if claims.Login == nil {
 			return fmt.Errorf("Invalid login token")
-		} else if err := p.extant(Login, claims.Login.LoginId); err != nil {
+		} else if err := p.extant(auth.Login, claims.Login.LoginId); err != nil {
 			return err
 		} else {
 			return nil
 		}
 
-	case Session:
+	case auth.Session:
 		if !claims.IsForAudience("admin") {
 			return fmt.Errorf("Invalid audience in JWT claims")
 		} else if claims.Session == nil {
 			return fmt.Errorf("Invalid session token")
-		} else if err := p.extant(Session, claims.Session.SessionId); err != nil {
+		} else if err := p.extant(auth.Session, claims.Session.SessionId); err != nil {
 			return err
 		} else {
 			return nil
@@ -366,11 +390,11 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 		return "", "", "", fmt.Errorf("Invalid session token")
 	}
 
-	if err := p.extant(Session, claims.Session.SessionId); err != nil {
+	if err := p.extant(auth.Session, claims.Session.SessionId); err != nil {
 		return "", "", "", err
 	}
 
-	p.touched(Session, claims.Session.SessionId)
+	p.touched(auth.Session, claims.Session.SessionId)
 
 	if keyID == 1 {
 		return claims.Session.LoggedInAs, claims.Session.Role, "", nil
@@ -522,23 +546,23 @@ func (p *Local) regenerate() {
 	log.Printf("%-5v Regenerated session secret", "INFO")
 }
 
-func (p *Local) extant(tokenType TokenType, id uuid.UUID) error {
+func (p *Local) extant(tokenType auth.TokenType, id uuid.UUID) error {
 	switch tokenType {
-	case Login:
+	case auth.Login:
 		return p.logins.extant(id)
 
-	case Session:
+	case auth.Session:
 		return p.sessions.extant(id)
 	}
 
 	return nil
 }
 
-func (p *Local) touched(tt TokenType, uuid uuid.UUID) {
+func (p *Local) touched(tt auth.TokenType, uuid uuid.UUID) {
 	switch tt {
-	case Login:
+	case auth.Login:
 		p.logins.touched(uuid)
-	case Session:
+	case auth.Session:
 		p.sessions.touched(uuid)
 	}
 }

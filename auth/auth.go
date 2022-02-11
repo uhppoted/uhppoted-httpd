@@ -36,6 +36,11 @@ type IAuth interface {
 	Invalidate(tokenType TokenType, token string) error
 }
 
+type IUser interface {
+	Password() ([]byte, string)
+	Role() string
+}
+
 type OpAuth interface {
 	UID() string
 
@@ -47,8 +52,4 @@ type OpAuth interface {
 
 type Operant interface {
 	AsRuleEntity() (string, interface{})
-}
-
-func NewAuthProvider(config string, loginExpiry, sessionExpiry string) (IAuth, error) {
-	return NewLocalAuthProvider(config, loginExpiry, sessionExpiry)
 }

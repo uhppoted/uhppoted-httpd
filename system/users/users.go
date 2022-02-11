@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -142,6 +143,18 @@ func (uu *Users) SetPassword(uid, pwd string, dbc db.DBC) ([]catalog.Object, err
 	}
 
 	return []catalog.Object{}, nil
+}
+
+func (uu *Users) User(uid string) (auth.IUser, bool) {
+	if strings.TrimSpace(uid) != "" {
+		for _, u := range uu.users {
+			if u.uid == uid {
+				return u, true
+			}
+		}
+	}
+
+	return nil, false
 }
 
 func (uu Users) Validate() error {

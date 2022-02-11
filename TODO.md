@@ -16,13 +16,10 @@
       - [x] Rework SetPassword to update system/users
       - [x] Move auth to sys
       - [x] Verify that admin password can be set to 'menu only' using rules
-      - [ ] Rework auth.Local to use system.users
-            - [ ] Ignore blank uid (uninitialised user) 
-                  i.e. not error but not usable
-            - (?) Could be just a file watcher on users.json
-      - [ ] Fix IAuth naming conflict
-      - [ ] Add auth provider to system/DBC
+      - [x] Rework auth.Local to use system.users
+            - [x] Ignore blank uid (uninitialised user) i.e. not error but not usable
       - [ ] Move resource checking to Basic
+      - [ ] Fix IAuth naming conflict
       - [ ] Disable menu item if not e.g. admin
 
 - [ ] Rework created/deleted/modified as Timestamp - DateTime is a controller value!!!!!!!

@@ -53,6 +53,17 @@ func (u User) IsDeleted() bool {
 	return !u.deleted.IsZero()
 }
 
+func (u User) Password() ([]byte, string) {
+	salt := make([]byte, len(u.salt))
+	copy(salt, u.salt)
+
+	return salt, u.password
+}
+
+func (u User) Role() string {
+	return u.role
+}
+
 func (u User) String() string {
 	name := strings.TrimSpace(u.name)
 	if name != "" {

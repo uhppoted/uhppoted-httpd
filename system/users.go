@@ -53,6 +53,10 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 	return list, nil
 }
 
+func User(uid string) (auth.IUser, bool) {
+	return sys.users.User(uid)
+}
+
 func SetPassword(uid, pwd string) error {
 	sys.Lock()
 	defer sys.Unlock()
