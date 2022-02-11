@@ -12,8 +12,9 @@
       - [x] Implement editing
       - [x] _add_
       - [x] _delete_
-      - [ ] Handle password
-      - [ ] Move auth to sys
+      - [x] password
+      - [ ] Rework SetPassword to update system/users
+      - [x] Move auth to sys
       - [ ] Fix IAuth naming conflict
       - [ ] Add auth provider to system/DBC
       - [ ] Move resource checking to Basic
@@ -23,6 +24,7 @@
             - (?) Could be just a file watcher on users.json
       - [ ] Disable menu item if not e.g. admin
 
+- [ ] Rework created/deleted as Timestamp - DateTime is a controller value!!!!!!!
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError
 - [ ] Make vtable'able subsystem an interface

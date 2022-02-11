@@ -1,8 +1,12 @@
 package users
 
 import (
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 
@@ -16,10 +20,12 @@ import (
 )
 
 type User struct {
-	OID  catalog.OID
-	Name string
-	UID  string
-	Role string
+	OID      catalog.OID
+	name     string
+	uid      string
+	role     string
+	salt     []byte
+	password string
 
 	created core.DateTime
 	deleted core.DateTime
@@ -35,7 +41,7 @@ const BLANK = "'blank'"
 var created = core.DateTimeNow()
 
 func (u User) IsValid() bool {
-	if strings.TrimSpace(u.Name) != "" || strings.TrimSpace(u.UID) != "" {
+	if strings.TrimSpace(u.name) != "" || strings.TrimSpace(u.uid) != "" {
 		return true
 	}
 
@@ -47,12 +53,12 @@ func (u User) IsDeleted() bool {
 }
 
 func (u User) String() string {
-	name := strings.TrimSpace(u.Name)
+	name := strings.TrimSpace(u.name)
 	if name != "" {
 		return name
 	}
 
-	uid := strings.TrimSpace(u.UID)
+	uid := strings.TrimSpace(u.uid)
 	if uid != "" {
 		return uid
 	}
@@ -69,9 +75,9 @@ func (u User) AsObjects(auth auth.OpAuth) []catalog.Object {
 		list = append(list, kv{UserStatus, u.status()})
 		list = append(list, kv{UserCreated, u.created})
 		list = append(list, kv{UserDeleted, u.deleted})
-		list = append(list, kv{UserName, u.Name})
-		list = append(list, kv{UserUID, u.UID})
-		list = append(list, kv{UserRole, u.Role})
+		list = append(list, kv{UserName, u.name})
+		list = append(list, kv{UserUID, u.uid})
+		list = append(list, kv{UserRole, u.role})
 		list = append(list, kv{UserPassword, ""})
 	}
 
@@ -84,9 +90,9 @@ func (u User) AsRuleEntity() (string, interface{}) {
 		UID  string
 		Role string
 	}{
-		Name: u.Name,
-		UID:  u.UID,
-		Role: u.Role,
+		Name: u.name,
+		UID:  u.uid,
+		Role: u.role,
 	}
 
 	return "user", &entity
@@ -117,15 +123,15 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			u.Name = strings.TrimSpace(value)
-			list = append(list, kv{UserName, stringify(u.Name, "")})
+			u.name = strings.TrimSpace(value)
+			list = append(list, kv{UserName, stringify(u.name, "")})
 
 			u.log(a,
 				"update",
 				u.OID,
 				"name",
-				fmt.Sprintf("Updated name from %v to %v", stringify(clone.Name, BLANK), stringify(u.Name, BLANK)),
-				stringify(u.Name, ""),
+				fmt.Sprintf("Updated name from %v to %v", stringify(clone.name, BLANK), stringify(u.name, BLANK)),
+				stringify(u.name, ""),
 				stringify(value, ""),
 				dbc)
 		}
@@ -134,16 +140,16 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 		if err := f("uid", value); err != nil {
 			return nil, err
 		} else {
-			u.UID = strings.TrimSpace(value)
-			list = append(list, kv{UserUID, stringify(u.UID, "")})
+			u.uid = strings.TrimSpace(value)
+			list = append(list, kv{UserUID, stringify(u.uid, "")})
 
 			u.log(a,
 				"update",
 				u.OID,
 				"uid",
-				fmt.Sprintf("Updated UID from %v to %v", stringify(clone.UID, BLANK), stringify(u.UID, BLANK)),
-				stringify(clone.UID, ""),
-				stringify(u.UID, ""),
+				fmt.Sprintf("Updated UID from %v to %v", stringify(clone.uid, BLANK), stringify(u.uid, BLANK)),
+				stringify(clone.uid, ""),
+				stringify(u.uid, ""),
 				dbc)
 		}
 
@@ -151,41 +157,51 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 		if err := f("role", value); err != nil {
 			return nil, err
 		} else {
-			u.Role = strings.TrimSpace(value)
-			list = append(list, kv{UserRole, stringify(u.Role, "")})
+			u.role = strings.TrimSpace(value)
+			list = append(list, kv{UserRole, stringify(u.role, "")})
 
 			u.log(a,
 				"update",
 				u.OID,
 				"role",
-				fmt.Sprintf("Updated role from %v to %v", stringify(clone.Role, BLANK), stringify(u.Role, BLANK)),
-				stringify(clone.Role, ""),
-				stringify(u.Role, ""),
+				fmt.Sprintf("Updated role from %v to %v", stringify(clone.role, BLANK), stringify(u.role, BLANK)),
+				stringify(clone.role, ""),
+				stringify(u.role, ""),
 				dbc)
 		}
 
 	case oid == u.OID.Append(UserPassword):
 		if err := f("password", value); err != nil {
 			return nil, err
-		} else if err := dbc.SetPassword(u.UID, value, u.Role); err != nil {
-			return nil, err
 		} else {
+			salt := make([]byte, 16)
+			if _, err := io.ReadFull(rand.Reader, salt); err != nil {
+				return nil, err
+			}
+
+			h := sha256.New()
+			h.Write(salt)
+			h.Write([]byte(value))
+
+			u.salt = salt
+			u.password = fmt.Sprintf("%0x", h.Sum(nil))
+
 			list = append(list, kv{UserPassword, ""})
 
 			u.log(a, "update", u.OID, "password", "Updated password", "", "", dbc)
 		}
 	}
 
-	if strings.TrimSpace(u.Name) == "" && strings.TrimSpace(u.UID) == "" {
+	if strings.TrimSpace(u.name) == "" && strings.TrimSpace(u.uid) == "" {
 		if a != nil {
 			if err := a.CanDelete(clone, auth.Users); err != nil {
 				return nil, err
 			}
 		}
 
-		if p := stringify(clone.UID, ""); p != "" {
+		if p := stringify(clone.uid, ""); p != "" {
 			u.log(a, "delete", u.OID, "user", fmt.Sprintf("Deleted UID %v", p), "", "", dbc)
-		} else if p = stringify(clone.Name, ""); p != "" {
+		} else if p = stringify(clone.name, ""); p != "" {
 			u.log(a, "delete", u.OID, "user", fmt.Sprintf("Deleted user %v", p), "", "", dbc)
 		} else {
 			u.log(a, "delete", u.OID, "user", "Deleted user", "", "", dbc)
@@ -239,17 +255,21 @@ func (u User) status() types.Status {
 
 func (u User) serialize() ([]byte, error) {
 	record := struct {
-		OID     catalog.OID   `json:"OID"`
-		Name    string        `json:"name,omitempty"`
-		UID     string        `json:"uid,omitempty"`
-		Role    string        `json:"role,omitempty"`
-		Created core.DateTime `json:"created"`
+		OID      catalog.OID   `json:"OID"`
+		Name     string        `json:"name,omitempty"`
+		UID      string        `json:"uid,omitempty"`
+		Role     string        `json:"role,omitempty"`
+		Salt     string        `json:"salt"`
+		Password string        `json:"password"`
+		Created  core.DateTime `json:"created"`
 	}{
-		OID:     u.OID,
-		Name:    strings.TrimSpace(u.Name),
-		UID:     strings.TrimSpace(u.UID),
-		Role:    strings.TrimSpace(u.Role),
-		Created: u.created,
+		OID:      u.OID,
+		Name:     strings.TrimSpace(u.name),
+		UID:      strings.TrimSpace(u.uid),
+		Role:     strings.TrimSpace(u.role),
+		Salt:     hex.EncodeToString(u.salt[:]),
+		Password: u.password,
+		Created:  u.created,
 	}
 
 	return json.Marshal(record)
@@ -259,11 +279,13 @@ func (u *User) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     catalog.OID   `json:"OID"`
-		Name    string        `json:"name,omitempty"`
-		UID     string        `json:"uid,omitempty"`
-		Role    string        `json:"role,omitempty"`
-		Created core.DateTime `json:"created"`
+		OID      catalog.OID   `json:"OID"`
+		Name     string        `json:"name,omitempty"`
+		UID      string        `json:"uid,omitempty"`
+		Role     string        `json:"role,omitempty"`
+		Salt     string        `json:"salt"`
+		Password string        `json:"password"`
+		Created  core.DateTime `json:"created"`
 	}{
 		Created: created,
 	}
@@ -272,10 +294,17 @@ func (u *User) deserialize(bytes []byte) error {
 		return err
 	}
 
+	salt, err := hex.DecodeString(record.Salt)
+	if err != nil {
+		return err
+	}
+
 	u.OID = record.OID
-	u.Name = strings.TrimSpace(record.Name)
-	u.UID = strings.TrimSpace(record.UID)
-	u.Role = strings.TrimSpace(record.Role)
+	u.name = strings.TrimSpace(record.Name)
+	u.uid = strings.TrimSpace(record.UID)
+	u.role = strings.TrimSpace(record.Role)
+	u.salt = salt
+	u.password = record.Password
 	u.created = record.Created
 
 	return nil
@@ -284,9 +313,9 @@ func (u *User) deserialize(bytes []byte) error {
 func (u User) clone() *User {
 	return &User{
 		OID:  u.OID,
-		Name: u.Name,
-		UID:  u.UID,
-		Role: u.Role,
+		name: u.name,
+		uid:  u.uid,
+		role: u.role,
 
 		created: u.created,
 		deleted: u.deleted,
@@ -305,8 +334,8 @@ func (u User) log(auth auth.OpAuth, operation string, oid catalog.OID, field, de
 		Component: "user",
 		Operation: operation,
 		Details: audit.Details{
-			ID:          stringify(u.UID, ""),
-			Name:        stringify(u.Name, ""),
+			ID:          stringify(u.uid, ""),
+			Name:        stringify(u.name, ""),
 			Field:       field,
 			Description: description,
 			Before:      before,

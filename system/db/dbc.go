@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
@@ -13,9 +12,6 @@ type DBC interface {
 	Objects() []catalog.Object
 	Commit()
 	Write(audit.AuditRecord)
-
-	// (provisional)
-	SetPassword(uid, password, role string) error
 }
 
 type dbc struct {
@@ -70,8 +66,4 @@ func (d *dbc) Write(record audit.AuditRecord) {
 	defer d.guard.Unlock()
 
 	d.logs = append(d.logs, record)
-}
-
-func (d *dbc) SetPassword(uid, pwd, role string) error {
-	return fmt.Errorf("NOT IMPLEMENTED")
 }

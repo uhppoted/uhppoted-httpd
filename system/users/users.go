@@ -37,7 +37,7 @@ func (uu *Users) Load(blob json.RawMessage) error {
 		var u User
 		if err := u.deserialize(v); err == nil {
 			if _, ok := uu.users[u.OID]; ok {
-				return fmt.Errorf("user '%v': duplicate OID (%v)", u.Name, u.OID)
+				return fmt.Errorf("user '%v': duplicate OID (%v)", u.name, u.OID)
 			}
 
 			uu.users[u.OID] = &u
@@ -46,9 +46,9 @@ func (uu *Users) Load(blob json.RawMessage) error {
 
 	for _, u := range uu.users {
 		catalog.PutUser(u.OID)
-		catalog.PutV(u.OID, catalog.UserName, u.Name)
-		catalog.PutV(u.OID, catalog.UserUID, u.UID)
-		catalog.PutV(u.OID, catalog.UserRole, u.Role)
+		catalog.PutV(u.OID, catalog.UserName, u.name)
+		catalog.PutV(u.OID, catalog.UserUID, u.uid)
+		catalog.PutV(u.OID, catalog.UserRole, u.role)
 	}
 
 	return nil
@@ -201,16 +201,16 @@ func validate(uu Users) error {
 			return fmt.Errorf("Invalid user OID (%v)", u.OID)
 		}
 
-		if oid, ok := users[u.UID]; ok {
+		if oid, ok := users[u.uid]; ok {
 			return &types.HttpdError{
 				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Duplicate UID (%v)", u.UID),
-				Detail: fmt.Errorf("UID %v: duplicate entry in records %v and %v", u.UID, oid, u.OID),
+				Err:    fmt.Errorf("Duplicate UID (%v)", u.uid),
+				Detail: fmt.Errorf("UID %v: duplicate entry in records %v and %v", u.uid, oid, u.OID),
 			}
 		}
 
-		if u.UID != "" {
-			users[u.UID] = u.OID
+		if u.uid != "" {
+			users[u.uid] = u.OID
 		}
 	}
 
