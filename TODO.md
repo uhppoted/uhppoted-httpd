@@ -13,21 +13,25 @@
       - [x] _add_
       - [x] _delete_
       - [x] password
-      - [ ] Rework SetPassword to update system/users
+      - [x] Rework SetPassword to update system/users
       - [x] Move auth to sys
-      - [ ] Fix IAuth naming conflict
-      - [ ] Add auth provider to system/DBC
-      - [ ] Move resource checking to Basic
-      - [ ] Update auth.Local UIDs and roles
+      - [x] Verify that admin password can be set to 'menu only' using rules
+      - [ ] Rework auth.Local to use system.users
             - [ ] Ignore blank uid (uninitialised user) 
                   i.e. not error but not usable
             - (?) Could be just a file watcher on users.json
+      - [ ] Fix IAuth naming conflict
+      - [ ] Add auth provider to system/DBC
+      - [ ] Move resource checking to Basic
       - [ ] Disable menu item if not e.g. admin
 
-- [ ] Rework created/deleted as Timestamp - DateTime is a controller value!!!!!!!
+- [ ] Rework created/deleted/modified as Timestamp - DateTime is a controller value!!!!!!!
+- [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError
 - [ ] Make vtable'able subsystem an interface
+- [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
+      be updated from the catalog ??
 
 ### IN PROGRESS
 

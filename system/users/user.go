@@ -27,8 +27,9 @@ type User struct {
 	salt     []byte
 	password string
 
-	created core.DateTime
-	deleted core.DateTime
+	created  core.DateTime
+	deleted  core.DateTime
+	modified core.DateTime
 }
 
 type kv = struct {
@@ -124,6 +125,7 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			return nil, err
 		} else {
 			u.name = strings.TrimSpace(value)
+			u.modified = core.DateTimeNow()
 			list = append(list, kv{UserName, stringify(u.name, "")})
 
 			u.log(a,
@@ -141,6 +143,7 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			return nil, err
 		} else {
 			u.uid = strings.TrimSpace(value)
+			u.modified = core.DateTimeNow()
 			list = append(list, kv{UserUID, stringify(u.uid, "")})
 
 			u.log(a,
@@ -158,6 +161,7 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			return nil, err
 		} else {
 			u.role = strings.TrimSpace(value)
+			u.modified = core.DateTimeNow()
 			list = append(list, kv{UserRole, stringify(u.role, "")})
 
 			u.log(a,
@@ -185,6 +189,7 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 
 			u.salt = salt
 			u.password = fmt.Sprintf("%0x", h.Sum(nil))
+			u.modified = core.DateTimeNow()
 
 			list = append(list, kv{UserPassword, ""})
 
@@ -208,6 +213,7 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 		}
 
 		u.deleted = core.DateTimeNow()
+		u.modified = core.DateTimeNow()
 		list = append(list, kv{UserDeleted, u.deleted})
 
 		catalog.Delete(u.OID)
@@ -262,6 +268,7 @@ func (u User) serialize() ([]byte, error) {
 		Salt     string        `json:"salt"`
 		Password string        `json:"password"`
 		Created  core.DateTime `json:"created"`
+		Modified core.DateTime `json:"modified"`
 	}{
 		OID:      u.OID,
 		Name:     strings.TrimSpace(u.name),
@@ -270,6 +277,7 @@ func (u User) serialize() ([]byte, error) {
 		Salt:     hex.EncodeToString(u.salt[:]),
 		Password: u.password,
 		Created:  u.created,
+		Modified: u.modified,
 	}
 
 	return json.Marshal(record)
@@ -286,8 +294,10 @@ func (u *User) deserialize(bytes []byte) error {
 		Salt     string        `json:"salt"`
 		Password string        `json:"password"`
 		Created  core.DateTime `json:"created"`
+		Modified core.DateTime `json:"modified"`
 	}{
-		Created: created,
+		Created:  created,
+		Modified: core.DateTimeNow(),
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -306,20 +316,27 @@ func (u *User) deserialize(bytes []byte) error {
 	u.salt = salt
 	u.password = record.Password
 	u.created = record.Created
+	u.modified = record.Modified
 
 	return nil
 }
 
 func (u User) clone() *User {
-	return &User{
-		OID:  u.OID,
-		name: u.name,
-		uid:  u.uid,
-		role: u.role,
+	replicant := User{
+		OID:      u.OID,
+		name:     u.name,
+		uid:      u.uid,
+		role:     u.role,
+		salt:     make([]byte, len(u.salt)),
+		password: u.password,
 
 		created: u.created,
 		deleted: u.deleted,
 	}
+
+	copy(replicant.salt, u.salt)
+
+	return &replicant
 }
 
 func (u User) log(auth auth.OpAuth, operation string, oid catalog.OID, field, description, before, after string, dbc db.DBC) {

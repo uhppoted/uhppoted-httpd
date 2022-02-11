@@ -125,6 +125,25 @@ func (uu *Users) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 	return objects, nil
 }
 
+func (uu *Users) SetPassword(uid, pwd string, dbc db.DBC) ([]catalog.Object, error) {
+	if uu == nil {
+		return nil, nil
+	}
+
+	for k, u := range uu.users {
+		if u.uid == uid {
+			objects, err := u.set(nil, u.OID.Append(UserPassword), pwd, dbc)
+			if err == nil {
+				uu.users[k] = u
+			}
+
+			return objects, err
+		}
+	}
+
+	return []catalog.Object{}, nil
+}
+
 func (uu Users) Validate() error {
 	return validate(uu)
 }
@@ -179,6 +198,7 @@ func (uu Users) add(a auth.OpAuth, u User) (*User, error) {
 	user := u.clone()
 	user.OID = oid
 	user.created = core.DateTimeNow()
+	u.modified = core.DateTimeNow()
 
 	if a != nil {
 		if err := a.CanAdd(user, auth.Users); err != nil {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
 func Password(body map[string]interface{}, role string, auth auth.IAuth) (interface{}, error) {
@@ -46,7 +47,7 @@ func Password(body map[string]interface{}, role string, auth auth.IAuth) (interf
 		return nil, fmt.Errorf("Invalid user ID or password")
 	}
 
-	if err := auth.SetPassword(uid, pwd, role); err != nil {
+	if err := system.SetPassword(uid, pwd); err != nil {
 		return nil, err
 	}
 

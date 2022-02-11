@@ -52,3 +52,31 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 
 	return list, nil
 }
+
+func SetPassword(uid, pwd string) error {
+	sys.Lock()
+	defer sys.Unlock()
+
+	dbc := db.NewDBC(sys.trail)
+	shadow := sys.users.Users.Clone()
+
+	if updated, err := shadow.SetPassword(uid, pwd, dbc); err != nil {
+		return err
+	} else {
+		dbc.Stash(updated)
+	}
+
+	if err := shadow.Validate(); err != nil {
+		return types.BadRequest(err, err)
+	}
+
+	if err := save(sys.users.file, sys.users.tag, &shadow); err != nil {
+		return err
+	}
+
+	dbc.Commit()
+	sys.users.Users = shadow
+	sys.updated()
+
+	return nil
+}

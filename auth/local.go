@@ -9,7 +9,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 	"sync"
@@ -302,29 +301,6 @@ func (p *Local) Invalidate(tokenType TokenType, cookie string) error {
 	return nil
 }
 
-func (p *Local) Store(uid, pwd, role string) error {
-	if strings.TrimSpace(uid) == "" {
-		return fmt.Errorf("Invalid user ID or password")
-	}
-
-	k := strings.TrimSpace(uid)
-
-	salt := make([]byte, 16)
-	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
-		return err
-	}
-
-	h := sha256.New()
-	h.Write(salt)
-	h.Write([]byte(pwd))
-
-	hash := fmt.Sprintf("%0x", h.Sum(nil))
-
-	p.private.Store(k, role, salt, hash)
-
-	return nil
-}
-
 func (p *Local) Verify(tokenType TokenType, cookie string) error {
 	token, _, err := p.getToken(cookie)
 	if err != nil {
@@ -434,49 +410,6 @@ func (p *Local) load(file string) error {
 	}
 
 	return p.deserialize(bytes)
-}
-
-func (p *Local) Save() error {
-	b, err := p.serialize()
-	if err != nil {
-		return err
-	}
-
-	tmp, err := os.CreateTemp("", "uhppoted-auth.*")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(p.file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), p.file)
-}
-
-func (p *Local) serialize() ([]byte, error) {
-	users := p.private.Users()
-	resources := p.private.Resources()
-
-	serializable := struct {
-		Users     map[string]*user `json:"users"`
-		Resources []resource       `json:"resources"`
-	}{
-		Users:     users,
-		Resources: resources,
-	}
-
-	return json.MarshalIndent(serializable, "", "  ")
 }
 
 func (p *Local) deserialize(bytes []byte) error {
@@ -760,16 +693,6 @@ func (ss *sessions) delete(uuid uuid.UUID) {
 	delete(ss.list, uuid)
 }
 
-func (s *salt) MarshalJSON() ([]byte, error) {
-	bytes := []byte{}
-
-	if s != nil {
-		bytes = []byte(*s)
-	}
-
-	return json.Marshal(hex.EncodeToString(bytes[:]))
-}
-
 func (s *salt) UnmarshalJSON(bytes []byte) error {
 	re := regexp.MustCompile(`^"([0-9a-fA-F]*)"$`)
 	match := re.FindSubmatch(bytes)
@@ -786,18 +709,6 @@ func (s *salt) UnmarshalJSON(bytes []byte) error {
 	*s = b
 
 	return nil
-}
-
-func (r resource) MarshalJSON() ([]byte, error) {
-	object := struct {
-		Path       string `json:"path"`
-		Authorised string `json:"authorised"`
-	}{
-		Path:       fmt.Sprintf("%v", r.Path),
-		Authorised: fmt.Sprintf("%v", r.Authorised),
-	}
-
-	return json.Marshal(object)
 }
 
 func (r *resource) UnmarshalJSON(bytes []byte) error {

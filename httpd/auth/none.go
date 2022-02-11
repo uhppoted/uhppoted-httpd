@@ -34,9 +34,5 @@ func (n *None) Verify(uid, pwd string) error {
 	return nil
 }
 
-func (n *None) SetPassword(uid, pwd, role string) error {
-	return nil
-}
-
 func (n *None) Logout(cookie *http.Cookie) {
 }

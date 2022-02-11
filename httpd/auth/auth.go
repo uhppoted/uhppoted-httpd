@@ -26,7 +26,6 @@ type IAuth interface {
 	Logout(cookie *http.Cookie)
 
 	Verify(uid, pwd string) error
-	SetPassword(uid, pwd, role string) error
 }
 
 func warn(err error) {

@@ -108,14 +108,6 @@ func (b *Basic) Verify(uid, pwd string) error {
 	return b.auth.Validate(uid, pwd)
 }
 
-func (b *Basic) SetPassword(uid, pwd, role string) error {
-	if err := b.auth.Store(uid, pwd, role); err != nil {
-		return err
-	}
-
-	return b.auth.Save()
-}
-
 func (b *Basic) Logout(cookie *http.Cookie) {
 	if err := b.auth.Invalidate(auth.Session, cookie.Value); err != nil {
 		warn(err)
