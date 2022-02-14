@@ -70,8 +70,9 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	file := filepath.Clean(filepath.Join(d.root, path[1:]))
+	authorised := map[string]bool{}
 
-	d.translate(file, context, w, acceptsGzip)
+	d.translate(file, context, authorised, w, acceptsGzip)
 }
 
 func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
@@ -120,10 +121,34 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 		"User":  uid,
 	}
 
-	d.translate(file, context, w, acceptsGzip)
+	authorised := map[string]bool{
+		"/sys/controllers.html": true,
+		"/sys/doors.html":       true,
+		"/sys/cards.html":       true,
+		"/sys/groups.html":      true,
+		"/sys/events.html":      true,
+		"/sys/logs.html":        true,
+		"/sys/users.html":       false,
+	}
+
+	for path, _ := range authorised {
+		authorised[path] = d.authorised(uid, role, path)
+	}
+
+	d.translate(file, context, authorised, w, acceptsGzip)
 }
 
-func (d *dispatcher) translate(filename string, context map[string]interface{}, w http.ResponseWriter, acceptsGzip bool) {
+func (d *dispatcher) translate(filename string, context map[string]interface{}, authorised map[string]bool, w http.ResponseWriter, acceptsGzip bool) {
+	type nav struct {
+		System bool
+		Doors  bool
+		Cards  bool
+		Groups bool
+		Events bool
+		Logs   bool
+		Users  bool
+	}
+
 	base := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
 	translation := filepath.Join("translations", "en", base+".json")
 	page := map[string]interface{}{}
@@ -162,6 +187,24 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 			}
 
 			return v
+		},
+
+		"nav": func(page string) interface{} {
+			return struct {
+				Page       string
+				Authorised nav
+			}{
+				Page: page,
+				Authorised: nav{
+					System: authorised["/sys/controllers.html"],
+					Doors:  authorised["/sys/doors.html"],
+					Cards:  authorised["/sys/cards.html"],
+					Groups: authorised["/sys/groups.html"],
+					Events: authorised["/sys/events.html"],
+					Logs:   authorised["/sys/logs.html"],
+					Users:  authorised["/sys/users.html"],
+				},
+			}
 		},
 	}
 

@@ -7,6 +7,10 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] 'users' page
+      - [ ] Move resource checking to Basic
+      - [ ] Fix IAuth naming conflict
+      - (?) 'default' page in template if e.g. not authorised for 'controllers'
+      - [x] Remove menu item if not authorised
       - [x] Page skeleton
       - [x] GET system/users
       - [x] Implement editing
@@ -17,11 +21,9 @@
       - [x] Move auth to sys
       - [x] Verify that admin password can be set to 'menu only' using rules
       - [x] Rework auth.Local to use system.users
-            - [x] Ignore blank uid (uninitialised user) i.e. not error but not usable
-      - [ ] Move resource checking to Basic
-      - [ ] Fix IAuth naming conflict
-      - [ ] Disable menu item if not e.g. admin
+      - [x] Ignore blank uid (uninitialised user) i.e. not error but not usable
 
+- [ ] Make scrollbars look like BCMT/PWA
 - [ ] Rework created/deleted/modified as Timestamp - DateTime is a controller value!!!!!!!
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys

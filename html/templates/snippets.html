@@ -31,13 +31,13 @@
       <!-- NAV -->
       <nav>
         <ul>
-          {{if eq . "system"}}<li class="selected">SYSTEM</li>{{else}}<li><a href="/sys/controllers.html">SYSTEM</a></li>{{end}}
-          {{if eq . "doors" }}<li class="selected">DOORS</li> {{else}}<li><a href="/sys/doors.html">DOORS</a></li>{{end}}
-          {{if eq . "cards" }}<li class="selected">CARDS</li> {{else}}<li><a href="/sys/cards.html">CARDS</a></li>{{end}}
-          {{if eq . "groups"}}<li class="selected">GROUPS</li>{{else}}<li><a href="/sys/groups.html">GROUPS</a></li>{{end}}
-          {{if eq . "events"}}<li class="selected">EVENTS</li>{{else}}<li><a href="/sys/events.html">EVENTS</a></li>{{end}}
-          {{if eq . "logs"  }}<li class="selected">LOGS</li>  {{else}}<li><a href="/sys/logs.html">LOGS</a></li>{{end}}
-          {{if eq . "users" }}<li class="selected">USERS</li> {{else}}<li><a href="/sys/users.html">USERS</a></li>{{end}}
+          {{if .Authorised.System}}{{if eq .Page "system"}}<li class="selected">SYSTEM</li>{{else}}<li><a href="/sys/controllers.html">SYSTEM</a></li>{{end}}{{end}}
+          {{if .Authorised.Doors}}{{if eq .Page "doors" }}<li class="selected">DOORS</li> {{else}}<li><a href="/sys/doors.html">DOORS</a></li>{{end}}{{end}}
+          {{if .Authorised.Cards}}{{if eq .Page "cards" }}<li class="selected">CARDS</li> {{else}}<li><a href="/sys/cards.html">CARDS</a></li>{{end}}{{end}}
+          {{if .Authorised.Groups}}{{if eq .Page "groups"}}<li class="selected">GROUPS</li>{{else}}<li><a href="/sys/groups.html">GROUPS</a></li>{{end}}{{end}}
+          {{if .Authorised.Events}}{{if eq .Page "events"}}<li class="selected">EVENTS</li>{{else}}<li><a href="/sys/events.html">EVENTS</a></li>{{end}}{{end}}
+          {{if .Authorised.Logs}}{{if eq .Page "logs"  }}<li class="selected">LOGS</li>  {{else}}<li><a href="/sys/logs.html">LOGS</a></li>{{end}}{{end}}
+          {{if .Authorised.Users}}{{if eq .Page "users" }}<li class="selected">USERS</li> {{else}}<li><a href="/sys/users.html">USERS</a></li>{{end}}{{end}}
         </ul>
       </nav>
 {{end}}
