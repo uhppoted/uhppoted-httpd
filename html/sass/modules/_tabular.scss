@@ -4,25 +4,26 @@ div.tabular {
   border-bottom-right-radius: 4px;
 }  
 
-// div.tabular::-webkit-scrollbar {
-//   background: white;
-//   border-bottom-right-radius: 3px;  
-// }
-//  
-// div.tabular::-webkit-scrollbar-track {
-//   background: white;
-//   border-bottom-right-radius: 3px;  
-// }
-//  
-// div.tabular::-webkit-scrollbar-thumb {
-//   background: #c1c1c1;
-//   border-bottom-right-radius: 3px;  
-// }
-// 
-// div.tabular::-webkit-scrollbar-corner {
-//   background: white;
-//   border-bottom-right-radius: 3px;
-// }
+div.tabular::-webkit-scrollbar {
+  background: transparent;
+  border-left: 2px solid $solarize-base2;
+}
+
+div.tabular::-webkit-scrollbar-track {
+  background: transparent;
+  border-left: 2px solid $solarize-base2;
+}
+
+div.tabular::-webkit-scrollbar-thumb {
+  background: darken($solarize-base2, 10%);
+  border: 2px solid $solarize-base3;
+  border-radius: 10px;
+}
+
+div.tabular::-webkit-scrollbar-corner {
+  background: transparent;
+  border: 2px solid $solarize-base3;
+}
 
 div.tabular table  {
   background: $content-table-background;

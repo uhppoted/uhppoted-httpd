@@ -23,7 +23,7 @@
       - [x] Rework auth.Local to use system.users
       - [x] Ignore blank uid (uninitialised user) i.e. not error but not usable
 
-- [ ] Make scrollbars look like BCMT/PWA
+- [x] Make scrollbars look like BCMT/PWA
 - [ ] Rework created/deleted/modified as Timestamp - DateTime is a controller value!!!!!!!
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys
