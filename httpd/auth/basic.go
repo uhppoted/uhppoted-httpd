@@ -14,11 +14,11 @@ const (
 )
 
 type Basic struct {
-	auth         auth.IAuth
+	auth         auth.IAuthenticate
 	cookieMaxAge int
 }
 
-func NewBasicAuthenticator(auth auth.IAuth, cookieMaxAge int) *Basic {
+func NewBasicAuthenticator(auth auth.IAuthenticate, cookieMaxAge int) *Basic {
 	a := Basic{
 		auth:         auth,
 		cookieMaxAge: cookieMaxAge,

@@ -8,8 +8,8 @@
 
 - [ ] 'users' page
       - [ ] Move resource checking to Basic
-      - [ ] Fix IAuth naming conflict
       - (?) 'default' page in template if e.g. not authorised for 'controllers'
+      - [x] Fix IAuth naming conflict
       - [x] Remove menu item if not authorised
       - [x] Page skeleton
       - [x] GET system/users

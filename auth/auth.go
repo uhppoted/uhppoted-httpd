@@ -26,7 +26,7 @@ func (r RuleSet) String() string {
 	return [...]string{"interfaces", "controllers", "doors", "cards", "groups", "events", "logs"}[r]
 }
 
-type IAuth interface {
+type IAuthenticate interface {
 	Preauthenticate() (string, error)
 	Authenticate(uid, pwd string) (string, error)
 	Validate(uid, pwd string) error
