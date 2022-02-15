@@ -10,7 +10,6 @@ import (
 	"log"
 	"os"
 	"regexp"
-	"strings"
 	"sync"
 	"time"
 
@@ -39,26 +38,15 @@ var constants = struct {
 }
 
 type Local struct {
-	private       private
+	keys          [][]byte
+	users         map[string]*user
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
-	file          string
 
 	logins   sessions
 	sessions sessions
-}
 
-type private struct {
-	keys      [][]byte
-	users     map[string]*user
-	resources []resource
-	guard     sync.Mutex
-
-	cached struct {
-		key       []byte
-		users     map[string]*user
-		resources []resource
-	}
+	guard sync.RWMutex
 }
 
 type sessions struct {
@@ -85,11 +73,6 @@ type user struct {
 	Role     string `json:"role"`
 }
 
-type resource struct {
-	Path       *regexp.Regexp `json:"path"`
-	Authorised *regexp.Regexp `json:"authorised"`
-}
-
 type session struct {
 	LoggedInAs string    `json:"uid,omitempty"`
 	SessionId  uuid.UUID `json:"session.id,omitempty"`
@@ -98,9 +81,8 @@ type session struct {
 
 func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
 	provider := Local{
-		private: private{
-			keys: make([][]byte, constants.KEYS),
-		},
+		keys:  make([][]byte, constants.KEYS),
+		users: map[string]*user{},
 
 		logins: sessions{
 			list: map[uuid.UUID]time.Time{},
@@ -112,7 +94,6 @@ func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, er
 
 		sessionExpiry: 60 * time.Minute,
 		loginExpiry:   1 * time.Minute,
-		file:          file,
 	}
 
 	if err := provider.load(file); err != nil {
@@ -134,10 +115,8 @@ func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, er
 	if key, err := genKey(); err != nil {
 		return nil, err
 	} else {
-		provider.private.keys[0] = key
+		provider.keys[0] = key
 	}
-
-	provider.watch(file)
 
 	regen := time.Tick(constants.REGENERATE)
 	sweep := time.Tick(constants.SWEEP)
@@ -161,7 +140,10 @@ func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, er
 }
 
 func (p *Local) Preauthenticate() (string, error) {
-	secret := p.private.Key()
+	p.guard.RLock()
+	defer p.guard.RUnlock()
+
+	secret := p.keys[0]
 	expiry := p.loginExpiry
 
 	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
@@ -207,7 +189,10 @@ func (p *Local) Preauthenticate() (string, error) {
 }
 
 func (p *Local) Authenticate(uid, pwd string) (string, error) {
-	secret := p.private.Key()
+	p.guard.RLock()
+	defer p.guard.RUnlock()
+
+	secret := p.keys[0]
 	expiry := p.sessionExpiry
 
 	var salt []byte
@@ -218,8 +203,7 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 		salt, password = u.Password()
 		role = u.Role()
 	} else {
-		users := p.private.Users()
-		if u, ok := users[uid]; !ok {
+		if u, ok := p.users[uid]; !ok {
 			return "", fmt.Errorf("Invalid login credentials")
 		} else {
 			salt = u.Salt
@@ -282,8 +266,7 @@ func (p *Local) Validate(uid, pwd string) error {
 	if u, ok := system.User(uid); ok && u != nil {
 		salt, password = u.Password()
 	} else {
-		users := p.private.Users()
-		if u, ok := users[uid]; !ok {
+		if u, ok := p.users[uid]; !ok {
 			return fmt.Errorf("invalid user ID or password")
 		} else {
 			salt = u.Salt
@@ -400,7 +383,9 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 		return claims.Session.LoggedInAs, claims.Session.Role, "", nil
 	}
 
-	secret := p.private.Key()
+	p.guard.RLock()
+	defer p.guard.RUnlock()
+	secret := p.keys[0]
 
 	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
 	if err != nil {
@@ -415,96 +400,32 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 	return claims.Session.LoggedInAs, claims.Session.Role, token2.String(), nil
 }
 
-func (p *Local) Authorised(uid, role, resource string) error {
-	resources := p.private.Resources()
-
-	for _, r := range resources {
-		if r.Path.Match([]byte(resource)) && r.Authorised.Match([]byte(role)) {
-			return nil
-		}
-	}
-
-	return fmt.Errorf("%v not authorized for %s", uid, resource)
-}
-
 func (p *Local) load(file string) error {
 	bytes, err := os.ReadFile(file)
 	if err != nil {
 		return err
 	}
 
-	return p.deserialize(bytes)
-}
-
-func (p *Local) deserialize(bytes []byte) error {
 	serializable := struct {
-		Users     map[string]*user `json:"users"`
-		Resources []resource       `json:"resources"`
+		Users map[string]*user `json:"users"`
 	}{
-		Users:     map[string]*user{},
-		Resources: []resource{},
+		Users: map[string]*user{},
 	}
 
 	if err := json.Unmarshal(bytes, &serializable); err != nil {
 		return err
 	}
 
-	p.private.guard.Lock()
-	defer p.private.guard.Unlock()
-
-	p.private.users = serializable.Users
-	p.private.resources = serializable.Resources
-	p.private.cached.users = nil
-	p.private.cached.resources = nil
+	p.users = serializable.Users
 
 	return nil
 }
 
-// NOTE: interim file watcher implementation pending fsnotify in Go v?.?
-//       (https://github.com/fsnotify/fsnotify requires workarounds for
-//        files updated atomically by renaming)
-func (p *Local) watch(filepath string) {
-	go func() {
-		finfo, err := os.Stat(filepath)
-		if err != nil {
-			log.Printf("ERROR Failed to get file information for '%s': %v", filepath, err)
-			return
-		}
-
-		lastModified := finfo.ModTime()
-		logged := false
-		for {
-			time.Sleep(2500 * time.Millisecond)
-			finfo, err := os.Stat(filepath)
-			if err != nil {
-				if !logged {
-					log.Printf("ERROR Failed to get file information for '%s': %v", filepath, err)
-					logged = true
-				}
-
-				continue
-			}
-
-			logged = false
-			if finfo.ModTime() != lastModified {
-				log.Printf("INFO  Reloading information from %s\n", filepath)
-
-				err := p.load(filepath)
-				if err != nil {
-					log.Printf("ERROR Failed to reload information from %s: %v", filepath, err)
-					continue
-				}
-
-				log.Printf("INFO  Updated auth DB from %s", filepath)
-				lastModified = finfo.ModTime()
-			}
-		}
-	}()
-}
-
 func (p *Local) getToken(cookie string) (*jwt.Token, int, error) {
-	secrets := p.private.Keys()
+	p.guard.RLock()
+	defer p.guard.RUnlock()
 
+	secrets := p.keys
 	for ix, secret := range secrets {
 		// NOTE: jwt.NewVerifier returns an error if the secret is nil so this is just a courtesy
 		//       thing to avoid a "jwt: key is nil" warning in the log when the HTTPD server has
@@ -535,13 +456,20 @@ func (p *Local) getToken(cookie string) (*jwt.Token, int, error) {
 }
 
 func (p *Local) regenerate() {
+	p.guard.Lock()
+	defer p.guard.Unlock()
+
 	key, err := genKey()
 	if err != nil {
 		log.Printf("%-5v Failed to regenerate session secret (%v)", "ERROR", err)
 		return
 	}
 
-	p.private.Push(key)
+	for i := 1; i < len(p.keys); i++ {
+		p.keys[i] = p.keys[i-1]
+	}
+
+	p.keys[0] = key
 
 	log.Printf("%-5v Regenerated session secret", "INFO")
 }
@@ -607,87 +535,6 @@ func genKey() ([]byte, error) {
 	return key, nil
 }
 
-func (p *private) Users() map[string]*user {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	if p.cached.users == nil {
-		p.cached.users = map[string]*user{}
-		for k, v := range p.users {
-			p.cached.users[k] = v
-		}
-	}
-
-	return p.cached.users
-}
-
-func (p *private) Resources() []resource {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	if p.cached.resources == nil {
-		p.cached.resources = []resource{}
-		for _, v := range p.resources {
-			p.cached.resources = append(p.cached.resources, v)
-		}
-	}
-
-	return p.cached.resources
-}
-
-func (p *private) Store(uid string, role string, salt []byte, hash string) {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	p.users[uid] = &user{
-		Salt:     salt,
-		Password: hash,
-		Role:     role,
-	}
-
-	p.cached.users = nil
-}
-
-func (p *private) Keys() [][]byte {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	keys := make([][]byte, len(p.keys))
-
-	for _, k := range p.keys {
-		key := make([]byte, constants.KEY_LENGTH)
-
-		copy(key, k)
-		keys = append(keys, key)
-	}
-
-	return keys
-}
-
-func (p *private) Push(key []byte) {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	for i := 1; i < len(p.keys); i++ {
-		p.keys[i] = p.keys[i-1]
-	}
-
-	p.keys[0] = key
-	p.cached.key = nil
-}
-
-func (p *private) Key() []byte {
-	p.guard.Lock()
-	defer p.guard.Unlock()
-
-	if p.cached.key == nil {
-		p.cached.key = make([]byte, constants.KEY_LENGTH)
-		copy(p.cached.key, p.keys[0])
-	}
-
-	return p.cached.key
-}
-
 func (ss *sessions) touched(uuid uuid.UUID) {
 	ss.guard.Lock()
 	defer ss.guard.Unlock()
@@ -731,41 +578,6 @@ func (s *salt) UnmarshalJSON(bytes []byte) error {
 	}
 
 	*s = b
-
-	return nil
-}
-
-func (r *resource) UnmarshalJSON(bytes []byte) error {
-	x := struct {
-		Path       string `json:"path"`
-		Authorised string `json:"authorised"`
-	}{}
-
-	err := json.Unmarshal(bytes, &x)
-	if err != nil {
-		return err
-	}
-
-	if !strings.HasPrefix(x.Path, "^") {
-		x.Path = "^" + x.Path
-	}
-
-	if !strings.HasSuffix(x.Path, "$") {
-		x.Path = x.Path + "$"
-	}
-
-	path, err := regexp.Compile(x.Path)
-	if err != nil {
-		return err
-	}
-
-	authorised, err := regexp.Compile(x.Authorised)
-	if err != nil {
-		return err
-	}
-
-	r.Path = path
-	r.Authorised = authorised
 
 	return nil
 }

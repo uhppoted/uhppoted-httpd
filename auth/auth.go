@@ -32,7 +32,6 @@ type IAuthenticate interface {
 	Validate(uid, pwd string) error
 	Verify(tokenType TokenType, token string) error
 	Authenticated(token string) (string, string, string, error)
-	Authorised(uid, role, resource string) error
 	Invalidate(tokenType TokenType, token string) error
 }
 

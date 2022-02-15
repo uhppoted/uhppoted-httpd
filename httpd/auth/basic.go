@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -39,6 +40,8 @@ func NewBasic(auth auth.IAuthenticate, file string, cookieMaxAge int) (*Basic, e
 	if err := a.load(file); err != nil {
 		return nil, err
 	}
+
+	a.watch(file)
 
 	return &a, nil
 }
@@ -159,6 +162,48 @@ func (b *Basic) load(file string) error {
 	b.guard.Unlock()
 
 	return nil
+}
+
+// NOTE: interim file watcher implementation pending fsnotify in Go v?.?
+//       (https://github.com/fsnotify/fsnotify requires workarounds for
+//        files updated atomically by renaming)
+func (b *Basic) watch(filepath string) {
+	go func() {
+		finfo, err := os.Stat(filepath)
+		if err != nil {
+			log.Printf("ERROR Failed to get file information for '%s': %v", filepath, err)
+			return
+		}
+
+		lastModified := finfo.ModTime()
+		logged := false
+		for {
+			time.Sleep(2500 * time.Millisecond)
+			finfo, err := os.Stat(filepath)
+			if err != nil {
+				if !logged {
+					log.Printf("ERROR Failed to get file information for '%s': %v", filepath, err)
+					logged = true
+				}
+
+				continue
+			}
+
+			logged = false
+			if finfo.ModTime() != lastModified {
+				log.Printf("INFO  Reloading information from %s\n", filepath)
+
+				err := b.load(filepath)
+				if err != nil {
+					log.Printf("ERROR Failed to reload information from %s: %v", filepath, err)
+					continue
+				}
+
+				log.Printf("INFO  Updated auth DB from %s", filepath)
+				lastModified = finfo.ModTime()
+			}
+		}
+	}()
 }
 
 func (r *resource) UnmarshalJSON(bytes []byte) error {
