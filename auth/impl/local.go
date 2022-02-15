@@ -96,8 +96,13 @@ func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, er
 		loginExpiry:   1 * time.Minute,
 	}
 
-	if err := provider.load(file); err != nil {
+	if f, err := os.Open(file); err != nil {
 		return nil, err
+	} else {
+		defer f.Close()
+		if err := provider.deserialize(f); err != nil {
+			return nil, err
+		}
 	}
 
 	if t, err := time.ParseDuration(loginExpiry); err != nil {
@@ -400,8 +405,8 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 	return claims.Session.LoggedInAs, claims.Session.Role, token2.String(), nil
 }
 
-func (p *Local) load(file string) error {
-	bytes, err := os.ReadFile(file)
+func (p *Local) deserialize(r io.Reader) error {
+	bytes, err := io.ReadAll(r)
 	if err != nil {
 		return err
 	}

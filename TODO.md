@@ -6,8 +6,8 @@
       - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
       - [ ] Cleanup the oh-so-duplicated catalog code
 
-- [ ] 'users' page
-      - [ ] Move resource checking to Basic
+- [x] 'users' page
+      - [x] Move resource checking to Basic
       - [x] Fix IAuth naming conflict
       - [x] Remove menu item if not authorised
       - [x] Page skeleton

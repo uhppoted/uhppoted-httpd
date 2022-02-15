@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -142,7 +143,18 @@ func (b *Basic) Authorised(uid, role, path string) error {
 }
 
 func (b *Basic) load(file string) error {
-	bytes, err := os.ReadFile(file)
+	f, err := os.Open(file)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	return b.deserialize(f)
+}
+
+func (b *Basic) deserialize(r io.Reader) error {
+	bytes, err := io.ReadAll(r)
 	if err != nil {
 		return err
 	}
