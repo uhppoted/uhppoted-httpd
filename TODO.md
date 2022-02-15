@@ -8,7 +8,6 @@
 
 - [ ] 'users' page
       - [ ] Move resource checking to Basic
-      - (?) 'default' page in template if e.g. not authorised for 'controllers'
       - [x] Fix IAuth naming conflict
       - [x] Remove menu item if not authorised
       - [x] Page skeleton
@@ -24,6 +23,7 @@
       - [x] Ignore blank uid (uninitialised user) i.e. not error but not usable
 
 - [x] Make scrollbars look like BCMT/PWA
+- [ ] Overview page 
 - [ ] Rework created/deleted/modified as Timestamp - DateTime is a controller value!!!!!!!
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys

@@ -1,8 +1,13 @@
 package auth
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"regexp"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
@@ -16,19 +21,29 @@ const (
 type Basic struct {
 	auth         auth.IAuthenticate
 	cookieMaxAge int
+	resources    []resource
+	guard        sync.RWMutex
 }
 
-func NewBasicAuthenticator(auth auth.IAuthenticate, cookieMaxAge int) *Basic {
+type resource struct {
+	Path       *regexp.Regexp `json:"path"`
+	Authorised *regexp.Regexp `json:"authorised"`
+}
+
+func NewBasic(auth auth.IAuthenticate, file string, cookieMaxAge int) (*Basic, error) {
 	a := Basic{
 		auth:         auth,
 		cookieMaxAge: cookieMaxAge,
 	}
 
-	return &a
+	if err := a.load(file); err != nil {
+		return nil, err
+	}
+
+	return &a, nil
 }
 
 func (b *Basic) Preauthenticate() (*http.Cookie, error) {
-
 	token, err := b.auth.Preauthenticate()
 	if err != nil {
 		return nil, err
@@ -47,8 +62,8 @@ func (b *Basic) Preauthenticate() (*http.Cookie, error) {
 	return &cookie, nil
 }
 
-// NOTE TO SELF: the uhppoted-httpd-login cookie is a single use expiring cookie
-//               intended to (eventually) support opaque login credentials
+// NTS: the uhppoted-httpd-login cookie is a single use expiring cookie
+//      intended to (eventually) support opaque login credentials
 func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie, error) {
 	if cookie == nil {
 		return nil, fmt.Errorf("Invalid login cookie")
@@ -100,10 +115,6 @@ func (b *Basic) Authenticated(cookie *http.Cookie) (string, string, *http.Cookie
 	return uid, role, nil, nil
 }
 
-func (b *Basic) Authorised(uid, role, path string) error {
-	return b.auth.Authorised(uid, role, path)
-}
-
 func (b *Basic) Verify(uid, pwd string) error {
 	return b.auth.Validate(uid, pwd)
 }
@@ -112,4 +123,75 @@ func (b *Basic) Logout(cookie *http.Cookie) {
 	if err := b.auth.Invalidate(auth.Session, cookie.Value); err != nil {
 		warn(err)
 	}
+}
+
+func (b *Basic) Authorised(uid, role, path string) error {
+	b.guard.RLock()
+	defer b.guard.RUnlock()
+
+	for _, r := range b.resources {
+		if r.Path.MatchString(path) && r.Authorised.MatchString(role) {
+			return nil
+		}
+	}
+
+	return fmt.Errorf("%v not authorized for %s", uid, path)
+}
+
+func (b *Basic) load(file string) error {
+	bytes, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	serializable := struct {
+		Resources []resource `json:"resources"`
+	}{
+		Resources: []resource{},
+	}
+
+	if err := json.Unmarshal(bytes, &serializable); err != nil {
+		return err
+	}
+
+	b.guard.Lock()
+	b.resources = serializable.Resources
+	b.guard.Unlock()
+
+	return nil
+}
+
+func (r *resource) UnmarshalJSON(bytes []byte) error {
+	x := struct {
+		Path       string `json:"path"`
+		Authorised string `json:"authorised"`
+	}{}
+
+	err := json.Unmarshal(bytes, &x)
+	if err != nil {
+		return err
+	}
+
+	if !strings.HasPrefix(x.Path, "^") {
+		x.Path = "^" + x.Path
+	}
+
+	if !strings.HasSuffix(x.Path, "$") {
+		x.Path = x.Path + "$"
+	}
+
+	path, err := regexp.Compile(x.Path)
+	if err != nil {
+		return err
+	}
+
+	authorised, err := regexp.Compile(x.Authorised)
+	if err != nil {
+		return err
+	}
+
+	r.Path = path
+	r.Authorised = authorised
+
+	return nil
 }

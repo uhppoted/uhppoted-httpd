@@ -67,13 +67,15 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		authentication = auth.NewNoneAuthenticator()
 
 	default:
-		// p, err := provider.NewAuthProvider(conf.HTTPD.Security.AuthDB, conf.HTTPD.Security.LoginExpiry, conf.HTTPD.Security.SessionExpiry)
 		p, err := local.NewAuthProvider(conf.HTTPD.Security.AuthDB, conf.HTTPD.Security.LoginExpiry, conf.HTTPD.Security.SessionExpiry)
 		if err != nil {
 			return err
 		}
 
-		authentication = auth.NewBasicAuthenticator(p, conf.HTTPD.Security.CookieMaxAge)
+		authentication, err = auth.NewBasic(p, conf.HTTPD.Security.AuthDB, conf.HTTPD.Security.CookieMaxAge)
+		if err != nil {
+			return err
+		}
 	}
 
 	audit.SetAuditFile(conf.HTTPD.Audit.File)
