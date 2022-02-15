@@ -12,7 +12,6 @@ import (
 	"sync"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/config"
 
@@ -21,6 +20,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Controllers struct {
@@ -230,7 +230,7 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 			cc.controllers = append(cc.controllers, &Controller{
 				oid:          oid,
 				deviceID:     d,
-				created:      core.DateTimeNow(),
+				created:      types.TimestampNow(),
 				unconfigured: true,
 			})
 		}
@@ -384,7 +384,7 @@ func (cc *Controllers) Validate() error {
 func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	record := c.clone()
 	record.oid = catalog.OID(catalog.NewController(c.deviceID))
-	record.created = core.DateTimeNow()
+	record.created = types.TimestampNow()
 
 	if a != nil {
 		if err := a.CanAdd(record, auth.Controllers); err != nil {

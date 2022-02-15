@@ -15,7 +15,7 @@ import (
 )
 
 func TestLANAsObjects(t *testing.T) {
-	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	bind, _ := core.ResolveBindAddr("192.168.1.101")
 	broadcast, _ := core.ResolveBroadcastAddr("192.168.1.102")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
@@ -34,7 +34,7 @@ func TestLANAsObjects(t *testing.T) {
 		{OID: "0.1.3", Value: ""},
 		{OID: "0.1.3.0.0", Value: types.StatusOk},
 		{OID: "0.1.3.0.1", Value: created},
-		{OID: "0.1.3.0.2", Value: core.DateTime{}},
+		{OID: "0.1.3.0.2", Value: types.Timestamp{}},
 		{OID: "0.1.3.0.4", Value: "LAN"},
 		{OID: "0.1.3.1", Value: "Le LAN"},
 		{OID: "0.1.3.3.1", Value: *bind},
@@ -50,8 +50,8 @@ func TestLANAsObjects(t *testing.T) {
 }
 
 func TestLANAsObjectsWithDeleted(t *testing.T) {
-	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	deleted := core.DateTimeNow()
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	deleted := types.TimestampNow()
 	bind, _ := core.ResolveBindAddr("192.168.1.101")
 	broadcast, _ := core.ResolveBroadcastAddr("192.168.1.102")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
@@ -79,7 +79,7 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 }
 
 func TestLANAsObjectsWithAuth(t *testing.T) {
-	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	bind, _ := core.ResolveBindAddr("192.168.1.101")
 	broadcast, _ := core.ResolveBroadcastAddr("192.168.1.102")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
@@ -98,7 +98,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 		catalog.Object{OID: "0.1.3", Value: ""},
 		catalog.Object{OID: "0.1.3.0.0", Value: types.StatusOk},
 		catalog.Object{OID: "0.1.3.0.1", Value: created},
-		catalog.Object{OID: "0.1.3.0.2", Value: core.DateTime{}},
+		catalog.Object{OID: "0.1.3.0.2", Value: types.Timestamp{}},
 		catalog.Object{OID: "0.1.3.0.4", Value: "LAN"},
 		catalog.Object{OID: "0.1.3.1", Value: "Le LAN"},
 		catalog.Object{OID: "0.1.3.3.1", Value: *bind},
@@ -154,7 +154,7 @@ func TestLANSetWithDeleted(t *testing.T) {
 		OID:  "0.1.3",
 		Name: "Le LAN",
 
-		deleted: core.DateTimeNow(),
+		deleted: types.TimestampNow(),
 	}
 
 	expected := []catalog.Object{

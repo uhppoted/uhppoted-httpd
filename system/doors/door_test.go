@@ -15,7 +15,7 @@ import (
 )
 
 func TestDoorAsObjects(t *testing.T) {
-	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	d := Door{
 		OID:     "0.3.3",
@@ -29,7 +29,7 @@ func TestDoorAsObjects(t *testing.T) {
 		{OID: "0.3.3", Value: ""},
 		{OID: "0.3.3.0.0", Value: types.StatusOk},
 		{OID: "0.3.3.0.1", Value: created},
-		{OID: "0.3.3.0.2", Value: core.DateTime{}},
+		{OID: "0.3.3.0.2", Value: types.Timestamp{}},
 		{OID: "0.3.3.1", Value: "Le Door"},
 		{OID: "0.3.3.2", Value: types.Uint8(0)},
 		{OID: "0.3.3.2.1", Value: types.StatusUnknown},
@@ -49,8 +49,8 @@ func TestDoorAsObjects(t *testing.T) {
 }
 
 func TestDoorAsObjectsWithDeleted(t *testing.T) {
-	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	deleted := core.DateTimeNow()
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	deleted := types.TimestampNow()
 
 	d := Door{
 		OID:     "0.3.3",
@@ -73,7 +73,7 @@ func TestDoorAsObjectsWithDeleted(t *testing.T) {
 }
 
 func TestDoorAsObjectsWithAuth(t *testing.T) {
-	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	d := Door{
 		OID:     "0.3.3",
@@ -87,7 +87,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.3.3", Value: ""},
 		{OID: "0.3.3.0.0", Value: types.StatusOk},
 		{OID: "0.3.3.0.1", Value: created},
-		{OID: "0.3.3.0.2", Value: core.DateTime{}},
+		{OID: "0.3.3.0.2", Value: types.Timestamp{}},
 		{OID: "0.3.3.1", Value: "Le Door"},
 		// {OID: "0.3.3.2", Value: types.Uint8(0)},
 		// {OID: "0.3.3.2.1", Value: types.StatusUnknown},
@@ -151,7 +151,7 @@ func TestDoorSetWithDeleted(t *testing.T) {
 		delay: 7,
 		mode:  core.NormallyOpen,
 
-		deleted: core.DateTimeNow(),
+		deleted: types.TimestampNow(),
 	}
 
 	expected := []catalog.Object{

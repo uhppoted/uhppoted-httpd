@@ -25,8 +25,8 @@ type Card struct {
 	To     core.Date
 	Groups map[catalog.OID]bool
 
-	created core.DateTime
-	deleted core.DateTime
+	created types.Timestamp
+	deleted types.Timestamp
 }
 
 type kv = struct {
@@ -36,7 +36,7 @@ type kv = struct {
 
 const BLANK = "'blank'"
 
-var created = core.DateTimeNow()
+var created = types.TimestampNow()
 
 func (c Card) String() string {
 	name := strings.TrimSpace(c.Name)
@@ -352,7 +352,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 				dbc)
 		}
 
-		c.deleted = core.DateTimeNow()
+		c.deleted = types.TimestampNow()
 		list = append(list, kv{CardDeleted, c.deleted})
 
 		catalog.Delete(c.OID)
@@ -400,13 +400,13 @@ func (c *Card) status() types.Status {
 
 func (c Card) serialize() ([]byte, error) {
 	record := struct {
-		OID     catalog.OID   `json:"OID"`
-		Name    string        `json:"name,omitempty"`
-		Card    uint32        `json:"card,omitempty"`
-		From    core.Date     `json:"from,omitempty"`
-		To      core.Date     `json:"to,omitempty"`
-		Groups  []catalog.OID `json:"groups"`
-		Created core.DateTime `json:"created"`
+		OID     catalog.OID     `json:"OID"`
+		Name    string          `json:"name,omitempty"`
+		Card    uint32          `json:"card,omitempty"`
+		From    core.Date       `json:"from,omitempty"`
+		To      core.Date       `json:"to,omitempty"`
+		Groups  []catalog.OID   `json:"groups"`
+		Created types.Timestamp `json:"created"`
 	}{
 		OID:     c.OID,
 		Name:    strings.TrimSpace(c.Name),
@@ -435,13 +435,13 @@ func (c *Card) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     catalog.OID   `json:"OID"`
-		Name    string        `json:"name,omitempty"`
-		Card    uint32        `json:"card,omitempty"`
-		From    core.Date     `json:"from,omitempty"`
-		To      core.Date     `json:"to,omitempty"`
-		Groups  []catalog.OID `json:"groups"`
-		Created core.DateTime `json:"created"`
+		OID     catalog.OID     `json:"OID"`
+		Name    string          `json:"name,omitempty"`
+		Card    uint32          `json:"card,omitempty"`
+		From    core.Date       `json:"from,omitempty"`
+		To      core.Date       `json:"to,omitempty"`
+		Groups  []catalog.OID   `json:"groups"`
+		Created types.Timestamp `json:"created"`
 	}{
 		Groups:  []catalog.OID{},
 		Created: created,

@@ -16,7 +16,7 @@ import (
 )
 
 func TestCardAsObjects(t *testing.T) {
-	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	card := types.Card(8165537)
 	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
@@ -34,7 +34,7 @@ func TestCardAsObjects(t *testing.T) {
 		{OID: "0.4.3", Value: ""},
 		{OID: "0.4.3.0.0", Value: types.StatusOk},
 		{OID: "0.4.3.0.1", Value: created},
-		{OID: "0.4.3.0.2", Value: core.DateTime{}},
+		{OID: "0.4.3.0.2", Value: types.Timestamp{}},
 		{OID: "0.4.3.1", Value: "Le Card"},
 		{OID: "0.4.3.2", Value: &card},
 		{OID: "0.4.3.3", Value: from},
@@ -49,8 +49,8 @@ func TestCardAsObjects(t *testing.T) {
 }
 
 func TestCardAsObjectsWithDeleted(t *testing.T) {
-	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	deleted := core.DateTimeNow()
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	deleted := types.TimestampNow()
 	card := types.Card(8165537)
 	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
@@ -77,7 +77,7 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 }
 
 func TestCardAsObjectsWithAuth(t *testing.T) {
-	created = core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	card := types.Card(8165537)
 	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
@@ -95,7 +95,7 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.4.3", Value: ""},
 		{OID: "0.4.3.0.0", Value: types.StatusOk},
 		{OID: "0.4.3.0.1", Value: created},
-		{OID: "0.4.3.0.2", Value: core.DateTime{}},
+		{OID: "0.4.3.0.2", Value: types.Timestamp{}},
 		{OID: "0.4.3.1", Value: "Le Card"},
 		// {OID: "0.4.3.2", Value: &card},
 		{OID: "0.4.3.3", Value: from},
@@ -150,7 +150,7 @@ func TestCardSetWithDeleted(t *testing.T) {
 		OID:  "0.4.3",
 		Name: "Le Carte",
 
-		deleted: core.DateTimeNow(),
+		deleted: types.TimestampNow(),
 	}
 
 	expected := []catalog.Object{

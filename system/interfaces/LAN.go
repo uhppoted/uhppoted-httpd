@@ -33,8 +33,8 @@ type LAN struct {
 	Debug            bool
 
 	ch           chan types.EventsList
-	created      core.DateTime
-	deleted      core.DateTime
+	created      types.Timestamp
+	deleted      types.Timestamp
 	unconfigured bool
 }
 
@@ -52,7 +52,7 @@ type kv = struct {
 	value interface{}
 }
 
-var created = core.DateTimeNow()
+var created = types.TimestampNow()
 
 func (l LAN) String() string {
 	return fmt.Sprintf("%v", l.Name)
@@ -573,7 +573,7 @@ func (l LAN) serialize() ([]byte, error) {
 		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
 		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
-		Created          core.DateTime      `json:"created,omitempty"`
+		Created          types.Timestamp    `json:"created,omitempty"`
 	}{
 		OID:              l.OID,
 		Name:             l.Name,
@@ -595,7 +595,7 @@ func (l *LAN) deserialize(bytes []byte) error {
 		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
 		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
-		Created          core.DateTime      `json:"created,omitempty"`
+		Created          types.Timestamp    `json:"created,omitempty"`
 	}{
 		Created: created,
 	}

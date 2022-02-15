@@ -10,8 +10,6 @@ import (
 	"strings"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
-
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -27,9 +25,9 @@ type User struct {
 	salt     []byte
 	password string
 
-	created  core.DateTime
-	deleted  core.DateTime
-	modified core.DateTime
+	created  types.Timestamp
+	deleted  types.Timestamp
+	modified types.Timestamp
 }
 
 type kv = struct {
@@ -39,7 +37,7 @@ type kv = struct {
 
 const BLANK = "'blank'"
 
-var created = core.DateTimeNow()
+var created = types.TimestampNow()
 
 func (u User) IsValid() bool {
 	if strings.TrimSpace(u.name) != "" || strings.TrimSpace(u.uid) != "" {
@@ -136,7 +134,7 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			return nil, err
 		} else {
 			u.name = strings.TrimSpace(value)
-			u.modified = core.DateTimeNow()
+			u.modified = types.TimestampNow()
 			list = append(list, kv{UserName, stringify(u.name, "")})
 
 			u.log(a,
@@ -154,7 +152,7 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			return nil, err
 		} else {
 			u.uid = strings.TrimSpace(value)
-			u.modified = core.DateTimeNow()
+			u.modified = types.TimestampNow()
 			list = append(list, kv{UserUID, stringify(u.uid, "")})
 
 			u.log(a,
@@ -172,7 +170,7 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			return nil, err
 		} else {
 			u.role = strings.TrimSpace(value)
-			u.modified = core.DateTimeNow()
+			u.modified = types.TimestampNow()
 			list = append(list, kv{UserRole, stringify(u.role, "")})
 
 			u.log(a,
@@ -200,7 +198,7 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 
 			u.salt = salt
 			u.password = fmt.Sprintf("%0x", h.Sum(nil))
-			u.modified = core.DateTimeNow()
+			u.modified = types.TimestampNow()
 
 			list = append(list, kv{UserPassword, ""})
 
@@ -223,8 +221,8 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			u.log(a, "delete", u.OID, "user", "Deleted user", "", "", dbc)
 		}
 
-		u.deleted = core.DateTimeNow()
-		u.modified = core.DateTimeNow()
+		u.deleted = types.TimestampNow()
+		u.modified = types.TimestampNow()
 		list = append(list, kv{UserDeleted, u.deleted})
 
 		catalog.Delete(u.OID)
@@ -272,14 +270,14 @@ func (u User) status() types.Status {
 
 func (u User) serialize() ([]byte, error) {
 	record := struct {
-		OID      catalog.OID   `json:"OID"`
-		Name     string        `json:"name,omitempty"`
-		UID      string        `json:"uid,omitempty"`
-		Role     string        `json:"role,omitempty"`
-		Salt     string        `json:"salt"`
-		Password string        `json:"password"`
-		Created  core.DateTime `json:"created"`
-		Modified core.DateTime `json:"modified"`
+		OID      catalog.OID     `json:"OID"`
+		Name     string          `json:"name,omitempty"`
+		UID      string          `json:"uid,omitempty"`
+		Role     string          `json:"role,omitempty"`
+		Salt     string          `json:"salt"`
+		Password string          `json:"password"`
+		Created  types.Timestamp `json:"created"`
+		Modified types.Timestamp `json:"modified"`
 	}{
 		OID:      u.OID,
 		Name:     strings.TrimSpace(u.name),
@@ -298,17 +296,17 @@ func (u *User) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID      catalog.OID   `json:"OID"`
-		Name     string        `json:"name,omitempty"`
-		UID      string        `json:"uid,omitempty"`
-		Role     string        `json:"role,omitempty"`
-		Salt     string        `json:"salt"`
-		Password string        `json:"password"`
-		Created  core.DateTime `json:"created"`
-		Modified core.DateTime `json:"modified"`
+		OID      catalog.OID     `json:"OID"`
+		Name     string          `json:"name,omitempty"`
+		UID      string          `json:"uid,omitempty"`
+		Role     string          `json:"role,omitempty"`
+		Salt     string          `json:"salt"`
+		Password string          `json:"password"`
+		Created  types.Timestamp `json:"created"`
+		Modified types.Timestamp `json:"modified"`
 	}{
 		Created:  created,
-		Modified: core.DateTimeNow(),
+		Modified: types.TimestampNow(),
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {

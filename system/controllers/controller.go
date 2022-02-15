@@ -28,8 +28,8 @@ type Controller struct {
 	Doors    map[uint8]catalog.OID
 	timezone string
 
-	created      core.DateTime
-	deleted      core.DateTime
+	created      types.Timestamp
+	deleted      types.Timestamp
 	unconfigured bool
 }
 
@@ -55,7 +55,7 @@ type cached struct {
 	acl types.Status
 }
 
-var created = core.DateTimeNow()
+var created = types.TimestampNow()
 
 func (c *Controller) IsValid() bool {
 	if c != nil && (c.name != "" || c.deviceID != 0) {
@@ -544,7 +544,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller"), "", "", dbc)
 		}
 
-		c.deleted = core.DateTimeNow()
+		c.deleted = types.TimestampNow()
 		list = append(list, kv{ControllerDeleted, c.deleted})
 
 		catalog.Delete(OID)
@@ -614,7 +614,7 @@ func (c *Controller) refreshed() {
 		log.Printf("Controller %v cached values expired", c)
 
 		if c.unconfigured {
-			c.deleted = core.DateTimeNow()
+			c.deleted = types.TimestampNow()
 			catalog.Delete(c.OID())
 			log.Printf("'unconfigured' controller %v removed", c)
 		}
@@ -633,7 +633,7 @@ func (c Controller) serialize() ([]byte, error) {
 		Address  *core.Address         `json:"address,omitempty"`
 		Doors    map[uint8]catalog.OID `json:"doors"`
 		TimeZone string                `json:"timezone,omitempty"`
-		Created  core.DateTime         `json:"created"`
+		Created  types.Timestamp       `json:"created"`
 	}{
 		OID:      c.OID(),
 		Name:     c.name,
@@ -661,7 +661,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 		Address  *core.Address    `json:"address,omitempty"`
 		Doors    map[uint8]string `json:"doors"`
 		TimeZone string           `json:"timezone,omitempty"`
-		Created  core.DateTime    `json:"created,omitempty"`
+		Created  types.Timestamp  `json:"created,omitempty"`
 	}{
 		Created: created,
 	}

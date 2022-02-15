@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
-
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -21,8 +19,8 @@ type Group struct {
 	Name  string               `json:"name"`
 	Doors map[catalog.OID]bool `json:"doors"`
 
-	created core.DateTime
-	deleted core.DateTime
+	created types.Timestamp
+	deleted types.Timestamp
 }
 
 type kv = struct {
@@ -32,7 +30,7 @@ type kv = struct {
 
 const BLANK = "'blank'"
 
-var created = core.DateTimeNow()
+var created = types.TimestampNow()
 
 func (g Group) String() string {
 	return fmt.Sprintf("%v", g.Name)
@@ -174,7 +172,7 @@ func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([
 		}
 
 		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
-		g.deleted = core.DateTimeNow()
+		g.deleted = types.TimestampNow()
 		list = append(list, kv{GroupDeleted, g.deleted})
 
 		catalog.Delete(g.OID)
@@ -214,10 +212,10 @@ func (g *Group) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 
 func (g Group) serialize() ([]byte, error) {
 	record := struct {
-		OID     catalog.OID   `json:"OID"`
-		Name    string        `json:"name,omitempty"`
-		Doors   []catalog.OID `json:"doors"`
-		Created core.DateTime `json:"created"`
+		OID     catalog.OID     `json:"OID"`
+		Name    string          `json:"name,omitempty"`
+		Doors   []catalog.OID   `json:"doors"`
+		Created types.Timestamp `json:"created"`
 	}{
 		OID:     g.OID,
 		Name:    g.Name,
@@ -240,10 +238,10 @@ func (g *Group) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     string        `json:"OID"`
-		Name    string        `json:"name,omitempty"`
-		Doors   []catalog.OID `json:"doors"`
-		Created core.DateTime `json:"created,omitempty"`
+		OID     string          `json:"OID"`
+		Name    string          `json:"name,omitempty"`
+		Doors   []catalog.OID   `json:"doors"`
+		Created types.Timestamp `json:"created,omitempty"`
 	}{
 		Created: created,
 	}

@@ -5,8 +5,6 @@ import (
 	"reflect"
 	"testing"
 
-	core "github.com/uhppoted/uhppote-core/types"
-
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -43,7 +41,7 @@ func TestCardAdd(t *testing.T) {
 
 	expected := []catalog.Object{
 		catalog.Object{OID: "0.4.2", Value: "new"},
-		catalog.Object{OID: "0.4.2.0.1", Value: core.DateTimeNow()},
+		catalog.Object{OID: "0.4.2.0.1", Value: types.TimestampNow()},
 	}
 
 	cards := makeCards(hagrid)
@@ -95,7 +93,7 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 	}{
 		returned: []catalog.Object{
 			catalog.Object{OID: "0.4.2", Value: "new"},
-			catalog.Object{OID: "0.4.2.0.1", Value: core.DateTimeNow()},
+			catalog.Object{OID: "0.4.2.0.1", Value: types.TimestampNow()},
 		},
 
 		logs: []audit.AuditRecord{

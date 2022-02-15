@@ -22,9 +22,8 @@
       - [x] Rework auth.Local to use system.users
       - [x] Ignore blank uid (uninitialised user) i.e. not error but not usable
 
-- [x] Make scrollbars look like BCMT/PWA
+- [x] Rework created/deleted/modified as Timestamp (DateTime is a controller type)
 - [ ] Overview page 
-- [ ] Rework created/deleted/modified as Timestamp - DateTime is a controller value!!!!!!!
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError

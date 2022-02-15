@@ -22,8 +22,8 @@ type Door struct {
 
 	delay   uint8
 	mode    core.ControlState
-	created core.DateTime
-	deleted core.DateTime
+	created types.Timestamp
+	deleted types.Timestamp
 }
 
 type kv = struct {
@@ -33,7 +33,7 @@ type kv = struct {
 
 const BLANK = "'blank'"
 
-var created = core.DateTimeNow()
+var created = types.TimestampNow()
 
 func (d *Door) IsValid() bool {
 	if d != nil {
@@ -236,7 +236,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 		}
 
 		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
-		d.deleted = core.DateTimeNow()
+		d.deleted = types.TimestampNow()
 
 		list = append(list, kv{DoorDeleted, d.deleted})
 		catalog.Delete(d.OID)
@@ -288,7 +288,7 @@ func (d Door) serialize() ([]byte, error) {
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
-		Created core.DateTime     `json:"created"`
+		Created types.Timestamp   `json:"created"`
 	}{
 		OID:     d.OID,
 		Name:    d.Name,
@@ -308,7 +308,7 @@ func (d *Door) deserialize(bytes []byte) error {
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
-		Created core.DateTime     `json:"created,omitempty"`
+		Created types.Timestamp   `json:"created,omitempty"`
 	}{
 		Delay:   5,
 		Mode:    core.Controlled,

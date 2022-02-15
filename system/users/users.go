@@ -8,8 +8,6 @@ import (
 	"sync"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
-
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -210,8 +208,8 @@ func (uu Users) add(a auth.OpAuth, u User) (*User, error) {
 
 	user := u.clone()
 	user.OID = oid
-	user.created = core.DateTimeNow()
-	u.modified = core.DateTimeNow()
+	user.created = types.TimestampNow()
+	u.modified = types.TimestampNow()
 
 	if a != nil {
 		if err := a.CanAdd(user, auth.Users); err != nil {
