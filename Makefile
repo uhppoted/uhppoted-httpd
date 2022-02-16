@@ -41,12 +41,12 @@ format:
 build: format
 	mkdir -p bin
 	go build -trimpath -o bin ./...
-	mkdir -p html/images/default
-	sass --no-source-map html/sass/themes/light:html/css/default
-	sass --no-source-map html/sass/themes/light:html/css/light
-	sass --no-source-map html/sass/themes/dark:html/css/dark
-	cp html/images/light/* html/images/default
-	npx eslint --fix html/javascript/*.js
+	mkdir -p httpd/html/images/default
+	sass --no-source-map sass/themes/light:httpd/html/css/default
+	sass --no-source-map sass/themes/light:httpd/html/css/light
+	sass --no-source-map sass/themes/dark:httpd/html/css/dark
+	cp httpd/html/images/light/* httpd/html/images/default
+	npx eslint --fix httpd/html/javascript/*.js
 
 test: build
 	go test ./...
@@ -56,7 +56,7 @@ vet: test
 
 lint: vet
 	golint ./...
-	npx eslint html/javascript/*.js
+	npx eslint httpd/html/javascript/*.js
 
 benchmark: build
 	go test -bench ./...
@@ -84,10 +84,12 @@ debug: format
 	go test -v -run Test ./auth/...
 	# dlv test github.com/uhppoted/uhppoted-httpd/system/catalog
 
-# NOTE: sass --watch doesn't seem to consistently pick up changes in themed partials
+# NTS: 1. sass --watch doesn't seem to consistently pick up changes in themed partials
+#      2. For development only - doesn't build the default CSS because the duplication 
+#         of light and default creates a naming conflict if run in the same command
+#         i.e. find sass -name "*.scss" | entr sass --no-source-map sass/stylesheets:html/css/default sass/themes/light:html/css/light sass/themes/dark:html/css/dark
 sass:
-	find html/sass -name "*.scss" | entr sass --no-source-map html/sass/themes/light:html/css/light html/sass/themes/dark:html/css/dark
-	# find html/sass -name "*.scss" | entr sass --no-source-map html/sass/stylesheets:html/css/default html/sass/themes/light:html/css/light html/sass/themes/dark:html/css/dark
+	find sass -name "*.scss" | entr sass --no-source-map sass/themes/light:httpd/html/css/light sass/themes/dark:httpd/html/css/dark
 
 version: build
 	$(CMD) version
@@ -98,15 +100,14 @@ help: build
 	$(CMD) help version
 	$(CMD) help help
 
+run: build
+	$(CMD) --debug --console
+
 daemonize: build
 	sudo $(CMD) daemonize
 
 undaemonize: build
 	sudo $(CMD) undaemonize
-
-run: build
-	# $(CMD) --debug --console > ../runtime/debug.log
-	$(CMD) --debug --console
 
 delve: build
 	dlv exec ./bin/uhppoted-httpd -- --debug --console

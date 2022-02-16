@@ -14,6 +14,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/uhppoted/uhppoted-httpd/httpd/html"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
@@ -209,9 +210,13 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 	}
 
 	// Ref. https://stackoverflow.com/questions/49043292/error-template-is-an-incomplete-or-empty-template
-	snippets := "html/templates/snippets.html"
+	// snippets := "httpd/html/templates/snippets.html"
+	// name := filepath.Base(filename)
+	// t, err := template.New(name).Funcs(functions).ParseFiles(snippets, filename)
+
+	snippets := "templates/snippets.html"
 	name := filepath.Base(filename)
-	t, err := template.New(name).Funcs(functions).ParseFiles(snippets, filename)
+	t, err := template.New(name).Funcs(functions).ParseFS(html.HTML, snippets, filename)
 	if err != nil {
 		warn(fmt.Errorf("Error parsing template '%s' (%w)", filename, err))
 		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)

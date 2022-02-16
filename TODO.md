@@ -6,23 +6,17 @@
       - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
       - [ ] Cleanup the oh-so-duplicated catalog code
 
-- [x] 'users' page
-      - [x] Move resource checking to Basic
-      - [x] Fix IAuth naming conflict
-      - [x] Remove menu item if not authorised
-      - [x] Page skeleton
-      - [x] GET system/users
-      - [x] Implement editing
-      - [x] _add_
-      - [x] _delete_
-      - [x] password
-      - [x] Rework SetPassword to update system/users
-      - [x] Move auth to sys
-      - [x] Verify that admin password can be set to 'menu only' using rules
-      - [x] Rework auth.Local to use system.users
-      - [x] Ignore blank uid (uninitialised user) i.e. not error but not usable
+- [ ] daemonize
+      - [ ] Embed HTML
+            - [x] Move SASS out of HTML
+            - [ ] Embed HTML in httpd
+            - [ ] (optionally) copy embedded HTML to folder and set config 
+      - [ ] `config`
+      - [ ] Set initial 'admin' user + generated password
+      - [ ] Bootstrap from scratch
 
-- [x] Rework created/deleted/modified as Timestamp (DateTime is a controller type)
+- [ ] undaemonize
+
 - [ ] Overview page 
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys
@@ -33,8 +27,6 @@
 
 ### IN PROGRESS
 
-- [ ] daemonize/undaemonize
-      - [ ] set initial 'admin' user + generated password
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 

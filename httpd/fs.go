@@ -10,7 +10,7 @@ type filesystem struct {
 	http.FileSystem
 }
 
-func (fs filesystem) Open(name string) (http.File, error) {
+func (fss filesystem) Open(name string) (http.File, error) {
 	parts := strings.Split(name, "/")
 	for _, part := range parts {
 		if strings.HasPrefix(part, ".") {
@@ -18,7 +18,7 @@ func (fs filesystem) Open(name string) (http.File, error) {
 		}
 	}
 
-	f, err := fs.FileSystem.Open(name)
+	f, err := fss.FileSystem.Open(name)
 	if err != nil {
 		return nil, err
 	}

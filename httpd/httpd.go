@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/httpd/html"
 )
 
 type HTTPD struct {
@@ -46,14 +47,18 @@ func (h *HTTPD) Run() {
 	defer cancel()
 
 	d := dispatcher{
-		root:    h.Dir,
+		root:    "", // h.Dir,
 		auth:    h.AuthProvider,
 		context: ctx,
 		timeout: h.RequestTimeout,
 	}
 
+	//	fs := filesystem{
+	//		http.FS(os.DirFS(h.Dir)),
+	//	}
+
 	fs := filesystem{
-		http.FS(os.DirFS(h.Dir)),
+		FileSystem: http.FS(html.STATIC),
 	}
 
 	// ... setup routing
