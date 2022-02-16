@@ -9,8 +9,10 @@
 - [ ] daemonize
       - [ ] Embed HTML
             - [x] Move SASS out of HTML
-            - [ ] Embed HTML in httpd
+            - [x] Embed HTML in httpd
+            - [ ] Use config.html if specified
             - [ ] (optionally) copy embedded HTML to folder and set config 
+            - [ ] Include HTML 'starter kit' on release
       - [ ] `config`
       - [ ] Set initial 'admin' user + generated password
       - [ ] Bootstrap from scratch
