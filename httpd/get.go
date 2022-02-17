@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -208,7 +207,6 @@ func (d *dispatcher) translate(path string, context map[string]interface{}, auth
 	}
 
 	// Ref. https://stackoverflow.com/questions/49043292/error-template-is-an-incomplete-or-empty-template
-	var fs fs.FS = d.fs
 	var name = filepath.Base(path)
 	var filename = path
 
@@ -216,7 +214,7 @@ func (d *dispatcher) translate(path string, context map[string]interface{}, auth
 		filename = filename[1:]
 	}
 
-	t, err := template.New(name).Funcs(functions).ParseFS(fs, "templates/snippets.html", filename)
+	t, err := template.New(name).Funcs(functions).ParseFS(d.fs, "templates/snippets.html", filename)
 	if err != nil {
 		warn(fmt.Errorf("Error parsing template '%s' (%w)", path, err))
 		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)

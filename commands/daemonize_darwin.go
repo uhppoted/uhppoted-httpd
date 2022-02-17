@@ -4,12 +4,15 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
 
+	"github.com/uhppoted/uhppoted-httpd/httpd/html"
 	//	"github.com/uhppoted/uhppoted-lib/config"
 	xpath "github.com/uhppoted/uhppoted-lib/encoding/plist"
 )
@@ -18,6 +21,7 @@ type info struct {
 	Label      string
 	Executable string
 	WorkDir    string
+	HTML       string
 	StdLogFile string
 	ErrLogFile string
 }
@@ -42,6 +46,7 @@ var DAEMONIZE = Daemonize{
 	workdir: "/usr/local/var/com.github.uhppoted/httpd",
 	logdir:  "/usr/local/var/com.github.uhppoted/logs",
 	config:  "/usr/local/etc/com.github.uhppoted/uhppoted.conf",
+	html:    "/usr/local/etc/com.github.uhppoted/httpd/html",
 }
 
 type Daemonize struct {
@@ -49,6 +54,7 @@ type Daemonize struct {
 	workdir string
 	logdir  string
 	config  string
+	html    string
 }
 
 func (cmd *Daemonize) Name() string {
@@ -110,6 +116,7 @@ func (cmd *Daemonize) execute() error {
 		Label:      fmt.Sprintf("com.github.uhppoted.%s", SERVICE),
 		Executable: executable,
 		WorkDir:    cmd.workdir,
+		HTML:       cmd.html,
 		StdLogFile: filepath.Join(cmd.logdir, fmt.Sprintf("%s.log", SERVICE)),
 		ErrLogFile: filepath.Join(cmd.logdir, fmt.Sprintf("%s.err", SERVICE)),
 	}
@@ -131,6 +138,10 @@ func (cmd *Daemonize) execute() error {
 	}
 
 	if err := cmd.conf(&i); err != nil {
+		return err
+	}
+
+	if err := cmd.unpack(&i); err != nil {
 		return err
 	}
 
@@ -342,6 +353,79 @@ func (cmd *Daemonize) firewall(i *info) error {
 
 		fmt.Println()
 	}
+
+	return nil
+}
+
+func (cmd *Daemonize) unpack(i *info) error {
+	root := i.HTML
+	r := bufio.NewReader(os.Stdin)
+
+	fmt.Println()
+	fmt.Printf("     Do you want to unpack the HTML files into %v (yes/no)? ", i.HTML)
+
+	text, err := r.ReadString('\n')
+	if err != nil || strings.TrimSpace(text) != "yes" {
+		fmt.Println()
+		return nil
+	}
+
+	fmt.Println()
+
+	mkdir := func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		} else if d.IsDir() {
+			folder := filepath.Join(root, path)
+
+			fmt.Printf("     ... creating folder '%v'\n", folder)
+			if err := os.MkdirAll(folder, 0744); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}
+
+	if err := fs.WalkDir(html.HTML, ".", mkdir); err != nil {
+		return err
+	}
+
+	cp := func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		} else if d.IsDir() {
+			return nil
+		}
+
+		src, err := html.HTML.Open(path)
+		if err != nil {
+			return err
+		}
+
+		defer src.Close()
+
+		dest, err := os.Create(filepath.Join(root, path))
+		if err != nil {
+			return err
+		}
+
+		defer dest.Close()
+
+		if _, err := io.Copy(dest, src); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	fmt.Println()
+	fmt.Printf("     ... copying files to %v\n", i.HTML)
+	if err := fs.WalkDir(html.HTML, ".", cp); err != nil {
+		return err
+	}
+
+	fmt.Println()
 
 	return nil
 }

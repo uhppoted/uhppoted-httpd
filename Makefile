@@ -79,9 +79,10 @@ release: update-release build-all
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 	cd dist; zip --recurse-paths $(DIST).zip $(DIST)
 
-debug: format
-	go build -trimpath -o bin ./...
-	go test -v -run Test ./auth/...
+debug: build
+	$(CMD) daemonize
+	# go build -trimpath -o bin ./...
+	# go test -v -run Test ./auth/...
 	# dlv test github.com/uhppoted/uhppoted-httpd/system/catalog
 
 # NTS: 1. sass --watch doesn't seem to consistently pick up changes in themed partials

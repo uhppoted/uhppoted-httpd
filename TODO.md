@@ -11,8 +11,11 @@
             - [x] Move SASS out of HTML
             - [x] Embed HTML in httpd
             - [x] Use config html if specified
-            - [ ] (optionally) copy embedded HTML to folder and set config 
-            - [ ] Unpack HTML 'starter kit' on release
+            - [x] Optionally copy embedded HTML to folder
+            - [ ] Login/password page buttons are weird
+                  (translations maybe ?)
+            - [ ] Update config for copied HTML
+            - [ ] Package HTML 'starter kit' on release
       - [ ] `config`
       - [ ] Set initial 'admin' user + generated password
       - [ ] Bootstrap from scratch

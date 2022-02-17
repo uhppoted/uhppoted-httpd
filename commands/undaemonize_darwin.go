@@ -16,6 +16,7 @@ var UNDAEMONIZE = Undaemonize{
 	plist:   fmt.Sprintf("com.github.uhppoted.%s.plist", SERVICE),
 	workdir: "/usr/local/var/com.github.uhppoted",
 	logdir:  "/usr/local/var/com.github.uhppoted/logs",
+	HTML:    "/usr/local/etc/com.github.uhppoted/httpd/html",
 	config:  "/usr/local/etc/com.github.uhppoted/uhppoted.conf",
 }
 
@@ -23,6 +24,7 @@ type Undaemonize struct {
 	plist   string
 	workdir string
 	logdir  string
+	HTML    string
 	config  string
 }
 
@@ -76,9 +78,10 @@ func (cmd *Undaemonize) Execute(args ...interface{}) error {
 	fmt.Printf(`
 	   NOTE: Configuration files in %s,
 	               working files in %s,
-	               and log files in %s
+	               log files in %s,
+	               and HTML files in %s
 	               were not removed and should be deleted manually
-	`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir)
+	`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir, cmd.HTML)
 	fmt.Println()
 
 	return nil
