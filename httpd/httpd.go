@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -19,7 +20,7 @@ import (
 )
 
 type HTTPD struct {
-	Dir                      string
+	HTML                     string
 	AuthProvider             auth.IAuth
 	HTTPEnabled              bool
 	HTTPSEnabled             bool
@@ -31,7 +32,7 @@ type HTTPD struct {
 }
 
 type dispatcher struct {
-	root    string
+	fs      fs.FS
 	auth    auth.IAuth
 	context context.Context
 	timeout time.Duration
@@ -47,18 +48,18 @@ func (h *HTTPD) Run() {
 	defer cancel()
 
 	d := dispatcher{
-		root:    "", // h.Dir,
+		fs:      html.HTML,
 		auth:    h.AuthProvider,
 		context: ctx,
 		timeout: h.RequestTimeout,
 	}
 
-	//	fs := filesystem{
-	//		http.FS(os.DirFS(h.Dir)),
-	//	}
+	if h.HTML != "" {
+		d.fs = os.DirFS(h.HTML)
+	}
 
 	fs := filesystem{
-		FileSystem: http.FS(html.STATIC),
+		FileSystem: http.FS(d.fs),
 	}
 
 	// ... setup routing

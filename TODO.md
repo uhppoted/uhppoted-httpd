@@ -10,7 +10,7 @@
       - [ ] Embed HTML
             - [x] Move SASS out of HTML
             - [x] Embed HTML in httpd
-            - [ ] Use config html if specified
+            - [x] Use config html if specified
             - [ ] (optionally) copy embedded HTML to folder and set config 
             - [ ] Unpack HTML 'starter kit' on release
       - [ ] `config`

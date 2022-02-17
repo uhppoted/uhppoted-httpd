@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -14,7 +15,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/uhppoted/uhppoted-httpd/httpd/html"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 )
 
@@ -70,10 +70,9 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	file := filepath.Clean(filepath.Join(d.root, path[1:]))
 	authorised := map[string]bool{}
 
-	d.translate(file, context, authorised, w, acceptsGzip)
+	d.translate(path, context, authorised, w, acceptsGzip)
 }
 
 func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
@@ -115,7 +114,6 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ... good to go
-	file := filepath.Clean(filepath.Join(d.root, path[1:]))
 	acceptsGzip := parseHeader(r)
 	context := map[string]interface{}{
 		"Theme": parseSettings(r),
@@ -136,10 +134,10 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 		authorised[path] = d.authorised(uid, role, path)
 	}
 
-	d.translate(file, context, authorised, w, acceptsGzip)
+	d.translate(path, context, authorised, w, acceptsGzip)
 }
 
-func (d *dispatcher) translate(filename string, context map[string]interface{}, authorised map[string]bool, w http.ResponseWriter, acceptsGzip bool) {
+func (d *dispatcher) translate(path string, context map[string]interface{}, authorised map[string]bool, w http.ResponseWriter, acceptsGzip bool) {
 	type nav struct {
 		System bool
 		Doors  bool
@@ -150,7 +148,7 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 		Users  bool
 	}
 
-	base := strings.TrimSuffix(filepath.Base(filename), filepath.Ext(filename))
+	base := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
 	translation := filepath.Join("translations", "en", base+".json")
 	page := map[string]interface{}{}
 
@@ -210,22 +208,24 @@ func (d *dispatcher) translate(filename string, context map[string]interface{}, 
 	}
 
 	// Ref. https://stackoverflow.com/questions/49043292/error-template-is-an-incomplete-or-empty-template
-	// snippets := "httpd/html/templates/snippets.html"
-	// name := filepath.Base(filename)
-	// t, err := template.New(name).Funcs(functions).ParseFiles(snippets, filename)
+	var fs fs.FS = d.fs
+	var name = filepath.Base(path)
+	var filename = path
 
-	snippets := "templates/snippets.html"
-	name := filepath.Base(filename)
-	t, err := template.New(name).Funcs(functions).ParseFS(html.HTML, snippets, filename)
+	if strings.HasPrefix(filename, "/") {
+		filename = filename[1:]
+	}
+
+	t, err := template.New(name).Funcs(functions).ParseFS(fs, "templates/snippets.html", filename)
 	if err != nil {
-		warn(fmt.Errorf("Error parsing template '%s' (%w)", filename, err))
+		warn(fmt.Errorf("Error parsing template '%s' (%w)", path, err))
 		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)
 		return
 	}
 
 	var b bytes.Buffer
 	if err := t.Execute(&b, &page); err != nil {
-		warn(fmt.Errorf("Error formatting page '%s' (%w)", filename, err))
+		warn(fmt.Errorf("Error formatting page '%s' (%w)", path, err))
 		http.Error(w, "Error formatting page", http.StatusInternalServerError)
 		return
 	}

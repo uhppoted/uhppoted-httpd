@@ -92,7 +92,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 	})
 
 	h := httpd.HTTPD{
-		Dir:                      "html",
+		HTML:                     conf.HTTPD.HTML,
 		AuthProvider:             authentication,
 		HTTPEnabled:              conf.HTTPD.HttpEnabled,
 		HTTPSEnabled:             conf.HTTPD.HttpsEnabled,
