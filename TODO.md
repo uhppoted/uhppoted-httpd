@@ -10,14 +10,20 @@
       - [ ] Embed HTML
             - [x] Move SASS out of HTML
             - [x] Embed HTML in httpd
-            - [ ] Use config.html if specified
+            - [ ] Use config html if specified
             - [ ] (optionally) copy embedded HTML to folder and set config 
-            - [ ] Include HTML 'starter kit' on release
+            - [ ] Unpack HTML 'starter kit' on release
       - [ ] `config`
       - [ ] Set initial 'admin' user + generated password
       - [ ] Bootstrap from scratch
+      - [ ] MacOS
+      - [ ] Linux
+      - [ ] Windows
 
 - [ ] undaemonize
+      - [x] MacOS
+      - [ ] Linux
+      - [ ] Windows
 
 - [ ] Overview page 
 - [ ] Include 'modified' when serializing/deserializing objects
