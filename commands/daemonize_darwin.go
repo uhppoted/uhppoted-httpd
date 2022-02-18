@@ -2,19 +2,25 @@ package commands
 
 import (
 	"bufio"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"io/fs"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/httpd/html"
 	"github.com/uhppoted/uhppoted-lib/config"
 	xpath "github.com/uhppoted/uhppoted-lib/encoding/plist"
+
+	"github.com/uhppoted/uhppoted-httpd/httpd/html"
 )
 
 type info struct {
@@ -143,6 +149,10 @@ func (cmd *Daemonize) execute() error {
 	}
 
 	if err := cmd.conf(&i, unpacked); err != nil {
+		return err
+	}
+
+	if err := cmd.users(&i); err != nil {
 		return err
 	}
 
@@ -432,4 +442,82 @@ func (cmd *Daemonize) unpack(i *info) (bool, error) {
 	fmt.Println()
 
 	return true, nil
+}
+
+func (cmd *Daemonize) users(i *info) error {
+	dir := filepath.Join(i.WorkDir, "system")
+
+	fmt.Printf("   ... creating folder '%v'\n", dir)
+	if err := os.MkdirAll(dir, 0744); err != nil {
+		return err
+	}
+
+	file := filepath.Join(dir, "users.json")
+	users := struct {
+		Users []interface{} `json:"users"`
+	}{}
+
+	info, err := os.Stat(file)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+	} else if !info.IsDir() {
+		bytes, err := os.ReadFile(file)
+		if err != nil {
+			return err
+		}
+
+		if err := json.Unmarshal(bytes, &users); err != nil {
+			return err
+		}
+	}
+
+	if len(users.Users) > 0 {
+		return nil
+	}
+
+	// ... create initial 'admin' user
+
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	letters := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	password := make([]byte, 16)
+	salt := make([]byte, 16)
+
+	for i := range password {
+		password[i] = letters[r.Intn(len(letters))]
+	}
+
+	for i := range salt {
+		salt[i] = byte(r.Intn(256))
+	}
+
+	h := sha256.New()
+	h.Write(salt)
+	h.Write([]byte(password))
+
+	admin := struct {
+		UID      string `json:"uid,omitempty"`
+		Role     string `json:"role,omitempty"`
+		Salt     string `json:"salt"`
+		Password string `json:"password"`
+	}{
+		UID:      "admin",
+		Role:     "admin",
+		Salt:     hex.EncodeToString(salt[:]),
+		Password: fmt.Sprintf("%0x", h.Sum(nil)),
+	}
+
+	users.Users = append(users.Users, admin)
+
+	// ... write default 'admin' user to users.json
+	if bytes, err := json.MarshalIndent(users, "  ", "  "); err != nil {
+		return err
+	} else if err := os.WriteFile(file, bytes, 0660); err != nil {
+		return err
+	}
+
+	fmt.Printf("   ... created default 'admin' user, password:%v\n", string(password))
+
+	return nil
 }

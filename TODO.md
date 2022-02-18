@@ -7,11 +7,11 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
-      - [ ] Set initial 'admin' user + generated password
       - [ ] MacOS
       - [ ] Linux
       - [ ] Windows
       - [ ] Bootstrap from scratch
+      - [x] Set initial 'admin' user + generated password
       - [x] Embed HTML
             - [x] Move SASS out of HTML
             - [x] Embed HTML in httpd
