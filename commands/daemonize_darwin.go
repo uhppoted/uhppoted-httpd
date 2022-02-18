@@ -13,7 +13,7 @@ import (
 	"text/template"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/html"
-	//	"github.com/uhppoted/uhppoted-lib/config"
+	"github.com/uhppoted/uhppoted-lib/config"
 	xpath "github.com/uhppoted/uhppoted-lib/encoding/plist"
 )
 
@@ -137,11 +137,12 @@ func (cmd *Daemonize) execute() error {
 		return err
 	}
 
-	if err := cmd.conf(&i); err != nil {
+	unpacked, err := cmd.unpack(&i)
+	if err != nil {
 		return err
 	}
 
-	if err := cmd.unpack(&i); err != nil {
+	if err := cmd.conf(&i, unpacked); err != nil {
 		return err
 	}
 
@@ -243,36 +244,39 @@ func (cmd *Daemonize) mkdirs() error {
 	return nil
 }
 
-func (cmd *Daemonize) conf(i *info) error {
+func (cmd *Daemonize) conf(i *info, unpacked bool) error {
 	path := cmd.config
 
 	fmt.Printf("   ... creating '%s'\n", path)
 
-	//	// initialise config from existing uhppoted.conf
-	//	cfg := config.NewConfig()
-	//	if f, err := os.Open(path); err != nil {
-	//		if !os.IsNotExist(err) {
-	//			return err
-	//		}
-	//	} else {
-	//		err := cfg.Read(f)
-	//		f.Close()
-	//		if err != nil {
-	//			return err
-	//		}
-	//	}
-	//
-	//	// write back config with any updated information
-	//	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	defer f.Close()
-	//
-	//	return cfg.Write(f)
+	// ... gGet config from existing uhppoted.conf
+	cfg := config.NewConfig()
+	if f, err := os.Open(path); err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+	} else {
+		err := cfg.Read(f)
+		f.Close()
+		if err != nil {
+			return err
+		}
+	}
 
-	return nil
+	// ... update httpd.HTML if unpacked
+	if unpacked {
+		cfg.HTTPD.HTML = i.HTML
+	}
+
+	// ... write back with added HTTPD config
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	return cfg.Write(f)
 }
 
 func (cmd *Daemonize) logrotate(i *info) error {
@@ -357,7 +361,7 @@ func (cmd *Daemonize) firewall(i *info) error {
 	return nil
 }
 
-func (cmd *Daemonize) unpack(i *info) error {
+func (cmd *Daemonize) unpack(i *info) (bool, error) {
 	root := i.HTML
 	r := bufio.NewReader(os.Stdin)
 
@@ -367,7 +371,7 @@ func (cmd *Daemonize) unpack(i *info) error {
 	text, err := r.ReadString('\n')
 	if err != nil || strings.TrimSpace(text) != "yes" {
 		fmt.Println()
-		return nil
+		return false, nil
 	}
 
 	fmt.Println()
@@ -388,7 +392,7 @@ func (cmd *Daemonize) unpack(i *info) error {
 	}
 
 	if err := fs.WalkDir(html.HTML, ".", mkdir); err != nil {
-		return err
+		return false, err
 	}
 
 	cp := func(path string, d fs.DirEntry, err error) error {
@@ -422,10 +426,10 @@ func (cmd *Daemonize) unpack(i *info) error {
 	fmt.Println()
 	fmt.Printf("     ... copying files to %v\n", i.HTML)
 	if err := fs.WalkDir(html.HTML, ".", cp); err != nil {
-		return err
+		return false, err
 	}
 
 	fmt.Println()
 
-	return nil
+	return true, nil
 }

@@ -13,14 +13,13 @@
             - [x] Use config html if specified
             - [x] Optionally copy embedded HTML to folder
             - [x] Login/password page buttons are weird (translations probably ?)
-            - [ ] Update config for copied HTML
+            - [x] Update config for copied HTML
             - [ ] Package HTML 'starter kit' on release
-      - [ ] `config`
       - [ ] Set initial 'admin' user + generated password
-      - [ ] Bootstrap from scratch
       - [ ] MacOS
       - [ ] Linux
       - [ ] Windows
+      - [ ] Bootstrap from scratch
 
 - [ ] undaemonize
       - [x] MacOS
