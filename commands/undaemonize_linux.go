@@ -3,11 +3,11 @@ package commands
 import (
 	"flag"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"strings"
-	"syscall"
+	//	"os"
+	//	"os/exec"
+	//	"path/filepath"
+	//	"strings"
+	//	"syscall"
 )
 
 var UNDAEMONIZE = Undaemonize{

@@ -3,12 +3,12 @@ package commands
 import (
 	"flag"
 	"fmt"
-	"golang.org/x/sys/windows/svc"
-	"golang.org/x/sys/windows/svc/eventlog"
-	"golang.org/x/sys/windows/svc/mgr"
-	"os"
+	//	"os"
 	"path/filepath"
-	"syscall"
+	//	"syscall"
+	//	"golang.org/x/sys/windows/svc"
+	//	"golang.org/x/sys/windows/svc/eventlog"
+	//	"golang.org/x/sys/windows/svc/mgr"
 )
 
 var UNDAEMONIZE = Undaemonize{
