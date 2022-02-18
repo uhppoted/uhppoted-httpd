@@ -477,8 +477,22 @@ func (cmd *Daemonize) users(i *info) error {
 		return nil
 	}
 
-	// ... create initial 'admin' user
+	// ... create initial 'admin' user?
+	stdin := bufio.NewReader(os.Stdin)
 
+	fmt.Println()
+	fmt.Printf("     Do you want to create a default 'admin' user (yes/no)? ")
+
+	text, err := stdin.ReadString('\n')
+	if err != nil || strings.ToLower(strings.TrimSpace(text)) == "no" {
+		fmt.Println()
+		return nil
+	}
+
+	fmt.Println()
+	fmt.Println("   ... creating default 'admin' user")
+
+	// ... generate password and salt
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	letters := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	password := make([]byte, 16)

@@ -7,10 +7,11 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
-      - [ ] MacOS
       - [ ] Linux
       - [ ] Windows
       - [ ] Bootstrap from scratch
+      - [x] MacOS
+      - [x] Make admin user thing optional
       - [x] Set initial 'admin' user + generated password
       - [x] Embed HTML
             - [x] Move SASS out of HTML
