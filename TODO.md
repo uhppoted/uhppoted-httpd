@@ -12,7 +12,7 @@
             - [x] Embed HTML in httpd
             - [x] Use config html if specified
             - [x] Optionally copy embedded HTML to folder
-            - [ ] Login/password page buttons are weird (translations probably ?)
+            - [x] Login/password page buttons are weird (translations probably ?)
             - [ ] Update config for copied HTML
             - [ ] Package HTML 'starter kit' on release
       - [ ] `config`

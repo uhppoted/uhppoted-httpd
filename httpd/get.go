@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/ioutil"
+	"io/fs"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -147,30 +147,24 @@ func (d *dispatcher) translate(path string, context map[string]interface{}, auth
 		Users  bool
 	}
 
-	base := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
-	translation := filepath.Join("translations", "en", base+".json")
 	page := map[string]interface{}{}
 
 	page["context"] = context
 	page["schema"] = catalog.GetSchema()
 
-	info, err := os.Stat(translation)
-	if err != nil && !os.IsNotExist(err) {
-		warn(fmt.Errorf("Error locating translation '%s' (%w)", translation, err))
-		http.Error(w, "Sadly, Most Of The Wheels All Came Off", http.StatusInternalServerError)
-		return
-	}
-
-	if err == nil && !info.IsDir() {
-		replacements, err := ioutil.ReadFile(translation)
-		if err != nil {
+	translation := filepath.Join("translations", "en", strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))+".json")
+	if info, err := fs.Stat(d.fs, translation); err != nil {
+		if !os.IsNotExist(err) {
+			warn(fmt.Errorf("Error locating translation '%s' (%w)", translation, err))
+			http.Error(w, "Sadly, Most Of The Wheels All Came Off", http.StatusInternalServerError)
+			return
+		}
+	} else if !info.IsDir() {
+		if replacements, err := fs.ReadFile(d.fs, translation); err != nil {
 			warn(fmt.Errorf("Error reading translation '%s' (%w)", translation, err))
 			http.Error(w, "Page Not Found", http.StatusNotFound)
 			return
-		}
-
-		err = json.Unmarshal(replacements, &page)
-		if err != nil {
+		} else if err := json.Unmarshal(replacements, &page); err != nil {
 			warn(fmt.Errorf("Error unmarshalling translation '%s' (%w)", translation, err))
 			http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
 			return

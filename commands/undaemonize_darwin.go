@@ -77,10 +77,10 @@ func (cmd *Undaemonize) Execute(args ...interface{}) error {
 	fmt.Printf("   ... com.github.uhppoted.%s unregistered as a LaunchDaemon\n", SERVICE)
 	fmt.Printf(`
 	   NOTE: Configuration files in %s,
-	               working files in %s,
-	               log files in %s,
-	               and HTML files in %s
-	               were not removed and should be deleted manually
+	         working files in %s,
+	         log files in %s,
+	         and HTML files in %s
+	         were not removed and should be deleted manually
 	`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir, cmd.HTML)
 	fmt.Println()
 
