@@ -73,11 +73,12 @@ build-all: vet
 	env GOOS=linux   GOARCH=arm GOARM=7 go build -trimpath -o dist/$(DIST)/arm7    ./...
 	env GOOS=darwin  GOARCH=amd64       go build -trimpath -o dist/$(DIST)/darwin  ./...
 	env GOOS=windows GOARCH=amd64       go build -trimpath -o dist/$(DIST)/windows ./...
+	cp -r httpd/html dist/$(DIST)
 
 release: update-release build-all
 	find . -name ".DS_Store" -delete
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
-	cd dist; zip --recurse-paths $(DIST).zip $(DIST)
+	cd dist;  zip --recurse-paths $(DIST).zip $(DIST)
 
 debug: build
 	$(CMD) daemonize

@@ -7,19 +7,19 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
-      - [ ] Embed HTML
+      - [ ] Set initial 'admin' user + generated password
+      - [ ] MacOS
+      - [ ] Linux
+      - [ ] Windows
+      - [ ] Bootstrap from scratch
+      - [x] Embed HTML
             - [x] Move SASS out of HTML
             - [x] Embed HTML in httpd
             - [x] Use config html if specified
             - [x] Optionally copy embedded HTML to folder
             - [x] Login/password page buttons are weird (translations probably ?)
             - [x] Update config for copied HTML
-            - [ ] Package HTML 'starter kit' on release
-      - [ ] Set initial 'admin' user + generated password
-      - [ ] MacOS
-      - [ ] Linux
-      - [ ] Windows
-      - [ ] Bootstrap from scratch
+            - [x] Package HTML 'starter kit' on release
 
 - [ ] undaemonize
       - [x] MacOS
