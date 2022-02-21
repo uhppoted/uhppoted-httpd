@@ -7,29 +7,35 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
-      - [ ] Linux
-            - https://www.vultr.com/docs/install-the-latest-version-of-golang-on-ubuntu/acvKnVOvxME9
-            - curl -X GET -H "Content-type: application/json" -H "Accept: application/json" "http://127.0.0.1:8080/index.html"
-
-            - [ ] chown -R uhppoted:uhppoted /var/uhppoted/httpd
-            - [ ] # HTTPD
-                  httpd.html = /etc/com.github.uhppoted/httpd/html
-```
-WARN  Error locating translation 'translations/en/index.json' (stat /etc/com.github.uhppoted/httpd/html/translations/en/index.json: permission denied)
-```
-
       - [ ] Windows
       - [ ] Bootstrap from scratch
-            - [ ] ERROR: open /etc/uhppoted/httpd/auth.json: no such file or directory
-            - [ ] FATAL Could not load system configuration (open /var/uhppoted/httpd/system/interfaces.json: permission denied)
+
+      - [ ] Linux
+            - https://www.vultr.com/docs/install-the-latest-version-of-golang-on-ubuntu/ 
+              eiGz1x2x4erBEE0v
+
 ```
-2022/02/21 18:54:15 ERROR open /var/uhppoted/httpd/system/controllers.json: no such file or directory
-2022/02/21 18:54:15 ERROR open /var/uhppoted/httpd/system/doors.json: no such file or directory
-2022/02/21 18:54:15 ERROR open /var/uhppoted/httpd/system/cards.json: no such file or directory
-2022/02/21 18:54:15 ERROR open /var/uhppoted/httpd/system/groups.json: no such file or directory
-2022/02/21 18:54:15 ERROR open /var/uhppoted/httpd/system/events.json: no such file or directory
-2022/02/21 18:54:15 ERROR open /var/uhppoted/httpd/system/logs.json: no such file or directory
-2022/02/21 18:54:15 Error loading ACL ruleset (open /etc/uhppoted/httpd/acl.grl: no such file or directory)
+adduser xxx
+adduser xxx sudo
+adduser uhppoted
+mkdir -p /opt/uhppoted
+chown -R uhppoted:uhppoted /opt/uhppoted
+sudo su - xxx
+wget https://go.dev/dl/go1.17.7.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf  go1.17.7.linux-amd64.tar.gz 
+echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
+echo "export GOPATH=~/.go" >> ~/.profile
+source ~/.profile
+go version
+sudo apt install npm
+sudo npm install -g sass
+npm install eslint
+git clone https://github.com/uhppoted/uhppoted-httpd.git
+cd uhppoted-httpd
+make build
+sudo cp ./bin/uhppoted-httpd /opt/uhppoted
+sudo chown -R uhppoted:uhppoted /opt/uhppoted
+cd /opt/uhppoted
 ```
 
       - [x] MacOS

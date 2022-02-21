@@ -159,6 +159,13 @@ func (cmd *Daemonize) execute() error {
 		LogFiles:      []string{fmt.Sprintf("/var/log/uhppoted/%s.log", SERVICE)},
 	}
 
+	f := func(path string, info fs.DirEntry, err error) error {
+		if err == nil {
+			err = os.Chown(path, uid, gid)
+		}
+		return err
+	}
+
 	if err := cmd.systemd(&i); err != nil {
 		return err
 	}
@@ -174,17 +181,6 @@ func (cmd *Daemonize) execute() error {
 	unpacked, err := cmd.unpack(&i)
 	if err != nil {
 		return err
-	} else if unpacked {
-		f := func(path string, info fs.DirEntry, err error) error {
-			if err == nil {
-				err = os.Chown(path, uid, gid)
-			}
-			return err
-		}
-
-		if err := filepath.WalkDir(cmd.html, f); err != nil {
-			return err
-		}
 	}
 
 	if err := cmd.conf(&i, unpacked); err != nil {
@@ -199,6 +195,14 @@ func (cmd *Daemonize) execute() error {
 		return err
 	}
 
+	if err := filepath.WalkDir(cmd.etc, f); err != nil {
+		return err
+	}
+
+	if err := filepath.WalkDir(cmd.workdir, f); err != nil {
+		return err
+	}
+
 	fmt.Printf("   ... %s registered as a systemd service\n", SERVICE)
 	fmt.Println()
 	fmt.Println("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:")
@@ -209,6 +213,11 @@ func (cmd *Daemonize) execute() error {
 	fmt.Println("   The firewall may need additional rules to allow UDP broadcast e.g. for UFW:")
 	fmt.Println()
 	fmt.Printf("     > sudo ufw allow from %s to any port 60000 proto udp\n", bind.IP)
+	fmt.Println()
+	fmt.Println("   The firewall may also need additional rules to allow external access to the HTTP server e.g. for UFW:")
+	fmt.Println()
+	fmt.Printf("     > sudo ufw allow from %s to any port 8080 proto tcp\n", bind.IP)
+	fmt.Printf("     > sudo ufw allow from %s to any port 8443 proto tcp\n", bind.IP)
 	fmt.Println()
 	fmt.Println()
 

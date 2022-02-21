@@ -12,7 +12,7 @@ import (
 
 var UNDAEMONIZE = Undaemonize{
 	workdir: "/var/uhppoted/httpd",
-	html:    "/usr/local/etc/com.github.uhppoted/httpd/html",
+	html:    "/usr/etc/uhppoted/httpd/html",
 	logdir:  "/var/log/uhppoted",
 	config:  "/etc/uhppoted/uhppoted.conf",
 }
