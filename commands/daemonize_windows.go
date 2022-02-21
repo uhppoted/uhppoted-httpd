@@ -17,16 +17,17 @@ import (
 
 var DAEMONIZE = Daemonize{
 	name:        SERVICE,
-	description: "UHPPOTE UTO311-L0x access card controllers service",
+	description: "UHPPOTE UTO311-L0x access card controllers HTTP service",
 	workdir:     workdir(),
 	logdir:      filepath.Join(workdir(), "logs"),
 	config:      filepath.Join(workdir(), "uhppoted.conf"),
-	hotp:        filepath.Join(workdir(), "mqtt.hotp.secrets"),
+	html:        filepath.Join(workdir(), "httpd", "html"),
 }
 
 type info struct {
 	Executable       string
 	WorkDir          string
+	HTML             string
 	LogDir           string
 	BindAddress      *types.BindAddr
 	BroadcastAddress *types.BroadcastAddr
@@ -38,7 +39,7 @@ type Daemonize struct {
 	workdir     string
 	logdir      string
 	config      string
-	hotp        string
+	html        string
 }
 
 func (cmd *Daemonize) Name() string {

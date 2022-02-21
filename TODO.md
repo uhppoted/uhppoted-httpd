@@ -14,13 +14,6 @@
       - [x] Make admin user thing optional
       - [x] Set initial 'admin' user + generated password
       - [x] Embed HTML
-            - [x] Move SASS out of HTML
-            - [x] Embed HTML in httpd
-            - [x] Use config html if specified
-            - [x] Optionally copy embedded HTML to folder
-            - [x] Login/password page buttons are weird (translations probably ?)
-            - [x] Update config for copied HTML
-            - [x] Package HTML 'starter kit' on release
 
 - [ ] undaemonize
       - [x] MacOS
