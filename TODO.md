@@ -9,10 +9,14 @@
 - [ ] daemonize
       - [ ] Windows
       - [ ] Bootstrap from scratch
+            ```
+            ERROR No active LAN subsystem
+            ```
 
       - [ ] Linux
             - https://www.vultr.com/docs/install-the-latest-version-of-golang-on-ubuntu/ 
               eiGz1x2x4erBEE0v
+              S7ipf8HxNzLwdfqF
 
 ```
 adduser xxx
@@ -29,12 +33,12 @@ source ~/.profile
 go version
 sudo apt install npm
 sudo npm install -g sass
-npm install eslint
 git clone https://github.com/uhppoted/uhppoted-httpd.git
 cd uhppoted-httpd
+npm install eslint
 make build
 sudo cp ./bin/uhppoted-httpd /opt/uhppoted
-sudo chown -R uhppoted:uhppoted /opt/uhppoted
+sudo chown uhppoted:uhppoted /opt/uhppoted/uhppoted-httpd
 cd /opt/uhppoted
 ```
 

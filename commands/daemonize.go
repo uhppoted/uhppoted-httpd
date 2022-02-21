@@ -19,7 +19,19 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd/html"
 )
 
-const interfaces = `{ "interfaces": [] }`
+const interfaces = `{
+  "interfaces": [
+    {
+      "OID": "0.1.1",
+      "name": "LAN",
+      "bind-address": "0.0.0.0",
+      "broadcast-address": "255.255.255.255",
+      "listen-address": "0.0.0.0:60001"
+    }
+  ]
+}
+`
+
 const controllers = `{ "controllers": [] }`
 const doors = `{ "doors": [] }`
 const cards = `{ "cards": [] }`
@@ -320,6 +332,7 @@ func (cmd *Daemonize) users(i info) error {
 	}
 
 	fmt.Printf("   ... created default 'admin' user, password:%v\n", string(password))
+	fmt.Println()
 
 	return nil
 }
