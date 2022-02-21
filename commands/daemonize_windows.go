@@ -22,6 +22,7 @@ var DAEMONIZE = Daemonize{
 	logdir:      filepath.Join(workdir(), "logs"),
 	config:      filepath.Join(workdir(), "uhppoted.conf"),
 	html:        filepath.Join(workdir(), "httpd", "html"),
+	etc:         filepath.Join(workdir(), "httpd"),
 }
 
 type info struct {
@@ -40,6 +41,7 @@ type Daemonize struct {
 	logdir      string
 	config      string
 	html        string
+	etc         string
 }
 
 func (cmd *Daemonize) Name() string {

@@ -19,6 +19,111 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd/html"
 )
 
+const interfaces = `{ "interfaces": [] }`
+const controllers = `{ "controllers": [] }`
+const doors = `{ "doors": [] }`
+const cards = `{ "cards": [] }`
+const groups = `{ "groups": [] }`
+const events = `{ "events": [] }`
+const logs = `{ "logs": [] }`
+const acl = ``
+
+const default_auth = `
+{
+  "users": {},
+  "resources": [
+    {
+      "path": "^/index.html$",
+      "authorised": ".*"
+    },
+    {
+      "path": "^/favicon.ico$",
+      "authorised": ".*"
+    },
+    {
+      "path": "^/sys/login.html$",
+      "authorised": ".*"
+    },
+    {
+      "path": "^/sys/unauthorized.html$",
+      "authorised": ".*"
+    },
+    {
+      "path": "^/sys/controllers.html$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/sys/cards.html$",
+      "authorised": "^(admin|user)$"
+    },
+    {
+      "path": "^/sys/doors.html$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/sys/groups.html$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/sys/events.html$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/sys/logs.html$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/sys/users.html$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/sys/password.html$",
+      "authorised": ".*"
+    },
+    {
+      "path": "^/other.html$",
+      "authorised": ".*"
+    },
+    {
+      "path": "^/password$",
+      "authorised": ".*"
+    },
+    {
+      "path": "^/interfaces$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/controllers$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/doors$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/cards$",
+      "authorised": "^(admin|user)$"
+    },
+    {
+      "path": "^/groups$",
+      "authorised": "^(admin|user)$"
+    },
+    {
+      "path": "^/events$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/logs$",
+      "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/users$",
+      "authorised": "^(admin)$"
+    }
+  ]
+}
+`
+
 func (cmd *Daemonize) conf(i *info, unpacked bool) error {
 	path := cmd.config
 
@@ -127,7 +232,7 @@ func (cmd *Daemonize) unpack(i *info) (bool, error) {
 	return true, nil
 }
 
-func (cmd *Daemonize) users(i *info) error {
+func (cmd *Daemonize) users(i info) error {
 	dir := filepath.Join(cmd.workdir, "system")
 
 	fmt.Printf("   ... creating folder '%v'\n", dir)
@@ -215,6 +320,72 @@ func (cmd *Daemonize) users(i *info) error {
 	}
 
 	fmt.Printf("   ... created default 'admin' user, password:%v\n", string(password))
+
+	return nil
+}
+
+func (cmd *Daemonize) sysinit(i info) error {
+	// ... create empty system files
+	folder := filepath.Join(cmd.workdir, "system")
+
+	fmt.Printf("   ... creating folder '%v'\n", folder)
+	if err := os.MkdirAll(folder, 0744); err != nil {
+		return err
+	}
+
+	files := []struct {
+		file    string
+		content []byte
+	}{
+		{"interfaces.json", []byte(interfaces)},
+		{"controllers.json", []byte(controllers)},
+		{"doors.json", []byte(doors)},
+		{"cards.json", []byte(cards)},
+		{"groups.json", []byte(groups)},
+		{"events.json", []byte(events)},
+		{"logs.json", []byte(logs)},
+	}
+
+	for _, v := range files {
+		file := filepath.Join(folder, v.file)
+
+		if _, err := os.Stat(file); err != nil {
+			if os.IsNotExist(err) {
+				fmt.Println("   ... creating default 'interfaces.json'")
+				if err := os.WriteFile(file, v.content, 0660); err != nil {
+					return err
+				}
+			} else {
+				return err
+			}
+		}
+	}
+
+	// ... create default auth.json file
+	file := filepath.Join(cmd.etc, "auth.json")
+	if _, err := os.Stat(file); err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println("   ... creating default 'auth.json'")
+			if err := os.WriteFile(file, []byte(default_auth), 0660); err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
+
+	// ... create default acl.grl file
+	file = filepath.Join(cmd.etc, "acl.grl")
+	if _, err := os.Stat(file); err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println("   ... creating default 'acl.grl'")
+			if err := os.WriteFile(file, []byte(acl), 0660); err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
 
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -20,7 +21,8 @@ var DAEMONIZE = Daemonize{
 	workdir:   "/var/uhppoted/httpd",
 	logdir:    "/var/log/uhppoted",
 	config:    "/etc/uhppoted/uhppoted.conf",
-	html:      "/etc/com.github.uhppoted/httpd/html",
+	html:      "/etc/uhppoted/httpd/html",
+	etc:       "/etc/uhppoted/httpd",
 }
 
 type usergroup string
@@ -75,6 +77,7 @@ type Daemonize struct {
 	logdir    string
 	config    string
 	html      string
+	etc       string
 }
 
 func (cmd *Daemonize) Name() string {
@@ -171,13 +174,28 @@ func (cmd *Daemonize) execute() error {
 	unpacked, err := cmd.unpack(&i)
 	if err != nil {
 		return err
+	} else if unpacked {
+		f := func(path string, info fs.DirEntry, err error) error {
+			if err == nil {
+				err = os.Chown(path, uid, gid)
+			}
+			return err
+		}
+
+		if err := filepath.WalkDir(cmd.html, f); err != nil {
+			return err
+		}
 	}
 
 	if err := cmd.conf(&i, unpacked); err != nil {
 		return err
 	}
 
-	if err := cmd.users(&i); err != nil {
+	if err := cmd.users(i); err != nil {
+		return err
+	}
+
+	if err := cmd.sysinit(i); err != nil {
 		return err
 	}
 

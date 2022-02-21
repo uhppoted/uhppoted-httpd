@@ -68,10 +68,10 @@ func (cmd *Undaemonize) Execute(args ...interface{}) error {
 	fmt.Printf("   ... %s unregistered as a systemd service\n", SERVICE)
 	fmt.Printf(`
        NOTE: Configuration files in %s,
-	         working files in %s,
-	         log files in %s,
-	         and HTML files in %s
-	         were not removed and should be deleted manually
+             working files in %s,
+             log files in %s,
+             and HTML files in %s
+             were not removed and should be deleted manually
 	`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir, cmd.html)
 	fmt.Println()
 
