@@ -15,6 +15,7 @@
       - [ ] Linux
             - [ ] (optionally) unpack GRL files
             ```
+            Error loading ACL ruleset (open : no such file or directory)
             ERROR No active LAN subsystem
             ```
 
@@ -248,7 +249,7 @@
 
 # SNIPPETS
 ```
-bRKUAeVjUWZWLYyl
+GK6p6XQYljJereFS
 adduser xxx
 adduser xxx sudo
 adduser uhppoted
