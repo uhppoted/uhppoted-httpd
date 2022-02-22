@@ -12,19 +12,15 @@
       - [ ] Don't overwrite existing HTML files (or)
       - [ ] Don't overwrite existing GRULES files (or conf)
       - [ ] Windows
-      - [ ] Linux
-            - [ ] (optionally) unpack GRL files
-            ```
-            Error loading ACL ruleset (open : no such file or directory)
-            ERROR No active LAN subsystem
-            ```
+      - [x] Linux
+            - [x] (optionally) unpack GRL files
 
 - [ ] Bootstrap from scratch
-      - [ ] Default ports should be 8080 and 8443
+      - [x] Default ports should be 8080 and 8443
       - [ ] Embedded/optional auth.json
-      - [ ] Embedded/optional acl.grl
+      - [ ] Embedded/optional ACL.grl
       - [ ] Generate TLS keys + certficates
-      - [ ] TLS mutual auth
+            - [ ] TLS mutual auth
       - [x] Embedded grule files
       - [x] MacOS
       - [x] Make admin user thing optional
@@ -239,6 +235,7 @@
 - https://github.com/janpaepke/ScrollMagic
 - [JSON-LS](https://json-ld.org)
 - [Microdata](https://html.spec.whatwg.org/multipage/microdata.html#microdata)
+- [Vercel ](https://vercel.com)
 
 # REFERENCES
 
@@ -249,7 +246,7 @@
 
 # SNIPPETS
 ```
-GK6p6XQYljJereFS
+Mb9qSW8sCB3HI6W5
 adduser xxx
 adduser xxx sudo
 adduser uhppoted
@@ -257,7 +254,7 @@ mkdir -p /opt/uhppoted
 chown -R uhppoted:uhppoted /opt/uhppoted
 sudo su - xxx
 wget https://go.dev/dl/go1.17.7.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf  go1.17.7.linux-amd64.tar.gz 
+sudo tar -C /usr/local -xvzf  go1.17.7.linux-amd64.tar.gz 
 echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
 echo "export GOPATH=~/.go" >> ~/.profile
 source ~/.profile
