@@ -183,7 +183,12 @@ func (cmd *Daemonize) execute() error {
 		return err
 	}
 
-	if err := cmd.conf(&i, unpacked); err != nil {
+	grules, err := cmd.grules(&i)
+	if err != nil {
+		return err
+	}
+
+	if err := cmd.conf(&i, unpacked, grules); err != nil {
 		return err
 	}
 

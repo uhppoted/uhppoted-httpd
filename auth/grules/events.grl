@@ -1,0 +1,31 @@
+rule ViewEvent "(allowed)" {
+     when
+         OP == "view::event"
+     then
+         RESULT.Allow = true;
+         Retract("ViewEvent");
+}
+
+rule AddEvent "(allowed)" {
+     when
+         OP == "add::event"
+     then
+         RESULT.Allow = true;
+         Retract("AddEvent");
+}
+
+rule UpdateEvent "(allowed)" {
+     when
+         OP == "update::event"
+     then
+         RESULT.Allow = true;
+         Retract("UpdateEvent");
+}
+
+rule DeleteEvent "(allowed)" {
+     when
+         OP == "delete::event"
+     then
+         RESULT.Allow = true;
+         Retract("DeleteEvent");
+}

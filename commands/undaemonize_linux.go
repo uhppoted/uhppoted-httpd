@@ -12,16 +12,16 @@ import (
 
 var UNDAEMONIZE = Undaemonize{
 	workdir: "/var/uhppoted/httpd",
-	html:    "/usr/etc/uhppoted/httpd/html",
 	logdir:  "/var/log/uhppoted",
 	config:  "/etc/uhppoted/uhppoted.conf",
+	etc:     "/usr/etc/uhppoted/httpd",
 }
 
 type Undaemonize struct {
 	workdir string
-	html    string
 	logdir  string
 	config  string
+	etc     string
 }
 
 func (cmd *Undaemonize) Name() string {
@@ -70,9 +70,10 @@ func (cmd *Undaemonize) Execute(args ...interface{}) error {
        NOTE: Configuration files in %s,
              working files in %s,
              log files in %s,
-             and HTML files in %s
+             HTML files in %s,
+             and GRULES files in %s
              were not removed and should be deleted manually
-	`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir, cmd.html)
+	`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir, filepath.Join(cmd.etc, "html"), filepath.Join(cmd.etc, "grules"))
 	fmt.Println()
 
 	return nil

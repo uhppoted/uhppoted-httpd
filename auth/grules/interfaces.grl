@@ -1,0 +1,31 @@
+rule ViewInterface "(allowed)" {
+     when
+         OP == "view::interface"
+     then
+         RESULT.Allow = true;
+         Retract("ViewInterface");
+}
+
+rule AddInterface "(allowed)" {
+     when
+         OP == "add::interface"
+     then
+         RESULT.Allow = true;
+         Retract("AddInterface");
+}
+
+rule UpdateInterface "(allowed)" {
+     when
+         OP == "update::interface"
+     then
+         RESULT.Allow = true;
+         Retract("UpdateInterface");
+}
+
+rule DeleteInterface "(allowed)" {
+     when
+         OP == "delete::interface"
+     then
+         RESULT.Allow = true;
+         Retract("DeleteInterface");
+}

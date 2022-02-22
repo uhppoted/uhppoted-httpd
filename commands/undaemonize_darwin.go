@@ -16,16 +16,16 @@ var UNDAEMONIZE = Undaemonize{
 	plist:   fmt.Sprintf("com.github.uhppoted.%s.plist", SERVICE),
 	workdir: "/usr/local/var/com.github.uhppoted",
 	logdir:  "/usr/local/var/com.github.uhppoted/logs",
-	html:    "/usr/local/etc/com.github.uhppoted/httpd/html",
 	config:  "/usr/local/etc/com.github.uhppoted/uhppoted.conf",
+	etc:     "/usr/local/etc/com.github.uhppoted/httpd",
 }
 
 type Undaemonize struct {
 	plist   string
 	workdir string
 	logdir  string
-	html    string
 	config  string
+	etc     string
 }
 
 func (cmd *Undaemonize) Name() string {
@@ -79,9 +79,10 @@ func (cmd *Undaemonize) Execute(args ...interface{}) error {
 	   NOTE: Configuration files in %s,
 	         working files in %s,
 	         log files in %s,
-	         and HTML files in %s
+	         HTML files in %s,
+	         and GRULES files in %s
 	         were not removed and should be deleted manually
-	`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir, cmd.html)
+	`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir, filepath.Join(cmd.etc, "html"), filepath.Join(cmd.etc, "grules"))
 	fmt.Println()
 
 	return nil

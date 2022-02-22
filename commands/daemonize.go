@@ -16,6 +16,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-lib/config"
 
+	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/html"
 )
 
@@ -136,7 +137,7 @@ const default_auth = `
 }
 `
 
-func (cmd *Daemonize) conf(i *info, unpacked bool) error {
+func (cmd *Daemonize) conf(i *info, unpacked bool, grules bool) error {
 	path := cmd.config
 
 	fmt.Printf("   ... creating '%s'\n", path)
@@ -157,7 +158,19 @@ func (cmd *Daemonize) conf(i *info, unpacked bool) error {
 
 	// ... update httpd.HTML if unpacked
 	if unpacked {
-		cfg.HTTPD.HTML = cmd.html
+		cfg.HTTPD.HTML = filepath.Join(cmd.etc, "html")
+	}
+
+	// ... update rules files if grules files unpacked
+	if grules {
+		cfg.HTTPD.DB.Rules.Interfaces = filepath.Join(cmd.etc, "grules", "interfaces.grl")
+		cfg.HTTPD.DB.Rules.Controllers = filepath.Join(cmd.etc, "grules", "controllers.grl")
+		cfg.HTTPD.DB.Rules.Doors = filepath.Join(cmd.etc, "grules", "doors.grl")
+		cfg.HTTPD.DB.Rules.Cards = filepath.Join(cmd.etc, "grules", "cards.grl")
+		cfg.HTTPD.DB.Rules.Groups = filepath.Join(cmd.etc, "grules", "groups.grl")
+		cfg.HTTPD.DB.Rules.Events = filepath.Join(cmd.etc, "grules", "events.grl")
+		cfg.HTTPD.DB.Rules.Logs = filepath.Join(cmd.etc, "grules", "logs.grl")
+		cfg.HTTPD.DB.Rules.Users = filepath.Join(cmd.etc, "grules", "users.grl")
 	}
 
 	// ... write back with added HTTPD config
@@ -172,7 +185,7 @@ func (cmd *Daemonize) conf(i *info, unpacked bool) error {
 }
 
 func (cmd *Daemonize) unpack(i *info) (bool, error) {
-	root := cmd.html
+	root := filepath.Join(cmd.etc, "html")
 	r := bufio.NewReader(os.Stdin)
 
 	fmt.Println()
@@ -236,6 +249,78 @@ func (cmd *Daemonize) unpack(i *info) (bool, error) {
 	fmt.Println()
 	fmt.Printf("     ... copying files to %v\n", root)
 	if err := fs.WalkDir(html.HTML, ".", cp); err != nil {
+		return false, err
+	}
+
+	fmt.Println()
+
+	return true, nil
+}
+
+func (cmd *Daemonize) grules(i *info) (bool, error) {
+	root := cmd.etc
+	r := bufio.NewReader(os.Stdin)
+
+	fmt.Println()
+	fmt.Printf("     Do you want to unpack the GRULES files into %v (yes/no)? ", filepath.Join(root, "grules"))
+
+	text, err := r.ReadString('\n')
+	if err != nil || strings.TrimSpace(text) != "yes" {
+		fmt.Println()
+		return false, nil
+	}
+
+	fmt.Println()
+
+	mkdir := func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		} else if d.IsDir() {
+			folder := filepath.Join(root, path)
+
+			fmt.Printf("     ... creating folder '%v'\n", folder)
+			if err := os.MkdirAll(folder, 0744); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}
+
+	if err := fs.WalkDir(auth.GRULES, ".", mkdir); err != nil {
+		return false, err
+	}
+
+	cp := func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		} else if d.IsDir() {
+			return nil
+		}
+
+		src, err := auth.GRULES.Open(path)
+		if err != nil {
+			return err
+		}
+
+		defer src.Close()
+
+		dest, err := os.Create(filepath.Join(root, path))
+		if err != nil {
+			return err
+		}
+
+		defer dest.Close()
+
+		if _, err := io.Copy(dest, src); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	fmt.Printf("     ... copying GRULES files to %v\n", filepath.Join(root, "grules"))
+	if err := fs.WalkDir(auth.GRULES, ".", cp); err != nil {
 		return false, err
 	}
 

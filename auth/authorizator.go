@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -56,9 +57,42 @@ var grules = struct {
 	ruleset: map[RuleSet]ruleset{},
 }
 
-func Init(rules map[RuleSet]string) {
+//go:embed grules
+var GRULES embed.FS
+
+func Init(rules map[RuleSet]string) error {
 	grules.guard.Lock()
 	defer grules.guard.Unlock()
+
+	// ... initialise from embedded grules files
+	var touched time.Time
+
+	resources := map[RuleSet]struct {
+		tag  string
+		file string
+	}{
+		Interfaces:  {"interfaces", "grules/interfaces.grl"},
+		Controllers: {"controllers", "grules/controllers.grl"},
+		Doors:       {"doors", "grules/doors.grl"},
+		Cards:       {"cards", "grules/cards.grl"},
+		Groups:      {"groups", "grules/groups.grl"},
+		Events:      {"events", "grules/events.grl"},
+		Logs:        {"logs", "grules/logs.grl"},
+		Users:       {"users", "grules/users.grl"},
+	}
+
+	for k, v := range resources {
+		kb := ast.NewKnowledgeLibrary()
+		resource := pkg.NewEmbeddedResource(GRULES, v.file)
+		if err := builder.NewRuleBuilder(kb).BuildRuleFromResource(v.tag, "0.0.0", resource); err != nil {
+			return fmt.Errorf("Error loading %v auth ruleset (%v)\n", "interfaces", err)
+		} else {
+			grules.ruleset[k] = ruleset{
+				kb:      kb,
+				touched: touched,
+			}
+		}
+	}
 
 	for k, v := range rules {
 		if f := strings.TrimSpace(v); f != "" {
@@ -71,6 +105,8 @@ func Init(rules map[RuleSet]string) {
 			}
 		}
 	}
+
+	return nil
 }
 
 func NewAuthorizator(uid, role string) OpAuth {
@@ -285,8 +321,12 @@ func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
 	v, ok := grules.ruleset[r]
 	grules.guard.RUnlock()
 
-	if !ok {
+	if !ok || (v.kb == nil && v.file == "") {
 		return nil, fmt.Errorf("No rules knowledgebase for ruleset '%v'", r)
+	}
+
+	if v.file == "" {
+		return v.kb, nil
 	}
 
 	var touched time.Time

@@ -40,7 +40,6 @@ var DAEMONIZE = Daemonize{
 	workdir: "/usr/local/var/com.github.uhppoted/httpd",
 	logdir:  "/usr/local/var/com.github.uhppoted/logs",
 	config:  "/usr/local/etc/com.github.uhppoted/uhppoted.conf",
-	html:    "/usr/local/etc/com.github.uhppoted/httpd/html",
 	etc:     "/usr/local/etc/com.github.uhppoted/httpd",
 }
 
@@ -49,7 +48,6 @@ type Daemonize struct {
 	workdir string
 	logdir  string
 	config  string
-	html    string
 	etc     string
 }
 
@@ -136,7 +134,12 @@ func (cmd *Daemonize) execute() error {
 		return err
 	}
 
-	if err := cmd.conf(&i, unpacked); err != nil {
+	grules, err := cmd.grules(&i)
+	if err != nil {
+		return err
+	}
+
+	if err := cmd.conf(&i, unpacked, grules); err != nil {
 		return err
 	}
 

@@ -1,5 +1,7 @@
 ## v0.7.x
 
+- [ ] Login not showing error for invalid password
+
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, squoosh, etc
       - [ ] GetV => GetBool, GetInt, etc
@@ -7,41 +9,22 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
+      - [ ] Don't overwrite existing HTML files (or)
+      - [ ] Don't overwrite existing GRULES files (or conf)
       - [ ] Windows
-      - [ ] Bootstrap from scratch
+      - [ ] Linux
+            - [ ] (optionally) unpack GRL files
             ```
             ERROR No active LAN subsystem
             ```
 
-      - [ ] Linux
-            - https://www.vultr.com/docs/install-the-latest-version-of-golang-on-ubuntu/ 
-              eiGz1x2x4erBEE0v
-              S7ipf8HxNzLwdfqF
-
-```
-adduser xxx
-adduser xxx sudo
-adduser uhppoted
-mkdir -p /opt/uhppoted
-chown -R uhppoted:uhppoted /opt/uhppoted
-sudo su - xxx
-wget https://go.dev/dl/go1.17.7.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf  go1.17.7.linux-amd64.tar.gz 
-echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
-echo "export GOPATH=~/.go" >> ~/.profile
-source ~/.profile
-go version
-sudo apt install npm
-sudo npm install -g sass
-git clone https://github.com/uhppoted/uhppoted-httpd.git
-cd uhppoted-httpd
-npm install eslint
-make build
-sudo cp ./bin/uhppoted-httpd /opt/uhppoted
-sudo chown uhppoted:uhppoted /opt/uhppoted/uhppoted-httpd
-cd /opt/uhppoted
-```
-
+- [ ] Bootstrap from scratch
+      - [ ] Default ports should be 8080 and 8443
+      - [ ] Embedded/optional auth.json
+      - [ ] Embedded/optional acl.grl
+      - [ ] Generate TLS keys + certficates
+      - [ ] TLS mutual auth
+      - [x] Embedded grule files
       - [x] MacOS
       - [x] Make admin user thing optional
       - [x] Set initial 'admin' user + generated password
@@ -49,10 +32,9 @@ cd /opt/uhppoted
 
 - [ ] undaemonize
       - [x] MacOS
-      - [ ] Linux
+      - [x] Linux
       - [ ] Windows
 
-- [ ] Overview page 
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError
@@ -61,6 +43,10 @@ cd /opt/uhppoted
       be updated from the catalog ??
 
 ### IN PROGRESS
+
+- [ ] Overview page 
+- [ ] README
+      - Include eslint in build requirements
 
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
@@ -258,3 +244,30 @@ cd /opt/uhppoted
 - https://stackoverflow.com/questions/40328932/javascript-es6-promise-for-loop
 - [datalist](https://demo.agektmr.com/datalist)
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
+
+
+# SNIPPETS
+```
+bRKUAeVjUWZWLYyl
+adduser xxx
+adduser xxx sudo
+adduser uhppoted
+mkdir -p /opt/uhppoted
+chown -R uhppoted:uhppoted /opt/uhppoted
+sudo su - xxx
+wget https://go.dev/dl/go1.17.7.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf  go1.17.7.linux-amd64.tar.gz 
+echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
+echo "export GOPATH=~/.go" >> ~/.profile
+source ~/.profile
+go version
+sudo apt install npm
+sudo npm install -g sass
+git clone https://github.com/uhppoted/uhppoted-httpd.git
+cd uhppoted-httpd
+npm install eslint
+make build
+sudo cp ./bin/uhppoted-httpd /opt/uhppoted
+sudo chown uhppoted:uhppoted /opt/uhppoted/uhppoted-httpd
+cd /opt/uhppoted
+```

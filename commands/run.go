@@ -81,8 +81,8 @@ func (cmd *Run) Execute(args ...interface{}) error {
 	audit.SetAuditFile(conf.HTTPD.Audit.File)
 
 	provider.Init(map[provider.RuleSet]string{
-		provider.Interfaces:  conf.HTTPD.DB.Rules.System,
-		provider.Controllers: conf.HTTPD.DB.Rules.System,
+		provider.Interfaces:  conf.HTTPD.DB.Rules.Interfaces,
+		provider.Controllers: conf.HTTPD.DB.Rules.Controllers,
 		provider.Doors:       conf.HTTPD.DB.Rules.Doors,
 		provider.Cards:       conf.HTTPD.DB.Rules.Cards,
 		provider.Groups:      conf.HTTPD.DB.Rules.Groups,

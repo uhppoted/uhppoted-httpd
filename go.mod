@@ -5,10 +5,10 @@ go 1.17
 require (
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.3.0
-	github.com/hyperjumptech/grule-rule-engine v1.10.4
-	github.com/uhppoted/uhppote-core v0.7.3-0.20220216224636-00c66fdff482
-	github.com/uhppoted/uhppoted-lib v0.7.3-0.20220217190322-c6959e0c66e7
-	golang.org/x/sys v0.0.0-20220209214540-3681064d5158
+	github.com/hyperjumptech/grule-rule-engine v1.10.5
+	github.com/uhppoted/uhppote-core v0.7.3-0.20220219124629-56f27299bc54
+	github.com/uhppoted/uhppoted-lib v0.7.3-0.20220222183506-fdd176142ee3
+	golang.org/x/sys v0.0.0-20220222172238-00053529121e
 )
 
 require (
