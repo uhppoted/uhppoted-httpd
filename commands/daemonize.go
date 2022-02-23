@@ -174,6 +174,7 @@ func (cmd *Daemonize) conf(i *info, unpacked bool, grules bool) error {
 	}
 
 	// ... write back with added HTTPD config
+
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
@@ -225,22 +226,25 @@ func (cmd *Daemonize) unpack(i *info) (bool, error) {
 			return nil
 		}
 
-		src, err := html.HTML.Open(path)
-		if err != nil {
-			return err
-		}
+		file := filepath.Join(root, path)
+		if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
+			src, err := html.HTML.Open(path)
+			if err != nil {
+				return err
+			}
 
-		defer src.Close()
+			defer src.Close()
 
-		dest, err := os.Create(filepath.Join(root, path))
-		if err != nil {
-			return err
-		}
+			dest, err := os.Create(file)
+			if err != nil {
+				return err
+			}
 
-		defer dest.Close()
+			defer dest.Close()
 
-		if _, err := io.Copy(dest, src); err != nil {
-			return err
+			if _, err := io.Copy(dest, src); err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -298,22 +302,25 @@ func (cmd *Daemonize) grules(i *info) (bool, error) {
 			return nil
 		}
 
-		src, err := auth.GRULES.Open(path)
-		if err != nil {
-			return err
-		}
+		file := filepath.Join(root, path)
+		if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
+			src, err := auth.GRULES.Open(path)
+			if err != nil {
+				return err
+			}
 
-		defer src.Close()
+			defer src.Close()
 
-		dest, err := os.Create(filepath.Join(root, path))
-		if err != nil {
-			return err
-		}
+			dest, err := os.Create(file)
+			if err != nil {
+				return err
+			}
 
-		defer dest.Close()
+			defer dest.Close()
 
-		if _, err := io.Copy(dest, src); err != nil {
-			return err
+			if _, err := io.Copy(dest, src); err != nil {
+				return err
+			}
 		}
 
 		return nil

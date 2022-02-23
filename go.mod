@@ -6,9 +6,9 @@ require (
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.3.0
 	github.com/hyperjumptech/grule-rule-engine v1.10.5
-	github.com/uhppoted/uhppote-core v0.7.3-0.20220219124629-56f27299bc54
-	github.com/uhppoted/uhppoted-lib v0.7.3-0.20220222195946-f70767727683
-	golang.org/x/sys v0.0.0-20220222172238-00053529121e
+	github.com/uhppoted/uhppote-core v0.7.3-0.20220223004905-c944e381b586
+	github.com/uhppoted/uhppoted-lib v0.7.3-0.20220223192935-0084ca23c724
+	golang.org/x/sys v0.0.0-20220223155357-96fed51e1446
 )
 
 require (

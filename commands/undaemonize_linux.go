@@ -73,7 +73,7 @@ func (cmd *Undaemonize) Execute(args ...interface{}) error {
              HTML files in %s,
              and GRULES files in %s
              were not removed and should be deleted manually
-	`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir, filepath.Join(cmd.etc, "html"), filepath.Join(cmd.etc, "grules"))
+`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir, filepath.Join(cmd.etc, "html"), filepath.Join(cmd.etc, "grules"))
 	fmt.Println()
 
 	return nil

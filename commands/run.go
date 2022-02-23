@@ -4,6 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
+
+	"github.com/uhppoted/uhppoted-lib/config"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	provider "github.com/uhppoted/uhppoted-httpd/auth"
@@ -11,13 +15,13 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
-	"github.com/uhppoted/uhppoted-lib/config"
 )
 
 type Run struct {
 	console       bool
 	configuration string
 	debug         bool
+	workdir       string
 }
 
 func (r *Run) FlagSet() *flag.FlagSet {
@@ -54,12 +58,39 @@ func (cmd *Run) Help() {
 	fmt.Println()
 }
 
-func (cmd *Run) Execute(args ...interface{}) error {
+func (cmd *Run) execute(f func(c config.Config) error) error {
+	// ... load configuration
 	conf := config.NewConfig()
 	if err := conf.Load(cmd.configuration); err != nil {
 		log.Printf("%5s Could not load configuration (%v)", "WARN", err)
 	}
 
+	// ... create lockfile
+	if err := os.MkdirAll(cmd.workdir, os.ModeDir|os.ModePerm); err != nil {
+		return fmt.Errorf("Unable to create working directory '%v': %v", cmd.workdir, err)
+	}
+
+	pid := fmt.Sprintf("%d\n", os.Getpid())
+	lockfile := filepath.Join(cmd.workdir, fmt.Sprintf("%s.pid", SERVICE))
+
+	if _, err := os.Stat(lockfile); err == nil {
+		return fmt.Errorf("PID lockfile '%v' already in use", lockfile)
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("Error checking PID lockfile '%v' (%v)", lockfile, err)
+	}
+
+	if err := os.WriteFile(lockfile, []byte(pid), 0644); err != nil {
+		return fmt.Errorf("Unable to create PID lockfile: %v", err)
+	}
+
+	defer func() {
+		os.Remove(lockfile)
+	}()
+
+	return f(*conf)
+}
+
+func (cmd *Run) run(conf config.Config) error {
 	var authentication auth.IAuth
 
 	switch conf.HTTPD.Security.Auth {
@@ -103,7 +134,7 @@ func (cmd *Run) Execute(args ...interface{}) error {
 		RequestTimeout:           conf.HTTPD.RequestTimeout,
 	}
 
-	if err := system.Init(*conf, cmd.configuration, cmd.debug); err != nil {
+	if err := system.Init(conf, cmd.configuration, cmd.debug); err != nil {
 		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 

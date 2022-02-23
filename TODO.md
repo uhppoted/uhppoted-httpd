@@ -1,6 +1,7 @@
 ## v0.7.x
 
 - [ ] Login not showing error for invalid password
+- [ ] config.NewConfig should not return pointer
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, squoosh, etc
@@ -9,28 +10,46 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
-      - [ ] Don't overwrite existing HTML files (or)
-      - [ ] Don't overwrite existing GRULES files (or conf)
+      - [ ] Restructure `run` for Windows services
+      - [x] Don't overwrite existing HTML files (or)
+      - [x] Don't overwrite existing GRULES files (or conf)
       - [ ] Windows
-      - [x] Linux
-            - [x] (optionally) unpack GRL files
+            - `system` is under `\ProgramData\uhppoted` (should be under `\ProgramData\uhppoted\httpd`)
+```
+ERROR: open C:\ProgramData\uhppoted\etc\httpd\auth.json: The system cannot find the path specified.
+
+; httpd.system.interfaces = C:\ProgramData\uhppoted\var\httpd\system\interfaces.json
+; httpd.system.controllers = C:\ProgramData\uhppoted\var\httpd\system\controllers.json
+
+
+2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\interfaces.json: The system cannot find the path specified.
+2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\controllers.json: The system cannot find the path specified.
+2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\doors.json: The system cannot find the path specified.
+2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\cards.json: The system cannot find the path specified.
+2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\groups.json: The system cannot find the path specified.
+2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\events.json: The system cannot find the path specified.
+2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\logs.json: The system cannot find the path specified.
+2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\users.json: The system cannot find the path specified.
+
+```
 
 - [ ] Bootstrap from scratch
-      - [x] Default ports should be 8080 and 8443
       - [ ] Embedded/optional auth.json
       - [ ] Embedded/optional ACL.grl
       - [ ] Generate TLS keys + certficates
             - [ ] TLS mutual auth
-      - [x] Embedded grule files
-      - [x] MacOS
-      - [x] Make admin user thing optional
-      - [x] Set initial 'admin' user + generated password
-      - [x] Embed HTML
 
 - [ ] undaemonize
-      - [x] MacOS
-      - [x] Linux
+      - [ ] collect warnings and print them out all together
       - [ ] Windows
+```
+C:\uhppoted>uhppoted-httpd.exe undaemonize
+   ... undaemonizing
+   ... unregistering %s as a Windows service uhppoted-httpd
+   ... stopping uhppoted-httpd service
+
+ERROR: The service has not been started.
+```
 
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys

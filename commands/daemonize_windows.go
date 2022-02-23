@@ -1,18 +1,18 @@
 package commands
 
 import (
-	//	"bufio"
+	"bufio"
 	"flag"
 	"fmt"
-	//	"os"
+	"os"
 	"path/filepath"
-	//	"strings"
+	"strings"
 
-	//	"golang.org/x/sys/windows/svc/eventlog"
-	//	"golang.org/x/sys/windows/svc/mgr"
+	"golang.org/x/sys/windows/svc/eventlog"
+	"golang.org/x/sys/windows/svc/mgr"
 
 	"github.com/uhppoted/uhppote-core/types"
-	//	"github.com/uhppoted/uhppoted-lib/config"
+	"github.com/uhppoted/uhppoted-lib/config"
 )
 
 var DAEMONIZE = Daemonize{
@@ -21,7 +21,6 @@ var DAEMONIZE = Daemonize{
 	workdir:     workdir(),
 	logdir:      filepath.Join(workdir(), "logs"),
 	config:      filepath.Join(workdir(), "uhppoted.conf"),
-	html:        filepath.Join(workdir(), "httpd", "html"),
 	etc:         filepath.Join(workdir(), "httpd"),
 }
 
@@ -40,7 +39,6 @@ type Daemonize struct {
 	workdir     string
 	logdir      string
 	config      string
-	html        string
 	etc         string
 }
 
@@ -71,164 +69,141 @@ func (cmd *Daemonize) Help() {
 }
 
 func (cmd *Daemonize) Execute(args ...interface{}) error {
-	return fmt.Errorf("NOT IMPLEMENTED")
-	//    dir := filepath.Dir(cmd.config)
-	//    r := bufio.NewReader(os.Stdin)
-	//
-	//    fmt.Println()
-	//    fmt.Printf("     **** PLEASE MAKE SURE YOU HAVE A BACKUP COPY OF THE CONFIGURATION INFORMATION AND KEYS IN %s ***\n", dir)
-	//    fmt.Println()
-	//    fmt.Printf("     Enter 'yes' to continue with the installation: ")
-	//
-	//    text, err := r.ReadString('\n')
-	//    if err != nil || strings.TrimSpace(text) != "yes" {
-	//        fmt.Println()
-	//        fmt.Printf("     -- installation cancelled --")
-	//        fmt.Println()
-	//        return nil
-	//    }
-	//
-	//    return cmd.execute()
+	dir := filepath.Dir(cmd.config)
+	r := bufio.NewReader(os.Stdin)
+
+	fmt.Println()
+	fmt.Printf("     **** PLEASE MAKE SURE YOU HAVE A BACKUP COPY OF THE CONFIGURATION INFORMATION AND KEYS IN %s ***\n", dir)
+	fmt.Println()
+	fmt.Printf("     Enter 'yes' to continue with the installation: ")
+
+	text, err := r.ReadString('\n')
+	if err != nil || strings.TrimSpace(text) != "yes" {
+		fmt.Println()
+		fmt.Printf("     -- installation cancelled --")
+		fmt.Println()
+		return nil
+	}
+
+	return cmd.execute()
 }
 
-// func (cmd *Daemonize) execute() error {
-//     fmt.Println()
-//     fmt.Println("   ... daemonizing")
-//
-//     executable, err := os.Executable()
-//     if err != nil {
-//         return err
-//     }
-//
-//     bind, broadcast, _ := config.DefaultIpAddresses()
-//
-//     i := info{
-//         Executable:       executable,
-//         WorkDir:          cmd.workdir,
-//         LogDir:           cmd.logdir,
-//         BindAddress:      &bind,
-//         BroadcastAddress: &broadcast,
-//     }
-//
-//     if err := cmd.register(&i); err != nil {
-//         return err
-//     }
-//
-//     if err := cmd.mkdirs(&i); err != nil {
-//         return err
-//     }
-//
-//     if err := cmd.conf(&i); err != nil {
-//         return err
-//     }
-//
-//     if err := cmd.genkeys(&i); err != nil {
-//         return err
-//     }
-//
-//     fmt.Printf("   ... %s registered as a Windows system service\n", SERVICE)
-//     fmt.Println()
-//     fmt.Println("   The service will start automatically on the next system restart. Start it manually from the")
-//     fmt.Println("   'Services' application or from the command line by executing the following command:")
-//     fmt.Println()
-//     fmt.Printf("     > net start %s\n", SERVICE)
-//     fmt.Printf("     > sc query %s\n", SERVICE)
-//     fmt.Println()
-//     fmt.Println("   Please replace the default RSA keys for event and system messages:")
-//     fmt.Printf("     - %s\n", filepath.Join(filepath.Dir(cmd.config), "mqtt", "rsa", "encryption", "event.pub"))
-//     fmt.Printf("     - %s\n", filepath.Join(filepath.Dir(cmd.config), "mqtt", "rsa", "encryption", "system.pub"))
-//     fmt.Println()
-//
-//     return nil
-// }
-//
-// func (cmd *Daemonize) register(i *info) error {
-//     config := mgr.Config{
-//         DisplayName:      cmd.name,
-//         Description:      cmd.description,
-//         StartType:        mgr.StartAutomatic,
-//         DelayedAutoStart: true,
-//     }
-//
-//     m, err := mgr.Connect()
-//     if err != nil {
-//         return err
-//     }
-//
-//     defer m.Disconnect()
-//
-//     s, err := m.OpenService(cmd.name)
-//     if err == nil {
-//         s.Close()
-//         return fmt.Errorf("service %s already exists", cmd.Name)
-//     }
-//
-//     s, err = m.CreateService(cmd.name, i.Executable, config, "is", "auto-started")
-//     if err != nil {
-//         return err
-//     }
-//
-//     defer s.Close()
-//
-//     err = eventlog.InstallAsEventCreate(cmd.name, eventlog.Error|eventlog.Warning|eventlog.Info)
-//     if err != nil {
-//         s.Delete()
-//         return fmt.Errorf("InstallAsEventCreate() failed: %v", err)
-//     }
-//
-//     return nil
-// }
-//
-// func (cmd *Daemonize) mkdirs(i *info) error {
-//     directories := []string{
-//         i.WorkDir,
-//         i.LogDir,
-//         filepath.Join(i.WorkDir, "mqtt"),
-//         filepath.Join(i.WorkDir, "mqtt", "rsa"),
-//         filepath.Join(i.WorkDir, "mqtt", "rsa", "encryption"),
-//         filepath.Join(i.WorkDir, "mqtt", "rsa", "signing"),
-//     }
-//
-//     for _, dir := range directories {
-//         fmt.Printf("   ... creating '%s'\n", dir)
-//
-//         if err := os.MkdirAll(dir, 0770); err != nil {
-//             return err
-//         }
-//     }
-//
-//     return nil
-// }
-//
-// func (cmd *Daemonize) conf(i *info) error {
-//     path := cmd.config
-//
-//     fmt.Printf("   ... creating '%s'\n", path)
-//
-//     // initialise config from existing uhppoted.conf
-//     cfg := config.NewConfig()
-//     if f, err := os.Open(path); err != nil {
-//         if !os.IsNotExist(err) {
-//             return err
-//         }
-//     } else {
-//         err := cfg.Read(f)
-//         f.Close()
-//         if err != nil {
-//             return err
-//         }
-//     }
-//
-//     // generate HMAC and RSA keys
-//     if cfg.MQTT.HMAC.Key == "" {
-//         hmac, err := hmac()
-//         if err != nil {
-//             return err
-//         }
-//
-//         cfg.MQTT.HMAC.Key = hmac
-//     }
-//
+func (cmd *Daemonize) execute() error {
+	fmt.Println()
+	fmt.Println("   ... daemonizing")
+
+	executable, err := os.Executable()
+	if err != nil {
+		return err
+	}
+
+	bind, broadcast, _ := config.DefaultIpAddresses()
+
+	i := info{
+		Executable:       executable,
+		WorkDir:          cmd.workdir,
+		LogDir:           cmd.logdir,
+		BindAddress:      &bind,
+		BroadcastAddress: &broadcast,
+	}
+
+	if err := cmd.register(&i); err != nil {
+		return err
+	}
+
+	if err := cmd.mkdirs(&i); err != nil {
+		return err
+	}
+
+	unpacked, err := cmd.unpack(&i)
+	if err != nil {
+		return err
+	}
+
+	grules, err := cmd.grules(&i)
+	if err != nil {
+		return err
+	}
+
+	if err := cmd.conf(&i, unpacked, grules); err != nil {
+		return err
+	}
+
+	if err := cmd.users(i); err != nil {
+		return err
+	}
+
+	if err := cmd.sysinit(i); err != nil {
+		return err
+	}
+
+	fmt.Printf("   ... %s registered as a Windows system service\n", SERVICE)
+	fmt.Println()
+	fmt.Println("   The service will start automatically on the next system restart. Start it manually from the")
+	fmt.Println("   'Services' application or from the command line by executing the following command:")
+	fmt.Println()
+	fmt.Printf("     > net start %s\n", SERVICE)
+	fmt.Printf("     > sc query %s\n", SERVICE)
+	fmt.Println()
+
+	return nil
+}
+
+func (cmd *Daemonize) register(i *info) error {
+	config := mgr.Config{
+		DisplayName:      cmd.name,
+		Description:      cmd.description,
+		StartType:        mgr.StartAutomatic,
+		DelayedAutoStart: true,
+	}
+
+	m, err := mgr.Connect()
+	if err != nil {
+		return err
+	}
+
+	defer m.Disconnect()
+
+	s, err := m.OpenService(cmd.name)
+	if err == nil {
+		s.Close()
+		return fmt.Errorf("service %s already exists", cmd.Name)
+	}
+
+	s, err = m.CreateService(cmd.name, i.Executable, config, "is", "auto-started")
+	if err != nil {
+		return err
+	}
+
+	defer s.Close()
+
+	err = eventlog.InstallAsEventCreate(cmd.name, eventlog.Error|eventlog.Warning|eventlog.Info)
+	if err != nil {
+		s.Delete()
+		return fmt.Errorf("InstallAsEventCreate() failed: %v", err)
+	}
+
+	return nil
+}
+
+func (cmd *Daemonize) mkdirs(i *info) error {
+	directories := []string{
+		i.WorkDir,
+		i.LogDir,
+		filepath.Join(i.WorkDir, "httpd"),
+	}
+
+	for _, dir := range directories {
+		fmt.Printf("   ... creating '%s'\n", dir)
+
+		if err := os.MkdirAll(dir, 0770); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 //     // replace line endings
 //     var b strings.Builder
 //
@@ -251,10 +226,3 @@ func (cmd *Daemonize) Execute(args ...interface{}) error {
 //     if _, err = f.Write([]byte(replacer.Replace(b.String()))); err != nil {
 //         return err
 //     }
-//
-//     return nil
-// }
-//
-// func (cmd *Daemonize) genkeys(i *info) error {
-//     return genkeys(filepath.Dir(cmd.config), cmd.hotp)
-// }
