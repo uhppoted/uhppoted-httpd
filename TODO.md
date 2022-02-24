@@ -10,27 +10,30 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
-      - [ ] Restructure `run` for Windows services
-      - [x] Don't overwrite existing HTML files (or)
-      - [x] Don't overwrite existing GRULES files (or conf)
+      - [x] Restructure `run` for Windows services
+      - [ ] Check log rotation
+      - [ ] Cannot change initial password
+```
+Invalid user OID ()
+```
+      - [ ] Can't find unpacked translations
+```
+2022/02/24 20:29:54 WARN  Error locating translation 'translations\en\login.json' (stat translations\en\login.json: invalid argument)
+```
       - [ ] Windows
+            - CRLF line endings
             - `system` is under `\ProgramData\uhppoted` (should be under `\ProgramData\uhppoted\httpd`)
 ```
-ERROR: open C:\ProgramData\uhppoted\etc\httpd\auth.json: The system cannot find the path specified.
-
-; httpd.system.interfaces = C:\ProgramData\uhppoted\var\httpd\system\interfaces.json
-; httpd.system.controllers = C:\ProgramData\uhppoted\var\httpd\system\controllers.json
-
-
-2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\interfaces.json: The system cannot find the path specified.
-2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\controllers.json: The system cannot find the path specified.
-2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\doors.json: The system cannot find the path specified.
-2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\cards.json: The system cannot find the path specified.
-2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\groups.json: The system cannot find the path specified.
-2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\events.json: The system cannot find the path specified.
-2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\logs.json: The system cannot find the path specified.
-2022/02/23 18:55:31 ERROR open C:\ProgramData\uhppoted\httpd\system\users.json: The system cannot find the path specified.
-
+C:\uhppoted>uhppoted-httpd --debug --console
+2022/02/24 20:27:16 uhppoted-httpd service v0.7.x - Microsoft Windows (PID 2460)
+2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\interfaces.json: The system cannot find the path specified.
+2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\controllers.json: The system cannot find the path specified.
+2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\doors.json: The system cannot find the path specified.
+2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\cards.json: The system cannot find the path specified.
+2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\groups.json: The system cannot find the path specified.
+2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\events.json: The system cannot find the path specified.
+2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\logs.json: The system cannot find the path specified.
+2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\users.json: The system cannot find the path specified.
 ```
 
 - [ ] Bootstrap from scratch
@@ -41,7 +44,7 @@ ERROR: open C:\ProgramData\uhppoted\etc\httpd\auth.json: The system cannot find 
 
 - [ ] undaemonize
       - [ ] collect warnings and print them out all together
-      - [ ] Windows
+      - [x] Windows
 ```
 C:\uhppoted>uhppoted-httpd.exe undaemonize
    ... undaemonizing
@@ -57,6 +60,28 @@ ERROR: The service has not been started.
 - [ ] Make vtable'able subsystem an interface
 - [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
       be updated from the catalog ??
+
+- [ ] ACL logging:
+```
+2022/02/24 11:13:08 INFO ACL
+201020304
+  6000001 6000001  2022-01-01 2022-12-31 N N N N
+  7000001 7000001  2022-02-01 2022-12-31 N N N N
+  8000001 8000001  2022-02-01 2022-12-31 N N N N
+303986753
+  6000001 6000001  2022-01-01 2022-12-31 Y N N Y
+  7000001 7000001  2022-02-01 2022-12-31 N N N N
+  8000001 8000001  2022-02-01 2022-12-31 Y Y N Y
+405419896
+  6000001 6000001  2022-01-01 2022-12-31 Y N N N
+  7000001 7000001  2022-02-01 2022-12-31 N Y N N
+  8000001 8000001  2022-02-01 2022-12-31 N Y N N
+2022/02/24 11:13:08 Comparing ACL
+2022/02/24 11:13:08 ACL 303986753 - unchanged:0   updated:0   added:0   deleted:3  
+2022/02/24 11:13:08 ACL 405419896 - unchanged:0   updated:0   added:3   deleted:3  
+2022/02/24 11:13:08 ACL 201020304 - unchanged:0   updated:0   added:0   deleted:3  
+2022/02/24 11:13:08 ACL compare - unchanged:0   updated:0   added:3   deleted:3  
+```
 
 ### IN PROGRESS
 

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"os"
 	"sort"
 	"strings"
 	"time"
@@ -277,7 +276,7 @@ func (l *LAN) api(controllers []Controller) *uhppoted.UHPPOTED {
 	u := uhppote.NewUHPPOTE(l.BindAddress, l.BroadcastAddress, l.ListenAddress, 1*time.Second, devices, l.Debug)
 	api := uhppoted.UHPPOTED{
 		UHPPOTE: u,
-		Log:     log.New(os.Stdout, "", log.LstdFlags|log.LUTC),
+		Log:     log.Default(),
 	}
 
 	return &api

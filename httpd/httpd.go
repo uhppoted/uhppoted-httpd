@@ -42,7 +42,7 @@ const (
 	SettingsCookie = "uhppoted-settings"
 )
 
-func (h *HTTPD) Run() {
+func (h *HTTPD) Run(interrupt chan os.Signal) {
 	// ... initialisation
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -153,19 +153,22 @@ func (h *HTTPD) Run() {
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
 
-		<-sigint
+		select {
+		case <-interrupt:
+			infox("HTTPD", "terminated")
+		}
 
 		cancel()
 
 		if srv != nil {
 			if err := srv.Shutdown(context.Background()); err != nil {
-				log.Printf("WARN  HTTP  server shutdown error: %v", err)
+				warnx("HTTPD", fmt.Errorf("HTTP server shutdown error: %w", err))
 			}
 		}
 
 		if srvs != nil {
 			if err := srvs.Shutdown(context.Background()); err != nil {
-				log.Printf("WARN  HTTPS server shutdown error: %v", err)
+				warnx("HTTPD", fmt.Errorf("HTTPS server shutdown error: %w", err))
 			}
 		}
 
@@ -174,7 +177,7 @@ func (h *HTTPD) Run() {
 
 	if srv != nil {
 		go func() {
-			log.Printf("INFO  HTTP  server starting on port %v", srv.Addr)
+			infox("HTTPD", fmt.Sprintf("HTTP  server starting on port %v", srv.Addr))
 			if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 				log.Fatalf("ERROR: %v", err)
 			}
@@ -183,7 +186,7 @@ func (h *HTTPD) Run() {
 
 	if srvs != nil {
 		go func() {
-			log.Printf("INFO  HTTPS server starting on port %v", srvs.Addr)
+			infox("HTTPD", fmt.Sprintf("HTTPS server starting on port %v", srvs.Addr))
 			if err := srvs.ListenAndServeTLS(h.TLSCertificate, h.TLSKey); err != http.ErrServerClosed {
 				log.Fatalf("ERROR: %v", err)
 			}
@@ -286,14 +289,22 @@ func resolve(u *url.URL) (string, error) {
 	return base.ResolveReference(u).EscapedPath(), nil
 }
 
-func debug(message string) {
-	log.Printf("%-5s %s", "DEBUG", message)
+func debug(msg string) {
+	log.Printf("%-5s %s", "DEBUG", msg)
 }
 
-func info(message string) {
-	log.Printf("%-5s %s", "INFO", message)
+func info(msg string) {
+	log.Printf("%-5s %s", "INFO", msg)
+}
+
+func infox(subsystem string, msg string) {
+	log.Printf("%-5s %-8v  %v", "INFO", subsystem, msg)
 }
 
 func warn(err error) {
 	log.Printf("%-5s %v", "WARN", err)
+}
+
+func warnx(subsystem string, err error) {
+	log.Printf("%-5s %-8v  %v", "WARN", subsystem, err)
 }

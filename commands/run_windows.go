@@ -1,18 +1,34 @@
 package commands
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"sync"
+	"syscall"
+
+	"golang.org/x/sys/windows/svc"
+	syslog "golang.org/x/sys/windows/svc/eventlog"
 
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-lib/config"
+	"github.com/uhppoted/uhppoted-lib/eventlog"
 )
 
 var RUN = Run{
 	console:       false,
 	workdir:       workdir(),
 	configuration: filepath.Join(workdir(), "uhppoted.conf"),
+	logFile:       filepath.Join(workdir(), "logs", fmt.Sprintf("%s.log", SERVICE)),
+	logFileSize:   10,
+}
+
+type service struct {
+	name string
+	conf config.Config
+	cmd  *Run
 }
 
 func (cmd *Run) Execute(args ...interface{}) error {
@@ -25,116 +41,114 @@ func (cmd *Run) Execute(args ...interface{}) error {
 	return cmd.execute(f)
 }
 
-func (cmd *Run) start(c config.Config) error {
-	return cmd.run(c)
-	//     var logger *log.Logger
+func (cmd *Run) start(conf config.Config) error {
+	if cmd.console {
+		log.SetOutput(os.Stdout)
+		log.SetFlags(log.LstdFlags)
 
-	//     eventlogger, err := eventlog.Open(SERVICE)
-	//     if err != nil {
-	//         events := filelogger.Ticker{Filename: r.logFile, MaxSize: r.logFileSize}
-	//         logger = log.New(&events, "", log.Ldate|log.Ltime|log.LUTC)
-	//     } else {
-	//         defer eventlogger.Close()
+		interrupt := make(chan os.Signal, 1)
 
-	//         events := EventLog{eventlogger}
-	//         logger = log.New(&events, SERVICE, log.Ldate|log.Ltime|log.LUTC)
-	//     }
+		signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
+		return cmd.run(conf, interrupt)
+	}
 
-	//     logger.Printf("%s service - start\n", SERVICE)
+	if eventlogger, err := syslog.Open(SERVICE); err != nil {
+		events := eventlog.Ticker{Filename: cmd.logFile, MaxSize: cmd.logFileSize}
 
-	//     if r.console {
-	//         interrupt := make(chan os.Signal, 1)
+		log.SetOutput(&events)
+	} else {
+		defer eventlogger.Close()
 
-	//         signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
-	//         r.run(c, logger, interrupt)
-	//         return nil
-	//     }
+		log.SetOutput(&EventLog{eventlogger})
+	}
 
-	//     uhppoted := service{
-	//         name:   SERVICE,
-	//         conf:   c,
-	//         logger: logger,
-	//         cmd:    r,
-	//     }
+	log.SetFlags(log.Ldate | log.Ltime | log.LUTC)
+	log.Printf("%s service - start\n", SERVICE)
 
-	//     logger.Printf("%s service - starting\n", SERVICE)
-	//     err = svc.Run(SERVICE, &uhppoted)
-	//     if err != nil {
-	//         fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
-	//         fmt.Println()
-	//         fmt.Printf("   To run %s as a command line application, type:\n", SERVICE)
-	//         fmt.Println()
-	//         fmt.Printf("     > %s --console\n", SERVICE)
-	//         fmt.Println()
+	uhppoted := service{
+		name: SERVICE,
+		conf: conf,
+		cmd:  cmd,
+	}
 
-	//         logger.Fatalf("Error executing ServiceManager.Run request: %v", err)
-	//         return err
-	//     }
+	log.Printf("%s service - starting\n", SERVICE)
 
-	//     logger.Printf("%s daemon - started\n", SERVICE)
-	//     return nil
+	if err := svc.Run(SERVICE, &uhppoted); err != nil {
+		fmt.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
+		fmt.Println()
+		fmt.Printf("   To run %s as a command line application, type:\n", SERVICE)
+		fmt.Println()
+		fmt.Printf("     > %s --console\n", SERVICE)
+		fmt.Println()
+
+		log.Printf("   Unable to execute ServiceManager.Run request (%v)\n", err)
+		log.Println()
+		log.Printf("   To run %s as a command line application, type:\n", SERVICE)
+		log.Println()
+		log.Printf("     > %s --console\n", SERVICE)
+		log.Println()
+
+		log.Fatalf("Error executing ServiceManager.Run request: %v", err)
+
+		return err
+	}
+
+	log.Printf("%s daemon - started\n", SERVICE)
+
+	return nil
 }
 
-// func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (ssec bool, errno uint32) {
-//     s.logger.Printf("%s service - Execute\n", SERVICE)
+func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (ssec bool, errno uint32) {
+	log.Printf("%s service - Execute\n", SERVICE)
 
-//     const commands = svc.AcceptStop | svc.AcceptShutdown
+	const commands = svc.AcceptStop | svc.AcceptShutdown
 
-//     status <- svc.Status{State: svc.StartPending}
+	status <- svc.Status{State: svc.StartPending}
 
-//     interrupt := make(chan os.Signal, 1)
-//     var wg sync.WaitGroup
+	interrupt := make(chan os.Signal, 1)
+	var wg sync.WaitGroup
 
-//     wg.Add(1)
-//     go func() {
-//         defer wg.Done()
-//         s.cmd.run(s.conf, s.logger, interrupt)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		s.cmd.run(s.conf, interrupt)
 
-//         s.logger.Printf("exit\n")
-//     }()
+		log.Printf("exit\n")
+	}()
 
-//     status <- svc.Status{State: svc.Running, Accepts: commands}
+	status <- svc.Status{State: svc.Running, Accepts: commands}
 
-// loop:
-//     for {
-//         select {
-//         case c := <-r:
-//             s.logger.Printf("%s service - select: %v  %v\n", SERVICE, c.Cmd, c.CurrentStatus)
-//             switch c.Cmd {
-//             case svc.Interrogate:
-//                 s.logger.Printf("%s service - svc.Interrogate %v\n", SERVICE, c.CurrentStatus)
-//                 status <- c.CurrentStatus
+loop:
+	for {
+		select {
+		case c := <-r:
+			log.Printf("%s service - select: %v  %v\n", SERVICE, c.Cmd, c.CurrentStatus)
+			switch c.Cmd {
+			case svc.Interrogate:
+				log.Printf("%s service - svc.Interrogate %v\n", SERVICE, c.CurrentStatus)
+				status <- c.CurrentStatus
 
-//             case svc.Stop:
-//                 interrupt <- syscall.SIGINT
-//                 s.logger.Printf("%s service- svc.Stop\n", SERVICE)
-//                 break loop
+			case svc.Stop:
+				interrupt <- syscall.SIGINT
+				log.Printf("%s service- svc.Stop\n", SERVICE)
+				break loop
 
-//             case svc.Shutdown:
-//                 interrupt <- syscall.SIGTERM
-//                 s.logger.Printf("%s service - svc.Shutdown\n", SERVICE)
-//                 break loop
+			case svc.Shutdown:
+				interrupt <- syscall.SIGTERM
+				log.Printf("%s service - svc.Shutdown\n", SERVICE)
+				break loop
 
-//             default:
-//                 s.logger.Printf("%s service - svc.????? (%v)\n", SERVICE, c.Cmd)
-//             }
-//         }
-//     }
+			default:
+				log.Printf("%s service - svc.????? (%v)\n", SERVICE, c.Cmd)
+			}
+		}
+	}
 
-//     s.logger.Printf("%s service - stopping\n", SERVICE)
-//     status <- svc.Status{State: svc.StopPending}
-//     wg.Wait()
-//     status <- svc.Status{State: svc.Stopped}
-//     s.logger.Printf("%s service - stopped\n", SERVICE)
+	log.Printf("%s service - stopping\n", SERVICE)
+	status <- svc.Status{State: svc.StopPending}
+	wg.Wait()
+	status <- svc.Status{State: svc.Stopped}
+	log.Printf("%s service - stopped\n", SERVICE)
 
-//     return false, 0
-// }
-
-// func (e *EventLog) Write(p []byte) (int, error) {
-//     err := e.log.Info(1, string(p))
-//     if err != nil {
-//         return 0, err
-//     }
-
-//     return len(p), nil
-// }
+	return false, 0
+}

@@ -22,6 +22,8 @@ type Run struct {
 	configuration string
 	debug         bool
 	workdir       string
+	logFile       string
+	logFileSize   int
 }
 
 func (r *Run) FlagSet() *flag.FlagSet {
@@ -83,14 +85,12 @@ func (cmd *Run) execute(f func(c config.Config) error) error {
 		return fmt.Errorf("Unable to create PID lockfile: %v", err)
 	}
 
-	defer func() {
-		os.Remove(lockfile)
-	}()
+	defer os.Remove(lockfile)
 
 	return f(*conf)
 }
 
-func (cmd *Run) run(conf config.Config) error {
+func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) error {
 	var authentication auth.IAuth
 
 	switch conf.HTTPD.Security.Auth {
@@ -138,7 +138,7 @@ func (cmd *Run) run(conf config.Config) error {
 		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 
-	h.Run()
+	h.Run(interrupt)
 
 	return nil
 }
