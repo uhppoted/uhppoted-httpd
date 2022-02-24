@@ -16,15 +16,6 @@ import (
 	"github.com/uhppoted/uhppoted-lib/config"
 )
 
-var DAEMONIZE = Daemonize{
-	usergroup: "uhppoted:uhppoted",
-	workdir:   "/var/uhppoted/httpd",
-	logdir:    "/var/log/uhppoted",
-	config:    "/etc/uhppoted/uhppoted.conf",
-	html:      "/etc/uhppoted/httpd/html",
-	etc:       "/etc/uhppoted/httpd",
-}
-
 type usergroup string
 
 type info struct {
@@ -70,6 +61,17 @@ const logRotateTemplate = `{{range .LogFiles}}{{.}} {
     endscript
 }{{end}}
 `
+
+var DAEMONIZE = Daemonize{
+	usergroup: "uhppoted:uhppoted",
+	workdir:   "/var/uhppoted/httpd",
+	logdir:    "/var/log/uhppoted",
+	config:    "/etc/uhppoted/uhppoted.conf",
+	html:      "/etc/uhppoted/httpd/html",
+	etc:       "/etc/uhppoted/httpd",
+}
+
+var replacer *strings.Replacer
 
 type Daemonize struct {
 	usergroup usergroup

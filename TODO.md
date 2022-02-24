@@ -1,7 +1,6 @@
 ## v0.7.x
 
 - [ ] Login not showing error for invalid password
-- [ ] config.NewConfig should not return pointer
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, squoosh, etc
@@ -21,20 +20,17 @@ Invalid user OID ()
 2022/02/24 20:29:54 WARN  Error locating translation 'translations\en\login.json' (stat translations\en\login.json: invalid argument)
 ```
       - [ ] Windows
-            - CRLF line endings
-            - `system` is under `\ProgramData\uhppoted` (should be under `\ProgramData\uhppoted\httpd`)
-```
-C:\uhppoted>uhppoted-httpd --debug --console
-2022/02/24 20:27:16 uhppoted-httpd service v0.7.x - Microsoft Windows (PID 2460)
-2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\interfaces.json: The system cannot find the path specified.
-2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\controllers.json: The system cannot find the path specified.
-2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\doors.json: The system cannot find the path specified.
-2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\cards.json: The system cannot find the path specified.
-2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\groups.json: The system cannot find the path specified.
-2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\events.json: The system cannot find the path specified.
-2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\logs.json: The system cannot find the path specified.
-2022/02/24 20:27:17 ERROR open C:\ProgramData\uhppoted\httpd\system\users.json: The system cannot find the path specified.
-```
+            - [ ] CRLF line endings
+              - [x] config
+              - [ ] system JSON files
+                    - [ ] interfaces.json
+                    - [x] users.json
+              - [x] GRULES files
+              - [x] auth.json
+              - [?] ACL.grl
+
+            - [ ] `users.json` is under `\ProgramData\uhppoted` (should be under `\ProgramData\uhppoted\httpd\system`)
+            - [x] `system` is under `\ProgramData\uhppoted` (should be under `\ProgramData\uhppoted\httpd`)
 
 - [ ] Bootstrap from scratch
       - [ ] Embedded/optional auth.json
@@ -45,15 +41,8 @@ C:\uhppoted>uhppoted-httpd --debug --console
 - [ ] undaemonize
       - [ ] collect warnings and print them out all together
       - [x] Windows
-```
-C:\uhppoted>uhppoted-httpd.exe undaemonize
-   ... undaemonizing
-   ... unregistering %s as a Windows service uhppoted-httpd
-   ... stopping uhppoted-httpd service
 
-ERROR: The service has not been started.
-```
-
+- [ ] config.NewConfig should not return pointer
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError
@@ -77,10 +66,10 @@ ERROR: The service has not been started.
   7000001 7000001  2022-02-01 2022-12-31 N Y N N
   8000001 8000001  2022-02-01 2022-12-31 N Y N N
 2022/02/24 11:13:08 Comparing ACL
-2022/02/24 11:13:08 ACL 303986753 - unchanged:0   updated:0   added:0   deleted:3  
-2022/02/24 11:13:08 ACL 405419896 - unchanged:0   updated:0   added:3   deleted:3  
-2022/02/24 11:13:08 ACL 201020304 - unchanged:0   updated:0   added:0   deleted:3  
-2022/02/24 11:13:08 ACL compare - unchanged:0   updated:0   added:3   deleted:3  
+2022/02/24 11:13:08 ACL 303986753 - unchanged:0   updated:0   added:0   deleted:3
+2022/02/24 11:13:08 ACL 405419896 - unchanged:0   updated:0   added:3   deleted:3
+2022/02/24 11:13:08 ACL 201020304 - unchanged:0   updated:0   added:0   deleted:3
+2022/02/24 11:13:08 ACL compare - unchanged:0   updated:0   added:3   deleted:3
 ```
 
 ### IN PROGRESS

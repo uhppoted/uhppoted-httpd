@@ -174,15 +174,12 @@ func (cmd *Daemonize) conf(i *info, unpacked bool, grules bool) error {
 	}
 
 	// ... write back with added HTTPD config
-
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
+	var b strings.Builder
+	if err := cfg.Write(&b); err != nil {
 		return err
 	}
 
-	defer f.Close()
-
-	return cfg.Write(f)
+	return write(b.String(), path)
 }
 
 func (cmd *Daemonize) unpack(i *info) (bool, error) {
@@ -235,16 +232,12 @@ func (cmd *Daemonize) unpack(i *info) (bool, error) {
 
 			defer src.Close()
 
-			dest, err := os.Create(file)
-			if err != nil {
+			var b strings.Builder
+			if _, err := io.Copy(&b, src); err != nil {
 				return err
 			}
 
-			defer dest.Close()
-
-			if _, err := io.Copy(dest, src); err != nil {
-				return err
-			}
+			return write(b.String(), file)
 		}
 
 		return nil
@@ -311,16 +304,12 @@ func (cmd *Daemonize) grules(i *info) (bool, error) {
 
 			defer src.Close()
 
-			dest, err := os.Create(file)
-			if err != nil {
+			var b strings.Builder
+			if _, err := io.Copy(&b, src); err != nil {
 				return err
 			}
 
-			defer dest.Close()
-
-			if _, err := io.Copy(dest, src); err != nil {
-				return err
-			}
+			return write(b.String(), file)
 		}
 
 		return nil
@@ -419,7 +408,7 @@ func (cmd *Daemonize) users(i info) error {
 	// ... write default 'admin' user to users.json
 	if bytes, err := json.MarshalIndent(users, "  ", "  "); err != nil {
 		return err
-	} else if err := os.WriteFile(file, bytes, 0660); err != nil {
+	} else if err := write(string(bytes), file); err != nil {
 		return err
 	}
 
@@ -431,7 +420,7 @@ func (cmd *Daemonize) users(i info) error {
 
 func (cmd *Daemonize) sysinit(i info) error {
 	// ... create empty system files
-	folder := filepath.Join(cmd.workdir, "system")
+	folder := filepath.Join(cmd.etc, "system")
 
 	fmt.Printf("   ... creating folder '%v'\n", folder)
 	if err := os.MkdirAll(folder, 0744); err != nil {
@@ -471,7 +460,7 @@ func (cmd *Daemonize) sysinit(i info) error {
 	if _, err := os.Stat(file); err != nil {
 		if os.IsNotExist(err) {
 			fmt.Println("   ... creating default 'auth.json'")
-			if err := os.WriteFile(file, []byte(default_auth), 0660); err != nil {
+			if err := write(default_auth, file); err != nil {
 				return err
 			}
 		} else {
@@ -484,12 +473,32 @@ func (cmd *Daemonize) sysinit(i info) error {
 	if _, err := os.Stat(file); err != nil {
 		if os.IsNotExist(err) {
 			fmt.Println("   ... creating default 'acl.grl'")
-			if err := os.WriteFile(file, []byte(acl), 0660); err != nil {
+			if err := write(acl, file); err != nil {
 				return err
 			}
 		} else {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func write(buffer string, path string) error {
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	s := buffer
+	if replacer != nil {
+		s = replacer.Replace(buffer)
+	}
+
+	if _, err = f.WriteString(s); err != nil {
+		return err
 	}
 
 	return nil

@@ -42,6 +42,12 @@ type Daemonize struct {
 	etc         string
 }
 
+var replacer = strings.NewReplacer(
+	"\r\n", "\r\n",
+	"\r", "\r\n",
+	"\n", "\r\n",
+)
+
 func (cmd *Daemonize) Name() string {
 	return "daemonize"
 }
@@ -203,26 +209,3 @@ func (cmd *Daemonize) mkdirs(i *info) error {
 
 	return nil
 }
-
-//     // replace line endings
-//     var b strings.Builder
-//
-//     err := cfg.Write(&b)
-//
-//     // write back config with any updated information
-//     f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-//     if err != nil {
-//         return err
-//     }
-//
-//     defer f.Close()
-//
-//     replacer := strings.NewReplacer(
-//         "\r\n", "\r\n",
-//         "\r", "\r\n",
-//         "\n", "\r\n",
-//     )
-//
-//     if _, err = f.Write([]byte(replacer.Replace(b.String()))); err != nil {
-//         return err
-//     }

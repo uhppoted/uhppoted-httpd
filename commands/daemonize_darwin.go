@@ -43,6 +43,8 @@ var DAEMONIZE = Daemonize{
 	etc:     "/usr/local/etc/com.github.uhppoted/httpd",
 }
 
+var replacer *strings.Replacer
+
 type Daemonize struct {
 	plist   string
 	workdir string
