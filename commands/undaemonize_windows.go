@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"syscall"
 
 	"golang.org/x/sys/windows/svc"
@@ -28,6 +27,9 @@ type Undaemonize struct {
 	config  string
 	etc     string
 }
+
+// Ref. https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--1000-1299-
+const ERROR_SERVICE_NOT_ACTIVE = 0x426
 
 func (cmd *Undaemonize) Name() string {
 	return "undaemonize"
@@ -70,18 +72,18 @@ func (cmd *Undaemonize) Execute(args ...interface{}) error {
 	fmt.Printf(`
        NOTE: Configuration files in %s,
              working files in %s,
-             and log files in %s
+             log files in %s,
              HTML files in %s,
              and GRULES files in %s
              were not removed and should be deleted manually
-`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir)
+`, filepath.Dir(cmd.config), cmd.workdir, cmd.logdir, filepath.Join(cmd.etc, "html"), filepath.Join(cmd.etc, "grules"))
 	fmt.Println()
 
 	return nil
 }
 
 func (cmd *Undaemonize) unregister() error {
-	fmt.Println("   ... unregistering %s as a Windows service", cmd.name)
+	fmt.Printf("   ... unregistering %s as a Windows service\n", cmd.name)
 	m, err := mgr.Connect()
 	if err != nil {
 		return err
@@ -99,12 +101,11 @@ func (cmd *Undaemonize) unregister() error {
 	fmt.Printf("   ... stopping %s service\n", cmd.name)
 	status, err := s.Control(svc.Stop)
 	if err != nil {
-		fmt.Printf(">>>>>>>>> DEBUG/X: %v\n", err)
-		fmt.Printf(">>>>>>>>> DEBUG/Y: %#v\n", err)
-		fmt.Printf(">>>>>>>>> DEBUG/Z: %T\n", err)
-
-		if !strings.Contains(fmt.Sprintf("%v", err), "The service has not been started.") {
-			return err
+		// Ref. https://stackoverflow.com/questions/63470776/how-to-get-windows-system-error-code-when-calling-windows-api-in-go
+		if syserr, ok := err.(syscall.Errno); ok {
+			if syserr != ERROR_SERVICE_NOT_ACTIVE {
+				return err
+			}
 		}
 	} else {
 		fmt.Printf("   ... %s stopped: %v\n", cmd.name, status)

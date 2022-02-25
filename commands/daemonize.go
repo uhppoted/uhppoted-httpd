@@ -223,6 +223,10 @@ func (cmd *Daemonize) unpack(i *info) (bool, error) {
 			return nil
 		}
 
+		if path == "html.go" {
+			return nil
+		}
+
 		file := filepath.Join(root, path)
 		if _, err := os.Stat(file); err != nil && os.IsNotExist(err) {
 			src, err := html.HTML.Open(path)
@@ -232,12 +236,16 @@ func (cmd *Daemonize) unpack(i *info) (bool, error) {
 
 			defer src.Close()
 
-			var b strings.Builder
-			if _, err := io.Copy(&b, src); err != nil {
+			dest, err := os.OpenFile(filepath.Join(root, path), os.O_RDWR|os.O_CREATE, 0660)
+			if err != nil {
 				return err
 			}
 
-			return write(b.String(), file)
+			defer dest.Close()
+
+			if _, err := io.Copy(dest, src); err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -326,7 +334,7 @@ func (cmd *Daemonize) grules(i *info) (bool, error) {
 }
 
 func (cmd *Daemonize) users(i info) error {
-	dir := filepath.Join(cmd.workdir, "system")
+	dir := filepath.Join(cmd.etc, "system")
 
 	fmt.Printf("   ... creating folder '%v'\n", dir)
 	if err := os.MkdirAll(dir, 0744); err != nil {
@@ -392,11 +400,13 @@ func (cmd *Daemonize) users(i info) error {
 	h.Write([]byte(password))
 
 	admin := struct {
+		OID      string `json:"OID"`
 		UID      string `json:"uid,omitempty"`
 		Role     string `json:"role,omitempty"`
 		Salt     string `json:"salt"`
 		Password string `json:"password"`
 	}{
+		OID:      "0.8.1",
 		UID:      "admin",
 		Role:     "admin",
 		Salt:     hex.EncodeToString(salt[:]),
@@ -429,27 +439,27 @@ func (cmd *Daemonize) sysinit(i info) error {
 
 	files := []struct {
 		file    string
-		content []byte
+		content string
 	}{
-		{"interfaces.json", []byte(interfaces)},
-		{"controllers.json", []byte(controllers)},
-		{"doors.json", []byte(doors)},
-		{"cards.json", []byte(cards)},
-		{"groups.json", []byte(groups)},
-		{"events.json", []byte(events)},
-		{"logs.json", []byte(logs)},
+		{"interfaces.json", interfaces},
+		{"controllers.json", controllers},
+		{"doors.json", doors},
+		{"cards.json", cards},
+		{"groups.json", groups},
+		{"events.json", events},
+		{"logs.json", logs},
 	}
 
 	for _, v := range files {
 		file := filepath.Join(folder, v.file)
 
 		if _, err := os.Stat(file); err != nil {
-			if os.IsNotExist(err) {
-				fmt.Println("   ... creating default 'interfaces.json'")
-				if err := os.WriteFile(file, v.content, 0660); err != nil {
-					return err
-				}
-			} else {
+			if !os.IsNotExist(err) {
+				return err
+			}
+
+			fmt.Println("   ... creating default 'interfaces.json'")
+			if err := write(v.content, file); err != nil {
 				return err
 			}
 		}
@@ -458,12 +468,12 @@ func (cmd *Daemonize) sysinit(i info) error {
 	// ... create default auth.json file
 	file := filepath.Join(cmd.etc, "auth.json")
 	if _, err := os.Stat(file); err != nil {
-		if os.IsNotExist(err) {
-			fmt.Println("   ... creating default 'auth.json'")
-			if err := write(default_auth, file); err != nil {
-				return err
-			}
-		} else {
+		if !os.IsNotExist(err) {
+			return err
+		}
+
+		fmt.Println("   ... creating default 'auth.json'")
+		if err := write(default_auth, file); err != nil {
 			return err
 		}
 	}
@@ -471,12 +481,12 @@ func (cmd *Daemonize) sysinit(i info) error {
 	// ... create default acl.grl file
 	file = filepath.Join(cmd.etc, "acl.grl")
 	if _, err := os.Stat(file); err != nil {
-		if os.IsNotExist(err) {
-			fmt.Println("   ... creating default 'acl.grl'")
-			if err := write(acl, file); err != nil {
-				return err
-			}
-		} else {
+		if !os.IsNotExist(err) {
+			return err
+		}
+
+		fmt.Println("   ... creating default 'acl.grl'")
+		if err := write(acl, file); err != nil {
 			return err
 		}
 	}

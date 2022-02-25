@@ -10,7 +10,7 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
-	"path/filepath"
+	"path"
 	"regexp"
 	"strings"
 
@@ -136,7 +136,7 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 	d.translate(path, context, authorised, w, acceptsGzip)
 }
 
-func (d *dispatcher) translate(path string, context map[string]interface{}, authorised map[string]bool, w http.ResponseWriter, acceptsGzip bool) {
+func (d *dispatcher) translate(file string, context map[string]interface{}, authorised map[string]bool, w http.ResponseWriter, acceptsGzip bool) {
 	type nav struct {
 		System bool
 		Doors  bool
@@ -152,7 +152,9 @@ func (d *dispatcher) translate(path string, context map[string]interface{}, auth
 	page["context"] = context
 	page["schema"] = catalog.GetSchema()
 
-	translation := filepath.Join("translations", "en", strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))+".json")
+	// For a FS, use path.Join rather than filepath.Join (ref. https://pkg.go.dev/io/fs#ValidPath)
+	translation := path.Join("translations", "en", strings.TrimSuffix(path.Base(file), path.Ext(file))+".json")
+
 	if info, err := fs.Stat(d.fs, translation); err != nil {
 		if !os.IsNotExist(err) {
 			warn(fmt.Errorf("Error locating translation '%s' (%w)", translation, err))
@@ -201,8 +203,8 @@ func (d *dispatcher) translate(path string, context map[string]interface{}, auth
 	}
 
 	// Ref. https://stackoverflow.com/questions/49043292/error-template-is-an-incomplete-or-empty-template
-	var name = filepath.Base(path)
-	var filename = path
+	var name = path.Base(file)
+	var filename = file
 
 	if strings.HasPrefix(filename, "/") {
 		filename = filename[1:]
@@ -210,14 +212,14 @@ func (d *dispatcher) translate(path string, context map[string]interface{}, auth
 
 	t, err := template.New(name).Funcs(functions).ParseFS(d.fs, "templates/snippets.html", filename)
 	if err != nil {
-		warn(fmt.Errorf("Error parsing template '%s' (%w)", path, err))
+		warn(fmt.Errorf("Error parsing template '%s' (%w)", file, err))
 		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)
 		return
 	}
 
 	var b bytes.Buffer
 	if err := t.Execute(&b, &page); err != nil {
-		warn(fmt.Errorf("Error formatting page '%s' (%w)", path, err))
+		warn(fmt.Errorf("Error formatting page '%s' (%w)", file, err))
 		http.Error(w, "Error formatting page", http.StatusInternalServerError)
 		return
 	}

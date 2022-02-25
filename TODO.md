@@ -1,7 +1,5 @@
 ## v0.7.x
 
-- [ ] Login not showing error for invalid password
-
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, squoosh, etc
       - [ ] GetV => GetBool, GetInt, etc
@@ -9,38 +7,28 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
-      - [x] Restructure `run` for Windows services
+      - [ ] Login not showing error for invalid password
       - [ ] Check log rotation
-      - [ ] Cannot change initial password
-```
-Invalid user OID ()
-```
-      - [ ] Can't find unpacked translations
-```
-2022/02/24 20:29:54 WARN  Error locating translation 'translations\en\login.json' (stat translations\en\login.json: invalid argument)
-```
-      - [ ] Windows
-            - [ ] CRLF line endings
-              - [x] config
-              - [ ] system JSON files
-                    - [ ] interfaces.json
-                    - [x] users.json
-              - [x] GRULES files
-              - [x] auth.json
-              - [?] ACL.grl
+      - [ ] lockfile not deleted on fatal error if e.g. load error (or e.g. TLS enabled)
+      - [x] Cannot change initial password
+      - [x] Windows
+            - [x] Can't find images on FS
+            - [x] Can't find unpacked translations - FS path uses "/" but filepath uses "\"
+            - [x] undaemonize
+            - [x] CRLF line endings
+              - [ ] HTML,CSS,Javascript,translations,manifest.json
+              - [x] system JSON files
+                    - [x] interfaces.json
+            - [x] `users.json` is under `\ProgramData\uhppoted` (should be under `\ProgramData\uhppoted\httpd\system`)
 
-            - [ ] `users.json` is under `\ProgramData\uhppoted` (should be under `\ProgramData\uhppoted\httpd\system`)
-            - [x] `system` is under `\ProgramData\uhppoted` (should be under `\ProgramData\uhppoted\httpd`)
+- [ ] undaemonize
+      - [ ] collect warnings and print them out all together
 
 - [ ] Bootstrap from scratch
       - [ ] Embedded/optional auth.json
       - [ ] Embedded/optional ACL.grl
       - [ ] Generate TLS keys + certficates
             - [ ] TLS mutual auth
-
-- [ ] undaemonize
-      - [ ] collect warnings and print them out all together
-      - [x] Windows
 
 - [ ] config.NewConfig should not return pointer
 - [ ] Include 'modified' when serializing/deserializing objects

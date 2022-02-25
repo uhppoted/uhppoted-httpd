@@ -224,6 +224,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 
 	for _, v := range list {
 		if err := load(v.file, v.tag, v.serializable); err != nil {
+			log.Printf("%5s Unable to load %v from %v (%v)", "ERROR", v.tag, v.file, err)
 			return err
 		}
 	}
