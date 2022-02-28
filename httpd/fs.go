@@ -1,7 +1,6 @@
 package httpd
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -20,7 +19,6 @@ func (fss filesystem) Open(name string) (http.File, error) {
 	}
 
 	f, err := fss.FileSystem.Open(name)
-	fmt.Printf(">>> DEBUG/FS:Open/Y %v  %v\n", name, err)
 	if err != nil {
 		return nil, err
 	}

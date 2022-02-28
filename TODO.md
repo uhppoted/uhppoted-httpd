@@ -7,22 +7,20 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
-      - [ ] Login not showing error for invalid password
+      - [ ] admin user is 'modified' after daemonize (looks like password field maybe ????)
       - [ ] Check log rotation
-      - [ ] lockfile not deleted on fatal error if e.g. load error (or e.g. TLS enabled)
+      - [ ] Generate TLS keys + certficates
+            - [ ] TLS mutual auth
+      - [x] Login not showing error for invalid password
+      - [x] lockfile not deleted on fatal error if e.g. load error (or e.g. TLS enabled)
       - [x] Windows
             - [x] CRLF line endings
-              - [ ] HTML,CSS,Javascript,translations,manifest.json
+            - [x] HTML,CSS,Javascript,translations,manifest.json
 
 - [ ] undaemonize
       - [ ] collect warnings and print them out all together
 
-- [ ] Bootstrap from scratch
-      - [ ] Embedded/optional auth.json
-      - [ ] Embedded/optional ACL.grl
-      - [ ] Generate TLS keys + certficates
-            - [ ] TLS mutual auth
-
+- [ ] Verifiy bootstrap from scratch
 - [ ] config.NewConfig should not return pointer
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys

@@ -131,7 +131,7 @@ func (d *dispatcher) login(w http.ResponseWriter, r *http.Request) {
 	sessionCookie, err := d.auth.Authenticate(uid, pwd, loginCookie)
 	if err != nil {
 		warn(err)
-		d.unauthenticated(r, w)
+		http.Error(w, "Invalid login credentials", http.StatusUnauthorized)
 		return
 	}
 
