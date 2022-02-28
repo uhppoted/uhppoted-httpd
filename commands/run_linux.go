@@ -23,14 +23,14 @@ var RUN = Run{
 func (cmd *Run) Execute(args ...interface{}) error {
 	log.Printf("%s service %s - %s (PID %d)\n", SERVICE, uhppote.VERSION, "Linux", os.Getpid())
 
-	f := func(c config.Config) error {
-		return cmd.exec(c)
+	f := func(c config.Config) {
+		cmd.exec(c)
 	}
 
 	return cmd.execute(f)
 }
 
-func (cmd *Run) exec(conf config.Config) error {
+func (cmd *Run) exec(conf config.Config) {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags)
 
@@ -57,5 +57,5 @@ func (cmd *Run) exec(conf config.Config) error {
 		}()
 	}
 
-	return cmd.run(conf, interrupt)
+	cmd.run(conf, interrupt)
 }

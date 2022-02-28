@@ -10,16 +10,9 @@
       - [ ] Login not showing error for invalid password
       - [ ] Check log rotation
       - [ ] lockfile not deleted on fatal error if e.g. load error (or e.g. TLS enabled)
-      - [x] Cannot change initial password
       - [x] Windows
-            - [x] Can't find images on FS
-            - [x] Can't find unpacked translations - FS path uses "/" but filepath uses "\"
-            - [x] undaemonize
             - [x] CRLF line endings
               - [ ] HTML,CSS,Javascript,translations,manifest.json
-              - [x] system JSON files
-                    - [x] interfaces.json
-            - [x] `users.json` is under `\ProgramData\uhppoted` (should be under `\ProgramData\uhppoted\httpd\system`)
 
 - [ ] undaemonize
       - [ ] collect warnings and print them out all together

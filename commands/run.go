@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/uhppoted/uhppoted-lib/config"
 
@@ -60,7 +61,7 @@ func (cmd *Run) Help() {
 	fmt.Println()
 }
 
-func (cmd *Run) execute(f func(c config.Config) error) error {
+func (cmd *Run) execute(f func(c config.Config)) error {
 	// ... load configuration
 	conf := config.NewConfig()
 	if err := conf.Load(cmd.configuration); err != nil {
@@ -85,12 +86,23 @@ func (cmd *Run) execute(f func(c config.Config) error) error {
 		return fmt.Errorf("Unable to create PID lockfile: %v", err)
 	}
 
-	defer os.Remove(lockfile)
+	// ... because it seems deferred functions are only invoked on a panic during sys.Init if run in a goroutine
+	var wg sync.WaitGroup
 
-	return f(*conf)
+	wg.Add(1)
+
+	go func() {
+		defer os.Remove(lockfile) // (because otherwise a panic inside httpd.Run doesn't remove up the lockfile)
+		f(*conf)
+		wg.Done()
+	}()
+
+	wg.Wait()
+
+	return nil
 }
 
-func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) error {
+func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 	var authentication auth.IAuth
 
 	switch conf.HTTPD.Security.Auth {
@@ -100,12 +112,12 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) error {
 	default:
 		p, err := local.NewAuthProvider(conf.HTTPD.Security.AuthDB, conf.HTTPD.Security.LoginExpiry, conf.HTTPD.Security.SessionExpiry)
 		if err != nil {
-			return err
+			log.Panicf("%5s Error instantiating auth provider (%v)", "FATAL", err)
 		}
 
 		authentication, err = auth.NewBasic(p, conf.HTTPD.Security.AuthDB, conf.HTTPD.Security.CookieMaxAge)
 		if err != nil {
-			return err
+			log.Panicf("%5s Error instantiating 'basic' auth provider (%v)", "FATAL", err)
 		}
 	}
 
@@ -135,10 +147,8 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) error {
 	}
 
 	if err := system.Init(conf, cmd.configuration, cmd.debug); err != nil {
-		log.Fatalf("%5s Could not load system configuration (%v)", "FATAL", err)
+		log.Panicf("%5s Could not load system configuration (%v)", "FATAL", err)
 	}
 
 	h.Run(interrupt)
-
-	return nil
 }

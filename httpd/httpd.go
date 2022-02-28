@@ -111,12 +111,14 @@ func (h *HTTPD) Run(interrupt chan os.Signal) {
 	if h.HTTPSEnabled {
 		ca, err := ioutil.ReadFile(h.CACertificate)
 		if err != nil {
-			log.Fatal(fmt.Errorf("Error reading CA certificate file '%s' (%v)", h.CACertificate, err))
+			log.Printf("%5s Error reading CA certificate file (%v)", "FATAL", err)
+			return
 		}
 
 		certificates := x509.NewCertPool()
 		if !certificates.AppendCertsFromPEM(ca) {
-			log.Fatal("Unable failed to parse CA certificate")
+			log.Printf("%5s Error parsing CA certificate (%v)", "FATAL", err)
+			return
 		}
 
 		tlsConfig := tls.Config{
@@ -179,7 +181,7 @@ func (h *HTTPD) Run(interrupt chan os.Signal) {
 		go func() {
 			infox("HTTPD", fmt.Sprintf("HTTP  server starting on port %v", srv.Addr))
 			if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-				log.Fatalf("ERROR: %v", err)
+				log.Panicf("ERROR: %v", err)
 			}
 		}()
 	}
@@ -188,7 +190,7 @@ func (h *HTTPD) Run(interrupt chan os.Signal) {
 		go func() {
 			infox("HTTPD", fmt.Sprintf("HTTPS server starting on port %v", srvs.Addr))
 			if err := srvs.ListenAndServeTLS(h.TLSCertificate, h.TLSKey); err != http.ErrServerClosed {
-				log.Fatalf("ERROR: %v", err)
+				log.Panicf("ERROR: %v", err)
 			}
 		}()
 	}

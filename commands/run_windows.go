@@ -34,14 +34,14 @@ type service struct {
 func (cmd *Run) Execute(args ...interface{}) error {
 	log.Printf("%s service %s - %s (PID %d)\n", SERVICE, uhppote.VERSION, "Microsoft Windows", os.Getpid())
 
-	f := func(c config.Config) error {
-		return cmd.start(c)
+	f := func(c config.Config) {
+		cmd.start(c)
 	}
 
 	return cmd.execute(f)
 }
 
-func (cmd *Run) start(conf config.Config) error {
+func (cmd *Run) start(conf config.Config) {
 	if cmd.console {
 		log.SetOutput(os.Stdout)
 		log.SetFlags(log.LstdFlags)
@@ -49,7 +49,8 @@ func (cmd *Run) start(conf config.Config) error {
 		interrupt := make(chan os.Signal, 1)
 
 		signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM)
-		return cmd.run(conf, interrupt)
+		cmd.run(conf, interrupt)
+		return
 	}
 
 	if eventlogger, err := syslog.Open(SERVICE); err != nil {
@@ -88,14 +89,12 @@ func (cmd *Run) start(conf config.Config) error {
 		log.Printf("     > %s --console\n", SERVICE)
 		log.Println()
 
-		log.Fatalf("Error executing ServiceManager.Run request: %v", err)
+		log.Panicf("Error executing ServiceManager.Run request: %v", err)
 
-		return err
+		return
 	}
 
 	log.Printf("%s daemon - started\n", SERVICE)
-
-	return nil
 }
 
 func (s *service) Execute(args []string, r <-chan svc.ChangeRequest, status chan<- svc.Status) (ssec bool, errno uint32) {

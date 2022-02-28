@@ -2,6 +2,7 @@ package commands
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -179,7 +180,7 @@ func (cmd *Daemonize) conf(i *info, unpacked bool, grules bool) error {
 		return err
 	}
 
-	return write(b.String(), path)
+	return toTextFile(b.String(), path)
 }
 
 func (cmd *Daemonize) unpack(i *info) (bool, error) {
@@ -236,15 +237,21 @@ func (cmd *Daemonize) unpack(i *info) (bool, error) {
 
 			defer src.Close()
 
-			dest, err := os.OpenFile(filepath.Join(root, path), os.O_RDWR|os.O_CREATE, 0660)
-			if err != nil {
+			var b bytes.Buffer
+			if _, err := io.Copy(&b, src); err != nil {
 				return err
 			}
 
-			defer dest.Close()
+			switch filepath.Ext(file) {
+			case ".html", ".json", ".js", ".css":
+				if err := toTextFile(b.String(), file); err != nil {
+					return err
+				}
 
-			if _, err := io.Copy(dest, src); err != nil {
-				return err
+			default:
+				if err := toBinaryFile(b.Bytes(), file); err != nil {
+					return err
+				}
 			}
 		}
 
@@ -317,7 +324,7 @@ func (cmd *Daemonize) grules(i *info) (bool, error) {
 				return err
 			}
 
-			return write(b.String(), file)
+			return toTextFile(b.String(), file)
 		}
 
 		return nil
@@ -418,7 +425,7 @@ func (cmd *Daemonize) users(i info) error {
 	// ... write default 'admin' user to users.json
 	if bytes, err := json.MarshalIndent(users, "  ", "  "); err != nil {
 		return err
-	} else if err := write(string(bytes), file); err != nil {
+	} else if err := toTextFile(string(bytes), file); err != nil {
 		return err
 	}
 
@@ -459,7 +466,7 @@ func (cmd *Daemonize) sysinit(i info) error {
 			}
 
 			fmt.Println("   ... creating default 'interfaces.json'")
-			if err := write(v.content, file); err != nil {
+			if err := toTextFile(v.content, file); err != nil {
 				return err
 			}
 		}
@@ -473,7 +480,7 @@ func (cmd *Daemonize) sysinit(i info) error {
 		}
 
 		fmt.Println("   ... creating default 'auth.json'")
-		if err := write(default_auth, file); err != nil {
+		if err := toTextFile(default_auth, file); err != nil {
 			return err
 		}
 	}
@@ -486,7 +493,7 @@ func (cmd *Daemonize) sysinit(i info) error {
 		}
 
 		fmt.Println("   ... creating default 'acl.grl'")
-		if err := write(acl, file); err != nil {
+		if err := toTextFile(acl, file); err != nil {
 			return err
 		}
 	}
@@ -494,8 +501,8 @@ func (cmd *Daemonize) sysinit(i info) error {
 	return nil
 }
 
-func write(buffer string, path string) error {
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+func toTextFile(buffer string, path string) error {
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0660)
 	if err != nil {
 		return err
 	}
@@ -508,6 +515,21 @@ func write(buffer string, path string) error {
 	}
 
 	if _, err = f.WriteString(s); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func toBinaryFile(buffer []byte, path string) error {
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0660)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	if _, err = f.Write(buffer); err != nil {
 		return err
 	}
 

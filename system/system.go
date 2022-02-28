@@ -231,12 +231,12 @@ func Init(cfg config.Config, conf string, debug bool) error {
 
 	kb := ast.NewKnowledgeLibrary()
 	if err := builder.NewRuleBuilder(kb).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(cfg.HTTPD.DB.Rules.ACL)); err != nil {
-		log.Fatal(fmt.Errorf("Error loading ACL ruleset (%v)", err))
+		log.Panicf("Error loading ACL ruleset (%v)", err)
 	}
 
 	rules, err := grule.NewGrule(kb)
 	if err != nil {
-		log.Fatal(fmt.Errorf("Error initialising ACL ruleset (%v)", err))
+		log.Panicf("Error initialising ACL ruleset (%v)", err)
 	}
 
 	sys.conf = conf
