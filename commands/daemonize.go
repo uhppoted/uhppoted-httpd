@@ -138,7 +138,7 @@ const default_auth = `
 }
 `
 
-func (cmd *Daemonize) conf(i *info, unpacked bool, grules bool) error {
+func (cmd *Daemonize) conf(i info, unpacked bool, grules bool) error {
 	path := cmd.config
 
 	fmt.Printf("   ... creating '%s'\n", path)
@@ -183,7 +183,7 @@ func (cmd *Daemonize) conf(i *info, unpacked bool, grules bool) error {
 	return toTextFile(b.String(), path)
 }
 
-func (cmd *Daemonize) unpack(i *info) (bool, error) {
+func (cmd *Daemonize) unpack(i info) (bool, error) {
 	root := filepath.Join(cmd.etc, "html")
 	r := bufio.NewReader(os.Stdin)
 
@@ -269,7 +269,7 @@ func (cmd *Daemonize) unpack(i *info) (bool, error) {
 	return true, nil
 }
 
-func (cmd *Daemonize) grules(i *info) (bool, error) {
+func (cmd *Daemonize) grules(i info) (bool, error) {
 	root := cmd.etc
 	r := bufio.NewReader(os.Stdin)
 
@@ -380,12 +380,11 @@ func (cmd *Daemonize) users(i info) error {
 	fmt.Printf("     Do you want to create a default 'admin' user (yes/no)? ")
 
 	text, err := stdin.ReadString('\n')
-	if err != nil || strings.ToLower(strings.TrimSpace(text)) == "no" {
-		fmt.Println()
+	fmt.Println()
+	if err != nil || strings.ToLower(strings.TrimSpace(text)) != "yes" {
 		return nil
 	}
 
-	fmt.Println()
 	fmt.Println("   ... creating default 'admin' user")
 
 	// ... generate password and salt
@@ -437,7 +436,7 @@ func (cmd *Daemonize) users(i info) error {
 
 func (cmd *Daemonize) sysinit(i info) error {
 	// ... create empty system files
-	folder := filepath.Join(cmd.etc, "system")
+	folder := filepath.Join(cmd.workdir, "system")
 
 	fmt.Printf("   ... creating folder '%v'\n", folder)
 	if err := os.MkdirAll(folder, 0744); err != nil {
@@ -465,8 +464,8 @@ func (cmd *Daemonize) sysinit(i info) error {
 				return err
 			}
 
-			fmt.Println("   ... creating default 'interfaces.json'")
-			if err := toTextFile(v.content, file); err != nil {
+			fmt.Printf("   ... creating default %v\n", file)
+			if err := toTextFile(v.content, v.file); err != nil {
 				return err
 			}
 		}
@@ -499,6 +498,64 @@ func (cmd *Daemonize) sysinit(i info) error {
 	}
 
 	return nil
+}
+
+func (cmd *Daemonize) genTLSkeys(i info) (bool, error) {
+	root := cmd.etc
+	r := bufio.NewReader(os.Stdin)
+
+	fmt.Println()
+	fmt.Printf("     Do you want to create TLS keys and certificates (yes/no)? ")
+
+	text, err := r.ReadString('\n')
+	fmt.Println()
+	if err != nil || strings.TrimSpace(text) != "yes" {
+		return false, nil
+	}
+
+	keys, err := genkeys()
+	if err != nil {
+		return false, err
+	} else if keys == nil {
+		return false, fmt.Errorf("Invalid TLS key set (%v)", keys)
+	}
+
+	file := filepath.Join(root, "ca.key")
+	if err := toTextFile(string(encode(keys.CA.privateKey)), file); err != nil {
+		return false, err
+	} else {
+		fmt.Printf("   ... created %v\n", file)
+	}
+
+	file = filepath.Join(root, "ca.cert")
+	if err := toTextFile(string(encode(keys.CA.certificate)), filepath.Join(root, "ca.cert")); err != nil {
+		return false, err
+	} else {
+		fmt.Printf("   ... created %v\n", file)
+	}
+
+	file = filepath.Join(root, "uhppoted.key")
+	if err := toTextFile(string(encode(keys.server.privateKey)), filepath.Join(root, "uhppoted.key")); err != nil {
+		return false, err
+	} else {
+		fmt.Printf("   ... created %v\n", file)
+	}
+
+	file = filepath.Join(root, "uhppoted.cert")
+	if err := toTextFile(string(encode(keys.server.certificate)), filepath.Join(root, "uhppoted.cert")); err != nil {
+		return false, err
+	} else {
+		fmt.Printf("   ... created %v\n", file)
+	}
+
+	fmt.Println()
+	fmt.Println("   ** PLEASE MOVE THE ca.key FILE TO A SECURE LOCATION")
+	fmt.Println()
+	fmt.Println("   ** NOTE: The generated TLS keys are for TEST USE ONLY and should be replaced with your own")
+	fmt.Println("            CA certificate and server and client keys and certificates for production use.")
+	fmt.Println()
+
+	return true, nil
 }
 
 func toTextFile(buffer string, path string) error {

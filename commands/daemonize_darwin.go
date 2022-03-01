@@ -127,21 +127,21 @@ func (cmd *Daemonize) execute() error {
 		return err
 	}
 
-	if err := cmd.firewall(&i); err != nil {
+	if err := cmd.firewall(i); err != nil {
 		return err
 	}
 
-	unpacked, err := cmd.unpack(&i)
+	unpacked, err := cmd.unpack(i)
 	if err != nil {
 		return err
 	}
 
-	grules, err := cmd.grules(&i)
+	grules, err := cmd.grules(i)
 	if err != nil {
 		return err
 	}
 
-	if err := cmd.conf(&i, unpacked, grules); err != nil {
+	if err := cmd.conf(i, unpacked, grules); err != nil {
 		return err
 	}
 
@@ -150,6 +150,10 @@ func (cmd *Daemonize) execute() error {
 	}
 
 	if err := cmd.sysinit(i); err != nil {
+		return err
+	}
+
+	if _, err := cmd.genTLSkeys(i); err != nil {
 		return err
 	}
 
@@ -282,7 +286,7 @@ func (cmd *Daemonize) logrotate(i *info) error {
 	return t.Execute(f, logfiles)
 }
 
-func (cmd *Daemonize) firewall(i *info) error {
+func (cmd *Daemonize) firewall(i info) error {
 	fmt.Println()
 	fmt.Printf("   ***\n")
 	fmt.Printf("   *** WARNING: adding '%s' to the application firewall and unblocking incoming connections\n", SERVICE)

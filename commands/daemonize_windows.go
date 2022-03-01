@@ -121,17 +121,17 @@ func (cmd *Daemonize) execute() error {
 		return err
 	}
 
-	unpacked, err := cmd.unpack(&i)
+	unpacked, err := cmd.unpack(i)
 	if err != nil {
 		return err
 	}
 
-	grules, err := cmd.grules(&i)
+	grules, err := cmd.grules(i)
 	if err != nil {
 		return err
 	}
 
-	if err := cmd.conf(&i, unpacked, grules); err != nil {
+	if err := cmd.conf(i, unpacked, grules); err != nil {
 		return err
 	}
 
@@ -140,6 +140,10 @@ func (cmd *Daemonize) execute() error {
 	}
 
 	if err := cmd.sysinit(i); err != nil {
+		return err
+	}
+
+	if _, err := cmd.genTLSkeys(i); err != nil {
 		return err
 	}
 

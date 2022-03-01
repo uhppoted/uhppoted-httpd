@@ -80,11 +80,14 @@ release: update-release build-all
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 	cd dist;  zip --recurse-paths $(DIST).zip $(DIST)
 
-debug: build
-	$(CMD) daemonize
-	# go build -trimpath -o bin ./...
-	# go test -v -run Test ./auth/...
-	# dlv test github.com/uhppoted/uhppoted-httpd/system/catalog
+debug: format
+	go build -trimpath -o bin ./...
+	go test -v -run Test ./commands/...
+
+delve: format
+	go build -trimpath -o bin ./...
+	dlv exec ./bin/uhppoted-httpd -- --debug --console
+	# dlv test github.com/uhppoted/uhppoted-httpd/commands
 
 # NTS: 1. sass --watch doesn't seem to consistently pick up changes in themed partials
 #      2. For development only - doesn't build the default CSS because the duplication 
@@ -111,5 +114,3 @@ daemonize: build
 undaemonize: build
 	sudo $(CMD) undaemonize
 
-delve: build
-	dlv exec ./bin/uhppoted-httpd -- --debug --console

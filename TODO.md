@@ -10,12 +10,16 @@
       - [ ] admin user is 'modified' after daemonize (looks like password field maybe ????)
       - [ ] Check log rotation
       - [ ] Generate TLS keys + certficates
+            - [x] CA key + certificate
+            - [x] server key + certificate
+            - [ ] client key + certificate
             - [ ] TLS mutual auth
+            - https://shaneutt.com/blog/golang-ca-and-signed-cert-go/
+      - [x] `sysinit` creating system files in _etc_
 
-- [ ] undaemonize
-      - [ ] collect warnings and print them out all together
+- [x] undaemonize
+      - [x] collect warnings and print them out all together
 - [x] ACL logging:
-
 
 - [ ] Verify bootstrap from scratch
 - [ ] config.NewConfig should not return pointer
