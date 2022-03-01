@@ -14,6 +14,8 @@
 
 - [ ] undaemonize
       - [ ] collect warnings and print them out all together
+- [x] ACL logging:
+
 
 - [ ] Verify bootstrap from scratch
 - [ ] config.NewConfig should not return pointer
@@ -24,7 +26,6 @@
 - [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
       be updated from the catalog ??
 
-- [x] ACL logging:
 
 ### IN PROGRESS
 

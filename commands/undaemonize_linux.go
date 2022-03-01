@@ -140,6 +140,7 @@ func (cmd *Undaemonize) clean() error {
 		}
 	}
 
+	warnings := []string{}
 	for _, dir := range directories {
 		fmt.Printf("   ... removing '%s'\n", dir)
 		if err := os.Remove(dir); err != nil && !os.IsNotExist(err) {
@@ -157,8 +158,12 @@ func (cmd *Undaemonize) clean() error {
 				return err
 			}
 
-			fmt.Printf("   ... WARNING: could not remove directory '%s' (%v)\n", dir, syserr)
+			warnings = append(warnings, fmt.Sprintf("could not remove directory '%s' (%v)", dir, syserr))
 		}
+	}
+
+	for _, w := range warnings {
+		fmt.Printf("   ... WARNING: %v\n", w)
 	}
 
 	return nil
