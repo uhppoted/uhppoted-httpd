@@ -11,16 +11,11 @@
       - [ ] Check log rotation
       - [ ] Generate TLS keys + certficates
             - [ ] TLS mutual auth
-      - [x] Login not showing error for invalid password
-      - [x] lockfile not deleted on fatal error if e.g. load error (or e.g. TLS enabled)
-      - [x] Windows
-            - [x] CRLF line endings
-            - [x] HTML,CSS,Javascript,translations,manifest.json
 
 - [ ] undaemonize
       - [ ] collect warnings and print them out all together
 
-- [ ] Verifiy bootstrap from scratch
+- [ ] Verify bootstrap from scratch
 - [ ] config.NewConfig should not return pointer
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys
@@ -29,27 +24,7 @@
 - [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
       be updated from the catalog ??
 
-- [ ] ACL logging:
-```
-2022/02/24 11:13:08 INFO ACL
-201020304
-  6000001 6000001  2022-01-01 2022-12-31 N N N N
-  7000001 7000001  2022-02-01 2022-12-31 N N N N
-  8000001 8000001  2022-02-01 2022-12-31 N N N N
-303986753
-  6000001 6000001  2022-01-01 2022-12-31 Y N N Y
-  7000001 7000001  2022-02-01 2022-12-31 N N N N
-  8000001 8000001  2022-02-01 2022-12-31 Y Y N Y
-405419896
-  6000001 6000001  2022-01-01 2022-12-31 Y N N N
-  7000001 7000001  2022-02-01 2022-12-31 N Y N N
-  8000001 8000001  2022-02-01 2022-12-31 N Y N N
-2022/02/24 11:13:08 Comparing ACL
-2022/02/24 11:13:08 ACL 303986753 - unchanged:0   updated:0   added:0   deleted:3
-2022/02/24 11:13:08 ACL 405419896 - unchanged:0   updated:0   added:3   deleted:3
-2022/02/24 11:13:08 ACL 201020304 - unchanged:0   updated:0   added:0   deleted:3
-2022/02/24 11:13:08 ACL compare - unchanged:0   updated:0   added:3   deleted:3
-```
+- [x] ACL logging:
 
 ### IN PROGRESS
 

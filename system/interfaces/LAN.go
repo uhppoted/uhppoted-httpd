@@ -1,7 +1,6 @@
 package interfaces
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -474,7 +473,7 @@ func (l *LAN) SynchDoors(c Controller) {
 }
 
 func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
-	log.Printf("Comparing ACL")
+	debug("Comparing ACL")
 
 	devices := []uhppote.Device{}
 	api := l.api(controllers)
@@ -496,7 +495,7 @@ func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
 	}
 
 	for k, v := range compare {
-		log.Printf("ACL %v - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", k, len(v.Unchanged), len(v.Updated), len(v.Added), len(v.Deleted))
+		info(fmt.Sprintf("ACL %v  unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", k, len(v.Unchanged), len(v.Updated), len(v.Added), len(v.Deleted)))
 	}
 
 	diff := acl.SystemDiff(compare)
@@ -510,7 +509,7 @@ func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
 	added := len(report.Added)
 	deleted := len(report.Deleted)
 
-	log.Printf("ACL compare - unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted)
+	info(fmt.Sprintf("ACL compare    unchanged:%-3v updated:%-3v added:%-3v deleted:%-3v", unchanged, updated, added, deleted))
 
 	for _, c := range controllers {
 		for _, d := range devices {
@@ -530,7 +529,7 @@ func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
 }
 
 func (l *LAN) UpdateACL(controllers []Controller, permissions acl.ACL) error {
-	log.Printf("Updating ACL")
+	info("Updating ACL")
 
 	api := l.api(controllers)
 	rpt, errors := acl.PutACL(api.UHPPOTE, permissions, false)
@@ -545,22 +544,24 @@ func (l *LAN) UpdateACL(controllers []Controller, permissions acl.ACL) error {
 
 	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
 
-	var msg bytes.Buffer
-	fmt.Fprintf(&msg, "ACL updated\n")
+	// var msg bytes.Buffer
+	// fmt.Fprintf(&msg, "ACL updated\n")
+	//
+	// for _, k := range keys {
+	// 	v := rpt[k]
+	// 	fmt.Fprintf(&msg, "                    %v", k)
+	// 	fmt.Fprintf(&msg, " unchanged:%-3v", len(v.Unchanged))
+	// 	fmt.Fprintf(&msg, " updated:%-3v", len(v.Updated))
+	// 	fmt.Fprintf(&msg, " added:%-3v", len(v.Added))
+	// 	fmt.Fprintf(&msg, " deleted:%-3v", len(v.Deleted))
+	// 	fmt.Fprintf(&msg, " failed:%-3v", len(v.Failed))
+	// 	fmt.Fprintf(&msg, " errored:%-3v", len(v.Errored))
+	// 	fmt.Fprintln(&msg)
+	// }
+	//
+	// log.Printf("%v", string(msg.Bytes()))
 
-	for _, k := range keys {
-		v := rpt[k]
-		fmt.Fprintf(&msg, "                    %v", k)
-		fmt.Fprintf(&msg, " unchanged:%-3v", len(v.Unchanged))
-		fmt.Fprintf(&msg, " updated:%-3v", len(v.Updated))
-		fmt.Fprintf(&msg, " added:%-3v", len(v.Added))
-		fmt.Fprintf(&msg, " deleted:%-3v", len(v.Deleted))
-		fmt.Fprintf(&msg, " failed:%-3v", len(v.Failed))
-		fmt.Fprintf(&msg, " errored:%-3v", len(v.Errored))
-		fmt.Fprintln(&msg)
-	}
-
-	log.Printf("%v", string(msg.Bytes()))
+	info("ACL updated")
 
 	return nil
 }

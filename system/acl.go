@@ -1,11 +1,7 @@
 package system
 
 import (
-	"bytes"
-	"fmt"
-	"log"
-
-	core "github.com/uhppoted/uhppote-core/types"
+	"github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-lib/acl"
 )
@@ -38,7 +34,7 @@ func permissions() (acl.ACL, error) {
 
 	for _, b := range controllers {
 		if v := b.DeviceID(); v != 0 {
-			acl[v] = map[uint32]core.Card{}
+			acl[v] = map[uint32]types.Card{}
 		}
 	}
 
@@ -46,10 +42,10 @@ func permissions() (acl.ACL, error) {
 		for _, c := range cards {
 			if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
 				card := uint32(*c.Card)
-				from := core.Date(c.From)
-				to := core.Date(c.To)
+				from := types.Date(c.From)
+				to := types.Date(c.To)
 
-				l[card] = core.Card{
+				l[card] = types.Card{
 					CardNumber: card,
 					From:       &from,
 					To:         &to,
@@ -130,10 +126,10 @@ func permissions() (acl.ACL, error) {
 
 	// ... 'k, done
 
-	var b bytes.Buffer
-
-	acl.Print(&b)
-	log.Printf("INFO %v", fmt.Sprintf("ACL\n%s", string(b.Bytes())))
+	// var b bytes.Buffer
+	//
+	// acl.Print(&b)
+	// log.Printf("INFO %v", fmt.Sprintf("ACL\n%s", string(b.Bytes())))
 
 	return acl, nil
 }

@@ -222,8 +222,12 @@ func stringify(i interface{}, defval string) string {
 	return defval
 }
 
+func debug(msg string) {
+	log.Printf("%-5v %v", "DEBUG", msg)
+}
+
 func info(msg string) {
-	log.Printf("INFO  %v", msg)
+	log.Printf("%-5v %v", "INFO", msg)
 }
 
 func warn(err error) {
