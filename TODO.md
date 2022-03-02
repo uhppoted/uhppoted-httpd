@@ -1,5 +1,10 @@
 ## v0.7.x
 
+- [ ] ??
+```
+Relative positioning of table rows and row groups is now supported. This site may need to be updated because it may depend on this feature having no effect.
+```
+
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, squoosh, etc
       - [ ] GetV => GetBool, GetInt, etc
@@ -7,11 +12,17 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
-      - [ ] admin user is 'modified' after daemonize (looks like password field maybe ????)
       - [ ] Check log rotation
+      - [x] admin user is 'modified' after daemonize - password field has pwd in it????
+```
+<input class="field password modified" type="password" placeholder="********" onchange="onEdited('user', event)" onkeydown="onEnter('user', event)" data-record="R081" data-original="" data-value="uhppoted" id="R081-password" data-oid="0.8.1.4" data-status="">
+```
       - [x] Generate TLS keys + certficates
             - [x] client key + certificate
             - [x] TLS mutual auth
+      - [ ] Windows
+            - [ ] `sysinit` unpacking to the 'current' folder instead of var
+            - [ ] Creating extraneous `system` folder under C:\ProgramData\uhppoted
 
 - [ ] Verify bootstrap from scratch
 - [ ] config.NewConfig should not return pointer
@@ -226,7 +237,7 @@
 - https://stackoverflow.com/questions/40328932/javascript-es6-promise-for-loop
 - [datalist](https://demo.agektmr.com/datalist)
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
-
+- https://gist.github.com/Mattemagikern/328cdd650be33bc33105e26db88e487d
 
 # SNIPPETS
 ```
