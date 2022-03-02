@@ -520,39 +520,52 @@ func (cmd *Daemonize) genTLSkeys(i info) (bool, error) {
 		return false, fmt.Errorf("Invalid TLS key set (%v)", keys)
 	}
 
-	file := filepath.Join(root, "ca.key")
-	if err := toTextFile(string(encode(keys.CA.privateKey)), file); err != nil {
-		return false, err
-	} else {
-		fmt.Printf("   ... created %v\n", file)
+	list := []struct {
+		item interface{}
+		file string
+	}{
+		{keys.CA.privateKey, "ca.key"},
+		{keys.CA.certificate, "ca.cert"},
+		{keys.server.privateKey, "uhppoted.key"},
+		{keys.server.certificate, "uhppoted.cert"},
+		{keys.client.privateKey, "client.key"},
+		{keys.client.certificate, "client.cert"},
 	}
 
-	file = filepath.Join(root, "ca.cert")
-	if err := toTextFile(string(encode(keys.CA.certificate)), filepath.Join(root, "ca.cert")); err != nil {
-		return false, err
-	} else {
-		fmt.Printf("   ... created %v\n", file)
-	}
+	for _, v := range list {
+		file := filepath.Join(root, v.file)
 
-	file = filepath.Join(root, "uhppoted.key")
-	if err := toTextFile(string(encode(keys.server.privateKey)), filepath.Join(root, "uhppoted.key")); err != nil {
-		return false, err
-	} else {
-		fmt.Printf("   ... created %v\n", file)
-	}
+		//	if _, err := os.Stat(file); err != nil {
+		//		if !os.IsNotExist(err) {
+		//			return false, err
+		//		} else if err := toTextFile(string(encode(v.item)), file); err != nil {
+		//			return false, err
+		//		} else {
+		//			fmt.Printf("   ... created %v\n", file)
+		//		}
+		//	}
 
-	file = filepath.Join(root, "uhppoted.cert")
-	if err := toTextFile(string(encode(keys.server.certificate)), filepath.Join(root, "uhppoted.cert")); err != nil {
-		return false, err
-	} else {
-		fmt.Printf("   ... created %v\n", file)
+		if err := toTextFile(string(encode(v.item)), file); err != nil {
+			return false, err
+		} else {
+			fmt.Printf("   ... created %v\n", file)
+		}
 	}
 
 	fmt.Println()
 	fmt.Println("   ** PLEASE MOVE THE ca.key FILE TO A SECURE LOCATION")
 	fmt.Println()
-	fmt.Println("   ** NOTE: The generated TLS keys are for TEST USE ONLY and should be replaced with your own")
-	fmt.Println("            CA certificate and server and client keys and certificates for production use.")
+	fmt.Println("   The supplied client.key file can be installed in a browser to support mutual TLS authentication.")
+	fmt.Println("   It is provided merely as an example and both the client key and certificate should be removed")
+	fmt.Println("   and replaced by your own keys and certificates.")
+	fmt.Println()
+	fmt.Println("   The client.key file is in PEM format - to convert it to a PKCS12 file for importing into Firefox")
+	fmt.Println("   execute the following command:")
+	fmt.Println()
+	fmt.Println("   openssl pkcs12 -export -in client.cert -inkey client.key -certfile ca.cert -out client.p12")
+	fmt.Println()
+	fmt.Println("   ** NB: The generated TLS keys and certificates are for TEST USE ONLY and should be replaced with")
+	fmt.Println("          your own CA certificate and server and client keys and certificates for production use.")
 	fmt.Println()
 
 	return true, nil

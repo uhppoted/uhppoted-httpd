@@ -9,17 +9,9 @@
 - [ ] daemonize
       - [ ] admin user is 'modified' after daemonize (looks like password field maybe ????)
       - [ ] Check log rotation
-      - [ ] Generate TLS keys + certficates
-            - [x] CA key + certificate
-            - [x] server key + certificate
-            - [ ] client key + certificate
-            - [ ] TLS mutual auth
-            - https://shaneutt.com/blog/golang-ca-and-signed-cert-go/
-      - [x] `sysinit` creating system files in _etc_
-
-- [x] undaemonize
-      - [x] collect warnings and print them out all together
-- [x] ACL logging:
+      - [x] Generate TLS keys + certficates
+            - [x] client key + certificate
+            - [x] TLS mutual auth
 
 - [ ] Verify bootstrap from scratch
 - [ ] config.NewConfig should not return pointer
@@ -35,7 +27,7 @@
 
 - [ ] Overview page 
 - [ ] README
-      - Include eslint in build requirements
+      - [ ] Include eslint in build requirements
 
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport

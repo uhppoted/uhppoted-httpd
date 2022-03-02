@@ -214,8 +214,11 @@ func (cmd *Undaemonize) clean() error {
 		}
 	}
 
-	for _, w := range warnings {
-		fmt.Printf("   ... WARNING: %v\n", w)
+	if len(warnings) > 0 {
+		fmt.Println()
+		for _, w := range warnings {
+			fmt.Printf("   ... WARNING: %v\n", w)
+		}
 	}
 
 	return nil
