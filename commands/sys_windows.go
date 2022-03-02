@@ -1,10 +1,10 @@
 package commands
 
 import (
+	"path/filepath"
+
 	"golang.org/x/sys/windows"
 	"golang.org/x/sys/windows/svc/eventlog"
-
-	"path/filepath"
 )
 
 type EventLog struct {
@@ -26,5 +26,7 @@ func workdir() string {
 		return `C:\uhppoted`
 	}
 
-	return filepath.Join(programData, "uhppoted")
+	folder := filepath.Join(programData, "uhppoted")
+
+	return folder
 }

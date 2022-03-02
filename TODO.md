@@ -1,9 +1,7 @@
 ## v0.7.x
 
-- [ ] ??
-```
-Relative positioning of table rows and row groups is now supported. This site may need to be updated because it may depend on this feature having no effect.
-```
+- [ ] _Relative positioning of table rows and row groups is now supported..._
+      - https://stackoverflow.com/questions/5148041/does-firefox-support-position-relative-on-table-elements
 
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, squoosh, etc
@@ -13,16 +11,13 @@ Relative positioning of table rows and row groups is now supported. This site ma
 
 - [ ] daemonize
       - [ ] Check log rotation
-      - [x] admin user is 'modified' after daemonize - password field has pwd in it????
-```
-<input class="field password modified" type="password" placeholder="********" onchange="onEdited('user', event)" onkeydown="onEnter('user', event)" data-record="R081" data-original="" data-value="uhppoted" id="R081-password" data-oid="0.8.1.4" data-status="">
-```
+      - [x] admin user is 'modified' after daemonize - password field has auto-filled password
       - [x] Generate TLS keys + certficates
             - [x] client key + certificate
             - [x] TLS mutual auth
-      - [ ] Windows
-            - [ ] `sysinit` unpacking to the 'current' folder instead of var
-            - [ ] Creating extraneous `system` folder under C:\ProgramData\uhppoted
+      - [x] Windows
+            - [x] `sysinit` unpacking to the 'current' folder instead of var
+            - [x] Creating extraneous `system` folder under C:\ProgramData\uhppoted
 
 - [ ] Verify bootstrap from scratch
 - [ ] config.NewConfig should not return pointer

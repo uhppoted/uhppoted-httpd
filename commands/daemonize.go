@@ -341,7 +341,7 @@ func (cmd *Daemonize) grules(i info) (bool, error) {
 }
 
 func (cmd *Daemonize) users(i info) error {
-	dir := filepath.Join(cmd.etc, "system")
+	dir := filepath.Join(cmd.workdir, "system")
 
 	fmt.Printf("   ... creating folder '%v'\n", dir)
 	if err := os.MkdirAll(dir, 0744); err != nil {
@@ -465,7 +465,7 @@ func (cmd *Daemonize) sysinit(i info) error {
 			}
 
 			fmt.Printf("   ... creating default %v\n", file)
-			if err := toTextFile(v.content, v.file); err != nil {
+			if err := toTextFile(v.content, file); err != nil {
 				return err
 			}
 		}

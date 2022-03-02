@@ -18,7 +18,7 @@ import (
 var DAEMONIZE = Daemonize{
 	name:        SERVICE,
 	description: "UHPPOTE UTO311-L0x access card controllers HTTP service",
-	workdir:     workdir(),
+	workdir:     filepath.Join(workdir(), "httpd"),
 	logdir:      filepath.Join(workdir(), "logs"),
 	config:      filepath.Join(workdir(), "uhppoted.conf"),
 	etc:         filepath.Join(workdir(), "httpd"),
@@ -200,7 +200,6 @@ func (cmd *Daemonize) mkdirs(i *info) error {
 	directories := []string{
 		i.WorkDir,
 		i.LogDir,
-		filepath.Join(i.WorkDir, "httpd"),
 	}
 
 	for _, dir := range directories {
