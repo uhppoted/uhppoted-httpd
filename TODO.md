@@ -29,7 +29,11 @@
 
 - [ ] Overview page 
 - [ ] README
-      - [ ] Include eslint in build requirements
+      - [x] Include eslint in build requirements
+      - [ ] uhppoted.conf
+      - [ ] HTML
+      - [ ] grules
+      - [ ] auth.json
 
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport

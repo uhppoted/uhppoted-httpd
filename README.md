@@ -2,74 +2,165 @@
 
 # uhppoted-httpd
 
-Browser based user interface for an access control system based on the UHPPOTE TCP/IP controllers
+`uhppoted-httpd` implements an HTTP server that provides a browser based user interface for an access control system based
+on UHPPOTE TCP/IP controllers. It is intended to supplement the existing command line tools and application integrations.
 
 ## Status
 
 _In development_
 
-## Design Notes
+Supported operating systems:
+- Linux
+- MacOS
+- Windows
+- ARM7 _(e.g. RaspberryPi)_
 
-Although `uhppoted-httpd` will (eventually) be a fully functional user interface for managing UHPPOTE 
-TCP/IP controllers, the design and implementation are intended to fit into the 'set of components' 
-philosophy that backs the other`uhppoted` modules i.e. it is should to fit into the working systems
-of the user and/or organisation, rather than have an identity of it's very own.
+## Raison d'être
 
-As such, the UI is intentionally simple, plain, low key and relatively unopinionated. It is intended 
-to be a working UI that can be customised with relatively little effort (logo's, themes and CSS). 
-Likewise, the scripting is vanilla Javascript (rather than e.g. Typescript or React) to keep the 
-complexity of the system to a reasonable level - which should hopefully also facilitate low maintenance
-in the long term.
+** CAVEAT EMPTOR **
 
-## Road map
+`uhppoted-httpd`, at this stage in its career, is primarily intended for use in validating the design and
+implementation of the other `uhppoted` components when integrated into a working system. It is also intended
+for exploring some alternative ideas around user interfaces and system architectures.
 
-The list below is a provisional list of features and functionality that are on the road map:
+Having said which, it does provide a functional and usable user interface for managing a small'ish access
+control system. Be warned though - the out-of-the-box look and feel is (deliberately) workaday, low key and
+plain and is very definitely intended as a basis for your own customisation with your own logos, themes and
+functionality.
 
-#### v0.8.0
+## Releases
 
-v0.8.0 is intended to provide the base layer functionality for a UI that manages 'local' controllers
-(i.e. directly accessible via the network), backed by an in-memory database. Provisionally, the 
-supported functionality will include:
+| *Version* | *Description*                                                                             |
+| --------- | ----------------------------------------------------------------------------------------- |
+|           |                                                                                           |
+|           |                                                                                           |
 
-- User ID+password authentication and authorization
-- HTTP and HTTPS support
-- Table based card management
-- Table based controller management
-- Door access rules
-- Events view
-- Logs view (?) 
-- Websocket protocol for real-time'ish events and controller statuses
-- Switchable UI themes
+## Installation
 
-#### v0.8.1
+Executables for all the supported operating systems are packaged in the [releases](https://github.com/uhppoted/uhppoted-httpd/releases):
 
-v0.8.1 is (provisionally) envisioned as adding UI support for `uhppoted-rest` as well as an optional SQL backend 
-database.
+The release tarballs contain the executables for all the operating systems - OS specific tarballs with all the _uhppoted_ components can be found in [uhpppoted](https://github.com/uhppoted/uhppoted/releases) releases.
 
-- Add support for controllers accessible via uhppoted-rest
-- Optional SQLite database
-- Greasemonkey/Tampermonkey support
+Installation is straightforward - download the archive and extract it to a directory of your choice. To install `uhppoted-httpd` as a system service:
+```
+   cd <uhppote directory>
+   sudo uhppoted-httpd daemonize
+```
 
-#### v0.8.2
+`uhppoted-httpd help` will list the available commands and associated options (documented below).
 
-v0.8.2 is (provisionally) envisioned as adding UI support for `uhppoted-mqtt`.
+The `daemonize` command will create all the necessary files for `uhppoted-httpd` if they do not exist already:
 
-- Add support for controllers accessible via uhppoted-mqtt
-- Add support for NoSQL backend database (?)
-- OAuth authentication
+- `uhppoted.conf`
+- access lists
+- GRULES files
+- HTML files
 
-#### v0.8.3
+### Building from source
 
-v0.8.3 is (provisionally) envisioned as adding UI support for controller accessed via the file based
-`uhppoted-app-s3`.
+Assuming you have `Go`, `make` and `eslint` installed:
 
-- Add support for controllers accessible via `uhppoted-app-s3`
+```
+git clone https://github.com/uhppoted/uhppoted-httpd.git
+cd uhppoted-httpd
+make build
+```
 
-#### vX.X.X
+If you prefer not to use `make`:
+```
+git clone https://github.com/uhppoted/uhppoted-httpd.git
+cd uhppoted-httpd
+mkdir bin
+go build -trimpath -o bin ./...
+```
 
-Far future features:
+The above commands build the `'uhppoted-httpd` executable to the `bin` directory.
 
-- UQL
-- Query UI
-- CRDT 
-- Multi-tenant support
+
+#### Dependencies
+
+| *Dependency*                                                            | *Description*                        |
+| ----------------------------------------------------------------------- | -------------------------------------|
+| [uhppote-core](https://github.com/uhppoted/uhppote-core)                | Device level API implementation      |
+| [uhppoted-lib](https://github.com/uhppoted/uhppoted-lib)                | common API for external applications |
+| [jwt/v3](https://github.com/cristalhq/jwt/v3)                           | JWT implementation                   |
+| [grule-rule-engine](https://github.com/hyperjumptech/grule-rule-engine) | Rules engine                         |
+| github.com/google/uuid                                                  | UUID type implementation             |
+| golang.org/x/sys                                                        | (for Windows service integration)    |
+
+## uhppoted-httpd
+
+Usage: ```uhppoted-httpd <command> <options>```
+
+Supported commands:
+
+- `help`
+- `version`
+- `config`
+- `run`
+- `console`
+- `daemonize`
+- `undaemonize`
+
+Defaults to `run` if the command it not provided i.e. ```uhppoted-httpd <options>``` is equivalent to 
+```uhppoted-httpd run <options>```.
+
+### `run`
+
+Runs the `uhppoted-httpd` HTTP server. Default command, intended for use as a system service that runs in the 
+background. 
+
+Command line:
+
+` uhppoted-httpd [--debug] [--console] [--config <file>] `
+
+```
+  --config      Sets the uhppoted.conf file to use for controller configurations. 
+                Defaults to the communal uhppoted.conf file shared by all the uhppoted modules.
+  --console     Runs the HTTP server endpoint as a console application, logging events to the console.
+  --debug       Displays verbose debugging information, in particular the communications with the 
+                UHPPOTE controllers
+```
+
+### `daemonize`
+
+Registers `uhppoted-httpd` as a system service that will be started on system boot. The command creates the necessary
+system specific service configuration files and service manager entries. On Linux it defaults to using the 
+`uhppoted:uhppoted` user:group - this can be changed with the `--user` option
+
+Command line:
+
+`uhppoted-httpd daemonize [--user <user>]`
+
+### `undaemonize`
+
+Unregisters `uhppoted-httpd` as a system service, but does not delete any created log or configuration files. 
+
+Command line:
+
+`uhppoted-httpd undaemonize `
+
+## Supporting files
+
+### `uhppoted.conf`
+
+`uhppoted.conf` is the communal configuration file shared by all the `uhppoted` project modules and is (or will 
+eventually be) documented in [uhppoted](https://github.com/uhppoted/uhppoted). `uhppoted-httpd` requires:
+- the _HTTPD_ section to define the configuration for the HTTP server
+- the _devices_ section to resolve non-local controller IP addresses and door to controller door identities.
+
+The `daemonize` command will create a `uhppoted.conf` file if one does not exist, or update the existing file
+with the default configuration.
+
+### HTML files
+
+### `auth.json`
+
+### `ACL.grl`
+
+### GRULES files
+
+### JSON files
+
+
+
