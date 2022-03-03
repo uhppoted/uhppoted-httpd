@@ -134,9 +134,6 @@ func (cmd *Daemonize) Execute(args ...interface{}) error {
 }
 
 func (cmd *Daemonize) execute() error {
-	fmt.Println()
-	fmt.Println("   ... daemonizing")
-
 	executable, err := os.Executable()
 	if err != nil {
 		return err
@@ -144,8 +141,19 @@ func (cmd *Daemonize) execute() error {
 
 	uid, gid, err := getUserGroup(string(cmd.usergroup))
 	if err != nil {
+		fmt.Println()
+		fmt.Printf("     **** PLEASE CREATE uid:gid %v (OR SPECIFY A DIFFERENT uid:gid WITH the --user OPTION) ***\n", cmd.usergroup)
+		fmt.Println()
 		return err
 	}
+
+	username := "uhppoted"
+	if u, err := user.LookupId(fmt.Sprintf("%v", uid)); err == nil {
+		username = u.Username
+	}
+
+	fmt.Println()
+	fmt.Println("   ... daemonizing")
 
 	bind, _, _ := config.DefaultIpAddresses()
 
@@ -161,7 +169,7 @@ func (cmd *Daemonize) execute() error {
 		LogFiles:      []string{fmt.Sprintf("/var/log/uhppoted/%s.log", SERVICE)},
 	}
 
-	f := func(path string, info fs.DirEntry, err error) error {
+	chown := func(path string, info fs.DirEntry, err error) error {
 		if err == nil {
 			err = os.Chown(path, uid, gid)
 		}
@@ -192,6 +200,8 @@ func (cmd *Daemonize) execute() error {
 
 	if err := cmd.conf(i, unpacked, grules); err != nil {
 		return err
+	} else if err = os.Chown(cmd.config, uid, gid); err != nil {
+		return err
 	}
 
 	if err := cmd.users(i); err != nil {
@@ -206,11 +216,11 @@ func (cmd *Daemonize) execute() error {
 		return err
 	}
 
-	if err := filepath.WalkDir(cmd.etc, f); err != nil {
+	if err := filepath.WalkDir(cmd.etc, chown); err != nil {
 		return err
 	}
 
-	if err := filepath.WalkDir(cmd.workdir, f); err != nil {
+	if err := filepath.WalkDir(cmd.workdir, chown); err != nil {
 		return err
 	}
 
@@ -229,6 +239,11 @@ func (cmd *Daemonize) execute() error {
 	fmt.Println()
 	fmt.Printf("     > sudo ufw allow from %s to any port 8080 proto tcp\n", bind.IP)
 	fmt.Printf("     > sudo ufw allow from %s to any port 8443 proto tcp\n", bind.IP)
+	fmt.Println()
+	fmt.Printf("   The installation can be verified by running the %v service in 'console' mode:\n", SERVICE)
+	fmt.Println()
+	fmt.Printf("     > sudo su %v\n", username)
+	fmt.Printf("     > ./uhppoted-httpd --debug --console\n")
 	fmt.Println()
 	fmt.Println()
 

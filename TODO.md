@@ -1,8 +1,5 @@
 ## v0.7.x
 
-- [ ] _Relative positioning of table rows and row groups is now supported..._
-      - https://stackoverflow.com/questions/5148041/does-firefox-support-position-relative-on-table-elements
-
 - [ ] OIDs:
       - [ ] catalog.Objects type to streamline e.g. append, trim, squoosh, etc
       - [ ] GetV => GetBool, GetInt, etc
@@ -11,13 +8,9 @@
 
 - [ ] daemonize
       - [ ] Check log rotation
-      - [x] admin user is 'modified' after daemonize - password field has auto-filled password
-      - [x] Generate TLS keys + certficates
-            - [x] client key + certificate
-            - [x] TLS mutual auth
-      - [x] Windows
-            - [x] `sysinit` unpacking to the 'current' folder instead of var
-            - [x] Creating extraneous `system` folder under C:\ProgramData\uhppoted
+      - [x] Linux
+            - [x] `ERROR: user: unknown user uhppoted`
+            - [x] `WARN Could not load configuration (open /etc/uhppoted/uhppoted.conf: permission denied)`
 
 - [ ] Verify bootstrap from scratch
 - [ ] config.NewConfig should not return pointer
@@ -27,6 +20,9 @@
 - [ ] Make vtable'able subsystem an interface
 - [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
       be updated from the catalog ??
+      - (?) broadcast channel
+      - (?) event bus
+      - (?) condition handlers a la Lisp
 
 
 ### IN PROGRESS
