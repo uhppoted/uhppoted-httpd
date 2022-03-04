@@ -116,14 +116,12 @@ func (ii *Interfaces) Clone() Interfaces {
 	return shadow
 }
 
-func (ii *Interfaces) AsObjects(auth auth.OpAuth) []catalog.Object {
-	objects := []catalog.Object{}
+func (ii *Interfaces) AsObjects(auth auth.OpAuth) catalog.Objects {
+	objects := catalog.Objects{}
 
 	for _, l := range ii.lans {
 		if l.IsValid() {
-			if v := l.AsObjects(auth); v != nil {
-				objects = append(objects, v...)
-			}
+			objects.Append(l.AsObjects(auth)...)
 		}
 	}
 

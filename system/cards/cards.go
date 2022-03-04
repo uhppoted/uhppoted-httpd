@@ -164,17 +164,14 @@ func (cc *Cards) Print() {
 	}
 }
 
-func (cc *Cards) AsObjects(auth auth.OpAuth) []catalog.Object {
-	objects := []catalog.Object{}
+func (cc *Cards) AsObjects(auth auth.OpAuth) catalog.Objects {
 	guard.RLock()
-
 	defer guard.RUnlock()
 
+	objects := catalog.Objects{}
 	for _, card := range cc.cards {
 		if card.IsValid() || card.IsDeleted() {
-			if l := card.AsObjects(auth); l != nil {
-				objects = append(objects, l...)
-			}
+			objects.Append(card.AsObjects(auth)...)
 		}
 	}
 

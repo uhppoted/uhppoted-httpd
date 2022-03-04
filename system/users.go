@@ -2,17 +2,18 @@ package system
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Users(uid, role string) interface{} {
+func Users(uid, role string) []catalog.Object {
 	sys.RLock()
 	defer sys.RUnlock()
 
 	auth := auth.NewAuthorizator(uid, role)
 
-	return sys.users.AsObjects(auth)
+	return sys.users.AsObjects(auth).AsArray()
 }
 
 func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error) {

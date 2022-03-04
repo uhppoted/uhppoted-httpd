@@ -149,11 +149,11 @@ func (ll *Logs) Clone() *Logs {
 	return &shadow
 }
 
-func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []interface{} {
+func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) catalog.Objects {
 	guard.RLock()
 	defer guard.RUnlock()
 
-	objects := []interface{}{}
+	objects := catalog.Objects{}
 	keys := []key{}
 
 	for k := range ll.logs {
@@ -174,7 +174,7 @@ func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []interface{} {
 		if l, ok := ll.logs[k]; ok {
 			if l.IsValid() || l.IsDeleted() {
 				if l := l.AsObjects(auth); l != nil {
-					objects = append(objects, l...)
+					objects.Append(l...)
 					count++
 				}
 			}
@@ -186,8 +186,8 @@ func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []interface{} {
 	if len(keys) > 0 {
 		first := ll.logs[keys[0]]
 		last := ll.logs[keys[len(keys)-1]]
-		objects = append(objects, catalog.NewObject2(LogsOID, LogsFirst, first.OID))
-		objects = append(objects, catalog.NewObject2(LogsOID, LogsLast, last.OID))
+		objects.Append(catalog.NewObject2(LogsOID, LogsFirst, first.OID))
+		objects.Append(catalog.NewObject2(LogsOID, LogsLast, last.OID))
 	}
 
 	return objects

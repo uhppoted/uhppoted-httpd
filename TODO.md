@@ -1,19 +1,23 @@
 ## v0.7.x
 
 - [ ] OIDs:
-      - [ ] catalog.Objects type to streamline e.g. append, trim, squoosh, etc
+      - [ ] catalog.Objects type:
+            - [x] Append
+            - [ ] squoosh
+            - (?) trim
       - [ ] GetV => GetBool, GetInt, etc
       - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
+      - [ ] Verify bootstrap from scratch
       - [ ] Check log rotation
             - [x] uhppoted-httpd.log
             - [ ] audit log
                   - [ ] Linux
                   - [ ] MacOS
 
-- [ ] Verify bootstrap from scratch
+
 - [ ] config.NewConfig should not return pointer
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys

@@ -33,7 +33,7 @@ func TestEventAsObjects(t *testing.T) {
 		CardName:   "Eine Kardt",
 	}
 
-	expected := []interface{}{
+	expected := []catalog.Object{
 		catalog.Object{OID: "0.6.3", Value: types.StatusOk},
 		catalog.Object{OID: "0.6.3.2", Value: uint32(405419896)},
 		catalog.Object{OID: "0.6.3.1", Value: timestamp},
@@ -74,7 +74,7 @@ func TestEventAsObjectsWithAuth(t *testing.T) {
 		CardName:   "Eine Kardt",
 	}
 
-	expected := []interface{}{
+	expected := []catalog.Object{
 		catalog.Object{OID: "0.6.3", Value: types.StatusOk},
 		//		catalog.Object{OID: "0.6.3.2", Value: uint32(405419896)},
 		catalog.Object{OID: "0.6.3.1", Value: timestamp},

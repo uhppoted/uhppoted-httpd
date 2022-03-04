@@ -12,7 +12,7 @@ func Groups(uid, role string) interface{} {
 
 	auth := auth.NewAuthorizator(uid, role)
 
-	return sys.groups.AsObjects(auth)
+	return sys.groups.AsObjects(auth).AsArray()
 }
 
 func UpdateGroups(uid, role string, m map[string]interface{}) (interface{}, error) {

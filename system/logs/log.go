@@ -46,7 +46,7 @@ func (l LogEntry) IsDeleted() bool {
 	return false
 }
 
-func (l *LogEntry) AsObjects(a auth.OpAuth) []interface{} {
+func (l *LogEntry) AsObjects(a auth.OpAuth) []catalog.Object {
 	type E = struct {
 		field catalog.Suffix
 		value interface{}
@@ -72,7 +72,7 @@ func (l *LogEntry) AsObjects(a auth.OpAuth) []interface{} {
 		return true
 	}
 
-	objects := []interface{}{}
+	objects := []catalog.Object{}
 
 	if f(l, "OID", l.OID) {
 		objects = append(objects, catalog.NewObject(l.OID, types.StatusOk))

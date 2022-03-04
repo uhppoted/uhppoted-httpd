@@ -50,14 +50,12 @@ func (dd *Doors) ByName(name string) (Door, bool) {
 	return Door{}, false
 }
 
-func (dd *Doors) AsObjects(auth auth.OpAuth) []catalog.Object {
-	objects := []catalog.Object{}
+func (dd *Doors) AsObjects(auth auth.OpAuth) catalog.Objects {
+	objects := catalog.Objects{}
 
 	for _, d := range dd.doors {
 		if d.IsValid() || d.IsDeleted() {
-			if l := d.AsObjects(auth); l != nil {
-				objects = append(objects, l...)
-			}
+			objects.Append(d.AsObjects(auth)...)
 		}
 	}
 

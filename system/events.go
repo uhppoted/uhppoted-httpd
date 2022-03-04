@@ -11,13 +11,13 @@ import (
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
-func Events(uid, role string, start, count int) []interface{} {
+func Events(uid, role string, start, count int) []catalog.Object {
 	sys.RLock()
 	defer sys.RUnlock()
 
 	auth := auth.NewAuthorizator(uid, role)
 
-	return sys.events.AsObjects(start, count, auth)
+	return sys.events.AsObjects(start, count, auth).AsArray()
 }
 
 func AppendEvents(list types.EventsList) {

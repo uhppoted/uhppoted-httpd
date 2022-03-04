@@ -12,7 +12,7 @@ func Cards(uid, role string) interface{} {
 
 	auth := auth.NewAuthorizator(uid, role)
 
-	return sys.cards.AsObjects(auth)
+	return sys.cards.AsObjects(auth).AsArray()
 }
 
 func UpdateCards(uid, role string, m map[string]interface{}) (interface{}, error) {

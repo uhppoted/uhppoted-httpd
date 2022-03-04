@@ -126,8 +126,8 @@ func (ee *Events) Clone() *Events {
 	return &shadow
 }
 
-func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []interface{} {
-	objects := []interface{}{}
+func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) catalog.Objects {
+	objects := catalog.Objects{}
 	keys := []key{}
 
 	ee.events.Range(func(k, v interface{}) bool {
@@ -149,7 +149,7 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []interface{} {
 			e := v.(Event)
 			if e.IsValid() || e.IsDeleted() {
 				if l := e.AsObjects(auth); l != nil {
-					objects = append(objects, l...)
+					objects.Append(l...)
 					count++
 				}
 			}
@@ -163,13 +163,12 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []interface{} {
 		last, _ := ee.events.Load(keys[len(keys)-1])
 
 		if first != nil {
-			objects = append(objects, catalog.NewObject2(EventsOID, EventsFirst, first.(Event).OID))
+			objects.Append(catalog.NewObject2(EventsOID, EventsFirst, first.(Event).OID))
 		}
 
 		if last != nil {
-			objects = append(objects, catalog.NewObject2(EventsOID, EventsLast, last.(Event).OID))
+			objects.Append(catalog.NewObject2(EventsOID, EventsLast, last.(Event).OID))
 		}
-
 	}
 
 	return objects

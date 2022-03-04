@@ -174,17 +174,15 @@ func (uu Users) Print() {
 	}
 }
 
-func (uu *Users) AsObjects(auth auth.OpAuth) []catalog.Object {
-	objects := []catalog.Object{}
+func (uu *Users) AsObjects(auth auth.OpAuth) catalog.Objects {
+	objects := catalog.Objects{}
 	guard.RLock()
 
 	defer guard.RUnlock()
 
 	for _, u := range uu.users {
 		if u.IsValid() || u.IsDeleted() {
-			if l := u.AsObjects(auth); l != nil {
-				objects = append(objects, l...)
-			}
+			objects.Append(u.AsObjects(auth)...)
 		}
 	}
 

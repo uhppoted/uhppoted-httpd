@@ -14,7 +14,7 @@ func Doors(uid, role string) interface{} {
 
 	auth := auth.NewAuthorizator(uid, role)
 
-	return sys.doors.AsObjects(auth)
+	return sys.doors.AsObjects(auth).AsArray()
 }
 
 func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error) {

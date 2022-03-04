@@ -153,7 +153,7 @@ func (e Event) IsDeleted() bool {
 	return false
 }
 
-func (e *Event) AsObjects(a auth.OpAuth) []interface{} {
+func (e *Event) AsObjects(a auth.OpAuth) []catalog.Object {
 	type E = struct {
 		field catalog.Suffix
 		value interface{}
@@ -183,7 +183,7 @@ func (e *Event) AsObjects(a auth.OpAuth) []interface{} {
 		return true
 	}
 
-	objects := []interface{}{}
+	objects := []catalog.Object{}
 
 	if f(e, "OID", e.OID) {
 		objects = append(objects, catalog.NewObject(e.OID, types.StatusOk))
