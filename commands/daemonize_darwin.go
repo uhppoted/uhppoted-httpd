@@ -14,10 +14,11 @@ import (
 )
 
 type info struct {
-	Label      string
-	Executable string
-	StdLogFile string
-	ErrLogFile string
+	Label        string
+	Executable   string
+	StdLogFile   string
+	ErrLogFile   string
+	AuditLogFile string
 }
 
 type plist struct {
@@ -109,10 +110,11 @@ func (cmd *Daemonize) execute() error {
 	}
 
 	i := info{
-		Label:      fmt.Sprintf("com.github.uhppoted.%s", SERVICE),
-		Executable: executable,
-		StdLogFile: filepath.Join(cmd.logdir, fmt.Sprintf("%s.log", SERVICE)),
-		ErrLogFile: filepath.Join(cmd.logdir, fmt.Sprintf("%s.err", SERVICE)),
+		Label:        fmt.Sprintf("com.github.uhppoted.%s", SERVICE),
+		Executable:   executable,
+		StdLogFile:   filepath.Join(cmd.logdir, fmt.Sprintf("%s.log", SERVICE)),
+		ErrLogFile:   filepath.Join(cmd.logdir, fmt.Sprintf("%s.err", SERVICE)),
+		AuditLogFile: filepath.Join(cmd.workdir, "audit", "audit.log"),
 	}
 
 	if err := cmd.launchd(&i); err != nil {
@@ -267,6 +269,10 @@ func (cmd *Daemonize) logrotate(i *info) error {
 		},
 		{
 			LogFile: i.ErrLogFile,
+			PID:     pid,
+		},
+		{
+			LogFile: i.AuditLogFile,
 			PID:     pid,
 		},
 	}

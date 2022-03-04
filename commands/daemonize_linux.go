@@ -166,7 +166,10 @@ func (cmd *Daemonize) execute() error {
 		Group:         "uhppoted",
 		Uid:           uid,
 		Gid:           gid,
-		LogFiles:      []string{fmt.Sprintf("/var/log/uhppoted/%s.log", SERVICE)},
+		LogFiles: []string{
+			fmt.Sprintf("/var/log/uhppoted/%s.log", SERVICE),
+			"/var/uhppoted/httpd/audit/audit.log",
+		},
 	}
 
 	chown := func(path string, info fs.DirEntry, err error) error {

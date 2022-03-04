@@ -8,9 +8,10 @@
 
 - [ ] daemonize
       - [ ] Check log rotation
-      - [x] Linux
-            - [x] `ERROR: user: unknown user uhppoted`
-            - [x] `WARN Could not load configuration (open /etc/uhppoted/uhppoted.conf: permission denied)`
+            - [x] uhppoted-httpd.log
+            - [ ] audit log
+                  - [ ] Linux
+                  - [ ] MacOS
 
 - [ ] Verify bootstrap from scratch
 - [ ] config.NewConfig should not return pointer
