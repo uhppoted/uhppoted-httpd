@@ -17,16 +17,16 @@ Supported operating systems:
 
 ## Raison d'être
 
-** CAVEAT EMPTOR **
+_CAVEAT EMPTOR_
 
-`uhppoted-httpd`, at this stage in its career, is primarily intended for use in validating the design and
-implementation of the other `uhppoted` components when integrated into a working system. It is also intended
-for exploring some alternative ideas around user interfaces and system architectures.
+Although `uhppoted-httpd` does provide a functional and usable user interface for managing a small'ish access
+control system, the out-of-the-box look and feel is (deliberately) workaday, low key and plain with the intention
+of being a base for your own customisation (with your own logos, themes, functionality, etc) rather than as a 
+finshed, shippable product.
 
-Having said which, it does provide a functional and usable user interface for managing a small'ish access
-control system. Be warned though - the out-of-the-box look and feel is (deliberately) workaday, low key and
-plain and is very definitely intended as a basis for your own customisation with your own logos, themes and
-functionality.
+Also, please be aware that at this stage in its career, it is primarily a testbed for validating the design and
+implementation of the other `uhppoted` components when integrated into a working system. It is also intended to
+become a platform for exploring some alternative ideas around user interfaces and system architectures.
 
 ## Releases
 
@@ -43,7 +43,7 @@ The release tarballs contain the executables for all the operating systems - OS 
 
 Installation is straightforward - download the archive and extract it to a directory of your choice. To install `uhppoted-httpd` as a system service:
 ```
-   cd <uhppote directory>
+   cd <uhppoted directory>
    sudo uhppoted-httpd daemonize
 ```
 
@@ -58,7 +58,13 @@ The `daemonize` command will create all the necessary files for `uhppoted-httpd`
 
 ### Building from source
 
-Assuming you have `Go`, `make` and `eslint` installed:
+Required tools:
+- [Go 1.17+](https://go.dev)
+- [sass](https://sass-lang.com)
+- make (optional but recommended)
+- [eslint](https://eslint.org) (optional but recommended)
+
+To build using the included Makefile:
 
 ```
 git clone https://github.com/uhppoted/uhppoted-httpd.git
@@ -66,11 +72,14 @@ cd uhppoted-httpd
 make build
 ```
 
-If you prefer not to use `make`:
+Without use `make`:
 ```
 git clone https://github.com/uhppoted/uhppoted-httpd.git
 cd uhppoted-httpd
-mkdir bin
+sass --no-source-map sass/themes/light:httpd/html/css/default
+sass --no-source-map sass/themes/light:httpd/html/css/light
+sass --no-source-map sass/themes/dark:httpd/html/css/dark
+cp httpd/html/images/light/* httpd/html/images/default
 go build -trimpath -o bin ./...
 ```
 

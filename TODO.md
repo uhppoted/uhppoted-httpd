@@ -31,6 +31,7 @@
 - [ ] Overview page 
 - [ ] README
       - [x] Include eslint in build requirements
+      - [x] Include sass in build requirements
       - [ ] uhppoted.conf
       - [ ] HTML
       - [ ] grules

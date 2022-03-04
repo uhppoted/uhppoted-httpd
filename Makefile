@@ -40,13 +40,13 @@ format:
 
 build: format
 	mkdir -p bin
-	go build -trimpath -o bin ./...
 	mkdir -p httpd/html/images/default
 	sass --no-source-map sass/themes/light:httpd/html/css/default
 	sass --no-source-map sass/themes/light:httpd/html/css/light
 	sass --no-source-map sass/themes/dark:httpd/html/css/dark
 	cp httpd/html/images/light/* httpd/html/images/default
 	npx eslint --fix httpd/html/javascript/*.js
+	go build -trimpath -o bin ./...
 
 test: build
 	go test ./...
