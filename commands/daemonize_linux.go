@@ -57,9 +57,10 @@ const logRotateTemplate = `{{range .LogFiles}}{{.}} {
     notifempty
     su uhppoted uhppoted
     postrotate
-       /usr/bin/killall -HUP uhppoted
+       /usr/bin/killall -HUP uhppoted-httpd
     endscript
-}{{end}}
+}
+{{end}}
 `
 
 var DAEMONIZE = Daemonize{

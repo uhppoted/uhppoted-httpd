@@ -4,6 +4,7 @@
       - [ ] catalog.Objects type:
             - [x] Append
             - [ ] squoosh
+            - [ ] dbc.Stash
             - (?) trim
       - [ ] GetV => GetBool, GetInt, etc
       - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
@@ -13,26 +14,28 @@
       - [ ] Verify bootstrap from scratch
       - [ ] Check log rotation
             - [x] uhppoted-httpd.log
-            - [ ] audit log
-                  - [ ] Linux
-                  - [ ] MacOS
+            - [x] fix SIGHUP target
+            - [x] audit log
+                  - [x] Linux
+                  - [x] MacOS
 
+- [ ] Overview page 
+- [ ] Events should use local index rather than controller (optionally ?)
+- [ ] Cleanup audit log
 
-- [ ] config.NewConfig should not return pointer
 - [ ] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError
 - [ ] Make vtable'able subsystem an interface
+
+### IN PROGRESS
+
 - [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
       be updated from the catalog ??
       - (?) broadcast channel
       - (?) event bus
       - (?) condition handlers a la Lisp
 
-
-### IN PROGRESS
-
-- [ ] Overview page 
 - [ ] README
       - [x] Include eslint in build requirements
       - [x] Include sass in build requirements
@@ -40,9 +43,6 @@
       - [ ] HTML
       - [ ] grules
       - [ ] auth.json
-
-- [ ] Rename 'address' to 'endpoint'
-      - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -101,21 +101,9 @@
       - use uhppoted-lib::healthcheck
 
 #### Other
-- [ ] Finish structuring catalog.schema
-      - [ ] (?) Generate schema.js from catalog.Schema
 
 - [ ] Fix Firefox layout
       - spacing/padding/margins
-
-- [ ] [TOML](https://toml.io) files
-
-- [ ] tabular
-      - (experiment) use :before or :content for flags???
-      - New table row submitted with error cannot be discarded
-      - Empty list: make first row a 'new' row (?)
-      - filter columns
-      - genericize JS:refresh
-      - 'faceted' filtering (https://ux.stackexchange.com/questions/48992/sorting-filtering-on-infinite-scrolling-data-table)
 
 - [ ] ACL
       - wrap ACL update in goroutine
@@ -125,11 +113,22 @@
       - progresss
       - indefinite
 
-- [ ] MemDB
-      - Rather use sync.Map
-      - keep historical copies on save (for undo/revert)
-        - git (?)
-      - unit tests for ACL rules
+- [ ] User settings
+      - automatic logout enabled/timeout
+
+## TODO
+
+### Cleanup
+
+- [ ] Rename 'address' to 'endpoint'
+      - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
+- [ ] (?) Generate schema.js from catalog.Schema
+- [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
+- [ ] Logo 
+      - https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible
+      - https://jn3008.tumblr.com/post/618100274778783744
+- [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
+- [ ] Fonts
 
 - [ ] Cards
       - unit tests for auth rules
@@ -151,18 +150,24 @@
       - simultaneous editing (?) 
         -- use hash of DB to identify changes
       
-- [ ] favicon:https://nedbatchelder.com/blog/202012/favicons_with_imagemagick.html
-- [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
+- [ ] MemDB
+      - Rather use sync.Map
+      - keep historical copies on save (for undo/revert)
+        - git (?)
+      - unit tests for ACL rules
 
-- [ ] Fonts
-- [ ] User settings
-      - automatic logout enabled/timeout
-- [ ] Logo 
-      - https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible
-      - https://jn3008.tumblr.com/post/618100274778783744
+- [ ] tabular
+      - (experiment) use :before or :content for flags???
+      - New table row submitted with error cannot be discarded
+      - Empty list: make first row a 'new' row (?)
+      - filter columns
+      - genericize JS:refresh
+      - 'faceted' filtering (https://ux.stackexchange.com/questions/48992/sorting-filtering-on-infinite-scrolling-data-table)
 
-## TODO
 
+### Functionality
+
+- [ ] [TOML](https://toml.io) files
 - [ ] Hamburger menu (?)
 - [ ] Use shadow DOM for datetime combobox
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
