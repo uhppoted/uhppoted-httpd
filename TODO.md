@@ -1,11 +1,7 @@
 ## v0.7.x
 
 - [ ] OIDs:
-      - [ ] catalog.Objects type:
-            - [x] Append
-            - [ ] squoosh
-            - [ ] dbc.Stash
-            - (?) trim
+      - [ ] Revert catalog.Objects type
       - [ ] GetV => GetBool, GetInt, etc
       - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
       - [ ] Cleanup the oh-so-duplicated catalog code

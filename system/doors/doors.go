@@ -37,19 +37,6 @@ func (dd *Doors) Door(oid catalog.OID) (Door, bool) {
 	return d, ok
 }
 
-func (dd *Doors) ByName(name string) (Door, bool) {
-	for _, d := range dd.doors {
-		p := strings.ReplaceAll(strings.ToLower(d.Name), " ", "")
-		q := strings.ReplaceAll(strings.ToLower(name), " ", "")
-
-		if p == q {
-			return d, false
-		}
-	}
-
-	return Door{}, false
-}
-
 func (dd *Doors) AsObjects(auth auth.OpAuth) catalog.Objects {
 	objects := catalog.Objects{}
 
@@ -125,18 +112,17 @@ func (dd *Doors) Sweep(retention time.Duration) {
 	}
 }
 
-func (dd Doors) Find(name string) (Door, bool) {
+func (dd *Doors) ByName(name string) (Door, bool) {
 	clean := func(s string) string {
 		return strings.ToLower(regexp.MustCompile(`\s+`).ReplaceAllString(s, ""))
 	}
 
-	p := clean(name)
+	for _, d := range dd.doors {
+		p := clean(d.Name)
+		q := clean(name)
 
-	if p != "" {
-		for _, d := range dd.doors {
-			if p == clean(d.Name) {
-				return d, true
-			}
+		if p == q {
+			return d, false
 		}
 	}
 
