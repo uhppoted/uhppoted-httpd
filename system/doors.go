@@ -4,17 +4,19 @@ import (
 	"fmt"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Doors(uid, role string) interface{} {
+func Doors(uid, role string) []catalog.Object {
 	sys.RLock()
 	defer sys.RUnlock()
 
 	auth := auth.NewAuthorizator(uid, role)
+	objects := sys.doors.AsObjects(auth)
 
-	return sys.doors.AsObjects(auth).AsArray()
+	return objects
 }
 
 func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error) {

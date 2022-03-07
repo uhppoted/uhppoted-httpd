@@ -46,6 +46,78 @@ func NewEvents() Events {
 	return Events{}
 }
 
+func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []catalog.Object {
+	objects := []catalog.Object{}
+	keys := []key{}
+
+	ee.events.Range(func(k, v interface{}) bool {
+		keys = append(keys, k.(key))
+		return true
+	})
+
+	sort.SliceStable(keys, func(i, j int) bool {
+		p := keys[i]
+		q := keys[j]
+		return q.timestamp.Before(p.timestamp)
+	})
+
+	ix := start
+	count := 0
+	for ix < len(keys) && count < max {
+		k := keys[ix]
+		if v, ok := ee.events.Load(k); ok {
+			e := v.(Event)
+			if e.IsValid() || e.IsDeleted() {
+				if l := e.AsObjects(auth); l != nil {
+					objects = catalog.Join(objects, l...)
+					count++
+				}
+			}
+		}
+
+		ix++
+	}
+
+	if len(keys) > 0 {
+		first, _ := ee.events.Load(keys[0])
+		last, _ := ee.events.Load(keys[len(keys)-1])
+
+		if first != nil {
+			objects = catalog.Join(objects, catalog.NewObject2(EventsOID, EventsFirst, first.(Event).OID))
+		}
+
+		if last != nil {
+			objects = catalog.Join(objects, catalog.NewObject2(EventsOID, EventsLast, last.(Event).OID))
+		}
+	}
+
+	return objects
+}
+
+func (ee *Events) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+	if ee == nil {
+		return nil, nil
+	}
+
+	var objects = []interface{}{}
+	var err error
+
+	ee.events.Range(func(k, v interface{}) bool {
+		e := v.(Event)
+		if !e.OID.Contains(oid) {
+			return true
+		}
+
+		if objects, err = e.set(auth, oid, value); err == nil {
+			ee.events.Store(k, e)
+		}
+
+		return false
+	})
+
+	return objects, err
+}
+
 func (ee *Events) Load(blob json.RawMessage) error {
 	rs := []json.RawMessage{}
 	if err := json.Unmarshal(blob, &rs); err != nil {
@@ -124,78 +196,6 @@ func (ee *Events) Clone() *Events {
 	})
 
 	return &shadow
-}
-
-func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) catalog.Objects {
-	objects := catalog.Objects{}
-	keys := []key{}
-
-	ee.events.Range(func(k, v interface{}) bool {
-		keys = append(keys, k.(key))
-		return true
-	})
-
-	sort.SliceStable(keys, func(i, j int) bool {
-		p := keys[i]
-		q := keys[j]
-		return q.timestamp.Before(p.timestamp)
-	})
-
-	ix := start
-	count := 0
-	for ix < len(keys) && count < max {
-		k := keys[ix]
-		if v, ok := ee.events.Load(k); ok {
-			e := v.(Event)
-			if e.IsValid() || e.IsDeleted() {
-				if l := e.AsObjects(auth); l != nil {
-					objects.Append(l...)
-					count++
-				}
-			}
-		}
-
-		ix++
-	}
-
-	if len(keys) > 0 {
-		first, _ := ee.events.Load(keys[0])
-		last, _ := ee.events.Load(keys[len(keys)-1])
-
-		if first != nil {
-			objects.Append(catalog.NewObject2(EventsOID, EventsFirst, first.(Event).OID))
-		}
-
-		if last != nil {
-			objects.Append(catalog.NewObject2(EventsOID, EventsLast, last.(Event).OID))
-		}
-	}
-
-	return objects
-}
-
-func (ee *Events) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
-	if ee == nil {
-		return nil, nil
-	}
-
-	var objects = []interface{}{}
-	var err error
-
-	ee.events.Range(func(k, v interface{}) bool {
-		e := v.(Event)
-		if !e.OID.Contains(oid) {
-			return true
-		}
-
-		if objects, err = e.set(auth, oid, value); err == nil {
-			ee.events.Store(k, e)
-		}
-
-		return false
-	})
-
-	return objects, err
 }
 
 func (ee *Events) Validate() error {

@@ -29,6 +29,47 @@ func NewInterfaces(ch chan types.EventsList) Interfaces {
 	}
 }
 
+func (ii *Interfaces) AsObjects(auth auth.OpAuth) []catalog.Object {
+	objects := []catalog.Object{}
+
+	for _, l := range ii.lans {
+		if l.IsValid() {
+			objects = catalog.Join(objects, l.AsObjects(auth)...)
+		}
+	}
+
+	return objects
+}
+
+func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	if ii == nil {
+		return nil, nil
+	}
+
+	for _, l := range ii.lans {
+		if l != nil && l.OID.Contains(oid) {
+			return l.set(auth, oid, value, dbc)
+		}
+	}
+
+	objects := []catalog.Object{}
+
+	if oid == "<new>" {
+		if l, err := ii.add(auth, LAN{}); err != nil {
+			return nil, err
+		} else if l == nil {
+			return nil, fmt.Errorf("Failed to add 'new' interface")
+		} else {
+			l.log(auth, "add", l.OID, "interface", fmt.Sprintf("Added 'new' interface"), "", "", dbc)
+			objects = append(objects, catalog.NewObject(l.OID, "new"))
+			objects = append(objects, catalog.NewObject2(l.OID, LANStatus, "new"))
+			objects = append(objects, catalog.NewObject2(l.OID, LANCreated, l.created))
+		}
+	}
+
+	return objects, nil
+}
+
 func (ii *Interfaces) LAN() (LAN, bool) {
 	for _, v := range ii.lans {
 		if v != nil {
@@ -114,47 +155,6 @@ func (ii *Interfaces) Clone() Interfaces {
 	}
 
 	return shadow
-}
-
-func (ii *Interfaces) AsObjects(auth auth.OpAuth) catalog.Objects {
-	objects := catalog.Objects{}
-
-	for _, l := range ii.lans {
-		if l.IsValid() {
-			objects.Append(l.AsObjects(auth)...)
-		}
-	}
-
-	return objects
-}
-
-func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	if ii == nil {
-		return nil, nil
-	}
-
-	for _, l := range ii.lans {
-		if l != nil && l.OID.Contains(oid) {
-			return l.set(auth, oid, value, dbc)
-		}
-	}
-
-	objects := []catalog.Object{}
-
-	if oid == "<new>" {
-		if l, err := ii.add(auth, LAN{}); err != nil {
-			return nil, err
-		} else if l == nil {
-			return nil, fmt.Errorf("Failed to add 'new' interface")
-		} else {
-			l.log(auth, "add", l.OID, "interface", fmt.Sprintf("Added 'new' interface"), "", "", dbc)
-			objects = append(objects, catalog.NewObject(l.OID, "new"))
-			objects = append(objects, catalog.NewObject2(l.OID, LANStatus, "new"))
-			objects = append(objects, catalog.NewObject2(l.OID, LANCreated, l.created))
-		}
-	}
-
-	return objects, nil
 }
 
 func (ii Interfaces) Validate() error {

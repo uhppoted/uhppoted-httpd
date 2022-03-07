@@ -1,19 +1,20 @@
 ## v0.7.x
 
 - [ ] OIDs:
-      - [ ] Revert catalog.Objects type
+      - [x] Revert catalog.Objects type
       - [ ] GetV => GetBool, GetInt, etc
-      - [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
       - [ ] Cleanup the oh-so-duplicated catalog code
 
 - [ ] daemonize
       - [ ] Verify bootstrap from scratch
       - [ ] Check log rotation
-            - [x] uhppoted-httpd.log
+            - [ ] uhppoted-httpd.log
+                  - [ ] Linux
+                  - [ ] MacOS
+            - [ ] audit.log
+                  - [ ] Linux
+                  - [ ] MacOS
             - [x] fix SIGHUP target
-            - [x] audit log
-                  - [x] Linux
-                  - [x] MacOS
 
 - [ ] Overview page 
 - [ ] Events should use local index rather than controller (optionally ?)
@@ -116,6 +117,7 @@
 
 ### Cleanup
 
+- [ ] MAYBE: Store all values in catalog and 'realize' local copies from cache
 - [ ] Rename 'address' to 'endpoint'
       - https://networkengineering.stackexchange.com/questions/9429/what-is-the-proper-term-for-ipaddress-hostnameport
 - [ ] (?) Generate schema.js from catalog.Schema

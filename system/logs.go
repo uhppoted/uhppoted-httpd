@@ -10,6 +10,7 @@ func Logs(uid, role string, start, count int) []catalog.Object {
 	defer sys.RUnlock()
 
 	auth := auth.NewAuthorizator(uid, role)
+	objects := sys.logs.AsObjects(start, count, auth)
 
-	return sys.logs.AsObjects(start, count, auth).AsArray()
+	return objects
 }

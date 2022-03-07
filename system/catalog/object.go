@@ -10,6 +10,10 @@ type Object struct {
 	Value interface{}
 }
 
+func Join(p []Object, q ...Object) []Object {
+	return append(p, q...)
+}
+
 func NewObject(oid OID, value interface{}) Object {
 	return Object{
 		OID:   oid,

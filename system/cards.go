@@ -2,17 +2,19 @@ package system
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Cards(uid, role string) interface{} {
+func Cards(uid, role string) []catalog.Object {
 	sys.RLock()
 	defer sys.RUnlock()
 
 	auth := auth.NewAuthorizator(uid, role)
+	objects := sys.cards.AsObjects(auth)
 
-	return sys.cards.AsObjects(auth).AsArray()
+	return objects
 }
 
 func UpdateCards(uid, role string, m map[string]interface{}) (interface{}, error) {

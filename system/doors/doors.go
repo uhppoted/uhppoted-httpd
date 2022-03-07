@@ -37,12 +37,12 @@ func (dd *Doors) Door(oid catalog.OID) (Door, bool) {
 	return d, ok
 }
 
-func (dd *Doors) AsObjects(auth auth.OpAuth) catalog.Objects {
-	objects := catalog.Objects{}
+func (dd *Doors) AsObjects(auth auth.OpAuth) []catalog.Object {
+	objects := []catalog.Object{}
 
 	for _, d := range dd.doors {
 		if d.IsValid() || d.IsDeleted() {
-			objects.Append(d.AsObjects(auth)...)
+			objects = catalog.Join(objects, d.AsObjects(auth)...)
 		}
 	}
 

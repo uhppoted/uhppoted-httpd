@@ -12,8 +12,9 @@ func Users(uid, role string) []catalog.Object {
 	defer sys.RUnlock()
 
 	auth := auth.NewAuthorizator(uid, role)
+	objects := sys.users.AsObjects(auth)
 
-	return sys.users.AsObjects(auth).AsArray()
+	return objects
 }
 
 func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error) {

@@ -26,6 +26,56 @@ func NewUsers() Users {
 	}
 }
 
+func (uu *Users) AsObjects(auth auth.OpAuth) []catalog.Object {
+	objects := []catalog.Object{}
+	guard.RLock()
+
+	defer guard.RUnlock()
+
+	for _, u := range uu.users {
+		if u.IsValid() || u.IsDeleted() {
+			objects = catalog.Join(objects, u.AsObjects(auth)...)
+		}
+	}
+
+	return objects
+}
+
+func (uu *Users) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	if uu == nil {
+		return nil, nil
+	}
+
+	for k, u := range uu.users {
+		if u.OID.Contains(oid) {
+			objects, err := u.set(auth, oid, value, dbc)
+			if err == nil {
+				uu.users[k] = u
+			}
+
+			return objects, err
+		}
+	}
+
+	objects := []catalog.Object{}
+
+	if oid == "<new>" {
+		if u, err := uu.add(auth, User{}); err != nil {
+			return nil, err
+		} else if u == nil {
+			return nil, fmt.Errorf("Failed to add 'new' user")
+		} else {
+			uu.users[u.OID] = u
+			objects = append(objects, catalog.NewObject(u.OID, "new"))
+			objects = append(objects, catalog.NewObject2(u.OID, UserCreated, u.created))
+
+			u.log(auth, "add", u.OID, "card", "Added 'new' user", "", "", dbc)
+		}
+	}
+
+	return objects, nil
+}
+
 func (uu *Users) Load(blob json.RawMessage) error {
 	rs := []json.RawMessage{}
 	if err := json.Unmarshal(blob, &rs); err != nil {
@@ -89,41 +139,6 @@ func (uu Users) Clone() Users {
 	return shadow
 }
 
-func (uu *Users) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	if uu == nil {
-		return nil, nil
-	}
-
-	for k, u := range uu.users {
-		if u.OID.Contains(oid) {
-			objects, err := u.set(auth, oid, value, dbc)
-			if err == nil {
-				uu.users[k] = u
-			}
-
-			return objects, err
-		}
-	}
-
-	objects := []catalog.Object{}
-
-	if oid == "<new>" {
-		if u, err := uu.add(auth, User{}); err != nil {
-			return nil, err
-		} else if u == nil {
-			return nil, fmt.Errorf("Failed to add 'new' user")
-		} else {
-			uu.users[u.OID] = u
-			objects = append(objects, catalog.NewObject(u.OID, "new"))
-			objects = append(objects, catalog.NewObject2(u.OID, UserCreated, u.created))
-
-			u.log(auth, "add", u.OID, "card", "Added 'new' user", "", "", dbc)
-		}
-	}
-
-	return objects, nil
-}
-
 func (uu *Users) SetPassword(uid, pwd string, dbc db.DBC) ([]catalog.Object, error) {
 	if uu == nil {
 		return nil, nil
@@ -172,21 +187,6 @@ func (uu Users) Print() {
 	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- USERS\n%s\n", string(b))
 	}
-}
-
-func (uu *Users) AsObjects(auth auth.OpAuth) catalog.Objects {
-	objects := catalog.Objects{}
-	guard.RLock()
-
-	defer guard.RUnlock()
-
-	for _, u := range uu.users {
-		if u.IsValid() || u.IsDeleted() {
-			objects.Append(u.AsObjects(auth)...)
-		}
-	}
-
-	return objects
 }
 
 func (uu Users) Sweep(retention time.Duration) {

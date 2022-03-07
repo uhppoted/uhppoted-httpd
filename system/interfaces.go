@@ -12,8 +12,9 @@ func Interfaces(uid, role string) []catalog.Object {
 	defer sys.RUnlock()
 
 	auth := auth.NewAuthorizator(uid, role)
+	objects := sys.interfaces.AsObjects(auth)
 
-	return sys.interfaces.AsObjects(auth).AsArray()
+	return objects
 }
 
 func UpdateInterfaces(uid, role string, m map[string]interface{}) (interface{}, error) {

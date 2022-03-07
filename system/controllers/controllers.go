@@ -56,6 +56,55 @@ func NewControllers() Controllers {
 	}
 }
 
+func (cc *Controllers) AsObjects(auth auth.OpAuth) []catalog.Object {
+	objects := []catalog.Object{}
+
+	for _, c := range cc.controllers {
+		if c.IsValid() {
+			objects = catalog.Join(objects, c.AsObjects(auth)...)
+		}
+	}
+
+	return objects
+}
+
+func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	if cc == nil {
+		return nil, nil
+	}
+
+	uid := ""
+	if auth != nil {
+		uid = auth.UID()
+	}
+
+	for _, c := range cc.controllers {
+		if c != nil && c.OID().Contains(oid) {
+			return c.set(auth, oid, value, dbc)
+		}
+	}
+
+	objects := []catalog.Object{}
+
+	if oid == "<new>" {
+		if c, err := cc.add(auth, Controller{}); err != nil {
+			return nil, err
+		} else if c == nil {
+			return nil, fmt.Errorf("Failed to add 'new' controller")
+		} else {
+			OID := c.OID()
+
+			objects = append(objects, catalog.NewObject(OID, "new"))
+			objects = append(objects, catalog.NewObject2(OID, ControllerStatus, "new"))
+			objects = append(objects, catalog.NewObject2(OID, ControllerCreated, c.created))
+
+			c.log(uid, "add", OID, "controller", fmt.Sprintf("Added 'new' controller"), "", "", dbc)
+		}
+	}
+
+	return objects, nil
+}
+
 func (cc *Controllers) List() []Controller {
 	list := []Controller{}
 
@@ -122,18 +171,6 @@ func (cc *Controllers) Save() (json.RawMessage, error) {
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
-func (cc *Controllers) AsObjects(auth auth.OpAuth) catalog.Objects {
-	objects := catalog.Objects{}
-
-	for _, c := range cc.controllers {
-		if c.IsValid() {
-			objects.Append(c.AsObjects(auth)...)
-		}
-	}
-
-	return objects
-}
-
 func (cc *Controllers) Sweep(retention time.Duration) {
 	if cc == nil {
 		return
@@ -158,43 +195,6 @@ func (cc Controllers) Print() {
 	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- CONTROLLERS\n%s\n", string(b))
 	}
-}
-
-func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	if cc == nil {
-		return nil, nil
-	}
-
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
-
-	for _, c := range cc.controllers {
-		if c != nil && c.OID().Contains(oid) {
-			return c.set(auth, oid, value, dbc)
-		}
-	}
-
-	objects := []catalog.Object{}
-
-	if oid == "<new>" {
-		if c, err := cc.add(auth, Controller{}); err != nil {
-			return nil, err
-		} else if c == nil {
-			return nil, fmt.Errorf("Failed to add 'new' controller")
-		} else {
-			OID := c.OID()
-
-			objects = append(objects, catalog.NewObject(OID, "new"))
-			objects = append(objects, catalog.NewObject2(OID, ControllerStatus, "new"))
-			objects = append(objects, catalog.NewObject2(OID, ControllerCreated, c.created))
-
-			c.log(uid, "add", OID, "controller", fmt.Sprintf("Added 'new' controller"), "", "", dbc)
-		}
-	}
-
-	return objects, nil
 }
 
 func (cc *Controllers) Refresh(i interfaces.Interfaces) {

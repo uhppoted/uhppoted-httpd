@@ -25,10 +25,54 @@ func NewGroups() Groups {
 	}
 }
 
-func (gg *Groups) Group(oid catalog.OID) (Group, bool) {
-	g, ok := gg.groups[oid]
+func (gg *Groups) AsObjects(auth auth.OpAuth) []catalog.Object {
+	guard.RLock()
+	defer guard.RUnlock()
 
-	return g, ok
+	objects := []catalog.Object{}
+
+	for _, g := range gg.groups {
+		if g.IsValid() || g.IsDeleted() {
+			objects = catalog.Join(objects, g.AsObjects(auth)...)
+		}
+	}
+
+	return objects
+}
+
+func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	if gg == nil {
+		return nil, nil
+	}
+
+	for k, g := range gg.groups {
+		if g.OID.Contains(oid) {
+			objects, err := g.set(auth, oid, value, dbc)
+			if err == nil {
+				gg.groups[k] = g
+			}
+
+			return objects, err
+		}
+	}
+
+	objects := []catalog.Object{}
+
+	if oid == "<new>" {
+		if g, err := gg.add(auth, Group{}); err != nil {
+			return nil, err
+		} else if g == nil {
+			return nil, fmt.Errorf("Failed to add 'new' group")
+		} else {
+			g.log(auth, "add", g.OID, "group", "Added 'new' group", dbc)
+
+			gg.groups[g.OID] = *g
+			objects = append(objects, catalog.NewObject(g.OID, "new"))
+			objects = append(objects, catalog.NewObject2(g.OID, GroupCreated, g.created))
+		}
+	}
+
+	return objects, nil
 }
 
 func (gg *Groups) Load(blob json.RawMessage) error {
@@ -79,6 +123,12 @@ func (gg Groups) Save() (json.RawMessage, error) {
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
+func (gg *Groups) Group(oid catalog.OID) (Group, bool) {
+	g, ok := gg.groups[oid]
+
+	return g, ok
+}
+
 func (gg Groups) Print() {
 	serializable := []json.RawMessage{}
 	for _, g := range gg.groups {
@@ -107,56 +157,6 @@ func (gg *Groups) Clone() Groups {
 	}
 
 	return shadow
-}
-
-func (gg *Groups) AsObjects(auth auth.OpAuth) catalog.Objects {
-	guard.RLock()
-	defer guard.RUnlock()
-
-	objects := catalog.Objects{}
-
-	for _, g := range gg.groups {
-		if g.IsValid() || g.IsDeleted() {
-			objects.Append(g.AsObjects(auth)...)
-		}
-	}
-
-	return objects
-}
-
-func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	if gg == nil {
-		return nil, nil
-	}
-
-	for k, g := range gg.groups {
-		if g.OID.Contains(oid) {
-			objects, err := g.set(auth, oid, value, dbc)
-			if err == nil {
-				gg.groups[k] = g
-			}
-
-			return objects, err
-		}
-	}
-
-	objects := []catalog.Object{}
-
-	if oid == "<new>" {
-		if g, err := gg.add(auth, Group{}); err != nil {
-			return nil, err
-		} else if g == nil {
-			return nil, fmt.Errorf("Failed to add 'new' group")
-		} else {
-			g.log(auth, "add", g.OID, "group", "Added 'new' group", dbc)
-
-			gg.groups[g.OID] = *g
-			objects = append(objects, catalog.NewObject(g.OID, "new"))
-			objects = append(objects, catalog.NewObject2(g.OID, GroupCreated, g.created))
-		}
-	}
-
-	return objects, nil
 }
 
 func (gg *Groups) Validate() error {

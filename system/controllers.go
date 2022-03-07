@@ -15,8 +15,9 @@ func Controllers(uid, role string) []catalog.Object {
 	defer sys.RUnlock()
 
 	auth := auth.NewAuthorizator(uid, role)
+	objects := sys.controllers.AsObjects(auth)
 
-	return sys.controllers.AsObjects(auth).AsArray()
+	return objects
 }
 
 func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {

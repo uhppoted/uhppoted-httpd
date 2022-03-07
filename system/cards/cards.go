@@ -25,6 +25,62 @@ func NewCards() Cards {
 	}
 }
 
+func (cc *Cards) AsObjects(auth auth.OpAuth) []catalog.Object {
+	guard.RLock()
+	defer guard.RUnlock()
+
+	objects := []catalog.Object{}
+	for _, card := range cc.cards {
+		if card.IsValid() || card.IsDeleted() {
+			objects = catalog.Join(objects, card.AsObjects(auth)...)
+		}
+	}
+
+	return objects
+}
+
+func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+	if cc == nil {
+		return nil, nil
+	}
+
+	for k, c := range cc.cards {
+		if c.OID.Contains(oid) {
+			objects, err := c.set(auth, oid, value, dbc)
+			if err == nil {
+				cc.cards[k] = c
+			}
+
+			return objects, err
+		}
+	}
+
+	objects := []catalog.Object{}
+
+	if oid == "<new>" {
+		if c, err := cc.add(auth, Card{}); err != nil {
+			return nil, err
+		} else if c == nil {
+			return nil, fmt.Errorf("Failed to add 'new' card")
+		} else {
+			c.log(auth,
+				"add",
+				c.OID,
+				"card",
+				"Added 'new' card",
+				"",
+				"",
+				dbc)
+
+			cc.cards[c.OID] = c
+			objects = append(objects, catalog.NewObject(c.OID, "new"))
+			objects = append(objects, catalog.NewObject2(c.OID, CardCreated, c.created))
+		}
+	}
+
+	return objects, nil
+}
+
 func (cc *Cards) List() []Card {
 	list := []Card{}
 
@@ -99,48 +155,6 @@ func (cc *Cards) Clone() Cards {
 	return shadow
 }
 
-func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
-	if cc == nil {
-		return nil, nil
-	}
-
-	for k, c := range cc.cards {
-		if c.OID.Contains(oid) {
-			objects, err := c.set(auth, oid, value, dbc)
-			if err == nil {
-				cc.cards[k] = c
-			}
-
-			return objects, err
-		}
-	}
-
-	objects := []catalog.Object{}
-
-	if oid == "<new>" {
-		if c, err := cc.add(auth, Card{}); err != nil {
-			return nil, err
-		} else if c == nil {
-			return nil, fmt.Errorf("Failed to add 'new' card")
-		} else {
-			c.log(auth,
-				"add",
-				c.OID,
-				"card",
-				"Added 'new' card",
-				"",
-				"",
-				dbc)
-
-			cc.cards[c.OID] = c
-			objects = append(objects, catalog.NewObject(c.OID, "new"))
-			objects = append(objects, catalog.NewObject2(c.OID, CardCreated, c.created))
-		}
-	}
-
-	return objects, nil
-}
-
 func (cc *Cards) Validate() error {
 	if cc != nil {
 		return validate(*cc)
@@ -162,20 +176,6 @@ func (cc *Cards) Print() {
 	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- CARDS\n%s\n", string(b))
 	}
-}
-
-func (cc *Cards) AsObjects(auth auth.OpAuth) catalog.Objects {
-	guard.RLock()
-	defer guard.RUnlock()
-
-	objects := catalog.Objects{}
-	for _, card := range cc.cards {
-		if card.IsValid() || card.IsDeleted() {
-			objects.Append(card.AsObjects(auth)...)
-		}
-	}
-
-	return objects
 }
 
 func (cc *Cards) Sweep(retention time.Duration) {

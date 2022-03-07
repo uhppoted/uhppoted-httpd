@@ -65,6 +65,69 @@ func NewLogs(entries ...LogEntry) Logs {
 	return logs
 }
 
+func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []catalog.Object {
+	guard.RLock()
+	defer guard.RUnlock()
+
+	objects := []catalog.Object{}
+	keys := []key{}
+
+	for k := range ll.logs {
+		keys = append(keys, k)
+	}
+
+	sort.SliceStable(keys, func(i, j int) bool {
+		p := ll.logs[keys[i]].Timestamp
+		q := ll.logs[keys[j]].Timestamp
+
+		return q.Before(p)
+	})
+
+	ix := start
+	count := 0
+	for ix < len(keys) && count < max {
+		k := keys[ix]
+		if l, ok := ll.logs[k]; ok {
+			if l.IsValid() || l.IsDeleted() {
+				if l := l.AsObjects(auth); l != nil {
+					objects = catalog.Join(objects, l...)
+					count++
+				}
+			}
+		}
+
+		ix++
+	}
+
+	if len(keys) > 0 {
+		first := ll.logs[keys[0]]
+		last := ll.logs[keys[len(keys)-1]]
+		objects = catalog.Join(objects, catalog.NewObject2(LogsOID, LogsFirst, first.OID))
+		objects = catalog.Join(objects, catalog.NewObject2(LogsOID, LogsLast, last.OID))
+	}
+
+	return objects
+}
+
+func (ll *Logs) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+	if ll == nil {
+		return nil, nil
+	}
+
+	for k, e := range ll.logs {
+		if e.OID.Contains(oid) {
+			objects, err := e.set(auth, oid, value)
+			if err == nil {
+				ll.logs[k] = e
+			}
+
+			return objects, err
+		}
+	}
+
+	return []interface{}{}, nil
+}
+
 func (ll *Logs) Load(blob json.RawMessage) error {
 	f := func(bytes json.RawMessage) (*LogEntry, key) {
 		var l LogEntry
@@ -147,69 +210,6 @@ func (ll *Logs) Clone() *Logs {
 	}
 
 	return &shadow
-}
-
-func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) catalog.Objects {
-	guard.RLock()
-	defer guard.RUnlock()
-
-	objects := catalog.Objects{}
-	keys := []key{}
-
-	for k := range ll.logs {
-		keys = append(keys, k)
-	}
-
-	sort.SliceStable(keys, func(i, j int) bool {
-		p := ll.logs[keys[i]].Timestamp
-		q := ll.logs[keys[j]].Timestamp
-
-		return q.Before(p)
-	})
-
-	ix := start
-	count := 0
-	for ix < len(keys) && count < max {
-		k := keys[ix]
-		if l, ok := ll.logs[k]; ok {
-			if l.IsValid() || l.IsDeleted() {
-				if l := l.AsObjects(auth); l != nil {
-					objects.Append(l...)
-					count++
-				}
-			}
-		}
-
-		ix++
-	}
-
-	if len(keys) > 0 {
-		first := ll.logs[keys[0]]
-		last := ll.logs[keys[len(keys)-1]]
-		objects.Append(catalog.NewObject2(LogsOID, LogsFirst, first.OID))
-		objects.Append(catalog.NewObject2(LogsOID, LogsLast, last.OID))
-	}
-
-	return objects
-}
-
-func (ll *Logs) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
-	if ll == nil {
-		return nil, nil
-	}
-
-	for k, e := range ll.logs {
-		if e.OID.Contains(oid) {
-			objects, err := e.set(auth, oid, value)
-			if err == nil {
-				ll.logs[k] = e
-			}
-
-			return objects, err
-		}
-	}
-
-	return []interface{}{}, nil
 }
 
 func (ll *Logs) Validate() error {
