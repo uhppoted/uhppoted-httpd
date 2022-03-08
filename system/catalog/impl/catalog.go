@@ -40,22 +40,22 @@ func Catalog() *catalog {
 	return &db
 }
 
-func (c *catalog) Doors() map[schema.OID]struct{} {
-	return c.doors
+func (cc *catalog) Doors() map[schema.OID]struct{} {
+	return cc.doors
 }
 
-func (c *catalog) Groups() map[schema.OID]struct{} {
-	return c.groups
+func (cc *catalog) Groups() map[schema.OID]struct{} {
+	return cc.groups
 }
 
-func (c *catalog) Clear() {
-	c.interfaces = map[schema.OID]struct{}{}
-	c.controllers = map[schema.OID]controller{}
-	c.doors = map[schema.OID]struct{}{}
-	c.cards = map[schema.OID]struct{}{}
-	c.groups = map[schema.OID]struct{}{}
-	c.events = map[schema.OID]struct{}{}
-	c.logs = map[schema.OID]struct{}{}
+func (cc *catalog) Clear() {
+	cc.interfaces = map[schema.OID]struct{}{}
+	cc.controllers = map[schema.OID]controller{}
+	cc.doors = map[schema.OID]struct{}{}
+	cc.cards = map[schema.OID]struct{}{}
+	cc.groups = map[schema.OID]struct{}{}
+	cc.events = map[schema.OID]struct{}{}
+	cc.logs = map[schema.OID]struct{}{}
 
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
@@ -63,80 +63,80 @@ func (c *catalog) Clear() {
 	cache.cache = map[schema.OID]value{}
 }
 
-func (c *catalog) PutInterface(oid schema.OID) {
+func (cc *catalog) PutInterface(oid schema.OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	c.interfaces[oid] = struct{}{}
+	cc.interfaces[oid] = struct{}{}
 }
 
-func (c *catalog) PutController(deviceID uint32, oid schema.OID) {
+func (cc *catalog) PutController(deviceID uint32, oid schema.OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	c.controllers[oid] = controller{
+	cc.controllers[oid] = controller{
 		ID:      deviceID,
 		deleted: false,
 	}
 }
 
-func (c *catalog) PutDoor(oid schema.OID) {
+func (cc *catalog) PutDoor(oid schema.OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	c.doors[oid] = struct{}{}
+	cc.doors[oid] = struct{}{}
 }
 
-func (c *catalog) PutCard(oid schema.OID) {
+func (cc *catalog) PutCard(oid schema.OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	c.cards[oid] = struct{}{}
+	cc.cards[oid] = struct{}{}
 }
 
-func (c *catalog) PutGroup(oid schema.OID) {
+func (cc *catalog) PutGroup(oid schema.OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	c.groups[oid] = struct{}{}
+	cc.groups[oid] = struct{}{}
 }
 
-func (c *catalog) HasGroup(oid schema.OID) bool {
+func (cc *catalog) HasGroup(oid schema.OID) bool {
 	guard.Lock()
 	defer guard.Unlock()
 
-	_, ok := c.groups[oid]
+	_, ok := cc.groups[oid]
 
 	return ok
 }
 
-func (c *catalog) PutEvent(oid schema.OID) {
+func (cc *catalog) PutEvent(oid schema.OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	c.events[oid] = struct{}{}
+	cc.events[oid] = struct{}{}
 }
 
-func (c *catalog) PutLogEntry(oid schema.OID) {
+func (cc *catalog) PutLogEntry(oid schema.OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	c.logs[oid] = struct{}{}
+	cc.logs[oid] = struct{}{}
 }
 
-func (c *catalog) PutUser(oid schema.OID) {
+func (cc *catalog) PutUser(oid schema.OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	c.users[oid] = struct{}{}
+	cc.users[oid] = struct{}{}
 }
 
-func (c *catalog) NewController(deviceID uint32) schema.OID {
+func (cc *catalog) NewController(deviceID uint32) schema.OID {
 	guard.Lock()
 	defer guard.Unlock()
 
 	if deviceID != 0 {
-		for oid, v := range c.controllers {
+		for oid, v := range cc.controllers {
 			if !v.deleted && v.ID == deviceID {
 				return oid
 			}
@@ -148,13 +148,13 @@ loop:
 	for {
 		item += 1
 		oid := schema.OID(fmt.Sprintf("%v.%d", schema.ControllersOID, item))
-		for v, _ := range c.controllers {
+		for v, _ := range cc.controllers {
 			if v == oid {
 				continue loop
 			}
 		}
 
-		c.controllers[oid] = controller{
+		cc.controllers[oid] = controller{
 			ID:      deviceID,
 			deleted: false,
 		}
@@ -163,7 +163,7 @@ loop:
 	}
 }
 
-func (c *catalog) NewDoor() schema.OID {
+func (cc *catalog) NewDoor() schema.OID {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -172,18 +172,18 @@ loop:
 	for {
 		item += 1
 		oid := schema.OID(fmt.Sprintf("%v.%d", schema.DoorsOID, item))
-		for v, _ := range c.doors {
+		for v, _ := range cc.doors {
 			if v == oid {
 				continue loop
 			}
 		}
 
-		c.doors[oid] = struct{}{}
+		cc.doors[oid] = struct{}{}
 		return oid
 	}
 }
 
-func (c *catalog) NewCard() schema.OID {
+func (cc *catalog) NewCard() schema.OID {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -192,19 +192,19 @@ loop:
 	for {
 		item += 1
 		oid := schema.OID(fmt.Sprintf("%v.%d", schema.CardsOID, item))
-		for v, _ := range c.cards {
+		for v, _ := range cc.cards {
 			if v == oid {
 				continue loop
 			}
 		}
 
-		c.cards[oid] = struct{}{}
+		cc.cards[oid] = struct{}{}
 
 		return oid
 	}
 }
 
-func (c *catalog) NewGroup() schema.OID {
+func (cc *catalog) NewGroup() schema.OID {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -213,19 +213,19 @@ loop:
 	for {
 		item += 1
 		oid := schema.OID(fmt.Sprintf("%v.%d", schema.GroupsOID, item))
-		for v, _ := range c.groups {
+		for v, _ := range cc.groups {
 			if v == oid {
 				continue loop
 			}
 		}
 
-		c.groups[oid] = struct{}{}
+		cc.groups[oid] = struct{}{}
 
 		return oid
 	}
 }
 
-func (c *catalog) NewEvent() schema.OID {
+func (cc *catalog) NewEvent() schema.OID {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -234,19 +234,19 @@ loop:
 	for {
 		item += 1
 		oid := schema.OID(fmt.Sprintf("%v.%d", schema.EventsOID, item))
-		for v, _ := range c.events {
+		for v, _ := range cc.events {
 			if v == oid {
 				continue loop
 			}
 		}
 
-		c.events[oid] = struct{}{}
+		cc.events[oid] = struct{}{}
 
 		return oid
 	}
 }
 
-func (c *catalog) NewLogEntry() schema.OID {
+func (cc *catalog) NewLogEntry() schema.OID {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -255,19 +255,19 @@ loop:
 	for {
 		item += 1
 		oid := schema.OID(fmt.Sprintf("%v.%d", schema.LogsOID, item))
-		for v, _ := range c.logs {
+		for v, _ := range cc.logs {
 			if v == oid {
 				continue loop
 			}
 		}
 
-		c.logs[oid] = struct{}{}
+		cc.logs[oid] = struct{}{}
 
 		return oid
 	}
 }
 
-func (c *catalog) NewUser() schema.OID {
+func (cc *catalog) NewUser() schema.OID {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -276,36 +276,36 @@ loop:
 	for {
 		item += 1
 		oid := schema.OID(fmt.Sprintf("%v.%d", schema.UsersOID, item))
-		for v, _ := range c.users {
+		for v, _ := range cc.users {
 			if v == oid {
 				continue loop
 			}
 		}
 
-		c.users[oid] = struct{}{}
+		cc.users[oid] = struct{}{}
 
 		return oid
 	}
 }
 
-func (c *catalog) Delete(oid schema.OID) {
+func (cc *catalog) Delete(oid schema.OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	if v, ok := c.controllers[oid]; ok {
-		c.controllers[oid] = controller{
+	if v, ok := cc.controllers[oid]; ok {
+		cc.controllers[oid] = controller{
 			ID:      v.ID,
 			deleted: true,
 		}
 	}
 }
 
-func (c *catalog) FindController(deviceID uint32) schema.OID {
+func (cc *catalog) FindController(deviceID uint32) schema.OID {
 	guard.Lock()
 	defer guard.Unlock()
 
 	if deviceID != 0 {
-		for oid, v := range c.controllers {
+		for oid, v := range cc.controllers {
 			if v.ID == deviceID && !v.deleted {
 				return oid
 			}

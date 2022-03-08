@@ -4,8 +4,8 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [x] Seperate interface and implementation
             - [x] Rename db to dbx to catch any dangling references
+            - [x] Redo function signatures to (cc *catalog) to catch weirdnesses
             - [ ] Move guard inside catalog struct
-            - [ ] Redo function signatures to (cc *catalog) to catch weirdnesses
             - [ ] Move Join from schema to catalog
             - [ ] Move NewObject from schema to catalog
             - [ ] Move NewObject2 from schema to catalog

@@ -28,7 +28,7 @@ func Get(oid schema.OID) interface{} {
 	return nil
 }
 
-func (c *catalog) GetV(oid schema.OID, suffix schema.Suffix) interface{} {
+func (cc *catalog) GetV(oid schema.OID, suffix schema.Suffix) interface{} {
 	cache.guard.RLock()
 	defer cache.guard.RUnlock()
 
@@ -39,14 +39,14 @@ func (c *catalog) GetV(oid schema.OID, suffix schema.Suffix) interface{} {
 	return nil
 }
 
-func (c *catalog) Put(oid schema.OID, v interface{}) {
+func (cc *catalog) Put(oid schema.OID, v interface{}) {
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
 
 	cache.cache[oid] = v
 }
 
-func (c *catalog) PutV(oid schema.OID, suffix schema.Suffix, v interface{}) {
+func (cc *catalog) PutV(oid schema.OID, suffix schema.Suffix, v interface{}) {
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
 
@@ -64,7 +64,7 @@ func PutL(objects []schema.Object) {
 	}
 }
 
-func (c *catalog) Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool) {
+func (cc *catalog) Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool) {
 	cache.guard.RLock()
 	defer cache.guard.RUnlock()
 
@@ -81,7 +81,7 @@ func (c *catalog) Find(prefix schema.OID, suffix schema.Suffix, value interface{
 	return schema.OID(""), false
 }
 
-func (c *catalog) GetDoorDeviceID(door schema.OID) uint32 {
+func (cc *catalog) GetDoorDeviceID(door schema.OID) uint32 {
 	fields := map[uint8]schema.Suffix{
 		1: schema.ControllerDoor1,
 		2: schema.ControllerDoor2,
@@ -89,10 +89,10 @@ func (c *catalog) GetDoorDeviceID(door schema.OID) uint32 {
 		4: schema.ControllerDoor4,
 	}
 
-	for k, controller := range c.controllers {
+	for k, controller := range cc.controllers {
 		if !controller.deleted {
 			for _, s := range fields {
-				if v := c.GetV(k, s); v == door {
+				if v := cc.GetV(k, s); v == door {
 					return controller.ID
 				}
 			}
@@ -102,7 +102,7 @@ func (c *catalog) GetDoorDeviceID(door schema.OID) uint32 {
 	return 0
 }
 
-func (c *catalog) GetDoorDeviceDoor(door schema.OID) uint8 {
+func (cc *catalog) GetDoorDeviceDoor(door schema.OID) uint8 {
 	fields := map[uint8]schema.Suffix{
 		1: schema.ControllerDoor1,
 		2: schema.ControllerDoor2,
@@ -110,10 +110,10 @@ func (c *catalog) GetDoorDeviceDoor(door schema.OID) uint8 {
 		4: schema.ControllerDoor4,
 	}
 
-	for k, controller := range c.controllers {
+	for k, controller := range cc.controllers {
 		if !controller.deleted {
 			for d, s := range fields {
-				if v := c.GetV(k, s); v == door {
+				if v := cc.GetV(k, s); v == door {
 					return d
 				}
 			}
