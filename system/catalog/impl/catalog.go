@@ -16,6 +16,7 @@ type catalog struct {
 	events      map[schema.OID]struct{}
 	logs        map[schema.OID]struct{}
 	users       map[schema.OID]struct{}
+	guard       sync.Mutex
 }
 
 var db = catalog{
@@ -28,8 +29,6 @@ var db = catalog{
 	logs:        map[schema.OID]struct{}{},
 	users:       map[schema.OID]struct{}{},
 }
-
-var guard sync.Mutex
 
 type controller struct {
 	ID      uint32
@@ -64,15 +63,15 @@ func (cc *catalog) Clear() {
 }
 
 func (cc *catalog) PutInterface(oid schema.OID) {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	cc.interfaces[oid] = struct{}{}
 }
 
 func (cc *catalog) PutController(deviceID uint32, oid schema.OID) {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	cc.controllers[oid] = controller{
 		ID:      deviceID,
@@ -81,29 +80,29 @@ func (cc *catalog) PutController(deviceID uint32, oid schema.OID) {
 }
 
 func (cc *catalog) PutDoor(oid schema.OID) {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	cc.doors[oid] = struct{}{}
 }
 
 func (cc *catalog) PutCard(oid schema.OID) {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	cc.cards[oid] = struct{}{}
 }
 
 func (cc *catalog) PutGroup(oid schema.OID) {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	cc.groups[oid] = struct{}{}
 }
 
 func (cc *catalog) HasGroup(oid schema.OID) bool {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	_, ok := cc.groups[oid]
 
@@ -111,29 +110,29 @@ func (cc *catalog) HasGroup(oid schema.OID) bool {
 }
 
 func (cc *catalog) PutEvent(oid schema.OID) {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	cc.events[oid] = struct{}{}
 }
 
 func (cc *catalog) PutLogEntry(oid schema.OID) {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	cc.logs[oid] = struct{}{}
 }
 
 func (cc *catalog) PutUser(oid schema.OID) {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	cc.users[oid] = struct{}{}
 }
 
 func (cc *catalog) NewController(deviceID uint32) schema.OID {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	if deviceID != 0 {
 		for oid, v := range cc.controllers {
@@ -164,8 +163,8 @@ loop:
 }
 
 func (cc *catalog) NewDoor() schema.OID {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	item := 0
 loop:
@@ -184,8 +183,8 @@ loop:
 }
 
 func (cc *catalog) NewCard() schema.OID {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	item := 0
 loop:
@@ -205,8 +204,8 @@ loop:
 }
 
 func (cc *catalog) NewGroup() schema.OID {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	item := 0
 loop:
@@ -226,8 +225,8 @@ loop:
 }
 
 func (cc *catalog) NewEvent() schema.OID {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	item := 0
 loop:
@@ -247,8 +246,8 @@ loop:
 }
 
 func (cc *catalog) NewLogEntry() schema.OID {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	item := 0
 loop:
@@ -268,8 +267,8 @@ loop:
 }
 
 func (cc *catalog) NewUser() schema.OID {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	item := 0
 loop:
@@ -289,8 +288,8 @@ loop:
 }
 
 func (cc *catalog) Delete(oid schema.OID) {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	if v, ok := cc.controllers[oid]; ok {
 		cc.controllers[oid] = controller{
@@ -301,8 +300,8 @@ func (cc *catalog) Delete(oid schema.OID) {
 }
 
 func (cc *catalog) FindController(deviceID uint32) schema.OID {
-	guard.Lock()
-	defer guard.Unlock()
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
 
 	if deviceID != 0 {
 		for oid, v := range cc.controllers {
