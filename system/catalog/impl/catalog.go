@@ -292,7 +292,7 @@ func (c *catalog) Delete(oid schema.OID) {
 	guard.Lock()
 	defer guard.Unlock()
 
-	if v, ok := db.controllers[oid]; ok {
+	if v, ok := c.controllers[oid]; ok {
 		c.controllers[oid] = controller{
 			ID:      v.ID,
 			deleted: true,
