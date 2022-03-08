@@ -1,20 +1,28 @@
 ## v0.7.x
 
 - [ ] OIDs:
-      - [x] Revert catalog.Objects type
-      - [ ] GetV => GetBool, GetInt, etc
       - [ ] Cleanup the oh-so-duplicated catalog code
+            - [ ] Seperate interface and implementation
+            - [ ] Move guard inside catalog struct
+            - [ ] Rename db to dbx to catch any dangling references
+            - [ ] Redo function signatures to (cc *catalog) to catch weirdnesses
+            - [ ] Move Join from schema to catalog
+            - [ ] Move NewObject from schema to catalog
+            - [ ] Move NewObject2 from schema to catalog
+
+      - [ ] GetV => GetBool, GetInt, etc
+
+- [ ] Verify bootstrap from scratch
+      - [ ] Weirdness (delay ??) around setting up a new controller with address 127.0.0.1
+      - [ ] Refresh overwrites in-progress card edits
+      - [ ] _invalid 'to' date (2022-05-31)_
+      - [ ] Empty events layout is all squashed to the left
+      - [ ] Log layout on Firefox is illogical
 
 - [ ] daemonize
-      - [ ] Verify bootstrap from scratch
       - [ ] Check log rotation
-            - [ ] uhppoted-httpd.log
-                  - [ ] Linux
-                  - [ ] MacOS
-            - [ ] audit.log
-                  - [ ] Linux
-                  - [ ] MacOS
-            - [x] fix SIGHUP target
+            - [ ] MacOS: sudo newsyslog -nvv
+            - [ ] Linux
 
 - [ ] Overview page 
 - [ ] Events should use local index rather than controller (optionally ?)

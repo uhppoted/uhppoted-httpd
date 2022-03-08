@@ -6,24 +6,24 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type LogEntry struct {
-	OID       catalog.OID `json:"OID"`
-	Timestamp time.Time   `json:"timestamp"`
-	UID       string      `json:"uid"`
-	Item      string      `json:"item"`
-	ItemID    string      `json:"item-id"`
-	ItemName  string      `json:"item-name"`
-	Field     string      `json:"field"`
-	Details   string      `json:"details"`
-	Before    string      `json:"before,omitempty"`
-	After     string      `json:"after,omitempty"`
+	OID       schema.OID `json:"OID"`
+	Timestamp time.Time  `json:"timestamp"`
+	UID       string     `json:"uid"`
+	Item      string     `json:"item"`
+	ItemID    string     `json:"item-id"`
+	ItemName  string     `json:"item-name"`
+	Field     string     `json:"field"`
+	Details   string     `json:"details"`
+	Before    string     `json:"before,omitempty"`
+	After     string     `json:"after,omitempty"`
 }
 
-func NewLogEntry(oid catalog.OID, timestamp time.Time, record audit.AuditRecord) LogEntry {
+func NewLogEntry(oid schema.OID, timestamp time.Time, record audit.AuditRecord) LogEntry {
 	return LogEntry{
 		OID:       oid,
 		Timestamp: timestamp,
@@ -46,9 +46,9 @@ func (l LogEntry) IsDeleted() bool {
 	return false
 }
 
-func (l *LogEntry) AsObjects(a auth.OpAuth) []catalog.Object {
+func (l *LogEntry) AsObjects(a auth.OpAuth) []schema.Object {
 	type E = struct {
-		field catalog.Suffix
+		field schema.Suffix
 		value interface{}
 	}
 
@@ -72,16 +72,16 @@ func (l *LogEntry) AsObjects(a auth.OpAuth) []catalog.Object {
 		return true
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if f(l, "OID", l.OID) {
-		objects = append(objects, catalog.NewObject(l.OID, types.StatusOk))
+		objects = append(objects, schema.NewObject(l.OID, types.StatusOk))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(l, field, v.value) {
-			objects = append(objects, catalog.NewObject2(l.OID, v.field, v.value))
+			objects = append(objects, schema.NewObject2(l.OID, v.field, v.value))
 		}
 	}
 
@@ -100,7 +100,7 @@ func (l *LogEntry) AsRuleEntity() (string, interface{}) {
 	return "log", &entity
 }
 
-func (l *LogEntry) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (l *LogEntry) set(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	return objects, nil
@@ -110,14 +110,14 @@ func (l LogEntry) serialize() ([]byte, error) {
 	record := struct {
 		Timestamp time.Time `json:"timestamp"`
 		UID       string
-		OID       catalog.OID `json:"OID"`
-		Item      string      `json:"item"`
-		ItemID    string      `json:"id"`
-		ItemName  string      `json:"name"`
-		Field     string      `json:"field"`
-		Details   string      `json:"details"`
-		Before    string      `json:"before,omitempty"`
-		After     string      `json:"after,omitempty"`
+		OID       schema.OID `json:"OID"`
+		Item      string     `json:"item"`
+		ItemID    string     `json:"id"`
+		ItemName  string     `json:"name"`
+		Field     string     `json:"field"`
+		Details   string     `json:"details"`
+		Before    string     `json:"before,omitempty"`
+		After     string     `json:"after,omitempty"`
 	}{
 		Timestamp: l.Timestamp,
 		UID:       l.UID,
@@ -138,14 +138,14 @@ func (l *LogEntry) deserialize(bytes []byte) error {
 	record := struct {
 		Timestamp time.Time `json:"timestamp"`
 		UID       string
-		OID       catalog.OID `json:"OID"`
-		Item      string      `json:"item"`
-		ItemID    string      `json:"id"`
-		ItemName  string      `json:"name"`
-		Field     string      `json:"field"`
-		Details   string      `json:"details"`
-		Before    string      `json:"before"`
-		After     string      `json:"after"`
+		OID       schema.OID `json:"OID"`
+		Item      string     `json:"item"`
+		ItemID    string     `json:"id"`
+		ItemName  string     `json:"name"`
+		Field     string     `json:"field"`
+		Details   string     `json:"details"`
+		Before    string     `json:"before"`
+		After     string     `json:"after"`
 	}{
 		Timestamp: l.Timestamp,
 		UID:       l.UID,

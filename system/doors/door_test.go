@@ -10,7 +10,7 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -25,7 +25,7 @@ func TestDoorAsObjects(t *testing.T) {
 		created: created,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.3.3", Value: ""},
 		{OID: "0.3.3.0.0", Value: types.StatusOk},
 		{OID: "0.3.3.0.1", Value: created},
@@ -61,7 +61,7 @@ func TestDoorAsObjectsWithDeleted(t *testing.T) {
 		deleted: deleted,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.3.3.0.2", Value: deleted},
 	}
 
@@ -83,7 +83,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		created: created,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.3.3", Value: ""},
 		{OID: "0.3.3.0.0", Value: types.StatusOk},
 		{OID: "0.3.3.0.1", Value: created},
@@ -117,10 +117,10 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 }
 
 func TestDoorSet(t *testing.T) {
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.3.3", Value: ""},
-		catalog.Object{OID: "0.3.3.1", Value: "Eine Kleine Dooren"},
-		catalog.Object{OID: "0.3.3.0.0", Value: types.StatusOk},
+	expected := []schema.Object{
+		schema.Object{OID: "0.3.3", Value: ""},
+		schema.Object{OID: "0.3.3.1", Value: "Eine Kleine Dooren"},
+		schema.Object{OID: "0.3.3.0.0", Value: types.StatusOk},
 	}
 
 	d := Door{
@@ -154,8 +154,8 @@ func TestDoorSetWithDeleted(t *testing.T) {
 		deleted: types.TimestampNow(),
 	}
 
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.3.3.0.2", Value: d.deleted},
+	expected := []schema.Object{
+		schema.Object{OID: "0.3.3.0.2", Value: d.deleted},
 	}
 
 	objects, err := d.set(nil, "0.3.3.1", "Eine Kleine Dooren", nil)

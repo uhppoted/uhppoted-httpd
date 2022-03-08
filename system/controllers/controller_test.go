@@ -11,7 +11,7 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -26,7 +26,7 @@ func TestControllerAsObjects(t *testing.T) {
 		name:     name,
 		deviceID: deviceID,
 		IP:       address,
-		Doors: map[uint8]catalog.OID{
+		Doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
 			3: "0.3.9",
@@ -35,7 +35,7 @@ func TestControllerAsObjects(t *testing.T) {
 		created: created,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.2.3", Value: ""},
 		{OID: "0.2.3.0.0", Value: types.StatusUnknown},
 		{OID: "0.2.3.0.1", Value: created},
@@ -54,10 +54,10 @@ func TestControllerAsObjects(t *testing.T) {
 		{OID: "0.2.3.6.1", Value: types.Uint32(0)},
 		{OID: "0.2.3.6.2", Value: types.Uint32(0)},
 		{OID: "0.2.3.6.3", Value: types.Uint32(0)},
-		{OID: "0.2.3.7.1", Value: catalog.OID("0.3.5")},
-		{OID: "0.2.3.7.2", Value: catalog.OID("0.3.7")},
-		{OID: "0.2.3.7.3", Value: catalog.OID("0.3.9")},
-		{OID: "0.2.3.7.4", Value: catalog.OID("0.3.11")},
+		{OID: "0.2.3.7.1", Value: schema.OID("0.3.5")},
+		{OID: "0.2.3.7.2", Value: schema.OID("0.3.7")},
+		{OID: "0.2.3.7.3", Value: schema.OID("0.3.9")},
+		{OID: "0.2.3.7.4", Value: schema.OID("0.3.11")},
 	}
 
 	objects := c.AsObjects(nil)
@@ -79,7 +79,7 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 		name:     name,
 		deviceID: deviceID,
 		IP:       address,
-		Doors: map[uint8]catalog.OID{
+		Doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
 			3: "0.3.9",
@@ -89,7 +89,7 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 		deleted: deleted,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.2.3.0.2", Value: deleted},
 	}
 
@@ -111,7 +111,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 		name:     name,
 		deviceID: deviceID,
 		IP:       address,
-		Doors: map[uint8]catalog.OID{
+		Doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
 			3: "0.3.9",
@@ -120,7 +120,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 		created: created,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.2.3", Value: ""},
 		{OID: "0.2.3.0.0", Value: types.StatusUnknown},
 		{OID: "0.2.3.0.1", Value: created},
@@ -139,10 +139,10 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.2.3.6.1", Value: types.Uint32(0)},
 		{OID: "0.2.3.6.2", Value: types.Uint32(0)},
 		{OID: "0.2.3.6.3", Value: types.Uint32(0)},
-		{OID: "0.2.3.7.1", Value: catalog.OID("0.3.5")},
-		{OID: "0.2.3.7.2", Value: catalog.OID("0.3.7")},
-		{OID: "0.2.3.7.3", Value: catalog.OID("0.3.9")},
-		{OID: "0.2.3.7.4", Value: catalog.OID("0.3.11")},
+		{OID: "0.2.3.7.1", Value: schema.OID("0.3.5")},
+		{OID: "0.2.3.7.2", Value: schema.OID("0.3.7")},
+		{OID: "0.2.3.7.3", Value: schema.OID("0.3.9")},
+		{OID: "0.2.3.7.4", Value: schema.OID("0.3.11")},
 	}
 
 	auth := stub{
@@ -163,7 +163,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 }
 
 func TestControllerSet(t *testing.T) {
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.2.3", Value: ""},
 		{OID: "0.2.3.1", Value: "Ze Kontroller"},
 		{OID: "0.2.3.0.0", Value: types.StatusUnknown},
@@ -196,8 +196,8 @@ func TestControllerSetWithDeleted(t *testing.T) {
 		deleted: types.TimestampNow(),
 	}
 
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.2.3.0.2", Value: c.deleted},
+	expected := []schema.Object{
+		schema.Object{OID: "0.2.3.0.2", Value: c.deleted},
 	}
 
 	objects, err := c.set(nil, "0.2.3.1", "Ze Kontroller", nil)

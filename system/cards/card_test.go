@@ -11,7 +11,7 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -30,7 +30,7 @@ func TestCardAsObjects(t *testing.T) {
 		created: created,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.4.3", Value: ""},
 		{OID: "0.4.3.0.0", Value: types.StatusOk},
 		{OID: "0.4.3.0.1", Value: created},
@@ -65,7 +65,7 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 		deleted: deleted,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.4.3.0.2", Value: deleted},
 	}
 
@@ -91,7 +91,7 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 		created: created,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.4.3", Value: ""},
 		{OID: "0.4.3.0.0", Value: types.StatusOk},
 		{OID: "0.4.3.0.1", Value: created},
@@ -120,7 +120,7 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 }
 
 func TestCardSet(t *testing.T) {
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.4.3", Value: ""},
 		{OID: "0.4.3.1", Value: "Ze Kardt"},
 		{OID: "0.4.3.0.0", Value: types.StatusOk},
@@ -153,8 +153,8 @@ func TestCardSetWithDeleted(t *testing.T) {
 		deleted: types.TimestampNow(),
 	}
 
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.4.3.0.2", Value: c.deleted},
+	expected := []schema.Object{
+		schema.Object{OID: "0.4.3.0.2", Value: c.deleted},
 	}
 
 	objects, err := c.set(nil, "0.4.3.1", "Ze Kardt", nil)

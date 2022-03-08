@@ -9,7 +9,7 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/engine"
 
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/system/groups"
 )
@@ -99,7 +99,7 @@ func (r *rules) Eval(ch cards.Card, gg groups.Groups, dd doors.Doors) ([]doors.D
 			return nil, nil, err
 		}
 
-		list := map[catalog.OID]int{}
+		list := map[schema.OID]int{}
 		for _, a := range p.allowed {
 			if d, ok := dd.ByName(a); ok {
 				list[d.OID] = 1

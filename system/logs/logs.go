@@ -13,6 +13,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
 type Logs struct {
@@ -20,10 +21,6 @@ type Logs struct {
 }
 
 type key [20]byte
-
-const LogsOID = catalog.LogsOID
-const LogsFirst = catalog.LogsFirst
-const LogsLast = catalog.LogsLast
 
 var guard sync.RWMutex
 
@@ -65,11 +62,11 @@ func NewLogs(entries ...LogEntry) Logs {
 	return logs
 }
 
-func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []catalog.Object {
+func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 	guard.RLock()
 	defer guard.RUnlock()
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 	keys := []key{}
 
 	for k := range ll.logs {
@@ -90,7 +87,7 @@ func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []catalog.Object {
 		if l, ok := ll.logs[k]; ok {
 			if l.IsValid() || l.IsDeleted() {
 				if l := l.AsObjects(auth); l != nil {
-					objects = catalog.Join(objects, l...)
+					objects = schema.Join(objects, l...)
 					count++
 				}
 			}
@@ -102,14 +99,14 @@ func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []catalog.Object {
 	if len(keys) > 0 {
 		first := ll.logs[keys[0]]
 		last := ll.logs[keys[len(keys)-1]]
-		objects = catalog.Join(objects, catalog.NewObject2(LogsOID, LogsFirst, first.OID))
-		objects = catalog.Join(objects, catalog.NewObject2(LogsOID, LogsLast, last.OID))
+		objects = schema.Join(objects, schema.NewObject2(LogsOID, LogsFirst, first.OID))
+		objects = schema.Join(objects, schema.NewObject2(LogsOID, LogsLast, last.OID))
 	}
 
 	return objects
 }
 
-func (ll *Logs) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (ll *Logs) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
 	if ll == nil {
 		return nil, nil
 	}

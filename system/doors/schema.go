@@ -1,26 +1,26 @@
 package doors
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-const DoorStatus = catalog.Status
-const DoorCreated = catalog.Created
-const DoorDeleted = catalog.Deleted
+const DoorStatus = schema.Status
+const DoorCreated = schema.Created
+const DoorDeleted = schema.Deleted
 
-const DoorName = catalog.DoorName
-const DoorDelay = catalog.DoorDelay
-const DoorDelayStatus = catalog.DoorDelayStatus
-const DoorDelayConfigured = catalog.DoorDelayConfigured
-const DoorDelayError = catalog.DoorDelayError
-const DoorDelayModified = catalog.DoorDelayModified
-const DoorControl = catalog.DoorControl
-const DoorControlStatus = catalog.DoorControlStatus
-const DoorControlConfigured = catalog.DoorControlConfigured
-const DoorControlError = catalog.DoorControlError
-const DoorControlModified = catalog.DoorControlModified
+const DoorName = schema.DoorName
+const DoorDelay = schema.DoorDelay
+const DoorDelayStatus = schema.DoorDelayStatus
+const DoorDelayConfigured = schema.DoorDelayConfigured
+const DoorDelayError = schema.DoorDelayError
+const DoorDelayModified = schema.DoorDelayModified
+const DoorControl = schema.DoorControl
+const DoorControlStatus = schema.DoorControlStatus
+const DoorControlConfigured = schema.DoorControlConfigured
+const DoorControlError = schema.DoorControlError
+const DoorControlModified = schema.DoorControlModified
 
-var lookup = map[catalog.Suffix]string{
+var lookup = map[schema.Suffix]string{
 	DoorStatus:            "door.status",
 	DoorCreated:           "door.created",
 	DoorDeleted:           "door.deleted",

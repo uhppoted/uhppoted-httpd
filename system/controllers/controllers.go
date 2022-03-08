@@ -17,6 +17,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
@@ -56,19 +57,19 @@ func NewControllers() Controllers {
 	}
 }
 
-func (cc *Controllers) AsObjects(auth auth.OpAuth) []catalog.Object {
-	objects := []catalog.Object{}
+func (cc *Controllers) AsObjects(auth auth.OpAuth) []schema.Object {
+	objects := []schema.Object{}
 
 	for _, c := range cc.controllers {
 		if c.IsValid() {
-			objects = catalog.Join(objects, c.AsObjects(auth)...)
+			objects = schema.Join(objects, c.AsObjects(auth)...)
 		}
 	}
 
 	return objects
 }
 
-func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if cc == nil {
 		return nil, nil
 	}
@@ -84,7 +85,7 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value stri
 		}
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if oid == "<new>" {
 		if c, err := cc.add(auth, Controller{}); err != nil {
@@ -94,9 +95,9 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value stri
 		} else {
 			OID := c.OID()
 
-			objects = append(objects, catalog.NewObject(OID, "new"))
-			objects = append(objects, catalog.NewObject2(OID, ControllerStatus, "new"))
-			objects = append(objects, catalog.NewObject2(OID, ControllerCreated, c.created))
+			objects = append(objects, schema.NewObject(OID, "new"))
+			objects = append(objects, schema.NewObject2(OID, ControllerStatus, "new"))
+			objects = append(objects, schema.NewObject2(OID, ControllerCreated, c.created))
 
 			c.log(uid, "add", OID, "controller", fmt.Sprintf("Added 'new' controller"), "", "", dbc)
 		}
@@ -257,7 +258,7 @@ func (cc *Controllers) Clone() Controllers {
 	return shadow
 }
 
-func Export(file string, controllers []*Controller, doors map[catalog.OID]doors.Door) error {
+func Export(file string, controllers []*Controller, doors map[schema.OID]doors.Door) error {
 	guard.RLock()
 
 	defer guard.RUnlock()
@@ -381,7 +382,7 @@ func (cc *Controllers) Validate() error {
 
 func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	record := c.clone()
-	record.oid = catalog.OID(catalog.NewController(c.deviceID))
+	record.oid = schema.OID(catalog.NewController(c.deviceID))
 	record.created = types.TimestampNow()
 
 	if a != nil {

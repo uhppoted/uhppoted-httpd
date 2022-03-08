@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Controllers(uid, role string) []catalog.Object {
+func Controllers(uid, role string) []schema.Object {
 	sys.RLock()
 	defer sys.RUnlock()
 
@@ -63,13 +63,13 @@ func validate(c *controllers.Controllers) error {
 		return types.BadRequest(err, err)
 	}
 
-	doors := map[catalog.OID]string{}
+	doors := map[schema.OID]string{}
 	controllers := c.List()
 
 	for _, r := range controllers {
 		for _, v := range r.Doors {
 			if v != "" {
-				if _, ok := sys.doors.Door(catalog.OID(v)); !ok {
+				if _, ok := sys.doors.Door(schema.OID(v)); !ok {
 					return types.BadRequest(
 						fmt.Errorf("Invalid door ID"),
 						fmt.Errorf("controller %v: invalid door ID (%v)", r.OID(), v))

@@ -1,23 +1,23 @@
 package events
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-const EventDeviceID = catalog.EventDeviceID
-const EventIndex = catalog.EventIndex
-const EventTimestamp = catalog.EventTimestamp
-const EventType = catalog.EventType
-const EventDoor = catalog.EventDoor
-const EventDirection = catalog.EventDirection
-const EventCard = catalog.EventCard
-const EventGranted = catalog.EventGranted
-const EventReason = catalog.EventReason
-const EventDeviceName = catalog.EventDeviceName
-const EventDoorName = catalog.EventDoorName
-const EventCardName = catalog.EventCardName
+const EventDeviceID = schema.EventDeviceID
+const EventIndex = schema.EventIndex
+const EventTimestamp = schema.EventTimestamp
+const EventType = schema.EventType
+const EventDoor = schema.EventDoor
+const EventDirection = schema.EventDirection
+const EventCard = schema.EventCard
+const EventGranted = schema.EventGranted
+const EventReason = schema.EventReason
+const EventDeviceName = schema.EventDeviceName
+const EventDoorName = schema.EventDoorName
+const EventCardName = schema.EventCardName
 
-var lookup = map[catalog.Suffix]string{
+var lookup = map[schema.Suffix]string{
 	EventDeviceID:   "event.device.ID",
 	EventIndex:      "event.index",
 	EventTimestamp:  "event.timestamp",

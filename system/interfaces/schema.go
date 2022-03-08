@@ -1,36 +1,38 @@
 package interfaces
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-const LANStatus = catalog.Status
-const LANCreated = catalog.Created
-const LANDeleted = catalog.Deleted
-const LANType = catalog.Type
+const LANStatus = schema.Status
+const LANCreated = schema.Created
+const LANDeleted = schema.Deleted
+const LANType = schema.Type
 
-const LANName = catalog.InterfaceName
-const LANBindAddress = catalog.LANBindAddress
-const LANBroadcastAddress = catalog.LANBroadcastAddress
-const LANListenAddress = catalog.LANListenAddress
+const LANName = schema.InterfaceName
+const LANBindAddress = schema.LANBindAddress
+const LANBroadcastAddress = schema.LANBroadcastAddress
+const LANListenAddress = schema.LANListenAddress
 
-const ControllerTouched = catalog.Touched
-const ControllerEndpointAddress = catalog.ControllerEndpointAddress
-const ControllerDateTimeCurrent = catalog.ControllerDateTimeCurrent
-const ControllerDateTimeModified = catalog.ControllerDateTimeModified
-const ControllerCardsCount = catalog.ControllerCardsCount
-const ControllerCardsStatus = catalog.ControllerCardsStatus
-const ControllerEventsStatus = catalog.ControllerEventsStatus
-const ControllerEventsFirst = catalog.ControllerEventsFirst
-const ControllerEventsLast = catalog.ControllerEventsLast
-const ControllerEventsCurrent = catalog.ControllerEventsCurrent
+const ControllerTouched = schema.Touched
+const ControllerEndpointAddress = schema.ControllerEndpointAddress
+const ControllerDateTimeCurrent = schema.ControllerDateTimeCurrent
+const ControllerDateTimeModified = schema.ControllerDateTimeModified
+const ControllerCardsCount = schema.ControllerCardsCount
+const ControllerCardsStatus = schema.ControllerCardsStatus
+const ControllerEventsStatus = schema.ControllerEventsStatus
+const ControllerEventsFirst = schema.ControllerEventsFirst
+const ControllerEventsLast = schema.ControllerEventsLast
+const ControllerEventsCurrent = schema.ControllerEventsCurrent
 
-const DoorDelay = catalog.DoorDelay
-const DoorDelayModified = catalog.DoorDelayModified
-const DoorControl = catalog.DoorControl
-const DoorControlModified = catalog.DoorControlModified
+const DoorDelay = schema.DoorDelay
+const DoorDelayConfigured = schema.DoorDelayConfigured
+const DoorDelayModified = schema.DoorDelayModified
+const DoorControl = schema.DoorControl
+const DoorControlModified = schema.DoorControlModified
+const DoorControlConfigured = schema.DoorControlConfigured
 
-var lookup = map[catalog.Suffix]string{
+var lookup = map[schema.Suffix]string{
 	LANStatus:           "LAN.status",
 	LANCreated:          "LAN.created",
 	LANDeleted:          "LAN.deleted",

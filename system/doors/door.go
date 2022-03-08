@@ -12,13 +12,14 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Door struct {
-	OID  catalog.OID `json:"OID"`
-	Name string      `json:"name"`
+	OID  schema.OID `json:"OID"`
+	Name string     `json:"name"`
 
 	delay   uint8
 	mode    core.ControlState
@@ -27,7 +28,7 @@ type Door struct {
 }
 
 type kv = struct {
-	field catalog.Suffix
+	field schema.Suffix
 	value interface{}
 }
 
@@ -55,7 +56,7 @@ func (d Door) String() string {
 	return fmt.Sprintf("%v", d.Name)
 }
 
-func (d *Door) AsObjects(auth auth.OpAuth) []catalog.Object {
+func (d *Door) AsObjects(auth auth.OpAuth) []schema.Object {
 	list := []kv{}
 
 	if d.IsDeleted() {
@@ -158,7 +159,7 @@ func (d *Door) AsRuleEntity() (string, interface{}) {
 	return "door", &entity
 }
 
-func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	f := func(field string, value interface{}) error {
 		if a == nil {
 			return nil
@@ -168,7 +169,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 	}
 
 	if d == nil {
-		return []catalog.Object{}, nil
+		return []schema.Object{}, nil
 	} else if d.IsDeleted() {
 		return d.toObjects([]kv{kv{DoorDeleted, d.deleted}}, a), fmt.Errorf("Door has been deleted")
 	}
@@ -247,7 +248,7 @@ func (d *Door) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 	return d.toObjects(list, a), nil
 }
 
-func (d *Door) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+func (d *Door) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	f := func(d *Door, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(d, field, value, auth.Doors); err != nil {
@@ -258,16 +259,16 @@ func (d *Door) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 		return true
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if !d.IsDeleted() && f(d, "OID", d.OID) {
-		objects = append(objects, catalog.NewObject(d.OID, ""))
+		objects = append(objects, schema.NewObject(d.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(d, field, v.value) {
-			objects = append(objects, catalog.NewObject2(d.OID, v.field, v.value))
+			objects = append(objects, schema.NewObject2(d.OID, v.field, v.value))
 		}
 	}
 
@@ -284,7 +285,7 @@ func (d *Door) status() types.Status {
 
 func (d Door) serialize() ([]byte, error) {
 	record := struct {
-		OID     catalog.OID       `json:"OID"`
+		OID     schema.OID        `json:"OID"`
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
@@ -304,7 +305,7 @@ func (d *Door) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     catalog.OID       `json:"OID"`
+		OID     schema.OID        `json:"OID"`
 		Name    string            `json:"name,omitempty"`
 		Delay   uint8             `json:"delay,omitempty"`
 		Mode    core.ControlState `json:"mode,omitempty"`
@@ -339,7 +340,7 @@ func (d *Door) clone() Door {
 	}
 }
 
-func (d *Door) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
+func (d *Door) log(auth auth.OpAuth, operation string, OID schema.OID, field string, description string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()

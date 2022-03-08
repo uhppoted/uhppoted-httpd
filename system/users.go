@@ -2,12 +2,12 @@ package system
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
-func Users(uid, role string) []catalog.Object {
+func Users(uid, role string) []schema.Object {
 	sys.RLock()
 	defer sys.RUnlock()
 

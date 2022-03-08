@@ -7,13 +7,13 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type Event struct {
-	OID        catalog.OID   `json:"OID"`
+	OID        schema.OID    `json:"OID"`
 	DeviceID   uint32        `json:"device-id"`
 	Index      uint32        `json:"index"`
 	Timestamp  core.DateTime `json:"timestamp"`
@@ -127,7 +127,7 @@ func (r reason) String() string {
 	return ""
 }
 
-func NewEvent(oid catalog.OID, e uhppoted.Event, device, door, card string) Event {
+func NewEvent(oid schema.OID, e uhppoted.Event, device, door, card string) Event {
 	return Event{
 		OID:        oid,
 		DeviceID:   e.DeviceID,
@@ -153,9 +153,9 @@ func (e Event) IsDeleted() bool {
 	return false
 }
 
-func (e *Event) AsObjects(a auth.OpAuth) []catalog.Object {
+func (e *Event) AsObjects(a auth.OpAuth) []schema.Object {
 	type E = struct {
-		field catalog.Suffix
+		field schema.Suffix
 		value interface{}
 	}
 
@@ -183,16 +183,16 @@ func (e *Event) AsObjects(a auth.OpAuth) []catalog.Object {
 		return true
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if f(e, "OID", e.OID) {
-		objects = append(objects, catalog.NewObject(e.OID, types.StatusOk))
+		objects = append(objects, schema.NewObject(e.OID, types.StatusOk))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(e, field, v.value) {
-			objects = append(objects, catalog.NewObject2(e.OID, v.field, v.value))
+			objects = append(objects, schema.NewObject2(e.OID, v.field, v.value))
 		}
 	}
 
@@ -213,7 +213,7 @@ func (e *Event) AsRuleEntity() (string, interface{}) {
 	return "event", &entity
 }
 
-func (e *Event) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (e *Event) set(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 
 	return objects, nil
@@ -221,7 +221,7 @@ func (e *Event) set(auth auth.OpAuth, oid catalog.OID, value string) ([]interfac
 
 func (e Event) serialize() ([]byte, error) {
 	record := struct {
-		OID        catalog.OID   `json:"OID"`
+		OID        schema.OID    `json:"OID"`
 		DeviceID   uint32        `json:"device-id,omitempty"`
 		Index      uint32        `json:"index"`
 		Timestamp  core.DateTime `json:"timestamp"`
@@ -255,7 +255,7 @@ func (e Event) serialize() ([]byte, error) {
 
 func (e *Event) deserialize(bytes []byte) error {
 	record := struct {
-		OID        catalog.OID   `json:"OID"`
+		OID        schema.OID    `json:"OID"`
 		DeviceID   uint32        `json:"device-id"`
 		Index      uint32        `json:"index"`
 		Timestamp  core.DateTime `json:"timestamp"`

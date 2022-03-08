@@ -10,6 +10,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
@@ -23,9 +24,9 @@ type key struct {
 	timestamp time.Time
 }
 
-const EventsOID = catalog.EventsOID
-const EventsFirst = catalog.EventsFirst
-const EventsLast = catalog.EventsLast
+const EventsOID = schema.EventsOID
+const EventsFirst = schema.EventsFirst
+const EventsLast = schema.EventsLast
 
 func newKey(deviceID uint32, index uint32, timestamp time.Time) key {
 	year, month, day := timestamp.Date()
@@ -46,8 +47,8 @@ func NewEvents() Events {
 	return Events{}
 }
 
-func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []catalog.Object {
-	objects := []catalog.Object{}
+func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
+	objects := []schema.Object{}
 	keys := []key{}
 
 	ee.events.Range(func(k, v interface{}) bool {
@@ -69,7 +70,7 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []catalog.Object {
 			e := v.(Event)
 			if e.IsValid() || e.IsDeleted() {
 				if l := e.AsObjects(auth); l != nil {
-					objects = catalog.Join(objects, l...)
+					objects = schema.Join(objects, l...)
 					count++
 				}
 			}
@@ -83,18 +84,18 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []catalog.Object {
 		last, _ := ee.events.Load(keys[len(keys)-1])
 
 		if first != nil {
-			objects = catalog.Join(objects, catalog.NewObject2(EventsOID, EventsFirst, first.(Event).OID))
+			objects = schema.Join(objects, schema.NewObject2(EventsOID, EventsFirst, first.(Event).OID))
 		}
 
 		if last != nil {
-			objects = catalog.Join(objects, catalog.NewObject2(EventsOID, EventsLast, last.(Event).OID))
+			objects = schema.Join(objects, schema.NewObject2(EventsOID, EventsLast, last.(Event).OID))
 		}
 	}
 
 	return objects
 }
 
-func (ee *Events) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string) ([]interface{}, error) {
+func (ee *Events) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
 	if ee == nil {
 		return nil, nil
 	}

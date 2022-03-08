@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -28,15 +28,15 @@ func TestLogEntryAsObjects(t *testing.T) {
 		After:     "gadget",
 	}
 
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.7.3", Value: types.StatusOk},
-		catalog.Object{OID: "0.7.3.1", Value: timestamp.Format(time.RFC3339)},
-		catalog.Object{OID: "0.7.3.2", Value: "admin"},
-		catalog.Object{OID: "0.7.3.3", Value: "thing1"},
-		catalog.Object{OID: "0.7.3.4", Value: "12.34"},
-		catalog.Object{OID: "0.7.3.5", Value: "A Thyngge"},
-		catalog.Object{OID: "0.7.3.6", Value: "widget"},
-		catalog.Object{OID: "0.7.3.7", Value: "grokked the widget thing"},
+	expected := []schema.Object{
+		schema.Object{OID: "0.7.3", Value: types.StatusOk},
+		schema.Object{OID: "0.7.3.1", Value: timestamp.Format(time.RFC3339)},
+		schema.Object{OID: "0.7.3.2", Value: "admin"},
+		schema.Object{OID: "0.7.3.3", Value: "thing1"},
+		schema.Object{OID: "0.7.3.4", Value: "12.34"},
+		schema.Object{OID: "0.7.3.5", Value: "A Thyngge"},
+		schema.Object{OID: "0.7.3.6", Value: "widget"},
+		schema.Object{OID: "0.7.3.7", Value: "grokked the widget thing"},
 	}
 
 	objects := l.AsObjects(nil)
@@ -62,15 +62,15 @@ func TestLogEntryAsObjectsWithAuth(t *testing.T) {
 		After:     "gadget",
 	}
 
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.7.3", Value: types.StatusOk},
-		catalog.Object{OID: "0.7.3.1", Value: timestamp.Format(time.RFC3339)},
-		//		catalog.Object{OID: "0.7.3.2", Value: "admin"},
-		catalog.Object{OID: "0.7.3.3", Value: "thing1"},
-		catalog.Object{OID: "0.7.3.4", Value: "12.34"},
-		catalog.Object{OID: "0.7.3.5", Value: "A Thyngge"},
-		catalog.Object{OID: "0.7.3.6", Value: "widget"},
-		catalog.Object{OID: "0.7.3.7", Value: "grokked the widget thing"},
+	expected := []schema.Object{
+		schema.Object{OID: "0.7.3", Value: types.StatusOk},
+		schema.Object{OID: "0.7.3.1", Value: timestamp.Format(time.RFC3339)},
+		//		schema.Object{OID: "0.7.3.2", Value: "admin"},
+		schema.Object{OID: "0.7.3.3", Value: "thing1"},
+		schema.Object{OID: "0.7.3.4", Value: "12.34"},
+		schema.Object{OID: "0.7.3.5", Value: "A Thyngge"},
+		schema.Object{OID: "0.7.3.6", Value: "widget"},
+		schema.Object{OID: "0.7.3.7", Value: "grokked the widget thing"},
 	}
 
 	auth := stub{

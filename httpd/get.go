@@ -14,7 +14,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
 const GZIP_MINIMUM = 16384
@@ -150,7 +150,7 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 	page := map[string]interface{}{}
 
 	page["context"] = context
-	page["schema"] = catalog.GetSchema()
+	page["schema"] = schema.GetSchema()
 
 	// For a FS, use path.Join rather than filepath.Join (ref. https://pkg.go.dev/io/fs#ValidPath)
 	translation := path.Join("translations", "en", strings.TrimSuffix(path.Base(file), path.Ext(file))+".json")

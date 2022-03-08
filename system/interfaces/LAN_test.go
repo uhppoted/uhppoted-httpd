@@ -10,7 +10,7 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -30,7 +30,7 @@ func TestLANAsObjects(t *testing.T) {
 		created: created,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.1.3", Value: ""},
 		{OID: "0.1.3.0.0", Value: types.StatusOk},
 		{OID: "0.1.3.0.1", Value: created},
@@ -67,7 +67,7 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 		deleted: deleted,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.1.3.0.2", Value: deleted},
 	}
 
@@ -94,16 +94,16 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 		created: created,
 	}
 
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.1.3", Value: ""},
-		catalog.Object{OID: "0.1.3.0.0", Value: types.StatusOk},
-		catalog.Object{OID: "0.1.3.0.1", Value: created},
-		catalog.Object{OID: "0.1.3.0.2", Value: types.Timestamp{}},
-		catalog.Object{OID: "0.1.3.0.4", Value: "LAN"},
-		catalog.Object{OID: "0.1.3.1", Value: "Le LAN"},
-		catalog.Object{OID: "0.1.3.3.1", Value: *bind},
-		catalog.Object{OID: "0.1.3.3.2", Value: *broadcast},
-		//		catalog.Object{OID: "0.1.3.3.3", Value: *listen},
+	expected := []schema.Object{
+		schema.Object{OID: "0.1.3", Value: ""},
+		schema.Object{OID: "0.1.3.0.0", Value: types.StatusOk},
+		schema.Object{OID: "0.1.3.0.1", Value: created},
+		schema.Object{OID: "0.1.3.0.2", Value: types.Timestamp{}},
+		schema.Object{OID: "0.1.3.0.4", Value: "LAN"},
+		schema.Object{OID: "0.1.3.1", Value: "Le LAN"},
+		schema.Object{OID: "0.1.3.3.1", Value: *bind},
+		schema.Object{OID: "0.1.3.3.2", Value: *broadcast},
+		//		schema.Object{OID: "0.1.3.3.3", Value: *listen},
 	}
 
 	auth := stub{
@@ -124,10 +124,10 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 }
 
 func TestLANSet(t *testing.T) {
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.1.3", Value: ""},
-		catalog.Object{OID: "0.1.3.1", Value: "Ze LAN"},
-		catalog.Object{OID: "0.1.3.0.0", Value: types.StatusOk},
+	expected := []schema.Object{
+		schema.Object{OID: "0.1.3", Value: ""},
+		schema.Object{OID: "0.1.3.1", Value: "Ze LAN"},
+		schema.Object{OID: "0.1.3.0.0", Value: types.StatusOk},
 	}
 
 	l := LAN{
@@ -157,8 +157,8 @@ func TestLANSetWithDeleted(t *testing.T) {
 		deleted: types.TimestampNow(),
 	}
 
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.1.3.0.2", Value: l.deleted},
+	expected := []schema.Object{
+		schema.Object{OID: "0.1.3.0.2", Value: l.deleted},
 	}
 
 	objects, err := l.set(nil, "0.1.3.1", "Ze LAN", nil)

@@ -1,21 +1,25 @@
 package logs
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-const LogTimestamp = catalog.LogTimestamp
-const LogUID = catalog.LogUID
-const LogItem = catalog.LogItem
-const LogItemID = catalog.LogItemID
-const LogItemName = catalog.LogItemName
-const LogField = catalog.LogField
-const LogDetails = catalog.LogDetails
+const LogsOID = schema.LogsOID
+const LogsFirst = schema.LogsFirst
+const LogsLast = schema.LogsLast
 
-const ControllerName = catalog.ControllerName
-const ControllerDeviceID = catalog.ControllerDeviceID
+const LogTimestamp = schema.LogTimestamp
+const LogUID = schema.LogUID
+const LogItem = schema.LogItem
+const LogItemID = schema.LogItemID
+const LogItemName = schema.LogItemName
+const LogField = schema.LogField
+const LogDetails = schema.LogDetails
 
-var lookup = map[catalog.Suffix]string{
+const ControllerName = schema.ControllerName
+const ControllerDeviceID = schema.ControllerDeviceID
+
+var lookup = map[schema.Suffix]string{
 	LogTimestamp: "log.timestamp",
 	LogUID:       "log.UID",
 	LogItem:      "log.item",

@@ -13,12 +13,13 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type User struct {
-	OID      catalog.OID
+	OID      schema.OID
 	name     string
 	uid      string
 	role     string
@@ -31,7 +32,7 @@ type User struct {
 }
 
 type kv = struct {
-	field catalog.Suffix
+	field schema.Suffix
 	value interface{}
 }
 
@@ -76,7 +77,7 @@ func (u User) String() string {
 	return ""
 }
 
-func (u User) AsObjects(auth auth.OpAuth) []catalog.Object {
+func (u User) AsObjects(auth auth.OpAuth) []schema.Object {
 	list := []kv{}
 
 	if u.IsDeleted() {
@@ -108,9 +109,9 @@ func (u User) AsRuleEntity() (string, interface{}) {
 	return "user", &entity
 }
 
-func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if u == nil {
-		return []catalog.Object{}, nil
+		return []schema.Object{}, nil
 	}
 
 	if u.IsDeleted() {
@@ -233,7 +234,7 @@ func (u *User) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 	return u.toObjects(list, a), nil
 }
 
-func (u User) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	f := func(u User, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(u, field, value, auth.Cards); err != nil {
@@ -244,16 +245,16 @@ func (u User) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 		return true
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if !u.IsDeleted() && f(u, "OID", u.OID) {
-		objects = append(objects, catalog.NewObject(u.OID, ""))
+		objects = append(objects, schema.NewObject(u.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(u, field, v.value) {
-			objects = append(objects, catalog.NewObject2(u.OID, v.field, v.value))
+			objects = append(objects, schema.NewObject2(u.OID, v.field, v.value))
 		}
 	}
 
@@ -270,7 +271,7 @@ func (u User) status() types.Status {
 
 func (u User) serialize() ([]byte, error) {
 	record := struct {
-		OID      catalog.OID     `json:"OID"`
+		OID      schema.OID      `json:"OID"`
 		Name     string          `json:"name,omitempty"`
 		UID      string          `json:"uid,omitempty"`
 		Role     string          `json:"role,omitempty"`
@@ -296,7 +297,7 @@ func (u *User) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID      catalog.OID     `json:"OID"`
+		OID      schema.OID      `json:"OID"`
 		Name     string          `json:"name,omitempty"`
 		UID      string          `json:"uid,omitempty"`
 		Role     string          `json:"role,omitempty"`
@@ -348,7 +349,7 @@ func (u User) clone() *User {
 	return &replicant
 }
 
-func (u User) log(auth auth.OpAuth, operation string, oid catalog.OID, field, description, before, after string, dbc db.DBC) {
+func (u User) log(auth auth.OpAuth, operation string, oid schema.OID, field, description, before, after string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()

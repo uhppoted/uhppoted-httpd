@@ -7,11 +7,12 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
-func Events(uid, role string, start, count int) []catalog.Object {
+func Events(uid, role string, start, count int) []schema.Object {
 	sys.RLock()
 	defer sys.RUnlock()
 
@@ -47,7 +48,7 @@ func eventController(e uhppoted.Event) string {
 
 	if e.DeviceID != 0 {
 		if oid := catalog.FindController(e.DeviceID); oid != "" {
-			if v := catalog.GetV(oid, catalog.ControllerName); v != nil {
+			if v := catalog.GetV(oid, schema.ControllerName); v != nil {
 				name = fmt.Sprintf("%v", v)
 			}
 		}
@@ -83,9 +84,9 @@ func eventCard(e uhppoted.Event) string {
 	name := ""
 
 	if e.CardNumber != 0 {
-		if oid, ok := catalog.Find(catalog.CardsOID, catalog.CardNumber, e.CardNumber); ok && oid != "" {
-			oid = oid.Trim(catalog.CardNumber)
-			if v := catalog.GetV(oid, catalog.CardName); v != nil {
+		if oid, ok := catalog.Find(schema.CardsOID, schema.CardNumber, e.CardNumber); ok && oid != "" {
+			oid = oid.Trim(schema.CardNumber)
+			if v := catalog.GetV(oid, schema.CardName); v != nil {
 				name = fmt.Sprintf("%v", v)
 			}
 		}
@@ -126,17 +127,17 @@ func eventDoor(e uhppoted.Event) string {
 
 			switch e.Door {
 			case 1:
-				door = catalog.GetV(oid, catalog.ControllerDoor1)
+				door = catalog.GetV(oid, schema.ControllerDoor1)
 			case 2:
-				door = catalog.GetV(oid, catalog.ControllerDoor2)
+				door = catalog.GetV(oid, schema.ControllerDoor2)
 			case 3:
-				door = catalog.GetV(oid, catalog.ControllerDoor3)
+				door = catalog.GetV(oid, schema.ControllerDoor3)
 			case 4:
-				door = catalog.GetV(oid, catalog.ControllerDoor4)
+				door = catalog.GetV(oid, schema.ControllerDoor4)
 			}
 
 			if door != nil {
-				if v := catalog.GetV(door.(catalog.OID), catalog.DoorName); v != nil {
+				if v := catalog.GetV(door.(schema.OID), schema.DoorName); v != nil {
 					name = fmt.Sprintf("%v", v)
 				}
 			}

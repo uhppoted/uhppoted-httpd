@@ -7,6 +7,7 @@ import (
 
 	"github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/logs"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
@@ -160,11 +161,11 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 
 	sys.logs.Logs = logs.NewLogs(h...)
 
-	oid := catalog.OID("0.2.1")
+	oid := schema.OID("0.2.1")
 	expected := "Alpha"
 
 	catalog.PutController(405419896, oid)
-	catalog.PutV(oid, catalog.ControllerName, "Alpha")
+	catalog.PutV(oid, schema.ControllerName, "Alpha")
 
 	name := eventController(event)
 	if name != expected {
@@ -180,11 +181,11 @@ func TestLookupHistoricalDeviceName(t *testing.T) {
 
 	sys.logs.Logs = logs.NewLogs(h...)
 
-	oid := catalog.OID("0.2.1")
+	oid := schema.OID("0.2.1")
 	expected := "Alpha7"
 
 	catalog.PutController(405419896, oid)
-	catalog.PutV(oid, catalog.ControllerName, "Alpha")
+	catalog.PutV(oid, schema.ControllerName, "Alpha")
 
 	name := eventController(event)
 	if name != expected {
@@ -206,12 +207,12 @@ func TestLookupDefaultCardName(t *testing.T) {
 func TestLookupCardName(t *testing.T) {
 	sys.logs.Logs = logs.NewLogs()
 
-	oid := catalog.OID("0.4.1")
+	oid := schema.OID("0.4.1")
 	expected := "FredF"
 
 	catalog.PutCard(oid)
-	catalog.PutV(oid, catalog.CardNumber, uint32(8165538))
-	catalog.PutV(oid, catalog.CardName, "FredF")
+	catalog.PutV(oid, schema.CardNumber, uint32(8165538))
+	catalog.PutV(oid, schema.CardName, "FredF")
 
 	name := eventCard(event)
 	if name != expected {
@@ -227,12 +228,12 @@ func TestLookupHistoricalCardName(t *testing.T) {
 
 	sys.logs.Logs = logs.NewLogs(h...)
 
-	oid := catalog.OID("0.4.1")
+	oid := schema.OID("0.4.1")
 	expected := "Barney"
 
 	catalog.PutCard(oid)
-	catalog.PutV(oid, catalog.CardNumber, uint32(8165538))
-	catalog.PutV(oid, catalog.CardName, "FredF")
+	catalog.PutV(oid, schema.CardNumber, uint32(8165538))
+	catalog.PutV(oid, schema.CardName, "FredF")
 
 	name := eventCard(event)
 	if name != expected {
@@ -254,16 +255,16 @@ func TestLookupDefaultDoorName(t *testing.T) {
 func TestLookupDoorName(t *testing.T) {
 	sys.logs.Logs = logs.NewLogs()
 
-	controller := catalog.OID("0.2.1")
-	door := catalog.OID("0.3.1")
+	controller := schema.OID("0.2.1")
+	door := schema.OID("0.3.1")
 
 	catalog.PutController(405419896, controller)
-	catalog.PutV(controller, catalog.ControllerName, "Alpha")
-	catalog.PutV(controller, catalog.ControllerDeviceID, 405419896)
-	catalog.PutV(controller, catalog.ControllerDoor3, door)
+	catalog.PutV(controller, schema.ControllerName, "Alpha")
+	catalog.PutV(controller, schema.ControllerDeviceID, 405419896)
+	catalog.PutV(controller, schema.ControllerDoor3, door)
 
 	catalog.PutDoor(door)
-	catalog.PutV(door, catalog.DoorName, "Gringotts")
+	catalog.PutV(door, schema.DoorName, "Gringotts")
 
 	expected := "Gringotts"
 
@@ -281,16 +282,16 @@ func TestLookupHistoricalDoorName(t *testing.T) {
 
 	sys.logs.Logs = logs.NewLogs(h...)
 
-	controller := catalog.OID("0.2.1")
-	door := catalog.OID("0.3.1")
+	controller := schema.OID("0.2.1")
+	door := schema.OID("0.3.1")
 
 	catalog.PutController(405419896, controller)
-	catalog.PutV(controller, catalog.ControllerName, "Alpha")
-	catalog.PutV(controller, catalog.ControllerDeviceID, 405419896)
-	catalog.PutV(controller, catalog.ControllerDoor3, door)
+	catalog.PutV(controller, schema.ControllerName, "Alpha")
+	catalog.PutV(controller, schema.ControllerDeviceID, 405419896)
+	catalog.PutV(controller, schema.ControllerDoor3, door)
 
 	catalog.PutDoor(door)
-	catalog.PutV(door, catalog.DoorName, "Gringotts")
+	catalog.PutV(door, schema.DoorName, "Gringotts")
 
 	expected := "Cupboard"
 

@@ -16,16 +16,17 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Controller struct {
-	oid      catalog.OID
+	oid      schema.OID
 	name     string
 	deviceID uint32
 	IP       *core.Address
-	Doors    map[uint8]catalog.OID
+	Doors    map[uint8]schema.OID
 	timezone string
 
 	created      types.Timestamp
@@ -34,7 +35,7 @@ type Controller struct {
 }
 
 type kv = struct {
-	field catalog.Suffix
+	field schema.Suffix
 	value interface{}
 }
 
@@ -69,7 +70,7 @@ func (c Controller) IsDeleted() bool {
 	return !c.deleted.IsZero()
 }
 
-func (c *Controller) OID() catalog.OID {
+func (c *Controller) OID() schema.OID {
 	if c != nil {
 		return c.oid
 	}
@@ -110,7 +111,7 @@ func (c *Controller) TimeZone() *time.Location {
 	return location
 }
 
-func (c *Controller) Door(d uint8) (catalog.OID, bool) {
+func (c *Controller) Door(d uint8) (schema.OID, bool) {
 	if c != nil {
 		if v, ok := c.Doors[d]; ok {
 			return v, true
@@ -128,7 +129,7 @@ func (c *Controller) realized() bool {
 	return false
 }
 
-func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
+func (c *Controller) AsObjects(auth auth.OpAuth) []schema.Object {
 	list := []kv{}
 
 	if c.IsDeleted() {
@@ -165,7 +166,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []catalog.Object {
 		cards := cinfo{}
 		events := einfo{}
 
-		doors := map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
+		doors := map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
 
 		if c.deviceID != 0 {
 			deviceID = fmt.Sprintf("%v", c.deviceID)
@@ -385,9 +386,9 @@ func (c *Controller) get() *cached {
 	return &e
 }
 
-func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if c == nil {
-		return []catalog.Object{}, nil
+		return []schema.Object{}, nil
 	}
 
 	if c.IsDeleted() {
@@ -488,7 +489,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 		if err := f("door[1]", value); err != nil {
 			return nil, err
 		} else {
-			c.Doors[1] = catalog.OID(value)
+			c.Doors[1] = schema.OID(value)
 			c.unconfigured = false
 			list = append(list, kv{ControllerDoor1, c.Doors[1]})
 
@@ -499,7 +500,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 		if err := f("door[2]", value); err != nil {
 			return nil, err
 		} else {
-			c.Doors[2] = catalog.OID(value)
+			c.Doors[2] = schema.OID(value)
 			c.unconfigured = false
 			list = append(list, kv{ControllerDoor2, c.Doors[2]})
 
@@ -510,7 +511,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 		if err := f("door[3]", value); err != nil {
 			return nil, err
 		} else {
-			c.Doors[3] = catalog.OID(value)
+			c.Doors[3] = schema.OID(value)
 			c.unconfigured = false
 			list = append(list, kv{ControllerDoor3, c.Doors[3]})
 
@@ -521,7 +522,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 		if err := f("door[4]", value); err != nil {
 			return nil, err
 		} else {
-			c.Doors[4] = catalog.OID(value)
+			c.Doors[4] = schema.OID(value)
 			c.unconfigured = false
 			list = append(list, kv{ControllerDoor4, c.Doors[4]})
 
@@ -555,7 +556,7 @@ func (c *Controller) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DB
 	return c.toObjects(list, a), nil
 }
 
-func (c *Controller) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+func (c *Controller) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	f := func(c *Controller, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(c, field, value, auth.Controllers); err != nil {
@@ -567,16 +568,16 @@ func (c *Controller) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 	}
 
 	OID := c.OID()
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if !c.IsDeleted() && f(c, "OID", OID) {
-		objects = append(objects, catalog.NewObject(OID, ""))
+		objects = append(objects, schema.NewObject(OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(c, field, v.value) {
-			objects = append(objects, catalog.NewObject2(OID, v.field, v.value))
+			objects = append(objects, schema.NewObject2(OID, v.field, v.value))
 		}
 	}
 
@@ -627,19 +628,19 @@ func (c Controller) serialize() ([]byte, error) {
 	}
 
 	record := struct {
-		OID      catalog.OID           `json:"OID,omitempty"`
-		Name     string                `json:"name,omitempty"`
-		DeviceID uint32                `json:"device-id,omitempty"`
-		Address  *core.Address         `json:"address,omitempty"`
-		Doors    map[uint8]catalog.OID `json:"doors"`
-		TimeZone string                `json:"timezone,omitempty"`
-		Created  types.Timestamp       `json:"created"`
+		OID      schema.OID           `json:"OID,omitempty"`
+		Name     string               `json:"name,omitempty"`
+		DeviceID uint32               `json:"device-id,omitempty"`
+		Address  *core.Address        `json:"address,omitempty"`
+		Doors    map[uint8]schema.OID `json:"doors"`
+		TimeZone string               `json:"timezone,omitempty"`
+		Created  types.Timestamp      `json:"created"`
 	}{
 		OID:      c.OID(),
 		Name:     c.name,
 		DeviceID: c.deviceID,
 		Address:  c.IP,
-		Doors:    map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""},
+		Doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
 		TimeZone: c.timezone,
 		Created:  c.created,
 	}
@@ -655,7 +656,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID      catalog.OID      `json:"OID"`
+		OID      schema.OID       `json:"OID"`
 		Name     string           `json:"name,omitempty"`
 		DeviceID uint32           `json:"device-id,omitempty"`
 		Address  *core.Address    `json:"address,omitempty"`
@@ -674,13 +675,13 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.name = strings.TrimSpace(record.Name)
 	c.deviceID = record.DeviceID
 	c.IP = record.Address
-	c.Doors = map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""}
+	c.Doors = map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
 	c.timezone = record.TimeZone
 	c.created = record.Created
 	c.unconfigured = false
 
 	for k, v := range record.Doors {
-		c.Doors[k] = catalog.OID(v)
+		c.Doors[k] = schema.OID(v)
 	}
 
 	return nil
@@ -694,7 +695,7 @@ func (c *Controller) clone() *Controller {
 			deviceID: c.deviceID,
 			IP:       c.IP,
 			timezone: c.timezone,
-			Doors:    map[uint8]catalog.OID{1: "", 2: "", 3: "", 4: ""},
+			Doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
 
 			created:      c.created,
 			deleted:      c.deleted,
@@ -734,7 +735,7 @@ func (c Controller) updated(uid, field string, before, after interface{}, dbc db
 	}
 }
 
-func (c *Controller) log(uid string, operation string, OID catalog.OID, field, description, before, after string, dbc db.DBC) {
+func (c *Controller) log(uid string, operation string, OID schema.OID, field, description, before, after string, dbc db.DBC) {
 	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       OID,

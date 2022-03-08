@@ -9,12 +9,13 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Interfaces struct {
-	lans map[catalog.OID]*LAN
+	lans map[schema.OID]*LAN
 	ch   chan types.EventsList
 }
 
@@ -24,24 +25,24 @@ var guard sync.RWMutex
 
 func NewInterfaces(ch chan types.EventsList) Interfaces {
 	return Interfaces{
-		lans: map[catalog.OID]*LAN{},
+		lans: map[schema.OID]*LAN{},
 		ch:   ch,
 	}
 }
 
-func (ii *Interfaces) AsObjects(auth auth.OpAuth) []catalog.Object {
-	objects := []catalog.Object{}
+func (ii *Interfaces) AsObjects(auth auth.OpAuth) []schema.Object {
+	objects := []schema.Object{}
 
 	for _, l := range ii.lans {
 		if l.IsValid() {
-			objects = catalog.Join(objects, l.AsObjects(auth)...)
+			objects = schema.Join(objects, l.AsObjects(auth)...)
 		}
 	}
 
 	return objects
 }
 
-func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if ii == nil {
 		return nil, nil
 	}
@@ -52,7 +53,7 @@ func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value strin
 		}
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if oid == "<new>" {
 		if l, err := ii.add(auth, LAN{}); err != nil {
@@ -61,9 +62,9 @@ func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value strin
 			return nil, fmt.Errorf("Failed to add 'new' interface")
 		} else {
 			l.log(auth, "add", l.OID, "interface", fmt.Sprintf("Added 'new' interface"), "", "", dbc)
-			objects = append(objects, catalog.NewObject(l.OID, "new"))
-			objects = append(objects, catalog.NewObject2(l.OID, LANStatus, "new"))
-			objects = append(objects, catalog.NewObject2(l.OID, LANCreated, l.created))
+			objects = append(objects, schema.NewObject(l.OID, "new"))
+			objects = append(objects, schema.NewObject2(l.OID, LANStatus, "new"))
+			objects = append(objects, schema.NewObject2(l.OID, LANCreated, l.created))
 		}
 	}
 
@@ -146,7 +147,7 @@ func (ii *Interfaces) Clone() Interfaces {
 	defer guard.RUnlock()
 
 	shadow := Interfaces{
-		lans: map[catalog.OID]*LAN{},
+		lans: map[schema.OID]*LAN{},
 	}
 
 	for k, v := range ii.lans {

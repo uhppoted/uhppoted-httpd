@@ -1,299 +1,166 @@
 package catalog
 
 import (
-	"fmt"
-	"sync"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-var catalog = struct {
-	interfaces  map[OID]struct{}
-	controllers map[OID]controller
-	doors       map[OID]struct{}
-	cards       map[OID]struct{}
-	groups      map[OID]struct{}
-	events      map[OID]struct{}
-	logs        map[OID]struct{}
-	users       map[OID]struct{}
-}{
-	interfaces:  map[OID]struct{}{},
-	controllers: map[OID]controller{},
-	doors:       map[OID]struct{}{},
-	cards:       map[OID]struct{}{},
-	groups:      map[OID]struct{}{},
-	events:      map[OID]struct{}{},
-	logs:        map[OID]struct{}{},
-	users:       map[OID]struct{}{},
+type Catalog interface {
+	Clear()
+	Delete(oid schema.OID)
+
+	GetV(oid schema.OID, suffix schema.Suffix) interface{}
+	Put(oid schema.OID, v interface{})
+	PutV(oid schema.OID, suffix schema.Suffix, v interface{})
+	Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool)
+
+	NewController(deviceID uint32) schema.OID
+	NewCard() schema.OID
+	NewDoor() schema.OID
+	NewGroup() schema.OID
+	NewEvent() schema.OID
+	NewLogEntry() schema.OID
+	NewUser() schema.OID
+
+	PutInterface(oid schema.OID)
+	PutController(deviceID uint32, oid schema.OID)
+	PutCard(oid schema.OID)
+	PutDoor(oid schema.OID)
+	PutGroup(oid schema.OID)
+	PutEvent(oid schema.OID)
+	PutLogEntry(oid schema.OID)
+	PutUser(oid schema.OID)
+
+	FindController(deviceID uint32) schema.OID
+
+	Doors() map[schema.OID]struct{}
+	GetDoorDeviceID(door schema.OID) uint32
+	GetDoorDeviceDoor(door schema.OID) uint8
+
+	Groups() map[schema.OID]struct{}
+	HasGroup(oid schema.OID) bool
 }
 
-var guard sync.Mutex
-
-type controller struct {
-	ID      uint32
-	deleted bool
-}
+var catalog Catalog = memdb.Catalog()
 
 func Clear() {
-	catalog.interfaces = map[OID]struct{}{}
-	catalog.controllers = map[OID]controller{}
-	catalog.doors = map[OID]struct{}{}
-	catalog.cards = map[OID]struct{}{}
-	catalog.groups = map[OID]struct{}{}
-	catalog.events = map[OID]struct{}{}
-	catalog.logs = map[OID]struct{}{}
-
-	cache.guard.Lock()
-	defer cache.guard.Unlock()
-	cache.cache = map[OID]value{}
+	catalog.Clear()
 }
 
-func PutInterface(oid OID) {
-	guard.Lock()
-	defer guard.Unlock()
-
-	catalog.interfaces[oid] = struct{}{}
+func Delete(oid schema.OID) {
+	catalog.Delete(oid)
 }
 
-func PutController(deviceID uint32, oid OID) {
-	guard.Lock()
-	defer guard.Unlock()
-
-	catalog.controllers[oid] = controller{
-		ID:      deviceID,
-		deleted: false,
-	}
+func GetV(oid schema.OID, suffix schema.Suffix) interface{} {
+	return catalog.GetV(oid, suffix)
 }
 
-func PutDoor(oid OID) {
-	guard.Lock()
-	defer guard.Unlock()
-
-	catalog.doors[oid] = struct{}{}
+func Put(oid schema.OID, v interface{}) {
+	catalog.Put(oid, v)
 }
 
-func PutCard(oid OID) {
-	guard.Lock()
-	defer guard.Unlock()
-
-	catalog.cards[oid] = struct{}{}
+func PutV(oid schema.OID, suffix schema.Suffix, v interface{}) {
+	catalog.PutV(oid, suffix, v)
 }
 
-func PutGroup(oid OID) {
-	guard.Lock()
-	defer guard.Unlock()
-
-	catalog.groups[oid] = struct{}{}
+func Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool) {
+	return catalog.Find(prefix, suffix, value)
 }
 
-func HasGroup(oid OID) bool {
-	guard.Lock()
-	defer guard.Unlock()
-
-	_, ok := catalog.groups[oid]
-
-	return ok
+func NewController(deviceID uint32) schema.OID {
+	return catalog.NewController(deviceID)
 }
 
-func PutEvent(oid OID) {
-	guard.Lock()
-	defer guard.Unlock()
-
-	catalog.events[oid] = struct{}{}
+func NewCard() schema.OID {
+	return catalog.NewCard()
 }
 
-func PutLogEntry(oid OID) {
-	guard.Lock()
-	defer guard.Unlock()
-
-	catalog.logs[oid] = struct{}{}
+func NewDoor() schema.OID {
+	return catalog.NewDoor()
 }
 
-func PutUser(oid OID) {
-	guard.Lock()
-	defer guard.Unlock()
-
-	catalog.users[oid] = struct{}{}
+func NewGroup() schema.OID {
+	return catalog.NewGroup()
 }
 
-func NewController(deviceID uint32) OID {
-	guard.Lock()
-	defer guard.Unlock()
-
-	if deviceID != 0 {
-		for oid, v := range catalog.controllers {
-			if !v.deleted && v.ID == deviceID {
-				return oid
-			}
-		}
-	}
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := OID(fmt.Sprintf("%v.%d", ControllersOID, item))
-		for v, _ := range catalog.controllers {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		catalog.controllers[oid] = controller{
-			ID:      deviceID,
-			deleted: false,
-		}
-
-		return oid
-	}
+func NewEvent() schema.OID {
+	return catalog.NewEvent()
 }
 
-func NewDoor() OID {
-	guard.Lock()
-	defer guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := OID(fmt.Sprintf("%v.%d", DoorsOID, item))
-		for v, _ := range catalog.doors {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		catalog.doors[oid] = struct{}{}
-		return oid
-	}
+func NewLogEntry() schema.OID {
+	return catalog.NewLogEntry()
 }
 
-func NewCard() OID {
-	guard.Lock()
-	defer guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := OID(fmt.Sprintf("%v.%d", CardsOID, item))
-		for v, _ := range catalog.cards {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		catalog.cards[oid] = struct{}{}
-
-		return oid
-	}
+func NewUser() schema.OID {
+	return catalog.NewUser()
 }
 
-func NewGroup() OID {
-	guard.Lock()
-	defer guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := OID(fmt.Sprintf("%v.%d", GroupsOID, item))
-		for v, _ := range catalog.groups {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		catalog.groups[oid] = struct{}{}
-
-		return oid
-	}
+func PutInterface(oid schema.OID) {
+	catalog.PutInterface(oid)
 }
 
-func NewEvent() OID {
-	guard.Lock()
-	defer guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := OID(fmt.Sprintf("%v.%d", EventsOID, item))
-		for v, _ := range catalog.events {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		catalog.events[oid] = struct{}{}
-
-		return oid
-	}
+func PutController(deviceID uint32, oid schema.OID) {
+	catalog.PutController(deviceID, oid)
 }
 
-func NewLogEntry() OID {
-	guard.Lock()
-	defer guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := OID(fmt.Sprintf("%v.%d", LogsOID, item))
-		for v, _ := range catalog.logs {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		catalog.logs[oid] = struct{}{}
-
-		return oid
-	}
+func PutCard(oid schema.OID) {
+	catalog.PutCard(oid)
 }
 
-func NewUser() OID {
-	guard.Lock()
-	defer guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := OID(fmt.Sprintf("%v.%d", UsersOID, item))
-		for v, _ := range catalog.users {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		catalog.users[oid] = struct{}{}
-
-		return oid
-	}
+func PutDoor(oid schema.OID) {
+	catalog.PutDoor(oid)
 }
 
-func Delete(oid OID) {
-	guard.Lock()
-	defer guard.Unlock()
-
-	if v, ok := catalog.controllers[oid]; ok {
-		catalog.controllers[oid] = controller{
-			ID:      v.ID,
-			deleted: true,
-		}
-	}
+func PutGroup(oid schema.OID) {
+	catalog.PutGroup(oid)
 }
 
-func FindController(deviceID uint32) OID {
-	guard.Lock()
-	defer guard.Unlock()
+func PutEvent(oid schema.OID) {
+	catalog.PutEvent(oid)
+}
 
-	if deviceID != 0 {
-		for oid, v := range catalog.controllers {
-			if v.ID == deviceID && !v.deleted {
-				return oid
-			}
-		}
+func PutLogEntry(oid schema.OID) {
+	catalog.PutLogEntry(oid)
+}
+
+func PutUser(oid schema.OID) {
+	catalog.PutUser(oid)
+}
+
+func FindController(deviceID uint32) schema.OID {
+	return catalog.FindController(deviceID)
+}
+
+func GetDoors() []schema.OID {
+	list := []schema.OID{}
+	doors := catalog.Doors()
+
+	for d, _ := range doors {
+		list = append(list, d)
 	}
 
-	return ""
+	return list
+}
+
+func GetDoorDeviceID(door schema.OID) uint32 {
+	return catalog.GetDoorDeviceID(door)
+}
+
+func GetDoorDeviceDoor(door schema.OID) uint8 {
+	return catalog.GetDoorDeviceDoor(door)
+}
+
+func GetGroups() []schema.OID {
+	list := []schema.OID{}
+	groups := catalog.Groups()
+
+	for g, _ := range groups {
+		list = append(list, g)
+	}
+
+	return list
+}
+
+func HasGroup(oid schema.OID) bool {
+	return catalog.HasGroup(oid)
 }

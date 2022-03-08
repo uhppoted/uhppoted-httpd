@@ -18,12 +18,13 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type LAN struct {
-	OID              catalog.OID
+	OID              schema.OID
 	Name             string
 	BindAddress      core.BindAddr
 	BroadcastAddress core.BroadcastAddr
@@ -37,16 +38,16 @@ type LAN struct {
 }
 
 type Controller interface {
-	OID() catalog.OID
+	OID() schema.OID
 	Name() string
 	DeviceID() uint32
 	EndPoint() *net.UDPAddr
 	TimeZone() *time.Location
-	Door(uint8) (catalog.OID, bool)
+	Door(uint8) (schema.OID, bool)
 }
 
 type kv = struct {
-	field catalog.Suffix
+	field schema.Suffix
 	value interface{}
 }
 
@@ -70,7 +71,7 @@ func (l LAN) IsDeleted() bool {
 	return !l.deleted.IsZero()
 }
 
-func (l *LAN) AsObjects(auth auth.OpAuth) []catalog.Object {
+func (l *LAN) AsObjects(auth auth.OpAuth) []schema.Object {
 	list := []kv{}
 
 	if l.IsDeleted() {
@@ -103,9 +104,9 @@ func (l *LAN) AsRuleEntity() (string, interface{}) {
 	return "lan", &entity
 }
 
-func (l *LAN) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if l == nil {
-		return []catalog.Object{}, nil
+		return []schema.Object{}, nil
 	}
 
 	if l.IsDeleted() {
@@ -207,7 +208,7 @@ func (l *LAN) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]c
 	return l.toObjects(list, a), nil
 }
 
-func (l *LAN) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+func (l *LAN) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	f := func(l *LAN, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(l, field, value, auth.Interfaces); err != nil {
@@ -218,16 +219,16 @@ func (l *LAN) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 		return true
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if !l.IsDeleted() && f(l, "OID", l.OID) {
-		objects = append(objects, catalog.NewObject(l.OID, ""))
+		objects = append(objects, schema.NewObject(l.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(l, field, v.value) {
-			objects = append(objects, catalog.NewObject2(l.OID, v.field, v.value))
+			objects = append(objects, schema.NewObject2(l.OID, v.field, v.value))
 		}
 	}
 
@@ -408,11 +409,11 @@ func (l *LAN) SynchDoors(c Controller) {
 	// ... update door delays
 	for _, door := range []uint8{1, 2, 3, 4} {
 		if oid, ok := c.Door(door); ok && oid != "" {
-			configured := catalog.GetV(oid, catalog.DoorDelayConfigured)
-			actual := catalog.GetV(oid, catalog.DoorDelay)
+			configured := catalog.GetV(oid, DoorDelayConfigured)
+			actual := catalog.GetV(oid, DoorDelay)
 			modified := false
 
-			if v := catalog.GetV(oid, catalog.DoorDelayModified); v != nil {
+			if v := catalog.GetV(oid, schema.DoorDelayModified); v != nil {
 				if b, ok := v.(bool); ok {
 					modified = b
 				}
@@ -441,11 +442,11 @@ func (l *LAN) SynchDoors(c Controller) {
 	// ... update door control states
 	for _, door := range []uint8{1, 2, 3, 4} {
 		if oid, ok := c.Door(door); ok && oid != "" {
-			configured := catalog.GetV(oid, catalog.DoorControlConfigured)
-			actual := catalog.GetV(oid, catalog.DoorControl)
+			configured := catalog.GetV(oid, DoorControlConfigured)
+			actual := catalog.GetV(oid, DoorControl)
 			modified := false
 
-			if v := catalog.GetV(oid, catalog.DoorControlModified); v != nil {
+			if v := catalog.GetV(oid, DoorControlModified); v != nil {
 				if b, ok := v.(bool); ok {
 					modified = b
 				}
@@ -568,7 +569,7 @@ func (l *LAN) UpdateACL(controllers []Controller, permissions acl.ACL) error {
 
 func (l LAN) serialize() ([]byte, error) {
 	record := struct {
-		OID              catalog.OID        `json:"OID"`
+		OID              schema.OID         `json:"OID"`
 		Name             string             `json:"name,omitempty"`
 		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
@@ -590,7 +591,7 @@ func (l *LAN) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID              catalog.OID        `json:"OID"`
+		OID              schema.OID         `json:"OID"`
 		Name             string             `json:"name,omitempty"`
 		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
@@ -615,7 +616,7 @@ func (l *LAN) deserialize(bytes []byte) error {
 	return nil
 }
 
-func (l *LAN) log(auth auth.OpAuth, operation string, OID catalog.OID, field, description, before, after string, dbc db.DBC) {
+func (l *LAN) log(auth auth.OpAuth, operation string, OID schema.OID, field, description, before, after string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()

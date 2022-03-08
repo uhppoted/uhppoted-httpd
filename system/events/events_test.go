@@ -10,7 +10,7 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -33,19 +33,19 @@ func TestEventAsObjects(t *testing.T) {
 		CardName:   "Eine Kardt",
 	}
 
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.6.3", Value: types.StatusOk},
-		catalog.Object{OID: "0.6.3.2", Value: uint32(405419896)},
-		catalog.Object{OID: "0.6.3.1", Value: timestamp},
-		catalog.Object{OID: "0.6.3.4", Value: eventType(6)},
-		catalog.Object{OID: "0.6.3.5", Value: uint8(3)},
-		catalog.Object{OID: "0.6.3.6", Value: direction(1)},
-		catalog.Object{OID: "0.6.3.7", Value: uint32(8165537)},
-		catalog.Object{OID: "0.6.3.9", Value: reason(0x55)},
-		catalog.Object{OID: "0.6.3.8", Value: true},
-		catalog.Object{OID: "0.6.3.10", Value: "Le Controlleur"},
-		catalog.Object{OID: "0.6.3.11", Value: "Ze Door"},
-		catalog.Object{OID: "0.6.3.12", Value: "Eine Kardt"},
+	expected := []schema.Object{
+		schema.Object{OID: "0.6.3", Value: types.StatusOk},
+		schema.Object{OID: "0.6.3.2", Value: uint32(405419896)},
+		schema.Object{OID: "0.6.3.1", Value: timestamp},
+		schema.Object{OID: "0.6.3.4", Value: eventType(6)},
+		schema.Object{OID: "0.6.3.5", Value: uint8(3)},
+		schema.Object{OID: "0.6.3.6", Value: direction(1)},
+		schema.Object{OID: "0.6.3.7", Value: uint32(8165537)},
+		schema.Object{OID: "0.6.3.9", Value: reason(0x55)},
+		schema.Object{OID: "0.6.3.8", Value: true},
+		schema.Object{OID: "0.6.3.10", Value: "Le Controlleur"},
+		schema.Object{OID: "0.6.3.11", Value: "Ze Door"},
+		schema.Object{OID: "0.6.3.12", Value: "Eine Kardt"},
 	}
 
 	objects := e.AsObjects(nil)
@@ -74,19 +74,19 @@ func TestEventAsObjectsWithAuth(t *testing.T) {
 		CardName:   "Eine Kardt",
 	}
 
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.6.3", Value: types.StatusOk},
-		//		catalog.Object{OID: "0.6.3.2", Value: uint32(405419896)},
-		catalog.Object{OID: "0.6.3.1", Value: timestamp},
-		catalog.Object{OID: "0.6.3.4", Value: eventType(6)},
-		catalog.Object{OID: "0.6.3.5", Value: uint8(3)},
-		catalog.Object{OID: "0.6.3.6", Value: direction(1)},
-		catalog.Object{OID: "0.6.3.7", Value: uint32(8165537)},
-		catalog.Object{OID: "0.6.3.9", Value: reason(0x55)},
-		catalog.Object{OID: "0.6.3.8", Value: true},
-		catalog.Object{OID: "0.6.3.10", Value: "Le Controlleur"},
-		catalog.Object{OID: "0.6.3.11", Value: "Ze Door"},
-		catalog.Object{OID: "0.6.3.12", Value: "Eine Kardt"},
+	expected := []schema.Object{
+		schema.Object{OID: "0.6.3", Value: types.StatusOk},
+		//		schema.Object{OID: "0.6.3.2", Value: uint32(405419896)},
+		schema.Object{OID: "0.6.3.1", Value: timestamp},
+		schema.Object{OID: "0.6.3.4", Value: eventType(6)},
+		schema.Object{OID: "0.6.3.5", Value: uint8(3)},
+		schema.Object{OID: "0.6.3.6", Value: direction(1)},
+		schema.Object{OID: "0.6.3.7", Value: uint32(8165537)},
+		schema.Object{OID: "0.6.3.9", Value: reason(0x55)},
+		schema.Object{OID: "0.6.3.8", Value: true},
+		schema.Object{OID: "0.6.3.10", Value: "Le Controlleur"},
+		schema.Object{OID: "0.6.3.11", Value: "Ze Door"},
+		schema.Object{OID: "0.6.3.12", Value: "Eine Kardt"},
 	}
 
 	auth := stub{

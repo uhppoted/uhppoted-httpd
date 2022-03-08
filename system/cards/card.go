@@ -13,24 +13,25 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Card struct {
-	OID    catalog.OID
+	OID    schema.OID
 	Name   string
 	Card   *types.Card
 	From   core.Date
 	To     core.Date
-	Groups map[catalog.OID]bool
+	Groups map[schema.OID]bool
 
 	created types.Timestamp
 	deleted types.Timestamp
 }
 
 type kv = struct {
-	field catalog.Suffix
+	field schema.Suffix
 	value interface{}
 }
 
@@ -75,7 +76,7 @@ func (c Card) IsDeleted() bool {
 	return !c.deleted.IsZero()
 }
 
-func (c *Card) AsObjects(auth auth.OpAuth) []catalog.Object {
+func (c *Card) AsObjects(auth auth.OpAuth) []schema.Object {
 	list := []kv{}
 
 	if c.IsDeleted() {
@@ -149,9 +150,9 @@ func (c *Card) AsRuleEntity() (string, interface{}) {
 	return "card", &entity
 }
 
-func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if c == nil {
-		return []catalog.Object{}, nil
+		return []schema.Object{}, nil
 	}
 
 	if c.IsDeleted() {
@@ -278,17 +279,17 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 			list = append(list, kv{CardTo, c.To})
 		}
 
-	case catalog.OID(c.OID.Append(CardGroups)).Contains(oid):
+	case schema.OID(c.OID.Append(CardGroups)).Contains(oid):
 		if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
 			gid := m[1]
-			k := catalog.GroupsOID.AppendS(gid)
+			k := schema.GroupsOID.AppendS(gid)
 
 			if err := f("group", value); err != nil {
 				return nil, err
-			} else if !catalog.HasGroup(catalog.OID(k)) {
+			} else if !catalog.HasGroup(schema.OID(k)) {
 				return nil, fmt.Errorf("invalid group OID (%v)", k)
 			} else {
-				group := catalog.GetV(catalog.OID(k), GroupName)
+				group := catalog.GetV(schema.OID(k), GroupName)
 
 				if value == "true" {
 					c.log(a,
@@ -363,7 +364,7 @@ func (c *Card) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]
 	return c.toObjects(list, a), nil
 }
 
-func (c *Card) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+func (c *Card) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	f := func(c *Card, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(c, field, value, auth.Cards); err != nil {
@@ -374,16 +375,16 @@ func (c *Card) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 		return true
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if !c.IsDeleted() && f(c, "OID", c.OID) {
-		objects = append(objects, catalog.NewObject(c.OID, ""))
+		objects = append(objects, schema.NewObject(c.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(c, field, v.value) {
-			objects = append(objects, catalog.NewObject2(c.OID, v.field, v.value))
+			objects = append(objects, schema.NewObject2(c.OID, v.field, v.value))
 		}
 	}
 
@@ -400,19 +401,19 @@ func (c *Card) status() types.Status {
 
 func (c Card) serialize() ([]byte, error) {
 	record := struct {
-		OID     catalog.OID     `json:"OID"`
+		OID     schema.OID      `json:"OID"`
 		Name    string          `json:"name,omitempty"`
 		Card    uint32          `json:"card,omitempty"`
 		From    core.Date       `json:"from,omitempty"`
 		To      core.Date       `json:"to,omitempty"`
-		Groups  []catalog.OID   `json:"groups"`
+		Groups  []schema.OID    `json:"groups"`
 		Created types.Timestamp `json:"created"`
 	}{
 		OID:     c.OID,
 		Name:    strings.TrimSpace(c.Name),
 		From:    c.From,
 		To:      c.To,
-		Groups:  []catalog.OID{},
+		Groups:  []schema.OID{},
 		Created: c.created,
 	}
 
@@ -435,15 +436,15 @@ func (c *Card) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     catalog.OID     `json:"OID"`
+		OID     schema.OID      `json:"OID"`
 		Name    string          `json:"name,omitempty"`
 		Card    uint32          `json:"card,omitempty"`
 		From    core.Date       `json:"from,omitempty"`
 		To      core.Date       `json:"to,omitempty"`
-		Groups  []catalog.OID   `json:"groups"`
+		Groups  []schema.OID    `json:"groups"`
 		Created types.Timestamp `json:"created"`
 	}{
-		Groups:  []catalog.OID{},
+		Groups:  []schema.OID{},
 		Created: created,
 	}
 
@@ -455,7 +456,7 @@ func (c *Card) deserialize(bytes []byte) error {
 	c.Name = strings.TrimSpace(record.Name)
 	c.From = record.From
 	c.To = record.To
-	c.Groups = map[catalog.OID]bool{}
+	c.Groups = map[schema.OID]bool{}
 	c.created = record.Created
 
 	if record.Card != 0 {
@@ -471,7 +472,7 @@ func (c *Card) deserialize(bytes []byte) error {
 
 func (c *Card) clone() *Card {
 	card := c.Card.Copy()
-	var groups = map[catalog.OID]bool{}
+	var groups = map[schema.OID]bool{}
 
 	for gid, g := range c.Groups {
 		groups[gid] = g
@@ -492,7 +493,7 @@ func (c *Card) clone() *Card {
 	return replicant
 }
 
-func (c *Card) log(auth auth.OpAuth, operation string, oid catalog.OID, field, description, before, after string, dbc db.DBC) {
+func (c *Card) log(auth auth.OpAuth, operation string, oid schema.OID, field, description, before, after string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()

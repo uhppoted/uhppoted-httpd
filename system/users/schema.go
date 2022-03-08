@@ -1,19 +1,19 @@
 package users
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-const UserStatus = catalog.Status
-const UserCreated = catalog.Created
-const UserDeleted = catalog.Deleted
-const UserModified = catalog.Modified
-const UserName = catalog.UserName
-const UserUID = catalog.UserUID
-const UserRole = catalog.UserRole
-const UserPassword = catalog.UserPassword
+const UserStatus = schema.Status
+const UserCreated = schema.Created
+const UserDeleted = schema.Deleted
+const UserModified = schema.Modified
+const UserName = schema.UserName
+const UserUID = schema.UserUID
+const UserRole = schema.UserRole
+const UserPassword = schema.UserPassword
 
-var lookup = map[catalog.Suffix]string{
+var lookup = map[schema.Suffix]string{
 	UserStatus:   "user.status",
 	UserCreated:  "user.created",
 	UserDeleted:  "user.deleted",

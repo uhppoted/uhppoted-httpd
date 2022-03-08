@@ -10,21 +10,22 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Group struct {
-	OID   catalog.OID          `json:"OID"`
-	Name  string               `json:"name"`
-	Doors map[catalog.OID]bool `json:"doors"`
+	OID   schema.OID          `json:"OID"`
+	Name  string              `json:"name"`
+	Doors map[schema.OID]bool `json:"doors"`
 
 	created types.Timestamp
 	deleted types.Timestamp
 }
 
 type kv = struct {
-	field catalog.Suffix
+	field schema.Suffix
 	value interface{}
 }
 
@@ -48,7 +49,7 @@ func (g Group) IsDeleted() bool {
 	return !g.deleted.IsZero()
 }
 
-func (g *Group) AsObjects(auth auth.OpAuth) []catalog.Object {
+func (g *Group) AsObjects(auth auth.OpAuth) []schema.Object {
 	list := []kv{}
 
 	if g.IsDeleted() {
@@ -114,9 +115,9 @@ func (g *Group) status() types.Status {
 	return types.StatusOk
 }
 
-func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if g == nil {
-		return []catalog.Object{}, nil
+		return []schema.Object{}, nil
 	}
 
 	if g.IsDeleted() {
@@ -143,10 +144,10 @@ func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([
 			list = append(list, kv{GroupName, g.Name})
 		}
 
-	case catalog.OID(g.OID.Append(GroupDoors)).Contains(oid):
+	case schema.OID(g.OID.Append(GroupDoors)).Contains(oid):
 		if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
 			did := m[1]
-			k := catalog.DoorsOID.AppendS(did)
+			k := schema.DoorsOID.AppendS(did)
 			door := catalog.GetV(k, DoorName)
 
 			if err := f(door.(string), value); err != nil {
@@ -183,7 +184,7 @@ func (g *Group) set(a auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([
 	return g.toObjects(list, a), nil
 }
 
-func (g *Group) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
+func (g *Group) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	f := func(g *Group, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(g, field, value, auth.Groups); err != nil {
@@ -194,16 +195,16 @@ func (g *Group) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 		return true
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if !g.IsDeleted() && f(g, "OID", g.OID) {
-		objects = append(objects, catalog.NewObject(g.OID, ""))
+		objects = append(objects, schema.NewObject(g.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(g, field, v.value) {
-			objects = append(objects, catalog.NewObject2(g.OID, v.field, v.value))
+			objects = append(objects, schema.NewObject2(g.OID, v.field, v.value))
 		}
 	}
 
@@ -212,14 +213,14 @@ func (g *Group) toObjects(list []kv, a auth.OpAuth) []catalog.Object {
 
 func (g Group) serialize() ([]byte, error) {
 	record := struct {
-		OID     catalog.OID     `json:"OID"`
+		OID     schema.OID      `json:"OID"`
 		Name    string          `json:"name,omitempty"`
-		Doors   []catalog.OID   `json:"doors"`
+		Doors   []schema.OID    `json:"doors"`
 		Created types.Timestamp `json:"created"`
 	}{
 		OID:     g.OID,
 		Name:    g.Name,
-		Doors:   []catalog.OID{},
+		Doors:   []schema.OID{},
 		Created: g.created,
 	}
 
@@ -240,7 +241,7 @@ func (g *Group) deserialize(bytes []byte) error {
 	record := struct {
 		OID     string          `json:"OID"`
 		Name    string          `json:"name,omitempty"`
-		Doors   []catalog.OID   `json:"doors"`
+		Doors   []schema.OID    `json:"doors"`
 		Created types.Timestamp `json:"created,omitempty"`
 	}{
 		Created: created,
@@ -250,13 +251,13 @@ func (g *Group) deserialize(bytes []byte) error {
 		return err
 	}
 
-	g.OID = catalog.OID(record.OID)
+	g.OID = schema.OID(record.OID)
 	g.Name = record.Name
-	g.Doors = map[catalog.OID]bool{}
+	g.Doors = map[schema.OID]bool{}
 	g.created = record.Created
 
 	for _, d := range record.Doors {
-		g.Doors[catalog.OID(d)] = true
+		g.Doors[schema.OID(d)] = true
 	}
 
 	return nil
@@ -266,7 +267,7 @@ func (g Group) clone() Group {
 	group := Group{
 		OID:     g.OID,
 		Name:    g.Name,
-		Doors:   map[catalog.OID]bool{},
+		Doors:   map[schema.OID]bool{},
 		created: g.created,
 		deleted: g.deleted,
 	}
@@ -278,7 +279,7 @@ func (g Group) clone() Group {
 	return group
 }
 
-func (g *Group) log(auth auth.OpAuth, operation string, OID catalog.OID, field string, description string, dbc db.DBC) {
+func (g *Group) log(auth auth.OpAuth, operation string, OID schema.OID, field string, description string, dbc db.DBC) {
 	uid := ""
 	if auth != nil {
 		uid = auth.UID()

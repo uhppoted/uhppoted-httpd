@@ -1,46 +1,46 @@
 package controllers
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-const LANStatus = catalog.Status
-const LANType = catalog.Type
-const LANName = catalog.InterfaceName
-const LANBindAddress = catalog.LANBindAddress
-const LANBroadcastAddress = catalog.LANBroadcastAddress
-const LANListenAddress = catalog.LANListenAddress
-const DoorDelay = catalog.DoorDelay
-const DoorDelayModified = catalog.DoorDelayModified
-const DoorControl = catalog.DoorControl
-const DoorControlModified = catalog.DoorControlModified
+const LANStatus = schema.Status
+const LANType = schema.Type
+const LANName = schema.InterfaceName
+const LANBindAddress = schema.LANBindAddress
+const LANBroadcastAddress = schema.LANBroadcastAddress
+const LANListenAddress = schema.LANListenAddress
+const DoorDelay = schema.DoorDelay
+const DoorDelayModified = schema.DoorDelayModified
+const DoorControl = schema.DoorControl
+const DoorControlModified = schema.DoorControlModified
 
-const ControllerStatus = catalog.Status
-const ControllerCreated = catalog.Created
-const ControllerDeleted = catalog.Deleted
-const ControllerTouched = catalog.Touched
-const ControllerName = catalog.ControllerName
-const ControllerDeviceID = catalog.ControllerDeviceID
-const ControllerEndpointStatus = catalog.ControllerEndpointStatus
-const ControllerEndpointAddress = catalog.ControllerEndpointAddress
-const ControllerEndpointConfigured = catalog.ControllerEndpointConfigured
-const ControllerDateTime = catalog.ControllerDateTime
-const ControllerDateTimeStatus = catalog.ControllerDateTimeStatus
-const ControllerDateTimeCurrent = catalog.ControllerDateTimeCurrent
-const ControllerDateTimeSystem = catalog.ControllerDateTimeSystem
-const ControllerDateTimeModified = catalog.ControllerDateTimeModified
-const ControllerCardsStatus = catalog.ControllerCardsStatus
-const ControllerCardsCount = catalog.ControllerCardsCount
-const ControllerEventsFirst = catalog.ControllerEventsFirst
-const ControllerEventsLast = catalog.ControllerEventsLast
-const ControllerEventsCurrent = catalog.ControllerEventsCurrent
-const ControllerEventsStatus = catalog.ControllerEventsStatus
-const ControllerDoor1 = catalog.ControllerDoor1
-const ControllerDoor2 = catalog.ControllerDoor2
-const ControllerDoor3 = catalog.ControllerDoor3
-const ControllerDoor4 = catalog.ControllerDoor4
+const ControllerStatus = schema.Status
+const ControllerCreated = schema.Created
+const ControllerDeleted = schema.Deleted
+const ControllerTouched = schema.Touched
+const ControllerName = schema.ControllerName
+const ControllerDeviceID = schema.ControllerDeviceID
+const ControllerEndpointStatus = schema.ControllerEndpointStatus
+const ControllerEndpointAddress = schema.ControllerEndpointAddress
+const ControllerEndpointConfigured = schema.ControllerEndpointConfigured
+const ControllerDateTime = schema.ControllerDateTime
+const ControllerDateTimeStatus = schema.ControllerDateTimeStatus
+const ControllerDateTimeCurrent = schema.ControllerDateTimeCurrent
+const ControllerDateTimeSystem = schema.ControllerDateTimeSystem
+const ControllerDateTimeModified = schema.ControllerDateTimeModified
+const ControllerCardsStatus = schema.ControllerCardsStatus
+const ControllerCardsCount = schema.ControllerCardsCount
+const ControllerEventsFirst = schema.ControllerEventsFirst
+const ControllerEventsLast = schema.ControllerEventsLast
+const ControllerEventsCurrent = schema.ControllerEventsCurrent
+const ControllerEventsStatus = schema.ControllerEventsStatus
+const ControllerDoor1 = schema.ControllerDoor1
+const ControllerDoor2 = schema.ControllerDoor2
+const ControllerDoor3 = schema.ControllerDoor3
+const ControllerDoor4 = schema.ControllerDoor4
 
-var lookup = map[catalog.Suffix]string{
+var lookup = map[schema.Suffix]string{
 	ControllerStatus:             "controller.status",
 	ControllerCreated:            "controller.created",
 	ControllerDeleted:            "controller.deleted",

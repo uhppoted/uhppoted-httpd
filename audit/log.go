@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-lib/eventlog"
 )
 
@@ -34,7 +34,7 @@ type Details struct {
 type AuditRecord struct {
 	Timestamp time.Time
 	UID       string
-	OID       catalog.OID
+	OID       schema.OID
 	Component string
 	Operation string
 	Details   Details

@@ -9,37 +9,38 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Cards struct {
-	cards map[catalog.OID]*Card
+	cards map[schema.OID]*Card
 }
 
 var guard sync.RWMutex
 
 func NewCards() Cards {
 	return Cards{
-		cards: map[catalog.OID]*Card{},
+		cards: map[schema.OID]*Card{},
 	}
 }
 
-func (cc *Cards) AsObjects(auth auth.OpAuth) []catalog.Object {
+func (cc *Cards) AsObjects(auth auth.OpAuth) []schema.Object {
 	guard.RLock()
 	defer guard.RUnlock()
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 	for _, card := range cc.cards {
 		if card.IsValid() || card.IsDeleted() {
-			objects = catalog.Join(objects, card.AsObjects(auth)...)
+			objects = schema.Join(objects, card.AsObjects(auth)...)
 		}
 	}
 
 	return objects
 }
 
-func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if cc == nil {
 		return nil, nil
 	}
@@ -55,7 +56,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 		}
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if oid == "<new>" {
 		if c, err := cc.add(auth, Card{}); err != nil {
@@ -73,8 +74,8 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 				dbc)
 
 			cc.cards[c.OID] = c
-			objects = append(objects, catalog.NewObject(c.OID, "new"))
-			objects = append(objects, catalog.NewObject2(c.OID, CardCreated, c.created))
+			objects = append(objects, schema.NewObject(c.OID, "new"))
+			objects = append(objects, schema.NewObject2(c.OID, CardCreated, c.created))
 		}
 	}
 
@@ -112,8 +113,8 @@ func (cc *Cards) Load(blob json.RawMessage) error {
 
 	for _, v := range cc.cards {
 		catalog.PutCard(v.OID)
-		catalog.PutV(v.OID, catalog.CardNumber, v.Card)
-		catalog.PutV(v.OID, catalog.CardName, v.Name)
+		catalog.PutV(v.OID, CardNumber, v.Card)
+		catalog.PutV(v.OID, CardName, v.Name)
 	}
 
 	return nil
@@ -145,7 +146,7 @@ func (cc *Cards) Clone() Cards {
 	defer guard.RUnlock()
 
 	shadow := Cards{
-		cards: map[catalog.OID]*Card{},
+		cards: map[schema.OID]*Card{},
 	}
 
 	for cid, v := range cc.cards {

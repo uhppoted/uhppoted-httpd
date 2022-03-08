@@ -5,17 +5,18 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
 type DBC interface {
-	Stash([]catalog.Object)
-	Objects() []catalog.Object
+	Stash([]schema.Object)
+	Objects() []schema.Object
 	Commit()
 	Write(audit.AuditRecord)
 }
 
 type dbc struct {
-	objects []catalog.Object
+	objects []schema.Object
 	trail   audit.AuditTrail
 	logs    []audit.AuditRecord
 	guard   sync.Mutex
@@ -23,13 +24,13 @@ type dbc struct {
 
 func NewDBC(trail audit.AuditTrail) DBC {
 	return &dbc{
-		objects: []catalog.Object{},
+		objects: []schema.Object{},
 		trail:   trail,
 		logs:    []audit.AuditRecord{},
 	}
 }
 
-func (d *dbc) Stash(list []catalog.Object) {
+func (d *dbc) Stash(list []schema.Object) {
 	d.guard.Lock()
 	defer d.guard.Unlock()
 
@@ -38,7 +39,7 @@ func (d *dbc) Stash(list []catalog.Object) {
 	}
 }
 
-func (d *dbc) Objects() []catalog.Object {
+func (d *dbc) Objects() []schema.Object {
 	return d.objects
 }
 

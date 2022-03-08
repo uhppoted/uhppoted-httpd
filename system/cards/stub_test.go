@@ -10,7 +10,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -68,7 +68,7 @@ func date(s string) core.Date {
 
 func makeCards(list ...Card) *Cards {
 	p := Cards{
-		cards: map[catalog.OID]*Card{},
+		cards: map[schema.OID]*Card{},
 	}
 
 	for _, c := range list {
@@ -85,7 +85,7 @@ func group(id string) types.Group {
 	}
 }
 
-func makeCard(oid catalog.OID, name string, card uint32, groups ...string) Card {
+func makeCard(oid schema.OID, name string, card uint32, groups ...string) Card {
 	var c *types.Card
 
 	if card > 0 {
@@ -99,11 +99,11 @@ func makeCard(oid catalog.OID, name string, card uint32, groups ...string) Card 
 		Card:   c,
 		From:   date("2021-01-02"),
 		To:     date("2021-12-30"),
-		Groups: map[catalog.OID]bool{},
+		Groups: map[schema.OID]bool{},
 	}
 
 	for _, g := range groups {
-		cardholder.Groups[catalog.OID(g)] = true
+		cardholder.Groups[schema.OID(g)] = true
 	}
 
 	return cardholder

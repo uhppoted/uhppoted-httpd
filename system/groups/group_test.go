@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -19,7 +19,7 @@ func TestGroupDeserialize(t *testing.T) {
 	expected := Group{
 		OID:  "0.5.3",
 		Name: "Le Groupe",
-		Doors: map[catalog.OID]bool{
+		Doors: map[schema.OID]bool{
 			"0.3.3": true,
 			"0.3.7": true,
 		},
@@ -44,7 +44,7 @@ func TestGroupDeserializeWithDefaultCreated(t *testing.T) {
 	expected := Group{
 		OID:  "0.5.3",
 		Name: "Le Groupe",
-		Doors: map[catalog.OID]bool{
+		Doors: map[schema.OID]bool{
 			"0.3.3": true,
 			"0.3.7": true,
 		},
@@ -69,14 +69,14 @@ func TestGroupAsObjects(t *testing.T) {
 	g := Group{
 		OID:  "0.5.3",
 		Name: "Le Groupe",
-		Doors: map[catalog.OID]bool{
+		Doors: map[schema.OID]bool{
 			"0.3.3": true,
 			"0.3.7": true,
 		},
 		created: created,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.5.3", Value: ""},
 		{OID: "0.5.3.0.0", Value: types.StatusOk},
 		{OID: "0.5.3.0.1", Value: created},
@@ -98,7 +98,7 @@ func TestGroupAsObjectsWithDeleted(t *testing.T) {
 	g := Group{
 		OID:  "0.5.3",
 		Name: "Le Groupe",
-		Doors: map[catalog.OID]bool{
+		Doors: map[schema.OID]bool{
 			"0.3.3": true,
 			"0.3.7": true,
 		},
@@ -106,7 +106,7 @@ func TestGroupAsObjectsWithDeleted(t *testing.T) {
 		deleted: deleted,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.5.3.0.2", Value: deleted},
 	}
 
@@ -123,14 +123,14 @@ func TestGroupAsObjectsWithAuth(t *testing.T) {
 	g := Group{
 		OID:  "0.5.3",
 		Name: "Le Groupe",
-		Doors: map[catalog.OID]bool{
+		Doors: map[schema.OID]bool{
 			"0.3.3": true,
 			"0.3.7": true,
 		},
 		created: created,
 	}
 
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.5.3", Value: ""},
 		{OID: "0.5.3.0.0", Value: types.StatusOk},
 		{OID: "0.5.3.0.1", Value: created},
@@ -156,7 +156,7 @@ func TestGroupAsObjectsWithAuth(t *testing.T) {
 }
 
 func TestGroupSet(t *testing.T) {
-	expected := []catalog.Object{
+	expected := []schema.Object{
 		{OID: "0.5.3", Value: ""},
 		{OID: "0.5.3.1", Value: "Ze Gruppe"},
 		{OID: "0.5.3.0.0", Value: types.StatusOk},
@@ -165,7 +165,7 @@ func TestGroupSet(t *testing.T) {
 	g := Group{
 		OID:  "0.5.3",
 		Name: "Le Groupe",
-		Doors: map[catalog.OID]bool{
+		Doors: map[schema.OID]bool{
 			"0.3.3": true,
 			"0.3.7": true,
 		},
@@ -189,7 +189,7 @@ func TestGroupSetWithDeleted(t *testing.T) {
 	g := Group{
 		OID:  "0.5.3",
 		Name: "Le Groupe",
-		Doors: map[catalog.OID]bool{
+		Doors: map[schema.OID]bool{
 			"0.3.3": true,
 			"0.3.7": true,
 		},
@@ -197,8 +197,8 @@ func TestGroupSetWithDeleted(t *testing.T) {
 		deleted: types.TimestampNow(),
 	}
 
-	expected := []catalog.Object{
-		catalog.Object{OID: "0.5.3.0.2", Value: g.deleted},
+	expected := []schema.Object{
+		schema.Object{OID: "0.5.3.0.2", Value: g.deleted},
 	}
 
 	objects, err := g.set(nil, "0.5.3.1", "Ze Gruppe", nil)

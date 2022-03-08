@@ -1,4 +1,4 @@
-package catalog
+package schema
 
 type Schema struct {
 	Interfaces  Interfaces  `json:"interfaces"`

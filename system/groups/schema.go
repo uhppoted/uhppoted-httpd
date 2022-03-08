@@ -1,19 +1,19 @@
 package groups
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-const GroupStatus = catalog.Status
-const GroupCreated = catalog.Created
-const GroupDeleted = catalog.Deleted
-const GroupModified = catalog.Modified
-const GroupName = catalog.GroupName
-const GroupDoors = catalog.GroupDoors
+const GroupStatus = schema.Status
+const GroupCreated = schema.Created
+const GroupDeleted = schema.Deleted
+const GroupModified = schema.Modified
+const GroupName = schema.GroupName
+const GroupDoors = schema.GroupDoors
 
-const DoorName = catalog.DoorName
+const DoorName = schema.DoorName
 
-var lookup = map[catalog.Suffix]string{
+var lookup = map[schema.Suffix]string{
 	GroupStatus:   "group.status",
 	GroupCreated:  "group.created",
 	GroupDeleted:  "group.deleted",

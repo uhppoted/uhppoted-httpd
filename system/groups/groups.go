@@ -9,38 +9,39 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Groups struct {
-	groups map[catalog.OID]Group
+	groups map[schema.OID]Group
 }
 
 var guard sync.RWMutex
 
 func NewGroups() Groups {
 	return Groups{
-		groups: map[catalog.OID]Group{},
+		groups: map[schema.OID]Group{},
 	}
 }
 
-func (gg *Groups) AsObjects(auth auth.OpAuth) []catalog.Object {
+func (gg *Groups) AsObjects(auth auth.OpAuth) []schema.Object {
 	guard.RLock()
 	defer guard.RUnlock()
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	for _, g := range gg.groups {
 		if g.IsValid() || g.IsDeleted() {
-			objects = catalog.Join(objects, g.AsObjects(auth)...)
+			objects = schema.Join(objects, g.AsObjects(auth)...)
 		}
 	}
 
 	return objects
 }
 
-func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if gg == nil {
 		return nil, nil
 	}
@@ -56,7 +57,7 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, d
 		}
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if oid == "<new>" {
 		if g, err := gg.add(auth, Group{}); err != nil {
@@ -67,8 +68,8 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, d
 			g.log(auth, "add", g.OID, "group", "Added 'new' group", dbc)
 
 			gg.groups[g.OID] = *g
-			objects = append(objects, catalog.NewObject(g.OID, "new"))
-			objects = append(objects, catalog.NewObject2(g.OID, GroupCreated, g.created))
+			objects = append(objects, schema.NewObject(g.OID, "new"))
+			objects = append(objects, schema.NewObject2(g.OID, GroupCreated, g.created))
 		}
 	}
 
@@ -123,7 +124,7 @@ func (gg Groups) Save() (json.RawMessage, error) {
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
-func (gg *Groups) Group(oid catalog.OID) (Group, bool) {
+func (gg *Groups) Group(oid schema.OID) (Group, bool) {
 	g, ok := gg.groups[oid]
 
 	return g, ok
@@ -149,7 +150,7 @@ func (gg *Groups) Clone() Groups {
 	defer guard.RUnlock()
 
 	shadow := Groups{
-		groups: map[catalog.OID]Group{},
+		groups: map[schema.OID]Group{},
 	}
 
 	for k, v := range gg.groups {

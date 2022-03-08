@@ -19,7 +19,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/system/events"
@@ -187,8 +187,8 @@ func (t trail) Write(records ...audit.AuditRecord) {
 }
 
 type object struct {
-	OID   catalog.OID `json:"OID"`
-	Value string      `json:"value"`
+	OID   schema.OID `json:"OID"`
+	Value string     `json:"value"`
 }
 
 type serializable interface {
@@ -415,16 +415,16 @@ func save(file string, tag string, v serializable) error {
 // Returns a deduplicated list of objects, retaining only the the last (i.e. latest) value.
 // NOTE: this implementation is horribly inefficient but the list is expected to almost always
 //       be tiny since it is the result of a manual edit.
-func squoosh(objects []catalog.Object) []catalog.Object {
-	keys := map[catalog.OID]struct{}{}
-	list := []catalog.Object{}
+func squoosh(objects []schema.Object) []schema.Object {
+	keys := map[schema.OID]struct{}{}
+	list := []schema.Object{}
 
 	for i := len(objects); i > 0; i-- {
 		object := objects[i-1]
 		oid := object.OID
 		if _, ok := keys[oid]; !ok {
 			keys[oid] = struct{}{}
-			list = append([]catalog.Object{object}, list...)
+			list = append([]schema.Object{object}, list...)
 		}
 	}
 

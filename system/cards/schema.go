@@ -1,21 +1,21 @@
 package cards
 
 import (
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-const CardStatus = catalog.Status
-const CardCreated = catalog.Created
-const CardDeleted = catalog.Deleted
-const CardModified = catalog.Modified
-const CardName = catalog.CardName
-const CardNumber = catalog.CardNumber
-const CardFrom = catalog.CardFrom
-const CardTo = catalog.CardTo
-const CardGroups = catalog.CardGroups
-const GroupName = catalog.GroupName
+const CardStatus = schema.Status
+const CardCreated = schema.Created
+const CardDeleted = schema.Deleted
+const CardModified = schema.Modified
+const CardName = schema.CardName
+const CardNumber = schema.CardNumber
+const CardFrom = schema.CardFrom
+const CardTo = schema.CardTo
+const CardGroups = schema.CardGroups
+const GroupName = schema.GroupName
 
-var lookup = map[catalog.Suffix]string{
+var lookup = map[schema.Suffix]string{
 	CardStatus:   "card.status",
 	CardCreated:  "card.created",
 	CardDeleted:  "card.deleted",

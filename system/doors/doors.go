@@ -11,38 +11,39 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Doors struct {
-	doors map[catalog.OID]Door
+	doors map[schema.OID]Door
 
 	file string
 }
 
-type object catalog.Object
+type object schema.Object
 
 var guard sync.RWMutex
 
 func NewDoors() Doors {
 	return Doors{
-		doors: map[catalog.OID]Door{},
+		doors: map[schema.OID]Door{},
 	}
 }
 
-func (dd *Doors) Door(oid catalog.OID) (Door, bool) {
+func (dd *Doors) Door(oid schema.OID) (Door, bool) {
 	d, ok := dd.doors[oid]
 
 	return d, ok
 }
 
-func (dd *Doors) AsObjects(auth auth.OpAuth) []catalog.Object {
-	objects := []catalog.Object{}
+func (dd *Doors) AsObjects(auth auth.OpAuth) []schema.Object {
+	objects := []schema.Object{}
 
 	for _, d := range dd.doors {
 		if d.IsValid() || d.IsDeleted() {
-			objects = catalog.Join(objects, d.AsObjects(auth)...)
+			objects = schema.Join(objects, d.AsObjects(auth)...)
 		}
 	}
 
@@ -144,7 +145,7 @@ func (dd Doors) Print() {
 	}
 }
 
-func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, dbc db.DBC) ([]catalog.Object, error) {
+func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if dd == nil {
 		return nil, nil
 	}
@@ -160,7 +161,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 		}
 	}
 
-	objects := []catalog.Object{}
+	objects := []schema.Object{}
 
 	if oid == "<new>" {
 		if d, err := dd.add(auth, Door{}); err != nil {
@@ -170,8 +171,8 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid catalog.OID, value string, db
 		} else {
 			d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added 'new' door"), dbc)
 			dd.doors[d.OID] = *d
-			objects = append(objects, catalog.NewObject(d.OID, "new"))
-			objects = append(objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
+			objects = append(objects, schema.NewObject(d.OID, "new"))
+			objects = append(objects, schema.NewObject2(d.OID, DoorCreated, d.created))
 		}
 	}
 
@@ -199,7 +200,7 @@ func (dd *Doors) Clone() Doors {
 	defer guard.RUnlock()
 
 	shadow := Doors{
-		doors: map[catalog.OID]Door{},
+		doors: map[schema.OID]Door{},
 		file:  dd.file,
 	}
 
