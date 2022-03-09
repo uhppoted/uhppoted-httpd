@@ -16,27 +16,11 @@
 
 - [ ] Verify bootstrap from scratch
       - [x] _invalid 'to' date (2022-05-31)_
-      - [ ] Weirdness (delay ??) around setting up a new controller with address 127.0.0.1
+      - [ ] Weirdness/delay around setting up a new controller with address 127.0.0.1 on clean/Linux system
       - [ ] Refresh overwrites in-progress card edits
       - [ ] Empty events layout is all squashed to the left
       - [ ] Log layout on Firefox is illogical
-      - [ ] Handle `panic` on permissions for logs.json 
-```
-goroutine 20 [running]:
-log.Panicf({0x17696db, 0xc0001a6c60}, {0xc0006b68b0, 0x9502f900, 0x46c7cfe00})
-  log/log.go:361 +0x67
-github.com/uhppoted/uhppoted-httpd/commands.(*Run).run(_, {{0xc0001a6c30, 0xc0001a6c60, 0xc0001a6c90, 0x9502f900, 0x46c7cfe00, 0xf224d4a00, 0x3c4d9a5e00, 0x165a0bc00}, 0xc0001a7170, ...}, ...)
-  github.com/uhppoted/uhppoted-httpd/commands/run.go:150 +0x7e5
-github.com/uhppoted/uhppoted-httpd/commands.(*Run).exec(_, {{0xc0001a6c30, 0xc0001a6c60, 0xc0001a6c90, 0x9502f900, 0x46c7cfe00, 0xf224d4a00, 0x3c4d9a5e00, 0x165a0bc00}, 0xc0001a7170, ...})
-  github.com/uhppoted/uhppoted-httpd/commands/run_darwin.go:60 +0x2b7
-github.com/uhppoted/uhppoted-httpd/commands.(*Run).Execute.func1({{0xc0001a6c30, 0xc0001a6c60, 0xc0001a6c90, 0x9502f900, 0x46c7cfe00, 0xf224d4a00, 0x3c4d9a5e00, 0x165a0bc00}, 0xc0001a7170, {0x1, ...}, ...})
-  github.com/uhppoted/uhppoted-httpd/commands/run_darwin.go:27 +0x45
-github.com/uhppoted/uhppoted-httpd/commands.(*Run).execute.func1()
-  github.com/uhppoted/uhppoted-httpd/commands/run.go:96 +0xd2
-created by github.com/uhppoted/uhppoted-httpd/commands.(*Run).execute
-  github.com/uhppoted/uhppoted-httpd/commands/run.go:94 +0x431
-make: *** [run] Error 2
-```
+      - [x] Handle `panic` on permissions for logs.json 
 
 - [ ] daemonize
       - [ ] Check log rotation

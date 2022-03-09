@@ -93,6 +93,13 @@ func (cmd *Run) execute(f func(c config.Config)) error {
 
 	go func() {
 		defer os.Remove(lockfile) // (because otherwise a panic inside httpd.Run doesn't remove up the lockfile)
+		defer func() {
+			if err := recover(); err != nil {
+				log.Printf("%-5s %v\n", "FATAL", err)
+				os.Exit(-1)
+			}
+		}()
+
 		f(*conf)
 		wg.Done()
 	}()
@@ -147,7 +154,7 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 	}
 
 	if err := system.Init(conf, cmd.configuration, cmd.debug); err != nil {
-		log.Panicf("%5s Could not load system configuration (%v)", "FATAL", err)
+		panic(fmt.Errorf("Could not load system configuration (%v)", err))
 	}
 
 	h.Run(interrupt)
