@@ -378,13 +378,13 @@ func (c *Card) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	objects := []schema.Object{}
 
 	if !c.IsDeleted() && f(c, "OID", c.OID) {
-		objects = append(objects, schema.NewObject(c.OID, ""))
+		catalog.Join(&objects, catalog.NewObject(c.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(c, field, v.value) {
-			objects = append(objects, schema.NewObject2(c.OID, v.field, v.value))
+			catalog.Join(&objects, catalog.NewObject2(c.OID, v.field, v.value))
 		}
 	}
 

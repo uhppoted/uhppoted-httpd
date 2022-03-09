@@ -6,6 +6,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -75,13 +76,13 @@ func (l *LogEntry) AsObjects(a auth.OpAuth) []schema.Object {
 	objects := []schema.Object{}
 
 	if f(l, "OID", l.OID) {
-		objects = append(objects, schema.NewObject(l.OID, types.StatusOk))
+		catalog.Join(&objects, catalog.NewObject(l.OID, types.StatusOk))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(l, field, v.value) {
-			objects = append(objects, schema.NewObject2(l.OID, v.field, v.value))
+			catalog.Join(&objects, catalog.NewObject2(l.OID, v.field, v.value))
 		}
 	}
 

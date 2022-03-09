@@ -70,7 +70,7 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 			e := v.(Event)
 			if e.IsValid() || e.IsDeleted() {
 				if l := e.AsObjects(auth); l != nil {
-					objects = schema.Join(objects, l...)
+					catalog.Join(&objects, l...)
 					count++
 				}
 			}
@@ -84,11 +84,11 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 		last, _ := ee.events.Load(keys[len(keys)-1])
 
 		if first != nil {
-			objects = schema.Join(objects, schema.NewObject2(EventsOID, EventsFirst, first.(Event).OID))
+			catalog.Join(&objects, catalog.NewObject2(EventsOID, EventsFirst, first.(Event).OID))
 		}
 
 		if last != nil {
-			objects = schema.Join(objects, schema.NewObject2(EventsOID, EventsLast, last.(Event).OID))
+			catalog.Join(&objects, catalog.NewObject2(EventsOID, EventsLast, last.(Event).OID))
 		}
 	}
 

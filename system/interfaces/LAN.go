@@ -222,13 +222,13 @@ func (l *LAN) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	objects := []schema.Object{}
 
 	if !l.IsDeleted() && f(l, "OID", l.OID) {
-		objects = append(objects, schema.NewObject(l.OID, ""))
+		objects = append(objects, catalog.NewObject(l.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(l, field, v.value) {
-			objects = append(objects, schema.NewObject2(l.OID, v.field, v.value))
+			objects = append(objects, catalog.NewObject2(l.OID, v.field, v.value))
 		}
 	}
 

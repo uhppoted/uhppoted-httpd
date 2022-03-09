@@ -35,7 +35,7 @@ func (uu *Users) AsObjects(auth auth.OpAuth) []schema.Object {
 
 	for _, u := range uu.users {
 		if u.IsValid() || u.IsDeleted() {
-			objects = schema.Join(objects, u.AsObjects(auth)...)
+			catalog.Join(&objects, u.AsObjects(auth)...)
 		}
 	}
 
@@ -67,8 +67,8 @@ func (uu *Users) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 			return nil, fmt.Errorf("Failed to add 'new' user")
 		} else {
 			uu.users[u.OID] = u
-			objects = append(objects, schema.NewObject(u.OID, "new"))
-			objects = append(objects, schema.NewObject2(u.OID, UserCreated, u.created))
+			catalog.Join(&objects, catalog.NewObject(u.OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(u.OID, UserCreated, u.created))
 
 			u.log(auth, "add", u.OID, "card", "Added 'new' user", "", "", dbc)
 		}

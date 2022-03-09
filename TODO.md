@@ -6,16 +6,18 @@
             - [x] Rename db to dbx to catch any dangling references
             - [x] Redo function signatures to (cc *catalog) to catch weirdnesses
             - [x] Move guard inside catalog struct
-            - [ ] Move Join from schema to catalog
-            - [ ] Move NewObject from schema to catalog
-            - [ ] Move NewObject2 from schema to catalog
+            - [x] Move Join from schema to catalog
+            - [x] Move NewObject from schema to catalog
+            - [x] Move NewObject2 from schema to catalog
+            - [ ] Unify `put`
+            - [ ] Unify `new`
 
       - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
+      - [ ] _invalid 'to' date (2022-05-31)_
       - [ ] Weirdness (delay ??) around setting up a new controller with address 127.0.0.1
       - [ ] Refresh overwrites in-progress card edits
-      - [ ] _invalid 'to' date (2022-05-31)_
       - [ ] Empty events layout is all squashed to the left
       - [ ] Log layout on Firefox is illogical
       - [ ] Handle `panic` on permissions for logs.json 
@@ -38,7 +40,7 @@ make: *** [run] Error 2
 
 - [ ] daemonize
       - [ ] Check log rotation
-            - [ ] MacOS: sudo newsyslog -nvv
+            - [x] MacOS: sudo newsyslog -nvv
             - [ ] Linux
 
 - [ ] Overview page 

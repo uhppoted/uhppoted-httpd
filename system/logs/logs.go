@@ -87,7 +87,7 @@ func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 		if l, ok := ll.logs[k]; ok {
 			if l.IsValid() || l.IsDeleted() {
 				if l := l.AsObjects(auth); l != nil {
-					objects = schema.Join(objects, l...)
+					catalog.Join(&objects, l...)
 					count++
 				}
 			}
@@ -99,8 +99,8 @@ func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 	if len(keys) > 0 {
 		first := ll.logs[keys[0]]
 		last := ll.logs[keys[len(keys)-1]]
-		objects = schema.Join(objects, schema.NewObject2(LogsOID, LogsFirst, first.OID))
-		objects = schema.Join(objects, schema.NewObject2(LogsOID, LogsLast, last.OID))
+		catalog.Join(&objects, catalog.NewObject2(LogsOID, LogsFirst, first.OID))
+		catalog.Join(&objects, catalog.NewObject2(LogsOID, LogsLast, last.OID))
 	}
 
 	return objects

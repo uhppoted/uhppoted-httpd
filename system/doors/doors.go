@@ -43,7 +43,7 @@ func (dd *Doors) AsObjects(auth auth.OpAuth) []schema.Object {
 
 	for _, d := range dd.doors {
 		if d.IsValid() || d.IsDeleted() {
-			objects = schema.Join(objects, d.AsObjects(auth)...)
+			catalog.Join(&objects, d.AsObjects(auth)...)
 		}
 	}
 
@@ -171,8 +171,8 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 		} else {
 			d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added 'new' door"), dbc)
 			dd.doors[d.OID] = *d
-			objects = append(objects, schema.NewObject(d.OID, "new"))
-			objects = append(objects, schema.NewObject2(d.OID, DoorCreated, d.created))
+			catalog.Join(&objects, catalog.NewObject(d.OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
 		}
 	}
 

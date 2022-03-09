@@ -262,13 +262,13 @@ func (d *Door) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	objects := []schema.Object{}
 
 	if !d.IsDeleted() && f(d, "OID", d.OID) {
-		objects = append(objects, schema.NewObject(d.OID, ""))
+		objects = append(objects, catalog.NewObject(d.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(d, field, v.value) {
-			objects = append(objects, schema.NewObject2(d.OID, v.field, v.value))
+			objects = append(objects, catalog.NewObject2(d.OID, v.field, v.value))
 		}
 	}
 

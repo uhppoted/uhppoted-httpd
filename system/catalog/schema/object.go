@@ -10,24 +10,6 @@ type Object struct {
 	Value interface{}
 }
 
-func Join(p []Object, q ...Object) []Object {
-	return append(p, q...)
-}
-
-func NewObject(oid OID, value interface{}) Object {
-	return Object{
-		OID:   oid,
-		Value: value,
-	}
-}
-
-func NewObject2(oid OID, suffix Suffix, value interface{}) Object {
-	return Object{
-		OID:   oid.Append(suffix),
-		Value: value,
-	}
-}
-
 func (o Object) MarshalJSON() ([]byte, error) {
 	v := struct {
 		OID   string `json:"OID"`

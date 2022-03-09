@@ -7,6 +7,7 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
@@ -186,13 +187,13 @@ func (e *Event) AsObjects(a auth.OpAuth) []schema.Object {
 	objects := []schema.Object{}
 
 	if f(e, "OID", e.OID) {
-		objects = append(objects, schema.NewObject(e.OID, types.StatusOk))
+		catalog.Join(&objects, catalog.NewObject(e.OID, types.StatusOk))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(e, field, v.value) {
-			objects = append(objects, schema.NewObject2(e.OID, v.field, v.value))
+			catalog.Join(&objects, catalog.NewObject2(e.OID, v.field, v.value))
 		}
 	}
 

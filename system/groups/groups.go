@@ -34,7 +34,7 @@ func (gg *Groups) AsObjects(auth auth.OpAuth) []schema.Object {
 
 	for _, g := range gg.groups {
 		if g.IsValid() || g.IsDeleted() {
-			objects = schema.Join(objects, g.AsObjects(auth)...)
+			catalog.Join(&objects, g.AsObjects(auth)...)
 		}
 	}
 
@@ -68,8 +68,8 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, db
 			g.log(auth, "add", g.OID, "group", "Added 'new' group", dbc)
 
 			gg.groups[g.OID] = *g
-			objects = append(objects, schema.NewObject(g.OID, "new"))
-			objects = append(objects, schema.NewObject2(g.OID, GroupCreated, g.created))
+			catalog.Join(&objects, catalog.NewObject(g.OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(g.OID, GroupCreated, g.created))
 		}
 	}
 

@@ -35,7 +35,7 @@ func (ii *Interfaces) AsObjects(auth auth.OpAuth) []schema.Object {
 
 	for _, l := range ii.lans {
 		if l.IsValid() {
-			objects = schema.Join(objects, l.AsObjects(auth)...)
+			catalog.Join(&objects, l.AsObjects(auth)...)
 		}
 	}
 
@@ -62,9 +62,9 @@ func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string
 			return nil, fmt.Errorf("Failed to add 'new' interface")
 		} else {
 			l.log(auth, "add", l.OID, "interface", fmt.Sprintf("Added 'new' interface"), "", "", dbc)
-			objects = append(objects, schema.NewObject(l.OID, "new"))
-			objects = append(objects, schema.NewObject2(l.OID, LANStatus, "new"))
-			objects = append(objects, schema.NewObject2(l.OID, LANCreated, l.created))
+			catalog.Join(&objects, catalog.NewObject(l.OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(l.OID, LANStatus, "new"))
+			catalog.Join(&objects, catalog.NewObject2(l.OID, LANCreated, l.created))
 		}
 	}
 

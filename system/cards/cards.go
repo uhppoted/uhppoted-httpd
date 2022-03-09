@@ -33,7 +33,7 @@ func (cc *Cards) AsObjects(auth auth.OpAuth) []schema.Object {
 	objects := []schema.Object{}
 	for _, card := range cc.cards {
 		if card.IsValid() || card.IsDeleted() {
-			objects = schema.Join(objects, card.AsObjects(auth)...)
+			catalog.Join(&objects, card.AsObjects(auth)...)
 		}
 	}
 
@@ -74,8 +74,8 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 				dbc)
 
 			cc.cards[c.OID] = c
-			objects = append(objects, schema.NewObject(c.OID, "new"))
-			objects = append(objects, schema.NewObject2(c.OID, CardCreated, c.created))
+			catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(c.OID, CardCreated, c.created))
 		}
 	}
 

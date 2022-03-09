@@ -248,13 +248,13 @@ func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	objects := []schema.Object{}
 
 	if !u.IsDeleted() && f(u, "OID", u.OID) {
-		objects = append(objects, schema.NewObject(u.OID, ""))
+		catalog.Join(&objects, catalog.NewObject(u.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
 		if f(u, field, v.value) {
-			objects = append(objects, schema.NewObject2(u.OID, v.field, v.value))
+			catalog.Join(&objects, catalog.NewObject2(u.OID, v.field, v.value))
 		}
 	}
 

@@ -62,7 +62,7 @@ func (cc *Controllers) AsObjects(auth auth.OpAuth) []schema.Object {
 
 	for _, c := range cc.controllers {
 		if c.IsValid() {
-			objects = schema.Join(objects, c.AsObjects(auth)...)
+			catalog.Join(&objects, c.AsObjects(auth)...)
 		}
 	}
 
@@ -95,9 +95,9 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid schema.OID, value strin
 		} else {
 			OID := c.OID()
 
-			objects = append(objects, schema.NewObject(OID, "new"))
-			objects = append(objects, schema.NewObject2(OID, ControllerStatus, "new"))
-			objects = append(objects, schema.NewObject2(OID, ControllerCreated, c.created))
+			catalog.Join(&objects, catalog.NewObject(OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(OID, ControllerStatus, "new"))
+			catalog.Join(&objects, catalog.NewObject2(OID, ControllerCreated, c.created))
 
 			c.log(uid, "add", OID, "controller", fmt.Sprintf("Added 'new' controller"), "", "", dbc)
 		}
