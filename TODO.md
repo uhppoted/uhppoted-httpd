@@ -15,7 +15,7 @@
       - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
-      - [ ] _invalid 'to' date (2022-05-31)_
+      - [x] _invalid 'to' date (2022-05-31)_
       - [ ] Weirdness (delay ??) around setting up a new controller with address 127.0.0.1
       - [ ] Refresh overwrites in-progress card edits
       - [ ] Empty events layout is all squashed to the left

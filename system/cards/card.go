@@ -263,7 +263,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			return nil, err
 		} else if to, err := core.DateFromString(value); err != nil {
 			return nil, err
-		} else if to.IsValid() {
+		} else if !to.IsValid() {
 			return nil, fmt.Errorf("invalid 'to' date (%v)", value)
 		} else {
 			c.log(a,
