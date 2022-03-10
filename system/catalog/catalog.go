@@ -1,8 +1,11 @@
 package catalog
 
 import (
+	"fmt"
+
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 type Catalog interface {
@@ -22,14 +25,7 @@ type Catalog interface {
 	NewLogEntry() schema.OID
 	NewUser() schema.OID
 
-	PutInterface(oid schema.OID)
-	PutController(deviceID uint32, oid schema.OID)
-	PutCard(oid schema.OID)
-	PutDoor(oid schema.OID)
-	PutGroup(oid schema.OID)
-	PutEvent(oid schema.OID)
-	PutLogEntry(oid schema.OID)
-	PutUser(oid schema.OID)
+	PutT(t ctypes.Type, v interface{}, oid schema.OID)
 
 	FindController(deviceID uint32) schema.OID
 
@@ -113,36 +109,13 @@ func NewUser() schema.OID {
 	return catalog.NewUser()
 }
 
-func PutInterface(oid schema.OID) {
-	catalog.PutInterface(oid)
-}
+func PutT(v interface{}, oid schema.OID) {
+	if t := ctypes.TypeOf(v); t != ctypes.TUnknown {
+		catalog.PutT(t, v, oid)
+		return
+	}
 
-func PutController(deviceID uint32, oid schema.OID) {
-	catalog.PutController(deviceID, oid)
-}
-
-func PutCard(oid schema.OID) {
-	catalog.PutCard(oid)
-}
-
-func PutDoor(oid schema.OID) {
-	catalog.PutDoor(oid)
-}
-
-func PutGroup(oid schema.OID) {
-	catalog.PutGroup(oid)
-}
-
-func PutEvent(oid schema.OID) {
-	catalog.PutEvent(oid)
-}
-
-func PutLogEntry(oid schema.OID) {
-	catalog.PutLogEntry(oid)
-}
-
-func PutUser(oid schema.OID) {
-	catalog.PutUser(oid)
+	panic(fmt.Sprintf("Unknown catalog type: %T", v))
 }
 
 func FindController(deviceID uint32) schema.OID {

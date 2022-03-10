@@ -136,7 +136,7 @@ func (cc *Controllers) Load(blob json.RawMessage) error {
 
 	for _, c := range cc.controllers {
 		oid := c.OID()
-		catalog.PutController(c.deviceID, oid)
+		catalog.PutT(c.deviceID, oid)
 		catalog.PutV(oid, ControllerName, c.name)
 		catalog.PutV(oid, ControllerDeviceID, c.deviceID)
 		catalog.PutV(oid, ControllerDateTimeModified, false)

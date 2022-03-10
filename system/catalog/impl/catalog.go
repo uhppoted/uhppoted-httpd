@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 type catalog struct {
@@ -62,42 +63,41 @@ func (cc *catalog) Clear() {
 	cache.cache = map[schema.OID]value{}
 }
 
-func (cc *catalog) PutInterface(oid schema.OID) {
+func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	cc.interfaces[oid] = struct{}{}
-}
+	switch t {
+	case ctypes.TInterface:
+		cc.interfaces[oid] = struct{}{}
 
-func (cc *catalog) PutController(deviceID uint32, oid schema.OID) {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
+	case ctypes.TController:
+		cc.controllers[oid] = controller{
+			ID:      v.(uint32),
+			deleted: false,
+		}
 
-	cc.controllers[oid] = controller{
-		ID:      deviceID,
-		deleted: false,
+	case ctypes.TDoor:
+		cc.doors[oid] = struct{}{}
+
+	case ctypes.TCard:
+		cc.cards[oid] = struct{}{}
+
+	case ctypes.TGroup:
+		cc.groups[oid] = struct{}{}
+
+	case ctypes.TEvent:
+		cc.events[oid] = struct{}{}
+
+	case ctypes.TLog:
+		cc.logs[oid] = struct{}{}
+
+	case ctypes.TUser:
+		cc.users[oid] = struct{}{}
+
+	default:
+		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
 	}
-}
-
-func (cc *catalog) PutDoor(oid schema.OID) {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	cc.doors[oid] = struct{}{}
-}
-
-func (cc *catalog) PutCard(oid schema.OID) {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	cc.cards[oid] = struct{}{}
-}
-
-func (cc *catalog) PutGroup(oid schema.OID) {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	cc.groups[oid] = struct{}{}
 }
 
 func (cc *catalog) HasGroup(oid schema.OID) bool {
@@ -107,27 +107,6 @@ func (cc *catalog) HasGroup(oid schema.OID) bool {
 	_, ok := cc.groups[oid]
 
 	return ok
-}
-
-func (cc *catalog) PutEvent(oid schema.OID) {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	cc.events[oid] = struct{}{}
-}
-
-func (cc *catalog) PutLogEntry(oid schema.OID) {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	cc.logs[oid] = struct{}{}
-}
-
-func (cc *catalog) PutUser(oid schema.OID) {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	cc.users[oid] = struct{}{}
 }
 
 func (cc *catalog) NewController(deviceID uint32) schema.OID {

@@ -93,10 +93,10 @@ func (gg *Groups) Load(blob json.RawMessage) error {
 		}
 	}
 
-	for _, g := range gg.groups {
-		catalog.PutGroup(g.OID)
-		catalog.PutV(g.OID, GroupName, g.Name)
-		catalog.PutV(g.OID, GroupCreated, g.created)
+	for _, v := range gg.groups {
+		catalog.PutT(v, v.OID)
+		catalog.PutV(v.OID, GroupName, v.Name)
+		catalog.PutV(v.OID, GroupCreated, v.created)
 	}
 
 	return nil

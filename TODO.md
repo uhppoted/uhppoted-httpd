@@ -2,20 +2,11 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
-            - [x] Seperate interface and implementation
-            - [x] Rename db to dbx to catch any dangling references
-            - [x] Redo function signatures to (cc *catalog) to catch weirdnesses
-            - [x] Move guard inside catalog struct
-            - [x] Move Join from schema to catalog
-            - [x] Move NewObject from schema to catalog
-            - [x] Move NewObject2 from schema to catalog
-            - [ ] Unify `put`
+            - [x] Genericize `PutXXX`
             - [ ] Unify `new`
       - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
-      - [x] _invalid 'to' date (2022-05-31)_
-      - [x] Handle `panic` on permissions for logs.json 
       - [ ] Weirdness/delay around setting up a new controller with address 127.0.0.1 on clean/Linux system
       - [ ] Refresh overwrites in-progress card edits
       - [ ] Empty events layout is all squashed to the left
@@ -23,8 +14,9 @@
 
 - [ ] daemonize
       - [ ] Check log rotation
-            - [x] MacOS: sudo newsyslog -nvv
-            - [ ] Linux
+            - [ ] Linux audit log is being truncated
+                  - double SIGHUP??
+                  - does double SIGHUP kill service ??
 
 - [ ] Overview page 
 - [ ] Events should use local index rather than controller (optionally ?)
@@ -44,8 +36,6 @@
       - (?) condition handlers a la Lisp
 
 - [ ] README
-      - [x] Include eslint in build requirements
-      - [x] Include sass in build requirements
       - [ ] uhppoted.conf
       - [ ] HTML
       - [ ] grules

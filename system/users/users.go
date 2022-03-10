@@ -94,11 +94,11 @@ func (uu *Users) Load(blob json.RawMessage) error {
 		}
 	}
 
-	for _, u := range uu.users {
-		catalog.PutUser(u.OID)
-		catalog.PutV(u.OID, schema.UserName, u.name)
-		catalog.PutV(u.OID, schema.UserUID, u.uid)
-		catalog.PutV(u.OID, schema.UserRole, u.role)
+	for _, v := range uu.users {
+		catalog.PutT(v, v.OID)
+		catalog.PutV(v.OID, schema.UserName, v.name)
+		catalog.PutV(v.OID, schema.UserUID, v.uid)
+		catalog.PutV(v.OID, schema.UserRole, v.role)
 	}
 
 	return nil

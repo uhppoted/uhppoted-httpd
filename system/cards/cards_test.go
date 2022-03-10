@@ -9,6 +9,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/groups"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -49,7 +50,7 @@ func TestCardAdd(t *testing.T) {
 	final := makeCards(hagrid, placeholder)
 
 	catalog.Clear()
-	catalog.PutCard(hagrid.OID)
+	catalog.PutT(hagrid, hagrid.OID)
 
 	r, err := cards.UpdateByOID(nil, "<new>", "", nil)
 	if err != nil {
@@ -70,7 +71,7 @@ func TestCardAddWithAuth(t *testing.T) {
 	auth := stub{}
 
 	catalog.Clear()
-	catalog.PutCard(hagrid.OID)
+	catalog.PutT(hagrid, hagrid.OID)
 
 	r, err := cards.UpdateByOID(&auth, "<new>", "", nil)
 	if err == nil {
@@ -123,7 +124,7 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 	cards := makeCards(hagrid)
 
 	catalog.Clear()
-	catalog.PutCard(hagrid.OID)
+	catalog.PutT(hagrid, hagrid.OID)
 
 	r, err := cards.UpdateByOID(nil, "<new>", "", &trail)
 	if err != nil {
@@ -283,11 +284,13 @@ func TestCardNumberSwap(t *testing.T) {
 }
 
 func TestCardUpdateAddGroup(t *testing.T) {
-	group := schema.GroupsOID.Append("10")
-	catalog.PutGroup(group)
+	oid := schema.GroupsOID.Append("10")
+	group := groups.Group{OID: oid}
+
+	catalog.PutT(group, oid)
 
 	cards := makeCards(hagrid)
-	final := makeCards(makeCard(hagrid.OID, "Hagrid", 6514231, fmt.Sprintf("%v", group)))
+	final := makeCards(makeCard(hagrid.OID, "Hagrid", 6514231, fmt.Sprintf("%v", oid)))
 	expected := []schema.Object{
 		{OID: "0.4.1", Value: ""},
 		{OID: "0.4.1.5.10", Value: true},
@@ -308,11 +311,12 @@ func TestCardUpdateAddGroup(t *testing.T) {
 }
 
 func TestCardUpdateRemoveGroup(t *testing.T) {
-	group := schema.GroupsOID.Append("10")
-	catalog.PutGroup(group)
+	oid := schema.GroupsOID.Append("10")
+	group := groups.Group{OID: oid}
+	catalog.PutT(group, oid)
 
 	hagrid2 := makeCard(hagrid.OID, "Hagrid", 6514231)
-	hagrid2.Groups[group] = false
+	hagrid2.Groups[oid] = false
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid2)
 	expected := []schema.Object{
@@ -350,7 +354,7 @@ func TestCardUpdateWithInvalidGroup(t *testing.T) {
 func TestCardDelete(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 
-	catalog.PutCard(hagrid.OID)
+	catalog.PutT(hagrid, hagrid.OID)
 
 	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(schema.CardName), "", nil); err != nil {
 		t.Fatalf("Unexpected error deleting card (%v)", err)
@@ -444,8 +448,8 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 
 	catalog.Clear()
-	catalog.PutCard(hagrid.OID)
-	catalog.PutCard(dobby.OID)
+	catalog.PutT(hagrid, hagrid.OID)
+	catalog.PutT(dobby, dobby.OID)
 
 	cards.UpdateByOID(nil, dobby.OID.Append(schema.CardName), "", &trail)
 	cards.UpdateByOID(nil, dobby.OID.Append(schema.CardNumber), "", &trail)
