@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/uhppoted/uhppoted-lib/config"
 
@@ -86,25 +85,16 @@ func (cmd *Run) execute(f func(c config.Config)) error {
 		return fmt.Errorf("Unable to create PID lockfile: %v", err)
 	}
 
-	// ... because it seems deferred functions are only invoked on a panic during sys.Init if run in a goroutine
-	var wg sync.WaitGroup
-
-	wg.Add(1)
-
-	go func() {
-		defer os.Remove(lockfile) // (because otherwise a panic inside httpd.Run doesn't remove up the lockfile)
-		defer func() {
-			if err := recover(); err != nil {
-				log.Printf("%-5s %v\n", "FATAL", err)
-				os.Exit(-1)
-			}
-		}()
-
-		f(*conf)
-		wg.Done()
+	defer func() {
+		if err := recover(); err != nil {
+			log.Printf("%-5s %v\n", "FATAL", err)
+			os.Exit(-1)
+		}
 	}()
 
-	wg.Wait()
+	defer os.Remove(lockfile)
+
+	f(*conf)
 
 	return nil
 }

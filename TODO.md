@@ -11,16 +11,15 @@
             - [x] Move NewObject2 from schema to catalog
             - [ ] Unify `put`
             - [ ] Unify `new`
-
       - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
       - [x] _invalid 'to' date (2022-05-31)_
+      - [x] Handle `panic` on permissions for logs.json 
       - [ ] Weirdness/delay around setting up a new controller with address 127.0.0.1 on clean/Linux system
       - [ ] Refresh overwrites in-progress card edits
       - [ ] Empty events layout is all squashed to the left
       - [ ] Log layout on Firefox is illogical
-      - [x] Handle `panic` on permissions for logs.json 
 
 - [ ] daemonize
       - [ ] Check log rotation
@@ -246,6 +245,7 @@
 - [JSON-LS](https://json-ld.org)
 - [Microdata](https://html.spec.whatwg.org/multipage/microdata.html#microdata)
 - [Vercel ](https://vercel.com)
+- [Riffle](https://riffle.systems/essays/prelude)
 
 # REFERENCES
 
