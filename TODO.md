@@ -7,16 +7,16 @@
       - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
-      - [ ] Weirdness/delay around setting up a new controller with address 127.0.0.1 on clean/Linux system
       - [ ] Refresh overwrites in-progress card edits
+      - (?) Can't add card name + number
       - [ ] Empty events layout is all squashed to the left
-      - [ ] Log layout on Firefox is illogical
+      - [ ] Log layout on Firefox is terrible
 
 - [ ] daemonize
       - [ ] Check log rotation
             - [ ] Linux audit log is being truncated
                   - double SIGHUP??
-                  - does double SIGHUP kill service ??
+            - [ ] Does double SIGHUP kill service ?? lI0BJ5kcKlVRHl4P
 
 - [ ] Overview page 
 - [ ] Events should use local index rather than controller (optionally ?)

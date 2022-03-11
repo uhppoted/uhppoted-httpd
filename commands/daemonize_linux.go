@@ -46,7 +46,7 @@ Group={{.Group}}
 WantedBy=multi-user.target
 `
 
-const logRotateTemplate = `{{range .LogFiles}}{{.}} {
+const logRotateTemplate = `{{range .LogFiles}}{{. }} {{end}}{
     daily
     rotate 30
     compress
@@ -60,7 +60,6 @@ const logRotateTemplate = `{{range .LogFiles}}{{.}} {
        /usr/bin/killall -HUP uhppoted-httpd
     endscript
 }
-{{end}}
 `
 
 var DAEMONIZE = Daemonize{
