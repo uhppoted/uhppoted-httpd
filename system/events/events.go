@@ -207,9 +207,13 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 	for _, e := range recent {
 		k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
 		if _, ok := ee.events.Load(k); !ok {
-			oid := catalog.NewEvent()
-			device, door, card := lookup(e)
-			ee.events.Store(k, NewEvent(oid, e, device, door, card))
+			oid := catalog.NewT(e)
+			if _, ok := ee.events.Load(oid); ok {
+				warn(fmt.Errorf("catalog returned duplicate OID (%v)", oid))
+			} else {
+				device, door, card := lookup(e)
+				ee.events.Store(k, NewEvent(oid, e, device, door, card))
+			}
 		}
 	}
 }

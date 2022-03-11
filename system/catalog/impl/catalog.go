@@ -40,14 +40,6 @@ func Catalog() *catalog {
 	return &db
 }
 
-func (cc *catalog) Doors() map[schema.OID]struct{} {
-	return cc.doors
-}
-
-func (cc *catalog) Groups() map[schema.OID]struct{} {
-	return cc.groups
-}
-
 func (cc *catalog) Clear() {
 	cc.interfaces = map[schema.OID]struct{}{}
 	cc.controllers = map[schema.OID]controller{}
@@ -61,6 +53,126 @@ func (cc *catalog) Clear() {
 	defer cache.guard.Unlock()
 
 	cache.cache = map[schema.OID]value{}
+}
+
+func (cc *catalog) Delete(oid schema.OID) {
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
+
+	if v, ok := cc.controllers[oid]; ok {
+		cc.controllers[oid] = controller{
+			ID:      v.ID,
+			deleted: true,
+		}
+	}
+}
+
+func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
+	switch t {
+	//	case ctypes.TInterface:
+	//		cc.interfaces[oid] = struct{}{}
+
+	case ctypes.TController:
+		return cc.newController(v.(uint32))
+
+	case ctypes.TDoor:
+		return cc.newOID(schema.DoorsOID)
+
+	case ctypes.TCard:
+		return cc.newOID(schema.CardsOID)
+
+	case ctypes.TGroup:
+		return cc.newOID(schema.GroupsOID)
+
+	case ctypes.TEvent:
+		return cc.newOID(schema.EventsOID)
+
+	case ctypes.TLog:
+		return cc.newOID(schema.LogsOID)
+
+	case ctypes.TUser:
+		return cc.newOID(schema.UsersOID)
+
+	default:
+		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
+	}
+}
+
+func (cc *catalog) newOID(base schema.OID) schema.OID {
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
+
+	var m map[schema.OID]struct{}
+
+	switch base {
+	case schema.DoorsOID:
+		m = cc.doors
+
+	case schema.CardsOID:
+		m = cc.cards
+
+	case schema.GroupsOID:
+		m = cc.groups
+
+	case schema.EventsOID:
+		m = cc.events
+
+	case schema.LogsOID:
+		m = cc.logs
+
+	case schema.UsersOID:
+		m = cc.users
+
+	default:
+		panic(fmt.Sprintf("Unsupported base OID (%v)", base))
+	}
+
+	item := 0
+loop:
+	for {
+		item += 1
+		oid := schema.OID(fmt.Sprintf("%v.%d", base, item))
+		for v, _ := range m {
+			if v == oid {
+				continue loop
+			}
+		}
+
+		m[oid] = struct{}{}
+		return oid
+	}
+}
+
+func (cc *catalog) newController(deviceID uint32) schema.OID {
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
+
+	if deviceID != 0 {
+		for oid, v := range cc.controllers {
+			if !v.deleted && v.ID == deviceID {
+				return oid
+			}
+		}
+	}
+
+	item := 0
+loop:
+	for {
+		item += 1
+		oid := schema.OID(fmt.Sprintf("%v.%d", schema.ControllersOID, item))
+		for v, _ := range cc.controllers {
+			if v == oid {
+				continue loop
+			}
+		}
+
+		cc.controllers[oid] = controller{
+			ID:      deviceID,
+			deleted: false,
+		}
+
+		return oid
+	}
 }
 
 func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
@@ -100,184 +212,6 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	}
 }
 
-func (cc *catalog) HasGroup(oid schema.OID) bool {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	_, ok := cc.groups[oid]
-
-	return ok
-}
-
-func (cc *catalog) NewController(deviceID uint32) schema.OID {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	if deviceID != 0 {
-		for oid, v := range cc.controllers {
-			if !v.deleted && v.ID == deviceID {
-				return oid
-			}
-		}
-	}
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", schema.ControllersOID, item))
-		for v, _ := range cc.controllers {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		cc.controllers[oid] = controller{
-			ID:      deviceID,
-			deleted: false,
-		}
-
-		return oid
-	}
-}
-
-func (cc *catalog) NewDoor() schema.OID {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", schema.DoorsOID, item))
-		for v, _ := range cc.doors {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		cc.doors[oid] = struct{}{}
-		return oid
-	}
-}
-
-func (cc *catalog) NewCard() schema.OID {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", schema.CardsOID, item))
-		for v, _ := range cc.cards {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		cc.cards[oid] = struct{}{}
-
-		return oid
-	}
-}
-
-func (cc *catalog) NewGroup() schema.OID {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", schema.GroupsOID, item))
-		for v, _ := range cc.groups {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		cc.groups[oid] = struct{}{}
-
-		return oid
-	}
-}
-
-func (cc *catalog) NewEvent() schema.OID {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", schema.EventsOID, item))
-		for v, _ := range cc.events {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		cc.events[oid] = struct{}{}
-
-		return oid
-	}
-}
-
-func (cc *catalog) NewLogEntry() schema.OID {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", schema.LogsOID, item))
-		for v, _ := range cc.logs {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		cc.logs[oid] = struct{}{}
-
-		return oid
-	}
-}
-
-func (cc *catalog) NewUser() schema.OID {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", schema.UsersOID, item))
-		for v, _ := range cc.users {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		cc.users[oid] = struct{}{}
-
-		return oid
-	}
-}
-
-func (cc *catalog) Delete(oid schema.OID) {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	if v, ok := cc.controllers[oid]; ok {
-		cc.controllers[oid] = controller{
-			ID:      v.ID,
-			deleted: true,
-		}
-	}
-}
-
 func (cc *catalog) FindController(deviceID uint32) schema.OID {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
@@ -291,4 +225,21 @@ func (cc *catalog) FindController(deviceID uint32) schema.OID {
 	}
 
 	return ""
+}
+
+func (cc *catalog) Doors() map[schema.OID]struct{} {
+	return cc.doors
+}
+
+func (cc *catalog) Groups() map[schema.OID]struct{} {
+	return cc.groups
+}
+
+func (cc *catalog) HasGroup(oid schema.OID) bool {
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
+
+	_, ok := cc.groups[oid]
+
+	return ok
 }

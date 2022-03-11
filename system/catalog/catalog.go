@@ -12,21 +12,14 @@ type Catalog interface {
 	Clear()
 	Delete(oid schema.OID)
 
+	NewT(t ctypes.Type, v interface{}) schema.OID
+	PutT(t ctypes.Type, v interface{}, oid schema.OID)
+
 	GetV(oid schema.OID, suffix schema.Suffix) interface{}
 	Put(oid schema.OID, v interface{})
 	PutV(oid schema.OID, suffix schema.Suffix, v interface{})
+
 	Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool)
-
-	NewController(deviceID uint32) schema.OID
-	NewCard() schema.OID
-	NewDoor() schema.OID
-	NewGroup() schema.OID
-	NewEvent() schema.OID
-	NewLogEntry() schema.OID
-	NewUser() schema.OID
-
-	PutT(t ctypes.Type, v interface{}, oid schema.OID)
-
 	FindController(deviceID uint32) schema.OID
 
 	Doors() map[schema.OID]struct{}
@@ -65,6 +58,22 @@ func Delete(oid schema.OID) {
 	catalog.Delete(oid)
 }
 
+func NewT(v interface{}) schema.OID {
+	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
+		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
+	} else {
+		return catalog.NewT(t, v)
+	}
+}
+
+func PutT(v interface{}, oid schema.OID) {
+	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
+		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
+	} else {
+		catalog.PutT(t, v, oid)
+	}
+}
+
 func GetV(oid schema.OID, suffix schema.Suffix) interface{} {
 	return catalog.GetV(oid, suffix)
 }
@@ -79,43 +88,6 @@ func PutV(oid schema.OID, suffix schema.Suffix, v interface{}) {
 
 func Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool) {
 	return catalog.Find(prefix, suffix, value)
-}
-
-func NewController(deviceID uint32) schema.OID {
-	return catalog.NewController(deviceID)
-}
-
-func NewCard() schema.OID {
-	return catalog.NewCard()
-}
-
-func NewDoor() schema.OID {
-	return catalog.NewDoor()
-}
-
-func NewGroup() schema.OID {
-	return catalog.NewGroup()
-}
-
-func NewEvent() schema.OID {
-	return catalog.NewEvent()
-}
-
-func NewLogEntry() schema.OID {
-	return catalog.NewLogEntry()
-}
-
-func NewUser() schema.OID {
-	return catalog.NewUser()
-}
-
-func PutT(v interface{}, oid schema.OID) {
-	if t := ctypes.TypeOf(v); t != ctypes.TUnknown {
-		catalog.PutT(t, v, oid)
-		return
-	}
-
-	panic(fmt.Sprintf("Unknown catalog type: %T", v))
 }
 
 func FindController(deviceID uint32) schema.OID {

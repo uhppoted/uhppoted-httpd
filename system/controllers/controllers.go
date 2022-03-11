@@ -223,7 +223,7 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 
 			info(fmt.Sprintf("Adding unconfigured controller %v", d))
 
-			oid := catalog.NewController(d)
+			oid := catalog.NewT(d)
 			// deviceID := d // because .. Go loop variable gotcha (the loop variable is mutable)
 
 			cc.controllers = append(cc.controllers, &Controller{
@@ -382,7 +382,7 @@ func (cc *Controllers) Validate() error {
 
 func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	record := c.clone()
-	record.oid = schema.OID(catalog.NewController(c.deviceID))
+	record.oid = schema.OID(catalog.NewT(c.deviceID))
 	record.created = types.TimestampNow()
 
 	if a != nil {

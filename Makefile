@@ -82,12 +82,12 @@ release: update-release build-all
 
 debug: format
 	go build -trimpath -o bin ./...
-	go test -run Test* ./system/...
+	go test -v -run Test ./system/catalog/impl/...
 
 delve: format
 	go build -trimpath -o bin ./...
-	dlv exec ./bin/uhppoted-httpd -- --debug --console
-	# dlv test github.com/uhppoted/uhppoted-httpd/commands
+#	dlv exec ./bin/uhppoted-httpd -- --debug --console
+	dlv test github.com/uhppoted/uhppoted-httpd/system/cards
 
 # NTS: 1. sass --watch doesn't seem to consistently pick up changes in themed partials
 #      2. For development only - doesn't build the default CSS because the duplication 

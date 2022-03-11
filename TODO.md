@@ -2,8 +2,10 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
-            - [x] Genericize `PutXXX`
-            - [ ] Unify `new`
+            - [x] Unify `new`
+            - [ ] Rework NewOID to not loop through map
+            - [ ] Delete only for controllers ?????????
+            - [ ] map ctypes and base OIDs to map[OID]struct{}
       - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch

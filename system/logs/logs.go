@@ -224,9 +224,16 @@ func (ll *Logs) Received(records ...audit.AuditRecord) {
 		guard.Lock()
 		defer guard.Unlock()
 
-		k := newKey(record.Timestamp, record.UID, record.Component, record.Details.ID, record.Details.Name, record.Details.Field, record.Details.Description)
+		k := newKey(record.Timestamp,
+			record.UID,
+			record.Component,
+			record.Details.ID,
+			record.Details.Name,
+			record.Details.Field,
+			record.Details.Description)
+
 		if _, ok := ll.logs[k]; !ok {
-			oid := catalog.NewLogEntry()
+			oid := catalog.NewT(LogEntry{})
 			ll.logs[k] = NewLogEntry(oid, timestamp, record)
 		}
 	}

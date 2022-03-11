@@ -200,7 +200,7 @@ func (uu Users) Sweep(retention time.Duration) {
 }
 
 func (uu Users) add(a auth.OpAuth, u User) (*User, error) {
-	oid := catalog.NewUser()
+	oid := catalog.NewT(u)
 	if _, ok := uu.users[oid]; ok {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
 	}

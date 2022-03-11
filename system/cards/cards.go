@@ -203,7 +203,7 @@ func (cc *Cards) Lookup(card uint32) *Card {
 }
 
 func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
-	oid := catalog.NewCard()
+	oid := catalog.NewT(c)
 	if _, ok := cc.cards[oid]; ok {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
 	}
