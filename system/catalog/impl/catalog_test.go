@@ -10,37 +10,45 @@ import (
 
 func TestNewOID(t *testing.T) {
 	cc := catalog{
-		interfaces:  map[schema.OID]struct{}{},
-		controllers: map[schema.OID]controller{},
-		doors: map[schema.OID]struct{}{
-			"0.3.1":   struct{}{},
-			"0.3.2":   struct{}{},
-			"0.3.100": struct{}{},
+		doors: table{
+			base: schema.DoorsOID,
+			m: map[schema.OID]struct{}{
+				"0.3.1":   struct{}{},
+				"0.3.2":   struct{}{},
+				"0.3.100": struct{}{},
+			},
 		},
-		cards:  map[schema.OID]struct{}{},
-		groups: map[schema.OID]struct{}{},
-		events: map[schema.OID]struct{}{},
-		logs:   map[schema.OID]struct{}{},
-		users:  map[schema.OID]struct{}{},
+
+		controllers: map[schema.OID]controller{},
+		interfaces:  table{},
+		cards:       table{},
+		groups:      table{},
+		events:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	expected := catalog{
-		interfaces:  map[schema.OID]struct{}{},
-		controllers: map[schema.OID]controller{},
-		doors: map[schema.OID]struct{}{
-			"0.3.1":   struct{}{},
-			"0.3.2":   struct{}{},
-			"0.3.3":   struct{}{},
-			"0.3.100": struct{}{},
+		doors: table{
+			base: schema.DoorsOID,
+			m: map[schema.OID]struct{}{
+				"0.3.1":   struct{}{},
+				"0.3.2":   struct{}{},
+				"0.3.3":   struct{}{},
+				"0.3.100": struct{}{},
+			},
 		},
-		cards:  map[schema.OID]struct{}{},
-		groups: map[schema.OID]struct{}{},
-		events: map[schema.OID]struct{}{},
-		logs:   map[schema.OID]struct{}{},
-		users:  map[schema.OID]struct{}{},
+
+		controllers: map[schema.OID]controller{},
+		interfaces:  table{},
+		cards:       table{},
+		groups:      table{},
+		events:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
-	oid := cc.newOID(schema.DoorsOID)
+	oid := cc.NewT(ctypes.TDoor, struct{}{})
 
 	if oid != "0.3.3" {
 		t.Errorf("Incorrect OID - expected:%v, got:%v", "0.3.3", oid)
@@ -53,34 +61,42 @@ func TestNewOID(t *testing.T) {
 
 func TestNewDoor(t *testing.T) {
 	cc := catalog{
-		interfaces:  map[schema.OID]struct{}{},
-		controllers: map[schema.OID]controller{},
-		doors: map[schema.OID]struct{}{
-			"0.3.1":   struct{}{},
-			"0.3.2":   struct{}{},
-			"0.3.100": struct{}{},
+		doors: table{
+			base: schema.DoorsOID,
+			m: map[schema.OID]struct{}{
+				"0.3.1":   struct{}{},
+				"0.3.2":   struct{}{},
+				"0.3.100": struct{}{},
+			},
 		},
-		cards:  map[schema.OID]struct{}{},
-		groups: map[schema.OID]struct{}{},
-		events: map[schema.OID]struct{}{},
-		logs:   map[schema.OID]struct{}{},
-		users:  map[schema.OID]struct{}{},
+
+		controllers: map[schema.OID]controller{},
+		interfaces:  table{},
+		cards:       table{},
+		groups:      table{},
+		events:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	expected := catalog{
-		interfaces:  map[schema.OID]struct{}{},
-		controllers: map[schema.OID]controller{},
-		doors: map[schema.OID]struct{}{
-			"0.3.1":   struct{}{},
-			"0.3.2":   struct{}{},
-			"0.3.3":   struct{}{},
-			"0.3.100": struct{}{},
+		doors: table{
+			base: schema.DoorsOID,
+			m: map[schema.OID]struct{}{
+				"0.3.1":   struct{}{},
+				"0.3.2":   struct{}{},
+				"0.3.3":   struct{}{},
+				"0.3.100": struct{}{},
+			},
 		},
-		cards:  map[schema.OID]struct{}{},
-		groups: map[schema.OID]struct{}{},
-		events: map[schema.OID]struct{}{},
-		logs:   map[schema.OID]struct{}{},
-		users:  map[schema.OID]struct{}{},
+
+		controllers: map[schema.OID]controller{},
+		interfaces:  table{},
+		cards:       table{},
+		groups:      table{},
+		events:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	oid := cc.NewT(ctypes.TDoor, nil)
@@ -96,14 +112,18 @@ func TestNewDoor(t *testing.T) {
 
 func TestNewEvent(t *testing.T) {
 	cc := catalog{
-		interfaces:  map[schema.OID]struct{}{},
+		events: table{
+			base: schema.EventsOID,
+			m:    map[schema.OID]struct{}{},
+		},
+
 		controllers: map[schema.OID]controller{},
-		doors:       map[schema.OID]struct{}{},
-		cards:       map[schema.OID]struct{}{},
-		groups:      map[schema.OID]struct{}{},
-		events:      map[schema.OID]struct{}{},
-		logs:        map[schema.OID]struct{}{},
-		users:       map[schema.OID]struct{}{},
+		interfaces:  table{},
+		doors:       table{},
+		cards:       table{},
+		groups:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	tests := []schema.OID{

@@ -2,6 +2,9 @@ package memdb
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
@@ -23,6 +26,7 @@ type catalog struct {
 type table struct {
 	base schema.OID
 	m    map[schema.OID]struct{}
+	last uint32
 }
 
 type controller struct {
@@ -38,7 +42,7 @@ var db = catalog{
 		m:    map[schema.OID]struct{}{},
 	},
 	doors: table{
-		base: schema.ControllersOID,
+		base: schema.DoorsOID,
 		m:    map[schema.OID]struct{}{},
 	},
 	cards: table{
@@ -164,7 +168,7 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	if m, ok := cc.tableFor(t); !ok {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
 	} else {
-		m.put(oid, v)
+		m.Put(oid, v)
 	}
 }
 
@@ -229,12 +233,12 @@ func (cc *catalog) tableFor(t ctypes.Type) (table, bool) {
 }
 
 func (t *table) NewT(v interface{}) schema.OID {
-	item := 0
+	suffix := t.last
 
 loop:
 	for {
-		item += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", t.base, item))
+		suffix += 1
+		oid := schema.OID(fmt.Sprintf("%v.%d", t.base, suffix))
 		for v, _ := range t.m {
 			if v == oid {
 				continue loop
@@ -242,10 +246,31 @@ loop:
 		}
 
 		t.m[oid] = struct{}{}
+		t.last = suffix
 		return oid
 	}
 }
 
-func (t *table) put(oid schema.OID, v interface{}) {
+func (t *table) Put(oid schema.OID, v interface{}) {
+	if !oid.HasPrefix(t.base) {
+		panic(fmt.Sprintf("PUT: illegal oid %v for base %v", oid, t.base))
+	}
+
+	suffix := strings.TrimPrefix(string(oid), string(t.base))
+
+	match := regexp.MustCompile(`\.([0-9]+)`).FindStringSubmatch(suffix)
+	if match == nil || len(match) != 2 {
+		panic(fmt.Sprintf("PUT: invalid oid %v for base %v", oid, t.base))
+	}
+
+	index, err := strconv.ParseUint(match[1], 10, 32)
+	if err != nil {
+		panic(fmt.Sprintf("PUT: out of range oid %v for base %v", oid, t.base))
+	}
+
 	t.m[oid] = struct{}{}
+
+	if v := uint32(index); v > t.last {
+		t.last = v
+	}
 }

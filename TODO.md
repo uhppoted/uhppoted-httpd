@@ -2,7 +2,7 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
-            - [ ] Rework NewOID to not loop through map
+            - [x] Rework NewOID to not loop through map
             - [x] map ctypes and base OIDs to map[OID]struct{}
             - [x] catalog 'table' 
             - [ ] Genericize 'controller' table
@@ -11,13 +11,13 @@
 
 - [ ] Verify bootstrap from scratch
       - [ ] Empty events layout is all squashed to the left
-      - [ ] Refresh overwrites in-progress card edits
       - [ ] Log layout on Firefox is terrible
+      - [ ] Refresh overwrites in-progress card edits
       - [ ] Linux
       - [ ] Windows
 
 - [ ] daemonize
-      - [ ] Check log rotation
+      - [x] Check log rotation
             - [x] Linux audit log is being truncated
       - [ ] Does double SIGHUP kill service ?? 
 
