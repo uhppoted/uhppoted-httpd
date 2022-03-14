@@ -4,7 +4,8 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [ ] Rework NewOID to not loop through map
             - [x] map ctypes and base OIDs to map[OID]struct{}
-            - [ ] catalog 'table' interface
+            - [x] catalog 'table' 
+            - [ ] Genericize 'controller' table
             - [ ] Delete only for controllers ?????????
       - [ ] GetV => GetBool, GetInt, etc
 

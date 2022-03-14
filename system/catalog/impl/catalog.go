@@ -9,15 +9,20 @@ import (
 )
 
 type catalog struct {
-	interfaces  map[schema.OID]struct{}
+	interfaces  table
 	controllers map[schema.OID]controller
-	doors       map[schema.OID]struct{}
-	cards       map[schema.OID]struct{}
-	groups      map[schema.OID]struct{}
-	events      map[schema.OID]struct{}
-	logs        map[schema.OID]struct{}
-	users       map[schema.OID]struct{}
+	doors       table
+	cards       table
+	groups      table
+	events      table
+	logs        table
+	users       table
 	guard       sync.Mutex
+}
+
+type table struct {
+	base schema.OID
+	m    map[schema.OID]struct{}
 }
 
 type controller struct {
@@ -26,25 +31,36 @@ type controller struct {
 }
 
 var db = catalog{
-	interfaces:  map[schema.OID]struct{}{},
 	controllers: map[schema.OID]controller{},
-	doors:       map[schema.OID]struct{}{},
-	cards:       map[schema.OID]struct{}{},
-	groups:      map[schema.OID]struct{}{},
-	events:      map[schema.OID]struct{}{},
-	logs:        map[schema.OID]struct{}{},
-	users:       map[schema.OID]struct{}{},
-}
 
-var baseOIDs = map[ctypes.Type]schema.OID{
-	ctypes.TInterface:  schema.InterfacesOID,
-	ctypes.TController: schema.ControllersOID,
-	ctypes.TDoor:       schema.DoorsOID,
-	ctypes.TCard:       schema.CardsOID,
-	ctypes.TGroup:      schema.GroupsOID,
-	ctypes.TEvent:      schema.EventsOID,
-	ctypes.TLog:        schema.LogsOID,
-	ctypes.TUser:       schema.UsersOID,
+	interfaces: table{
+		base: schema.InterfacesOID,
+		m:    map[schema.OID]struct{}{},
+	},
+	doors: table{
+		base: schema.ControllersOID,
+		m:    map[schema.OID]struct{}{},
+	},
+	cards: table{
+		base: schema.CardsOID,
+		m:    map[schema.OID]struct{}{},
+	},
+	groups: table{
+		base: schema.GroupsOID,
+		m:    map[schema.OID]struct{}{},
+	},
+	events: table{
+		base: schema.EventsOID,
+		m:    map[schema.OID]struct{}{},
+	},
+	logs: table{
+		base: schema.LogsOID,
+		m:    map[schema.OID]struct{}{},
+	},
+	users: table{
+		base: schema.UsersOID,
+		m:    map[schema.OID]struct{}{},
+	},
 }
 
 func Catalog() *catalog {
@@ -52,13 +68,14 @@ func Catalog() *catalog {
 }
 
 func (cc *catalog) Clear() {
-	cc.interfaces = map[schema.OID]struct{}{}
 	cc.controllers = map[schema.OID]controller{}
-	cc.doors = map[schema.OID]struct{}{}
-	cc.cards = map[schema.OID]struct{}{}
-	cc.groups = map[schema.OID]struct{}{}
-	cc.events = map[schema.OID]struct{}{}
-	cc.logs = map[schema.OID]struct{}{}
+
+	cc.interfaces.m = map[schema.OID]struct{}{}
+	cc.doors.m = map[schema.OID]struct{}{}
+	cc.cards.m = map[schema.OID]struct{}{}
+	cc.groups.m = map[schema.OID]struct{}{}
+	cc.events.m = map[schema.OID]struct{}{}
+	cc.logs.m = map[schema.OID]struct{}{}
 
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
@@ -79,6 +96,7 @@ func (cc *catalog) Delete(oid schema.OID) {
 }
 
 func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
+	// NTS: only support a single interface at this point in time
 	if t == ctypes.TInterface {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
 	}
@@ -87,34 +105,15 @@ func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
 		return cc.newController(v.(uint32))
 	}
 
-	base, ok := baseOIDs[t]
+	m, ok := cc.tableFor(t)
 	if !ok {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
-	}
-
-	m, ok := cc.mapFor(t)
-	if !ok {
-		panic(fmt.Sprintf("Unsupported base OID (%v)", base))
 	}
 
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	item := 0
-
-loop:
-	for {
-		item += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", base, item))
-		for v, _ := range m {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		m[oid] = struct{}{}
-		return oid
-	}
+	return m.NewT(v)
 }
 
 func (cc *catalog) newController(deviceID uint32) schema.OID {
@@ -162,10 +161,10 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 		return
 	}
 
-	if m, ok := cc.mapFor(t); !ok {
+	if m, ok := cc.tableFor(t); !ok {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
 	} else {
-		m[oid] = struct{}{}
+		m.put(oid, v)
 	}
 }
 
@@ -185,23 +184,23 @@ func (cc *catalog) FindController(deviceID uint32) schema.OID {
 }
 
 func (cc *catalog) Doors() map[schema.OID]struct{} {
-	return cc.doors
+	return cc.doors.m
 }
 
 func (cc *catalog) Groups() map[schema.OID]struct{} {
-	return cc.groups
+	return cc.groups.m
 }
 
 func (cc *catalog) HasGroup(oid schema.OID) bool {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	_, ok := cc.groups[oid]
+	_, ok := cc.groups.m[oid]
 
 	return ok
 }
 
-func (cc *catalog) mapFor(t ctypes.Type) (map[schema.OID]struct{}, bool) {
+func (cc *catalog) tableFor(t ctypes.Type) (table, bool) {
 	switch t {
 	case ctypes.TInterface:
 		return cc.interfaces, true
@@ -225,6 +224,28 @@ func (cc *catalog) mapFor(t ctypes.Type) (map[schema.OID]struct{}, bool) {
 		return cc.users, true
 
 	default:
-		return nil, false
+		return table{}, false
 	}
+}
+
+func (t *table) NewT(v interface{}) schema.OID {
+	item := 0
+
+loop:
+	for {
+		item += 1
+		oid := schema.OID(fmt.Sprintf("%v.%d", t.base, item))
+		for v, _ := range t.m {
+			if v == oid {
+				continue loop
+			}
+		}
+
+		t.m[oid] = struct{}{}
+		return oid
+	}
+}
+
+func (t *table) put(oid schema.OID, v interface{}) {
+	t.m[oid] = struct{}{}
 }
