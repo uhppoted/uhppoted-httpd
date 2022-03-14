@@ -20,6 +20,11 @@ type catalog struct {
 	guard       sync.Mutex
 }
 
+type controller struct {
+	ID      uint32
+	deleted bool
+}
+
 var db = catalog{
 	interfaces:  map[schema.OID]struct{}{},
 	controllers: map[schema.OID]controller{},
@@ -31,9 +36,15 @@ var db = catalog{
 	users:       map[schema.OID]struct{}{},
 }
 
-type controller struct {
-	ID      uint32
-	deleted bool
+var baseOIDs = map[ctypes.Type]schema.OID{
+	ctypes.TInterface:  schema.InterfacesOID,
+	ctypes.TController: schema.ControllersOID,
+	ctypes.TDoor:       schema.DoorsOID,
+	ctypes.TCard:       schema.CardsOID,
+	ctypes.TGroup:      schema.GroupsOID,
+	ctypes.TEvent:      schema.EventsOID,
+	ctypes.TLog:        schema.LogsOID,
+	ctypes.TUser:       schema.UsersOID,
 }
 
 func Catalog() *catalog {
@@ -68,66 +79,29 @@ func (cc *catalog) Delete(oid schema.OID) {
 }
 
 func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
-	switch t {
-	//	case ctypes.TInterface:
-	//		cc.interfaces[oid] = struct{}{}
-
-	case ctypes.TController:
-		return cc.newController(v.(uint32))
-
-	case ctypes.TDoor:
-		return cc.newOID(schema.DoorsOID)
-
-	case ctypes.TCard:
-		return cc.newOID(schema.CardsOID)
-
-	case ctypes.TGroup:
-		return cc.newOID(schema.GroupsOID)
-
-	case ctypes.TEvent:
-		return cc.newOID(schema.EventsOID)
-
-	case ctypes.TLog:
-		return cc.newOID(schema.LogsOID)
-
-	case ctypes.TUser:
-		return cc.newOID(schema.UsersOID)
-
-	default:
+	if t == ctypes.TInterface {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
 	}
-}
 
-func (cc *catalog) newOID(base schema.OID) schema.OID {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
+	if t == ctypes.TController {
+		return cc.newController(v.(uint32))
+	}
 
-	var m map[schema.OID]struct{}
+	base, ok := baseOIDs[t]
+	if !ok {
+		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
+	}
 
-	switch base {
-	case schema.DoorsOID:
-		m = cc.doors
-
-	case schema.CardsOID:
-		m = cc.cards
-
-	case schema.GroupsOID:
-		m = cc.groups
-
-	case schema.EventsOID:
-		m = cc.events
-
-	case schema.LogsOID:
-		m = cc.logs
-
-	case schema.UsersOID:
-		m = cc.users
-
-	default:
+	m, ok := cc.mapFor(t)
+	if !ok {
 		panic(fmt.Sprintf("Unsupported base OID (%v)", base))
 	}
 
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
+
 	item := 0
+
 loop:
 	for {
 		item += 1
@@ -179,36 +153,19 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	switch t {
-	case ctypes.TInterface:
-		cc.interfaces[oid] = struct{}{}
-
-	case ctypes.TController:
+	if t == ctypes.TController {
 		cc.controllers[oid] = controller{
 			ID:      v.(uint32),
 			deleted: false,
 		}
 
-	case ctypes.TDoor:
-		cc.doors[oid] = struct{}{}
+		return
+	}
 
-	case ctypes.TCard:
-		cc.cards[oid] = struct{}{}
-
-	case ctypes.TGroup:
-		cc.groups[oid] = struct{}{}
-
-	case ctypes.TEvent:
-		cc.events[oid] = struct{}{}
-
-	case ctypes.TLog:
-		cc.logs[oid] = struct{}{}
-
-	case ctypes.TUser:
-		cc.users[oid] = struct{}{}
-
-	default:
+	if m, ok := cc.mapFor(t); !ok {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
+	} else {
+		m[oid] = struct{}{}
 	}
 }
 
@@ -242,4 +199,32 @@ func (cc *catalog) HasGroup(oid schema.OID) bool {
 	_, ok := cc.groups[oid]
 
 	return ok
+}
+
+func (cc *catalog) mapFor(t ctypes.Type) (map[schema.OID]struct{}, bool) {
+	switch t {
+	case ctypes.TInterface:
+		return cc.interfaces, true
+
+	case ctypes.TDoor:
+		return cc.doors, true
+
+	case ctypes.TCard:
+		return cc.cards, true
+
+	case ctypes.TGroup:
+		return cc.groups, true
+
+	case ctypes.TEvent:
+		return cc.events, true
+
+	case ctypes.TLog:
+		return cc.logs, true
+
+	case ctypes.TUser:
+		return cc.users, true
+
+	default:
+		return nil, false
+	}
 }

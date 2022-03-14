@@ -2,25 +2,26 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
-            - [x] Unify `new`
             - [ ] Rework NewOID to not loop through map
+            - [x] map ctypes and base OIDs to map[OID]struct{}
+            - [ ] catalog 'table' interface
             - [ ] Delete only for controllers ?????????
-            - [ ] map ctypes and base OIDs to map[OID]struct{}
       - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
-      - [ ] Refresh overwrites in-progress card edits
-      - (?) Can't add card name + number
       - [ ] Empty events layout is all squashed to the left
+      - [ ] Refresh overwrites in-progress card edits
       - [ ] Log layout on Firefox is terrible
+      - [ ] Linux
+      - [ ] Windows
 
 - [ ] daemonize
       - [ ] Check log rotation
-            - [ ] Linux audit log is being truncated
-                  - double SIGHUP??
-            - [ ] Does double SIGHUP kill service ?? lI0BJ5kcKlVRHl4P
+            - [x] Linux audit log is being truncated
+      - [ ] Does double SIGHUP kill service ?? 
 
 - [ ] Overview page 
+- [ ] Move delete to UI (PUT OID + 'deleted' ?)
 - [ ] Events should use local index rather than controller (optionally ?)
 - [ ] Cleanup audit log
 
