@@ -176,7 +176,7 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 		g.deleted = types.TimestampNow()
 		list = append(list, kv{GroupDeleted, g.deleted})
 
-		catalog.Delete(g.OID)
+		catalog.DeleteT(g, g.OID)
 	}
 
 	list = append(list, kv{GroupStatus, g.status()})

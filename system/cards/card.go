@@ -356,7 +356,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		c.deleted = types.TimestampNow()
 		list = append(list, kv{CardDeleted, c.deleted})
 
-		catalog.Delete(c.OID)
+		catalog.DeleteT(c, c.OID)
 	}
 
 	list = append(list, kv{CardStatus, c.status()})

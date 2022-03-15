@@ -9,7 +9,7 @@ import (
 func TestTableNewT(t *testing.T) {
 	tt := table{
 		base: schema.DoorsOID,
-		m:    map[schema.OID]struct{}{},
+		m:    map[schema.OID]record{},
 		last: 123,
 	}
 

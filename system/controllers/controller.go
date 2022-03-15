@@ -548,7 +548,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		c.deleted = types.TimestampNow()
 		list = append(list, kv{ControllerDeleted, c.deleted})
 
-		catalog.Delete(OID)
+		catalog.DeleteT(c, OID)
 	}
 
 	list = append(list, kv{ControllerStatus, c.status()})
@@ -616,7 +616,7 @@ func (c *Controller) refreshed() {
 
 		if c.unconfigured {
 			c.deleted = types.TimestampNow()
-			catalog.Delete(c.OID())
+			catalog.DeleteT(c, c.OID())
 			log.Printf("'unconfigured' controller %v removed", c)
 		}
 	}

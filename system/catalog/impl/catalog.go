@@ -20,13 +20,17 @@ type catalog struct {
 	events      table
 	logs        table
 	users       table
-	guard       sync.Mutex
+	guard       sync.RWMutex
 }
 
 type table struct {
 	base schema.OID
-	m    map[schema.OID]struct{}
+	m    map[schema.OID]record
 	last uint32
+}
+
+type record struct {
+	deleted bool
 }
 
 type controller struct {
@@ -39,31 +43,31 @@ var db = catalog{
 
 	interfaces: table{
 		base: schema.InterfacesOID,
-		m:    map[schema.OID]struct{}{},
+		m:    map[schema.OID]record{},
 	},
 	doors: table{
 		base: schema.DoorsOID,
-		m:    map[schema.OID]struct{}{},
+		m:    map[schema.OID]record{},
 	},
 	cards: table{
 		base: schema.CardsOID,
-		m:    map[schema.OID]struct{}{},
+		m:    map[schema.OID]record{},
 	},
 	groups: table{
 		base: schema.GroupsOID,
-		m:    map[schema.OID]struct{}{},
+		m:    map[schema.OID]record{},
 	},
 	events: table{
 		base: schema.EventsOID,
-		m:    map[schema.OID]struct{}{},
+		m:    map[schema.OID]record{},
 	},
 	logs: table{
 		base: schema.LogsOID,
-		m:    map[schema.OID]struct{}{},
+		m:    map[schema.OID]record{},
 	},
 	users: table{
 		base: schema.UsersOID,
-		m:    map[schema.OID]struct{}{},
+		m:    map[schema.OID]record{},
 	},
 }
 
@@ -72,31 +76,23 @@ func Catalog() *catalog {
 }
 
 func (cc *catalog) Clear() {
+	cc.guard.Lock()
+	defer cc.guard.Unlock()
+
 	cc.controllers = map[schema.OID]controller{}
 
-	cc.interfaces.m = map[schema.OID]struct{}{}
-	cc.doors.m = map[schema.OID]struct{}{}
-	cc.cards.m = map[schema.OID]struct{}{}
-	cc.groups.m = map[schema.OID]struct{}{}
-	cc.events.m = map[schema.OID]struct{}{}
-	cc.logs.m = map[schema.OID]struct{}{}
+	cc.interfaces.m = map[schema.OID]record{}
+	cc.doors.m = map[schema.OID]record{}
+	cc.cards.m = map[schema.OID]record{}
+	cc.groups.m = map[schema.OID]record{}
+	cc.events.m = map[schema.OID]record{}
+	cc.logs.m = map[schema.OID]record{}
+	cc.users.m = map[schema.OID]record{}
 
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
 
 	cache.cache = map[schema.OID]value{}
-}
-
-func (cc *catalog) Delete(oid schema.OID) {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	if v, ok := cc.controllers[oid]; ok {
-		cc.controllers[oid] = controller{
-			ID:      v.ID,
-			deleted: true,
-		}
-	}
 }
 
 func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
@@ -172,9 +168,81 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	}
 }
 
-func (cc *catalog) FindController(deviceID uint32) schema.OID {
+func (cc *catalog) DeleteT(t ctypes.Type, oid schema.OID) {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
+
+	switch t {
+	case ctypes.TController:
+		if v, ok := cc.controllers[oid]; ok {
+			cc.controllers[oid] = controller{
+				ID:      v.ID,
+				deleted: true,
+			}
+		}
+
+	default:
+		if tt, ok := cc.tableFor(t); ok {
+			if _, ok := tt.m[oid]; ok {
+				tt.m[oid] = record{
+					deleted: true,
+				}
+			}
+		}
+	}
+}
+
+func (cc *catalog) ListT(t ctypes.Type) []schema.OID {
+	cc.guard.RLock()
+	defer cc.guard.RUnlock()
+
+	list := []schema.OID{}
+
+	switch t {
+	case ctypes.TController:
+		for d, v := range cc.controllers {
+			if !v.deleted {
+				list = append(list, d)
+			}
+		}
+
+	default:
+		if tt, ok := cc.tableFor(t); ok {
+			for d, v := range tt.m {
+				if !v.deleted {
+					list = append(list, d)
+				}
+			}
+		}
+	}
+
+	return list
+}
+
+func (cc *catalog) HasT(t ctypes.Type, oid schema.OID) bool {
+	cc.guard.RLock()
+	defer cc.guard.RUnlock()
+
+	switch t {
+	case ctypes.TController:
+		if v, ok := cc.controllers[oid]; ok && !v.deleted {
+			return true
+		}
+
+	default:
+		if tt, ok := cc.tableFor(t); ok {
+			if v, ok := tt.m[oid]; ok && !v.deleted {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func (cc *catalog) FindController(deviceID uint32) schema.OID {
+	cc.guard.RLock()
+	defer cc.guard.RUnlock()
 
 	if deviceID != 0 {
 		for oid, v := range cc.controllers {
@@ -185,23 +253,6 @@ func (cc *catalog) FindController(deviceID uint32) schema.OID {
 	}
 
 	return ""
-}
-
-func (cc *catalog) Doors() map[schema.OID]struct{} {
-	return cc.doors.m
-}
-
-func (cc *catalog) Groups() map[schema.OID]struct{} {
-	return cc.groups.m
-}
-
-func (cc *catalog) HasGroup(oid schema.OID) bool {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	_, ok := cc.groups.m[oid]
-
-	return ok
 }
 
 func (cc *catalog) tableFor(t ctypes.Type) (table, bool) {
@@ -245,7 +296,7 @@ loop:
 			}
 		}
 
-		t.m[oid] = struct{}{}
+		t.m[oid] = record{}
 		t.last = suffix
 		return oid
 	}
@@ -268,7 +319,7 @@ func (t *table) Put(oid schema.OID, v interface{}) {
 		panic(fmt.Sprintf("PUT: out of range oid %v for base %v", oid, t.base))
 	}
 
-	t.m[oid] = struct{}{}
+	t.m[oid] = record{}
 
 	if v := uint32(index); v > t.last {
 		t.last = v

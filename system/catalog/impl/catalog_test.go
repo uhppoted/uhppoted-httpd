@@ -2,6 +2,7 @@ package memdb
 
 import (
 	"reflect"
+	"sort"
 	"testing"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
@@ -12,10 +13,10 @@ func TestNewOID(t *testing.T) {
 	cc := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]struct{}{
-				"0.3.1":   struct{}{},
-				"0.3.2":   struct{}{},
-				"0.3.100": struct{}{},
+			m: map[schema.OID]record{
+				"0.3.1":   record{},
+				"0.3.2":   record{},
+				"0.3.100": record{},
 			},
 		},
 
@@ -31,11 +32,11 @@ func TestNewOID(t *testing.T) {
 	expected := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]struct{}{
-				"0.3.1":   struct{}{},
-				"0.3.2":   struct{}{},
-				"0.3.3":   struct{}{},
-				"0.3.100": struct{}{},
+			m: map[schema.OID]record{
+				"0.3.1":   record{},
+				"0.3.2":   record{},
+				"0.3.3":   record{},
+				"0.3.100": record{},
 			},
 		},
 
@@ -63,10 +64,10 @@ func TestNewDoor(t *testing.T) {
 	cc := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]struct{}{
-				"0.3.1":   struct{}{},
-				"0.3.2":   struct{}{},
-				"0.3.100": struct{}{},
+			m: map[schema.OID]record{
+				"0.3.1":   record{},
+				"0.3.2":   record{},
+				"0.3.100": record{},
 			},
 		},
 
@@ -82,11 +83,11 @@ func TestNewDoor(t *testing.T) {
 	expected := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]struct{}{
-				"0.3.1":   struct{}{},
-				"0.3.2":   struct{}{},
-				"0.3.3":   struct{}{},
-				"0.3.100": struct{}{},
+			m: map[schema.OID]record{
+				"0.3.1":   record{},
+				"0.3.2":   record{},
+				"0.3.3":   record{},
+				"0.3.100": record{},
 			},
 		},
 
@@ -114,7 +115,7 @@ func TestNewEvent(t *testing.T) {
 	cc := catalog{
 		events: table{
 			base: schema.EventsOID,
-			m:    map[schema.OID]struct{}{},
+			m:    map[schema.OID]record{},
 		},
 
 		controllers: map[schema.OID]controller{},
@@ -137,6 +138,66 @@ func TestNewEvent(t *testing.T) {
 
 		if oid != expected {
 			t.Errorf("Invalid event OID - expected:%v, got:%v", expected, oid)
+		}
+	}
+}
+
+func TestListT(t *testing.T) {
+	cc := catalog{
+		doors: table{
+			base: schema.DoorsOID,
+			m: map[schema.OID]record{
+				"0.3.1":   record{},
+				"0.3.2":   record{},
+				"0.3.3":   record{deleted: true},
+				"0.3.100": record{},
+				"0.3.200": record{},
+			},
+		},
+	}
+
+	expected := []schema.OID{
+		"0.3.1",
+		"0.3.100",
+		"0.3.2",
+		"0.3.200",
+	}
+
+	list := cc.ListT(ctypes.TDoor)
+
+	sort.Slice(list, func(i, j int) bool { return string(list[i]) < string(list[j]) })
+
+	if !reflect.DeepEqual(&list, &expected) {
+		t.Errorf("Incorrect list of doors:\n   expected:%v\n   got:     %v", &expected, &list)
+	}
+}
+
+func TestHasT(t *testing.T) {
+	cc := catalog{
+		groups: table{
+			base: schema.GroupsOID,
+			m: map[schema.OID]record{
+				"0.5.1":   record{},
+				"0.5.2":   record{},
+				"0.5.3":   record{deleted: true},
+				"0.5.100": record{},
+				"0.5.200": record{},
+			},
+		},
+	}
+
+	tests := map[schema.OID]bool{
+		"0.5.1":   true,
+		"0.5.2":   true,
+		"0.5.3":   false,
+		"0.5.100": true,
+		"0.5.200": true,
+		"0.5.5":   false,
+	}
+
+	for k, v := range tests {
+		if has := cc.HasT(ctypes.TGroup, k); has != v {
+			t.Errorf("HasT returned incorrect result for '%v' - expected:%v\n, got:%v", k, v, has)
 		}
 	}
 }

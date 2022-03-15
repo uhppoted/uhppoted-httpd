@@ -226,7 +226,7 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		u.modified = types.TimestampNow()
 		list = append(list, kv{UserDeleted, u.deleted})
 
-		catalog.Delete(u.OID)
+		catalog.DeleteT(u, u.OID)
 	}
 
 	list = append(list, kv{UserStatus, u.status()})

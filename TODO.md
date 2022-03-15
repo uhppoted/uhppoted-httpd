@@ -2,11 +2,9 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
-            - [x] Rework NewOID to not loop through map
-            - [x] map ctypes and base OIDs to map[OID]struct{}
-            - [x] catalog 'table' 
             - [ ] Genericize 'controller' table
-            - [ ] Delete only for controllers ?????????
+            - [x] Delete only for controllers ?
+            - [ ] Why don't catalog.NewT tests fail ?????
       - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
@@ -32,6 +30,8 @@
 - [ ] Make vtable'able subsystem an interface
 
 ### IN PROGRESS
+
+- [ ] catalog: reuse low order OIDs if possible
 
 - [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
       be updated from the catalog ??

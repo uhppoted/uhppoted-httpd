@@ -10,24 +10,22 @@ import (
 
 type Catalog interface {
 	Clear()
-	Delete(oid schema.OID)
 
-	NewT(t ctypes.Type, v interface{}) schema.OID
-	PutT(t ctypes.Type, v interface{}, oid schema.OID)
+	NewT(ctypes.Type, interface{}) schema.OID
+	PutT(ctypes.Type, interface{}, schema.OID)
+	DeleteT(ctypes.Type, schema.OID)
+	ListT(ctypes.Type) []schema.OID
+	HasT(ctypes.Type, schema.OID) bool
 
-	GetV(oid schema.OID, suffix schema.Suffix) interface{}
-	Put(oid schema.OID, v interface{})
-	PutV(oid schema.OID, suffix schema.Suffix, v interface{})
+	GetV(schema.OID, schema.Suffix) interface{}
+	Put(schema.OID, interface{})
+	PutV(schema.OID, schema.Suffix, interface{})
 
 	Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool)
 	FindController(deviceID uint32) schema.OID
 
-	Doors() map[schema.OID]struct{}
 	GetDoorDeviceID(door schema.OID) uint32
 	GetDoorDeviceDoor(door schema.OID) uint8
-
-	Groups() map[schema.OID]struct{}
-	HasGroup(oid schema.OID) bool
 }
 
 var catalog Catalog = memdb.Catalog()
@@ -54,10 +52,6 @@ func Clear() {
 	catalog.Clear()
 }
 
-func Delete(oid schema.OID) {
-	catalog.Delete(oid)
-}
-
 func NewT(v interface{}) schema.OID {
 	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
@@ -71,6 +65,14 @@ func PutT(v interface{}, oid schema.OID) {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	} else {
 		catalog.PutT(t, v, oid)
+	}
+}
+
+func DeleteT(v interface{}, oid schema.OID) {
+	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
+		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
+	} else {
+		catalog.DeleteT(t, oid)
 	}
 }
 
@@ -95,14 +97,7 @@ func FindController(deviceID uint32) schema.OID {
 }
 
 func GetDoors() []schema.OID {
-	list := []schema.OID{}
-	doors := catalog.Doors()
-
-	for d, _ := range doors {
-		list = append(list, d)
-	}
-
-	return list
+	return catalog.ListT(ctypes.TDoor)
 }
 
 func GetDoorDeviceID(door schema.OID) uint32 {
@@ -114,16 +109,9 @@ func GetDoorDeviceDoor(door schema.OID) uint8 {
 }
 
 func GetGroups() []schema.OID {
-	list := []schema.OID{}
-	groups := catalog.Groups()
-
-	for g, _ := range groups {
-		list = append(list, g)
-	}
-
-	return list
+	return catalog.ListT(ctypes.TGroup)
 }
 
 func HasGroup(oid schema.OID) bool {
-	return catalog.HasGroup(oid)
+	return catalog.HasT(ctypes.TGroup, oid)
 }

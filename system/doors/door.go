@@ -240,7 +240,7 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		d.deleted = types.TimestampNow()
 
 		list = append(list, kv{DoorDeleted, d.deleted})
-		catalog.Delete(d.OID)
+		catalog.DeleteT(d, d.OID)
 	}
 
 	list = append(list, kv{DoorStatus, d.status()})
