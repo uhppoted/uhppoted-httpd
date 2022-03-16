@@ -89,7 +89,7 @@ func (cc *catalog) GetDoorDeviceID(door schema.OID) uint32 {
 		4: schema.ControllerDoor4,
 	}
 
-	for k, controller := range cc.controllers {
+	for k, controller := range cc.controllers.m {
 		if !controller.deleted {
 			for _, s := range fields {
 				if v := cc.GetV(k, s); v == door {
@@ -110,7 +110,7 @@ func (cc *catalog) GetDoorDeviceDoor(door schema.OID) uint8 {
 		4: schema.ControllerDoor4,
 	}
 
-	for k, controller := range cc.controllers {
+	for k, controller := range cc.controllers.m {
 		if !controller.deleted {
 			for d, s := range fields {
 				if v := cc.GetV(k, s); v == door {

@@ -20,7 +20,7 @@ func TestNewOID(t *testing.T) {
 			},
 		},
 
-		controllers: map[schema.OID]controller{},
+		controllers: controllers{},
 		interfaces:  table{},
 		cards:       table{},
 		groups:      table{},
@@ -40,7 +40,7 @@ func TestNewOID(t *testing.T) {
 			},
 		},
 
-		controllers: map[schema.OID]controller{},
+		controllers: controllers{},
 		interfaces:  table{},
 		cards:       table{},
 		groups:      table{},
@@ -71,7 +71,7 @@ func TestNewDoor(t *testing.T) {
 			},
 		},
 
-		controllers: map[schema.OID]controller{},
+		controllers: controllers{},
 		interfaces:  table{},
 		cards:       table{},
 		groups:      table{},
@@ -91,7 +91,7 @@ func TestNewDoor(t *testing.T) {
 			},
 		},
 
-		controllers: map[schema.OID]controller{},
+		controllers: controllers{},
 		interfaces:  table{},
 		cards:       table{},
 		groups:      table{},
@@ -118,7 +118,7 @@ func TestNewEvent(t *testing.T) {
 			m:    map[schema.OID]record{},
 		},
 
-		controllers: map[schema.OID]controller{},
+		controllers: controllers{},
 		interfaces:  table{},
 		doors:       table{},
 		cards:       table{},

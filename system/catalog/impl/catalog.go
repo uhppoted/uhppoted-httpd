@@ -13,7 +13,7 @@ import (
 
 type catalog struct {
 	interfaces  table
-	controllers map[schema.OID]controller
+	controllers controllers
 	doors       table
 	cards       table
 	groups      table
@@ -29,17 +29,25 @@ type table struct {
 	last uint32
 }
 
+type controllers struct {
+	base schema.OID
+	m    map[schema.OID]controller
+}
+
 type record struct {
 	deleted bool
 }
 
 type controller struct {
-	ID      uint32
-	deleted bool
+	record
+	ID uint32
 }
 
 var db = catalog{
-	controllers: map[schema.OID]controller{},
+	controllers: controllers{
+		base: schema.ControllersOID,
+		m:    map[schema.OID]controller{},
+	},
 
 	interfaces: table{
 		base: schema.InterfacesOID,
@@ -79,7 +87,7 @@ func (cc *catalog) Clear() {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	cc.controllers = map[schema.OID]controller{}
+	cc.controllers.m = map[schema.OID]controller{}
 
 	cc.interfaces.m = map[schema.OID]record{}
 	cc.doors.m = map[schema.OID]record{}
@@ -121,7 +129,7 @@ func (cc *catalog) newController(deviceID uint32) schema.OID {
 	defer cc.guard.Unlock()
 
 	if deviceID != 0 {
-		for oid, v := range cc.controllers {
+		for oid, v := range cc.controllers.m {
 			if !v.deleted && v.ID == deviceID {
 				return oid
 			}
@@ -133,15 +141,17 @@ loop:
 	for {
 		item += 1
 		oid := schema.OID(fmt.Sprintf("%v.%d", schema.ControllersOID, item))
-		for v, _ := range cc.controllers {
+		for v, _ := range cc.controllers.m {
 			if v == oid {
 				continue loop
 			}
 		}
 
-		cc.controllers[oid] = controller{
-			ID:      deviceID,
-			deleted: false,
+		cc.controllers.m[oid] = controller{
+			record: record{
+				deleted: false,
+			},
+			ID: deviceID,
 		}
 
 		return oid
@@ -153,9 +163,11 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	defer cc.guard.Unlock()
 
 	if t == ctypes.TController {
-		cc.controllers[oid] = controller{
-			ID:      v.(uint32),
-			deleted: false,
+		cc.controllers.m[oid] = controller{
+			record: record{
+				deleted: false,
+			},
+			ID: v.(uint32),
 		}
 
 		return
@@ -174,10 +186,12 @@ func (cc *catalog) DeleteT(t ctypes.Type, oid schema.OID) {
 
 	switch t {
 	case ctypes.TController:
-		if v, ok := cc.controllers[oid]; ok {
-			cc.controllers[oid] = controller{
-				ID:      v.ID,
-				deleted: true,
+		if v, ok := cc.controllers.m[oid]; ok {
+			cc.controllers.m[oid] = controller{
+				record: record{
+					deleted: true,
+				},
+				ID: v.ID,
 			}
 		}
 
@@ -200,7 +214,7 @@ func (cc *catalog) ListT(t ctypes.Type) []schema.OID {
 
 	switch t {
 	case ctypes.TController:
-		for d, v := range cc.controllers {
+		for d, v := range cc.controllers.m {
 			if !v.deleted {
 				list = append(list, d)
 			}
@@ -225,7 +239,7 @@ func (cc *catalog) HasT(t ctypes.Type, oid schema.OID) bool {
 
 	switch t {
 	case ctypes.TController:
-		if v, ok := cc.controllers[oid]; ok && !v.deleted {
+		if v, ok := cc.controllers.m[oid]; ok && !v.deleted {
 			return true
 		}
 
@@ -245,7 +259,7 @@ func (cc *catalog) FindController(deviceID uint32) schema.OID {
 	defer cc.guard.RUnlock()
 
 	if deviceID != 0 {
-		for oid, v := range cc.controllers {
+		for oid, v := range cc.controllers.m {
 			if v.ID == deviceID && !v.deleted {
 				return oid
 			}

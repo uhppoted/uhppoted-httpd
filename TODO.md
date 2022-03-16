@@ -4,12 +4,23 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [ ] Genericize 'controller' table
             - [x] Delete only for controllers ?
-            - [ ] Why don't catalog.NewT tests fail ?????
+            - [ ] catalog: reuse low order OIDs if possible
+                  - [ ] Use 0 for last value if table size is e.g. < 20
+                  - [ ] Rework catalog.NewT tests
+                  - [ ] Unit test for non-zero 'last' value
+                  - [ ] binary search map for highest value
       - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
       - [ ] Empty events layout is all squashed to the left
       - [ ] Log layout on Firefox is terrible
+```
+Serif Font: Times New Roman, 16 point
+Sans-Serif Font: Arial, 16 point
+Fixed-Width Font: Courier New, 13 point
+Default Encoding: Western (ISO-8859-1)
+Default Language: English (US)
+```
       - [ ] Refresh overwrites in-progress card edits
       - [ ] Linux
       - [ ] Windows
@@ -30,8 +41,6 @@
 - [ ] Make vtable'able subsystem an interface
 
 ### IN PROGRESS
-
-- [ ] catalog: reuse low order OIDs if possible
 
 - [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
       be updated from the catalog ??
@@ -105,6 +114,7 @@
 
 - [ ] Fix Firefox layout
       - spacing/padding/margins
+      - https://css-tricks.com/snippets/css/better-helvetica/
 
 - [ ] ACL
       - wrap ACL update in goroutine
