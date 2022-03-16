@@ -2,13 +2,13 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
+            - [ ] catalog: convert to Go generics
             - [ ] Genericize 'controller' table
-            - [x] Delete only for controllers ?
             - [ ] catalog: reuse low order OIDs if possible
+                  - [ ] binary search map for highest value
                   - [ ] Use 0 for last value if table size is e.g. < 20
                   - [ ] Rework catalog.NewT tests
                   - [ ] Unit test for non-zero 'last' value
-                  - [ ] binary search map for highest value
       - [ ] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
