@@ -2,9 +2,6 @@ package memdb
 
 import (
 	"fmt"
-	"regexp"
-	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
@@ -21,26 +18,6 @@ type catalog struct {
 	logs        table
 	users       table
 	guard       sync.RWMutex
-}
-
-type table struct {
-	base schema.OID
-	m    map[schema.OID]record
-	last uint32
-}
-
-type controllers struct {
-	base schema.OID
-	m    map[schema.OID]controller
-}
-
-type record struct {
-	deleted bool
-}
-
-type controller struct {
-	record
-	ID uint32
 }
 
 var db = catalog{
@@ -87,15 +64,14 @@ func (cc *catalog) Clear() {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	cc.controllers.m = map[schema.OID]controller{}
-
-	cc.interfaces.m = map[schema.OID]record{}
-	cc.doors.m = map[schema.OID]record{}
-	cc.cards.m = map[schema.OID]record{}
-	cc.groups.m = map[schema.OID]record{}
-	cc.events.m = map[schema.OID]record{}
-	cc.logs.m = map[schema.OID]record{}
-	cc.users.m = map[schema.OID]record{}
+	cc.interfaces.Clear()
+	cc.controllers.Clear()
+	cc.doors.Clear()
+	cc.cards.Clear()
+	cc.groups.Clear()
+	cc.events.Clear()
+	cc.logs.Clear()
+	cc.users.Clear()
 
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
@@ -104,13 +80,24 @@ func (cc *catalog) Clear() {
 }
 
 func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
+	if t == ctypes.TController {
+		cc.guard.Lock()
+		defer cc.guard.Unlock()
+
+		if deviceID := v.(uint32); deviceID != 0 {
+			for oid, v := range cc.controllers.m {
+				if !v.deleted && v.ID == deviceID {
+					return oid
+				}
+			}
+		}
+
+		return cc.controllers.New(v.(uint32))
+	}
+
 	// NTS: only support a single interface at this point in time
 	if t == ctypes.TInterface {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
-	}
-
-	if t == ctypes.TController {
-		return cc.newController(v.(uint32))
 	}
 
 	m, ok := cc.tableFor(t)
@@ -121,41 +108,7 @@ func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	return m.NewT(v)
-}
-
-func (cc *catalog) newController(deviceID uint32) schema.OID {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	if deviceID != 0 {
-		for oid, v := range cc.controllers.m {
-			if !v.deleted && v.ID == deviceID {
-				return oid
-			}
-		}
-	}
-
-	item := 0
-loop:
-	for {
-		item += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", schema.ControllersOID, item))
-		for v, _ := range cc.controllers.m {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		cc.controllers.m[oid] = controller{
-			record: record{
-				deleted: false,
-			},
-			ID: deviceID,
-		}
-
-		return oid
-	}
+	return m.New(v)
 }
 
 func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
@@ -163,13 +116,7 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	defer cc.guard.Unlock()
 
 	if t == ctypes.TController {
-		cc.controllers.m[oid] = controller{
-			record: record{
-				deleted: false,
-			},
-			ID: v.(uint32),
-		}
-
+		cc.controllers.Put(oid, v.(uint32))
 		return
 	}
 
@@ -186,22 +133,11 @@ func (cc *catalog) DeleteT(t ctypes.Type, oid schema.OID) {
 
 	switch t {
 	case ctypes.TController:
-		if v, ok := cc.controllers.m[oid]; ok {
-			cc.controllers.m[oid] = controller{
-				record: record{
-					deleted: true,
-				},
-				ID: v.ID,
-			}
-		}
+		cc.controllers.Delete(oid)
 
 	default:
 		if tt, ok := cc.tableFor(t); ok {
-			if _, ok := tt.m[oid]; ok {
-				tt.m[oid] = record{
-					deleted: true,
-				}
-			}
+			tt.Delete(oid)
 		}
 	}
 }
@@ -294,48 +230,5 @@ func (cc *catalog) tableFor(t ctypes.Type) (table, bool) {
 
 	default:
 		return table{}, false
-	}
-}
-
-func (t *table) NewT(v interface{}) schema.OID {
-	suffix := t.last
-
-loop:
-	for {
-		suffix += 1
-		oid := schema.OID(fmt.Sprintf("%v.%d", t.base, suffix))
-		for v, _ := range t.m {
-			if v == oid {
-				continue loop
-			}
-		}
-
-		t.m[oid] = record{}
-		t.last = suffix
-		return oid
-	}
-}
-
-func (t *table) Put(oid schema.OID, v interface{}) {
-	if !oid.HasPrefix(t.base) {
-		panic(fmt.Sprintf("PUT: illegal oid %v for base %v", oid, t.base))
-	}
-
-	suffix := strings.TrimPrefix(string(oid), string(t.base))
-
-	match := regexp.MustCompile(`\.([0-9]+)`).FindStringSubmatch(suffix)
-	if match == nil || len(match) != 2 {
-		panic(fmt.Sprintf("PUT: invalid oid %v for base %v", oid, t.base))
-	}
-
-	index, err := strconv.ParseUint(match[1], 10, 32)
-	if err != nil {
-		panic(fmt.Sprintf("PUT: out of range oid %v for base %v", oid, t.base))
-	}
-
-	t.m[oid] = record{}
-
-	if v := uint32(index); v > t.last {
-		t.last = v
 	}
 }

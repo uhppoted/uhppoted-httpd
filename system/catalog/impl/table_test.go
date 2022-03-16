@@ -14,7 +14,7 @@ func TestTableNewT(t *testing.T) {
 	}
 
 	expected := schema.OID("0.3.5")
-	oid := tt.NewT(struct{}{})
+	oid := tt.New(struct{}{})
 
 	if oid != "0.3.124" {
 		t.Errorf("Incorrect new OID - expected:%v, got:%v", expected, oid)
