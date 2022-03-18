@@ -22,37 +22,45 @@ type catalog struct {
 
 var db = catalog{
 	controllers: controllers{
-		base: schema.ControllersOID,
-		m:    map[schema.OID]controller{},
+		base:  schema.ControllersOID,
+		m:     map[schema.OID]controller{},
+		limit: 32,
 	},
 
 	interfaces: table{
-		base: schema.InterfacesOID,
-		m:    map[schema.OID]record{},
+		base:  schema.InterfacesOID,
+		m:     map[schema.OID]record{},
+		limit: 32,
 	},
 	doors: table{
-		base: schema.DoorsOID,
-		m:    map[schema.OID]record{},
+		base:  schema.DoorsOID,
+		m:     map[schema.OID]record{},
+		limit: 32,
 	},
 	cards: table{
-		base: schema.CardsOID,
-		m:    map[schema.OID]record{},
+		base:  schema.CardsOID,
+		m:     map[schema.OID]record{},
+		limit: 32,
 	},
 	groups: table{
-		base: schema.GroupsOID,
-		m:    map[schema.OID]record{},
+		base:  schema.GroupsOID,
+		m:     map[schema.OID]record{},
+		limit: 32,
 	},
 	events: table{
-		base: schema.EventsOID,
-		m:    map[schema.OID]record{},
+		base:  schema.EventsOID,
+		m:     map[schema.OID]record{},
+		limit: 32,
 	},
 	logs: table{
-		base: schema.LogsOID,
-		m:    map[schema.OID]record{},
+		base:  schema.LogsOID,
+		m:     map[schema.OID]record{},
+		limit: 32,
 	},
 	users: table{
-		base: schema.UsersOID,
-		m:    map[schema.OID]record{},
+		base:  schema.UsersOID,
+		m:     map[schema.OID]record{},
+		limit: 32,
 	},
 }
 

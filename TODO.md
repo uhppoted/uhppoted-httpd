@@ -2,11 +2,10 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
-            - [ ] catalog: convert to Go generics
             - [ ] Genericize 'controller' table
-            - [ ] catalog: reuse low order OIDs if possible
+            - (?) catalog: reuse low order OIDs if possible
                   - [ ] binary search map for highest value
-                  - [ ] Use 0 for last value if table size is e.g. < 20
+                  - [x] Use 0 for last value if table size is e.g. < 20
                   - [ ] Rework catalog.NewT tests
                   - [ ] Unit test for non-zero 'last' value
       - [ ] GetV => GetBool, GetInt, etc
@@ -26,8 +25,6 @@ Default Language: English (US)
       - [ ] Windows
 
 - [ ] daemonize
-      - [x] Check log rotation
-            - [x] Linux audit log is being truncated
       - [ ] Does double SIGHUP kill service ?? 
 
 - [ ] Overview page 
