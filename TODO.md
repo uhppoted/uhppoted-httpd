@@ -3,23 +3,17 @@
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [ ] Genericize 'controller' table
-            - (?) catalog: reuse low order OIDs if possible
+            - [ ] catalog: reuse low order OIDs if possible
                   - [ ] binary search map for highest value
                   - [x] Use 0 for last value if table size is e.g. < 20
                   - [ ] Rework catalog.NewT tests
-                  - [ ] Unit test for non-zero 'last' value
+                  - [x] Unit test for non-zero 'last' value
       - [x] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
+      - [x] Fix log layout on Firefox
+      - [x] Fix events layout on Firefox
       - [ ] Empty events layout is all squashed to the left
-      - [ ] Log layout on Firefox is terrible
-```
-Serif Font: Times New Roman, 16 point
-Sans-Serif Font: Arial, 16 point
-Fixed-Width Font: Courier New, 13 point
-Default Encoding: Western (ISO-8859-1)
-Default Language: English (US)
-```
       - [ ] Refresh overwrites in-progress card edits
       - [ ] Linux
       - [ ] Windows
@@ -255,28 +249,3 @@ Default Language: English (US)
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
 - https://gist.github.com/Mattemagikern/328cdd650be33bc33105e26db88e487d
 
-# SNIPPETS
-```
-Mb9qSW8sCB3HI6W5
-adduser xxx
-adduser xxx sudo
-adduser uhppoted
-mkdir -p /opt/uhppoted
-chown -R uhppoted:uhppoted /opt/uhppoted
-sudo su - xxx
-wget https://go.dev/dl/go1.17.7.linux-amd64.tar.gz
-sudo tar -C /usr/local -xvzf  go1.17.7.linux-amd64.tar.gz 
-echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.profile
-echo "export GOPATH=~/.go" >> ~/.profile
-source ~/.profile
-go version
-sudo apt install npm
-sudo npm install -g sass
-git clone https://github.com/uhppoted/uhppoted-httpd.git
-cd uhppoted-httpd
-npm install eslint
-make build
-sudo cp ./bin/uhppoted-httpd /opt/uhppoted
-sudo chown uhppoted:uhppoted /opt/uhppoted/uhppoted-httpd
-cd /opt/uhppoted
-```

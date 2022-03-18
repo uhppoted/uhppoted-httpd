@@ -4,6 +4,7 @@ DIST   ?= development
 DEBUG  ?= --debug
 CMD     = ./bin/uhppoted-httpd
 
+.PHONY: sass
 .PHONY: debug
 .PHONY: reset
 .PHONY: update

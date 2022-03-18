@@ -734,48 +734,61 @@ th.timestamp {
 td input.timestamp {
   width: 140px;
   height: 18px;
-  font-variant: small-caps;
-  font-variant-caps: all-petite-caps;
-  font-size: 1.2em;
+  font-size: 0.88em;
 }
 
 td input.uid {
   width: 72px;
   white-space: nowrap;
   font-variant: small-caps;
-  font-variant-caps: all-petite-caps;
   font-size: 1.2em;
 }
 
-td input.module {
+td input.item {
   width: 96px;
   font-variant: small-caps;
-  font-variant-caps: all-petite-caps;
   font-size: 1.2em;
 }
 
-td input.module-id {
+td input.item-id {
   width: 72px;
   font-variant: small-caps;
-  font-variant-caps: all-petite-caps;
-  font-size: 1.2em;
+  font-size: 0.88em;
 }
 
-td input.module-name {
+td input.item-name {
   width: 120px;
   font-variant: small-caps;
-  font-variant-caps: all-petite-caps;
-  font-size: 1.2em;
+  font-size: 1.1em;
 }
 
-td input.module-field {
+td input.item-field {
   width: 96px;
   font-variant: small-caps;
   font-variant-caps: all-petite-caps;
-  font-size: 1.2em;
+  font-size: 1.1em;
 }
 
 td input.details {
   width: 90%;
   font-style: italic;
+}
+
+@-moz-document url-prefix("") {
+  td input.field {
+    font-family: "Arial", san-serif;
+    font-size: 1em;
+  }
+
+  td input.timestamp {
+    font-size: 0.88em;
+  }
+
+  td input.item-id {
+    font-size: 0.88em;
+  }
+
+  td input.details {
+    font-size: 0.9em;
+  }
 }

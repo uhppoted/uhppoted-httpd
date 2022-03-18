@@ -817,3 +817,26 @@ td input.reason {
   font-size: 1.1em;
   font-variant: small-caps;
 }
+
+@-moz-document url-prefix("") {
+  td input.field {
+    font-family: "Arial", san-serif;
+    font-size: 1em;
+  }
+
+  td input.timestamp {
+    font-size: 0.88em;
+  }
+
+  td input.deviceID {
+    font-size: 0.88em;
+  }
+
+  td input.doorid {
+    font-size: 0.88em;
+  }
+
+  td input.cardno {
+    font-size: 0.88em;
+  }
+}
