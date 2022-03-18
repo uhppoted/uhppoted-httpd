@@ -80,6 +80,25 @@ func GetV(oid schema.OID, suffix schema.Suffix) interface{} {
 	return catalog.GetV(oid, suffix)
 }
 
+func GetBool(oid schema.OID, suffix schema.Suffix) (bool, bool) {
+	if v := catalog.GetV(oid, suffix); v == nil {
+		return false, false
+	} else if b, ok := v.(bool); !ok {
+		return false, false
+	} else {
+		return b, true
+	}
+}
+func GetUint8(oid schema.OID, suffix schema.Suffix) (uint8, bool) {
+	if v := catalog.GetV(oid, suffix); v == nil {
+		return 0, false
+	} else if u, ok := v.(uint8); !ok {
+		return 0, false
+	} else {
+		return u, true
+	}
+}
+
 func Put(oid schema.OID, v interface{}) {
 	catalog.Put(oid, v)
 }

@@ -413,10 +413,8 @@ func (l *LAN) SynchDoors(c Controller) {
 			actual := catalog.GetV(oid, DoorDelay)
 			modified := false
 
-			if v := catalog.GetV(oid, schema.DoorDelayModified); v != nil {
-				if b, ok := v.(bool); ok {
-					modified = b
-				}
+			if b, ok := catalog.GetBool(oid, schema.DoorDelayModified); ok {
+				modified = b
 			}
 
 			if configured != nil && (actual == nil || actual != configured) && modified {
@@ -446,10 +444,8 @@ func (l *LAN) SynchDoors(c Controller) {
 			actual := catalog.GetV(oid, DoorControl)
 			modified := false
 
-			if v := catalog.GetV(oid, DoorControlModified); v != nil {
-				if b, ok := v.(bool); ok {
-					modified = b
-				}
+			if b, ok := catalog.GetBool(oid, DoorControlModified); ok {
+				modified = b
 			}
 
 			if configured != nil && (actual == nil || actual != configured) && modified {

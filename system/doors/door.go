@@ -84,14 +84,12 @@ func (d *Door) AsObjects(auth auth.OpAuth) []schema.Object {
 			status:     types.StatusUnknown,
 		}
 
-		if v := catalog.GetV(d.OID, DoorDelay); v != nil {
-			delay.delay = v.(uint8)
+		if v, ok := catalog.GetUint8(d.OID, DoorDelay); ok {
+			delay.delay = v
 			modified := false
 
-			if v := catalog.GetV(d.OID, DoorDelayModified); v != nil {
-				if b, ok := v.(bool); ok {
-					modified = b
-				}
+			if b, ok := catalog.GetBool(d.OID, DoorDelayModified); ok {
+				modified = b
 			}
 
 			switch {
@@ -111,10 +109,8 @@ func (d *Door) AsObjects(auth auth.OpAuth) []schema.Object {
 			control.control = v.(core.ControlState)
 			modified := false
 
-			if v := catalog.GetV(d.OID, DoorControlModified); v != nil {
-				if b, ok := v.(bool); ok {
-					modified = b
-				}
+			if b, ok := catalog.GetBool(d.OID, DoorControlModified); ok {
+				modified = b
 			}
 
 			switch {

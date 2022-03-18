@@ -8,7 +8,7 @@
                   - [x] Use 0 for last value if table size is e.g. < 20
                   - [ ] Rework catalog.NewT tests
                   - [ ] Unit test for non-zero 'last' value
-      - [ ] GetV => GetBool, GetInt, etc
+      - [x] GetV => GetBool, GetInt, etc
 
 - [ ] Verify bootstrap from scratch
       - [ ] Empty events layout is all squashed to the left
