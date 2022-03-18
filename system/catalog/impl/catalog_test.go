@@ -13,10 +13,10 @@ func TestNewOID(t *testing.T) {
 	cc := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]record{
-				"0.3.1":   record{},
-				"0.3.2":   record{},
-				"0.3.100": record{},
+			m: map[schema.OID]entry{
+				"0.3.1":   entry{},
+				"0.3.2":   entry{},
+				"0.3.100": entry{},
 			},
 		},
 
@@ -32,11 +32,11 @@ func TestNewOID(t *testing.T) {
 	expected := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]record{
-				"0.3.1":   record{},
-				"0.3.2":   record{},
-				"0.3.3":   record{},
-				"0.3.100": record{},
+			m: map[schema.OID]entry{
+				"0.3.1":   entry{},
+				"0.3.2":   entry{},
+				"0.3.3":   entry{},
+				"0.3.100": entry{},
 			},
 		},
 
@@ -64,10 +64,10 @@ func TestNewDoor(t *testing.T) {
 	cc := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]record{
-				"0.3.1":   record{},
-				"0.3.2":   record{},
-				"0.3.100": record{},
+			m: map[schema.OID]entry{
+				"0.3.1":   entry{},
+				"0.3.2":   entry{},
+				"0.3.100": entry{},
 			},
 		},
 
@@ -83,11 +83,11 @@ func TestNewDoor(t *testing.T) {
 	expected := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]record{
-				"0.3.1":   record{},
-				"0.3.2":   record{},
-				"0.3.3":   record{},
-				"0.3.100": record{},
+			m: map[schema.OID]entry{
+				"0.3.1":   entry{},
+				"0.3.2":   entry{},
+				"0.3.3":   entry{},
+				"0.3.100": entry{},
 			},
 		},
 
@@ -115,7 +115,7 @@ func TestNewEvent(t *testing.T) {
 	cc := catalog{
 		events: table{
 			base: schema.EventsOID,
-			m:    map[schema.OID]record{},
+			m:    map[schema.OID]entry{},
 		},
 
 		controllers: controllers{},
@@ -146,12 +146,12 @@ func TestListT(t *testing.T) {
 	cc := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]record{
-				"0.3.1":   record{},
-				"0.3.2":   record{},
-				"0.3.3":   record{deleted: true},
-				"0.3.100": record{},
-				"0.3.200": record{},
+			m: map[schema.OID]entry{
+				"0.3.1":   entry{},
+				"0.3.2":   entry{},
+				"0.3.3":   entry{deleted: true},
+				"0.3.100": entry{},
+				"0.3.200": entry{},
 			},
 		},
 	}
@@ -176,12 +176,12 @@ func TestHasT(t *testing.T) {
 	cc := catalog{
 		groups: table{
 			base: schema.GroupsOID,
-			m: map[schema.OID]record{
-				"0.5.1":   record{},
-				"0.5.2":   record{},
-				"0.5.3":   record{deleted: true},
-				"0.5.100": record{},
-				"0.5.200": record{},
+			m: map[schema.OID]entry{
+				"0.5.1":   entry{},
+				"0.5.2":   entry{},
+				"0.5.3":   entry{deleted: true},
+				"0.5.100": entry{},
+				"0.5.200": entry{},
 			},
 		},
 	}
@@ -206,11 +206,11 @@ func TestDeleteT(t *testing.T) {
 	cc := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]record{
-				"0.3.1":   record{},
-				"0.3.2":   record{},
-				"0.3.3":   record{},
-				"0.3.100": record{},
+			m: map[schema.OID]entry{
+				"0.3.1":   entry{},
+				"0.3.2":   entry{},
+				"0.3.3":   entry{},
+				"0.3.100": entry{},
 			},
 		},
 
@@ -226,11 +226,11 @@ func TestDeleteT(t *testing.T) {
 	expected := catalog{
 		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]record{
-				"0.3.1":   record{},
-				"0.3.2":   record{},
-				"0.3.3":   record{deleted: true},
-				"0.3.100": record{},
+			m: map[schema.OID]entry{
+				"0.3.1":   entry{},
+				"0.3.2":   entry{},
+				"0.3.3":   entry{deleted: true},
+				"0.3.100": entry{},
 			},
 		},
 

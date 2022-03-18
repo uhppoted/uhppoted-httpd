@@ -11,7 +11,7 @@ import (
 
 type table struct {
 	base  schema.OID
-	m     map[schema.OID]record
+	m     map[schema.OID]entry
 	limit int
 	last  uint32
 }
@@ -23,12 +23,12 @@ type controllers struct {
 	last  uint32
 }
 
-type record struct {
+type entry struct {
 	deleted bool
 }
 
 type controller struct {
-	record
+	entry
 	ID uint32
 }
 
@@ -50,7 +50,7 @@ loop:
 			}
 		}
 
-		t.m[oid] = record{}
+		t.m[oid] = entry{}
 		t.last = suffix
 		return oid
 	}
@@ -73,7 +73,7 @@ func (t *table) Put(oid schema.OID, v interface{}) {
 		panic(fmt.Sprintf("PUT: out of range oid %v for base %v", oid, t.base))
 	}
 
-	t.m[oid] = record{}
+	t.m[oid] = entry{}
 
 	if v := uint32(index); v > t.last {
 		t.last = v
@@ -88,7 +88,7 @@ func (t *table) Delete(oid schema.OID) {
 }
 
 func (t *table) Clear() {
-	t.m = map[schema.OID]record{}
+	t.m = map[schema.OID]entry{}
 	t.last = 0
 }
 

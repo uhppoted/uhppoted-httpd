@@ -29,37 +29,37 @@ var db = catalog{
 
 	interfaces: table{
 		base:  schema.InterfacesOID,
-		m:     map[schema.OID]record{},
+		m:     map[schema.OID]entry{},
 		limit: 32,
 	},
 	doors: table{
 		base:  schema.DoorsOID,
-		m:     map[schema.OID]record{},
+		m:     map[schema.OID]entry{},
 		limit: 32,
 	},
 	cards: table{
 		base:  schema.CardsOID,
-		m:     map[schema.OID]record{},
+		m:     map[schema.OID]entry{},
 		limit: 32,
 	},
 	groups: table{
 		base:  schema.GroupsOID,
-		m:     map[schema.OID]record{},
+		m:     map[schema.OID]entry{},
 		limit: 32,
 	},
 	events: table{
 		base:  schema.EventsOID,
-		m:     map[schema.OID]record{},
+		m:     map[schema.OID]entry{},
 		limit: 32,
 	},
 	logs: table{
 		base:  schema.LogsOID,
-		m:     map[schema.OID]record{},
+		m:     map[schema.OID]entry{},
 		limit: 32,
 	},
 	users: table{
 		base:  schema.UsersOID,
-		m:     map[schema.OID]record{},
+		m:     map[schema.OID]entry{},
 		limit: 32,
 	},
 }
