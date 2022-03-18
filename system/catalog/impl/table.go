@@ -9,11 +9,20 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-type table struct {
+type table[V record] struct {
 	base  schema.OID
-	m     map[schema.OID]entry
+	m     map[schema.OID]V
 	limit int
 	last  uint32
+}
+
+type record interface {
+	*entry
+	Delete()
+}
+
+func (e *entry) Delete() {
+	e.deleted = true
 }
 
 type controllers struct {
@@ -27,12 +36,14 @@ type entry struct {
 	deleted bool
 }
 
+type pentry *entry
+
 type controller struct {
 	entry
 	ID uint32
 }
 
-func (t *table) New(v interface{}) schema.OID {
+func (t *table[pentry]) New(v interface{}) schema.OID {
 	suffix := t.last
 
 	// ... FWIW, keep the low order OID space compact
@@ -50,13 +61,13 @@ loop:
 			}
 		}
 
-		t.m[oid] = entry{}
+		t.m[oid] = &entry{}
 		t.last = suffix
 		return oid
 	}
 }
 
-func (t *table) Put(oid schema.OID, v interface{}) {
+func (t *table[pentry]) Put(oid schema.OID, v interface{}) {
 	if !oid.HasPrefix(t.base) {
 		panic(fmt.Sprintf("PUT: illegal oid %v for base %v", oid, t.base))
 	}
@@ -73,22 +84,26 @@ func (t *table) Put(oid schema.OID, v interface{}) {
 		panic(fmt.Sprintf("PUT: out of range oid %v for base %v", oid, t.base))
 	}
 
-	t.m[oid] = entry{}
+	t.m[oid] = &entry{}
 
 	if v := uint32(index); v > t.last {
 		t.last = v
 	}
 }
 
-func (t *table) Delete(oid schema.OID) {
+func (t *table[T]) Delete(oid schema.OID) {
 	if v, ok := t.m[oid]; ok {
-		v.deleted = true
-		t.m[oid] = v
+		v.Delete()
+		//        switch r.(type) {
+		//		case *entry:
+		//			r.deleted = true
+		//		}
+		//		t.m[oid] = v
 	}
 }
 
-func (t *table) Clear() {
-	t.m = map[schema.OID]entry{}
+func (t *table[pentry]) Clear() {
+	t.m = map[schema.OID]pentry{}
 	t.last = 0
 }
 

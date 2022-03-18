@@ -9,14 +9,14 @@ import (
 )
 
 type catalog struct {
-	interfaces  table
+	interfaces  table[*entry]
 	controllers controllers
-	doors       table
-	cards       table
-	groups      table
-	events      table
-	logs        table
-	users       table
+	doors       table[*entry]
+	cards       table[*entry]
+	groups      table[*entry]
+	events      table[*entry]
+	logs        table[*entry]
+	users       table[*entry]
 	guard       sync.RWMutex
 }
 
@@ -27,39 +27,39 @@ var db = catalog{
 		limit: 32,
 	},
 
-	interfaces: table{
+	interfaces: table[*entry]{
 		base:  schema.InterfacesOID,
-		m:     map[schema.OID]entry{},
+		m:     map[schema.OID]*entry{},
 		limit: 32,
 	},
-	doors: table{
+	doors: table[*entry]{
 		base:  schema.DoorsOID,
-		m:     map[schema.OID]entry{},
+		m:     map[schema.OID]*entry{},
 		limit: 32,
 	},
-	cards: table{
+	cards: table[*entry]{
 		base:  schema.CardsOID,
-		m:     map[schema.OID]entry{},
+		m:     map[schema.OID]*entry{},
 		limit: 32,
 	},
-	groups: table{
+	groups: table[*entry]{
 		base:  schema.GroupsOID,
-		m:     map[schema.OID]entry{},
+		m:     map[schema.OID]*entry{},
 		limit: 32,
 	},
-	events: table{
+	events: table[*entry]{
 		base:  schema.EventsOID,
-		m:     map[schema.OID]entry{},
+		m:     map[schema.OID]*entry{},
 		limit: 32,
 	},
-	logs: table{
+	logs: table[*entry]{
 		base:  schema.LogsOID,
-		m:     map[schema.OID]entry{},
+		m:     map[schema.OID]*entry{},
 		limit: 32,
 	},
-	users: table{
+	users: table[*entry]{
 		base:  schema.UsersOID,
-		m:     map[schema.OID]entry{},
+		m:     map[schema.OID]*entry{},
 		limit: 32,
 	},
 }
@@ -213,7 +213,7 @@ func (cc *catalog) FindController(deviceID uint32) schema.OID {
 	return ""
 }
 
-func (cc *catalog) tableFor(t ctypes.Type) (table, bool) {
+func (cc *catalog) tableFor(t ctypes.Type) (table[*entry], bool) {
 	switch t {
 	case ctypes.TInterface:
 		return cc.interfaces, true
@@ -237,6 +237,6 @@ func (cc *catalog) tableFor(t ctypes.Type) (table, bool) {
 		return cc.users, true
 
 	default:
-		return table{}, false
+		return table[*entry]{}, false
 	}
 }
