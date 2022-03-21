@@ -3,10 +3,7 @@
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [ ] Genericize 'controller' table
-            - [ ] catalog: reuse low order OIDs if possible
-                  - [ ] binary search map for highest value
-                  - [ ] Rework catalog.NewT tests
-            - (?) Ditch the compacting entirely (or revisit later)
+            - [x] Ditch the compacting entirely
 
 - [ ] Verify bootstrap from scratch
       - [ ] Empty events layout is all squashed to the left

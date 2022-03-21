@@ -10,10 +10,9 @@ import (
 )
 
 type table[V record] struct {
-	base  schema.OID
-	m     map[schema.OID]V
-	limit int
-	last  uint32
+	base schema.OID
+	m    map[schema.OID]V
+	last uint32
 }
 
 type record interface {
@@ -26,10 +25,9 @@ func (e *entry) Delete() {
 }
 
 type controllers struct {
-	base  schema.OID
-	m     map[schema.OID]*controller
-	limit int
-	last  uint32
+	base schema.OID
+	m    map[schema.OID]*controller
+	last uint32
 }
 
 type entry struct {
@@ -47,11 +45,6 @@ func (c *controller) Delete() {
 
 func newOID(t table[*entry], v interface{}) schema.OID {
 	suffix := t.last
-
-	// ... FWIW, keep the low order OID space compact
-	if len(t.m) < t.limit {
-		suffix = 0
-	}
 
 loop:
 	for {

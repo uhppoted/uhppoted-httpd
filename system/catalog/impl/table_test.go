@@ -7,7 +7,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-func TestTableNewTWithCompacting(t *testing.T) {
+func TestTableNewOID(t *testing.T) {
 	tt := table[*entry]{
 		base: schema.DoorsOID,
 		m: map[schema.OID]*entry{
@@ -15,42 +15,7 @@ func TestTableNewTWithCompacting(t *testing.T) {
 			"0.3.2":  &entry{},
 			"0.3.10": &entry{},
 		},
-		last:  10,
-		limit: 32,
-	}
-
-	expected := table[*entry]{
-		base: schema.DoorsOID,
-		m: map[schema.OID]*entry{
-			"0.3.1":  &entry{},
-			"0.3.2":  &entry{},
-			"0.3.3":  &entry{},
-			"0.3.10": &entry{},
-		},
-		last:  10,
-		limit: 32,
-	}
-	oid := newOID(tt, struct{}{})
-
-	if oid != "0.3.3" {
-		t.Errorf("Incorrect new OID - expected:%v, got:%v", "0.3.3", oid)
-	}
-
-	if !reflect.DeepEqual(tt, expected) {
-		t.Errorf("New OID not added to table\n   expected:%v\n   got:     %v", expected, tt)
-	}
-}
-
-func TestTableNewTWithoutCompacting(t *testing.T) {
-	tt := table[*entry]{
-		base: schema.DoorsOID,
-		m: map[schema.OID]*entry{
-			"0.3.1":  &entry{},
-			"0.3.2":  &entry{},
-			"0.3.10": &entry{},
-		},
-		last:  123,
-		limit: -1,
+		last: 123,
 	}
 
 	expected := table[*entry]{
@@ -61,8 +26,7 @@ func TestTableNewTWithoutCompacting(t *testing.T) {
 			"0.3.10":  &entry{},
 			"0.3.124": &entry{},
 		},
-		last:  123,
-		limit: -1,
+		last: 123,
 	}
 
 	oid := newOID(tt, struct{}{})
@@ -84,8 +48,7 @@ func TestTablePut(t *testing.T) {
 			"0.3.2":  &entry{},
 			"0.3.10": &entry{},
 		},
-		last:  123,
-		limit: -1,
+		last: 123,
 	}
 
 	expected := table[*entry]{
@@ -96,8 +59,7 @@ func TestTablePut(t *testing.T) {
 			"0.3.10":  &entry{},
 			"0.3.124": &entry{},
 		},
-		last:  123,
-		limit: -1,
+		last: 123,
 	}
 
 	put(tt, "0.3.124", struct{}{})
@@ -145,8 +107,7 @@ func TestTableNewController(t *testing.T) {
 			"0.2.2":  &controller{ID: 1002},
 			"0.2.10": &controller{ID: 1010},
 		},
-		last:  10,
-		limit: 32,
+		last: 10,
 	}
 
 	expected := controllers{
@@ -157,8 +118,7 @@ func TestTableNewController(t *testing.T) {
 			"0.2.10": &controller{ID: 1010},
 			"0.2.11": &controller{ID: 1234},
 		},
-		last:  11,
-		limit: 32,
+		last: 11,
 	}
 
 	oid := tt.New(1234)
@@ -180,8 +140,7 @@ func TestTablePutController(t *testing.T) {
 			"0.2.2":  &controller{ID: 1002},
 			"0.2.10": &controller{ID: 1010},
 		},
-		last:  123,
-		limit: -1,
+		last: 123,
 	}
 
 	expected := controllers{
@@ -192,8 +151,7 @@ func TestTablePutController(t *testing.T) {
 			"0.2.10":  &controller{ID: 1010},
 			"0.2.124": &controller{ID: 1234},
 		},
-		last:  124,
-		limit: -1,
+		last: 124,
 	}
 
 	tt.Put("0.2.124", 1234)
@@ -211,8 +169,7 @@ func TestTableDeleteController(t *testing.T) {
 			"0.2.2":  &controller{ID: 1002},
 			"0.2.10": &controller{ID: 1010},
 		},
-		last:  123,
-		limit: -1,
+		last: 123,
 	}
 
 	expected := controllers{
@@ -222,8 +179,7 @@ func TestTableDeleteController(t *testing.T) {
 			"0.2.2":  &controller{ID: 1002, deleted: true},
 			"0.2.10": &controller{ID: 1010},
 		},
-		last:  123,
-		limit: -1,
+		last: 123,
 	}
 
 	tt.Delete("0.2.2")
