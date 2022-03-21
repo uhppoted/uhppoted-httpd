@@ -23,7 +23,7 @@ type catalog struct {
 var db = catalog{
 	controllers: controllers{
 		base:  schema.ControllersOID,
-		m:     map[schema.OID]controller{},
+		m:     map[schema.OID]*controller{},
 		limit: 32,
 	},
 
@@ -116,7 +116,7 @@ func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	return m.New(v)
+	return newOID(m, v)
 }
 
 func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
@@ -131,7 +131,7 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	if m, ok := cc.tableFor(t); !ok {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
 	} else {
-		m.Put(oid, v)
+		put(m, oid, v)
 	}
 }
 

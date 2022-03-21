@@ -39,7 +39,7 @@ func TypeOf(v interface{}) Type {
 	case "*interfaces.LAN", "interfaces.LAN":
 		return TInterface
 
-	case "uint32":
+	case "*controllers.Controller", "uint32":
 		return TController
 
 	case "*cards.Card", "cards.Card":

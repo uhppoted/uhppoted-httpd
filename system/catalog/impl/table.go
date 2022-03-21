@@ -17,7 +17,7 @@ type table[V record] struct {
 }
 
 type record interface {
-	*entry
+	*entry | *controller
 	Delete()
 }
 
@@ -27,7 +27,7 @@ func (e *entry) Delete() {
 
 type controllers struct {
 	base  schema.OID
-	m     map[schema.OID]controller
+	m     map[schema.OID]*controller
 	limit int
 	last  uint32
 }
@@ -36,14 +36,16 @@ type entry struct {
 	deleted bool
 }
 
-type pentry *entry
-
 type controller struct {
-	entry
-	ID uint32
+	deleted bool
+	ID      uint32
 }
 
-func (t *table[pentry]) New(v interface{}) schema.OID {
+func (c *controller) Delete() {
+	c.deleted = true
+}
+
+func newOID(t table[*entry], v interface{}) schema.OID {
 	suffix := t.last
 
 	// ... FWIW, keep the low order OID space compact
@@ -67,7 +69,7 @@ loop:
 	}
 }
 
-func (t *table[pentry]) Put(oid schema.OID, v interface{}) {
+func put(t table[*entry], oid schema.OID, v interface{}) {
 	if !oid.HasPrefix(t.base) {
 		panic(fmt.Sprintf("PUT: illegal oid %v for base %v", oid, t.base))
 	}
@@ -94,11 +96,6 @@ func (t *table[pentry]) Put(oid schema.OID, v interface{}) {
 func (t *table[T]) Delete(oid schema.OID) {
 	if v, ok := t.m[oid]; ok {
 		v.Delete()
-		//        switch r.(type) {
-		//		case *entry:
-		//			r.deleted = true
-		//		}
-		//		t.m[oid] = v
 	}
 }
 
@@ -120,7 +117,7 @@ loop:
 			}
 		}
 
-		t.m[oid] = controller{
+		t.m[oid] = &controller{
 			ID: v,
 		}
 		t.last = suffix
@@ -145,7 +142,7 @@ func (t *controllers) Put(oid schema.OID, v uint32) {
 		panic(fmt.Sprintf("PUT: out of range oid %v for base %v", oid, t.base))
 	}
 
-	t.m[oid] = controller{
+	t.m[oid] = &controller{
 		ID: v,
 	}
 
@@ -162,6 +159,6 @@ func (t *controllers) Delete(oid schema.OID) {
 }
 
 func (t *controllers) Clear() {
-	t.m = map[schema.OID]controller{}
+	t.m = map[schema.OID]*controller{}
 	t.last = 0
 }

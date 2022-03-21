@@ -5,14 +5,10 @@
             - [ ] Genericize 'controller' table
             - [ ] catalog: reuse low order OIDs if possible
                   - [ ] binary search map for highest value
-                  - [x] Use 0 for last value if table size is e.g. < 20
                   - [ ] Rework catalog.NewT tests
-                  - [x] Unit test for non-zero 'last' value
-      - [x] GetV => GetBool, GetInt, etc
+            - (?) Ditch the compacting entirely (or revisit later)
 
 - [ ] Verify bootstrap from scratch
-      - [x] Fix log layout on Firefox
-      - [x] Fix events layout on Firefox
       - [ ] Empty events layout is all squashed to the left
       - [ ] Refresh overwrites in-progress card edits
       - [ ] Linux
