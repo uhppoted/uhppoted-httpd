@@ -3,16 +3,18 @@
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [ ] Genericize 'controller' table
-            - [x] Ditch the compacting entirely
+            - [ ] uhppoted.Event ??????
+            - [x] Ditch the OID compacting entirely
 
 - [ ] Verify bootstrap from scratch
-      - [ ] Empty events layout is all squashed to the left
+      - [x] Empty events layout is all squashed to the left
       - [ ] Refresh overwrites in-progress card edits
-      - [ ] Linux
+      - [x] Linux
       - [ ] Windows
+      - [ ] Setting controller address 'blanks' it out before it gets updated
 
-- [ ] daemonize
-      - [ ] Does double SIGHUP kill service ?? 
+- [x] daemonize
+      - [x] Does double SIGHUP kill service ?? 
 
 - [ ] Overview page 
 - [ ] Move delete to UI (PUT OID + 'deleted' ?)

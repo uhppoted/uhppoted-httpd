@@ -725,10 +725,39 @@ td.ellipsis img.button {
 th.timestamp {
   border-bottom: 1px;
   white-space: nowrap;
+  min-width: 140px;
 }
 
 th.deviceID {
-  white-space: nowrap;
+  min-width: 80px;
+}
+
+th.eventType {
+  min-width: 56px;
+}
+
+th.direction {
+  min-width: 16px;
+}
+
+th.door {
+  min-width: 104px;
+}
+
+th.cardno {
+  min-width: 56px;
+}
+
+th.card {
+  min-width: 120px;
+}
+
+th.access {
+  min-width: 60px;
+}
+
+th.reason {
+  min-width: 100px;
 }
 
 td input.timestamp {

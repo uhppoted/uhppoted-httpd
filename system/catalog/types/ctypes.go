@@ -51,7 +51,7 @@ func TypeOf(v interface{}) Type {
 	case "*groups.Group", "groups.Group":
 		return TGroup
 
-	case "*events.Event", "events.Event":
+	case "*events.Event", "events.Event", "uhppoted.Event":
 		return TEvent
 
 	case "*logs.LogEntry", "logs.LogEntry":
