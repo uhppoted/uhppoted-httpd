@@ -9,14 +9,14 @@ import (
 )
 
 type catalog struct {
-	interfaces  table[*entry]
+	interfaces  table
 	controllers controllers
-	doors       table[*entry]
-	cards       table[*entry]
-	groups      table[*entry]
-	events      table[*entry]
-	logs        table[*entry]
-	users       table[*entry]
+	doors       table
+	cards       table
+	groups      table
+	events      table
+	logs        table
+	users       table
 	guard       sync.RWMutex
 }
 
@@ -26,33 +26,33 @@ var db = catalog{
 		m:    map[schema.OID]*controller{},
 	},
 
-	interfaces: table[*entry]{
+	interfaces: table{
 		base: schema.InterfacesOID,
-		m:    map[schema.OID]*entry{},
+		m:    map[schema.OID]*record{},
 	},
-	doors: table[*entry]{
+	doors: table{
 		base: schema.DoorsOID,
-		m:    map[schema.OID]*entry{},
+		m:    map[schema.OID]*record{},
 	},
-	cards: table[*entry]{
+	cards: table{
 		base: schema.CardsOID,
-		m:    map[schema.OID]*entry{},
+		m:    map[schema.OID]*record{},
 	},
-	groups: table[*entry]{
+	groups: table{
 		base: schema.GroupsOID,
-		m:    map[schema.OID]*entry{},
+		m:    map[schema.OID]*record{},
 	},
-	events: table[*entry]{
+	events: table{
 		base: schema.EventsOID,
-		m:    map[schema.OID]*entry{},
+		m:    map[schema.OID]*record{},
 	},
-	logs: table[*entry]{
+	logs: table{
 		base: schema.LogsOID,
-		m:    map[schema.OID]*entry{},
+		m:    map[schema.OID]*record{},
 	},
-	users: table[*entry]{
+	users: table{
 		base: schema.UsersOID,
-		m:    map[schema.OID]*entry{},
+		m:    map[schema.OID]*record{},
 	},
 }
 
@@ -108,7 +108,7 @@ func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	return newOID(m, v)
+	return m.New(v)
 }
 
 func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
@@ -123,7 +123,7 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	if m, ok := cc.tableFor(t); !ok {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
 	} else {
-		put(m, oid, v)
+		m.Put(oid, v)
 	}
 }
 
@@ -205,7 +205,7 @@ func (cc *catalog) FindController(deviceID uint32) schema.OID {
 	return ""
 }
 
-func (cc *catalog) tableFor(t ctypes.Type) (table[*entry], bool) {
+func (cc *catalog) tableFor(t ctypes.Type) (table, bool) {
 	switch t {
 	case ctypes.TInterface:
 		return cc.interfaces, true
@@ -229,6 +229,6 @@ func (cc *catalog) tableFor(t ctypes.Type) (table[*entry], bool) {
 		return cc.users, true
 
 	default:
-		return table[*entry]{}, false
+		return table{}, false
 	}
 }

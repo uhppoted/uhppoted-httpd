@@ -4,17 +4,13 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [ ] Genericize 'controller' table
             - [ ] uhppoted.Event ??????
-            - [x] Ditch the OID compacting entirely
+            - [ ] Try generics with CatalogXXX base types
+                  - e.g. Delete[CatalogType]
 
 - [ ] Verify bootstrap from scratch
-      - [x] Empty events layout is all squashed to the left
       - [ ] Refresh overwrites in-progress card edits
-      - [x] Linux
-      - [ ] Windows
       - [ ] Setting controller address 'blanks' it out before it gets updated
-
-- [x] daemonize
-      - [x] Does double SIGHUP kill service ?? 
+      - [ ] Windows
 
 - [ ] Overview page 
 - [ ] Move delete to UI (PUT OID + 'deleted' ?)

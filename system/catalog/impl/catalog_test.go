@@ -11,42 +11,42 @@ import (
 
 func TestNewOID(t *testing.T) {
 	cc := catalog{
-		doors: table[*entry]{
+		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]*entry{
-				"0.3.1":   &entry{},
-				"0.3.2":   &entry{},
-				"0.3.100": &entry{},
+			m: map[schema.OID]*record{
+				"0.3.1":   &record{},
+				"0.3.2":   &record{},
+				"0.3.100": &record{},
 			},
 		},
 
 		controllers: controllers{},
-		interfaces:  table[*entry]{},
-		cards:       table[*entry]{},
-		groups:      table[*entry]{},
-		events:      table[*entry]{},
-		logs:        table[*entry]{},
-		users:       table[*entry]{},
+		interfaces:  table{},
+		cards:       table{},
+		groups:      table{},
+		events:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	expected := catalog{
-		doors: table[*entry]{
+		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]*entry{
-				"0.3.1":   &entry{},
-				"0.3.2":   &entry{},
-				"0.3.3":   &entry{},
-				"0.3.100": &entry{},
+			m: map[schema.OID]*record{
+				"0.3.1":   &record{},
+				"0.3.2":   &record{},
+				"0.3.3":   &record{},
+				"0.3.100": &record{},
 			},
 		},
 
 		controllers: controllers{},
-		interfaces:  table[*entry]{},
-		cards:       table[*entry]{},
-		groups:      table[*entry]{},
-		events:      table[*entry]{},
-		logs:        table[*entry]{},
-		users:       table[*entry]{},
+		interfaces:  table{},
+		cards:       table{},
+		groups:      table{},
+		events:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	oid := cc.NewT(ctypes.TDoor, struct{}{})
@@ -62,42 +62,42 @@ func TestNewOID(t *testing.T) {
 
 func TestNewDoor(t *testing.T) {
 	cc := catalog{
-		doors: table[*entry]{
+		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]*entry{
-				"0.3.1":   &entry{},
-				"0.3.2":   &entry{},
-				"0.3.100": &entry{},
+			m: map[schema.OID]*record{
+				"0.3.1":   &record{},
+				"0.3.2":   &record{},
+				"0.3.100": &record{},
 			},
 		},
 
 		controllers: controllers{},
-		interfaces:  table[*entry]{},
-		cards:       table[*entry]{},
-		groups:      table[*entry]{},
-		events:      table[*entry]{},
-		logs:        table[*entry]{},
-		users:       table[*entry]{},
+		interfaces:  table{},
+		cards:       table{},
+		groups:      table{},
+		events:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	expected := catalog{
-		doors: table[*entry]{
+		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]*entry{
-				"0.3.1":   &entry{},
-				"0.3.2":   &entry{},
-				"0.3.3":   &entry{},
-				"0.3.100": &entry{},
+			m: map[schema.OID]*record{
+				"0.3.1":   &record{},
+				"0.3.2":   &record{},
+				"0.3.3":   &record{},
+				"0.3.100": &record{},
 			},
 		},
 
 		controllers: controllers{},
-		interfaces:  table[*entry]{},
-		cards:       table[*entry]{},
-		groups:      table[*entry]{},
-		events:      table[*entry]{},
-		logs:        table[*entry]{},
-		users:       table[*entry]{},
+		interfaces:  table{},
+		cards:       table{},
+		groups:      table{},
+		events:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	oid := cc.NewT(ctypes.TDoor, nil)
@@ -113,18 +113,18 @@ func TestNewDoor(t *testing.T) {
 
 func TestNewEvent(t *testing.T) {
 	cc := catalog{
-		events: table[*entry]{
+		events: table{
 			base: schema.EventsOID,
-			m:    map[schema.OID]*entry{},
+			m:    map[schema.OID]*record{},
 		},
 
 		controllers: controllers{},
-		interfaces:  table[*entry]{},
-		doors:       table[*entry]{},
-		cards:       table[*entry]{},
-		groups:      table[*entry]{},
-		logs:        table[*entry]{},
-		users:       table[*entry]{},
+		interfaces:  table{},
+		doors:       table{},
+		cards:       table{},
+		groups:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	tests := []schema.OID{
@@ -144,14 +144,14 @@ func TestNewEvent(t *testing.T) {
 
 func TestListT(t *testing.T) {
 	cc := catalog{
-		doors: table[*entry]{
+		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]*entry{
-				"0.3.1":   &entry{},
-				"0.3.2":   &entry{},
-				"0.3.3":   &entry{deleted: true},
-				"0.3.100": &entry{},
-				"0.3.200": &entry{},
+			m: map[schema.OID]*record{
+				"0.3.1":   &record{},
+				"0.3.2":   &record{},
+				"0.3.3":   &record{deleted: true},
+				"0.3.100": &record{},
+				"0.3.200": &record{},
 			},
 		},
 	}
@@ -174,14 +174,14 @@ func TestListT(t *testing.T) {
 
 func TestHasT(t *testing.T) {
 	cc := catalog{
-		groups: table[*entry]{
+		groups: table{
 			base: schema.GroupsOID,
-			m: map[schema.OID]*entry{
-				"0.5.1":   &entry{},
-				"0.5.2":   &entry{},
-				"0.5.3":   &entry{deleted: true},
-				"0.5.100": &entry{},
-				"0.5.200": &entry{},
+			m: map[schema.OID]*record{
+				"0.5.1":   &record{},
+				"0.5.2":   &record{},
+				"0.5.3":   &record{deleted: true},
+				"0.5.100": &record{},
+				"0.5.200": &record{},
 			},
 		},
 	}
@@ -204,43 +204,43 @@ func TestHasT(t *testing.T) {
 
 func TestDeleteT(t *testing.T) {
 	cc := catalog{
-		doors: table[*entry]{
+		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]*entry{
-				"0.3.1":   &entry{},
-				"0.3.2":   &entry{},
-				"0.3.3":   &entry{},
-				"0.3.100": &entry{},
+			m: map[schema.OID]*record{
+				"0.3.1":   &record{},
+				"0.3.2":   &record{},
+				"0.3.3":   &record{},
+				"0.3.100": &record{},
 			},
 		},
 
 		controllers: controllers{},
-		interfaces:  table[*entry]{},
-		cards:       table[*entry]{},
-		groups:      table[*entry]{},
-		events:      table[*entry]{},
-		logs:        table[*entry]{},
-		users:       table[*entry]{},
+		interfaces:  table{},
+		cards:       table{},
+		groups:      table{},
+		events:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	expected := catalog{
-		doors: table[*entry]{
+		doors: table{
 			base: schema.DoorsOID,
-			m: map[schema.OID]*entry{
-				"0.3.1":   &entry{},
-				"0.3.2":   &entry{},
-				"0.3.3":   &entry{deleted: true},
-				"0.3.100": &entry{},
+			m: map[schema.OID]*record{
+				"0.3.1":   &record{},
+				"0.3.2":   &record{},
+				"0.3.3":   &record{deleted: true},
+				"0.3.100": &record{},
 			},
 		},
 
 		controllers: controllers{},
-		interfaces:  table[*entry]{},
-		cards:       table[*entry]{},
-		groups:      table[*entry]{},
-		events:      table[*entry]{},
-		logs:        table[*entry]{},
-		users:       table[*entry]{},
+		interfaces:  table{},
+		cards:       table{},
+		groups:      table{},
+		events:      table{},
+		logs:        table{},
+		users:       table{},
 	}
 
 	cc.DeleteT(ctypes.TDoor, "0.3.3")

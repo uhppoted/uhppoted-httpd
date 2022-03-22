@@ -8,28 +8,28 @@ import (
 )
 
 func TestTableNewOID(t *testing.T) {
-	tt := table[*entry]{
+	tt := table{
 		base: schema.DoorsOID,
-		m: map[schema.OID]*entry{
-			"0.3.1":  &entry{},
-			"0.3.2":  &entry{},
-			"0.3.10": &entry{},
+		m: map[schema.OID]*record{
+			"0.3.1":  &record{},
+			"0.3.2":  &record{},
+			"0.3.10": &record{},
 		},
 		last: 123,
 	}
 
-	expected := table[*entry]{
+	expected := table{
 		base: schema.DoorsOID,
-		m: map[schema.OID]*entry{
-			"0.3.1":   &entry{},
-			"0.3.2":   &entry{},
-			"0.3.10":  &entry{},
-			"0.3.124": &entry{},
+		m: map[schema.OID]*record{
+			"0.3.1":   &record{},
+			"0.3.2":   &record{},
+			"0.3.10":  &record{},
+			"0.3.124": &record{},
 		},
-		last: 123,
+		last: 124,
 	}
 
-	oid := newOID(tt, struct{}{})
+	oid := tt.New(struct{}{})
 
 	if oid != "0.3.124" {
 		t.Errorf("Incorrect new OID - expected:%v, got:%v", "0.3.124", oid)
@@ -41,28 +41,28 @@ func TestTableNewOID(t *testing.T) {
 }
 
 func TestTablePut(t *testing.T) {
-	tt := table[*entry]{
+	tt := table{
 		base: schema.DoorsOID,
-		m: map[schema.OID]*entry{
-			"0.3.1":  &entry{},
-			"0.3.2":  &entry{},
-			"0.3.10": &entry{},
+		m: map[schema.OID]*record{
+			"0.3.1":  &record{},
+			"0.3.2":  &record{},
+			"0.3.10": &record{},
 		},
 		last: 123,
 	}
 
-	expected := table[*entry]{
+	expected := table{
 		base: schema.DoorsOID,
-		m: map[schema.OID]*entry{
-			"0.3.1":   &entry{},
-			"0.3.2":   &entry{},
-			"0.3.10":  &entry{},
-			"0.3.124": &entry{},
+		m: map[schema.OID]*record{
+			"0.3.1":   &record{},
+			"0.3.2":   &record{},
+			"0.3.10":  &record{},
+			"0.3.124": &record{},
 		},
-		last: 123,
+		last: 124,
 	}
 
-	put(tt, "0.3.124", struct{}{})
+	tt.Put("0.3.124", struct{}{})
 
 	if !reflect.DeepEqual(tt, expected) {
 		t.Errorf("OID not added to table\n   expected:%v\n   got:     %v", expected, tt)
@@ -70,21 +70,21 @@ func TestTablePut(t *testing.T) {
 }
 
 func TestTableDelete(t *testing.T) {
-	tt := table[*entry]{
-		m: map[schema.OID]*entry{
-			"0.3.1":  &entry{},
-			"0.3.2":  &entry{},
-			"0.3.10": &entry{},
+	tt := table{
+		m: map[schema.OID]*record{
+			"0.3.1":  &record{},
+			"0.3.2":  &record{},
+			"0.3.10": &record{},
 		},
 	}
 
-	expected := table[*entry]{
-		m: map[schema.OID]*entry{
-			"0.3.1": &entry{},
-			"0.3.2": &entry{
+	expected := table{
+		m: map[schema.OID]*record{
+			"0.3.1": &record{},
+			"0.3.2": &record{
 				deleted: true,
 			},
-			"0.3.10": &entry{},
+			"0.3.10": &record{},
 		},
 	}
 
