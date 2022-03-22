@@ -19,6 +19,7 @@ import (
 )
 
 type User struct {
+	catalog.CatalogUser
 	OID      schema.OID
 	name     string
 	uid      string

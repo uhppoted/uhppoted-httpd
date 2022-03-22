@@ -8,6 +8,31 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
+type CatalogType interface {
+	CatalogInterface | CatalogDoor | CatalogCard | CatalogGroup | CatalogEvent | CatalogLogEntry | CatalogUser
+}
+
+type CatalogInterface struct {
+}
+
+type CatalogDoor struct {
+}
+
+type CatalogCard struct {
+}
+
+type CatalogGroup struct {
+}
+
+type CatalogEvent struct {
+}
+
+type CatalogLogEntry struct {
+}
+
+type CatalogUser struct {
+}
+
 type Catalog interface {
 	Clear()
 
@@ -52,7 +77,15 @@ func Clear() {
 	catalog.Clear()
 }
 
-func NewT(v interface{}) schema.OID {
+func NewController(v uint32) schema.OID {
+	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
+		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
+	} else {
+		return catalog.NewT(t, v)
+	}
+}
+
+func NewT[T CatalogType](v T) schema.OID {
 	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	} else {

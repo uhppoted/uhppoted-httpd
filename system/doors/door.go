@@ -18,6 +18,7 @@ import (
 )
 
 type Door struct {
+	catalog.CatalogDoor
 	OID  schema.OID `json:"OID"`
 	Name string     `json:"name"`
 

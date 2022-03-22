@@ -19,6 +19,7 @@ import (
 )
 
 type Card struct {
+	catalog.CatalogCard
 	OID    schema.OID
 	Name   string
 	Card   *types.Card

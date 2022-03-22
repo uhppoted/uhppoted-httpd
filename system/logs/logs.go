@@ -233,7 +233,7 @@ func (ll *Logs) Received(records ...audit.AuditRecord) {
 			record.Details.Description)
 
 		if _, ok := ll.logs[k]; !ok {
-			oid := catalog.NewT(LogEntry{})
+			oid := catalog.NewT(LogEntry{}.CatalogLogEntry)
 			ll.logs[k] = NewLogEntry(oid, timestamp, record)
 		}
 	}

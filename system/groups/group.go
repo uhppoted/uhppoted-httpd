@@ -16,6 +16,7 @@ import (
 )
 
 type Group struct {
+	catalog.CatalogGroup
 	OID   schema.OID          `json:"OID"`
 	Name  string              `json:"name"`
 	Doors map[schema.OID]bool `json:"doors"`

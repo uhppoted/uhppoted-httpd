@@ -180,7 +180,7 @@ func (gg *Groups) Sweep(retention time.Duration) {
 }
 
 func (gg *Groups) add(a auth.OpAuth, g Group) (*Group, error) {
-	oid := catalog.NewT(g)
+	oid := catalog.NewT(g.CatalogGroup)
 	if _, ok := gg.groups[oid]; ok {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
 	}

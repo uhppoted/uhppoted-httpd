@@ -14,6 +14,7 @@ import (
 )
 
 type Event struct {
+	catalog.CatalogEvent
 	OID        schema.OID    `json:"OID"`
 	DeviceID   uint32        `json:"device-id"`
 	Index      uint32        `json:"index"`

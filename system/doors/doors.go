@@ -180,7 +180,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 }
 
 func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
-	oid := catalog.NewT(d)
+	oid := catalog.NewT(d.CatalogDoor)
 	if _, ok := dd.doors[oid]; ok {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
 	}

@@ -12,6 +12,7 @@ import (
 )
 
 type LogEntry struct {
+	catalog.CatalogLogEntry
 	OID       schema.OID `json:"OID"`
 	Timestamp time.Time  `json:"timestamp"`
 	UID       string     `json:"uid"`

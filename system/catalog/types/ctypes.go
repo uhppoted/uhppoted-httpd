@@ -32,32 +32,32 @@ func (t Type) String() string {
 	}[t]
 }
 
-// Poor man's generics :-(
+// ... pending real Go generics
 func TypeOf(v interface{}) Type {
 	t := fmt.Sprintf("%T", v)
 	switch t {
-	case "*interfaces.LAN", "interfaces.LAN":
+	case "*interfaces.LAN", "interfaces.LAN", "catalog.CatalogInterface":
 		return TInterface
 
-	case "*controllers.Controller", "uint32":
+	case "*controllers.Controller", "uint32", "catalog.CatalogController":
 		return TController
 
-	case "*cards.Card", "cards.Card":
+	case "*cards.Card", "cards.Card", "catalog.CatalogCard":
 		return TCard
 
-	case "*doors.Door", "doors.Door":
+	case "*doors.Door", "doors.Door", "catalog.CatalogDoor":
 		return TDoor
 
-	case "*groups.Group", "groups.Group":
+	case "*groups.Group", "groups.Group", "catalog.CatalogGroup":
 		return TGroup
 
-	case "*events.Event", "events.Event", "uhppoted.Event":
+	case "*events.Event", "events.Event", "catalog.CatalogEvent":
 		return TEvent
 
-	case "*logs.LogEntry", "logs.LogEntry":
+	case "*logs.LogEntry", "logs.LogEntry", "catalog.CatalogLogEntry":
 		return TLog
 
-	case "*users.User", "user.User":
+	case "*users.User", "user.User", "catalog.CatalogUser":
 		return TUser
 
 	default:

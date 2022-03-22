@@ -215,20 +215,20 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 	} else {
 	loop:
 		for _, d := range found {
+			id := d // because .. Go loop variable gotcha (the loop variable is mutable)
 			for _, c := range cc.controllers {
-				if c.DeviceID() == d && !c.IsDeleted() {
+				if c.DeviceID() == id && !c.IsDeleted() {
 					continue loop
 				}
 			}
 
 			info(fmt.Sprintf("Adding unconfigured controller %v", d))
 
-			oid := catalog.NewT(d)
-			// deviceID := d // because .. Go loop variable gotcha (the loop variable is mutable)
+			oid := catalog.NewController(id)
 
 			cc.controllers = append(cc.controllers, &Controller{
 				oid:          oid,
-				deviceID:     d,
+				deviceID:     id,
 				created:      types.TimestampNow(),
 				unconfigured: true,
 			})
@@ -382,7 +382,7 @@ func (cc *Controllers) Validate() error {
 
 func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	record := c.clone()
-	record.oid = schema.OID(catalog.NewT(c.deviceID))
+	record.oid = schema.OID(catalog.NewController(c.DeviceID()))
 	record.created = types.TimestampNow()
 
 	if a != nil {
