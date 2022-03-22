@@ -9,48 +9,48 @@ import (
 )
 
 type catalog struct {
-	interfaces  table
-	controllers controllers
-	doors       table
-	cards       table
-	groups      table
-	events      table
-	logs        table
-	users       table
+	interfaces  Table
+	controllers Table
+	doors       Table
+	cards       Table
+	groups      Table
+	events      Table
+	logs        Table
+	users       Table
 	guard       sync.RWMutex
 }
 
 var db = catalog{
-	controllers: controllers{
+	controllers: &controllers{
 		base: schema.ControllersOID,
 		m:    map[schema.OID]*controller{},
 	},
 
-	interfaces: table{
+	interfaces: &table{
 		base: schema.InterfacesOID,
 		m:    map[schema.OID]*record{},
 	},
-	doors: table{
+	doors: &table{
 		base: schema.DoorsOID,
 		m:    map[schema.OID]*record{},
 	},
-	cards: table{
+	cards: &table{
 		base: schema.CardsOID,
 		m:    map[schema.OID]*record{},
 	},
-	groups: table{
+	groups: &table{
 		base: schema.GroupsOID,
 		m:    map[schema.OID]*record{},
 	},
-	events: table{
+	events: &table{
 		base: schema.EventsOID,
 		m:    map[schema.OID]*record{},
 	},
-	logs: table{
+	logs: &table{
 		base: schema.LogsOID,
 		m:    map[schema.OID]*record{},
 	},
-	users: table{
+	users: &table{
 		base: schema.UsersOID,
 		m:    map[schema.OID]*record{},
 	},
@@ -85,7 +85,7 @@ func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
 		defer cc.guard.Unlock()
 
 		if deviceID := v.(uint32); deviceID != 0 {
-			for oid, v := range cc.controllers.m {
+			for oid, v := range cc.controllers.(*controllers).m {
 				if !v.deleted && v.ID == deviceID {
 					return oid
 				}
@@ -150,7 +150,7 @@ func (cc *catalog) ListT(t ctypes.Type) []schema.OID {
 
 	switch t {
 	case ctypes.TController:
-		for d, v := range cc.controllers.m {
+		for d, v := range cc.controllers.(*controllers).m {
 			if !v.deleted {
 				list = append(list, d)
 			}
@@ -158,7 +158,7 @@ func (cc *catalog) ListT(t ctypes.Type) []schema.OID {
 
 	default:
 		if tt, ok := cc.tableFor(t); ok {
-			for d, v := range tt.m {
+			for d, v := range tt.(*table).m {
 				if !v.deleted {
 					list = append(list, d)
 				}
@@ -175,13 +175,13 @@ func (cc *catalog) HasT(t ctypes.Type, oid schema.OID) bool {
 
 	switch t {
 	case ctypes.TController:
-		if v, ok := cc.controllers.m[oid]; ok && !v.deleted {
+		if v, ok := cc.controllers.(*controllers).m[oid]; ok && !v.deleted {
 			return true
 		}
 
 	default:
 		if tt, ok := cc.tableFor(t); ok {
-			if v, ok := tt.m[oid]; ok && !v.deleted {
+			if v, ok := tt.(*table).m[oid]; ok && !v.deleted {
 				return true
 			}
 		}
@@ -195,7 +195,7 @@ func (cc *catalog) FindController(deviceID uint32) schema.OID {
 	defer cc.guard.RUnlock()
 
 	if deviceID != 0 {
-		for oid, v := range cc.controllers.m {
+		for oid, v := range cc.controllers.(*controllers).m {
 			if v.ID == deviceID && !v.deleted {
 				return oid
 			}
@@ -205,7 +205,7 @@ func (cc *catalog) FindController(deviceID uint32) schema.OID {
 	return ""
 }
 
-func (cc *catalog) tableFor(t ctypes.Type) (table, bool) {
+func (cc *catalog) tableFor(t ctypes.Type) (Table, bool) {
 	switch t {
 	case ctypes.TInterface:
 		return cc.interfaces, true
@@ -229,6 +229,6 @@ func (cc *catalog) tableFor(t ctypes.Type) (table, bool) {
 		return cc.users, true
 
 	default:
-		return table{}, false
+		return nil, false
 	}
 }

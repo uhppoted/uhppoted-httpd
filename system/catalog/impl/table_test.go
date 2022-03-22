@@ -121,7 +121,7 @@ func TestTableNewController(t *testing.T) {
 		last: 11,
 	}
 
-	oid := tt.New(1234)
+	oid := tt.New(uint32(1234))
 
 	if oid != "0.2.11" {
 		t.Errorf("Incorrect new OID - expected:%v, got:%v", "0.2.11", oid)
@@ -154,7 +154,7 @@ func TestTablePutController(t *testing.T) {
 		last: 124,
 	}
 
-	tt.Put("0.2.124", 1234)
+	tt.Put("0.2.124", uint32(1234))
 
 	if !reflect.DeepEqual(tt, expected) {
 		t.Errorf("OID not added to controllers\n   expected:%v\n   got:     %v", expected, tt)

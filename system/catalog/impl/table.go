@@ -9,6 +9,13 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
+type Table interface {
+	New(interface{}) schema.OID
+	Put(schema.OID, interface{})
+	Delete(schema.OID)
+	Clear()
+}
+
 type table struct {
 	base schema.OID
 	m    map[schema.OID]*record
@@ -84,7 +91,7 @@ func (t *table) Clear() {
 	t.last = 0
 }
 
-func (t *controllers) New(v uint32) schema.OID {
+func (t *controllers) New(v interface{}) schema.OID {
 	suffix := t.last
 
 loop:
@@ -98,14 +105,14 @@ loop:
 		}
 
 		t.m[oid] = &controller{
-			ID: v,
+			ID: v.(uint32),
 		}
 		t.last = suffix
 		return oid
 	}
 }
 
-func (t *controllers) Put(oid schema.OID, v uint32) {
+func (t *controllers) Put(oid schema.OID, v interface{}) {
 	if !oid.HasPrefix(t.base) {
 		panic(fmt.Sprintf("PUT: illegal oid %v for base %v", oid, t.base))
 	}
@@ -123,7 +130,7 @@ func (t *controllers) Put(oid schema.OID, v uint32) {
 	}
 
 	t.m[oid] = &controller{
-		ID: v,
+		ID: v.(uint32),
 	}
 
 	if v := uint32(index); v > t.last {
