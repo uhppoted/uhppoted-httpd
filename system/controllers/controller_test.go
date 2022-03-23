@@ -12,6 +12,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -22,10 +23,12 @@ func TestControllerAsObjects(t *testing.T) {
 	address, _ := core.ResolveAddr("192.168.1.101")
 
 	c := Controller{
-		oid:      "0.2.3",
-		name:     name,
-		deviceID: deviceID,
-		IP:       address,
+		CatalogController: ctypes.CatalogController{
+			DeviceID: deviceID,
+		},
+		oid:  "0.2.3",
+		name: name,
+		IP:   address,
 		Doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
@@ -75,10 +78,12 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 	address, _ := core.ResolveAddr("192.168.1.101")
 
 	c := Controller{
-		oid:      "0.2.3",
-		name:     name,
-		deviceID: deviceID,
-		IP:       address,
+		CatalogController: ctypes.CatalogController{
+			DeviceID: deviceID,
+		},
+		oid:  "0.2.3",
+		name: name,
+		IP:   address,
 		Doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
@@ -107,10 +112,12 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 	address, _ := core.ResolveAddr("192.168.1.101")
 
 	c := Controller{
-		oid:      "0.2.3",
-		name:     name,
-		deviceID: deviceID,
-		IP:       address,
+		CatalogController: ctypes.CatalogController{
+			DeviceID: deviceID,
+		},
+		oid:  "0.2.3",
+		name: name,
+		IP:   address,
 		Doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",

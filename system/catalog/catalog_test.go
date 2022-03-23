@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 func TestJoin(t *testing.T) {
@@ -38,7 +39,7 @@ func TestJoin(t *testing.T) {
 
 func TestNewInterface(t *testing.T) {
 	type lan struct {
-		CatalogInterface
+		ctypes.CatalogInterface
 	}
 
 	catalog.Clear()
@@ -53,18 +54,46 @@ func TestNewInterface(t *testing.T) {
 }
 
 func TestNewController(t *testing.T) {
+	type controller struct {
+		ctypes.CatalogController
+	}
+
 	catalog.Clear()
 
-	oid := NewController(uint32(1234))
+	p := controller{
+		CatalogController: ctypes.CatalogController{
+			DeviceID: 1234,
+		},
+	}
 
-	if oid != "0.2.1" {
+	q := controller{
+		CatalogController: ctypes.CatalogController{
+			DeviceID: 5678,
+		},
+	}
+
+	r := controller{
+		CatalogController: ctypes.CatalogController{
+			DeviceID: 1234,
+		},
+	}
+
+	if oid := NewT(p.CatalogController); oid != "0.2.1" {
+		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.1", oid)
+	}
+
+	if oid := NewT(q.CatalogController); oid != "0.2.2" {
+		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.2", oid)
+	}
+
+	if oid := NewT(r.CatalogController); oid != "0.2.1" {
 		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.1", oid)
 	}
 }
 
 func TestNewDoor(t *testing.T) {
 	type door struct {
-		CatalogDoor
+		ctypes.CatalogDoor
 	}
 
 	catalog.Clear()
@@ -78,7 +107,7 @@ func TestNewDoor(t *testing.T) {
 
 func TestNewCard(t *testing.T) {
 	type card struct {
-		CatalogCard
+		ctypes.CatalogCard
 	}
 
 	catalog.Clear()
@@ -92,7 +121,7 @@ func TestNewCard(t *testing.T) {
 
 func TestNewGroup(t *testing.T) {
 	type group struct {
-		CatalogGroup
+		ctypes.CatalogGroup
 	}
 
 	catalog.Clear()
@@ -106,7 +135,7 @@ func TestNewGroup(t *testing.T) {
 
 func TestNewEvent(t *testing.T) {
 	type event struct {
-		CatalogEvent
+		ctypes.CatalogEvent
 	}
 
 	catalog.Clear()
@@ -120,7 +149,7 @@ func TestNewEvent(t *testing.T) {
 
 func TestNewLogEntry(t *testing.T) {
 	type logentry struct {
-		CatalogLogEntry
+		ctypes.CatalogLogEntry
 	}
 
 	catalog.Clear()
@@ -134,7 +163,7 @@ func TestNewLogEntry(t *testing.T) {
 
 func TestNewUser(t *testing.T) {
 	type user struct {
-		CatalogUser
+		ctypes.CatalogUser
 	}
 
 	catalog.Clear()

@@ -13,12 +13,13 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Door struct {
-	catalog.CatalogDoor
+	ctypes.CatalogDoor
 	OID  schema.OID `json:"OID"`
 	Name string     `json:"name"`
 

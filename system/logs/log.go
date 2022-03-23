@@ -8,11 +8,12 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type LogEntry struct {
-	catalog.CatalogLogEntry
+	ctypes.CatalogLogEntry
 	OID       schema.OID `json:"OID"`
 	Timestamp time.Time  `json:"timestamp"`
 	UID       string     `json:"uid"`

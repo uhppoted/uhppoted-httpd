@@ -40,7 +40,7 @@ type LAN struct {
 type Controller interface {
 	OID() schema.OID
 	Name() string
-	DeviceID() uint32
+	ID() uint32
 	EndPoint() *net.UDPAddr
 	TimeZone() *time.Location
 	Door(uint8) (schema.OID, bool)
@@ -259,7 +259,7 @@ func (l *LAN) api(controllers []Controller) *uhppoted.UHPPOTED {
 
 	for _, v := range controllers {
 		name := v.Name()
-		id := v.DeviceID()
+		id := v.ID()
 		addr := v.EndPoint()
 
 		if id > 0 && addr != nil {
@@ -301,10 +301,10 @@ func (l *LAN) Search(controllers []Controller) ([]uint32, error) {
 
 // A long-running function i.e. expects to be invoked from an external goroutine
 func (l *LAN) Refresh(c Controller) {
-	log.Printf("%v: refreshing LAN controller status", c.DeviceID())
+	log.Printf("%v: refreshing LAN controller status", c.ID())
 
 	api := l.api([]Controller{c})
-	deviceID := uhppoted.DeviceID(c.DeviceID())
+	deviceID := uhppoted.DeviceID(c.ID())
 
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: deviceID}); err != nil {
 		log.Printf("%v", err)
@@ -333,7 +333,7 @@ func (l *LAN) Refresh(c Controller) {
 		catalog.PutV(c.OID(), ControllerCardsCount, cards.Cards)
 	}
 
-	if first, last, current, err := api.GetEventIndices(c.DeviceID()); err != nil {
+	if first, last, current, err := api.GetEventIndices(c.ID()); err != nil {
 		log.Printf("%v", err)
 	} else {
 		catalog.PutV(c.OID(), ControllerTouched, time.Now())
@@ -363,11 +363,11 @@ func (l *LAN) Refresh(c Controller) {
 		}
 	}
 
-	if events, err := api.GetEvents(c.DeviceID(), 5); err != nil {
+	if events, err := api.GetEvents(c.ID(), 5); err != nil {
 		log.Printf("%v", err)
 	} else if l.ch != nil {
 		l.ch <- types.EventsList{
-			DeviceID: c.DeviceID(),
+			DeviceID: c.ID(),
 			Events:   events,
 		}
 	}
@@ -375,7 +375,7 @@ func (l *LAN) Refresh(c Controller) {
 
 func (l *LAN) SynchTime(c Controller) {
 	api := l.api([]Controller{c})
-	deviceID := uhppoted.DeviceID(c.DeviceID())
+	deviceID := uhppoted.DeviceID(c.ID())
 	location := c.TimeZone()
 	now := time.Now().In(location)
 	datetime := core.DateTime(now)
@@ -404,7 +404,7 @@ func (l *LAN) SynchTime(c Controller) {
 
 func (l *LAN) SynchDoors(c Controller) {
 	api := l.api([]Controller{c})
-	deviceID := c.DeviceID()
+	deviceID := c.ID()
 
 	// ... update door delays
 	for _, door := range []uint8{1, 2, 3, 4} {
@@ -510,8 +510,8 @@ func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
 
 	for _, c := range controllers {
 		for _, d := range devices {
-			if c.DeviceID() == d.DeviceID {
-				rs := compare[c.DeviceID()]
+			if c.ID() == d.DeviceID {
+				rs := compare[c.ID()]
 				if len(rs.Updated)+len(rs.Added)+len(rs.Deleted) > 0 {
 					catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusError)
 				} else {

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 type Table interface {
@@ -92,20 +93,21 @@ func (t *table) Clear() {
 }
 
 func (t *controllers) New(v interface{}) schema.OID {
+	u := v.(ctypes.CatalogController)
 	suffix := t.last
 
 loop:
 	for {
 		suffix += 1
 		oid := schema.OID(fmt.Sprintf("%v.%d", t.base, suffix))
-		for v, _ := range t.m {
-			if v == oid {
+		for c, _ := range t.m {
+			if c == oid {
 				continue loop
 			}
 		}
 
 		t.m[oid] = &controller{
-			ID: v.(uint32),
+			ID: u.DeviceID,
 		}
 		t.last = suffix
 		return oid

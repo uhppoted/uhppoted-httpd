@@ -84,15 +84,17 @@ func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
 		cc.guard.Lock()
 		defer cc.guard.Unlock()
 
-		if deviceID := v.(uint32); deviceID != 0 {
-			for oid, v := range cc.controllers.(*controllers).m {
-				if !v.deleted && v.ID == deviceID {
+		u := v.(ctypes.CatalogController)
+
+		if deviceID := u.DeviceID; deviceID != 0 {
+			for oid, c := range cc.controllers.(*controllers).m {
+				if !c.deleted && c.ID == deviceID {
 					return oid
 				}
 			}
 		}
 
-		return cc.controllers.New(v.(uint32))
+		return cc.controllers.New(u)
 	}
 
 	// NTS: only support a single interface at this point in time

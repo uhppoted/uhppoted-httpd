@@ -9,12 +9,13 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type Event struct {
-	catalog.CatalogEvent
+	ctypes.CatalogEvent
 	OID        schema.OID    `json:"OID"`
 	DeviceID   uint32        `json:"device-id"`
 	Index      uint32        `json:"index"`

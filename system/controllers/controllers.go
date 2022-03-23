@@ -18,6 +18,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
@@ -136,9 +137,9 @@ func (cc *Controllers) Load(blob json.RawMessage) error {
 
 	for _, c := range cc.controllers {
 		oid := c.OID()
-		catalog.PutT(c.deviceID, oid)
+		catalog.PutT(c.DeviceID, oid)
 		catalog.PutV(oid, ControllerName, c.name)
-		catalog.PutV(oid, ControllerDeviceID, c.deviceID)
+		catalog.PutV(oid, ControllerDeviceID, c.DeviceID)
 		catalog.PutV(oid, ControllerDateTimeModified, false)
 		catalog.PutV(oid, ControllerDoor1, c.Doors[1])
 		catalog.PutV(oid, ControllerDoor2, c.Doors[2])
@@ -217,21 +218,24 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 		for _, d := range found {
 			id := d // because .. Go loop variable gotcha (the loop variable is mutable)
 			for _, c := range cc.controllers {
-				if c.DeviceID() == id && !c.IsDeleted() {
+				if c.ID() == id && !c.IsDeleted() {
 					continue loop
 				}
 			}
 
 			info(fmt.Sprintf("Adding unconfigured controller %v", d))
 
-			oid := catalog.NewController(id)
-
-			cc.controllers = append(cc.controllers, &Controller{
-				oid:          oid,
-				deviceID:     id,
+			v := Controller{
+				CatalogController: ctypes.CatalogController{
+					DeviceID: id,
+				},
 				created:      types.TimestampNow(),
 				unconfigured: true,
-			})
+			}
+
+			v.oid = catalog.NewT(v.CatalogController)
+
+			cc.controllers = append(cc.controllers, &v)
 		}
 	}
 
@@ -298,7 +302,7 @@ func Export(file string, controllers []*Controller, doors map[schema.OID]doors.D
 				device.Doors[3] = d.Name
 			}
 
-			devices[c.deviceID] = &device
+			devices[c.DeviceID] = &device
 		}
 	}
 
@@ -382,7 +386,7 @@ func (cc *Controllers) Validate() error {
 
 func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	record := c.clone()
-	record.oid = schema.OID(catalog.NewController(c.DeviceID()))
+	record.oid = schema.OID(catalog.NewT(c.CatalogController))
 	record.created = types.TimestampNow()
 
 	if a != nil {
@@ -409,12 +413,12 @@ func validate(cc Controllers) error {
 			continue
 		}
 
-		if c.deviceID != 0 {
-			if _, ok := devices[c.deviceID]; ok {
-				return fmt.Errorf("Duplicate controller ID (%v)", c.deviceID)
+		if c.DeviceID != 0 {
+			if _, ok := devices[c.DeviceID]; ok {
+				return fmt.Errorf("Duplicate controller ID (%v)", c.DeviceID)
 			}
 
-			devices[c.deviceID] = string(OID)
+			devices[c.DeviceID] = string(OID)
 		}
 	}
 

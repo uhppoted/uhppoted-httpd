@@ -29,11 +29,9 @@ func permissions() (acl.ACL, error) {
 	controllers := sys.controllers.List()
 
 	// initialise empty ACL
-
 	acl := make(acl.ACL)
-
 	for _, b := range controllers {
-		if v := b.DeviceID(); v != 0 {
+		if v := b.ID(); v != 0 {
 			acl[v] = map[uint32]types.Card{}
 		}
 	}

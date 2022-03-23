@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 func TestTableNewOID(t *testing.T) {
@@ -121,7 +122,9 @@ func TestTableNewController(t *testing.T) {
 		last: 11,
 	}
 
-	oid := tt.New(uint32(1234))
+	oid := tt.New(ctypes.CatalogController{
+		DeviceID: 1234,
+	})
 
 	if oid != "0.2.11" {
 		t.Errorf("Incorrect new OID - expected:%v, got:%v", "0.2.11", oid)

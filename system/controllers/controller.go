@@ -17,14 +17,15 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Controller struct {
+	ctypes.CatalogController
 	oid      schema.OID
 	name     string
-	deviceID uint32
 	IP       *core.Address
 	Doors    map[uint8]schema.OID
 	timezone string
@@ -59,7 +60,7 @@ type cached struct {
 var created = types.TimestampNow()
 
 func (c *Controller) IsValid() bool {
-	if c != nil && (c.name != "" || c.deviceID != 0) {
+	if c != nil && (c.name != "" || c.DeviceID != 0) {
 		return true
 	}
 
@@ -86,9 +87,9 @@ func (c *Controller) Name() string {
 	return ""
 }
 
-func (c *Controller) DeviceID() uint32 {
+func (c *Controller) ID() uint32 {
 	if c != nil {
-		return c.deviceID
+		return c.DeviceID
 	}
 
 	return 0
@@ -122,7 +123,7 @@ func (c *Controller) Door(d uint8) (schema.OID, bool) {
 }
 
 func (c *Controller) realized() bool {
-	if c != nil && c.deviceID != 0 && !c.IsDeleted() {
+	if c != nil && c.DeviceID != 0 && !c.IsDeleted() {
 		return true
 	}
 
@@ -168,8 +169,8 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []schema.Object {
 
 		doors := map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
 
-		if c.deviceID != 0 {
-			deviceID = fmt.Sprintf("%v", c.deviceID)
+		if c.DeviceID != 0 {
+			deviceID = fmt.Sprintf("%v", c.DeviceID)
 		}
 
 		if c.IP != nil {
@@ -183,7 +184,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []schema.Object {
 			}
 		}
 
-		if c.deviceID != 0 {
+		if c.DeviceID != 0 {
 			if cached := c.get(); cached != nil {
 				// ... get IP address field from cached value
 				if cached.address != nil {
@@ -274,7 +275,7 @@ func (c *Controller) AsRuleEntity() (string, interface{}) {
 
 	if c != nil {
 		v.Name = c.name
-		v.DeviceID = c.deviceID
+		v.DeviceID = c.DeviceID
 	}
 
 	return "controller", &v
@@ -285,7 +286,7 @@ func (c *Controller) String() string {
 		return ""
 	}
 
-	if deviceID := c.DeviceID(); deviceID == 0 {
+	if deviceID := c.DeviceID; deviceID == 0 {
 		return fmt.Sprintf("%v", c.Name())
 	} else {
 		return fmt.Sprintf("%v (%v)", c.Name(), deviceID)
@@ -297,7 +298,7 @@ func (c *Controller) status() types.Status {
 		return types.StatusDeleted
 	}
 
-	if c.deviceID != 0 {
+	if c.DeviceID != 0 {
 		if cached := c.get(); cached != nil {
 			dt := time.Now().Sub(cached.touched)
 			switch {
@@ -429,13 +430,13 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			return nil, err
 		} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 			if id, err := strconv.ParseUint(value, 10, 32); err == nil {
-				c.deviceID = uint32(id)
+				c.DeviceID = uint32(id)
 				c.unconfigured = false
-				list = append(list, kv{ControllerDeviceID, c.deviceID})
-				c.updated(uid, "device-id", clone.deviceID, c.deviceID, dbc)
+				list = append(list, kv{ControllerDeviceID, c.DeviceID})
+				c.updated(uid, "device-id", clone.DeviceID, c.DeviceID, dbc)
 			}
 		} else if value == "" {
-			if p := stringify(c.deviceID, ""); p != "" {
+			if p := stringify(c.DeviceID, ""); p != "" {
 				c.log(uid, "update", OID, "device-id", fmt.Sprintf("Cleared device ID %v", p), p, "", dbc)
 			} else if p = stringify(c.name, ""); p != "" {
 				c.log(uid, "update", OID, "device-id", fmt.Sprintf("Cleared device ID for %v", p), "", "", dbc)
@@ -443,7 +444,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 				c.log(uid, "update", OID, "device-id", fmt.Sprintf("Cleared device ID"), "", "", dbc)
 			}
 
-			c.deviceID = 0
+			c.DeviceID = 0
 			c.unconfigured = false
 			list = append(list, kv{ControllerDeviceID, ""})
 		}
@@ -469,7 +470,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			c.timezone = tz.String()
 			c.unconfigured = false
 
-			if c.deviceID != 0 {
+			if c.DeviceID != 0 {
 				if cached := c.get(); cached != nil {
 					if !cached.datetime.datetime.IsZero() {
 						tz := timezone(c.timezone)
@@ -530,7 +531,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		}
 	}
 
-	if c.name == "" && c.deviceID == 0 {
+	if c.name == "" && c.DeviceID == 0 {
 		if a != nil {
 			if err := a.CanDelete(c, auth.Controllers); err != nil {
 				return nil, err
@@ -539,7 +540,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 
 		if p := stringify(clone.name, ""); p != "" {
 			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
-		} else if p = stringify(clone.deviceID, ""); p != "" {
+		} else if p = stringify(clone.DeviceID, ""); p != "" {
 			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
 		} else {
 			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller"), "", "", dbc)
@@ -638,7 +639,7 @@ func (c Controller) serialize() ([]byte, error) {
 	}{
 		OID:      c.OID(),
 		Name:     c.name,
-		DeviceID: c.deviceID,
+		DeviceID: c.DeviceID,
 		Address:  c.IP,
 		Doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
 		TimeZone: c.timezone,
@@ -673,7 +674,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 
 	c.oid = record.OID
 	c.name = strings.TrimSpace(record.Name)
-	c.deviceID = record.DeviceID
+	c.DeviceID = record.DeviceID
 	c.IP = record.Address
 	c.Doors = map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
 	c.timezone = record.TimeZone
@@ -690,9 +691,11 @@ func (c *Controller) deserialize(bytes []byte) error {
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
+			CatalogController: ctypes.CatalogController{
+				DeviceID: c.DeviceID,
+			},
 			oid:      c.oid,
 			name:     c.name,
-			deviceID: c.deviceID,
 			IP:       c.IP,
 			timezone: c.timezone,
 			Doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
@@ -722,7 +725,7 @@ func (c Controller) updated(uid, field string, before, after interface{}, dbc db
 			Component: "controller",
 			Operation: "update",
 			Details: audit.Details{
-				ID:          stringify(c.deviceID, ""),
+				ID:          stringify(c.DeviceID, ""),
 				Name:        stringify(c.name, ""),
 				Field:       field,
 				Description: description,
@@ -742,7 +745,7 @@ func (c *Controller) log(uid string, operation string, OID schema.OID, field, de
 		Component: "controller",
 		Operation: operation,
 		Details: audit.Details{
-			ID:          stringify(c.deviceID, ""),
+			ID:          stringify(c.DeviceID, ""),
 			Name:        stringify(c.name, ""),
 			Field:       field,
 			Description: description,
