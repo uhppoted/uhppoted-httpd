@@ -94,7 +94,7 @@ func (gg *Groups) Load(blob json.RawMessage) error {
 	}
 
 	for _, v := range gg.groups {
-		catalog.PutT(v, v.OID)
+		catalog.PutT(v.CatalogGroup, v.OID)
 		catalog.PutV(v.OID, GroupName, v.Name)
 		catalog.PutV(v.OID, GroupCreated, v.created)
 	}

@@ -95,7 +95,7 @@ func (uu *Users) Load(blob json.RawMessage) error {
 	}
 
 	for _, v := range uu.users {
-		catalog.PutT(v, v.OID)
+		catalog.PutT(v.CatalogUser, v.OID)
 		catalog.PutV(v.OID, schema.UserName, v.name)
 		catalog.PutV(v.OID, schema.UserUID, v.uid)
 		catalog.PutV(v.OID, schema.UserRole, v.role)

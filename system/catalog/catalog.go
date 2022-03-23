@@ -60,7 +60,7 @@ func NewT[T ctypes.CatalogType](v T) schema.OID {
 	}
 }
 
-func PutT(v interface{}, oid schema.OID) {
+func PutT[T ctypes.CatalogType](v T, oid schema.OID) {
 	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	} else {

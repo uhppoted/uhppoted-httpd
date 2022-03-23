@@ -70,7 +70,7 @@ func (dd *Doors) Load(blob json.RawMessage) error {
 	}
 
 	for _, v := range dd.doors {
-		catalog.PutT(v, v.OID)
+		catalog.PutT(v.CatalogDoor, v.OID)
 		catalog.PutV(v.OID, DoorName, v.Name)
 		catalog.PutV(v.OID, DoorDelayConfigured, v.delay)
 		catalog.PutV(v.OID, DoorDelayModified, false)

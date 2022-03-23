@@ -50,7 +50,7 @@ func TestCardAdd(t *testing.T) {
 	final := makeCards(hagrid, placeholder)
 
 	catalog.Clear()
-	catalog.PutT(hagrid, hagrid.OID)
+	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
 	r, err := cards.UpdateByOID(nil, "<new>", "", nil)
 	if err != nil {
@@ -71,7 +71,7 @@ func TestCardAddWithAuth(t *testing.T) {
 	auth := stub{}
 
 	catalog.Clear()
-	catalog.PutT(hagrid, hagrid.OID)
+	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
 	r, err := cards.UpdateByOID(&auth, "<new>", "", nil)
 	if err == nil {
@@ -124,7 +124,7 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 	cards := makeCards(hagrid)
 
 	catalog.Clear()
-	catalog.PutT(hagrid, hagrid.OID)
+	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
 	r, err := cards.UpdateByOID(nil, "<new>", "", &trail)
 	if err != nil {
@@ -287,7 +287,7 @@ func TestCardUpdateAddGroup(t *testing.T) {
 	oid := schema.GroupsOID.Append("10")
 	group := groups.Group{OID: oid}
 
-	catalog.PutT(group, oid)
+	catalog.PutT(group.CatalogGroup, oid)
 
 	cards := makeCards(hagrid)
 	final := makeCards(makeCard(hagrid.OID, "Hagrid", 6514231, fmt.Sprintf("%v", oid)))
@@ -313,7 +313,7 @@ func TestCardUpdateAddGroup(t *testing.T) {
 func TestCardUpdateRemoveGroup(t *testing.T) {
 	oid := schema.GroupsOID.Append("10")
 	group := groups.Group{OID: oid}
-	catalog.PutT(group, oid)
+	catalog.PutT(group.CatalogGroup, oid)
 
 	hagrid2 := makeCard(hagrid.OID, "Hagrid", 6514231)
 	hagrid2.Groups[oid] = false
@@ -354,7 +354,7 @@ func TestCardUpdateWithInvalidGroup(t *testing.T) {
 func TestCardDelete(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 
-	catalog.PutT(hagrid, hagrid.OID)
+	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
 	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(schema.CardName), "", nil); err != nil {
 		t.Fatalf("Unexpected error deleting card (%v)", err)
@@ -448,8 +448,8 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 
 	catalog.Clear()
-	catalog.PutT(hagrid, hagrid.OID)
-	catalog.PutT(dobby, dobby.OID)
+	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
+	catalog.PutT(dobby.CatalogCard, dobby.OID)
 
 	cards.UpdateByOID(nil, dobby.OID.Append(schema.CardName), "", &trail)
 	cards.UpdateByOID(nil, dobby.OID.Append(schema.CardNumber), "", &trail)

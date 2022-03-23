@@ -138,7 +138,8 @@ func (ee *Events) Load(blob json.RawMessage) error {
 	}
 
 	ee.events.Range(func(k, v interface{}) bool {
-		catalog.PutT(v.(Event), v.(Event).OID)
+		e := v.(Event)
+		catalog.PutT(e.CatalogEvent, e.OID)
 		return true
 	})
 

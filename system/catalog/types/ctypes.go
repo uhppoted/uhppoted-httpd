@@ -65,7 +65,7 @@ func (t Type) String() string {
 func TypeOf(v interface{}) Type {
 	t := fmt.Sprintf("%T", v)
 	switch t {
-	case "*interfaces.LAN", "interfaces.LAN", "catalog.CatalogInterface":
+	case "*interfaces.LAN", "interfaces.LAN", "ctypes.CatalogInterface":
 		return TInterface
 
 	case "*controllers.Controller", "uint32", "ctypes.CatalogController":

@@ -118,7 +118,7 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	defer cc.guard.Unlock()
 
 	if t == ctypes.TController {
-		cc.controllers.Put(oid, v.(uint32))
+		cc.controllers.Put(oid, v.(ctypes.CatalogController).DeviceID)
 		return
 	}
 
@@ -234,3 +234,35 @@ func (cc *catalog) tableFor(t ctypes.Type) (Table, bool) {
 		return nil, false
 	}
 }
+
+// func tableFor[T ctypes.CatalogType](v T) Table {
+// 	t := fmt.Sprintf("%T", v)
+// 	switch t {
+// 	case "ctypes.CatalogInterface":
+// 		return cc.interfaces
+//
+// 	case "ctypes.CatalogController":
+// 		return cc.controllers
+//
+// 	case "ctypes.CatalogCard":
+// 		return cc.cards
+//
+// 	case "ctypes.CatalogDoor":
+// 		return cc.doors
+//
+// 	case "ctypes.CatalogGroup":
+// 		return cc.groups
+//
+// 	case "ctypes.CatalogEvent":
+// 		return cc.events
+//
+// 	case "ctypes.CatalogLogEntry":
+// 		return cc.logs
+//
+// 	case "ctypes.CatalogUser":
+// 		return cc.users
+//
+// 	default:
+// 		return nil
+// 	}
+// }
