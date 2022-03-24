@@ -11,6 +11,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -18,7 +19,9 @@ func TestDoorAsObjects(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	d := Door{
-		OID:     "0.3.3",
+		CatalogDoor: ctypes.CatalogDoor{
+			OID: "0.3.3",
+		},
 		Name:    "Le Door",
 		delay:   7,
 		mode:    core.NormallyOpen,
@@ -53,7 +56,9 @@ func TestDoorAsObjectsWithDeleted(t *testing.T) {
 	deleted := types.TimestampNow()
 
 	d := Door{
-		OID:     "0.3.3",
+		CatalogDoor: ctypes.CatalogDoor{
+			OID: "0.3.3",
+		},
 		Name:    "Le Door",
 		delay:   7,
 		mode:    core.NormallyOpen,
@@ -76,7 +81,9 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	d := Door{
-		OID:     "0.3.3",
+		CatalogDoor: ctypes.CatalogDoor{
+			OID: "0.3.3",
+		},
 		Name:    "Le Door",
 		delay:   7,
 		mode:    core.NormallyOpen,
@@ -124,7 +131,9 @@ func TestDoorSet(t *testing.T) {
 	}
 
 	d := Door{
-		OID:   "0.3.3",
+		CatalogDoor: ctypes.CatalogDoor{
+			OID: "0.3.3",
+		},
 		Name:  "Le Door",
 		delay: 7,
 		mode:  core.NormallyOpen,
@@ -146,7 +155,9 @@ func TestDoorSet(t *testing.T) {
 
 func TestDoorSetWithDeleted(t *testing.T) {
 	d := Door{
-		OID:   "0.3.3",
+		CatalogDoor: ctypes.CatalogDoor{
+			OID: "0.3.3",
+		},
 		Name:  "Le Door",
 		delay: 7,
 		mode:  core.NormallyOpen,

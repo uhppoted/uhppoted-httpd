@@ -12,6 +12,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -22,7 +23,9 @@ func TestCardAsObjects(t *testing.T) {
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
 	c := Card{
-		OID:     "0.4.3",
+		CatalogCard: ctypes.CatalogCard{
+			OID: "0.4.3",
+		},
 		Name:    "Le Card",
 		Card:    &card,
 		From:    from,
@@ -56,7 +59,9 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
 	c := Card{
-		OID:     "0.4.3",
+		CatalogCard: ctypes.CatalogCard{
+			OID: "0.4.3",
+		},
 		Name:    "Le Card",
 		Card:    &card,
 		From:    from,
@@ -83,7 +88,9 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
 	c := Card{
-		OID:     "0.4.3",
+		CatalogCard: ctypes.CatalogCard{
+			OID: "0.4.3",
+		},
 		Name:    "Le Card",
 		Card:    &card,
 		From:    from,
@@ -127,7 +134,9 @@ func TestCardSet(t *testing.T) {
 	}
 
 	c := Card{
-		OID:  "0.4.3",
+		CatalogCard: ctypes.CatalogCard{
+			OID: "0.4.3",
+		},
 		Name: "Le Carte",
 	}
 
@@ -147,7 +156,9 @@ func TestCardSet(t *testing.T) {
 
 func TestCardSetWithDeleted(t *testing.T) {
 	c := Card{
-		OID:  "0.4.3",
+		CatalogCard: ctypes.CatalogCard{
+			OID: "0.4.3",
+		},
 		Name: "Le Carte",
 
 		deleted: types.TimestampNow(),

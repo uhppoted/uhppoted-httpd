@@ -14,21 +14,22 @@ import (
 
 type LogEntry struct {
 	ctypes.CatalogLogEntry
-	OID       schema.OID `json:"OID"`
-	Timestamp time.Time  `json:"timestamp"`
-	UID       string     `json:"uid"`
-	Item      string     `json:"item"`
-	ItemID    string     `json:"item-id"`
-	ItemName  string     `json:"item-name"`
-	Field     string     `json:"field"`
-	Details   string     `json:"details"`
-	Before    string     `json:"before,omitempty"`
-	After     string     `json:"after,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
+	UID       string    `json:"uid"`
+	Item      string    `json:"item"`
+	ItemID    string    `json:"item-id"`
+	ItemName  string    `json:"item-name"`
+	Field     string    `json:"field"`
+	Details   string    `json:"details"`
+	Before    string    `json:"before,omitempty"`
+	After     string    `json:"after,omitempty"`
 }
 
 func NewLogEntry(oid schema.OID, timestamp time.Time, record audit.AuditRecord) LogEntry {
 	return LogEntry{
-		OID:       oid,
+		CatalogLogEntry: ctypes.CatalogLogEntry{
+			OID: oid,
+		},
 		Timestamp: timestamp,
 		UID:       record.UID,
 		Item:      record.Component,
@@ -182,7 +183,9 @@ func (l *LogEntry) deserialize(bytes []byte) error {
 
 func (l LogEntry) clone() LogEntry {
 	log := LogEntry{
-		OID:       l.OID,
+		CatalogLogEntry: ctypes.CatalogLogEntry{
+			OID: l.OID,
+		},
 		Timestamp: l.Timestamp,
 	}
 

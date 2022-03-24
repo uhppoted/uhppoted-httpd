@@ -11,6 +11,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -18,7 +19,9 @@ func TestEventAsObjects(t *testing.T) {
 	timestamp := core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	e := Event{
-		OID:        "0.6.3",
+		CatalogEvent: ctypes.CatalogEvent{
+			OID: "0.6.3",
+		},
 		DeviceID:   405419896,
 		Index:      79,
 		Timestamp:  timestamp,
@@ -59,7 +62,9 @@ func TestEventAsObjectsWithAuth(t *testing.T) {
 	timestamp := core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	e := Event{
-		OID:        "0.6.3",
+		CatalogEvent: ctypes.CatalogEvent{
+			OID: "0.6.3",
+		},
 		DeviceID:   405419896,
 		Index:      79,
 		Timestamp:  timestamp,

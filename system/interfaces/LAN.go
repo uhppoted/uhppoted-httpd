@@ -26,7 +26,6 @@ import (
 
 type LAN struct {
 	ctypes.CatalogInterface
-	OID              schema.OID
 	Name             string
 	BindAddress      core.BindAddr
 	BroadcastAddress core.BroadcastAddr
@@ -243,7 +242,9 @@ func (l *LAN) status() types.Status {
 
 func (l LAN) Clone() LAN {
 	return LAN{
-		OID:              l.OID,
+		CatalogInterface: ctypes.CatalogInterface{
+			OID: l.OID,
+		},
 		Name:             l.Name,
 		BindAddress:      l.BindAddress,
 		BroadcastAddress: l.BroadcastAddress,

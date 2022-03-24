@@ -11,6 +11,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -94,7 +95,9 @@ func makeCard(oid schema.OID, name string, card uint32, groups ...string) Card {
 	}
 
 	cardholder := Card{
-		OID:    oid,
+		CatalogCard: ctypes.CatalogCard{
+			OID: oid,
+		},
 		Name:   name,
 		Card:   c,
 		From:   date("2021-01-02"),

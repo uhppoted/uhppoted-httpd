@@ -9,6 +9,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -16,7 +17,9 @@ func TestLogEntryAsObjects(t *testing.T) {
 	timestamp := time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local)
 
 	l := LogEntry{
-		OID:       "0.7.3",
+		CatalogLogEntry: ctypes.CatalogLogEntry{
+			OID: "0.7.3",
+		},
 		Timestamp: timestamp,
 		UID:       "admin",
 		Item:      "thing1",
@@ -50,7 +53,9 @@ func TestLogEntryAsObjectsWithAuth(t *testing.T) {
 	timestamp := time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local)
 
 	l := LogEntry{
-		OID:       "0.7.3",
+		CatalogLogEntry: ctypes.CatalogLogEntry{
+			OID: "0.7.3",
+		},
 		Timestamp: timestamp,
 		UID:       "admin",
 		Item:      "thing1",

@@ -11,6 +11,7 @@ type CatalogType interface {
 }
 
 type CatalogInterface struct {
+	OID schema.OID
 }
 
 type CatalogController struct {
@@ -19,21 +20,27 @@ type CatalogController struct {
 }
 
 type CatalogDoor struct {
+	OID schema.OID
 }
 
 type CatalogCard struct {
+	OID schema.OID
 }
 
 type CatalogGroup struct {
+	OID schema.OID
 }
 
 type CatalogEvent struct {
+	OID schema.OID
 }
 
 type CatalogLogEntry struct {
+	OID schema.OID
 }
 
 type CatalogUser struct {
+	OID schema.OID
 }
 
 type Type int

@@ -21,7 +21,6 @@ import (
 
 type Card struct {
 	ctypes.CatalogCard
-	OID    schema.OID
 	Name   string
 	Card   *types.Card
 	From   core.Date
@@ -481,7 +480,9 @@ func (c *Card) clone() *Card {
 	}
 
 	replicant := &Card{
-		OID:    c.OID,
+		CatalogCard: ctypes.CatalogCard{
+			OID: c.OID,
+		},
 		Name:   c.Name,
 		Card:   card,
 		From:   c.From,

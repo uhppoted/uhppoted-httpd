@@ -9,6 +9,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/groups"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -37,7 +38,9 @@ func (d *dbc) SetPassword(uid, pwd, role string) error {
 
 func TestCardAdd(t *testing.T) {
 	placeholder := Card{
-		OID:    schema.OID("0.4.2"),
+		CatalogCard: ctypes.CatalogCard{
+			OID: schema.OID("0.4.2"),
+		},
 		Groups: map[schema.OID]bool{},
 	}
 
@@ -116,7 +119,9 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 		},
 
 		db: makeCards(hagrid, Card{
-			OID:    schema.OID("0.4.2"),
+			CatalogCard: ctypes.CatalogCard{
+				OID: schema.OID("0.4.2"),
+			},
 			Groups: map[schema.OID]bool{},
 		}),
 	}
@@ -285,7 +290,11 @@ func TestCardNumberSwap(t *testing.T) {
 
 func TestCardUpdateAddGroup(t *testing.T) {
 	oid := schema.GroupsOID.Append("10")
-	group := groups.Group{OID: oid}
+	group := groups.Group{
+		CatalogGroup: ctypes.CatalogGroup{
+			OID: oid,
+		},
+	}
 
 	catalog.PutT(group.CatalogGroup, oid)
 
@@ -312,7 +321,11 @@ func TestCardUpdateAddGroup(t *testing.T) {
 
 func TestCardUpdateRemoveGroup(t *testing.T) {
 	oid := schema.GroupsOID.Append("10")
-	group := groups.Group{OID: oid}
+	group := groups.Group{
+		CatalogGroup: ctypes.CatalogGroup{
+			OID: oid,
+		},
+	}
 	catalog.PutT(group.CatalogGroup, oid)
 
 	hagrid2 := makeCard(hagrid.OID, "Hagrid", 6514231)

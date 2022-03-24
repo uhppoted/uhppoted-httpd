@@ -16,7 +16,6 @@ import (
 
 type Event struct {
 	ctypes.CatalogEvent
-	OID        schema.OID    `json:"OID"`
 	DeviceID   uint32        `json:"device-id"`
 	Index      uint32        `json:"index"`
 	Timestamp  core.DateTime `json:"timestamp"`
@@ -132,7 +131,9 @@ func (r reason) String() string {
 
 func NewEvent(oid schema.OID, e uhppoted.Event, device, door, card string) Event {
 	return Event{
-		OID:        oid,
+		CatalogEvent: ctypes.CatalogEvent{
+			OID: oid,
+		},
 		DeviceID:   e.DeviceID,
 		Index:      e.Index,
 		Timestamp:  e.Timestamp,
@@ -296,7 +297,9 @@ func (e *Event) deserialize(bytes []byte) error {
 
 func (e Event) clone() Event {
 	event := Event{
-		OID:       e.OID,
+		CatalogEvent: ctypes.CatalogEvent{
+			OID: e.OID,
+		},
 		Timestamp: e.Timestamp,
 	}
 

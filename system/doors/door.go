@@ -20,8 +20,7 @@ import (
 
 type Door struct {
 	ctypes.CatalogDoor
-	OID  schema.OID `json:"OID"`
-	Name string     `json:"name"`
+	Name string `json:"name"`
 
 	delay   uint8
 	mode    core.ControlState
@@ -329,7 +328,9 @@ func (d *Door) deserialize(bytes []byte) error {
 
 func (d *Door) clone() Door {
 	return Door{
-		OID:     d.OID,
+		CatalogDoor: ctypes.CatalogDoor{
+			OID: d.OID,
+		},
 		Name:    d.Name,
 		delay:   d.delay,
 		mode:    d.mode,

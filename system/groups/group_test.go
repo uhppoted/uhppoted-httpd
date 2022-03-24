@@ -9,6 +9,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -17,7 +18,9 @@ func TestGroupDeserialize(t *testing.T) {
 
 	encoded := `{ "OID":"0.5.3", "name":"Le Groupe", "doors":["0.3.3","0.3.7"], "created":"2022-04-01 00:00:00" }`
 	expected := Group{
-		OID:  "0.5.3",
+		CatalogGroup: ctypes.CatalogGroup{
+			OID: "0.5.3",
+		},
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -42,7 +45,9 @@ func TestGroupDeserializeWithDefaultCreated(t *testing.T) {
 
 	encoded := `{ "OID":"0.5.3", "name":"Le Groupe", "doors":["0.3.3","0.3.7"] }`
 	expected := Group{
-		OID:  "0.5.3",
+		CatalogGroup: ctypes.CatalogGroup{
+			OID: "0.5.3",
+		},
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -67,7 +72,9 @@ func TestGroupAsObjects(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	g := Group{
-		OID:  "0.5.3",
+		CatalogGroup: ctypes.CatalogGroup{
+			OID: "0.5.3",
+		},
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -96,7 +103,9 @@ func TestGroupAsObjectsWithDeleted(t *testing.T) {
 	deleted := types.TimestampNow()
 
 	g := Group{
-		OID:  "0.5.3",
+		CatalogGroup: ctypes.CatalogGroup{
+			OID: "0.5.3",
+		},
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -121,7 +130,9 @@ func TestGroupAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	g := Group{
-		OID:  "0.5.3",
+		CatalogGroup: ctypes.CatalogGroup{
+			OID: "0.5.3",
+		},
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -163,7 +174,9 @@ func TestGroupSet(t *testing.T) {
 	}
 
 	g := Group{
-		OID:  "0.5.3",
+		CatalogGroup: ctypes.CatalogGroup{
+			OID: "0.5.3",
+		},
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -187,7 +200,9 @@ func TestGroupSet(t *testing.T) {
 
 func TestGroupSetWithDeleted(t *testing.T) {
 	g := Group{
-		OID:  "0.5.3",
+		CatalogGroup: ctypes.CatalogGroup{
+			OID: "0.5.3",
+		},
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,

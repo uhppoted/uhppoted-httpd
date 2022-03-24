@@ -21,7 +21,6 @@ import (
 
 type User struct {
 	ctypes.CatalogUser
-	OID      schema.OID
 	name     string
 	uid      string
 	role     string
@@ -335,7 +334,9 @@ func (u *User) deserialize(bytes []byte) error {
 
 func (u User) clone() *User {
 	replicant := User{
-		OID:      u.OID,
+		CatalogUser: ctypes.CatalogUser{
+			OID: u.OID,
+		},
 		name:     u.name,
 		uid:      u.uid,
 		role:     u.role,

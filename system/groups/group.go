@@ -18,7 +18,6 @@ import (
 
 type Group struct {
 	ctypes.CatalogGroup
-	OID   schema.OID          `json:"OID"`
 	Name  string              `json:"name"`
 	Doors map[schema.OID]bool `json:"doors"`
 
@@ -267,7 +266,9 @@ func (g *Group) deserialize(bytes []byte) error {
 
 func (g Group) clone() Group {
 	group := Group{
-		OID:     g.OID,
+		CatalogGroup: ctypes.CatalogGroup{
+			OID: g.OID,
+		},
 		Name:    g.Name,
 		Doors:   map[schema.OID]bool{},
 		created: g.created,

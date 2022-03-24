@@ -211,7 +211,11 @@ func TestLookupCardName(t *testing.T) {
 	sys.logs.Logs = logs.NewLogs()
 
 	oid := schema.OID("0.4.1")
-	card := cards.Card{OID: oid}
+	card := cards.Card{
+		CatalogCard: ctypes.CatalogCard{
+			OID: oid,
+		},
+	}
 	expected := "FredF"
 
 	catalog.PutT(card.CatalogCard, oid)
@@ -233,7 +237,11 @@ func TestLookupHistoricalCardName(t *testing.T) {
 	sys.logs.Logs = logs.NewLogs(h...)
 
 	oid := schema.OID("0.4.1")
-	card := cards.Card{OID: oid}
+	card := cards.Card{
+		CatalogCard: ctypes.CatalogCard{
+			OID: oid,
+		},
+	}
 	expected := "Barney"
 
 	catalog.PutT(card.CatalogCard, oid)
@@ -262,7 +270,11 @@ func TestLookupDoorName(t *testing.T) {
 
 	controller := schema.OID("0.2.1")
 	oid := schema.OID("0.3.1")
-	door := doors.Door{OID: schema.OID("0.3.1")}
+	door := doors.Door{
+		CatalogDoor: ctypes.CatalogDoor{
+			OID: "0.3.1",
+		},
+	}
 
 	catalog.PutT(ctypes.CatalogController{DeviceID: 405419896}, controller)
 	catalog.PutV(controller, schema.ControllerName, "Alpha")
@@ -290,7 +302,11 @@ func TestLookupHistoricalDoorName(t *testing.T) {
 
 	controller := schema.OID("0.2.1")
 	oid := schema.OID("0.3.1")
-	door := doors.Door{OID: oid}
+	door := doors.Door{
+		CatalogDoor: ctypes.CatalogDoor{
+			OID: oid,
+		},
+	}
 
 	catalog.PutT(ctypes.CatalogController{DeviceID: 405419896}, controller)
 	catalog.PutV(controller, schema.ControllerName, "Alpha")
