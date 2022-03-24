@@ -12,9 +12,13 @@
 
 - [ ] Overview page 
       - [x] Skeleton page
-      - [ ] Remove LAN block
+      - [x] Remove LAN block
+      - [x] Mark all input fields readonly
+      - [x] Make date/time readonly
+      - [ ] Make doors reaonly/text
       - [ ] Rework controllers as 'blocks'
-      - [ ] Remove all edit functionality
+      - [ ] Add event summary
+      - [ ] Add log summary
 
 - [ ] Verify bootstrap from scratch
       - [ ] Refresh overwrites in-progress card edits

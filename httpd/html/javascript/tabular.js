@@ -33,7 +33,7 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
 
 const pages = {
   overview: {
-    get: [ '/controllers', '/doors'],
+    get: ['/controllers', '/doors'],
     refreshed: function () {
       overview.refreshed()
     }
@@ -691,7 +691,7 @@ function getPage (tag) {
   switch (tag) {
     case 'overview':
       return pages.overview
-      
+
     case 'controllers':
       return pages.controllers
 

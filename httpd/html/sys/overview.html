@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
   </head>
 
-  <body> 
+  <body>
     <div id="content">
 
       {{template "user"   .}}
@@ -19,50 +19,6 @@
       <!-- MAIN -->
       <main>
         <div id="container">
-          <table id="interface" class="interface" data-oid="{{ .schema.Interfaces.OID }}.1">
-            <tr>
-              <td colspan="3">
-                <div style="display:flex;">
-                  <input type="text" class="name" placeholder="-" style="flex-grow:1;"
-                          onchange="onEdited('interface', event)" 
-                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Name }}"
-                          data-original=""
-                          data-value="" 
-                          readonly />
-                  <span class="control commit"   onclick="onCommit('interface', event)">&#9745;</span>
-                  <span class="control rollback" onclick="onRollback('interface', event)">&#9746;</span>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Bind }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
-              <td>bind:</td>
-              <td><input type="text" class="bind" placeholder="-" 
-                          onchange="onEdited('interface', event)" 
-                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Bind }}"
-                          data-original=""
-                          data-value="" /></td>
-            </tr>
-            <tr>
-              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
-              <td>broadcast:</td>
-              <td><input type="text" class="broadcast" placeholder="-" 
-                          onchange="onEdited('interface', event)" 
-                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}"
-                          data-original=""
-                          data-value="" /></td>
-            </tr>
-            <tr>
-              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Listen }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
-              <td>listen:</td>
-              <td><input type="text" class="listen" value="" placeholder="-"
-                          onchange="onEdited('interface', event)" 
-                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Listen }}"
-                          data-original=""
-                          data-value="" /></td>
-            </tr>
-          </table>
-
           <div id="controls" data-oid="{{ .schema.Controllers.OID }}">
             <img id="commitall"   class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controllers', event, 'controllers')" />
             <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('controllers', event, 'controllers')" />
@@ -93,18 +49,19 @@
               <tbody></tbody>
               <tfoot></tfoot>
             </table>
-            
+
             <template id="controller">
                 <td class="rowheader" style="display:flex; flex-direction:row;">
                   <img class="flag name" src="/images/{{$.context.Theme}}/corner.svg" />
-                  <input class="field name" 
-                         type="text" 
-                         value="" 
-                         placeholder="-" 
-                         onchange="onEdited('controller', event)" 
-                         data-record="" 
-                         data-original="" 
-                         data-value="" />
+                  <input class="field name"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('controller', event)"
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
                   <span class="control commit"   onclick="onCommit('controller', event)"   data-record="" data-enabled="false">
                     <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                   </span>
@@ -116,83 +73,86 @@
                 <td class="ID">
                   <img class="flag ID" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field ID"
-                         type="text" 
-                         list="fruits" 
+                         type="text"
+                         list="fruits"
                          min="0"
                          value=""
                          placeholder="-"
-                         onchange="onEdited('controller', event)" 
+                         onchange="onEdited('controller', event)"
                          data-record=""
                          data-original=""
-                         data-value="" />
+                         data-value="" 
+                         readonly />
                 </td>
 
                 <td>
                   <img class="flag IP" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field IP"
-                         type="text" 
+                         type="text"
                          value=""
                          placeholder="-"
-                         onkeydown="onEnter('controller',event)" 
-                         onchange="onEdited('controller', event)" 
+                         onkeydown="onEnter('controller',event)"
+                         onchange="onEdited('controller', event)"
                          data-record=""
                          data-original=""
-                         data-value=""  
-                         data-status="" />
+                         data-value=""
+                         data-status="" 
+                         readonly />
                 </td>
 
                 <td class="combobox">
                   <img class="flag datetime" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field datetime"
-                         type="text" 
+                         type="text"
                          value=""
                          placeholder="-"
-                         autocomplete="off" 
-                         onkeydown="onEnter('controller', event)" 
-                         onchange="onEdited('controller', event)" 
+                         autocomplete="off"
+                         onkeydown="onEnter('controller', event)"
+                         onchange="onEdited('controller', event)"
                          data-record=""
                          data-original=""
                          data-value=""
-                         data-status="" />
+                         data-status="" 
+                         readonly />
                   <ul style="position:fixed; left:0px; top:0px; z-index:2; width:fit-content; max-height:120px; overflow:auto;"/>
                 </td>
 
                 <td>
                   <img class="flag cards" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field cards"
-                         type="number" 
+                         type="number"
                          min="0"
                          value=""
                          placeholder="-"
-                         onchange="onEdited('controller', event)" 
+                         onchange="onEdited('controller', event)"
                          data-record=""
                          data-original=""
-                         data-value=""  
-                         data-status="" 
+                         data-value=""
+                         data-status=""
                          readonly />
                 </td>
 
                 <td>
                   <img class="flag events" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field events"
-                         type="number" 
+                         type="number"
                          min="0"
                          value=""
                          placeholder="-"
-                         onchange="onEdited('controller', event)" 
+                         onchange="onEdited('controller', event)"
                          data-record=""
                          data-original=""
-                         data-value=""  
+                         data-value=""
                          readonly />
                 </td>
 
                 <td>
                   <img class="flag door1" src="/images/{{$.context.Theme}}/corner.svg" />
                   <select class="field door1"
-                          type="text" 
+                          type="text"
                           value=""
                           placeholder="-"
-                          onchange="onEdited('controller', event)" 
+                          onchange="onEdited('controller', event)"
                           data-record=""
                           data-original=""
                           data-value="">
@@ -203,13 +163,13 @@
                 <td>
                   <img class="flag door2" src="/images/{{$.context.Theme}}/corner.svg" />
                   <select class="field door2"
-                          type="text" 
+                          type="text"
                           value=""
                           placeholder="-"
-                          onchange="onEdited('controller', event)" 
+                          onchange="onEdited('controller', event)"
                           data-record=""
                           data-original=""
-                          data-value=""  
+                          data-value=""
                           readonly>
                     <option value="">-</option>
                   </select>
@@ -218,13 +178,13 @@
                 <td>
                   <img class="flag door3" src="/images/{{$.context.Theme}}/corner.svg" />
                   <select class="field door3"
-                          type="text" 
+                          type="text"
                           value=""
                           placeholder="-"
-                          onchange="onEdited('controller', event)" 
+                          onchange="onEdited('controller', event)"
                           data-record=""
                           data-original=""
-                          data-value=""  
+                          data-value=""
                           readonly>
                     <option value="">-</option>
                   </select>
@@ -233,10 +193,10 @@
                 <td>
                   <img class="flag door4" src="/images/{{$.context.Theme}}/corner.svg" />
                   <select class="field door4"
-                          type="text" 
+                          type="text"
                           value=""
                           placeholder="-"
-                          onchange="onEdited('controller', event)" 
+                          onchange="onEdited('controller', event)"
                           data-record=""
                           data-original=""
                           data-value="">
@@ -262,22 +222,22 @@
   <!-- SCRIPTS -->
 
   <script type="module">
-    import { retheme, 
-             dismiss, 
-             resetIdle, 
-             onMenu, 
-             onSignOut, 
-             onReload, 
+    import { retheme,
+             dismiss,
+             resetIdle,
+             onMenu,
+             onSignOut,
+             onReload,
              setRefresh } from "/javascript/uhppoted.js"
 
-    import { onEdited, 
-             onEnter, 
-             onTick, 
-             onCommit, 
-             onCommitAll, 
-             onRollback, 
-             onRollbackAll, 
-             onNew, 
+    import { onEdited,
+             onEnter,
+             onTick,
+             onCommit,
+             onCommitAll,
+             onRollback,
+             onRollbackAll,
+             onNew,
              onRefresh } from "/javascript/tabular.js"
 
     window.retheme = retheme
@@ -297,7 +257,7 @@
     window.onRefresh = onRefresh
 
     const refresh = function() {
-      onRefresh('overview')      
+      onRefresh('overview')
     }
 
     resetIdle()
