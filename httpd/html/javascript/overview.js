@@ -1,9 +1,6 @@
 import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
-import * as combobox from './datetime.js'
-
-const dropdowns = new Map()
 
 export function refreshed () {
   const list = [...DB.controllers.values()]
