@@ -2,85 +2,322 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
   <head>
-    <title>uhppoted-httpd</title>
+    <title>uhppoted-httpd: Overview</title>
     <link rel="manifest"   href="/manifest.json">
     <link rel="icon"       href="/images/favicon.svg">
-    <link rel="stylesheet" href="/css/uhppoted.css" type="text/css">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/system.css" type="text/css">
     <meta charset="UTF-8">
   </head>
 
   <body> 
     <div id="content">
-      
-      <!-- LOGO -->
-      <div id="logo">
-        <img src="/images/logo.png"  />
-      </div>
-      
-      <!-- DASHBOARD -->
-      <div id="dashboard">
-        <div id="user">
-          <div id="avatar">
-          <p>{{.context.User}}</p>
-          <img id="avatar" src="/images/user-cog-solid.svg" />
-          </div>
-          <div class="menu">
-            <a href="#" onclick="logout(event)">Sign out</a>
-          </div>
-        </div>
-      </div>
+
+      {{template "user"   .}}
+      {{template "header" .}}
+      {{template "nav"    (nav "overview")}}
 
       <!-- MAIN -->
-      <div id="main">
-        <div class="tabs">
-          <input type="radio" id="system" name="tab" class="tab-content-first" checked>
-          <label for="system">System</label>       
+      <main>
+        <div id="container">
+          <table id="interface" class="interface" data-oid="{{ .schema.Interfaces.OID }}.1">
+            <tr>
+              <td colspan="3">
+                <div style="display:flex;">
+                  <input type="text" class="name" placeholder="-" style="flex-grow:1;"
+                          onchange="onEdited('interface', event)" 
+                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Name }}"
+                          data-original=""
+                          data-value="" 
+                          readonly />
+                  <span class="control commit"   onclick="onCommit('interface', event)">&#9745;</span>
+                  <span class="control rollback" onclick="onRollback('interface', event)">&#9746;</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Bind }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
+              <td>bind:</td>
+              <td><input type="text" class="bind" placeholder="-" 
+                          onchange="onEdited('interface', event)" 
+                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Bind }}"
+                          data-original=""
+                          data-value="" /></td>
+            </tr>
+            <tr>
+              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
+              <td>broadcast:</td>
+              <td><input type="text" class="broadcast" placeholder="-" 
+                          onchange="onEdited('interface', event)" 
+                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}"
+                          data-original=""
+                          data-value="" /></td>
+            </tr>
+            <tr>
+              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Listen }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
+              <td>listen:</td>
+              <td><input type="text" class="listen" value="" placeholder="-"
+                          onchange="onEdited('interface', event)" 
+                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Listen }}"
+                          data-original=""
+                          data-value="" /></td>
+            </tr>
+          </table>
 
-          <input type="radio" id="acl" name="tab" class="tab-content-2">
-          <label for="acl">ACL</label>       
+          <div id="controls" data-oid="{{ .schema.Controllers.OID }}">
+            <img id="commitall"   class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controllers', event, 'controllers')" />
+            <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('controllers', event, 'controllers')" />
+            <div id="message" class="message">
+              <div>
+                <span class="warning" id="warning"></span>
+                <button class="dismiss" onclick="dismiss()">&#9746;</button>
+              </div>
+            </div>
+            <img id="add"     class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('controller')" />
+            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('controllers', event)" />
+          </div>
 
-          <input type="radio" id="groups" name="tab" class="tab-content-3">
-          <label for="groups">Groups</label>       
+          <div id="controllers" class="tabular">
+            <table>
+              <thead>
+                <tr>
+                  <th class="name     topleft">Controller</th>
+                  <th class="ID       colheader">ID</th>
+                  <th class="IP       colheader">Endpoint</th>
+                  <th class="datetime colheader">Date/Time</th>
+                  <th class="cards    colheader">Cards</th>
+                  <th class="events   colheader">Events</th>
+                  <th class="doors    colheader" colspan="4">Doors</th>
+                  <th class="padding  colheader" ></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+            
+            <template id="controller">
+                <td class="rowheader" style="display:flex; flex-direction:row;">
+                  <img class="flag name" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field name" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         onchange="onEdited('controller', event)" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" />
+                  <span class="control commit"   onclick="onCommit('controller', event)"   data-record="" data-enabled="false">
+                    <img src="/images/{{$.context.Theme}}/check-solid.svg" />
+                  </span>
+                  <span class="control rollback" onclick="onRollback('controller', event)" data-record="" data-enabled="false">
+                    <img src="/images/{{$.context.Theme}}/times-solid.svg" />
+                  </span>
+                </td>
 
-          <input type="radio" id="people" name="tab" class="tab-content-last">
-          <label for="people">People</label>       
+                <td class="ID">
+                  <img class="flag ID" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field ID"
+                         type="text" 
+                         list="fruits" 
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('controller', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" />
+                </td>
 
-          <ul>
-            <li class="tab-content tab-content-first">
-              <h1>System</h1>
-              <p><i> -- system information -- </i></p>
-            </li>
-          
-          <li class="tab-content tab-content-2">
-            <h1>ACL</h1>
-            <p><i> -- access control list -- </i></p>
-          </li>
-          
-          <li class="tab-content tab-content-3">
-            <h1>Groups</h1>
-            <p><i> --  groups and roles -- </i></p>
-          </li>
-          
-          <li class="tab-content tab-content-last">
-            <h1>People</h1>
-            <p><i> -- people information -- </i></p>
-          </li>
-        </ul>
+                <td>
+                  <img class="flag IP" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field IP"
+                         type="text" 
+                         value=""
+                         placeholder="-"
+                         onkeydown="onEnter('controller',event)" 
+                         onchange="onEdited('controller', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value=""  
+                         data-status="" />
+                </td>
 
-       </div>
-      </div>
+                <td class="combobox">
+                  <img class="flag datetime" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field datetime"
+                         type="text" 
+                         value=""
+                         placeholder="-"
+                         autocomplete="off" 
+                         onkeydown="onEnter('controller', event)" 
+                         onchange="onEdited('controller', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         data-status="" />
+                  <ul style="position:fixed; left:0px; top:0px; z-index:2; width:fit-content; max-height:120px; overflow:auto;"/>
+                </td>
+
+                <td>
+                  <img class="flag cards" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field cards"
+                         type="number" 
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('controller', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value=""  
+                         data-status="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag events" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <input class="field events"
+                         type="number" 
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('controller', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value=""  
+                         readonly />
+                </td>
+
+                <td>
+                  <img class="flag door1" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <select class="field door1"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited('controller', event)" 
+                          data-record=""
+                          data-original=""
+                          data-value="">
+                    <option value="">-</option>
+                  </select>
+                </td>
+
+                <td>
+                  <img class="flag door2" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <select class="field door2"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited('controller', event)" 
+                          data-record=""
+                          data-original=""
+                          data-value=""  
+                          readonly>
+                    <option value="">-</option>
+                  </select>
+                </td>
+
+                <td>
+                  <img class="flag door3" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <select class="field door3"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited('controller', event)" 
+                          data-record=""
+                          data-original=""
+                          data-value=""  
+                          readonly>
+                    <option value="">-</option>
+                  </select>
+                </td>
+
+                <td>
+                  <img class="flag door4" src="/images/{{$.context.Theme}}/corner.svg" />
+                  <select class="field door4"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited('controller', event)" 
+                          data-record=""
+                          data-original=""
+                          data-value="">
+                    <option value="">-</option>
+                  </select>
+                </td>
+
+                <!-- 'padding' column (CSS: tr::last-child) -->
+                <td class="padding"></td>
+            </template>
+
+          </div>
+        </div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer>
+        <p>v0.0.0</p>
+      </footer>
     </div>
-    <div class="message"><p id="message"></p></div>
   </body>
 
   <!-- SCRIPTS -->
- 
-  <script src="./javascript/uhppoted.js"></script>
 
+  <script type="module">
+    import { retheme, 
+             dismiss, 
+             resetIdle, 
+             onMenu, 
+             onSignOut, 
+             onReload, 
+             setRefresh } from "/javascript/uhppoted.js"
+
+    import { onEdited, 
+             onEnter, 
+             onTick, 
+             onCommit, 
+             onCommitAll, 
+             onRollback, 
+             onRollbackAll, 
+             onNew, 
+             onRefresh } from "/javascript/tabular.js"
+
+    window.retheme = retheme
+    window.dismiss = dismiss
+    window.onMenuX = onMenu
+    window.onSignOut = onSignOut
+    window.onReload = onReload
+
+    window.onEnter = onEnter
+    window.onEdited = onEdited
+    window.onTick = onTick
+    window.onCommit = onCommit
+    window.onCommitAll = onCommitAll
+    window.onRollback = onRollback
+    window.onRollbackAll = onRollbackAll
+    window.onNew = onNew
+    window.onRefresh = onRefresh
+
+    const refresh = function() {
+      onRefresh('overview')      
+    }
+
+    resetIdle()
+    refresh()
+    setRefresh(refresh)
+  </script>
+
+  <!-- global information initialised by Go template -->
   <script>
-    resetIdle();
+    var constants = {
+      theme: {{$.context.Theme}},
+    }
+
+    function onMenu(event, state) {
+      if (window.onMenuX) {
+        window.onMenuX(event, state)
+      } else {
+        console.debug('onMenu is not defined')
+      }
+    }
   </script>
 
 </html>
-
-

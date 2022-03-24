@@ -138,13 +138,14 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 
 func (d *dispatcher) translate(file string, context map[string]interface{}, authorised map[string]bool, w http.ResponseWriter, acceptsGzip bool) {
 	type nav struct {
-		System bool
-		Doors  bool
-		Cards  bool
-		Groups bool
-		Events bool
-		Logs   bool
-		Users  bool
+		Overview bool
+		System   bool
+		Doors    bool
+		Cards    bool
+		Groups   bool
+		Events   bool
+		Logs     bool
+		Users    bool
 	}
 
 	page := map[string]interface{}{}
@@ -190,13 +191,14 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 			}{
 				Page: page,
 				Authorised: nav{
-					System: authorised["/sys/controllers.html"],
-					Doors:  authorised["/sys/doors.html"],
-					Cards:  authorised["/sys/cards.html"],
-					Groups: authorised["/sys/groups.html"],
-					Events: authorised["/sys/events.html"],
-					Logs:   authorised["/sys/logs.html"],
-					Users:  authorised["/sys/users.html"],
+					Overview: authorised["/sys/overview.html"],
+					System:   authorised["/sys/controllers.html"],
+					Doors:    authorised["/sys/doors.html"],
+					Cards:    authorised["/sys/cards.html"],
+					Groups:   authorised["/sys/groups.html"],
+					Events:   authorised["/sys/events.html"],
+					Logs:     authorised["/sys/logs.html"],
+					Users:    authorised["/sys/users.html"],
 				},
 			}
 		},

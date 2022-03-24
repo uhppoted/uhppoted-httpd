@@ -6,6 +6,7 @@ import * as combobox from './datetime.js'
 const dropdowns = new Map()
 
 export function refreshed () {
+  console.log("REFRESHED")
   const list = [...DB.controllers.values()]
     .filter(c => alive(c))
     .sort((p, q) => p.created.localeCompare(q.created))

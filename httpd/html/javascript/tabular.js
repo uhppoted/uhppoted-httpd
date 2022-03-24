@@ -1,3 +1,4 @@
+import * as overview from './overview.js'
 import * as LAN from './interfaces.js'
 import * as controllers from './controllers.js'
 import * as doors from './doors.js'
@@ -31,6 +32,13 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
 }
 
 const pages = {
+  overview: {
+    get: [ '/controllers', '/doors'],
+    refreshed: function () {
+      overview.refreshed()
+    }
+  },
+
   controllers: {
     get: ['/interfaces', '/controllers', '/doors'],
     post: '/controllers',
@@ -681,6 +689,9 @@ export function post (page, records, reset, cleanup) {
 
 function getPage (tag) {
   switch (tag) {
+    case 'overview':
+      return pages.overview
+      
     case 'controllers':
       return pages.controllers
 

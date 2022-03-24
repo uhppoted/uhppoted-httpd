@@ -2,16 +2,24 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
-            - [ ] Genericize 'controller' table
+            - [ ] Fix ctypes lookup hack (or at least hide it decently)
+            - [ ] Set OID in catalog.NewT
+            - [ ] Replace PutT + NewT with AddT
+            - [x] Genericize 'controller' table
             - [x] Move device ID to CatalogController
-            - [ ] Move OID to catalog type
-            - [ ] Move catalog types to ctypes
+            - [x] Move OID to catalog type
+            - [x] Move catalog types to ctypes
+
+- [ ] Overview page 
+      - [x] Skeleton page
+      - [ ] Remove LAN block
+      - [ ] Rework controllers as 'blocks'
+      - [ ] Remove all edit functionality
 
 - [ ] Verify bootstrap from scratch
       - [ ] Refresh overwrites in-progress card edits
       - [ ] Setting controller address 'blanks' it out before it gets updated
 
-- [ ] Overview page 
 - [ ] Move delete to UI (PUT OID + 'deleted' ?)
 - [ ] Events should use local index rather than controller (optionally ?)
 - [ ] Cleanup audit log
