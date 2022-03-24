@@ -3,14 +3,13 @@
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [ ] Genericize 'controller' table
-            - [ ] Move device ID to CatalogController
+            - [x] Move device ID to CatalogController
             - [ ] Move OID to catalog type
             - [ ] Move catalog types to ctypes
 
 - [ ] Verify bootstrap from scratch
       - [ ] Refresh overwrites in-progress card edits
       - [ ] Setting controller address 'blanks' it out before it gets updated
-      - [x] Windows 
 
 - [ ] Overview page 
 - [ ] Move delete to UI (PUT OID + 'deleted' ?)

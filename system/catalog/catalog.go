@@ -68,7 +68,7 @@ func PutT[T ctypes.CatalogType](v T, oid schema.OID) {
 	}
 }
 
-func DeleteT(v interface{}, oid schema.OID) {
+func DeleteT[T ctypes.CatalogType](v T, oid schema.OID) {
 	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	} else {
