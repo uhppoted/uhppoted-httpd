@@ -2,6 +2,8 @@ package ctypes
 
 import (
 	"fmt"
+
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
 type CatalogType interface {
@@ -12,6 +14,7 @@ type CatalogInterface struct {
 }
 
 type CatalogController struct {
+	OID      schema.OID
 	DeviceID uint32
 }
 

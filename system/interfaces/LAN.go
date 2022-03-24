@@ -40,7 +40,7 @@ type LAN struct {
 }
 
 type Controller interface {
-	OID() schema.OID
+	OIDx() schema.OID
 	Name() string
 	ID() uint32
 	EndPoint() *net.UDPAddr
@@ -313,8 +313,8 @@ func (l *LAN) Refresh(c Controller) {
 	} else if info == nil {
 		log.Printf("Got %v response to get-device request for %v", info, deviceID)
 	} else {
-		catalog.PutV(c.OID(), ControllerTouched, time.Now())
-		catalog.PutV(c.OID(), ControllerEndpointAddress, core.Address(info.Address))
+		catalog.PutV(c.OIDx(), ControllerTouched, time.Now())
+		catalog.PutV(c.OIDx(), ControllerEndpointAddress, core.Address(info.Address))
 	}
 
 	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: deviceID}); err != nil {
@@ -322,8 +322,8 @@ func (l *LAN) Refresh(c Controller) {
 	} else if status == nil {
 		log.Printf("Got %v response to get-status request for %v", status, deviceID)
 	} else {
-		catalog.PutV(c.OID(), ControllerTouched, time.Now())
-		catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
+		catalog.PutV(c.OIDx(), ControllerTouched, time.Now())
+		catalog.PutV(c.OIDx(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
 	}
 
 	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: deviceID}); err != nil {
@@ -331,18 +331,18 @@ func (l *LAN) Refresh(c Controller) {
 	} else if cards == nil {
 		log.Printf("Got %v response to get-card-records request for %v", cards, deviceID)
 	} else {
-		catalog.PutV(c.OID(), ControllerTouched, time.Now())
-		catalog.PutV(c.OID(), ControllerCardsCount, cards.Cards)
+		catalog.PutV(c.OIDx(), ControllerTouched, time.Now())
+		catalog.PutV(c.OIDx(), ControllerCardsCount, cards.Cards)
 	}
 
 	if first, last, current, err := api.GetEventIndices(c.ID()); err != nil {
 		log.Printf("%v", err)
 	} else {
-		catalog.PutV(c.OID(), ControllerTouched, time.Now())
-		catalog.PutV(c.OID(), ControllerEventsStatus, types.StatusOk)
-		catalog.PutV(c.OID(), ControllerEventsFirst, first)
-		catalog.PutV(c.OID(), ControllerEventsLast, last)
-		catalog.PutV(c.OID(), ControllerEventsCurrent, current)
+		catalog.PutV(c.OIDx(), ControllerTouched, time.Now())
+		catalog.PutV(c.OIDx(), ControllerEventsStatus, types.StatusOk)
+		catalog.PutV(c.OIDx(), ControllerEventsFirst, first)
+		catalog.PutV(c.OIDx(), ControllerEventsLast, last)
+		catalog.PutV(c.OIDx(), ControllerEventsCurrent, current)
 	}
 
 	for _, d := range []uint8{1, 2, 3, 4} {
@@ -390,14 +390,14 @@ func (l *LAN) SynchTime(c Controller) {
 	if response, err := api.SetTime(request); err != nil {
 		log.Printf("ERROR %v", err)
 	} else if response != nil {
-		catalog.PutV(c.OID(), ControllerDateTimeModified, false)
+		catalog.PutV(c.OIDx(), ControllerDateTimeModified, false)
 
 		if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: deviceID}); err != nil {
 			log.Printf("%v", err)
 		} else if status == nil {
 			log.Printf("Got %v response to get-status request for %v", status, deviceID)
 		} else {
-			catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
+			catalog.PutV(c.OIDx(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
 		}
 
 		log.Printf("INFO  synchronized device-time %v %v", response.DeviceID, response.DateTime)
@@ -515,9 +515,9 @@ func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
 			if c.ID() == d.DeviceID {
 				rs := compare[c.ID()]
 				if len(rs.Updated)+len(rs.Added)+len(rs.Deleted) > 0 {
-					catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusError)
+					catalog.PutV(c.OIDx(), ControllerCardsStatus, types.StatusError)
 				} else {
-					catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusOk)
+					catalog.PutV(c.OIDx(), ControllerCardsStatus, types.StatusOk)
 				}
 				break
 			}

@@ -24,9 +24,9 @@ func TestControllerAsObjects(t *testing.T) {
 
 	c := Controller{
 		CatalogController: ctypes.CatalogController{
+			OID:      "0.2.3",
 			DeviceID: deviceID,
 		},
-		oid:  "0.2.3",
 		name: name,
 		IP:   address,
 		Doors: map[uint8]schema.OID{
@@ -79,9 +79,9 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 
 	c := Controller{
 		CatalogController: ctypes.CatalogController{
+			OID:      "0.2.3",
 			DeviceID: deviceID,
 		},
-		oid:  "0.2.3",
 		name: name,
 		IP:   address,
 		Doors: map[uint8]schema.OID{
@@ -113,9 +113,9 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 
 	c := Controller{
 		CatalogController: ctypes.CatalogController{
+			OID:      "0.2.3",
 			DeviceID: deviceID,
 		},
-		oid:  "0.2.3",
 		name: name,
 		IP:   address,
 		Doors: map[uint8]schema.OID{
@@ -177,7 +177,9 @@ func TestControllerSet(t *testing.T) {
 	}
 
 	c := Controller{
-		oid:  "0.2.3",
+		CatalogController: ctypes.CatalogController{
+			OID: "0.2.3",
+		},
 		name: "Le Controlleur",
 	}
 
@@ -197,7 +199,9 @@ func TestControllerSet(t *testing.T) {
 
 func TestControllerSetWithDeleted(t *testing.T) {
 	c := Controller{
-		oid:  "0.2.3",
+		CatalogController: ctypes.CatalogController{
+			OID: "0.2.3",
+		},
 		name: "Le Controlleur",
 
 		deleted: types.TimestampNow(),

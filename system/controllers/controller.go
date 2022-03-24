@@ -24,7 +24,6 @@ import (
 
 type Controller struct {
 	ctypes.CatalogController
-	oid      schema.OID
 	name     string
 	IP       *core.Address
 	Doors    map[uint8]schema.OID
@@ -71,12 +70,8 @@ func (c Controller) IsDeleted() bool {
 	return !c.deleted.IsZero()
 }
 
-func (c *Controller) OID() schema.OID {
-	if c != nil {
-		return c.oid
-	}
-
-	return ""
+func (c Controller) OIDx() schema.OID {
+	return c.OID
 }
 
 func (c *Controller) Name() string {
@@ -324,61 +319,61 @@ func (c *Controller) get() *cached {
 	e.events.last = 0
 	e.events.current = 0
 
-	if v := catalog.GetV(c.oid, ControllerTouched); v != nil {
+	if v := catalog.GetV(c.OID, ControllerTouched); v != nil {
 		if touched, ok := v.(time.Time); ok {
 			e.touched = touched
 		}
 	}
 
-	if v := catalog.GetV(c.oid, ControllerEndpointAddress); v != nil {
+	if v := catalog.GetV(c.OID, ControllerEndpointAddress); v != nil {
 		if address, ok := v.(core.Address); ok {
 			e.address = &address
 		}
 	}
 
-	if v := catalog.GetV(c.oid, ControllerDateTimeCurrent); v != nil {
+	if v := catalog.GetV(c.OID, ControllerDateTimeCurrent); v != nil {
 		if datetime, ok := v.(core.DateTime); ok {
 			e.datetime.datetime = datetime
 		}
 	}
 
-	if v := catalog.GetV(c.OID(), ControllerDateTimeModified); v != nil {
+	if v := catalog.GetV(c.OID, ControllerDateTimeModified); v != nil {
 		if b, ok := v.(bool); ok {
 			e.datetime.modified = b
 		}
 	}
 
-	if v := catalog.GetV(c.oid, ControllerCardsCount); v != nil {
+	if v := catalog.GetV(c.OID, ControllerCardsCount); v != nil {
 		if cards, ok := v.(uint32); ok {
 			e.cards = &cards
 		}
 	}
 
-	if v := catalog.GetV(c.oid, ControllerEventsStatus); v != nil {
+	if v := catalog.GetV(c.OID, ControllerEventsStatus); v != nil {
 		if status, ok := v.(types.Status); ok {
 			e.events.status = status
 		}
 	}
 
-	if v := catalog.GetV(c.oid, ControllerEventsFirst); v != nil {
+	if v := catalog.GetV(c.OID, ControllerEventsFirst); v != nil {
 		if index, ok := v.(uint32); ok {
 			e.events.first = types.Uint32(index)
 		}
 	}
 
-	if v := catalog.GetV(c.oid, ControllerEventsLast); v != nil {
+	if v := catalog.GetV(c.OID, ControllerEventsLast); v != nil {
 		if index, ok := v.(uint32); ok {
 			e.events.last = types.Uint32(index)
 		}
 	}
 
-	if v := catalog.GetV(c.oid, ControllerEventsCurrent); v != nil {
+	if v := catalog.GetV(c.OID, ControllerEventsCurrent); v != nil {
 		if index, ok := v.(uint32); ok {
 			e.events.current = types.Uint32(index)
 		}
 	}
 
-	if v := catalog.GetV(c.oid, ControllerCardsStatus); v != nil {
+	if v := catalog.GetV(c.OID, ControllerCardsStatus); v != nil {
 		if acl, ok := v.(types.Status); ok {
 			e.acl = acl
 		}
@@ -409,7 +404,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		uid = a.UID()
 	}
 
-	OID := c.OID()
+	OID := c.OID
 	clone := c.clone()
 	list := []kv{}
 
@@ -568,7 +563,7 @@ func (c *Controller) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 		return true
 	}
 
-	OID := c.OID()
+	OID := c.OID
 	objects := []schema.Object{}
 
 	if !c.IsDeleted() && f(c, "OID", OID) {
@@ -590,21 +585,21 @@ func (c *Controller) refreshed() {
 
 	touched := time.Time(c.created)
 
-	if v := catalog.GetV(c.OID(), ControllerTouched); v != nil {
+	if v := catalog.GetV(c.OID, ControllerTouched); v != nil {
 		if t, ok := v.(time.Time); ok {
 			touched = t
 		}
 	}
 
 	if touched.Before(expired) {
-		catalog.PutV(c.OID(), ControllerEndpointAddress, nil)
-		catalog.PutV(c.OID(), ControllerDateTimeCurrent, nil)
-		catalog.PutV(c.OID(), ControllerCardsCount, nil)
-		catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusUnknown)
-		catalog.PutV(c.OID(), ControllerEventsStatus, types.StatusUnknown)
-		catalog.PutV(c.OID(), ControllerEventsFirst, 0)
-		catalog.PutV(c.OID(), ControllerEventsLast, 0)
-		catalog.PutV(c.OID(), ControllerEventsCurrent, 0)
+		catalog.PutV(c.OID, ControllerEndpointAddress, nil)
+		catalog.PutV(c.OID, ControllerDateTimeCurrent, nil)
+		catalog.PutV(c.OID, ControllerCardsCount, nil)
+		catalog.PutV(c.OID, ControllerCardsStatus, types.StatusUnknown)
+		catalog.PutV(c.OID, ControllerEventsStatus, types.StatusUnknown)
+		catalog.PutV(c.OID, ControllerEventsFirst, 0)
+		catalog.PutV(c.OID, ControllerEventsLast, 0)
+		catalog.PutV(c.OID, ControllerEventsCurrent, 0)
 
 		for _, d := range []uint8{1, 2, 3, 4} {
 			if door, ok := c.Door(d); ok {
@@ -617,7 +612,7 @@ func (c *Controller) refreshed() {
 
 		if c.unconfigured {
 			c.deleted = types.TimestampNow()
-			catalog.DeleteT(c.CatalogController, c.OID())
+			catalog.DeleteT(c.CatalogController, c.OID)
 			log.Printf("'unconfigured' controller %v removed", c)
 		}
 	}
@@ -637,7 +632,7 @@ func (c Controller) serialize() ([]byte, error) {
 		TimeZone string               `json:"timezone,omitempty"`
 		Created  types.Timestamp      `json:"created"`
 	}{
-		OID:      c.OID(),
+		OID:      c.OID,
 		Name:     c.name,
 		DeviceID: c.DeviceID,
 		Address:  c.IP,
@@ -672,7 +667,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 		return err
 	}
 
-	c.oid = record.OID
+	c.OID = record.OID
 	c.name = strings.TrimSpace(record.Name)
 	c.DeviceID = record.DeviceID
 	c.IP = record.Address
@@ -692,9 +687,9 @@ func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
 			CatalogController: ctypes.CatalogController{
+				OID:      c.OID,
 				DeviceID: c.DeviceID,
 			},
-			oid:      c.oid,
 			name:     c.name,
 			IP:       c.IP,
 			timezone: c.timezone,
@@ -721,7 +716,7 @@ func (c Controller) updated(uid, field string, before, after interface{}, dbc db
 
 		record := audit.AuditRecord{
 			UID:       uid,
-			OID:       c.OID(),
+			OID:       c.OID,
 			Component: "controller",
 			Operation: "update",
 			Details: audit.Details{

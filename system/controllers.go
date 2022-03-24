@@ -72,7 +72,7 @@ func validate(c *controllers.Controllers) error {
 				if _, ok := sys.doors.Door(schema.OID(v)); !ok {
 					return types.BadRequest(
 						fmt.Errorf("Invalid door ID"),
-						fmt.Errorf("controller %v: invalid door ID (%v)", r.OID(), v))
+						fmt.Errorf("controller %v: invalid door ID (%v)", r.OIDx(), v))
 				}
 			}
 
@@ -80,10 +80,10 @@ func validate(c *controllers.Controllers) error {
 				d, _ := sys.doors.Door(v)
 				return types.BadRequest(
 					fmt.Errorf("%v door assigned to more than one controller", d.Name),
-					fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID()))
+					fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OIDx()))
 			}
 
-			doors[v] = string(r.OID())
+			doors[v] = string(r.OIDx())
 		}
 	}
 

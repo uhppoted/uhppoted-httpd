@@ -81,7 +81,7 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid schema.OID, value strin
 	}
 
 	for _, c := range cc.controllers {
-		if c != nil && c.OID().Contains(oid) {
+		if c != nil && c.OID.Contains(oid) {
 			return c.set(auth, oid, value, dbc)
 		}
 	}
@@ -94,7 +94,7 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid schema.OID, value strin
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
-			OID := c.OID()
+			OID := c.OID
 
 			catalog.Join(&objects, catalog.NewObject(OID, "new"))
 			catalog.Join(&objects, catalog.NewObject2(OID, ControllerStatus, "new"))
@@ -136,7 +136,7 @@ func (cc *Controllers) Load(blob json.RawMessage) error {
 	}
 
 	for _, c := range cc.controllers {
-		oid := c.OID()
+		oid := c.OID
 		catalog.PutT(c.CatalogController, oid)
 		catalog.PutV(oid, ControllerName, c.name)
 		catalog.PutV(oid, ControllerDeviceID, c.DeviceID)
@@ -233,7 +233,7 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 				unconfigured: true,
 			}
 
-			v.oid = catalog.NewT(v.CatalogController)
+			v.OID = catalog.NewT(v.CatalogController)
 
 			cc.controllers = append(cc.controllers, &v)
 		}
@@ -386,7 +386,7 @@ func (cc *Controllers) Validate() error {
 
 func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	record := c.clone()
-	record.oid = schema.OID(catalog.NewT(c.CatalogController))
+	record.OID = schema.OID(catalog.NewT(c.CatalogController))
 	record.created = types.TimestampNow()
 
 	if a != nil {
@@ -404,7 +404,7 @@ func validate(cc Controllers) error {
 	devices := map[uint32]string{}
 
 	for _, c := range cc.controllers {
-		OID := c.OID()
+		OID := c.OID
 		if OID == "" {
 			return fmt.Errorf("Invalid controller OID (%v)", OID)
 		}
