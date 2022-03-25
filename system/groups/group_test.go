@@ -8,8 +8,9 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -18,7 +19,7 @@ func TestGroupDeserialize(t *testing.T) {
 
 	encoded := `{ "OID":"0.5.3", "name":"Le Groupe", "doors":["0.3.3","0.3.7"], "created":"2022-04-01 00:00:00" }`
 	expected := Group{
-		CatalogGroup: ctypes.CatalogGroup{
+		CatalogGroup: catalog.CatalogGroup{
 			OID: "0.5.3",
 		},
 		Name: "Le Groupe",
@@ -45,7 +46,7 @@ func TestGroupDeserializeWithDefaultCreated(t *testing.T) {
 
 	encoded := `{ "OID":"0.5.3", "name":"Le Groupe", "doors":["0.3.3","0.3.7"] }`
 	expected := Group{
-		CatalogGroup: ctypes.CatalogGroup{
+		CatalogGroup: catalog.CatalogGroup{
 			OID: "0.5.3",
 		},
 		Name: "Le Groupe",
@@ -69,10 +70,12 @@ func TestGroupDeserializeWithDefaultCreated(t *testing.T) {
 }
 
 func TestGroupAsObjects(t *testing.T) {
+	catalog.Init(memdb.Catalog())
+
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	g := Group{
-		CatalogGroup: ctypes.CatalogGroup{
+		CatalogGroup: catalog.CatalogGroup{
 			OID: "0.5.3",
 		},
 		Name: "Le Groupe",
@@ -103,7 +106,7 @@ func TestGroupAsObjectsWithDeleted(t *testing.T) {
 	deleted := types.TimestampNow()
 
 	g := Group{
-		CatalogGroup: ctypes.CatalogGroup{
+		CatalogGroup: catalog.CatalogGroup{
 			OID: "0.5.3",
 		},
 		Name: "Le Groupe",
@@ -130,7 +133,7 @@ func TestGroupAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	g := Group{
-		CatalogGroup: ctypes.CatalogGroup{
+		CatalogGroup: catalog.CatalogGroup{
 			OID: "0.5.3",
 		},
 		Name: "Le Groupe",
@@ -174,7 +177,7 @@ func TestGroupSet(t *testing.T) {
 	}
 
 	g := Group{
-		CatalogGroup: ctypes.CatalogGroup{
+		CatalogGroup: catalog.CatalogGroup{
 			OID: "0.5.3",
 		},
 		Name: "Le Groupe",
@@ -200,7 +203,7 @@ func TestGroupSet(t *testing.T) {
 
 func TestGroupSetWithDeleted(t *testing.T) {
 	g := Group{
-		CatalogGroup: ctypes.CatalogGroup{
+		CatalogGroup: catalog.CatalogGroup{
 			OID: "0.5.3",
 		},
 		Name: "Le Groupe",

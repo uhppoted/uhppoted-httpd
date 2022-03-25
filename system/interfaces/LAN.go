@@ -19,13 +19,12 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type LAN struct {
-	ctypes.CatalogInterface
+	catalog.CatalogInterface
 	Name             string
 	BindAddress      core.BindAddr
 	BroadcastAddress core.BroadcastAddr
@@ -242,7 +241,7 @@ func (l *LAN) status() types.Status {
 
 func (l LAN) Clone() LAN {
 	return LAN{
-		CatalogInterface: ctypes.CatalogInterface{
+		CatalogInterface: catalog.CatalogInterface{
 			OID: l.OID,
 		},
 		Name:             l.Name,

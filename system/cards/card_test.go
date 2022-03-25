@@ -11,19 +11,22 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func TestCardAsObjects(t *testing.T) {
+	catalog.Init(memdb.Catalog())
+
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	card := types.Card(8165537)
 	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
 	c := Card{
-		CatalogCard: ctypes.CatalogCard{
+		CatalogCard: catalog.CatalogCard{
 			OID: "0.4.3",
 		},
 		Name:    "Le Card",
@@ -59,7 +62,7 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
 	c := Card{
-		CatalogCard: ctypes.CatalogCard{
+		CatalogCard: catalog.CatalogCard{
 			OID: "0.4.3",
 		},
 		Name:    "Le Card",
@@ -88,7 +91,7 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
 	c := Card{
-		CatalogCard: ctypes.CatalogCard{
+		CatalogCard: catalog.CatalogCard{
 			OID: "0.4.3",
 		},
 		Name:    "Le Card",
@@ -134,7 +137,7 @@ func TestCardSet(t *testing.T) {
 	}
 
 	c := Card{
-		CatalogCard: ctypes.CatalogCard{
+		CatalogCard: catalog.CatalogCard{
 			OID: "0.4.3",
 		},
 		Name: "Le Carte",
@@ -156,7 +159,7 @@ func TestCardSet(t *testing.T) {
 
 func TestCardSetWithDeleted(t *testing.T) {
 	c := Card{
-		CatalogCard: ctypes.CatalogCard{
+		CatalogCard: catalog.CatalogCard{
 			OID: "0.4.3",
 		},
 		Name: "Le Carte",

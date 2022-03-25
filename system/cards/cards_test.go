@@ -8,8 +8,8 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/groups"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -37,8 +37,10 @@ func (d *dbc) SetPassword(uid, pwd, role string) error {
 }
 
 func TestCardAdd(t *testing.T) {
+	catalog.Init(memdb.Catalog())
+
 	placeholder := Card{
-		CatalogCard: ctypes.CatalogCard{
+		CatalogCard: catalog.CatalogCard{
 			OID: schema.OID("0.4.2"),
 		},
 		Groups: map[schema.OID]bool{},
@@ -69,6 +71,8 @@ func TestCardAdd(t *testing.T) {
 }
 
 func TestCardAddWithAuth(t *testing.T) {
+	catalog.Init(memdb.Catalog())
+
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid)
 	auth := stub{}
@@ -89,6 +93,8 @@ func TestCardAddWithAuth(t *testing.T) {
 }
 
 func TestCardAddWithAuditTrail(t *testing.T) {
+	catalog.Init(memdb.Catalog())
+
 	trail := dbc{}
 
 	expected := struct {
@@ -119,7 +125,7 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 		},
 
 		db: makeCards(hagrid, Card{
-			CatalogCard: ctypes.CatalogCard{
+			CatalogCard: catalog.CatalogCard{
 				OID: schema.OID("0.4.2"),
 			},
 			Groups: map[schema.OID]bool{},
@@ -291,7 +297,7 @@ func TestCardNumberSwap(t *testing.T) {
 func TestCardUpdateAddGroup(t *testing.T) {
 	oid := schema.GroupsOID.Append("10")
 	group := groups.Group{
-		CatalogGroup: ctypes.CatalogGroup{
+		CatalogGroup: catalog.CatalogGroup{
 			OID: oid,
 		},
 	}
@@ -322,7 +328,7 @@ func TestCardUpdateAddGroup(t *testing.T) {
 func TestCardUpdateRemoveGroup(t *testing.T) {
 	oid := schema.GroupsOID.Append("10")
 	group := groups.Group{
-		CatalogGroup: ctypes.CatalogGroup{
+		CatalogGroup: catalog.CatalogGroup{
 			OID: oid,
 		},
 	}
@@ -404,6 +410,8 @@ func TestCardHolderDeleteWithAuth(t *testing.T) {
 }
 
 func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
+	catalog.Init(memdb.Catalog())
+
 	trail := dbc{}
 
 	expected := struct {

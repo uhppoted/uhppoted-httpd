@@ -3,7 +3,6 @@ package catalog
 import (
 	"fmt"
 
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
@@ -28,7 +27,55 @@ type Catalog interface {
 	GetDoorDeviceDoor(door schema.OID) uint8
 }
 
-var catalog Catalog = memdb.Catalog()
+type CatalogType interface {
+	CatalogInterface |
+		CatalogController |
+		CatalogDoor |
+		CatalogCard |
+		CatalogGroup |
+		CatalogEvent |
+		CatalogLogEntry |
+		CatalogUser
+}
+
+type CatalogInterface struct {
+	OID schema.OID
+}
+
+type CatalogController struct {
+	OID      schema.OID
+	DeviceID uint32
+}
+
+type CatalogDoor struct {
+	OID schema.OID
+}
+
+type CatalogCard struct {
+	OID schema.OID
+}
+
+type CatalogGroup struct {
+	OID schema.OID
+}
+
+type CatalogEvent struct {
+	OID schema.OID
+}
+
+type CatalogLogEntry struct {
+	OID schema.OID
+}
+
+type CatalogUser struct {
+	OID schema.OID
+}
+
+var catalog Catalog
+
+func Init(c Catalog) {
+	catalog = c
+}
 
 func Join(p *[]schema.Object, q ...schema.Object) {
 	*p = append(*p, q...)
@@ -52,24 +99,24 @@ func Clear() {
 	catalog.Clear()
 }
 
-func NewT[T ctypes.CatalogType](v T) schema.OID {
-	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
+func NewT[T CatalogType](v T) schema.OID {
+	if t := TypeOf(v); t == ctypes.TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	} else {
 		return catalog.NewT(t, v)
 	}
 }
 
-func PutT[T ctypes.CatalogType](v T, oid schema.OID) {
-	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
+func PutT[T CatalogType](v T, oid schema.OID) {
+	if t := TypeOf(v); t == ctypes.TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	} else {
 		catalog.PutT(t, v, oid)
 	}
 }
 
-func DeleteT[T ctypes.CatalogType](v T, oid schema.OID) {
-	if t := ctypes.TypeOf(v); t == ctypes.TUnknown {
+func DeleteT[T CatalogType](v T, oid schema.OID) {
+	if t := TypeOf(v); t == ctypes.TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	} else {
 		catalog.DeleteT(t, oid)
@@ -133,4 +180,37 @@ func GetGroups() []schema.OID {
 
 func HasGroup(oid schema.OID) bool {
 	return catalog.HasT(ctypes.TGroup, oid)
+}
+
+// TODO Remove, pending migration to real Go generics
+func TypeOf(v interface{}) ctypes.Type {
+	t := fmt.Sprintf("%T", v)
+	switch t {
+	case "catalog.CatalogInterface":
+		return ctypes.TInterface
+
+	case "catalog.CatalogController":
+		return ctypes.TController
+
+	case "catalog.CatalogDoor":
+		return ctypes.TDoor
+
+	case "catalog.CatalogCard":
+		return ctypes.TCard
+
+	case "catalog.CatalogGroup":
+		return ctypes.TGroup
+
+	case "catalog.CatalogEvent":
+		return ctypes.TEvent
+
+	case "catalog.CatalogLogEntry":
+		return ctypes.TLog
+
+	case "catalog.CatalogUser":
+		return ctypes.TUser
+
+	default:
+		return ctypes.TUnknown
+	}
 }

@@ -5,16 +5,11 @@
             - [ ] Fix ctypes lookup hack (or at least hide it decently)
             - [ ] Set OID in catalog.NewT
             - [ ] Replace PutT + NewT with AddT
-            - [x] Genericize 'controller' table
-            - [x] Move device ID to CatalogController
-            - [x] Move OID to catalog type
-            - [x] Move catalog types to ctypes
+            - [ ] Remove Catalog.Clear (only used for tests)
+            - [ ] Unit tests for reworked catalog (i.e. implement simplified stub)
+            - [ ] Rename catalog in `impl`
 
 - [ ] Overview page 
-      - [x] Skeleton page
-      - [x] Remove LAN block
-      - [x] Mark all input fields readonly
-      - [x] Make date/time readonly
       - [ ] Make doors reaonly/text
       - [ ] Rework controllers as 'blocks'
       - [ ] Add event summary

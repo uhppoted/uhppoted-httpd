@@ -10,8 +10,8 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -95,7 +95,7 @@ func makeCard(oid schema.OID, name string, card uint32, groups ...string) Card {
 	}
 
 	cardholder := Card{
-		CatalogCard: ctypes.CatalogCard{
+		CatalogCard: catalog.CatalogCard{
 			OID: oid,
 		},
 		Name:   name,

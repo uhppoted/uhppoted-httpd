@@ -9,13 +9,12 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
 type Event struct {
-	ctypes.CatalogEvent
+	catalog.CatalogEvent
 	DeviceID   uint32        `json:"device-id"`
 	Index      uint32        `json:"index"`
 	Timestamp  core.DateTime `json:"timestamp"`
@@ -131,7 +130,7 @@ func (r reason) String() string {
 
 func NewEvent(oid schema.OID, e uhppoted.Event, device, door, card string) Event {
 	return Event{
-		CatalogEvent: ctypes.CatalogEvent{
+		CatalogEvent: catalog.CatalogEvent{
 			OID: oid,
 		},
 		DeviceID:   e.DeviceID,
@@ -297,7 +296,7 @@ func (e *Event) deserialize(bytes []byte) error {
 
 func (e Event) clone() Event {
 	event := Event{
-		CatalogEvent: ctypes.CatalogEvent{
+		CatalogEvent: catalog.CatalogEvent{
 			OID: e.OID,
 		},
 		Timestamp: e.Timestamp,

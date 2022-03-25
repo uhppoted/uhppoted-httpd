@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
@@ -84,7 +85,7 @@ func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
 		cc.guard.Lock()
 		defer cc.guard.Unlock()
 
-		u := v.(ctypes.CatalogController)
+		u := v.(cat.CatalogController)
 
 		if deviceID := u.DeviceID; deviceID != 0 {
 			for oid, c := range cc.controllers.(*controllers).m {
@@ -118,7 +119,7 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	defer cc.guard.Unlock()
 
 	if t == ctypes.TController {
-		cc.controllers.Put(oid, v.(ctypes.CatalogController).DeviceID)
+		cc.controllers.Put(oid, v.(cat.CatalogController).DeviceID)
 		return
 	}
 

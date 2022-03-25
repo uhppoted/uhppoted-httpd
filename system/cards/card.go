@@ -14,13 +14,12 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Card struct {
-	ctypes.CatalogCard
+	catalog.CatalogCard
 	Name   string
 	Card   *types.Card
 	From   core.Date
@@ -480,7 +479,7 @@ func (c *Card) clone() *Card {
 	}
 
 	replicant := &Card{
-		CatalogCard: ctypes.CatalogCard{
+		CatalogCard: catalog.CatalogCard{
 			OID: c.OID,
 		},
 		Name:   c.Name,

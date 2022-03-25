@@ -1,47 +1,6 @@
 package ctypes
 
-import (
-	"fmt"
-
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-)
-
-type CatalogType interface {
-	CatalogInterface | CatalogController | CatalogDoor | CatalogCard | CatalogGroup | CatalogEvent | CatalogLogEntry | CatalogUser
-}
-
-type CatalogInterface struct {
-	OID schema.OID
-}
-
-type CatalogController struct {
-	OID      schema.OID
-	DeviceID uint32
-}
-
-type CatalogDoor struct {
-	OID schema.OID
-}
-
-type CatalogCard struct {
-	OID schema.OID
-}
-
-type CatalogGroup struct {
-	OID schema.OID
-}
-
-type CatalogEvent struct {
-	OID schema.OID
-}
-
-type CatalogLogEntry struct {
-	OID schema.OID
-}
-
-type CatalogUser struct {
-	OID schema.OID
-}
+import ()
 
 type Type int
 
@@ -69,37 +28,4 @@ func (t Type) String() string {
 		"log",
 		"user",
 	}[t]
-}
-
-// ... pending real Go generics
-func TypeOf(v interface{}) Type {
-	t := fmt.Sprintf("%T", v)
-	switch t {
-	case "ctypes.CatalogInterface":
-		return TInterface
-
-	case "ctypes.CatalogController":
-		return TController
-
-	case "ctypes.CatalogCard":
-		return TCard
-
-	case "ctypes.CatalogDoor":
-		return TDoor
-
-	case "ctypes.CatalogGroup":
-		return TGroup
-
-	case "ctypes.CatalogEvent":
-		return TEvent
-
-	case "ctypes.CatalogLogEntry":
-		return TLog
-
-	case "ctypes.CatalogUser":
-		return TUser
-
-	default:
-		return TUnknown
-	}
 }

@@ -11,13 +11,12 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Group struct {
-	ctypes.CatalogGroup
+	catalog.CatalogGroup
 	Name  string              `json:"name"`
 	Doors map[schema.OID]bool `json:"doors"`
 
@@ -266,7 +265,7 @@ func (g *Group) deserialize(bytes []byte) error {
 
 func (g Group) clone() Group {
 	group := Group{
-		CatalogGroup: ctypes.CatalogGroup{
+		CatalogGroup: catalog.CatalogGroup{
 			OID: g.OID,
 		},
 		Name:    g.Name,

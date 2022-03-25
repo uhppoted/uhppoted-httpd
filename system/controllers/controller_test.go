@@ -11,19 +11,22 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func TestControllerAsObjects(t *testing.T) {
+	catalog.Init(memdb.Catalog())
+
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	name := "Le Thing"
 	deviceID := uint32(12345678)
 	address, _ := core.ResolveAddr("192.168.1.101")
 
 	c := Controller{
-		CatalogController: ctypes.CatalogController{
+		CatalogController: catalog.CatalogController{
 			OID:      "0.2.3",
 			DeviceID: deviceID,
 		},
@@ -78,7 +81,7 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 	address, _ := core.ResolveAddr("192.168.1.101")
 
 	c := Controller{
-		CatalogController: ctypes.CatalogController{
+		CatalogController: catalog.CatalogController{
 			OID:      "0.2.3",
 			DeviceID: deviceID,
 		},
@@ -112,7 +115,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 	address, _ := core.ResolveAddr("192.168.1.101")
 
 	c := Controller{
-		CatalogController: ctypes.CatalogController{
+		CatalogController: catalog.CatalogController{
 			OID:      "0.2.3",
 			DeviceID: deviceID,
 		},
@@ -177,7 +180,7 @@ func TestControllerSet(t *testing.T) {
 	}
 
 	c := Controller{
-		CatalogController: ctypes.CatalogController{
+		CatalogController: catalog.CatalogController{
 			OID: "0.2.3",
 		},
 		name: "Le Controlleur",
@@ -199,7 +202,7 @@ func TestControllerSet(t *testing.T) {
 
 func TestControllerSetWithDeleted(t *testing.T) {
 	c := Controller{
-		CatalogController: ctypes.CatalogController{
+		CatalogController: catalog.CatalogController{
 			OID: "0.2.3",
 		},
 		name: "Le Controlleur",

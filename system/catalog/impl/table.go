@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 type Table interface {
@@ -93,7 +93,7 @@ func (t *table) Clear() {
 }
 
 func (t *controllers) New(v interface{}) schema.OID {
-	u := v.(ctypes.CatalogController)
+	u := v.(cat.CatalogController)
 	suffix := t.last
 
 loop:

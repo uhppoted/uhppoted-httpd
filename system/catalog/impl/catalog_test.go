@@ -5,9 +5,64 @@ import (
 	"sort"
 	"testing"
 
+	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
+
+func TestNewInterface(t *testing.T) {
+	type lan struct {
+		cat.CatalogInterface
+	}
+
+	Catalog().Clear()
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("Expected 'panic' - currently only a single static LAN interface is supported")
+		}
+	}()
+
+	Catalog().NewT(ctypes.TInterface, lan{}.CatalogInterface)
+}
+
+func TestNewController(t *testing.T) {
+	type controller struct {
+		cat.CatalogController
+	}
+
+	Catalog().Clear()
+
+	p := controller{
+		CatalogController: cat.CatalogController{
+			DeviceID: 1234,
+		},
+	}
+
+	q := controller{
+		CatalogController: cat.CatalogController{
+			DeviceID: 5678,
+		},
+	}
+
+	r := controller{
+		CatalogController: cat.CatalogController{
+			DeviceID: 1234,
+		},
+	}
+
+	if oid := Catalog().NewT(ctypes.TController, p.CatalogController); oid != "0.2.1" {
+		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.1", oid)
+	}
+
+	if oid := Catalog().NewT(ctypes.TController, q.CatalogController); oid != "0.2.2" {
+		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.2", oid)
+	}
+
+	if oid := Catalog().NewT(ctypes.TController, r.CatalogController); oid != "0.2.1" {
+		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.1", oid)
+	}
+}
 
 func TestNewDoor(t *testing.T) {
 	cc := catalog{
@@ -62,6 +117,34 @@ func TestNewDoor(t *testing.T) {
 	}
 }
 
+func TestNewCard(t *testing.T) {
+	type card struct {
+		cat.CatalogCard
+	}
+
+	Catalog().Clear()
+
+	oid := Catalog().NewT(ctypes.TCard, card{}.CatalogCard)
+
+	if oid != "0.4.1" {
+		t.Errorf("Incorrect card OID - expected:%v, got:%v", "0.4.1", oid)
+	}
+}
+
+func TestNewGroup(t *testing.T) {
+	type group struct {
+		cat.CatalogGroup
+	}
+
+	Catalog().Clear()
+
+	oid := Catalog().NewT(ctypes.TGroup, group{}.CatalogGroup)
+
+	if oid != "0.5.1" {
+		t.Errorf("Incorrect group OID - expected:%v, got:%v", "0.5.1", oid)
+	}
+}
+
 func TestNewEvent(t *testing.T) {
 	cc := catalog{
 		events: &table{
@@ -90,6 +173,34 @@ func TestNewEvent(t *testing.T) {
 		if oid != expected {
 			t.Errorf("Invalid event OID - expected:%v, got:%v", expected, oid)
 		}
+	}
+}
+
+func TestNewLogEntry(t *testing.T) {
+	type logentry struct {
+		cat.CatalogLogEntry
+	}
+
+	Catalog().Clear()
+
+	oid := Catalog().NewT(ctypes.TLog, logentry{}.CatalogLogEntry)
+
+	if oid != "0.7.1" {
+		t.Errorf("Incorrect log entry OID - expected:%v, got:%v", "0.7.1", oid)
+	}
+}
+
+func TestNewUser(t *testing.T) {
+	type user struct {
+		cat.CatalogUser
+	}
+
+	Catalog().Clear()
+
+	oid := Catalog().NewT(ctypes.TUser, user{}.CatalogUser)
+
+	if oid != "0.8.1" {
+		t.Errorf("Incorrect user OID - expected:%v, got:%v", "0.8.1", oid)
 	}
 }
 

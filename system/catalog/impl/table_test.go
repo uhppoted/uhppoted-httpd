@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
+	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 func TestTableNewOID(t *testing.T) {
@@ -122,7 +122,7 @@ func TestTableNewController(t *testing.T) {
 		last: 11,
 	}
 
-	oid := tt.New(ctypes.CatalogController{
+	oid := tt.New(cat.CatalogController{
 		DeviceID: 1234,
 	})
 

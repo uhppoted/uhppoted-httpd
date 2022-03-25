@@ -18,7 +18,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
@@ -226,7 +225,7 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 			info(fmt.Sprintf("Adding unconfigured controller %v", d))
 
 			v := Controller{
-				CatalogController: ctypes.CatalogController{
+				CatalogController: catalog.CatalogController{
 					DeviceID: id,
 				},
 				created:      types.TimestampNow(),

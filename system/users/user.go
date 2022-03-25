@@ -14,13 +14,12 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type User struct {
-	ctypes.CatalogUser
+	catalog.CatalogUser
 	name     string
 	uid      string
 	role     string
@@ -334,7 +333,7 @@ func (u *User) deserialize(bytes []byte) error {
 
 func (u User) clone() *User {
 	replicant := User{
-		CatalogUser: ctypes.CatalogUser{
+		CatalogUser: catalog.CatalogUser{
 			OID: u.OID,
 		},
 		name:     u.name,

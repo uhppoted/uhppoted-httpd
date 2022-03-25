@@ -10,8 +10,8 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -22,7 +22,7 @@ func TestLANAsObjects(t *testing.T) {
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
 	l := LAN{
-		CatalogInterface: ctypes.CatalogInterface{
+		CatalogInterface: catalog.CatalogInterface{
 			OID: "0.1.3",
 		},
 		Name:             "Le LAN",
@@ -60,7 +60,7 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
 	l := LAN{
-		CatalogInterface: ctypes.CatalogInterface{
+		CatalogInterface: catalog.CatalogInterface{
 			OID: "0.1.3",
 		},
 		Name:             "Le LAN",
@@ -90,7 +90,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
 	l := LAN{
-		CatalogInterface: ctypes.CatalogInterface{
+		CatalogInterface: catalog.CatalogInterface{
 			OID: "0.1.3",
 		},
 		Name:             "Le LAN",
@@ -138,7 +138,7 @@ func TestLANSet(t *testing.T) {
 	}
 
 	l := LAN{
-		CatalogInterface: ctypes.CatalogInterface{
+		CatalogInterface: catalog.CatalogInterface{
 			OID: "0.1.3",
 		},
 		Name: "Le LAN",
@@ -160,7 +160,7 @@ func TestLANSet(t *testing.T) {
 
 func TestLANSetWithDeleted(t *testing.T) {
 	l := LAN{
-		CatalogInterface: ctypes.CatalogInterface{
+		CatalogInterface: catalog.CatalogInterface{
 			OID: "0.1.3",
 		},
 		Name: "Le LAN",

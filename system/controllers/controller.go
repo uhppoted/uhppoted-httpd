@@ -17,13 +17,12 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Controller struct {
-	ctypes.CatalogController
+	catalog.CatalogController
 	name     string
 	IP       *core.Address
 	Doors    map[uint8]schema.OID
@@ -686,7 +685,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
-			CatalogController: ctypes.CatalogController{
+			CatalogController: catalog.CatalogController{
 				OID:      c.OID,
 				DeviceID: c.DeviceID,
 			},

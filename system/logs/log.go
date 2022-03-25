@@ -8,12 +8,11 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type LogEntry struct {
-	ctypes.CatalogLogEntry
+	catalog.CatalogLogEntry
 	Timestamp time.Time `json:"timestamp"`
 	UID       string    `json:"uid"`
 	Item      string    `json:"item"`
@@ -27,7 +26,7 @@ type LogEntry struct {
 
 func NewLogEntry(oid schema.OID, timestamp time.Time, record audit.AuditRecord) LogEntry {
 	return LogEntry{
-		CatalogLogEntry: ctypes.CatalogLogEntry{
+		CatalogLogEntry: catalog.CatalogLogEntry{
 			OID: oid,
 		},
 		Timestamp: timestamp,
@@ -183,7 +182,7 @@ func (l *LogEntry) deserialize(bytes []byte) error {
 
 func (l LogEntry) clone() LogEntry {
 	log := LogEntry{
-		CatalogLogEntry: ctypes.CatalogLogEntry{
+		CatalogLogEntry: catalog.CatalogLogEntry{
 			OID: l.OID,
 		},
 		Timestamp: l.Timestamp,

@@ -13,13 +13,12 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Door struct {
-	ctypes.CatalogDoor
+	catalog.CatalogDoor
 	Name string `json:"name"`
 
 	delay   uint8
@@ -328,7 +327,7 @@ func (d *Door) deserialize(bytes []byte) error {
 
 func (d *Door) clone() Door {
 	return Door{
-		CatalogDoor: ctypes.CatalogDoor{
+		CatalogDoor: catalog.CatalogDoor{
 			OID: d.OID,
 		},
 		Name:    d.Name,

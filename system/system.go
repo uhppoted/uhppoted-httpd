@@ -19,6 +19,8 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
@@ -198,6 +200,8 @@ type serializable interface {
 }
 
 func Init(cfg config.Config, conf string, debug bool) error {
+	catalog.Init(memdb.Catalog())
+
 	sys.interfaces.file = cfg.HTTPD.System.Interfaces
 	sys.controllers.file = cfg.HTTPD.System.Controllers
 	sys.doors.file = cfg.HTTPD.System.Doors
