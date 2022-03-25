@@ -26,7 +26,6 @@ function updateFromDB (oid, record) {
 
   const name = row.querySelector(`[data-oid="${oid}${schema.controllers.name}"]`)
   const deviceID = row.querySelector(`[data-oid="${oid}${schema.controllers.deviceID}"]`)
-  const address = row.querySelector(`[data-oid="${oid}${schema.controllers.endpoint.address}"]`)
   const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime.current}"]`)
   const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards.count}"]`)
   const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.last}"]`)
@@ -35,52 +34,21 @@ function updateFromDB (oid, record) {
   const door3 = row.querySelector(`[data-oid="${oid}${schema.controllers.door3}"]`)
   const door4 = row.querySelector(`[data-oid="${oid}${schema.controllers.door4}"]`)
 
-  // ... populate door dropdowns
-  const doors = [...DB.doors.values()]
-    .filter(o => o.status && o.status !== '<new>' && alive(o))
-    .sort((p, q) => p.created.localeCompare(q.created));
-
-  [door1, door2, door3, door4].forEach(select => {
-    const options = select.options
-    let ix = 1
-
-    doors.forEach(d => {
-      const value = d.OID
-      const label = d.name !== '' ? d.name : `<D${d.OID}>`.replaceAll('.', '')
-
-      if (ix < options.length) {
-        if (options[ix].value !== value) {
-          options.add(new Option(label, value, false, false), ix)
-        } else if (options[ix].label !== label) {
-          options[ix].label = label
-        }
-      } else {
-        options.add(new Option(label, value, false, false))
-      }
-
-      ix++
-    })
-
-    while (options.length > (doors.length + 1)) {
-      options.remove(options.length - 1)
-    }
-  })
-
   // ... set record values
+  const doors = new Map([...DB.doors.values()].map(o => [o.OID, o.name]))
+
   row.dataset.status = record.status
 
   update(name, record.name)
   update(deviceID, record.deviceID)
-  update(address, record.address.address, record.address.status)
   update(datetime, record.datetime.datetime, record.datetime.status)
   update(cards, record.cards.cards, record.cards.status)
   update(events, record.events.last)
-  update(door1, record.doors[1])
-  update(door2, record.doors[2])
-  update(door3, record.doors[3])
-  update(door4, record.doors[4])
+  update(door1, doors.get(record.doors[1]))
+  update(door2, doors.get(record.doors[2]))
+  update(door3, doors.get(record.doors[3]))
+  update(door4, doors.get(record.doors[4]))
 
-  address.dataset.original = record.address.configured
   datetime.dataset.original = record.datetime.expected
 
   return row
@@ -116,27 +84,16 @@ function add (oid, record) {
     row.dataset.status = 'unknown'
     row.innerHTML = template.innerHTML
 
-    const commit = row.querySelector('td span.commit')
-    commit.id = uuid + '_commit'
-    commit.dataset.record = uuid
-    commit.dataset.enabled = 'false'
-
-    const rollback = row.querySelector('td span.rollback')
-    rollback.id = uuid + '_rollback'
-    rollback.dataset.record = uuid
-    rollback.dataset.enabled = 'false'
-
     const fields = [
       { suffix: 'name', oid: `${oid}${schema.controllers.name}`, selector: 'td input.name', flag: 'td img.name' },
       { suffix: 'ID', oid: `${oid}${schema.controllers.deviceID}`, selector: 'td input.ID', flag: 'td img.ID' },
-      { suffix: 'IP', oid: `${oid}${schema.controllers.endpoint.address}`, selector: 'td input.IP', flag: 'td img.IP' },
       { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime.current}`, selector: 'td input.datetime', flag: 'td img.datetime' },
       { suffix: 'cards', oid: `${oid}${schema.controllers.cards.count}`, selector: 'td input.cards', flag: 'td img.cards' },
       { suffix: 'events', oid: `${oid}${schema.controllers.events.last}`, selector: 'td input.events', flag: 'td img.events' },
-      { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td select.door1', flag: 'td img.door1' },
-      { suffix: 'door-2', oid: `${oid}${schema.controllers.door2}`, selector: 'td select.door2', flag: 'td img.door2' },
-      { suffix: 'door-3', oid: `${oid}${schema.controllers.door3}`, selector: 'td select.door3', flag: 'td img.door3' },
-      { suffix: 'door-4', oid: `${oid}${schema.controllers.door4}`, selector: 'td select.door4', flag: 'td img.door4' }
+      { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td input.door1', flag: 'td img.door1' },
+      { suffix: 'door-2', oid: `${oid}${schema.controllers.door2}`, selector: 'td input.door2', flag: 'td img.door2' },
+      { suffix: 'door-3', oid: `${oid}${schema.controllers.door3}`, selector: 'td input.door3', flag: 'td img.door3' },
+      { suffix: 'door-4', oid: `${oid}${schema.controllers.door4}`, selector: 'td input.door4', flag: 'td img.door4' }
     ]
 
     fields.forEach(f => {

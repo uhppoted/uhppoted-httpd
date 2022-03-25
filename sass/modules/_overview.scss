@@ -1,0 +1,69 @@
+#container {
+  display: flex; 
+  flex-direction:column; 
+  width:100%; 
+  height:100%;
+}
+
+th.name {
+  min-width: 90px;
+  border-bottom: 1px;
+}
+
+th.ID {
+  min-width: 88px;
+}
+
+th.datetime {
+  min-width: 176px;
+}
+
+th.cards {
+  text-align: center; 
+}
+
+th.events {
+  text-align: center; 
+}
+
+th.doors {
+}
+
+tr.controller td {
+}
+
+tr.controller td input.name {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 132px;
+  pointer-events: none;
+}
+
+tr.controller td input.ID {
+  width: 88px;
+  pointer-events: none;
+  -moz-appearance:textfield;
+}
+
+tr.controller td input.datetime {
+  min-width: 176px;
+  pointer-events: none;
+}
+
+tr.controller td input.cards {
+  width: 72px;
+  text-align: center; 
+  pointer-events: none;
+}
+
+tr.controller td input.events {
+  width: 72px;
+  text-align: center; 
+  pointer-events: none;
+}
+
+tr.controller td input.door1,.door2,.door3,.door4 {
+  width: 72px;
+  pointer-events: none;
+}
+

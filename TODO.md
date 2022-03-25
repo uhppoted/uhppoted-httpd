@@ -3,14 +3,19 @@
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [ ] Fix ctypes lookup hack (or at least hide it decently)
+            - [ ] Add type constraint to `tableFor`
             - [ ] Set OID in catalog.NewT
             - [ ] Replace PutT + NewT with AddT
             - [ ] Remove Catalog.Clear (only used for tests)
+            - [ ] Remove catalog.impl.Clear (only used for tests)
             - [ ] Unit tests for reworked catalog (i.e. implement simplified stub)
             - [ ] Rename catalog in `impl`
 
 - [ ] Overview page 
-      - [ ] Make doors reaonly/text
+      - [x] Make doors readonly/text
+      - [x] Make date/time readonly/text
+      - [x] Remove endpoint
+      - [x] Remove all onEnter, onEdited, onCommit, onRollback
       - [ ] Rework controllers as 'blocks'
       - [ ] Add event summary
       - [ ] Add log summary

@@ -5,7 +5,7 @@
     <title>uhppoted-httpd: Overview</title>
     <link rel="manifest"   href="/manifest.json">
     <link rel="icon"       href="/images/favicon.svg">
-    <link rel="stylesheet" href="/css/{{$.context.Theme}}/system.css" type="text/css">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/overview.css" type="text/css">
     <meta charset="UTF-8">
   </head>
 
@@ -20,15 +20,12 @@
       <main>
         <div id="container">
           <div id="controls" data-oid="{{ .schema.Controllers.OID }}">
-            <img id="commitall"   class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controllers', event, 'controllers')" />
-            <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('controllers', event, 'controllers')" />
             <div id="message" class="message">
               <div>
                 <span class="warning" id="warning"></span>
                 <button class="dismiss" onclick="dismiss()">&#9746;</button>
               </div>
             </div>
-            <img id="add"     class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('controller')" />
             <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('controllers', event)" />
           </div>
 
@@ -38,7 +35,6 @@
                 <tr>
                   <th class="name     topleft">Controller</th>
                   <th class="ID       colheader">ID</th>
-                  <th class="IP       colheader">Endpoint</th>
                   <th class="datetime colheader">Date/Time</th>
                   <th class="cards    colheader">Cards</th>
                   <th class="events   colheader">Events</th>
@@ -57,28 +53,19 @@
                          type="text"
                          value=""
                          placeholder="-"
-                         onchange="onEdited('controller', event)"
                          data-record=""
                          data-original=""
                          data-value="" 
                          readonly />
-                  <span class="control commit"   onclick="onCommit('controller', event)"   data-record="" data-enabled="false">
-                    <img src="/images/{{$.context.Theme}}/check-solid.svg" />
-                  </span>
-                  <span class="control rollback" onclick="onRollback('controller', event)" data-record="" data-enabled="false">
-                    <img src="/images/{{$.context.Theme}}/times-solid.svg" />
-                  </span>
                 </td>
 
                 <td class="ID">
                   <img class="flag ID" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field ID"
                          type="text"
-                         list="fruits"
                          min="0"
                          value=""
                          placeholder="-"
-                         onchange="onEdited('controller', event)"
                          data-record=""
                          data-original=""
                          data-value="" 
@@ -86,35 +73,16 @@
                 </td>
 
                 <td>
-                  <img class="flag IP" src="/images/{{$.context.Theme}}/corner.svg" />
-                  <input class="field IP"
-                         type="text"
-                         value=""
-                         placeholder="-"
-                         onkeydown="onEnter('controller',event)"
-                         onchange="onEdited('controller', event)"
-                         data-record=""
-                         data-original=""
-                         data-value=""
-                         data-status="" 
-                         readonly />
-                </td>
-
-                <td class="combobox">
                   <img class="flag datetime" src="/images/{{$.context.Theme}}/corner.svg" />
                   <input class="field datetime"
                          type="text"
                          value=""
                          placeholder="-"
-                         autocomplete="off"
-                         onkeydown="onEnter('controller', event)"
-                         onchange="onEdited('controller', event)"
                          data-record=""
                          data-original=""
                          data-value=""
                          data-status="" 
                          readonly />
-                  <ul style="position:fixed; left:0px; top:0px; z-index:2; width:fit-content; max-height:120px; overflow:auto;"/>
                 </td>
 
                 <td>
@@ -124,7 +92,6 @@
                          min="0"
                          value=""
                          placeholder="-"
-                         onchange="onEdited('controller', event)"
                          data-record=""
                          data-original=""
                          data-value=""
@@ -139,7 +106,6 @@
                          min="0"
                          value=""
                          placeholder="-"
-                         onchange="onEdited('controller', event)"
                          data-record=""
                          data-original=""
                          data-value=""
@@ -148,60 +114,50 @@
 
                 <td>
                   <img class="flag door1" src="/images/{{$.context.Theme}}/corner.svg" />
-                  <select class="field door1"
-                          type="text"
-                          value=""
-                          placeholder="-"
-                          onchange="onEdited('controller', event)"
-                          data-record=""
-                          data-original=""
-                          data-value="">
-                    <option value="">-</option>
-                  </select>
+                  <input class="field door1"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         readonly />
                 </td>
 
                 <td>
                   <img class="flag door2" src="/images/{{$.context.Theme}}/corner.svg" />
-                  <select class="field door2"
-                          type="text"
-                          value=""
-                          placeholder="-"
-                          onchange="onEdited('controller', event)"
-                          data-record=""
-                          data-original=""
-                          data-value=""
-                          readonly>
-                    <option value="">-</option>
-                  </select>
+                  <input class="field door2"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                        readonly />
                 </td>
 
                 <td>
                   <img class="flag door3" src="/images/{{$.context.Theme}}/corner.svg" />
-                  <select class="field door3"
-                          type="text"
-                          value=""
-                          placeholder="-"
-                          onchange="onEdited('controller', event)"
-                          data-record=""
-                          data-original=""
-                          data-value=""
-                          readonly>
-                    <option value="">-</option>
-                  </select>
+                  <input class="field door3"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         readonly />
                 </td>
 
                 <td>
                   <img class="flag door4" src="/images/{{$.context.Theme}}/corner.svg" />
-                  <select class="field door4"
-                          type="text"
-                          value=""
-                          placeholder="-"
-                          onchange="onEdited('controller', event)"
-                          data-record=""
-                          data-original=""
-                          data-value="">
-                    <option value="">-</option>
-                  </select>
+                  <input class="field door4"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                        data-value=""
+                        readonly />
                 </td>
 
                 <!-- 'padding' column (CSS: tr::last-child) -->
