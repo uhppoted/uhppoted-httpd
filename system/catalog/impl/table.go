@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
@@ -14,6 +14,8 @@ type Table interface {
 	New(interface{}) schema.OID
 	Put(schema.OID, interface{})
 	Delete(schema.OID)
+	List() []schema.OID
+	Has(v any, oid schema.OID) bool
 	Clear()
 }
 
@@ -87,14 +89,42 @@ func (t *table) Delete(oid schema.OID) {
 	}
 }
 
+func (t *table) List() []schema.OID {
+	list := []schema.OID{}
+
+	for d, v := range t.m {
+		if !v.deleted {
+			list = append(list, d)
+		}
+	}
+
+	return list
+}
+
+func (t *table) Has(v any, oid schema.OID) bool {
+	if v, ok := t.m[oid]; ok && !v.deleted {
+		return true
+	}
+
+	return false
+}
+
 func (t *table) Clear() {
 	t.m = map[schema.OID]*record{}
 	t.last = 0
 }
 
 func (t *controllers) New(v interface{}) schema.OID {
-	u := v.(cat.CatalogController)
+	u := v.(catalog.CatalogController)
 	suffix := t.last
+
+	if deviceID := u.DeviceID; deviceID != 0 {
+		for oid, c := range t.m {
+			if !c.deleted && c.ID == deviceID {
+				return oid
+			}
+		}
+	}
 
 loop:
 	for {
@@ -132,7 +162,7 @@ func (t *controllers) Put(oid schema.OID, v interface{}) {
 	}
 
 	t.m[oid] = &controller{
-		ID: v.(uint32),
+		ID: v.(catalog.CatalogController).DeviceID,
 	}
 
 	if v := uint32(index); v > t.last {
@@ -145,6 +175,26 @@ func (t *controllers) Delete(oid schema.OID) {
 		v.deleted = true
 		t.m[oid] = v
 	}
+}
+
+func (t *controllers) List() []schema.OID {
+	list := []schema.OID{}
+
+	for d, v := range t.m {
+		if !v.deleted {
+			list = append(list, d)
+		}
+	}
+
+	return list
+}
+
+func (t *controllers) Has(v any, oid schema.OID) bool {
+	if v, ok := t.m[oid]; ok && !v.deleted {
+		return true
+	}
+
+	return false
 }
 
 func (t *controllers) Clear() {

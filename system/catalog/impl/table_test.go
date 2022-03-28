@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
@@ -122,7 +122,7 @@ func TestTableNewController(t *testing.T) {
 		last: 11,
 	}
 
-	oid := tt.New(cat.CatalogController{
+	oid := tt.New(catalog.CatalogController{
 		DeviceID: 1234,
 	})
 
@@ -157,7 +157,9 @@ func TestTablePutController(t *testing.T) {
 		last: 124,
 	}
 
-	tt.Put("0.2.124", uint32(1234))
+	tt.Put("0.2.124", catalog.CatalogController{
+		DeviceID: 1234,
+	})
 
 	if !reflect.DeepEqual(tt, expected) {
 		t.Errorf("OID not added to controllers\n   expected:%v\n   got:     %v", expected, tt)

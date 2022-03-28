@@ -2,8 +2,9 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
-            - [ ] Fix ctypes lookup hack (or at least hide it decently)
-            - [ ] Add type constraint to `tableFor`
+            - [x] Genericize `controllers` table
+            - [x] Fix ctypes lookup hack (or at least hide it decently)
+            - [ ] Genericize FindController
             - [ ] Set OID in catalog.NewT (and update PutT and DeleteT likewise)
             - [ ] Replace PutT + NewT with AddT
             - [ ] Remove Catalog.Clear (only used for tests)

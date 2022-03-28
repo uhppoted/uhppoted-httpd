@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
@@ -80,126 +79,67 @@ func (cc *db) Clear() {
 }
 
 func (cc *db) NewT(v any) schema.OID {
-	t := TypeOf(v)
-	if t == TUnknown {
+	tt := tableForT(cc, v)
+	if tt == nil {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	}
 
-	if t == TController {
-		cc.guard.Lock()
-		defer cc.guard.Unlock()
-
-		u := v.(catalog.CatalogController)
-
-		if deviceID := u.DeviceID; deviceID != 0 {
-			for oid, c := range cc.controllers.(*controllers).m {
-				if !c.deleted && c.ID == deviceID {
-					return oid
-				}
-			}
-		}
-
-		return cc.controllers.New(u)
-	}
-
-	// NTS: only support a single interface at this point in time
-	if t == TInterface {
-		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
-	}
-
-	m, ok := cc.tableForT(t)
-	if !ok {
-		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
+	// NTS: only supports a 'known' interface at this point in time
+	if tt == cc.interfaces {
+		panic(fmt.Sprintf("Unsupported catalog type (%T)", v))
 	}
 
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	return m.New(v)
+	return tt.New(v)
 }
 
 func (cc *db) PutT(v any, oid schema.OID) {
-	t := TypeOf(v)
-	if t == TUnknown {
+	tt := tableForT(cc, v)
+	if tt == nil {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	}
 
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	if t == TController {
-		cc.controllers.Put(oid, v.(catalog.CatalogController).DeviceID)
-		return
-	}
-
-	if m, ok := cc.tableForT(t); !ok {
-		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
-	} else {
-		m.Put(oid, v)
-	}
+	tt.Put(oid, v)
 }
 
 func (cc *db) DeleteT(v any, oid schema.OID) {
-	t := TypeOf(v)
-	if t == TUnknown {
+	tt := tableForT(cc, v)
+	if tt == nil {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	}
 
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	switch t {
-	case TController:
-		cc.controllers.Delete(oid)
-
-	default:
-		if tt, ok := cc.tableForT(t); ok {
-			tt.Delete(oid)
-		}
-	}
+	tt.Delete(oid)
 }
 
 func (cc *db) ListT(oid schema.OID) []schema.OID {
 	cc.guard.RLock()
 	defer cc.guard.RUnlock()
 
-	list := []schema.OID{}
-
-	if tt, ok := cc.tableFor(oid); ok {
-		for d, v := range tt.(*table).m {
-			if !v.deleted {
-				list = append(list, d)
-			}
-		}
+	if tt := tableFor(cc, oid); tt != nil {
+		return tt.List()
 	}
 
-	return list
+	return []schema.OID{}
 }
 
 func (cc *db) HasT(v any, oid schema.OID) bool {
-	t := TypeOf(v)
-	if t == TUnknown {
+	tt := tableForT(cc, v)
+	if tt == nil {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	}
 
 	cc.guard.RLock()
 	defer cc.guard.RUnlock()
 
-	switch t {
-	case TController:
-		if v, ok := cc.controllers.(*controllers).m[oid]; ok && !v.deleted {
-			return true
-		}
-
-	default:
-		if tt, ok := cc.tableForT(t); ok {
-			if v, ok := tt.(*table).m[oid]; ok && !v.deleted {
-				return true
-			}
-		}
-	}
-
-	return false
+	return tt.Has(v, oid)
 }
 
 func (cc *db) FindController(deviceID uint32) schema.OID {
@@ -217,133 +157,71 @@ func (cc *db) FindController(deviceID uint32) schema.OID {
 	return ""
 }
 
-// TODO Remove, pending migration to real Go generics
-func (cc *db) tableForT(t Type) (Table, bool) {
-	switch t {
-	case TInterface:
-		return cc.interfaces, true
-
-	case TController:
-		return cc.controllers, true
-
-	case TDoor:
-		return cc.doors, true
-
-	case TCard:
-		return cc.cards, true
-
-	case TGroup:
-		return cc.groups, true
-
-	case TEvent:
-		return cc.events, true
-
-	case TLog:
-		return cc.logs, true
-
-	case TUser:
-		return cc.users, true
-
-	default:
-		return nil, false
-	}
-}
-
-func (cc *db) tableFor(oid schema.OID) (Table, bool) {
-	switch oid {
-	case schema.InterfacesOID:
-		return cc.interfaces, true
-
-	case schema.ControllersOID:
-		return cc.doors, true
-
-	case schema.DoorsOID:
-		return cc.doors, true
-
-	case schema.CardsOID:
-		return cc.cards, true
-
-	case schema.GroupsOID:
-		return cc.groups, true
-
-	case schema.EventsOID:
-		return cc.events, true
-
-	case schema.LogsOID:
-		return cc.logs, true
-
-	case schema.UsersOID:
-		return cc.users, true
-
-	default:
-		return nil, false
-	}
-}
-
-// TODO Remove, pending migration to real Go generics
-func TypeOf(v any) Type {
+// TODO Ewwww - but there doesn't seem to be an elegant way with the
+//              current state of Go generics :-(
+func tableForT(cc *db, v any) Table {
 	t := fmt.Sprintf("%T", v)
+
 	switch t {
 	case "catalog.CatalogInterface":
-		return TInterface
+		return cc.interfaces
 
 	case "catalog.CatalogController":
-		return TController
+		return cc.controllers
 
 	case "catalog.CatalogDoor":
-		return TDoor
+		return cc.doors
 
 	case "catalog.CatalogCard":
-		return TCard
+		return cc.cards
 
 	case "catalog.CatalogGroup":
-		return TGroup
+		return cc.groups
 
 	case "catalog.CatalogEvent":
-		return TEvent
+		return cc.events
 
 	case "catalog.CatalogLogEntry":
-		return TLog
+		return cc.logs
 
 	case "catalog.CatalogUser":
-		return TUser
+		return cc.users
 
 	default:
-		return TUnknown
+		return nil
 	}
 }
 
-// func tableForT[T ctypes.CatalogType](v T) Table {
-// 	t := fmt.Sprintf("%T", v)
-// 	switch t {
-// 	case "ctypes.CatalogInterface":
-// 		return cc.interfaces
-//
-// 	case "ctypes.CatalogController":
-// 		return cc.controllers
-//
-// 	case "ctypes.CatalogCard":
-// 		return cc.cards
-//
-// 	case "ctypes.CatalogDoor":
-// 		return cc.doors
-//
-// 	case "ctypes.CatalogGroup":
-// 		return cc.groups
-//
-// 	case "ctypes.CatalogEvent":
-// 		return cc.events
-//
-// 	case "ctypes.CatalogLogEntry":
-// 		return cc.logs
-//
-// 	case "ctypes.CatalogUser":
-// 		return cc.users
-//
-// 	default:
-// 		return nil
-// 	}
-// }
+func tableFor(cc *db, oid schema.OID) Table {
+	switch oid {
+	case schema.InterfacesOID:
+		return cc.interfaces
+
+	case schema.ControllersOID:
+		return cc.doors
+
+	case schema.DoorsOID:
+		return cc.doors
+
+	case schema.CardsOID:
+		return cc.cards
+
+	case schema.GroupsOID:
+		return cc.groups
+
+	case schema.EventsOID:
+		return cc.events
+
+	case schema.LogsOID:
+		return cc.logs
+
+	case schema.UsersOID:
+		return cc.users
+
+	default:
+		return nil
+	}
+}
 
 // TODO REMOVE WHEN MIGRATION TO Go GENERICS IS DONE
 type Type int
