@@ -7,7 +7,6 @@ import (
 
 	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 func TestNewInterface(t *testing.T) {
@@ -233,7 +232,7 @@ func TestListT(t *testing.T) {
 		"0.3.200",
 	}
 
-	list := cc.ListT(ctypes.TDoor)
+	list := cc.ListT(schema.DoorsOID)
 
 	sort.Slice(list, func(i, j int) bool { return string(list[i]) < string(list[j]) })
 
@@ -243,6 +242,10 @@ func TestListT(t *testing.T) {
 }
 
 func TestHasT(t *testing.T) {
+	type group struct {
+		cat.CatalogGroup
+	}
+
 	cc := catalog{
 		groups: &table{
 			base: schema.GroupsOID,
@@ -266,7 +269,7 @@ func TestHasT(t *testing.T) {
 	}
 
 	for k, v := range tests {
-		if has := cc.HasT(ctypes.TGroup, k); has != v {
+		if has := cc.HasT(group{}.CatalogGroup, k); has != v {
 			t.Errorf("HasT returned incorrect result for '%v' - expected:%v\n, got:%v", k, v, has)
 		}
 	}

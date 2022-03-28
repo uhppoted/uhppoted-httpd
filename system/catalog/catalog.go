@@ -2,17 +2,16 @@ package catalog
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 type Catalog interface {
 	Clear()
 
-	NewT(interface{}) schema.OID
-	PutT(interface{}, schema.OID)
-	DeleteT(interface{}, schema.OID)
-	ListT(ctypes.Type) []schema.OID
-	HasT(ctypes.Type, schema.OID) bool
+	NewT(any) schema.OID
+	PutT(any, schema.OID)
+	DeleteT(any, schema.OID)
+	ListT(schema.OID) []schema.OID
+	HasT(any, schema.OID) bool
 
 	GetV(schema.OID, schema.Suffix) interface{}
 	Put(schema.OID, interface{})
@@ -149,7 +148,7 @@ func FindController(deviceID uint32) schema.OID {
 }
 
 func GetDoors() []schema.OID {
-	return catalog.ListT(ctypes.TDoor)
+	return catalog.ListT(schema.DoorsOID)
 }
 
 func GetDoorDeviceID(door schema.OID) uint32 {
@@ -161,9 +160,13 @@ func GetDoorDeviceDoor(door schema.OID) uint8 {
 }
 
 func GetGroups() []schema.OID {
-	return catalog.ListT(ctypes.TGroup)
+	return catalog.ListT(schema.GroupsOID)
 }
 
 func HasGroup(oid schema.OID) bool {
-	return catalog.HasT(ctypes.TGroup, oid)
+	type group struct {
+		CatalogGroup
+	}
+
+	return catalog.HasT(group{}.CatalogGroup, oid)
 }

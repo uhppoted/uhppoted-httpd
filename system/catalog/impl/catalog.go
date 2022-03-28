@@ -6,7 +6,6 @@ import (
 
 	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 type catalog struct {
@@ -80,13 +79,13 @@ func (cc *catalog) Clear() {
 	cache.cache = map[schema.OID]value{}
 }
 
-func (cc *catalog) NewT(v interface{}) schema.OID {
+func (cc *catalog) NewT(v any) schema.OID {
 	t := TypeOf(v)
-	if t == ctypes.TUnknown {
+	if t == TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	}
 
-	if t == ctypes.TController {
+	if t == TController {
 		cc.guard.Lock()
 		defer cc.guard.Unlock()
 
@@ -104,11 +103,11 @@ func (cc *catalog) NewT(v interface{}) schema.OID {
 	}
 
 	// NTS: only support a single interface at this point in time
-	if t == ctypes.TInterface {
+	if t == TInterface {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
 	}
 
-	m, ok := cc.tableFor(t)
+	m, ok := cc.tableForT(t)
 	if !ok {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
 	}
@@ -119,30 +118,30 @@ func (cc *catalog) NewT(v interface{}) schema.OID {
 	return m.New(v)
 }
 
-func (cc *catalog) PutT(v interface{}, oid schema.OID) {
+func (cc *catalog) PutT(v any, oid schema.OID) {
 	t := TypeOf(v)
-	if t == ctypes.TUnknown {
+	if t == TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	}
 
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
-	if t == ctypes.TController {
+	if t == TController {
 		cc.controllers.Put(oid, v.(cat.CatalogController).DeviceID)
 		return
 	}
 
-	if m, ok := cc.tableFor(t); !ok {
+	if m, ok := cc.tableForT(t); !ok {
 		panic(fmt.Sprintf("Unsupported catalog type (%v)", t))
 	} else {
 		m.Put(oid, v)
 	}
 }
 
-func (cc *catalog) DeleteT(v interface{}, oid schema.OID) {
+func (cc *catalog) DeleteT(v any, oid schema.OID) {
 	t := TypeOf(v)
-	if t == ctypes.TUnknown {
+	if t == TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	}
 
@@ -150,36 +149,26 @@ func (cc *catalog) DeleteT(v interface{}, oid schema.OID) {
 	defer cc.guard.Unlock()
 
 	switch t {
-	case ctypes.TController:
+	case TController:
 		cc.controllers.Delete(oid)
 
 	default:
-		if tt, ok := cc.tableFor(t); ok {
+		if tt, ok := cc.tableForT(t); ok {
 			tt.Delete(oid)
 		}
 	}
 }
 
-func (cc *catalog) ListT(t ctypes.Type) []schema.OID {
+func (cc *catalog) ListT(oid schema.OID) []schema.OID {
 	cc.guard.RLock()
 	defer cc.guard.RUnlock()
 
 	list := []schema.OID{}
 
-	switch t {
-	case ctypes.TController:
-		for d, v := range cc.controllers.(*controllers).m {
+	if tt, ok := cc.tableFor(oid); ok {
+		for d, v := range tt.(*table).m {
 			if !v.deleted {
 				list = append(list, d)
-			}
-		}
-
-	default:
-		if tt, ok := cc.tableFor(t); ok {
-			for d, v := range tt.(*table).m {
-				if !v.deleted {
-					list = append(list, d)
-				}
 			}
 		}
 	}
@@ -187,18 +176,23 @@ func (cc *catalog) ListT(t ctypes.Type) []schema.OID {
 	return list
 }
 
-func (cc *catalog) HasT(t ctypes.Type, oid schema.OID) bool {
+func (cc *catalog) HasT(v any, oid schema.OID) bool {
+	t := TypeOf(v)
+	if t == TUnknown {
+		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
+	}
+
 	cc.guard.RLock()
 	defer cc.guard.RUnlock()
 
 	switch t {
-	case ctypes.TController:
+	case TController:
 		if v, ok := cc.controllers.(*controllers).m[oid]; ok && !v.deleted {
 			return true
 		}
 
 	default:
-		if tt, ok := cc.tableFor(t); ok {
+		if tt, ok := cc.tableForT(t); ok {
 			if v, ok := tt.(*table).m[oid]; ok && !v.deleted {
 				return true
 			}
@@ -223,27 +217,62 @@ func (cc *catalog) FindController(deviceID uint32) schema.OID {
 	return ""
 }
 
-func (cc *catalog) tableFor(t ctypes.Type) (Table, bool) {
+// TODO Remove, pending migration to real Go generics
+func (cc *catalog) tableForT(t Type) (Table, bool) {
 	switch t {
-	case ctypes.TInterface:
+	case TInterface:
 		return cc.interfaces, true
 
-	case ctypes.TDoor:
+	case TController:
+		return cc.controllers, true
+
+	case TDoor:
 		return cc.doors, true
 
-	case ctypes.TCard:
+	case TCard:
 		return cc.cards, true
 
-	case ctypes.TGroup:
+	case TGroup:
 		return cc.groups, true
 
-	case ctypes.TEvent:
+	case TEvent:
 		return cc.events, true
 
-	case ctypes.TLog:
+	case TLog:
 		return cc.logs, true
 
-	case ctypes.TUser:
+	case TUser:
+		return cc.users, true
+
+	default:
+		return nil, false
+	}
+}
+
+func (cc *catalog) tableFor(oid schema.OID) (Table, bool) {
+	switch oid {
+	case schema.InterfacesOID:
+		return cc.interfaces, true
+
+	case schema.ControllersOID:
+		return cc.doors, true
+
+	case schema.DoorsOID:
+		return cc.doors, true
+
+	case schema.CardsOID:
+		return cc.cards, true
+
+	case schema.GroupsOID:
+		return cc.groups, true
+
+	case schema.EventsOID:
+		return cc.events, true
+
+	case schema.LogsOID:
+		return cc.logs, true
+
+	case schema.UsersOID:
 		return cc.users, true
 
 	default:
@@ -252,39 +281,39 @@ func (cc *catalog) tableFor(t ctypes.Type) (Table, bool) {
 }
 
 // TODO Remove, pending migration to real Go generics
-func TypeOf(v interface{}) ctypes.Type {
+func TypeOf(v any) Type {
 	t := fmt.Sprintf("%T", v)
 	switch t {
 	case "catalog.CatalogInterface":
-		return ctypes.TInterface
+		return TInterface
 
 	case "catalog.CatalogController":
-		return ctypes.TController
+		return TController
 
 	case "catalog.CatalogDoor":
-		return ctypes.TDoor
+		return TDoor
 
 	case "catalog.CatalogCard":
-		return ctypes.TCard
+		return TCard
 
 	case "catalog.CatalogGroup":
-		return ctypes.TGroup
+		return TGroup
 
 	case "catalog.CatalogEvent":
-		return ctypes.TEvent
+		return TEvent
 
 	case "catalog.CatalogLogEntry":
-		return ctypes.TLog
+		return TLog
 
 	case "catalog.CatalogUser":
-		return ctypes.TUser
+		return TUser
 
 	default:
-		return ctypes.TUnknown
+		return TUnknown
 	}
 }
 
-// func tableFor[T ctypes.CatalogType](v T) Table {
+// func tableForT[T ctypes.CatalogType](v T) Table {
 // 	t := fmt.Sprintf("%T", v)
 // 	switch t {
 // 	case "ctypes.CatalogInterface":
@@ -315,3 +344,32 @@ func TypeOf(v interface{}) ctypes.Type {
 // 		return nil
 // 	}
 // }
+
+// TODO REMOVE WHEN MIGRATION TO Go GENERICS IS DONE
+type Type int
+
+const (
+	TUnknown Type = iota
+	TInterface
+	TController
+	TDoor
+	TCard
+	TGroup
+	TEvent
+	TLog
+	TUser
+)
+
+func (t Type) String() string {
+	return []string{
+		"unknown",
+		"interface",
+		"controller",
+		"door",
+		"card",
+		"group",
+		"event",
+		"log",
+		"user",
+	}[t]
+}

@@ -2,7 +2,6 @@ package catalog
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 type stub struct {
@@ -11,21 +10,21 @@ type stub struct {
 func (s stub) Clear() {
 }
 
-func (s stub) NewT(ctypes.Type, interface{}) schema.OID {
+func (s stub) NewT(any) schema.OID {
 	return ""
 }
 
-func (s stub) PutT(ctypes.Type, interface{}, schema.OID) {
+func (s stub) PutT(any, schema.OID) {
 }
 
-func (s stub) DeleteT(ctypes.Type, schema.OID) {
+func (s stub) DeleteT(any, schema.OID) {
 }
 
-func (s stub) ListT(ctypes.Type) []schema.OID {
+func (s stub) ListT(schema.OID) []schema.OID {
 	return nil
 }
 
-func (s stub) HasT(ctypes.Type, schema.OID) bool {
+func (s stub) HasT(any, schema.OID) bool {
 	return false
 }
 
