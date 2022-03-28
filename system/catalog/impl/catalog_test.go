@@ -23,7 +23,7 @@ func TestNewInterface(t *testing.T) {
 		}
 	}()
 
-	Catalog().NewT(ctypes.TInterface, lan{}.CatalogInterface)
+	Catalog().NewT(lan{}.CatalogInterface)
 }
 
 func TestNewController(t *testing.T) {
@@ -51,20 +51,24 @@ func TestNewController(t *testing.T) {
 		},
 	}
 
-	if oid := Catalog().NewT(ctypes.TController, p.CatalogController); oid != "0.2.1" {
+	if oid := Catalog().NewT(p.CatalogController); oid != "0.2.1" {
 		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.1", oid)
 	}
 
-	if oid := Catalog().NewT(ctypes.TController, q.CatalogController); oid != "0.2.2" {
+	if oid := Catalog().NewT(q.CatalogController); oid != "0.2.2" {
 		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.2", oid)
 	}
 
-	if oid := Catalog().NewT(ctypes.TController, r.CatalogController); oid != "0.2.1" {
+	if oid := Catalog().NewT(r.CatalogController); oid != "0.2.1" {
 		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.1", oid)
 	}
 }
 
 func TestNewDoor(t *testing.T) {
+	type door struct {
+		cat.CatalogDoor
+	}
+
 	cc := catalog{
 		doors: &table{
 			base: schema.DoorsOID,
@@ -106,7 +110,7 @@ func TestNewDoor(t *testing.T) {
 		users:       &table{},
 	}
 
-	oid := cc.NewT(ctypes.TDoor, nil)
+	oid := cc.NewT(door{}.CatalogDoor)
 
 	if oid != "0.3.101" {
 		t.Errorf("Incorrect OID - expected:%v, got:%v", "0.3.101", oid)
@@ -124,7 +128,7 @@ func TestNewCard(t *testing.T) {
 
 	Catalog().Clear()
 
-	oid := Catalog().NewT(ctypes.TCard, card{}.CatalogCard)
+	oid := Catalog().NewT(card{}.CatalogCard)
 
 	if oid != "0.4.1" {
 		t.Errorf("Incorrect card OID - expected:%v, got:%v", "0.4.1", oid)
@@ -138,7 +142,7 @@ func TestNewGroup(t *testing.T) {
 
 	Catalog().Clear()
 
-	oid := Catalog().NewT(ctypes.TGroup, group{}.CatalogGroup)
+	oid := Catalog().NewT(group{}.CatalogGroup)
 
 	if oid != "0.5.1" {
 		t.Errorf("Incorrect group OID - expected:%v, got:%v", "0.5.1", oid)
@@ -146,6 +150,10 @@ func TestNewGroup(t *testing.T) {
 }
 
 func TestNewEvent(t *testing.T) {
+	type event struct {
+		cat.CatalogEvent
+	}
+
 	cc := catalog{
 		events: &table{
 			base: schema.EventsOID,
@@ -168,7 +176,7 @@ func TestNewEvent(t *testing.T) {
 	}
 
 	for _, expected := range tests {
-		oid := cc.NewT(ctypes.TEvent, nil)
+		oid := cc.NewT(event{}.CatalogEvent)
 
 		if oid != expected {
 			t.Errorf("Invalid event OID - expected:%v, got:%v", expected, oid)
@@ -183,7 +191,7 @@ func TestNewLogEntry(t *testing.T) {
 
 	Catalog().Clear()
 
-	oid := Catalog().NewT(ctypes.TLog, logentry{}.CatalogLogEntry)
+	oid := Catalog().NewT(logentry{}.CatalogLogEntry)
 
 	if oid != "0.7.1" {
 		t.Errorf("Incorrect log entry OID - expected:%v, got:%v", "0.7.1", oid)
@@ -197,7 +205,7 @@ func TestNewUser(t *testing.T) {
 
 	Catalog().Clear()
 
-	oid := Catalog().NewT(ctypes.TUser, user{}.CatalogUser)
+	oid := Catalog().NewT(user{}.CatalogUser)
 
 	if oid != "0.8.1" {
 		t.Errorf("Incorrect user OID - expected:%v, got:%v", "0.8.1", oid)
@@ -265,6 +273,10 @@ func TestHasT(t *testing.T) {
 }
 
 func TestDeleteT(t *testing.T) {
+	type door struct {
+		cat.CatalogDoor
+	}
+
 	cc := catalog{
 		doors: &table{
 			base: schema.DoorsOID,
@@ -305,7 +317,7 @@ func TestDeleteT(t *testing.T) {
 		users:       &table{},
 	}
 
-	cc.DeleteT(ctypes.TDoor, "0.3.3")
+	cc.DeleteT(door{}.CatalogDoor, "0.3.3")
 
 	if !reflect.DeepEqual(&cc, &expected) {
 		t.Errorf("Catalog not updated:\n   expected:%v\n   got:     %v", &expected, &cc)

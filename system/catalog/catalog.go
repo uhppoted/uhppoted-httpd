@@ -1,8 +1,6 @@
 package catalog
 
 import (
-	"fmt"
-
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
@@ -10,9 +8,9 @@ import (
 type Catalog interface {
 	Clear()
 
-	NewT(ctypes.Type, interface{}) schema.OID
-	PutT(ctypes.Type, interface{}, schema.OID)
-	DeleteT(ctypes.Type, schema.OID)
+	NewT(interface{}) schema.OID
+	PutT(interface{}, schema.OID)
+	DeleteT(interface{}, schema.OID)
 	ListT(ctypes.Type) []schema.OID
 	HasT(ctypes.Type, schema.OID) bool
 
@@ -100,27 +98,15 @@ func Clear() {
 }
 
 func NewT[T CatalogType](v T) schema.OID {
-	if t := TypeOf(v); t == ctypes.TUnknown {
-		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
-	} else {
-		return catalog.NewT(t, v)
-	}
+	return catalog.NewT(v)
 }
 
 func PutT[T CatalogType](v T, oid schema.OID) {
-	if t := TypeOf(v); t == ctypes.TUnknown {
-		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
-	} else {
-		catalog.PutT(t, v, oid)
-	}
+	catalog.PutT(v, oid)
 }
 
 func DeleteT[T CatalogType](v T, oid schema.OID) {
-	if t := TypeOf(v); t == ctypes.TUnknown {
-		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
-	} else {
-		catalog.DeleteT(t, oid)
-	}
+	catalog.DeleteT(v, oid)
 }
 
 func GetV(oid schema.OID, suffix schema.Suffix) interface{} {
@@ -180,37 +166,4 @@ func GetGroups() []schema.OID {
 
 func HasGroup(oid schema.OID) bool {
 	return catalog.HasT(ctypes.TGroup, oid)
-}
-
-// TODO Remove, pending migration to real Go generics
-func TypeOf(v interface{}) ctypes.Type {
-	t := fmt.Sprintf("%T", v)
-	switch t {
-	case "catalog.CatalogInterface":
-		return ctypes.TInterface
-
-	case "catalog.CatalogController":
-		return ctypes.TController
-
-	case "catalog.CatalogDoor":
-		return ctypes.TDoor
-
-	case "catalog.CatalogCard":
-		return ctypes.TCard
-
-	case "catalog.CatalogGroup":
-		return ctypes.TGroup
-
-	case "catalog.CatalogEvent":
-		return ctypes.TEvent
-
-	case "catalog.CatalogLogEntry":
-		return ctypes.TLog
-
-	case "catalog.CatalogUser":
-		return ctypes.TUser
-
-	default:
-		return ctypes.TUnknown
-	}
 }

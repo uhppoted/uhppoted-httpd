@@ -80,7 +80,12 @@ func (cc *catalog) Clear() {
 	cache.cache = map[schema.OID]value{}
 }
 
-func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
+func (cc *catalog) NewT(v interface{}) schema.OID {
+	t := TypeOf(v)
+	if t == ctypes.TUnknown {
+		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
+	}
+
 	if t == ctypes.TController {
 		cc.guard.Lock()
 		defer cc.guard.Unlock()
@@ -114,7 +119,12 @@ func (cc *catalog) NewT(t ctypes.Type, v interface{}) schema.OID {
 	return m.New(v)
 }
 
-func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
+func (cc *catalog) PutT(v interface{}, oid schema.OID) {
+	t := TypeOf(v)
+	if t == ctypes.TUnknown {
+		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
+	}
+
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
@@ -130,7 +140,12 @@ func (cc *catalog) PutT(t ctypes.Type, v interface{}, oid schema.OID) {
 	}
 }
 
-func (cc *catalog) DeleteT(t ctypes.Type, oid schema.OID) {
+func (cc *catalog) DeleteT(v interface{}, oid schema.OID) {
+	t := TypeOf(v)
+	if t == ctypes.TUnknown {
+		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
+	}
+
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
@@ -233,6 +248,39 @@ func (cc *catalog) tableFor(t ctypes.Type) (Table, bool) {
 
 	default:
 		return nil, false
+	}
+}
+
+// TODO Remove, pending migration to real Go generics
+func TypeOf(v interface{}) ctypes.Type {
+	t := fmt.Sprintf("%T", v)
+	switch t {
+	case "catalog.CatalogInterface":
+		return ctypes.TInterface
+
+	case "catalog.CatalogController":
+		return ctypes.TController
+
+	case "catalog.CatalogDoor":
+		return ctypes.TDoor
+
+	case "catalog.CatalogCard":
+		return ctypes.TCard
+
+	case "catalog.CatalogGroup":
+		return ctypes.TGroup
+
+	case "catalog.CatalogEvent":
+		return ctypes.TEvent
+
+	case "catalog.CatalogLogEntry":
+		return ctypes.TLog
+
+	case "catalog.CatalogUser":
+		return ctypes.TUser
+
+	default:
+		return ctypes.TUnknown
 	}
 }
 

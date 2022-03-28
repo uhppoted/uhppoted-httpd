@@ -5,14 +5,13 @@ import (
 
 	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/catalog/types"
 )
 
 func TestGetDoorDeviceID(t *testing.T) {
 	cc := Catalog()
 	door := schema.OID("0.3.5")
 
-	cc.PutT(ctypes.TController, cat.CatalogController{DeviceID: 405419896}, "0.2.7")
+	cc.PutT(cat.CatalogController{DeviceID: 405419896}, "0.2.7")
 	cc.PutV("0.2.7", schema.ControllerDoor3, door)
 
 	d := cc.GetDoorDeviceID(door)
@@ -26,7 +25,7 @@ func TestGetDoorDeviceDoor(t *testing.T) {
 	cc := Catalog()
 	door := schema.OID("0.3.5")
 
-	cc.PutT(ctypes.TController, cat.CatalogController{DeviceID: 405419896}, "0.2.7")
+	cc.PutT(cat.CatalogController{DeviceID: 405419896}, "0.2.7")
 	cc.PutV("0.2.7", schema.ControllerDoor3, door)
 
 	d := cc.GetDoorDeviceDoor(door)

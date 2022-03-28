@@ -12,13 +12,9 @@
             - [ ] Rename catalog in `impl`
 
 - [ ] Overview page 
-      - [x] Make doors readonly/text
-      - [x] Make date/time readonly/text
-      - [x] Remove endpoint
-      - [x] Remove all onEnter, onEdited, onCommit, onRollback
-      - [ ] Rework controllers as 'blocks'
       - [ ] Add event summary
       - [ ] Add log summary
+      - [ ] Rework controllers as 'blocks'
 
 - [ ] Verify bootstrap from scratch
       - [ ] Refresh overwrites in-progress card edits
