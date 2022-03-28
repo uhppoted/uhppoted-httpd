@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"sync"
 
-	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-type catalog struct {
+type db struct {
 	interfaces  Table
 	controllers Table
 	doors       Table
@@ -20,7 +20,7 @@ type catalog struct {
 	guard       sync.RWMutex
 }
 
-var db = catalog{
+var dbx = db{
 	controllers: &controllers{
 		base: schema.ControllersOID,
 		m:    map[schema.OID]*controller{},
@@ -56,11 +56,11 @@ var db = catalog{
 	},
 }
 
-func Catalog() *catalog {
-	return &db
+func Catalog() *db {
+	return &dbx
 }
 
-func (cc *catalog) Clear() {
+func (cc *db) Clear() {
 	cc.guard.Lock()
 	defer cc.guard.Unlock()
 
@@ -79,7 +79,7 @@ func (cc *catalog) Clear() {
 	cache.cache = map[schema.OID]value{}
 }
 
-func (cc *catalog) NewT(v any) schema.OID {
+func (cc *db) NewT(v any) schema.OID {
 	t := TypeOf(v)
 	if t == TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
@@ -89,7 +89,7 @@ func (cc *catalog) NewT(v any) schema.OID {
 		cc.guard.Lock()
 		defer cc.guard.Unlock()
 
-		u := v.(cat.CatalogController)
+		u := v.(catalog.CatalogController)
 
 		if deviceID := u.DeviceID; deviceID != 0 {
 			for oid, c := range cc.controllers.(*controllers).m {
@@ -118,7 +118,7 @@ func (cc *catalog) NewT(v any) schema.OID {
 	return m.New(v)
 }
 
-func (cc *catalog) PutT(v any, oid schema.OID) {
+func (cc *db) PutT(v any, oid schema.OID) {
 	t := TypeOf(v)
 	if t == TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
@@ -128,7 +128,7 @@ func (cc *catalog) PutT(v any, oid schema.OID) {
 	defer cc.guard.Unlock()
 
 	if t == TController {
-		cc.controllers.Put(oid, v.(cat.CatalogController).DeviceID)
+		cc.controllers.Put(oid, v.(catalog.CatalogController).DeviceID)
 		return
 	}
 
@@ -139,7 +139,7 @@ func (cc *catalog) PutT(v any, oid schema.OID) {
 	}
 }
 
-func (cc *catalog) DeleteT(v any, oid schema.OID) {
+func (cc *db) DeleteT(v any, oid schema.OID) {
 	t := TypeOf(v)
 	if t == TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
@@ -159,7 +159,7 @@ func (cc *catalog) DeleteT(v any, oid schema.OID) {
 	}
 }
 
-func (cc *catalog) ListT(oid schema.OID) []schema.OID {
+func (cc *db) ListT(oid schema.OID) []schema.OID {
 	cc.guard.RLock()
 	defer cc.guard.RUnlock()
 
@@ -176,7 +176,7 @@ func (cc *catalog) ListT(oid schema.OID) []schema.OID {
 	return list
 }
 
-func (cc *catalog) HasT(v any, oid schema.OID) bool {
+func (cc *db) HasT(v any, oid schema.OID) bool {
 	t := TypeOf(v)
 	if t == TUnknown {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
@@ -202,7 +202,7 @@ func (cc *catalog) HasT(v any, oid schema.OID) bool {
 	return false
 }
 
-func (cc *catalog) FindController(deviceID uint32) schema.OID {
+func (cc *db) FindController(deviceID uint32) schema.OID {
 	cc.guard.RLock()
 	defer cc.guard.RUnlock()
 
@@ -218,7 +218,7 @@ func (cc *catalog) FindController(deviceID uint32) schema.OID {
 }
 
 // TODO Remove, pending migration to real Go generics
-func (cc *catalog) tableForT(t Type) (Table, bool) {
+func (cc *db) tableForT(t Type) (Table, bool) {
 	switch t {
 	case TInterface:
 		return cc.interfaces, true
@@ -249,7 +249,7 @@ func (cc *catalog) tableForT(t Type) (Table, bool) {
 	}
 }
 
-func (cc *catalog) tableFor(oid schema.OID) (Table, bool) {
+func (cc *db) tableFor(oid schema.OID) (Table, bool) {
 	switch oid {
 	case schema.InterfacesOID:
 		return cc.interfaces, true

@@ -28,7 +28,7 @@ func Get(oid schema.OID) interface{} {
 	return nil
 }
 
-func (cc *catalog) GetV(oid schema.OID, suffix schema.Suffix) interface{} {
+func (cc *db) GetV(oid schema.OID, suffix schema.Suffix) interface{} {
 	cache.guard.RLock()
 	defer cache.guard.RUnlock()
 
@@ -39,14 +39,14 @@ func (cc *catalog) GetV(oid schema.OID, suffix schema.Suffix) interface{} {
 	return nil
 }
 
-func (cc *catalog) Put(oid schema.OID, v interface{}) {
+func (cc *db) Put(oid schema.OID, v interface{}) {
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
 
 	cache.cache[oid] = v
 }
 
-func (cc *catalog) PutV(oid schema.OID, suffix schema.Suffix, v interface{}) {
+func (cc *db) PutV(oid schema.OID, suffix schema.Suffix, v interface{}) {
 	cache.guard.Lock()
 	defer cache.guard.Unlock()
 
@@ -64,7 +64,7 @@ func PutL(objects []schema.Object) {
 	}
 }
 
-func (cc *catalog) Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool) {
+func (cc *db) Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool) {
 	cache.guard.RLock()
 	defer cache.guard.RUnlock()
 
@@ -81,7 +81,7 @@ func (cc *catalog) Find(prefix schema.OID, suffix schema.Suffix, value interface
 	return schema.OID(""), false
 }
 
-func (cc *catalog) GetDoorDeviceID(door schema.OID) uint32 {
+func (cc *db) GetDoorDeviceID(door schema.OID) uint32 {
 	fields := map[uint8]schema.Suffix{
 		1: schema.ControllerDoor1,
 		2: schema.ControllerDoor2,
@@ -102,7 +102,7 @@ func (cc *catalog) GetDoorDeviceID(door schema.OID) uint32 {
 	return 0
 }
 
-func (cc *catalog) GetDoorDeviceDoor(door schema.OID) uint8 {
+func (cc *db) GetDoorDeviceDoor(door schema.OID) uint8 {
 	fields := map[uint8]schema.Suffix{
 		1: schema.ControllerDoor1,
 		2: schema.ControllerDoor2,

@@ -5,13 +5,13 @@ import (
 	"sort"
 	"testing"
 
-	cat "github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
 func TestNewInterface(t *testing.T) {
 	type lan struct {
-		cat.CatalogInterface
+		catalog.CatalogInterface
 	}
 
 	Catalog().Clear()
@@ -27,25 +27,25 @@ func TestNewInterface(t *testing.T) {
 
 func TestNewController(t *testing.T) {
 	type controller struct {
-		cat.CatalogController
+		catalog.CatalogController
 	}
 
 	Catalog().Clear()
 
 	p := controller{
-		CatalogController: cat.CatalogController{
+		CatalogController: catalog.CatalogController{
 			DeviceID: 1234,
 		},
 	}
 
 	q := controller{
-		CatalogController: cat.CatalogController{
+		CatalogController: catalog.CatalogController{
 			DeviceID: 5678,
 		},
 	}
 
 	r := controller{
-		CatalogController: cat.CatalogController{
+		CatalogController: catalog.CatalogController{
 			DeviceID: 1234,
 		},
 	}
@@ -65,10 +65,10 @@ func TestNewController(t *testing.T) {
 
 func TestNewDoor(t *testing.T) {
 	type door struct {
-		cat.CatalogDoor
+		catalog.CatalogDoor
 	}
 
-	cc := catalog{
+	cc := db{
 		doors: &table{
 			base: schema.DoorsOID,
 			m: map[schema.OID]*record{
@@ -88,7 +88,7 @@ func TestNewDoor(t *testing.T) {
 		users:       &table{},
 	}
 
-	expected := catalog{
+	expected := db{
 		doors: &table{
 			base: schema.DoorsOID,
 			m: map[schema.OID]*record{
@@ -122,7 +122,7 @@ func TestNewDoor(t *testing.T) {
 
 func TestNewCard(t *testing.T) {
 	type card struct {
-		cat.CatalogCard
+		catalog.CatalogCard
 	}
 
 	Catalog().Clear()
@@ -136,7 +136,7 @@ func TestNewCard(t *testing.T) {
 
 func TestNewGroup(t *testing.T) {
 	type group struct {
-		cat.CatalogGroup
+		catalog.CatalogGroup
 	}
 
 	Catalog().Clear()
@@ -150,10 +150,10 @@ func TestNewGroup(t *testing.T) {
 
 func TestNewEvent(t *testing.T) {
 	type event struct {
-		cat.CatalogEvent
+		catalog.CatalogEvent
 	}
 
-	cc := catalog{
+	cc := db{
 		events: &table{
 			base: schema.EventsOID,
 			m:    map[schema.OID]*record{},
@@ -185,7 +185,7 @@ func TestNewEvent(t *testing.T) {
 
 func TestNewLogEntry(t *testing.T) {
 	type logentry struct {
-		cat.CatalogLogEntry
+		catalog.CatalogLogEntry
 	}
 
 	Catalog().Clear()
@@ -199,7 +199,7 @@ func TestNewLogEntry(t *testing.T) {
 
 func TestNewUser(t *testing.T) {
 	type user struct {
-		cat.CatalogUser
+		catalog.CatalogUser
 	}
 
 	Catalog().Clear()
@@ -212,7 +212,7 @@ func TestNewUser(t *testing.T) {
 }
 
 func TestListT(t *testing.T) {
-	cc := catalog{
+	cc := db{
 		doors: &table{
 			base: schema.DoorsOID,
 			m: map[schema.OID]*record{
@@ -243,10 +243,10 @@ func TestListT(t *testing.T) {
 
 func TestHasT(t *testing.T) {
 	type group struct {
-		cat.CatalogGroup
+		catalog.CatalogGroup
 	}
 
-	cc := catalog{
+	cc := db{
 		groups: &table{
 			base: schema.GroupsOID,
 			m: map[schema.OID]*record{
@@ -277,10 +277,10 @@ func TestHasT(t *testing.T) {
 
 func TestDeleteT(t *testing.T) {
 	type door struct {
-		cat.CatalogDoor
+		catalog.CatalogDoor
 	}
 
-	cc := catalog{
+	cc := db{
 		doors: &table{
 			base: schema.DoorsOID,
 			m: map[schema.OID]*record{
@@ -300,7 +300,7 @@ func TestDeleteT(t *testing.T) {
 		users:       &table{},
 	}
 
-	expected := catalog{
+	expected := db{
 		doors: &table{
 			base: schema.DoorsOID,
 			m: map[schema.OID]*record{
@@ -328,7 +328,7 @@ func TestDeleteT(t *testing.T) {
 }
 
 func TestClear(t *testing.T) {
-	cc := catalog{
+	cc := db{
 		interfaces: &table{
 			base: schema.InterfacesOID,
 			m:    map[schema.OID]*record{"0.1.1": &record{}},
@@ -371,7 +371,7 @@ func TestClear(t *testing.T) {
 		},
 	}
 
-	expected := catalog{
+	expected := db{
 		interfaces: &table{
 			base: schema.InterfacesOID,
 			m:    map[schema.OID]*record{},

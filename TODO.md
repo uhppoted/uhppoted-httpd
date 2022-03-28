@@ -4,12 +4,12 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [ ] Fix ctypes lookup hack (or at least hide it decently)
             - [ ] Add type constraint to `tableFor`
-            - [ ] Set OID in catalog.NewT
+            - [ ] Set OID in catalog.NewT (and update PutT and DeleteT likewise)
             - [ ] Replace PutT + NewT with AddT
             - [ ] Remove Catalog.Clear (only used for tests)
             - [ ] Remove catalog.impl.Clear (only used for tests)
             - [ ] Unit tests for reworked catalog (i.e. implement simplified stub)
-            - [ ] Rename catalog in `impl`
+            - [x] Rename catalog in `impl`
 
 - [ ] Overview page 
       - [ ] Add event summary
