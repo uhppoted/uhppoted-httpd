@@ -4,7 +4,7 @@
       - [ ] Cleanup the oh-so-duplicated catalog code
             - [x] Genericize `controllers` table
             - [x] Fix ctypes lookup hack (or at least hide it decently)
-            - [ ] Genericize FindController
+            - [ ] Genericize FindController 
             - [ ] Set OID in catalog.NewT (and update PutT and DeleteT likewise)
             - [ ] Replace PutT + NewT with AddT
             - [ ] Remove Catalog.Clear (only used for tests)
@@ -15,7 +15,7 @@
 - [ ] Overview page 
       - [ ] Add event summary
       - [ ] Add log summary
-      - [ ] Rework controllers as 'blocks'
+      - (?) Rework controllers as 'blocks'
 
 - [ ] Verify bootstrap from scratch
       - [ ] Refresh overwrites in-progress card edits

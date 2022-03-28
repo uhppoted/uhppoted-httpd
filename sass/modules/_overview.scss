@@ -5,28 +5,28 @@
   height:100%;
 }
 
-th.name {
+div#controllers th.name {
   min-width: 90px;
   border-bottom: 1px;
 }
 
-th.ID {
+div#controllers th.ID {
   min-width: 88px;
 }
 
-th.datetime {
+div#controllers th.datetime {
   min-width: 176px;
 }
 
-th.cards {
+div#controllers th.cards {
   text-align: center; 
 }
 
-th.events {
+div#controllers th.events {
   text-align: center; 
 }
 
-th.doors {
+div#controllers th.doors {
 }
 
 tr.controller td {
@@ -67,3 +67,69 @@ tr.controller td input.door1,.door2,.door3,.door4 {
   pointer-events: none;
 }
 
+div#events {
+  margin-top: 16px;
+}
+
+div#events th.timestamp {
+  border-bottom: 1px;
+  white-space: nowrap;
+  min-width: 140px;
+}
+
+div#events th.deviceID {
+  min-width: 80px;
+}
+
+div#events th.eventType {
+  min-width: 56px;
+}
+
+div#events th.direction {
+  min-width: 16px;
+}
+
+div#events th.door {
+  min-width: 104px;
+}
+
+div#events th.cardno {
+  min-width: 56px;
+}
+
+div#events th.card {
+  min-width: 120px;
+}
+
+div#events th.access {
+  min-width: 60px;
+}
+
+div#events th.reason {
+  min-width: 100px;
+}
+
+div#logs {
+  margin-top: 16px;
+}
+
+div#logs th.timestamp {
+  border-bottom: 1px;
+  white-space: nowrap;
+  min-width: 140px;
+}
+
+div#logs th.uid {
+  white-space: nowrap;
+  min-width: 72px;
+}
+
+div#logs th.module {
+  white-space: nowrap;
+  min-width: 384px;
+}
+
+div#logs th.details {
+  white-space: nowrap;
+  min-width: 140px;
+}
