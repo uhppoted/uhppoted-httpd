@@ -143,16 +143,12 @@ func (cc *db) HasT(v any, oid schema.OID) bool {
 	return tt.Has(v, oid)
 }
 
-func (cc *db) FindController(deviceID uint32) schema.OID {
+func (cc *db) FindController(v catalog.CatalogController) schema.OID {
 	cc.guard.RLock()
 	defer cc.guard.RUnlock()
 
-	if deviceID != 0 {
-		for oid, v := range cc.controllers.(*controllers).m {
-			if v.ID == deviceID && !v.deleted {
-				return oid
-			}
-		}
+	if t, ok := cc.controllers.(*controllers); ok {
+		return t.Find(v)
 	}
 
 	return ""

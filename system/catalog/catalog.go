@@ -18,7 +18,7 @@ type Catalog interface {
 	PutV(schema.OID, schema.Suffix, interface{})
 
 	Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool)
-	FindController(deviceID uint32) schema.OID
+	FindController(v CatalogController) schema.OID
 
 	GetDoorDeviceID(door schema.OID) uint32
 	GetDoorDeviceDoor(door schema.OID) uint8
@@ -144,7 +144,7 @@ func Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OI
 }
 
 func FindController(deviceID uint32) schema.OID {
-	return catalog.FindController(deviceID)
+	return catalog.FindController(CatalogController{DeviceID: deviceID})
 }
 
 func GetDoors() []schema.OID {

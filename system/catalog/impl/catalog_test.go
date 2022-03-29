@@ -412,3 +412,39 @@ func TestClear(t *testing.T) {
 		t.Errorf("Catalog not updated:\n   expected:%#v\n   got:     %#v", &expected, &cc)
 	}
 }
+
+func TestFindController(t *testing.T) {
+	cc := db{
+		controllers: &controllers{
+			base: schema.ControllersOID,
+			m: map[schema.OID]*controller{
+				"0.2.1": &controller{
+					ID: 1234678,
+				},
+				"0.2.7": &controller{
+					ID: 23456789,
+				},
+				"0.2.89": &controller{
+					ID: 34567890,
+				},
+			},
+			last: 100,
+		},
+
+		interfaces: &table{},
+		doors:      &table{},
+		cards:      &table{},
+		groups:     &table{},
+		events:     &table{},
+		logs:       &table{},
+		users:      &table{},
+	}
+
+	if oid := cc.FindController(catalog.CatalogController{DeviceID: 23456789}); oid != "0.2.7" {
+		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.7", oid)
+	}
+
+	if oid := cc.FindController(catalog.CatalogController{DeviceID: 45678901}); oid != "" {
+		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "", oid)
+	}
+}

@@ -105,3 +105,29 @@ func TestControllerDelete(t *testing.T) {
 		}
 	}
 }
+
+func TestControllersFind(t *testing.T) {
+	tt := controllers{
+		base: schema.ControllersOID,
+		m: map[schema.OID]*controller{
+			"0.2.1": &controller{
+				ID: 1234678,
+			},
+			"0.2.7": &controller{
+				ID: 23456789,
+			},
+			"0.2.89": &controller{
+				ID: 34567890,
+			},
+		},
+		last: 100,
+	}
+
+	if oid := tt.Find(catalog.CatalogController{DeviceID: 23456789}); oid != "0.2.7" {
+		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.7", oid)
+	}
+
+	if oid := tt.Find(catalog.CatalogController{DeviceID: 45678901}); oid != "" {
+		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "", oid)
+	}
+}
