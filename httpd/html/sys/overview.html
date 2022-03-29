@@ -173,9 +173,9 @@
               <thead>
                 <tr>
                   <th class="colheader rowheader timestamp">Timestamp</th>
-                  <th class="colheader deviceID" colspan="2">Device</th>
+                  <th class="colheader deviceID" >Controller</th>
                   <th class="colheader eventType">Event</th>
-                  <th class="colheader door" colspan="3">Door</th>
+                  <th class="colheader door">Door</th>
                   <th class="colheader card" colspan="2">Card</th>
                   <th class="colheader access">Access</th>
                   <th class="colheader reason">Reason</th>
@@ -185,6 +185,100 @@
               <tbody></tbody>
               <tfoot></tfoot>
             </table>
+
+            <template id="event">
+              <td class="rowheader" style="display:flex; flex-direction:row;">
+                <input class="field timestamp" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field device" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field eventType" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field door" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field cardno" 
+                      type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field card" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field access" 
+                      type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field reason" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <!-- 'padding' column (CSS: tr::last-child) -->
+              <td class="padding"></td>
+            </template>
+
           </div>
 
           <!-- LOGS -->

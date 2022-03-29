@@ -69,44 +69,90 @@ tr.controller td input.door1,.door2,.door3,.door4 {
 
 div#events {
   margin-top: 16px;
-}
 
-div#events th.timestamp {
-  border-bottom: 1px;
-  white-space: nowrap;
-  min-width: 140px;
-}
+  th.timestamp {
+    border-bottom: 1px;
+    white-space: nowrap;
+    min-width: 140px; 
+  }
 
-div#events th.deviceID {
-  min-width: 80px;
-}
+  th.deviceID {
+    min-width: 80px;
+  }
 
-div#events th.eventType {
-  min-width: 56px;
-}
+  th.eventType {
+    min-width: 56px;
+  }
 
-div#events th.direction {
-  min-width: 16px;
-}
+  th.direction {
+    min-width: 16px;
+  }
 
-div#events th.door {
-  min-width: 104px;
-}
+  th.door {
+    min-width: 104px;
+  }
 
-div#events th.cardno {
-  min-width: 56px;
-}
+  th.cardno {
+    min-width: 56px;
+  }
 
-div#events th.card {
-  min-width: 120px;
-}
+  th.card {
+    min-width: 120px;
+  }
 
-div#events th.access {
-  min-width: 60px;
-}
+  th.access {
+    min-width: 60px;
+  }
 
-div#events th.reason {
-  min-width: 100px;
+  th.reason {
+    min-width: 100px;
+  }
+
+  td input.timestamp {
+    width: 140px;
+    height: 18px;
+    font-size: 0.88em;
+  }
+
+  td input.device {
+    width: 72px;
+    font-size: 1.1em;
+    font-variant: small-caps;
+  }
+
+  td input.eventType {
+    width: 56px;
+    font-size: 1.1em;
+    font-variant: small-caps;
+  }
+
+  td input.door {
+    width: 96px;
+    font-size: 1.1em;
+    font-variant: small-caps;
+  }
+
+  td input.cardno {
+    width: 56px;
+    font-size: 0.88em;
+  }
+
+  td input.card {
+    width: 120px;
+    font-size: 1.1em;
+    font-variant: small-caps;
+  }
+
+  td input.access {
+    width: 60px;
+    font-size: 1.1em;
+    font-variant: small-caps;
+  }
+
+  td input.reason {
+    font-size: 1.1em;
+    font-variant: small-caps;
+  }
 }
 
 div#logs {

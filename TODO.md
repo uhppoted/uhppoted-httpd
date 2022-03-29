@@ -9,9 +9,11 @@
             - [ ] Unit tests for reworked catalog (i.e. implement simplified stub)
 
 - [ ] Overview page 
-      - [ ] Add event summary
+      - [x] Add event summary
+            - [ ] Make sure table *replaces* instead of *growing* for new events
       - [ ] Add log summary
-      - [ ] Make layout a bit less basic
+      - [ ] Seperate message + refresh from controllers table
+      - (?) Make layout a bit less basic
 
 - [ ] Verify bootstrap from scratch
       - [ ] Refresh overwrites in-progress card edits
