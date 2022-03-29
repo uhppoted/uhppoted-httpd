@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
@@ -157,39 +158,44 @@ func (cc *db) FindController(deviceID uint32) schema.OID {
 	return ""
 }
 
-// TODO Ewwww - but there doesn't seem to be an elegant way with the
-//              current state of Go generics :-(
+// NTS: There really doesn't really seem to be a way to do this with Go generics
+//
+// Ref. https://go.googlesource.com/proposal/+/refs/heads/master/design/43651-type-parameters.md#methods-may-not-take-additional-type-arguments
+type tableType interface {
+	TypeOf() catalog.Type
+}
+
 func tableForT(cc *db, v any) Table {
-	t := fmt.Sprintf("%T", v)
+	if t, ok := v.(tableType); ok {
+		switch t.TypeOf() {
 
-	switch t {
-	case "catalog.CatalogInterface":
-		return cc.interfaces
+		case catalog.TInterface:
+			return cc.interfaces
 
-	case "catalog.CatalogController":
-		return cc.controllers
+		case catalog.TController:
+			return cc.controllers
 
-	case "catalog.CatalogDoor":
-		return cc.doors
+		case catalog.TDoor:
+			return cc.doors
 
-	case "catalog.CatalogCard":
-		return cc.cards
+		case catalog.TCard:
+			return cc.cards
 
-	case "catalog.CatalogGroup":
-		return cc.groups
+		case catalog.TGroup:
+			return cc.groups
 
-	case "catalog.CatalogEvent":
-		return cc.events
+		case catalog.TEvent:
+			return cc.events
 
-	case "catalog.CatalogLogEntry":
-		return cc.logs
+		case catalog.TLogEntry:
+			return cc.logs
 
-	case "catalog.CatalogUser":
-		return cc.users
-
-	default:
-		return nil
+		case catalog.TUser:
+			return cc.users
+		}
 	}
+
+	return nil
 }
 
 func tableFor(cc *db, oid schema.OID) Table {
@@ -221,33 +227,4 @@ func tableFor(cc *db, oid schema.OID) Table {
 	default:
 		return nil
 	}
-}
-
-// TODO REMOVE WHEN MIGRATION TO Go GENERICS IS DONE
-type Type int
-
-const (
-	TUnknown Type = iota
-	TInterface
-	TController
-	TDoor
-	TCard
-	TGroup
-	TEvent
-	TLog
-	TUser
-)
-
-func (t Type) String() string {
-	return []string{
-		"unknown",
-		"interface",
-		"controller",
-		"door",
-		"card",
-		"group",
-		"event",
-		"log",
-		"user",
-	}[t]
 }

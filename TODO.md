@@ -2,20 +2,16 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
-            - [x] Genericize `controllers` table
-            - [x] Fix ctypes lookup hack (or at least hide it decently)
+            - [x] CatalogXXX.Typeof()
             - [ ] Genericize FindController 
-            - [ ] Set OID in catalog.NewT (and update PutT and DeleteT likewise)
-            - [ ] Replace PutT + NewT with AddT
             - [ ] Remove Catalog.Clear (only used for tests)
             - [ ] Remove catalog.impl.Clear (only used for tests)
             - [ ] Unit tests for reworked catalog (i.e. implement simplified stub)
-            - [x] Rename catalog in `impl`
 
 - [ ] Overview page 
       - [ ] Add event summary
       - [ ] Add log summary
-      - (?) Rework controllers as 'blocks'
+      - [ ] Make layout a bit less basic
 
 - [ ] Verify bootstrap from scratch
       - [ ] Refresh overwrites in-progress card edits
