@@ -1,10 +1,9 @@
 ## v0.7.x
 
-- [ ] OIDs:
-      - [ ] Cleanup the oh-so-duplicated catalog code
+- [x] OIDs:
+      - [x] Cleanup the oh-so-duplicated catalog code
             - [x] Remove Catalog.Clear (only used for tests)
             - [x] Remove catalog.impl.Clear (only used for tests)
-            - [ ] Unit tests for reworked catalog (i.e. implement simplified stub)
 
 - [ ] Overview page 
       - [x] Add event summary
