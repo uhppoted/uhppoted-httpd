@@ -14,7 +14,7 @@ func TestNewInterface(t *testing.T) {
 		catalog.CatalogInterface
 	}
 
-	Catalog().Clear()
+	db := NewCatalog()
 
 	defer func() {
 		if r := recover(); r == nil {
@@ -22,7 +22,7 @@ func TestNewInterface(t *testing.T) {
 		}
 	}()
 
-	Catalog().NewT(lan{}.CatalogInterface)
+	db.NewT(lan{}.CatalogInterface)
 }
 
 func TestNewController(t *testing.T) {
@@ -30,7 +30,7 @@ func TestNewController(t *testing.T) {
 		catalog.CatalogController
 	}
 
-	Catalog().Clear()
+	db := NewCatalog()
 
 	p := controller{
 		CatalogController: catalog.CatalogController{
@@ -50,15 +50,15 @@ func TestNewController(t *testing.T) {
 		},
 	}
 
-	if oid := Catalog().NewT(p.CatalogController); oid != "0.2.1" {
+	if oid := db.NewT(p.CatalogController); oid != "0.2.1" {
 		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.1", oid)
 	}
 
-	if oid := Catalog().NewT(q.CatalogController); oid != "0.2.2" {
+	if oid := db.NewT(q.CatalogController); oid != "0.2.2" {
 		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.2", oid)
 	}
 
-	if oid := Catalog().NewT(r.CatalogController); oid != "0.2.1" {
+	if oid := db.NewT(r.CatalogController); oid != "0.2.1" {
 		t.Errorf("Incorrect controller OID - expected:%v, got:%v", "0.2.1", oid)
 	}
 }
@@ -125,9 +125,8 @@ func TestNewCard(t *testing.T) {
 		catalog.CatalogCard
 	}
 
-	Catalog().Clear()
-
-	oid := Catalog().NewT(card{}.CatalogCard)
+	db := NewCatalog()
+	oid := db.NewT(card{}.CatalogCard)
 
 	if oid != "0.4.1" {
 		t.Errorf("Incorrect card OID - expected:%v, got:%v", "0.4.1", oid)
@@ -139,9 +138,8 @@ func TestNewGroup(t *testing.T) {
 		catalog.CatalogGroup
 	}
 
-	Catalog().Clear()
-
-	oid := Catalog().NewT(group{}.CatalogGroup)
+	db := NewCatalog()
+	oid := db.NewT(group{}.CatalogGroup)
 
 	if oid != "0.5.1" {
 		t.Errorf("Incorrect group OID - expected:%v, got:%v", "0.5.1", oid)
@@ -188,9 +186,8 @@ func TestNewLogEntry(t *testing.T) {
 		catalog.CatalogLogEntry
 	}
 
-	Catalog().Clear()
-
-	oid := Catalog().NewT(logentry{}.CatalogLogEntry)
+	db := NewCatalog()
+	oid := db.NewT(logentry{}.CatalogLogEntry)
 
 	if oid != "0.7.1" {
 		t.Errorf("Incorrect log entry OID - expected:%v, got:%v", "0.7.1", oid)
@@ -202,9 +199,8 @@ func TestNewUser(t *testing.T) {
 		catalog.CatalogUser
 	}
 
-	Catalog().Clear()
-
-	oid := Catalog().NewT(user{}.CatalogUser)
+	db := NewCatalog()
+	oid := db.NewT(user{}.CatalogUser)
 
 	if oid != "0.8.1" {
 		t.Errorf("Incorrect user OID - expected:%v, got:%v", "0.8.1", oid)
@@ -324,92 +320,6 @@ func TestDeleteT(t *testing.T) {
 
 	if !reflect.DeepEqual(&cc, &expected) {
 		t.Errorf("Catalog not updated:\n   expected:%v\n   got:     %v", &expected, &cc)
-	}
-}
-
-func TestClear(t *testing.T) {
-	cc := db{
-		interfaces: &table{
-			base: schema.InterfacesOID,
-			m:    map[schema.OID]*record{"0.1.1": &record{}},
-			last: 101,
-		},
-		controllers: &controllers{
-			base: schema.ControllersOID,
-			m:    map[schema.OID]*controller{"0.2.1": &controller{}},
-			last: 102,
-		},
-		doors: &table{
-			base: schema.DoorsOID,
-			m:    map[schema.OID]*record{"0.3.1": &record{}},
-			last: 103,
-		},
-		cards: &table{
-			base: schema.CardsOID,
-			m:    map[schema.OID]*record{"0.4.1": &record{}},
-			last: 104,
-		},
-		groups: &table{
-			base: schema.GroupsOID,
-			m:    map[schema.OID]*record{"0.5.1": &record{}},
-			last: 105,
-		},
-		events: &table{
-			base: schema.EventsOID,
-			m:    map[schema.OID]*record{"0.6.1": &record{}},
-			last: 106,
-		},
-		logs: &table{
-			base: schema.LogsOID,
-			m:    map[schema.OID]*record{"0.7.1": &record{}},
-			last: 107,
-		},
-		users: &table{
-			base: schema.UsersOID,
-			m:    map[schema.OID]*record{"0.8.1": &record{}},
-			last: 108,
-		},
-	}
-
-	expected := db{
-		interfaces: &table{
-			base: schema.InterfacesOID,
-			m:    map[schema.OID]*record{},
-			last: 0},
-		controllers: &controllers{
-			base: schema.ControllersOID,
-			m:    map[schema.OID]*controller{},
-			last: 0},
-		doors: &table{
-			base: schema.DoorsOID,
-			m:    map[schema.OID]*record{},
-			last: 0},
-		cards: &table{
-			base: schema.CardsOID,
-			m:    map[schema.OID]*record{},
-			last: 0},
-		groups: &table{
-			base: schema.GroupsOID,
-			m:    map[schema.OID]*record{},
-			last: 0},
-		events: &table{
-			base: schema.EventsOID,
-			m:    map[schema.OID]*record{},
-			last: 0},
-		logs: &table{
-			base: schema.LogsOID,
-			m:    map[schema.OID]*record{},
-			last: 0},
-		users: &table{
-			base: schema.UsersOID,
-			m:    map[schema.OID]*record{},
-			last: 0},
-	}
-
-	cc.Clear()
-
-	if !reflect.DeepEqual(&cc, &expected) {
-		t.Errorf("Catalog not updated:\n   expected:%#v\n   got:     %#v", &expected, &cc)
 	}
 }
 

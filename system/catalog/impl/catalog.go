@@ -20,63 +20,42 @@ type db struct {
 	guard       sync.RWMutex
 }
 
-var dbx = db{
-	controllers: &controllers{
-		base: schema.ControllersOID,
-		m:    map[schema.OID]*controller{},
-	},
+func NewCatalog() *db {
+	return &db{
+		controllers: &controllers{
+			base: schema.ControllersOID,
+			m:    map[schema.OID]*controller{},
+		},
 
-	interfaces: &table{
-		base: schema.InterfacesOID,
-		m:    map[schema.OID]*record{},
-	},
-	doors: &table{
-		base: schema.DoorsOID,
-		m:    map[schema.OID]*record{},
-	},
-	cards: &table{
-		base: schema.CardsOID,
-		m:    map[schema.OID]*record{},
-	},
-	groups: &table{
-		base: schema.GroupsOID,
-		m:    map[schema.OID]*record{},
-	},
-	events: &table{
-		base: schema.EventsOID,
-		m:    map[schema.OID]*record{},
-	},
-	logs: &table{
-		base: schema.LogsOID,
-		m:    map[schema.OID]*record{},
-	},
-	users: &table{
-		base: schema.UsersOID,
-		m:    map[schema.OID]*record{},
-	},
-}
-
-func Catalog() *db {
-	return &dbx
-}
-
-func (cc *db) Clear() {
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
-
-	cc.interfaces.Clear()
-	cc.controllers.Clear()
-	cc.doors.Clear()
-	cc.cards.Clear()
-	cc.groups.Clear()
-	cc.events.Clear()
-	cc.logs.Clear()
-	cc.users.Clear()
-
-	cache.guard.Lock()
-	defer cache.guard.Unlock()
-
-	cache.cache = map[schema.OID]value{}
+		interfaces: &table{
+			base: schema.InterfacesOID,
+			m:    map[schema.OID]*record{},
+		},
+		doors: &table{
+			base: schema.DoorsOID,
+			m:    map[schema.OID]*record{},
+		},
+		cards: &table{
+			base: schema.CardsOID,
+			m:    map[schema.OID]*record{},
+		},
+		groups: &table{
+			base: schema.GroupsOID,
+			m:    map[schema.OID]*record{},
+		},
+		events: &table{
+			base: schema.EventsOID,
+			m:    map[schema.OID]*record{},
+		},
+		logs: &table{
+			base: schema.LogsOID,
+			m:    map[schema.OID]*record{},
+		},
+		users: &table{
+			base: schema.UsersOID,
+			m:    map[schema.OID]*record{},
+		},
+	}
 }
 
 func (cc *db) NewT(v any) schema.OID {

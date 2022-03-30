@@ -200,7 +200,7 @@ type serializable interface {
 }
 
 func Init(cfg config.Config, conf string, debug bool) error {
-	catalog.Init(memdb.Catalog())
+	catalog.Init(memdb.NewCatalog())
 
 	sys.interfaces.file = cfg.HTTPD.System.Interfaces
 	sys.controllers.file = cfg.HTTPD.System.Controllers

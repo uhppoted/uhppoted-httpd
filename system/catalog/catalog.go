@@ -5,8 +5,6 @@ import (
 )
 
 type Catalog interface {
-	Clear()
-
 	NewT(any) schema.OID
 	PutT(any, schema.OID)
 	DeleteT(any, schema.OID)
@@ -90,10 +88,6 @@ func NewObject2(oid schema.OID, suffix schema.Suffix, value interface{}) schema.
 		OID:   oid.Append(suffix),
 		Value: value,
 	}
-}
-
-func Clear() {
-	catalog.Clear()
 }
 
 func NewT[T CatalogType](v T) schema.OID {

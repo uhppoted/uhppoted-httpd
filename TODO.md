@@ -2,10 +2,8 @@
 
 - [ ] OIDs:
       - [ ] Cleanup the oh-so-duplicated catalog code
-            - [x] CatalogXXX.Typeof()
-            - [x] Genericize FindController 
-            - [ ] Remove Catalog.Clear (only used for tests)
-            - [ ] Remove catalog.impl.Clear (only used for tests)
+            - [x] Remove Catalog.Clear (only used for tests)
+            - [x] Remove catalog.impl.Clear (only used for tests)
             - [ ] Unit tests for reworked catalog (i.e. implement simplified stub)
 
 - [ ] Overview page 

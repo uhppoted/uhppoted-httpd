@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-httpd/commands"
 	"github.com/uhppoted/uhppoted-lib/command"
-	"os"
 )
 
 var cli = []uhppoted.Command{

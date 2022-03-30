@@ -144,7 +144,7 @@ func init() {
 }
 
 func TestLookupDefaultDeviceName(t *testing.T) {
-	catalog.Init(memdb.Catalog())
+	catalog.Init(memdb.NewCatalog())
 
 	sys.logs.Logs = logs.NewLogs()
 
@@ -157,7 +157,7 @@ func TestLookupDefaultDeviceName(t *testing.T) {
 }
 
 func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
-	catalog.Init(memdb.Catalog())
+	catalog.Init(memdb.NewCatalog())
 
 	h := []logs.LogEntry{}
 	for _, v := range history {

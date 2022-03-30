@@ -117,8 +117,3 @@ func (t *controllers) Find(v any) schema.OID {
 
 	return ""
 }
-
-func (t *controllers) Clear() {
-	t.m = map[schema.OID]*controller{}
-	t.last = 0
-}

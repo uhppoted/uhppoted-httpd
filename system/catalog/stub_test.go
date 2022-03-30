@@ -7,9 +7,6 @@ import (
 type stub struct {
 }
 
-func (s stub) Clear() {
-}
-
 func (s stub) NewT(any) schema.OID {
 	return ""
 }

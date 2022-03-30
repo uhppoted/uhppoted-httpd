@@ -37,7 +37,7 @@ func (d *dbc) SetPassword(uid, pwd, role string) error {
 }
 
 func TestCardAdd(t *testing.T) {
-	catalog.Init(memdb.Catalog())
+	catalog.Init(memdb.NewCatalog())
 
 	placeholder := Card{
 		CatalogCard: catalog.CatalogCard{
@@ -54,7 +54,6 @@ func TestCardAdd(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid, placeholder)
 
-	catalog.Clear()
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
 	r, err := cards.UpdateByOID(nil, "<new>", "", nil)
@@ -71,13 +70,12 @@ func TestCardAdd(t *testing.T) {
 }
 
 func TestCardAddWithAuth(t *testing.T) {
-	catalog.Init(memdb.Catalog())
+	catalog.Init(memdb.NewCatalog())
 
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid)
 	auth := stub{}
 
-	catalog.Clear()
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
 	r, err := cards.UpdateByOID(&auth, "<new>", "", nil)
@@ -93,7 +91,7 @@ func TestCardAddWithAuth(t *testing.T) {
 }
 
 func TestCardAddWithAuditTrail(t *testing.T) {
-	catalog.Init(memdb.Catalog())
+	catalog.Init(memdb.NewCatalog())
 
 	trail := dbc{}
 
@@ -134,7 +132,6 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 
 	cards := makeCards(hagrid)
 
-	catalog.Clear()
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
 	r, err := cards.UpdateByOID(nil, "<new>", "", &trail)
@@ -410,7 +407,7 @@ func TestCardHolderDeleteWithAuth(t *testing.T) {
 }
 
 func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
-	catalog.Init(memdb.Catalog())
+	catalog.Init(memdb.NewCatalog())
 
 	trail := dbc{}
 
@@ -468,7 +465,6 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 
 	cards := makeCards(hagrid, dobby)
 
-	catalog.Clear()
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 	catalog.PutT(dobby.CatalogCard, dobby.OID)
 

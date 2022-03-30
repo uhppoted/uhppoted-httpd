@@ -8,13 +8,13 @@ import (
 )
 
 func TestGetDoorDeviceID(t *testing.T) {
-	cc := Catalog()
+	db := NewCatalog()
 	door := schema.OID("0.3.5")
 
-	cc.PutT(cat.CatalogController{DeviceID: 405419896}, "0.2.7")
-	cc.PutV("0.2.7", schema.ControllerDoor3, door)
+	db.PutT(cat.CatalogController{DeviceID: 405419896}, "0.2.7")
+	db.PutV("0.2.7", schema.ControllerDoor3, door)
 
-	d := cc.GetDoorDeviceID(door)
+	d := db.GetDoorDeviceID(door)
 
 	if d != 405419896 {
 		t.Errorf("Incorrect device ID - expected:%v, got:%v", 405419896, d)
@@ -22,13 +22,13 @@ func TestGetDoorDeviceID(t *testing.T) {
 }
 
 func TestGetDoorDeviceDoor(t *testing.T) {
-	cc := Catalog()
+	db := NewCatalog()
 	door := schema.OID("0.3.5")
 
-	cc.PutT(cat.CatalogController{DeviceID: 405419896}, "0.2.7")
-	cc.PutV("0.2.7", schema.ControllerDoor3, door)
+	db.PutT(cat.CatalogController{DeviceID: 405419896}, "0.2.7")
+	db.PutV("0.2.7", schema.ControllerDoor3, door)
 
-	d := cc.GetDoorDeviceDoor(door)
+	d := db.GetDoorDeviceDoor(door)
 
 	if d != 3 {
 		t.Errorf("Incorrect device door - expected:%v, got:%v", 3, d)

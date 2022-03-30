@@ -15,7 +15,6 @@ type Table interface {
 	Delete(schema.OID)
 	List() []schema.OID
 	Has(v any, oid schema.OID) bool
-	Clear()
 }
 
 type table struct {
@@ -95,9 +94,4 @@ func (t *table) Has(v any, oid schema.OID) bool {
 	}
 
 	return false
-}
-
-func (t *table) Clear() {
-	t.m = map[schema.OID]*record{}
-	t.last = 0
 }

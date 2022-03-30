@@ -17,7 +17,7 @@ import (
 )
 
 func TestDoorAsObjects(t *testing.T) {
-	catalog.Init(memdb.Catalog())
+	catalog.Init(memdb.NewCatalog())
 
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
