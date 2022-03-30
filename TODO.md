@@ -8,10 +8,9 @@
 - [ ] Overview page 
       - [x] Add event summary
             - [x] Not sorting new records
-            - [ ] Showing unnecessary vertical scroll bar
-      - [ ] Add log summary
+      - [x] Add log summary
+      - [ ] Optimise fetch
       - [ ] Seperate message + refresh from controllers table
-      - (?) Make layout a bit less basic
 
 - [ ] Verify bootstrap from scratch
       - [ ] Refresh overwrites in-progress card edits

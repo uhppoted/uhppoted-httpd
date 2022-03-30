@@ -731,54 +731,44 @@ div#controllers th.name {
   min-width: 90px;
   border-bottom: 1px;
 }
-
 div#controllers th.ID {
   min-width: 88px;
 }
-
 div#controllers th.datetime {
   min-width: 176px;
 }
-
 div#controllers th.cards {
   text-align: center;
 }
-
 div#controllers th.events {
   text-align: center;
 }
-
-tr.controller td input.name {
+div#controllers tr.controller td input.name {
   margin-top: 5px;
   margin-bottom: 5px;
   width: 132px;
   pointer-events: none;
 }
-
-tr.controller td input.ID {
+div#controllers tr.controller td input.ID {
   width: 88px;
   pointer-events: none;
   -moz-appearance: textfield;
 }
-
-tr.controller td input.datetime {
+div#controllers tr.controller td input.datetime {
   min-width: 176px;
   pointer-events: none;
 }
-
-tr.controller td input.cards {
+div#controllers tr.controller td input.cards {
   width: 72px;
   text-align: center;
   pointer-events: none;
 }
-
-tr.controller td input.events {
+div#controllers tr.controller td input.events {
   width: 72px;
   text-align: center;
   pointer-events: none;
 }
-
-tr.controller td input.door1, .door2, .door3, .door4 {
+div#controllers tr.controller td input.door1, div#controllers .door2, div#controllers .door3, div#controllers .door4 {
   width: 72px;
   pointer-events: none;
 }
@@ -845,7 +835,7 @@ div#events td input.card {
   font-variant: small-caps;
 }
 div#events td input.access {
-  width: 60px;
+  width: 72px;
   font-size: 1.1em;
   font-variant: small-caps;
 }
@@ -857,28 +847,57 @@ div#events td input.reason {
 div#logs {
   margin-top: 16px;
 }
-
 div#logs th.timestamp {
   border-bottom: 1px;
   white-space: nowrap;
   min-width: 140px;
 }
-
 div#logs th.uid {
   white-space: nowrap;
   min-width: 72px;
 }
-
-div#logs th.module {
-  white-space: nowrap;
-  min-width: 384px;
-}
-
 div#logs th.details {
   white-space: nowrap;
   min-width: 140px;
 }
+div#logs td input.timestamp {
+  width: 140px;
+  height: 18px;
+  font-size: 0.88em;
+}
+div#logs td input.uid {
+  width: 72px;
+  white-space: nowrap;
+  font-variant: small-caps;
+  font-size: 1.2em;
+}
+div#logs td input.details {
+  width: 90%;
+  font-style: italic;
+}
 
+@-moz-document url-prefix("") {
+  td input.field {
+    font-family: "Arial", san-serif;
+    font-size: 1em;
+  }
+
+  td input.access {
+    font-size: 0.88em;
+  }
+
+  td input.timestamp {
+    font-size: 0.88em;
+  }
+
+  td input.uid {
+    font-size: 0.88em;
+  }
+
+  td input.details {
+    font-size: 0.9em;
+  }
+}
 .combobox ul {
   display: none;
   background: #93a1a1;

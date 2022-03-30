@@ -288,14 +288,49 @@
               <thead>
                 <tr>
                   <th class="colheader rowheader timestamp">Timestamp</th>
-                  <th class="colheader uid">User ID</th>
-                  <th class="colheader module" colspan="4">Item</th>
+                  <th class="colheader uid">User</th>
                   <th class="colheader details">Details</th>
                 </tr>
               </thead>
               <tbody></tbody>
               <tfoot></tfoot>
             </table>
+            
+            <template id="entry">
+                <td class="rowheader">
+                  <input class="field timestamp" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field uid" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field details" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+            </template>
+
           </div>
 
         </div>

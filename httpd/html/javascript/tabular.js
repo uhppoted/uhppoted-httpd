@@ -33,7 +33,7 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
 
 const pages = {
   overview: {
-    get: ['/controllers', '/doors', '/events'],
+    get: ['/controllers', '/doors', '/events', '/logs'],
     refreshed: function () {
       overview.refreshed()
     }
