@@ -58,15 +58,15 @@ function refreshLogs () {
   })
 
   // sorts the table rows by 'timestamp'
-    const table = document.querySelector('#logs table')
-    const tbody = table.tBodies[0]
+  const table = document.querySelector('#logs table')
+  const tbody = table.tBodies[0]
 
-    tbody.sort((p, q) => {
-      const u = DB.logs().get(p.dataset.oid)
-      const v = DB.logs().get(q.dataset.oid)
+  tbody.sort((p, q) => {
+    const u = DB.logs().get(p.dataset.oid)
+    const v = DB.logs().get(q.dataset.oid)
 
-      return v.timestamp.localeCompare(u.timestamp)
-    })
+    return v.timestamp.localeCompare(u.timestamp)
+  })
 }
 
 function realizeControllers (controllers) {

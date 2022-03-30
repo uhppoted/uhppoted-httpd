@@ -9,8 +9,8 @@
       - [x] Add event summary
             - [x] Not sorting new records
       - [x] Add log summary
+      - [x] Seperate message + refresh from controllers table
       - [ ] Optimise fetch
-      - [ ] Seperate message + refresh from controllers table
 
 - [ ] Verify bootstrap from scratch
       - [ ] Refresh overwrites in-progress card edits
