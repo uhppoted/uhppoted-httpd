@@ -5,6 +5,7 @@ import { schema } from './schema.js'
 const pagesize = 5
 
 export function refreshed () {
+  console.log('refreshed')
   refreshControllers()
   refreshEvents()
 }
@@ -31,6 +32,16 @@ function refreshEvents () {
 
   events.forEach(o => {
     updateEvent(o.OID, o)
+  })
+
+  const table = document.querySelector('#events table')
+  const tbody = table.tBodies[0]
+
+  tbody.sort((p, q) => {
+    const u = DB.events().get(p.dataset.oid)
+    const v = DB.events().get(q.dataset.oid)
+
+    return v.timestamp.localeCompare(u.timestamp)
   })
 }
 
@@ -156,12 +167,9 @@ function addEvent (oid) {
 
     const fields = [
       { suffix: 'timestamp', oid: `${oid}${schema.events.timestamp}`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
-      { suffix: 'deviceID', oid: `${oid}${schema.events.deviceID}`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
       { suffix: 'device', oid: `${oid}${schema.events.deviceName}`, selector: 'td input.device', flag: 'td img.device' },
       { suffix: 'eventType', oid: `${oid}${schema.events.type}`, selector: 'td input.eventType', flag: 'td img.eventType' },
-      { suffix: 'doorid', oid: `${oid}${schema.events.door}`, selector: 'td input.doorid', flag: 'td img.doorid' },
       { suffix: 'door', oid: `${oid}${schema.events.doorName}`, selector: 'td input.door', flag: 'td img.door' },
-      { suffix: 'direction', oid: `${oid}${schema.events.direction}`, selector: 'td input.direction', flag: 'td img.direction' },
       { suffix: 'cardno', oid: `${oid}${schema.events.card}`, selector: 'td input.cardno', flag: 'td img.cardno' },
       { suffix: 'card', oid: `${oid}${schema.events.cardName}`, selector: 'td input.card', flag: 'td img.card' },
       { suffix: 'access', oid: `${oid}${schema.events.granted}`, selector: 'td input.access', flag: 'td img.access' },

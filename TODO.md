@@ -7,7 +7,8 @@
 
 - [ ] Overview page 
       - [x] Add event summary
-            - [ ] Make sure table *replaces* instead of *growing* for new events
+            - [x] Not sorting new records
+            - [ ] Showing unnecessary vertical scroll bar
       - [ ] Add log summary
       - [ ] Seperate message + refresh from controllers table
       - (?) Make layout a bit less basic
