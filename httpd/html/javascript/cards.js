@@ -5,6 +5,7 @@ import { schema } from './schema.js'
 const pagesize = 5
 
 export function refreshed () {
+  console.log('refreshed')
   const cards = [...DB.cards.values()]
     .filter(c => alive(c))
     .sort((p, q) => p.created.localeCompare(q.created))
@@ -33,15 +34,19 @@ export function refreshed () {
 
   // sorts the table rows by 'created'
   const g = function () {
-    const table = document.querySelector('#cards table')
-    const tbody = table.tBodies[0]
+    const focused = document.activeElement
 
-    tbody.sort((p, q) => {
-      const u = DB.cards.get(p.dataset.oid)
-      const v = DB.cards.get(q.dataset.oid)
+    if (!focused || focused.nodeName !== 'INPUT') {
+      const table = document.querySelector('#cards table')
+      const tbody = table.tBodies[0]
 
-      return u.created.localeCompare(v.created)
-    })
+      tbody.sort((p, q) => {
+        const u = DB.cards.get(p.dataset.oid)
+        const v = DB.cards.get(q.dataset.oid)
+
+        return u.created.localeCompare(v.created)
+      })
+    }
   }
 
   const chunk = offset => new Promise(resolve => {

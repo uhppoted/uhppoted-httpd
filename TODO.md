@@ -6,10 +6,11 @@
 
 - [ ] Verify bootstrap from scratch
       - [x] Setting controller address 'blanks' it out before it gets updated
-      - [ ] Refresh overwrites in-progress card edits
+      - [x] Card field being edited loses focus on refresh
       - [ ] 'Controller has been deleted' message when another field (e.g. address) is also 
             changed at the same time
             - maybe just ignore (?)
+            - only really a problem when somebody else deletes an object you are editing
 
 - [ ] Move delete to UI (PUT OID + 'deleted' ?)
 - [ ] Events should use local index rather than controller (optionally ?)

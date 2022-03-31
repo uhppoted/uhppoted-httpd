@@ -33,15 +33,19 @@ export function refreshed () {
 
   // sorts the table rows by 'created'
   const g = function () {
-    const table = document.querySelector('#users table')
-    const tbody = table.tBodies[0]
+    const focused = document.activeElement
 
-    tbody.sort((p, q) => {
-      const u = DB.users().get(p.dataset.oid)
-      const v = DB.users().get(q.dataset.oid)
+    if (!focused || focused.nodeName !== 'INPUT') {
+      const table = document.querySelector('#users table')
+      const tbody = table.tBodies[0]
 
-      return u.created.localeCompare(v.created)
-    })
+      tbody.sort((p, q) => {
+        const u = DB.users().get(p.dataset.oid)
+        const v = DB.users().get(q.dataset.oid)
+
+        return u.created.localeCompare(v.created)
+      })
+    }
   }
 
   const chunk = offset => new Promise(resolve => {

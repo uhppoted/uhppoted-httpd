@@ -33,15 +33,19 @@ export function refreshed () {
 
   // sorts the table rows by 'timestamp'
   const g = function () {
-    const table = document.querySelector('#events table')
-    const tbody = table.tBodies[0]
+    const focused = document.activeElement
 
-    tbody.sort((p, q) => {
-      const u = DB.events().get(p.dataset.oid)
-      const v = DB.events().get(q.dataset.oid)
+    if (!focused || focused.nodeName !== 'INPUT') {
+      const table = document.querySelector('#events table')
+      const tbody = table.tBodies[0]
 
-      return v.timestamp.localeCompare(u.timestamp)
-    })
+      tbody.sort((p, q) => {
+        const u = DB.events().get(p.dataset.oid)
+        const v = DB.events().get(q.dataset.oid)
+
+        return v.timestamp.localeCompare(u.timestamp)
+      })
+    }
   }
 
   // hides/shows the 'more' button
