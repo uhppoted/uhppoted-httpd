@@ -21,6 +21,7 @@ const ControllerDeleted = schema.Deleted
 const ControllerTouched = schema.Touched
 const ControllerName = schema.ControllerName
 const ControllerDeviceID = schema.ControllerDeviceID
+const ControllerEndpoint = schema.ControllerEndpoint
 const ControllerEndpointStatus = schema.ControllerEndpointStatus
 const ControllerEndpointAddress = schema.ControllerEndpointAddress
 const ControllerEndpointConfigured = schema.ControllerEndpointConfigured

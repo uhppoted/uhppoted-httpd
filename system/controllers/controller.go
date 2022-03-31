@@ -451,7 +451,11 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		} else {
 			c.IP = addr
 			c.unconfigured = false
-			list = append(list, kv{".3", c.IP})
+
+			list = append(list, kv{ControllerEndpointAddress, addr})
+			list = append(list, kv{ControllerEndpointConfigured, addr})
+			list = append(list, kv{ControllerEndpointStatus, types.StatusUncertain})
+
 			c.updated(uid, "address", clone.IP, c.IP, dbc)
 		}
 

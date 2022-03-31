@@ -5,8 +5,11 @@
       - [x] Update auth.json in daemonize
 
 - [ ] Verify bootstrap from scratch
+      - [x] Setting controller address 'blanks' it out before it gets updated
       - [ ] Refresh overwrites in-progress card edits
-      - [ ] Setting controller address 'blanks' it out before it gets updated
+      - [ ] 'Controller has been deleted' message when another field (e.g. address) is also 
+            changed at the same time
+            - maybe just ignore (?)
 
 - [ ] Move delete to UI (PUT OID + 'deleted' ?)
 - [ ] Events should use local index rather than controller (optionally ?)
@@ -24,6 +27,7 @@
       - (?) broadcast channel
       - (?) event bus
       - (?) condition handlers a la Lisp
+      - (?) package audit logger
 
 - [ ] README
       - [ ] uhppoted.conf

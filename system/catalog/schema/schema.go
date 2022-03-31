@@ -365,6 +365,7 @@ const LANListenAddress Suffix = ".3.3"
 
 const ControllerName Suffix = ".1"
 const ControllerDeviceID Suffix = ".2"
+const ControllerEndpoint Suffix = ".3"
 const ControllerEndpointStatus Suffix = ".3.0"
 const ControllerEndpointAddress Suffix = ".3.1"
 const ControllerEndpointConfigured Suffix = ".3.2"
