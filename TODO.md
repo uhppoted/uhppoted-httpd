@@ -1,16 +1,8 @@
 ## v0.7.x
 
-- [x] OIDs:
-      - [x] Cleanup the oh-so-duplicated catalog code
-            - [x] Remove Catalog.Clear (only used for tests)
-            - [x] Remove catalog.impl.Clear (only used for tests)
-
-- [ ] Overview page 
-      - [x] Add event summary
-            - [x] Not sorting new records
-      - [x] Add log summary
-      - [x] Seperate message + refresh from controllers table
-      - [ ] Optimise fetch
+- [x] Overview page 
+      - [x] Optimise fetch
+      - [x] Update auth.json in daemonize
 
 - [ ] Verify bootstrap from scratch
       - [ ] Refresh overwrites in-progress card edits

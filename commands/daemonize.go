@@ -55,11 +55,19 @@ const default_auth = `
       "authorised": ".*"
     },
     {
+      "path": "^/sys/overview.html$",
+      "authorised": ".*"
+    },
+    {
       "path": "^/sys/login.html$",
       "authorised": ".*"
     },
     {
       "path": "^/sys/unauthorized.html$",
+      "authorised": ".*"
+    },
+    {
+      "path": "^/sys/overview.html$",
       "authorised": ".*"
     },
     {
