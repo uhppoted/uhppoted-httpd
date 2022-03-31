@@ -31,10 +31,12 @@ type LAN struct {
 	ListenAddress    core.ListenAddr
 	Debug            bool
 
-	ch           chan types.EventsList
-	created      types.Timestamp
-	deleted      types.Timestamp
+	ch      chan types.EventsList
+	created types.Timestamp
+	deleted types.Timestamp
+
 	unconfigured bool
+	deleting     bool
 }
 
 type Controller interface {
@@ -110,7 +112,11 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 	}
 
 	if l.IsDeleted() {
-		return l.toObjects([]kv{{LANDeleted, l.deleted}}, a), fmt.Errorf("LAN has been deleted")
+		if l.deleting {
+			return []schema.Object{}, nil
+		} else {
+			return l.toObjects([]kv{{LANDeleted, l.deleted}}, a), fmt.Errorf("LAN has been deleted")
+		}
 	}
 
 	f := func(field string, value interface{}) error {
@@ -141,9 +147,7 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 		}
 
 	case l.OID.Append(LANBindAddress):
-		if l.IsDeleted() {
-			return nil, fmt.Errorf("LAN has been deleted")
-		} else if addr, err := core.ResolveBindAddr(value); err != nil {
+		if addr, err := core.ResolveBindAddr(value); err != nil {
 			return nil, err
 		} else if err := f("bind", addr); err != nil {
 			return nil, err
@@ -161,9 +165,7 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 		}
 
 	case l.OID.Append(LANBroadcastAddress):
-		if l.IsDeleted() {
-			return nil, fmt.Errorf("LAN has been deleted")
-		} else if addr, err := core.ResolveBroadcastAddr(value); err != nil {
+		if addr, err := core.ResolveBroadcastAddr(value); err != nil {
 			return nil, err
 		} else if err := f("broadcast", addr); err != nil {
 			return nil, err
@@ -181,9 +183,7 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 		}
 
 	case l.OID.Append(LANListenAddress):
-		if l.IsDeleted() {
-			return nil, fmt.Errorf("LAN has been deleted")
-		} else if addr, err := core.ResolveListenAddr(value); err != nil {
+		if addr, err := core.ResolveListenAddr(value); err != nil {
 			return nil, err
 		} else if err = f("listen", addr); err != nil {
 			return nil, err
@@ -206,6 +206,10 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 	}
 
 	return l.toObjects(list, a), nil
+}
+
+func (l *LAN) committed() {
+	l.deleting = false
 }
 
 func (l *LAN) toObjects(list []kv, a auth.OpAuth) []schema.Object {

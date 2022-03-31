@@ -70,8 +70,10 @@ func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error
 		return nil, err
 	}
 
-	sys.doors.Doors = shadow
 	dbc.Commit()
+	shadow.Committed()
+
+	sys.doors.Doors = shadow
 	sys.updated()
 
 	list := squoosh(dbc.Objects())

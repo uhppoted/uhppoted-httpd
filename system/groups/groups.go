@@ -76,6 +76,12 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, db
 	return objects, nil
 }
 
+func (gg *Groups) Committed() {
+	for _, g := range gg.groups {
+		g.committed()
+	}
+}
+
 func (gg *Groups) Load(blob json.RawMessage) error {
 	rs := []json.RawMessage{}
 	if err := json.Unmarshal(blob, &rs); err != nil {

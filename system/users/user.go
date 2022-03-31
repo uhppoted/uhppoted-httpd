@@ -29,6 +29,8 @@ type User struct {
 	created  types.Timestamp
 	deleted  types.Timestamp
 	modified types.Timestamp
+
+	deleting bool
 }
 
 type kv = struct {
@@ -115,7 +117,11 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	}
 
 	if u.IsDeleted() {
-		return u.toObjects([]kv{{UserDeleted, u.deleted}}, a), fmt.Errorf("User has been deleted")
+		if u.deleting {
+			return []schema.Object{}, nil
+		} else {
+			return u.toObjects([]kv{{UserDeleted, u.deleted}}, a), fmt.Errorf("User has been deleted")
+		}
 	}
 
 	f := func(field string, value interface{}) error {
@@ -224,6 +230,8 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 
 		u.deleted = types.TimestampNow()
 		u.modified = types.TimestampNow()
+		u.deleting = true
+
 		list = append(list, kv{UserDeleted, u.deleted})
 
 		catalog.DeleteT(u.CatalogUser, u.OID)
@@ -232,6 +240,10 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	list = append(list, kv{UserStatus, u.status()})
 
 	return u.toObjects(list, a), nil
+}
+
+func (u User) committed() {
+	u.deleting = false
 }
 
 func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {

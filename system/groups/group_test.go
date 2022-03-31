@@ -232,3 +232,34 @@ func TestGroupSetWithDeleted(t *testing.T) {
 		t.Errorf("Group name unexpectedly updated - expected:%v, got:%v", "Le Group", g.Name)
 	}
 }
+
+func TestGroupSetWhileDeleting(t *testing.T) {
+	g := Group{
+		CatalogGroup: catalog.CatalogGroup{
+			OID: "0.5.3",
+		},
+		Name: "Le Groupe",
+		Doors: map[schema.OID]bool{
+			"0.3.3": true,
+			"0.3.7": true,
+		},
+
+		deleted:  types.TimestampNow(),
+		deleting: true,
+	}
+
+	expected := []schema.Object{}
+
+	objects, err := g.set(nil, "0.5.3.1", "Ze Gruppe", nil)
+	if err != nil {
+		t.Errorf("Unexpected error, got (%v)", err)
+	}
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+
+	if g.Name != "Le Groupe" {
+		t.Errorf("Group name unexpectedly updated - expected:%v, got:%v", "Le Group", g.Name)
+	}
+}

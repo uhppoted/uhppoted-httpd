@@ -28,6 +28,8 @@ type Card struct {
 
 	created types.Timestamp
 	deleted types.Timestamp
+
+	deleting bool
 }
 
 type kv = struct {
@@ -156,7 +158,11 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	}
 
 	if c.IsDeleted() {
-		return c.toObjects([]kv{{CardDeleted, c.deleted}}, a), fmt.Errorf("Card has been deleted")
+		if c.deleting {
+			return []schema.Object{}, nil
+		} else {
+			return c.toObjects([]kv{{CardDeleted, c.deleted}}, a), fmt.Errorf("Card has been deleted")
+		}
 	}
 
 	f := func(field string, value interface{}) error {
@@ -354,6 +360,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		}
 
 		c.deleted = types.TimestampNow()
+		c.deleting = true
 		list = append(list, kv{CardDeleted, c.deleted})
 
 		catalog.DeleteT(c.CatalogCard, c.OID)
@@ -362,6 +369,10 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	list = append(list, kv{CardStatus, c.status()})
 
 	return c.toObjects(list, a), nil
+}
+
+func (c *Card) committed() {
+	c.deleting = false
 }
 
 func (c *Card) toObjects(list []kv, a auth.OpAuth) []schema.Object {

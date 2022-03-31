@@ -106,6 +106,14 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid schema.OID, value strin
 	return objects, nil
 }
 
+func (cc *Controllers) Committed() {
+	for _, c := range cc.controllers {
+		if c != nil {
+			c.committed()
+		}
+	}
+}
+
 func (cc *Controllers) List() []Controller {
 	list := []Controller{}
 

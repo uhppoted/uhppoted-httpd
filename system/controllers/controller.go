@@ -31,6 +31,7 @@ type Controller struct {
 	created      types.Timestamp
 	deleted      types.Timestamp
 	unconfigured bool
+	deleting     bool
 }
 
 type kv = struct {
@@ -387,7 +388,11 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 	}
 
 	if c.IsDeleted() {
-		return c.toObjects([]kv{{ControllerDeleted, c.deleted}}, a), fmt.Errorf("Controller has been deleted")
+		if c.deleting {
+			return []schema.Object{}, nil
+		} else {
+			return c.toObjects([]kv{{ControllerDeleted, c.deleted}}, a), fmt.Errorf("Controller has been deleted")
+		}
 	}
 
 	f := func(field string, value interface{}) error {
@@ -545,6 +550,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		}
 
 		c.deleted = types.TimestampNow()
+		c.deleting = true
 		list = append(list, kv{ControllerDeleted, c.deleted})
 
 		catalog.DeleteT(c.CatalogController, OID)
@@ -553,6 +559,10 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 	list = append(list, kv{ControllerStatus, c.status()})
 
 	return c.toObjects(list, a), nil
+}
+
+func (c *Controller) committed() {
+	c.deleting = false
 }
 
 func (c *Controller) toObjects(list []kv, a auth.OpAuth) []schema.Object {

@@ -77,6 +77,12 @@ func (uu *Users) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 	return objects, nil
 }
 
+func (uu *Users) Committed() {
+	for _, u := range uu.users {
+		u.committed()
+	}
+}
+
 func (uu *Users) Load(blob json.RawMessage) error {
 	rs := []json.RawMessage{}
 	if err := json.Unmarshal(blob, &rs); err != nil {
