@@ -45,25 +45,29 @@ const pages = {
     refreshed: function () {
       LAN.refreshed()
       controllers.refreshed()
-    }
+    },
+    deleted: controllers.deleted
   },
 
   doors: {
     get: ['/doors', '/controllers'],
     post: '/doors',
-    refreshed: doors.refreshed
+    refreshed: doors.refreshed,
+    deleted: doors.deleted
   },
 
   cards: {
     get: ['/cards', '/groups'],
     post: '/cards',
-    refreshed: cards.refreshed
+    refreshed: cards.refreshed,
+    deleted: cards.deleted
   },
 
   groups: {
     get: ['/groups', '/doors'],
     post: '/groups',
-    refreshed: groups.refreshed
+    refreshed: groups.refreshed,
+    deleted: groups.deleted
   },
 
   events: {
@@ -83,7 +87,8 @@ const pages = {
   users: {
     get: ['/users'],
     post: '/users',
-    refreshed: users.refreshed
+    refreshed: users.refreshed,
+    deleted: users.deleted
   }
 }
 
@@ -591,16 +596,22 @@ function rollback (recordset, row, refreshed) {
 }
 
 function commit (page, ...rows) {
+  const deleted = []
   const list = []
 
   rows.forEach(row => {
     const oid = row.dataset.oid
-    const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
-    children.forEach(e => {
-      if (e.classList.contains('modified')) {
-        list.push(e)
-      }
-    })
+
+    if (page.deleted && page.deleted(row)) {
+      deleted.push(oid)
+    } else {
+      const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
+      children.forEach(e => {
+        if (e.classList.contains('modified')) {
+          list.push(e)
+        }
+      })
+    }
   })
 
   const records = []
@@ -631,7 +642,7 @@ function commit (page, ...rows) {
     unmark('modified', e, flag)
   })
 
-  post(page, records, reset, cleanup)
+  post(page, records, deleted, reset, cleanup)
 }
 
 function create (page) {
@@ -639,7 +650,7 @@ function create (page) {
   const reset = function () {}
   const cleanup = function () {}
 
-  post(page, records, reset, cleanup)
+  post(page, records, null, reset, cleanup)
 }
 
 function more (page) {
@@ -652,10 +663,10 @@ function more (page) {
 }
 
 // NOTE: exported only for use by interfaces
-export function post (page, records, reset, cleanup) {
+export function post (page, updated, deleted, reset, cleanup) {
   busy()
 
-  postAsJSON(page.post, { objects: records })
+  postAsJSON(page.post, { objects: updated, deleted: deleted })
     .then(response => {
       if (response.redirected) {
         window.location = response.url
@@ -679,7 +690,7 @@ export function post (page, records, reset, cleanup) {
     })
     .catch(function (err) {
       reset()
-      warning(`Error committing record (ERR:${err.message.toLowerCase()})`)
+      warning(`Error committing changes (ERR:${err.message.toLowerCase()})`)
     })
     .finally(() => {
       cleanup()

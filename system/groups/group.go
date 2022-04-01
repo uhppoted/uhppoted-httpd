@@ -138,8 +138,9 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 		return nil
 	}
 
+	//	name := g.Name
+
 	list := []kv{}
-	name := g.Name
 	switch {
 	case oid == g.OID.Append(GroupName):
 		if err := f("name", value); err != nil {
@@ -171,23 +172,46 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 		}
 	}
 
-	if !g.IsValid() {
+	//	if !g.IsValid() {
+	//		if a != nil {
+	//			if err := a.CanDelete(g, auth.Groups); err != nil {
+	//				return nil, err
+	//			}
+	//		}
+	//
+	//		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
+	//		g.deleted = types.TimestampNow()
+	//		g.deleting = true
+	//
+	//		list = append(list, kv{GroupDeleted, g.deleted})
+	//
+	//		catalog.DeleteT(g.CatalogGroup, g.OID)
+	//	}
+
+	list = append(list, kv{GroupStatus, g.status()})
+
+	return g.toObjects(list, a), nil
+}
+
+func (g *Group) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
+	list := []kv{}
+
+	if g != nil {
 		if a != nil {
 			if err := a.CanDelete(g, auth.Groups); err != nil {
 				return nil, err
 			}
 		}
 
-		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
+		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", g.Name), dbc)
 		g.deleted = types.TimestampNow()
 		g.deleting = true
 
+		list = append(list, kv{GroupStatus, g.status()})
 		list = append(list, kv{GroupDeleted, g.deleted})
 
 		catalog.DeleteT(g.CatalogGroup, g.OID)
 	}
-
-	list = append(list, kv{GroupStatus, g.status()})
 
 	return g.toObjects(list, a), nil
 }

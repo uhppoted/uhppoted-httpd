@@ -331,18 +331,19 @@ func (s *system) sweep() {
 	s.users.Sweep(s.retention)
 }
 
-func unpack(m map[string]interface{}) ([]object, error) {
+func unpack(m map[string]interface{}) ([]object, []schema.OID, error) {
 	f := func(err error) error {
 		return types.BadRequest(fmt.Errorf("Invalid request (%v)", err), fmt.Errorf("Error unpacking 'post' request (%w)", err))
 	}
 
 	o := struct {
-		Objects []object `json:"objects"`
+		Objects []object     `json:"objects"`
+		Deleted []schema.OID `json:"deleted"`
 	}{}
 
 	blob, err := json.Marshal(m)
 	if err != nil {
-		return nil, f(err)
+		return nil, nil, f(err)
 	}
 
 	if sys.debug {
@@ -350,10 +351,10 @@ func unpack(m map[string]interface{}) ([]object, error) {
 	}
 
 	if err := json.Unmarshal(blob, &o); err != nil {
-		return nil, f(err)
+		return nil, nil, f(err)
 	}
 
-	return o.Objects, nil
+	return o.Objects, o.Deleted, nil
 }
 
 func load(file string, tag string, v serializable) error {

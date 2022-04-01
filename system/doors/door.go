@@ -177,7 +177,7 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	}
 
 	list := []kv{}
-	name := fmt.Sprintf("%v", d.Name)
+	//name := fmt.Sprintf("%v", d.Name)
 
 	switch oid {
 	case d.OID.Append(DoorName):
@@ -231,22 +231,49 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		}
 	}
 
-	if !d.IsValid() {
+	//	if !d.IsValid() {
+	//		if a != nil {
+	//			if err := a.CanDelete(d, auth.Doors); err != nil {
+	//				return nil, err
+	//			}
+	//		}
+	//
+	//		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
+	//		d.deleted = types.TimestampNow()
+	//		d.deleting = true
+	//
+	//		list = append(list, kv{DoorDeleted, d.deleted})
+	//		catalog.DeleteT(d.CatalogDoor, d.OID)
+	//	}
+
+	list = append(list, kv{DoorStatus, d.status()})
+
+	return d.toObjects(list, a), nil
+}
+
+func (d *Door) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
+	list := []kv{}
+
+	if d != nil {
 		if a != nil {
 			if err := a.CanDelete(d, auth.Doors); err != nil {
 				return nil, err
 			}
 		}
 
-		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
+		if door := catalog.GetDoorDeviceDoor(d.OID); door != 0 {
+			return nil, fmt.Errorf("Cannot delete door %v - assigned to controller", d.Name)
+		}
+
+		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", d.Name), dbc)
 		d.deleted = types.TimestampNow()
 		d.deleting = true
 
 		list = append(list, kv{DoorDeleted, d.deleted})
+		list = append(list, kv{DoorStatus, d.status()})
+
 		catalog.DeleteT(d.CatalogDoor, d.OID)
 	}
-
-	list = append(list, kv{DoorStatus, d.status()})
 
 	return d.toObjects(list, a), nil
 }

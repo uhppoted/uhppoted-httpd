@@ -372,11 +372,15 @@ func TestCardDelete(t *testing.T) {
 
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
-	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(schema.CardName), "", nil); err != nil {
-		t.Fatalf("Unexpected error deleting card (%v)", err)
-	}
+	//	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(schema.CardName), "", nil); err != nil {
+	//		t.Fatalf("Unexpected error deleting card (%v)", err)
+	//	}
+	//
+	//	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(schema.CardNumber), "", nil); err != nil {
+	//		t.Fatalf("Unexpected error deleting card (%v)", err)
+	//	}
 
-	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(schema.CardNumber), "", nil); err != nil {
+	if _, err := cards.DeleteByOID(nil, dobby.OID, nil); err != nil {
 		t.Fatalf("Unexpected error deleting card (%v)", err)
 	}
 
@@ -397,13 +401,18 @@ func TestCardHolderDeleteWithAuth(t *testing.T) {
 		},
 	}
 
-	if _, err := cards.UpdateByOID(&authx, dobby.OID.Append(schema.CardName), "", nil); err != nil {
-		t.Fatalf("Unexpected error deleting card (%v)", err)
-	}
+	//	if _, err := cards.UpdateByOID(&authx, dobby.OID.Append(schema.CardName), "", nil); err != nil {
+	//		t.Fatalf("Unexpected error deleting card (%v)", err)
+	//	}
+	//
+	//	if _, err := cards.UpdateByOID(&authx, dobby.OID.Append(schema.CardNumber), "", nil); err == nil {
+	//		t.Fatalf("Expected 'not authorised' error deleting card, got:%v", err)
+	//	}
 
-	if _, err := cards.UpdateByOID(&authx, dobby.OID.Append(schema.CardNumber), "", nil); err == nil {
+	if _, err := cards.DeleteByOID(&authx, dobby.OID, nil); err == nil {
 		t.Fatalf("Expected 'not authorised' error deleting card, got:%v", err)
 	}
+
 }
 
 func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
@@ -416,42 +425,42 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 		db   *Cards
 	}{
 		logs: []audit.AuditRecord{
-			audit.AuditRecord{
-				UID:       "",
-				OID:       "0.4.2",
-				Component: "card",
-				Operation: "update",
-				Details: audit.Details{
-					ID:          "1234567",
-					Name:        "Dobby",
-					Field:       "name",
-					Description: "Updated name from Dobby to 'blank'",
-					Before:      "Dobby",
-					After:       "",
-				},
-			},
-			audit.AuditRecord{
-				UID:       "",
-				OID:       "0.4.2",
-				Component: "card",
-				Operation: "update",
-				Details: audit.Details{
-					ID:          "1234567",
-					Name:        "",
-					Field:       "number",
-					Description: "Cleared card number 1234567",
-					Before:      "1234567",
-					After:       "",
-				},
-			},
+			//			audit.AuditRecord{
+			//				UID:       "",
+			//				OID:       "0.4.2",
+			//				Component: "card",
+			//				Operation: "update",
+			//				Details: audit.Details{
+			//					ID:          "1234567",
+			//					Name:        "Dobby",
+			//					Field:       "name",
+			//					Description: "Updated name from Dobby to 'blank'",
+			//					Before:      "Dobby",
+			//					After:       "",
+			//				},
+			//			},
+			//			audit.AuditRecord{
+			//				UID:       "",
+			//				OID:       "0.4.2",
+			//				Component: "card",
+			//				Operation: "update",
+			//				Details: audit.Details{
+			//					ID:          "1234567",
+			//					Name:        "",
+			//					Field:       "number",
+			//					Description: "Cleared card number 1234567",
+			//					Before:      "1234567",
+			//					After:       "",
+			//				},
+			//			},
 			audit.AuditRecord{
 				UID:       "",
 				OID:       "0.4.2",
 				Component: "card",
 				Operation: "delete",
 				Details: audit.Details{
-					ID:          "",
-					Name:        "",
+					ID:          "1234567",
+					Name:        "Dobby",
 					Field:       "card",
 					Description: "Deleted card 1234567",
 					Before:      "",
@@ -460,7 +469,7 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 			},
 		},
 
-		db: makeCards(hagrid, makeCard(dobby.OID, "", 0, "G05")),
+		db: makeCards(hagrid, dobby),
 	}
 
 	cards := makeCards(hagrid, dobby)
@@ -468,8 +477,10 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 	catalog.PutT(dobby.CatalogCard, dobby.OID)
 
-	cards.UpdateByOID(nil, dobby.OID.Append(schema.CardName), "", &trail)
-	cards.UpdateByOID(nil, dobby.OID.Append(schema.CardNumber), "", &trail)
+	//	cards.UpdateByOID(nil, dobby.OID.Append(schema.CardName), "", &trail)
+	//	cards.UpdateByOID(nil, dobby.OID.Append(schema.CardNumber), "", &trail)
+
+	cards.DeleteByOID(nil, dobby.OID, &trail)
 
 	compareDB(cards, expected.db, t)
 

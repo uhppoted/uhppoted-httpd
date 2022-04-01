@@ -5,7 +5,6 @@ import { schema } from './schema.js'
 const pagesize = 5
 
 export function refreshed () {
-  console.log('refreshed')
   const cards = [...DB.cards.values()]
     .filter(c => alive(c))
     .sort((p, q) => p.created.localeCompare(q.created))
@@ -69,34 +68,17 @@ export function refreshed () {
     .catch(err => console.error(err))
 }
 
-function updateFromDB (oid, record) {
-  const row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
+export function deleted (row) {
+  const name = row.querySelector('td input.name')
+  const card = row.querySelector('td input.number')
+  const re = /^\s*$/
 
-  const name = row.querySelector(`[data-oid="${oid}${schema.cards.name}"]`)
-  const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
-  const from = row.querySelector(`[data-oid="${oid}${schema.cards.from}"]`)
-  const to = row.querySelector(`[data-oid="${oid}${schema.cards.to}"]`)
-  const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && alive(g))
+  if (name && name.dataset.oid !== '' && re.test(name.dataset.value) &&
+      card && card.dataset.oid !== '' && re.test(card.dataset.value)) {
+    return true
+  }
 
-  row.dataset.status = record.status
-
-  update(name, record.name)
-  update(number, record.number)
-  update(from, record.from)
-  update(to, record.to)
-
-  groups.forEach(g => {
-    const td = row.querySelector(`td[data-group="${g.OID}"]`)
-
-    if (td) {
-      const e = td.querySelector('.field')
-      const g = record.groups.get(`${e.dataset.oid}`)
-
-      update(e, g && g.member)
-    }
-  })
-
-  return row
+  return false
 }
 
 function realize (cards) {
@@ -232,4 +214,34 @@ function add (oid, record) {
 
     return row
   }
+}
+
+function updateFromDB (oid, record) {
+  const row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
+
+  const name = row.querySelector(`[data-oid="${oid}${schema.cards.name}"]`)
+  const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
+  const from = row.querySelector(`[data-oid="${oid}${schema.cards.from}"]`)
+  const to = row.querySelector(`[data-oid="${oid}${schema.cards.to}"]`)
+  const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && alive(g))
+
+  row.dataset.status = record.status
+
+  update(name, record.name)
+  update(number, record.number)
+  update(from, record.from)
+  update(to, record.to)
+
+  groups.forEach(g => {
+    const td = row.querySelector(`td[data-group="${g.OID}"]`)
+
+    if (td) {
+      const e = td.querySelector('.field')
+      const g = record.groups.get(`${e.dataset.oid}`)
+
+      update(e, g && g.member)
+    }
+  })
+
+  return row
 }

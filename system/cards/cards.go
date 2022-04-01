@@ -41,41 +41,58 @@ func (cc *Cards) AsObjects(auth auth.OpAuth) []schema.Object {
 }
 
 func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
-	if cc == nil {
-		return nil, nil
-	}
+	objects := []schema.Object{}
 
-	for k, c := range cc.cards {
-		if c.OID.Contains(oid) {
-			objects, err := c.set(auth, oid, value, dbc)
-			if err == nil {
-				cc.cards[k] = c
+	if cc != nil {
+		for k, c := range cc.cards {
+			if c.OID.Contains(oid) {
+				objects, err := c.set(auth, oid, value, dbc)
+				if err == nil {
+					cc.cards[k] = c
+				}
+
+				return objects, err
 			}
+		}
 
-			return objects, err
+		if oid == "<new>" {
+			if c, err := cc.add(auth, Card{}); err != nil {
+				return nil, err
+			} else if c == nil {
+				return nil, fmt.Errorf("Failed to add 'new' card")
+			} else {
+				c.log(auth,
+					"add",
+					c.OID,
+					"card",
+					"Added 'new' card",
+					"",
+					"",
+					dbc)
+
+				cc.cards[c.OID] = c
+				catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
+				catalog.Join(&objects, catalog.NewObject2(c.OID, CardCreated, c.created))
+			}
 		}
 	}
 
+	return objects, nil
+}
+
+func (cc *Cards) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
-	if oid == "<new>" {
-		if c, err := cc.add(auth, Card{}); err != nil {
-			return nil, err
-		} else if c == nil {
-			return nil, fmt.Errorf("Failed to add 'new' card")
-		} else {
-			c.log(auth,
-				"add",
-				c.OID,
-				"card",
-				"Added 'new' card",
-				"",
-				"",
-				dbc)
+	if cc != nil {
+		for k, c := range cc.cards {
+			if c.OID == oid {
+				objects, err := c.delete(auth, dbc)
+				if err == nil {
+					cc.cards[k] = c
+				}
 
-			cc.cards[c.OID] = c
-			catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
-			catalog.Join(&objects, catalog.NewObject2(c.OID, CardCreated, c.created))
+				return objects, err
+			}
 		}
 	}
 

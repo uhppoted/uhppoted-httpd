@@ -242,6 +242,37 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	return u.toObjects(list, a), nil
 }
 
+func (u *User) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
+	list := []kv{}
+
+	if u != nil {
+		if a != nil {
+			if err := a.CanDelete(u, auth.Users); err != nil {
+				return nil, err
+			}
+		}
+
+		if p := stringify(u.uid, ""); p != "" {
+			u.log(a, "delete", u.OID, "user", fmt.Sprintf("Deleted UID %v", p), "", "", dbc)
+		} else if p = stringify(u.name, ""); p != "" {
+			u.log(a, "delete", u.OID, "user", fmt.Sprintf("Deleted user %v", p), "", "", dbc)
+		} else {
+			u.log(a, "delete", u.OID, "user", "Deleted user", "", "", dbc)
+		}
+
+		u.deleted = types.TimestampNow()
+		u.modified = types.TimestampNow()
+		u.deleting = true
+
+		list = append(list, kv{UserDeleted, u.deleted})
+		list = append(list, kv{UserStatus, u.status()})
+
+		catalog.DeleteT(u.CatalogUser, u.OID)
+	}
+
+	return u.toObjects(list, a), nil
+}
+
 func (u User) committed() {
 	u.deleting = false
 }

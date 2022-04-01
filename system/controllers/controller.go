@@ -534,29 +534,64 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		}
 	}
 
-	if c.name == "" && c.DeviceID == 0 {
+	//	if c.name == "" && c.DeviceID == 0 {
+	//		if a != nil {
+	//			if err := a.CanDelete(c, auth.Controllers); err != nil {
+	//				return nil, err
+	//			}
+	//		}
+	//
+	//		if p := stringify(clone.name, ""); p != "" {
+	//			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
+	//		} else if p = stringify(clone.DeviceID, ""); p != "" {
+	//			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
+	//		} else {
+	//			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller"), "", "", dbc)
+	//		}
+	//
+	//		c.deleted = types.TimestampNow()
+	//		c.deleting = true
+	//		list = append(list, kv{ControllerDeleted, c.deleted})
+	//
+	//		catalog.DeleteT(c.CatalogController, OID)
+	//	}
+
+	list = append(list, kv{ControllerStatus, c.status()})
+
+	return c.toObjects(list, a), nil
+}
+
+func (c *Controller) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
+	list := []kv{}
+
+	if c != nil {
+		uid := ""
+		if a != nil {
+			uid = a.UID()
+		}
+
 		if a != nil {
 			if err := a.CanDelete(c, auth.Controllers); err != nil {
 				return nil, err
 			}
 		}
 
-		if p := stringify(clone.name, ""); p != "" {
-			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
-		} else if p = stringify(clone.DeviceID, ""); p != "" {
-			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
+		if p := stringify(c.name, ""); p != "" {
+			c.log(uid, "delete", c.OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
+		} else if p = stringify(c.DeviceID, ""); p != "" {
+			c.log(uid, "delete", c.OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
 		} else {
-			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller"), "", "", dbc)
+			c.log(uid, "delete", c.OID, "device-id", fmt.Sprintf("Deleted controller"), "", "", dbc)
 		}
 
 		c.deleted = types.TimestampNow()
 		c.deleting = true
+
 		list = append(list, kv{ControllerDeleted, c.deleted})
+		list = append(list, kv{ControllerStatus, c.status()})
 
-		catalog.DeleteT(c.CatalogController, OID)
+		catalog.DeleteT(c.CatalogController, c.OID)
 	}
-
-	list = append(list, kv{ControllerStatus, c.status()})
 
 	return c.toObjects(list, a), nil
 }

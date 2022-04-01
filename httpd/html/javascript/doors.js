@@ -20,65 +20,15 @@ export function refreshed () {
   })
 }
 
-function updateFromDB (oid, record) {
-  const row = document.querySelector("div#doors tr[data-oid='" + oid + "']")
+export function deleted (row) {
+  const name = row.querySelector('td input.name')
+  const re = /^\s*$/
 
-  const name = row.querySelector(`[data-oid="${oid}.1"]`)
-  const controller = row.querySelector(`[data-oid="${oid}.0.4.2"]`)
-  const deviceID = row.querySelector(`[data-oid="${oid}.0.4.3"]`)
-  const door = row.querySelector(`[data-oid="${oid}.0.4.4"]`)
-  const delay = row.querySelector(`[data-oid="${oid}.2"]`)
-  const mode = row.querySelector(`[data-oid="${oid}.3"]`)
-
-  row.dataset.status = record.status
-
-  const d = record.delay.status === 'uncertain' ? record.delay.configured : record.delay.delay
-  const m = record.mode.status === 'uncertain' ? record.mode.configured : record.mode.mode
-  const c = lookup(record)
-
-  update(name, record.name)
-  update(controller, c.name)
-  update(deviceID, c.deviceID)
-  update(door, c.door)
-  update(delay, d, record.delay.status)
-  update(mode, m, record.mode.status)
-
-  // ... set tooltips for error'd values
-  { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)
-
-    if (tooltip) {
-      const p = tooltip.querySelector('p')
-      const err = record.delay.err && record.delay.err !== '' ? record.delay.err : ''
-      const enabled = !!(record.delay.err && record.delay.err !== '')
-
-      p.innerHTML = err
-
-      if (enabled) {
-        tooltip.classList.add('enabled')
-      } else {
-        tooltip.classList.remove('enabled')
-      }
-    }
+  if (name && name.dataset.oid !== '' && re.test(name.dataset.value)) {
+    return true
   }
 
-  { const tooltip = row.querySelector(`[data-oid="${oid}.3"] + div.tooltip-content`)
-
-    if (tooltip) {
-      const p = tooltip.querySelector('p')
-      const err = record.mode.err && record.mode.err !== '' ? record.mode.err : ''
-      const enabled = !!(record.mode.err && record.mode.err !== '')
-
-      p.innerHTML = err
-
-      if (enabled) {
-        tooltip.classList.add('enabled')
-      } else {
-        tooltip.classList.remove('enabled')
-      }
-    }
-  }
-
-  return row
+  return false
 }
 
 function realize (doors) {
@@ -151,6 +101,67 @@ function add (oid) {
 
     return row
   }
+}
+
+function updateFromDB (oid, record) {
+  const row = document.querySelector("div#doors tr[data-oid='" + oid + "']")
+
+  const name = row.querySelector(`[data-oid="${oid}.1"]`)
+  const controller = row.querySelector(`[data-oid="${oid}.0.4.2"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}.0.4.3"]`)
+  const door = row.querySelector(`[data-oid="${oid}.0.4.4"]`)
+  const delay = row.querySelector(`[data-oid="${oid}.2"]`)
+  const mode = row.querySelector(`[data-oid="${oid}.3"]`)
+
+  row.dataset.status = record.status
+
+  const d = record.delay.status === 'uncertain' ? record.delay.configured : record.delay.delay
+  const m = record.mode.status === 'uncertain' ? record.mode.configured : record.mode.mode
+  const c = lookup(record)
+
+  update(name, record.name)
+  update(controller, c.name)
+  update(deviceID, c.deviceID)
+  update(door, c.door)
+  update(delay, d, record.delay.status)
+  update(mode, m, record.mode.status)
+
+  // ... set tooltips for error'd values
+  { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)
+
+    if (tooltip) {
+      const p = tooltip.querySelector('p')
+      const err = record.delay.err && record.delay.err !== '' ? record.delay.err : ''
+      const enabled = !!(record.delay.err && record.delay.err !== '')
+
+      p.innerHTML = err
+
+      if (enabled) {
+        tooltip.classList.add('enabled')
+      } else {
+        tooltip.classList.remove('enabled')
+      }
+    }
+  }
+
+  { const tooltip = row.querySelector(`[data-oid="${oid}.3"] + div.tooltip-content`)
+
+    if (tooltip) {
+      const p = tooltip.querySelector('p')
+      const err = record.mode.err && record.mode.err !== '' ? record.mode.err : ''
+      const enabled = !!(record.mode.err && record.mode.err !== '')
+
+      p.innerHTML = err
+
+      if (enabled) {
+        tooltip.classList.add('enabled')
+      } else {
+        tooltip.classList.remove('enabled')
+      }
+    }
+  }
+
+  return row
 }
 
 function lookup (record) {

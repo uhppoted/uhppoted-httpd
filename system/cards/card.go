@@ -174,7 +174,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	}
 
 	list := []kv{}
-	clone := c.clone()
+	//clone := c.clone()
 
 	switch {
 	case oid == c.OID.Append(CardName):
@@ -323,50 +323,80 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		}
 	}
 
-	if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
+	//	if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
+	//		if a != nil {
+	//			if err := a.CanDelete(clone, auth.Cards); err != nil {
+	//				return nil, err
+	//			}
+	//		}
+	//
+	//		if p := stringify(clone.Card, ""); p != "" {
+	//			c.log(a,
+	//				"delete",
+	//				c.OID,
+	//				"card",
+	//				fmt.Sprintf("Deleted card %v", p),
+	//				"",
+	//				"",
+	//				dbc)
+	//		} else if p = stringify(clone.Name, ""); p != "" {
+	//			c.log(a,
+	//				"delete",
+	//				c.OID,
+	//				"card",
+	//				fmt.Sprintf("Deleted card for %v", p),
+	//				"",
+	//				"",
+	//				dbc)
+	//		} else {
+	//			c.log(a,
+	//				"delete",
+	//				c.OID,
+	//				"card",
+	//				"Deleted card",
+	//				"",
+	//				"",
+	//				dbc)
+	//		}
+	//
+	//		c.deleted = types.TimestampNow()
+	//		c.deleting = true
+	//		list = append(list, kv{CardDeleted, c.deleted})
+	//
+	//		catalog.DeleteT(c.CatalogCard, c.OID)
+	//	}
+
+	list = append(list, kv{CardStatus, c.status()})
+
+	return c.toObjects(list, a), nil
+}
+
+func (c *Card) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
+	list := []kv{}
+
+	if c != nil {
 		if a != nil {
-			if err := a.CanDelete(clone, auth.Cards); err != nil {
+			if err := a.CanDelete(c, auth.Cards); err != nil {
 				return nil, err
 			}
 		}
 
-		if p := stringify(clone.Card, ""); p != "" {
-			c.log(a,
-				"delete",
-				c.OID,
-				"card",
-				fmt.Sprintf("Deleted card %v", p),
-				"",
-				"",
-				dbc)
-		} else if p = stringify(clone.Name, ""); p != "" {
-			c.log(a,
-				"delete",
-				c.OID,
-				"card",
-				fmt.Sprintf("Deleted card for %v", p),
-				"",
-				"",
-				dbc)
+		if p := stringify(c.Card, ""); p != "" {
+			c.log(a, "delete", c.OID, "card", fmt.Sprintf("Deleted card %v", p), "", "", dbc)
+		} else if p = stringify(c.Name, ""); p != "" {
+			c.log(a, "delete", c.OID, "card", fmt.Sprintf("Deleted card for %v", p), "", "", dbc)
 		} else {
-			c.log(a,
-				"delete",
-				c.OID,
-				"card",
-				"Deleted card",
-				"",
-				"",
-				dbc)
+			c.log(a, "delete", c.OID, "card", "Deleted card", "", "", dbc)
 		}
 
 		c.deleted = types.TimestampNow()
 		c.deleting = true
+
 		list = append(list, kv{CardDeleted, c.deleted})
+		list = append(list, kv{CardStatus, c.status()})
 
 		catalog.DeleteT(c.CatalogCard, c.OID)
 	}
-
-	list = append(list, kv{CardStatus, c.status()})
 
 	return c.toObjects(list, a), nil
 }

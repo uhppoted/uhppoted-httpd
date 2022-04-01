@@ -21,28 +21,15 @@ export function refreshed () {
   })
 }
 
-function updateFromDB (oid, record) {
-  const row = document.querySelector("div#groups tr[data-oid='" + oid + "']")
+export function deleted (row) {
+  const name = row.querySelector('td input.name')
+  const re = /^\s*$/
 
-  const name = row.querySelector(`[data-oid="${oid}${schema.groups.name}"]`)
-  const doors = [...DB.doors.values()].filter(o => o.status && o.status !== '<new>' && alive(o))
+  if (name && name.dataset.oid !== '' && re.test(name.dataset.value)) {
+    return true
+  }
 
-  row.dataset.status = record.status
-
-  update(name, record.name)
-
-  doors.forEach(o => {
-    const td = row.querySelector(`td[data-door="${o.OID}"]`)
-
-    if (td) {
-      const e = td.querySelector('.field')
-      const d = record.doors.get(`${e.dataset.oid}`)
-
-      update(e, d && d.allowed)
-    }
-  })
-
-  return row
+  return false
 }
 
 function realize (groups) {
@@ -176,4 +163,28 @@ function add (oid, record) {
 
     return row
   }
+}
+
+function updateFromDB (oid, record) {
+  const row = document.querySelector("div#groups tr[data-oid='" + oid + "']")
+
+  const name = row.querySelector(`[data-oid="${oid}${schema.groups.name}"]`)
+  const doors = [...DB.doors.values()].filter(o => o.status && o.status !== '<new>' && alive(o))
+
+  row.dataset.status = record.status
+
+  update(name, record.name)
+
+  doors.forEach(o => {
+    const td = row.querySelector(`td[data-door="${o.OID}"]`)
+
+    if (td) {
+      const e = td.querySelector('.field')
+      const d = record.doors.get(`${e.dataset.oid}`)
+
+      update(e, d && d.allowed)
+    }
+  })
+
+  return row
 }

@@ -43,34 +43,51 @@ func (uu *Users) AsObjects(auth auth.OpAuth) []schema.Object {
 }
 
 func (uu *Users) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
-	if uu == nil {
-		return nil, nil
-	}
+	objects := []schema.Object{}
 
-	for k, u := range uu.users {
-		if u.OID.Contains(oid) {
-			objects, err := u.set(auth, oid, value, dbc)
-			if err == nil {
-				uu.users[k] = u
+	if uu != nil {
+		for k, u := range uu.users {
+			if u.OID.Contains(oid) {
+				objects, err := u.set(auth, oid, value, dbc)
+				if err == nil {
+					uu.users[k] = u
+				}
+
+				return objects, err
 			}
+		}
 
-			return objects, err
+		if oid == "<new>" {
+			if u, err := uu.add(auth, User{}); err != nil {
+				return nil, err
+			} else if u == nil {
+				return nil, fmt.Errorf("Failed to add 'new' user")
+			} else {
+				uu.users[u.OID] = u
+				catalog.Join(&objects, catalog.NewObject(u.OID, "new"))
+				catalog.Join(&objects, catalog.NewObject2(u.OID, UserCreated, u.created))
+
+				u.log(auth, "add", u.OID, "card", "Added 'new' user", "", "", dbc)
+			}
 		}
 	}
 
+	return objects, nil
+}
+
+func (uu *Users) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
-	if oid == "<new>" {
-		if u, err := uu.add(auth, User{}); err != nil {
-			return nil, err
-		} else if u == nil {
-			return nil, fmt.Errorf("Failed to add 'new' user")
-		} else {
-			uu.users[u.OID] = u
-			catalog.Join(&objects, catalog.NewObject(u.OID, "new"))
-			catalog.Join(&objects, catalog.NewObject2(u.OID, UserCreated, u.created))
+	if uu != nil {
+		for k, u := range uu.users {
+			if u.OID == oid {
+				objects, err := u.delete(auth, dbc)
+				if err == nil {
+					uu.users[k] = u
+				}
 
-			u.log(auth, "add", u.OID, "card", "Added 'new' user", "", "", dbc)
+				return objects, err
+			}
 		}
 	}
 

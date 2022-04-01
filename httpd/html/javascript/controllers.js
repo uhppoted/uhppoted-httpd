@@ -24,76 +24,17 @@ export function refreshed () {
   })
 }
 
-function updateFromDB (oid, record) {
-  const row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
+export function deleted (row) {
+  const name = row.querySelector('td input.name')
+  const id = row.querySelector('td input.ID')
+  const re = /^\s*$/
 
-  const name = row.querySelector(`[data-oid="${oid}${schema.controllers.name}"]`)
-  const deviceID = row.querySelector(`[data-oid="${oid}${schema.controllers.deviceID}"]`)
-  const address = row.querySelector(`[data-oid="${oid}${schema.controllers.endpoint.address}"]`)
-  const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime.current}"]`)
-  const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards.count}"]`)
-  const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.last}"]`)
-  const door1 = row.querySelector(`[data-oid="${oid}${schema.controllers.door1}"]`)
-  const door2 = row.querySelector(`[data-oid="${oid}${schema.controllers.door2}"]`)
-  const door3 = row.querySelector(`[data-oid="${oid}${schema.controllers.door3}"]`)
-  const door4 = row.querySelector(`[data-oid="${oid}${schema.controllers.door4}"]`)
-
-  // ... populate door dropdowns
-  const doors = [...DB.doors.values()]
-    .filter(o => o.status && o.status !== '<new>' && alive(o))
-    .sort((p, q) => p.created.localeCompare(q.created));
-
-  [door1, door2, door3, door4].forEach(select => {
-    const options = select.options
-    let ix = 1
-
-    doors.forEach(d => {
-      const value = d.OID
-      const label = d.name !== '' ? d.name : `<D${d.OID}>`.replaceAll('.', '')
-
-      if (ix < options.length) {
-        if (options[ix].value !== value) {
-          options.add(new Option(label, value, false, false), ix)
-        } else if (options[ix].label !== label) {
-          options[ix].label = label
-        }
-      } else {
-        options.add(new Option(label, value, false, false))
-      }
-
-      ix++
-    })
-
-    while (options.length > (doors.length + 1)) {
-      options.remove(options.length - 1)
-    }
-  })
-
-  // ... set record values
-  row.dataset.status = record.status
-
-  update(name, record.name)
-  update(deviceID, record.deviceID)
-  update(address, record.address.address, record.address.status)
-  update(datetime, record.datetime.datetime, record.datetime.status)
-  update(cards, record.cards.cards, record.cards.status)
-  update(events, record.events.last)
-  update(door1, record.doors[1])
-  update(door2, record.doors[2])
-  update(door3, record.doors[3])
-  update(door4, record.doors[4])
-
-  address.dataset.original = record.address.configured
-  datetime.dataset.original = record.datetime.expected
-
-  // .. initialise date/time picker
-  const cb = dropdowns.get(`${oid}${schema.controllers.datetime.current}`)
-
-  if (cb) {
-    combobox.set(cb, Date.parse(record.datetime.datetime))
+  if (name && name.dataset.oid !== '' && re.test(name.dataset.value) &&
+      id && id.dataset.oid !== '' && re.test(id.dataset.value)) {
+    return true
   }
 
-  return row
+  return false
 }
 
 function realize (controllers) {
@@ -170,4 +111,76 @@ function add (oid, record) {
 
     return row
   }
+}
+
+function updateFromDB (oid, record) {
+  const row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
+
+  const name = row.querySelector(`[data-oid="${oid}${schema.controllers.name}"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}${schema.controllers.deviceID}"]`)
+  const address = row.querySelector(`[data-oid="${oid}${schema.controllers.endpoint.address}"]`)
+  const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime.current}"]`)
+  const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards.count}"]`)
+  const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.last}"]`)
+  const door1 = row.querySelector(`[data-oid="${oid}${schema.controllers.door1}"]`)
+  const door2 = row.querySelector(`[data-oid="${oid}${schema.controllers.door2}"]`)
+  const door3 = row.querySelector(`[data-oid="${oid}${schema.controllers.door3}"]`)
+  const door4 = row.querySelector(`[data-oid="${oid}${schema.controllers.door4}"]`)
+
+  // ... populate door dropdowns
+  const doors = [...DB.doors.values()]
+    .filter(o => o.status && o.status !== '<new>' && alive(o))
+    .sort((p, q) => p.created.localeCompare(q.created));
+
+  [door1, door2, door3, door4].forEach(select => {
+    const options = select.options
+    let ix = 1
+
+    doors.forEach(d => {
+      const value = d.OID
+      const label = d.name !== '' ? d.name : `<D${d.OID}>`.replaceAll('.', '')
+
+      if (ix < options.length) {
+        if (options[ix].value !== value) {
+          options.add(new Option(label, value, false, false), ix)
+        } else if (options[ix].label !== label) {
+          options[ix].label = label
+        }
+      } else {
+        options.add(new Option(label, value, false, false))
+      }
+
+      ix++
+    })
+
+    while (options.length > (doors.length + 1)) {
+      options.remove(options.length - 1)
+    }
+  })
+
+  // ... set record values
+  row.dataset.status = record.status
+
+  update(name, record.name)
+  update(deviceID, record.deviceID)
+  update(address, record.address.address, record.address.status)
+  update(datetime, record.datetime.datetime, record.datetime.status)
+  update(cards, record.cards.cards, record.cards.status)
+  update(events, record.events.last)
+  update(door1, record.doors[1])
+  update(door2, record.doors[2])
+  update(door3, record.doors[3])
+  update(door4, record.doors[4])
+
+  address.dataset.original = record.address.configured
+  datetime.dataset.original = record.datetime.expected
+
+  // .. initialise date/time picker
+  const cb = dropdowns.get(`${oid}${schema.controllers.datetime.current}`)
+
+  if (cb) {
+    combobox.set(cb, Date.parse(record.datetime.datetime))
+  }
+
+  return row
 }

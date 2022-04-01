@@ -1,17 +1,18 @@
 ## v0.7.x
 
-- [x] Overview page 
-      - [x] Optimise fetch
-      - [x] Update auth.json in daemonize
+- [ ] Move delete to UI
+      - [ ] Throw error if UpdateXXX not valid (i.e. where delete used to be and/or in validate)
+      - [ ] Remove 'deleting' hack
+      - [ ] Genericize commit in interfaces.js
+      - [ ] Clean up repetive code:
+```
+uid := ""
+if auth != nil {                                                                                                |
+    uid = auth.UID()
+}
+```
 
-- [x] Verify bootstrap from scratch
-      - [x] Setting controller address 'blanks' it out before it gets updated
-      - [x] Card field being edited loses focus on refresh
-      - [x] 'Controller has been deleted' message when another field (e.g. address) is also 
-            changed at the same time
-
-- [ ] Move delete to UI (PUT OID + 'deleted' ?)
-- [ ] Events should use local index rather than controller (optionally ?)
+- [ ] (optionally ?) Events should use local index rather than controller 
 - [ ] Cleanup audit log
 
 - [ ] Include 'modified' when serializing/deserializing objects

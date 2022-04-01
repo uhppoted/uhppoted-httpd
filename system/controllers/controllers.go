@@ -106,6 +106,19 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid schema.OID, value strin
 	return objects, nil
 }
 
+func (cc *Controllers) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+	objects := []schema.Object{}
+
+	if cc != nil {
+		for _, c := range cc.controllers {
+			if c != nil && c.OID == oid {
+				return c.delete(auth, dbc)
+			}
+		}
+	}
+
+	return objects, nil
+}
 func (cc *Controllers) Committed() {
 	for _, c := range cc.controllers {
 		if c != nil {

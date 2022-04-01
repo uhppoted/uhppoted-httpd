@@ -21,7 +21,7 @@ func UpdateInterfaces(uid, role string, m map[string]interface{}) (interface{}, 
 	sys.Lock()
 	defer sys.Unlock()
 
-	objects, err := unpack(m)
+	updated, _, err := unpack(m)
 	if err != nil {
 		return nil, err
 	}
@@ -30,11 +30,11 @@ func UpdateInterfaces(uid, role string, m map[string]interface{}) (interface{}, 
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.interfaces.Interfaces.Clone()
 
-	for _, o := range objects {
-		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
+	for _, o := range updated {
+		if objects, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
 			return nil, err
 		} else {
-			dbc.Stash(updated)
+			dbc.Stash(objects)
 		}
 	}
 

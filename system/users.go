@@ -21,7 +21,7 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 	sys.Lock()
 	defer sys.Unlock()
 
-	objects, err := unpack(m)
+	updated, deleted, err := unpack(m)
 	if err != nil {
 		return nil, err
 	}
@@ -30,11 +30,19 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.users.Users.Clone()
 
-	for _, o := range objects {
-		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
+	for _, o := range updated {
+		if objects, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
 			return nil, err
 		} else {
-			dbc.Stash(updated)
+			dbc.Stash(objects)
+		}
+	}
+
+	for _, oid := range deleted {
+		if objects, err := shadow.DeleteByOID(auth, oid, dbc); err != nil {
+			return nil, err
+		} else {
+			dbc.Stash(objects)
 		}
 	}
 

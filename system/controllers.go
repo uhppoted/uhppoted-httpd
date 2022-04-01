@@ -25,7 +25,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 
 	defer sys.Unlock()
 
-	objects, err := unpack(m)
+	updated, deleted, err := unpack(m)
 	if err != nil {
 		return nil, err
 	}
@@ -33,11 +33,19 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.controllers.Controllers.Clone()
 
-	for _, o := range objects {
-		if updated, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
+	for _, o := range updated {
+		if objects, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
 			return nil, err
 		} else {
-			dbc.Stash(updated)
+			dbc.Stash(objects)
+		}
+	}
+
+	for _, oid := range deleted {
+		if objects, err := shadow.DeleteByOID(auth, oid, dbc); err != nil {
+			return nil, err
+		} else {
+			dbc.Stash(objects)
 		}
 	}
 

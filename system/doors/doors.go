@@ -146,33 +146,50 @@ func (dd Doors) Print() {
 }
 
 func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
-	if dd == nil {
-		return nil, nil
-	}
+	objects := []schema.Object{}
 
-	for k, d := range dd.doors {
-		if d.OID.Contains(oid) {
-			objects, err := d.set(auth, oid, value, dbc)
-			if err == nil {
-				dd.doors[k] = d
+	if dd != nil {
+		for k, d := range dd.doors {
+			if d.OID.Contains(oid) {
+				objects, err := d.set(auth, oid, value, dbc)
+				if err == nil {
+					dd.doors[k] = d
+				}
+
+				return objects, err
 			}
+		}
 
-			return objects, err
+		if oid == "<new>" {
+			if d, err := dd.add(auth, Door{}); err != nil {
+				return nil, err
+			} else if d == nil {
+				return nil, fmt.Errorf("Failed to add 'new' door")
+			} else {
+				d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added 'new' door"), dbc)
+				dd.doors[d.OID] = *d
+				catalog.Join(&objects, catalog.NewObject(d.OID, "new"))
+				catalog.Join(&objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
+			}
 		}
 	}
 
+	return objects, nil
+}
+
+func (dd *Doors) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
-	if oid == "<new>" {
-		if d, err := dd.add(auth, Door{}); err != nil {
-			return nil, err
-		} else if d == nil {
-			return nil, fmt.Errorf("Failed to add 'new' door")
-		} else {
-			d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added 'new' door"), dbc)
-			dd.doors[d.OID] = *d
-			catalog.Join(&objects, catalog.NewObject(d.OID, "new"))
-			catalog.Join(&objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
+	if dd != nil {
+		for k, d := range dd.doors {
+			if d.OID == oid {
+				objects, err := d.delete(auth, dbc)
+				if err == nil {
+					dd.doors[k] = d
+				}
+
+				return objects, err
+			}
 		}
 	}
 

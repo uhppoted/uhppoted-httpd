@@ -68,22 +68,17 @@ export function refreshed () {
     .catch(err => console.error(err))
 }
 
-function updateFromDB (oid, record) {
-  const row = document.querySelector("div#users tr[data-oid='" + oid + "']")
+export function deleted (row) {
+  const name = row.querySelector('td input.name')
+  const uid = row.querySelector('td input.uid')
+  const re = /^\s*$/
 
-  const name = row.querySelector(`[data-oid="${oid}${schema.users.name}"]`)
-  const uid = row.querySelector(`[data-oid="${oid}${schema.users.uid}"]`)
-  const role = row.querySelector(`[data-oid="${oid}${schema.users.role}"]`)
-  const password = row.querySelector(`[data-oid="${oid}${schema.users.password}"]`)
+  if (name && name.dataset.oid !== '' && re.test(name.dataset.value) &&
+      uid && uid.dataset.oid !== '' && re.test(uid.dataset.value)) {
+    return true
+  }
 
-  row.dataset.status = record.status
-
-  update(name, record.name)
-  update(uid, record.uid)
-  update(role, record.role)
-  update(password, record.password)
-
-  return row
+  return false
 }
 
 function realize (users) {
@@ -151,4 +146,22 @@ function add (oid, record) {
 
     return row
   }
+}
+
+function updateFromDB (oid, record) {
+  const row = document.querySelector("div#users tr[data-oid='" + oid + "']")
+
+  const name = row.querySelector(`[data-oid="${oid}${schema.users.name}"]`)
+  const uid = row.querySelector(`[data-oid="${oid}${schema.users.uid}"]`)
+  const role = row.querySelector(`[data-oid="${oid}${schema.users.role}"]`)
+  const password = row.querySelector(`[data-oid="${oid}${schema.users.password}"]`)
+
+  row.dataset.status = record.status
+
+  update(name, record.name)
+  update(uid, record.uid)
+  update(role, record.role)
+  update(password, record.password)
+
+  return row
 }

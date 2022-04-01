@@ -108,7 +108,7 @@ export function commit (element) {
     refreshed: refreshed
   }
 
-  post(page, records, reset, cleanup)
+  post(page, records, null, reset, cleanup)
 }
 
 function modified (oid) {
