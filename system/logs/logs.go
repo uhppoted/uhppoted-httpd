@@ -161,11 +161,7 @@ func (ll *Logs) Load(blob json.RawMessage) error {
 }
 
 func (ll Logs) Save() (json.RawMessage, error) {
-	if err := validate(ll); err != nil {
-		return nil, err
-	}
-
-	if err := scrub(ll); err != nil {
+	if err := ll.Validate(); err != nil {
 		return nil, err
 	}
 
@@ -264,14 +260,6 @@ func load(file string) ([]json.RawMessage, error) {
 	}
 
 	return blob["logs"], nil
-}
-
-func validate(ll Logs) error {
-	return nil
-}
-
-func scrub(ll Logs) error {
-	return nil
 }
 
 func warn(err error) {

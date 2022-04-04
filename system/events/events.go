@@ -147,11 +147,7 @@ func (ee *Events) Load(blob json.RawMessage) error {
 }
 
 func (ee *Events) Save() (json.RawMessage, error) {
-	if err := validate(ee); err != nil {
-		return nil, err
-	}
-
-	if err := scrub(ee); err != nil {
+	if err := ee.Validate(); err != nil {
 		return nil, err
 	}
 
@@ -217,14 +213,6 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 			}
 		}
 	}
-}
-
-func validate(ee *Events) error {
-	return nil
-}
-
-func scrub(ee *Events) error {
-	return nil
 }
 
 func warn(err error) {

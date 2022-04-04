@@ -122,10 +122,6 @@ func (gg Groups) Save() (json.RawMessage, error) {
 		return nil, err
 	}
 
-	if err := scrub(gg); err != nil {
-		return nil, err
-	}
-
 	serializable := []json.RawMessage{}
 
 	for _, g := range gg.groups {
@@ -233,8 +229,4 @@ func (gg *Groups) add(a auth.OpAuth, g Group) (*Group, error) {
 	}
 
 	return &record, nil
-}
-
-func scrub(gg Groups) error {
-	return nil
 }

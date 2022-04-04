@@ -1,7 +1,7 @@
 ## v0.7.x
 
 - [ ] Change card number to not be a pointer
-- [ ] Remove all `scrub`
+- [x] Remove all `scrub`
 
 - [ ] Move delete to UI
       - [x] Remove 'deleting' hack

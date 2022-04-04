@@ -107,11 +107,7 @@ func (ii *Interfaces) Load(blob json.RawMessage) error {
 }
 
 func (ii Interfaces) Save() (json.RawMessage, error) {
-	if err := validate(ii); err != nil {
-		return nil, err
-	}
-
-	if err := scrub(ii); err != nil {
+	if err := ii.Validate(); err != nil {
 		return nil, err
 	}
 
@@ -159,14 +155,6 @@ func (ii *Interfaces) Clone() Interfaces {
 }
 
 func (ii Interfaces) Validate() error {
-	return validate(ii)
-}
-
-func (ii *Interfaces) add(auth auth.OpAuth, l LAN) (*LAN, error) {
-	return nil, fmt.Errorf("NOT SUPPORTED")
-}
-
-func validate(ii Interfaces) error {
 	names := map[string]string{}
 
 	for k, l := range ii.lans {
@@ -193,8 +181,8 @@ func validate(ii Interfaces) error {
 	return nil
 }
 
-func scrub(ii Interfaces) error {
-	return nil
+func (ii *Interfaces) add(auth auth.OpAuth, l LAN) (*LAN, error) {
+	return nil, fmt.Errorf("NOT SUPPORTED")
 }
 
 func stringify(i interface{}, defval string) string {
