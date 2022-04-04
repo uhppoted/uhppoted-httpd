@@ -185,32 +185,3 @@ func TestDoorSetWithDeleted(t *testing.T) {
 		t.Errorf("Door name unexpectedly updated - expected:%v, got:%v", "Le Door", d.Name)
 	}
 }
-
-func TestDoorSetWhileDeleting(t *testing.T) {
-	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
-		Name:  "Le Door",
-		delay: 7,
-		mode:  core.NormallyOpen,
-
-		deleted:  types.TimestampNow(),
-		deleting: true,
-	}
-
-	expected := []schema.Object{}
-
-	objects, err := d.set(nil, "0.3.3.1", "Eine Kleine Dooren", nil)
-	if err != nil {
-		t.Errorf("Unexpected error, got (%v)", err)
-	}
-
-	if !reflect.DeepEqual(objects, expected) {
-		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
-	}
-
-	if d.Name != "Le Door" {
-		t.Errorf("Door name unexpectedly updated - expected:%v, got:%v", "Le Door", d.Name)
-	}
-}

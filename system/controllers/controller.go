@@ -31,7 +31,6 @@ type Controller struct {
 	created      types.Timestamp
 	deleted      types.Timestamp
 	unconfigured bool
-	deleting     bool
 }
 
 type kv = struct {
@@ -388,11 +387,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 	}
 
 	if c.IsDeleted() {
-		if c.deleting {
-			return []schema.Object{}, nil
-		} else {
-			return c.toObjects([]kv{{ControllerDeleted, c.deleted}}, a), fmt.Errorf("Controller has been deleted")
-		}
+		return c.toObjects([]kv{{ControllerDeleted, c.deleted}}, a), fmt.Errorf("Controller has been deleted")
 	}
 
 	f := func(field string, value interface{}) error {
@@ -534,28 +529,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		}
 	}
 
-	//	if c.name == "" && c.DeviceID == 0 {
-	//		if a != nil {
-	//			if err := a.CanDelete(c, auth.Controllers); err != nil {
-	//				return nil, err
-	//			}
-	//		}
-	//
-	//		if p := stringify(clone.name, ""); p != "" {
-	//			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
-	//		} else if p = stringify(clone.DeviceID, ""); p != "" {
-	//			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
-	//		} else {
-	//			clone.log(uid, "delete", OID, "device-id", fmt.Sprintf("Deleted controller"), "", "", dbc)
-	//		}
-	//
-	//		c.deleted = types.TimestampNow()
-	//		c.deleting = true
-	//		list = append(list, kv{ControllerDeleted, c.deleted})
-	//
-	//		catalog.DeleteT(c.CatalogController, OID)
-	//	}
-
 	list = append(list, kv{ControllerStatus, c.status()})
 
 	return c.toObjects(list, a), nil
@@ -585,7 +558,6 @@ func (c *Controller) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) 
 		}
 
 		c.deleted = types.TimestampNow()
-		c.deleting = true
 
 		list = append(list, kv{ControllerDeleted, c.deleted})
 		list = append(list, kv{ControllerStatus, c.status()})
@@ -594,10 +566,6 @@ func (c *Controller) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) 
 	}
 
 	return c.toObjects(list, a), nil
-}
-
-func (c *Controller) committed() {
-	c.deleting = false
 }
 
 func (c *Controller) toObjects(list []kv, a auth.OpAuth) []schema.Object {

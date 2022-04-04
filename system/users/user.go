@@ -29,8 +29,6 @@ type User struct {
 	created  types.Timestamp
 	deleted  types.Timestamp
 	modified types.Timestamp
-
-	deleting bool
 }
 
 type kv = struct {
@@ -117,11 +115,7 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	}
 
 	if u.IsDeleted() {
-		if u.deleting {
-			return []schema.Object{}, nil
-		} else {
-			return u.toObjects([]kv{{UserDeleted, u.deleted}}, a), fmt.Errorf("User has been deleted")
-		}
+		return u.toObjects([]kv{{UserDeleted, u.deleted}}, a), fmt.Errorf("User has been deleted")
 	}
 
 	f := func(field string, value interface{}) error {
@@ -213,30 +207,6 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		}
 	}
 
-	if strings.TrimSpace(u.name) == "" && strings.TrimSpace(u.uid) == "" {
-		if a != nil {
-			if err := a.CanDelete(clone, auth.Users); err != nil {
-				return nil, err
-			}
-		}
-
-		if p := stringify(clone.uid, ""); p != "" {
-			u.log(a, "delete", u.OID, "user", fmt.Sprintf("Deleted UID %v", p), "", "", dbc)
-		} else if p = stringify(clone.name, ""); p != "" {
-			u.log(a, "delete", u.OID, "user", fmt.Sprintf("Deleted user %v", p), "", "", dbc)
-		} else {
-			u.log(a, "delete", u.OID, "user", "Deleted user", "", "", dbc)
-		}
-
-		u.deleted = types.TimestampNow()
-		u.modified = types.TimestampNow()
-		u.deleting = true
-
-		list = append(list, kv{UserDeleted, u.deleted})
-
-		catalog.DeleteT(u.CatalogUser, u.OID)
-	}
-
 	list = append(list, kv{UserStatus, u.status()})
 
 	return u.toObjects(list, a), nil
@@ -262,7 +232,6 @@ func (u *User) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 
 		u.deleted = types.TimestampNow()
 		u.modified = types.TimestampNow()
-		u.deleting = true
 
 		list = append(list, kv{UserDeleted, u.deleted})
 		list = append(list, kv{UserStatus, u.status()})
@@ -271,10 +240,6 @@ func (u *User) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 	}
 
 	return u.toObjects(list, a), nil
-}
-
-func (u User) committed() {
-	u.deleting = false
 }
 
 func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {

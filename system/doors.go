@@ -79,8 +79,6 @@ func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error
 	}
 
 	dbc.Commit()
-	shadow.Committed()
-
 	sys.doors.Doors = shadow
 	sys.updated()
 

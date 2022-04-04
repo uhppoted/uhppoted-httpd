@@ -196,12 +196,6 @@ func (dd *Doors) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]sc
 	return objects, nil
 }
 
-func (dd *Doors) Committed() {
-	for _, d := range dd.doors {
-		d.committed()
-	}
-}
-
 func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
 	oid := catalog.NewT(d.CatalogDoor)
 	if _, ok := dd.doors[oid]; ok {

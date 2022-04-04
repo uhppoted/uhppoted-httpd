@@ -58,7 +58,6 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}
 
 	dbc.Commit()
-	shadow.Committed()
 	sys.controllers.Controllers = shadow
 	sys.updated()
 

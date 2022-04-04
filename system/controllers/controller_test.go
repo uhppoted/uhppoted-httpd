@@ -227,30 +227,3 @@ func TestControllerSetWithDeleted(t *testing.T) {
 		t.Errorf("Controller name unexpectedly updated - expected:%v, got:%v", "Le Controlleur", c.name)
 	}
 }
-
-func TestControllerSetWhileDeleting(t *testing.T) {
-	c := Controller{
-		CatalogController: catalog.CatalogController{
-			OID: "0.2.3",
-		},
-		name: "Le Controlleur",
-
-		deleted:  types.TimestampNow(),
-		deleting: true,
-	}
-
-	expected := []schema.Object{}
-
-	objects, err := c.set(nil, "0.2.3.1", "Ze Kontroller", nil)
-	if err != nil {
-		t.Errorf("Unexxpected error, got (%v)", err)
-	}
-
-	if !reflect.DeepEqual(objects, expected) {
-		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
-	}
-
-	if c.name != "Le Controlleur" {
-		t.Errorf("Controller name unexpectedly updated - expected:%v, got:%v", "Le Controlleur", c.name)
-	}
-}

@@ -119,13 +119,6 @@ func (cc *Controllers) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC)
 
 	return objects, nil
 }
-func (cc *Controllers) Committed() {
-	for _, c := range cc.controllers {
-		if c != nil {
-			c.committed()
-		}
-	}
-}
 
 func (cc *Controllers) List() []Controller {
 	list := []Controller{}

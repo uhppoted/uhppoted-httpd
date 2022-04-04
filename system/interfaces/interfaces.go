@@ -71,12 +71,6 @@ func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string
 	return objects, nil
 }
 
-func (ii *Interfaces) Committed() {
-	for _, l := range ii.lans {
-		l.committed()
-	}
-}
-
 func (ii *Interfaces) LAN() (LAN, bool) {
 	for _, v := range ii.lans {
 		if v != nil {

@@ -36,7 +36,6 @@ type LAN struct {
 	deleted types.Timestamp
 
 	unconfigured bool
-	deleting     bool
 }
 
 type Controller interface {
@@ -112,11 +111,7 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 	}
 
 	if l.IsDeleted() {
-		if l.deleting {
-			return []schema.Object{}, nil
-		} else {
-			return l.toObjects([]kv{{LANDeleted, l.deleted}}, a), fmt.Errorf("LAN has been deleted")
-		}
+		return l.toObjects([]kv{{LANDeleted, l.deleted}}, a), fmt.Errorf("LAN has been deleted")
 	}
 
 	f := func(field string, value interface{}) error {
@@ -201,15 +196,9 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 		}
 	}
 
-	if !l.IsDeleted() {
-		list = append(list, kv{LANStatus, l.status()})
-	}
+	list = append(list, kv{LANStatus, l.status()})
 
 	return l.toObjects(list, a), nil
-}
-
-func (l *LAN) committed() {
-	l.deleting = false
 }
 
 func (l *LAN) toObjects(list []kv, a auth.OpAuth) []schema.Object {

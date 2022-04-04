@@ -55,7 +55,6 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 	}
 
 	dbc.Commit()
-	shadow.Committed()
 
 	sys.users.Users = shadow
 	sys.updated()

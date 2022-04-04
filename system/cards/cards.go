@@ -99,12 +99,6 @@ func (cc *Cards) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]sc
 	return objects, nil
 }
 
-func (cc *Cards) Committed() {
-	for _, c := range cc.cards {
-		c.committed()
-	}
-}
-
 func (cc *Cards) List() []Card {
 	list := []Card{}
 

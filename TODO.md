@@ -1,8 +1,8 @@
 ## v0.7.x
 
 - [ ] Move delete to UI
+      - [x] Remove 'deleting' hack
       - [ ] Throw error if UpdateXXX not valid (i.e. where delete used to be and/or in validate)
-      - [ ] Remove 'deleting' hack
       - [ ] Genericize commit in interfaces.js
       - [ ] Clean up repetive code:
 ```
@@ -12,7 +12,11 @@ if auth != nil {                                                                
 }
 ```
 
-- [ ] (optionally ?) Events should use local index rather than controller 
+- [ ] Events should use local index rather than controller 
+      - Get first/last
+      - Store all events in the catalog
+      - Query catalog for up to N missing events between first/last
+- (?) Invoke 'create' explicitly a la delete ?????
 - [ ] Cleanup audit log
 
 - [ ] Include 'modified' when serializing/deserializing objects

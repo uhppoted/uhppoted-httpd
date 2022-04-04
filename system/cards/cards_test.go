@@ -372,14 +372,6 @@ func TestCardDelete(t *testing.T) {
 
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
-	//	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(schema.CardName), "", nil); err != nil {
-	//		t.Fatalf("Unexpected error deleting card (%v)", err)
-	//	}
-	//
-	//	if _, err := cards.UpdateByOID(nil, dobby.OID.Append(schema.CardNumber), "", nil); err != nil {
-	//		t.Fatalf("Unexpected error deleting card (%v)", err)
-	//	}
-
 	if _, err := cards.DeleteByOID(nil, dobby.OID, nil); err != nil {
 		t.Fatalf("Unexpected error deleting card (%v)", err)
 	}
@@ -400,14 +392,6 @@ func TestCardHolderDeleteWithAuth(t *testing.T) {
 			return nil
 		},
 	}
-
-	//	if _, err := cards.UpdateByOID(&authx, dobby.OID.Append(schema.CardName), "", nil); err != nil {
-	//		t.Fatalf("Unexpected error deleting card (%v)", err)
-	//	}
-	//
-	//	if _, err := cards.UpdateByOID(&authx, dobby.OID.Append(schema.CardNumber), "", nil); err == nil {
-	//		t.Fatalf("Expected 'not authorised' error deleting card, got:%v", err)
-	//	}
 
 	if _, err := cards.DeleteByOID(&authx, dobby.OID, nil); err == nil {
 		t.Fatalf("Expected 'not authorised' error deleting card, got:%v", err)

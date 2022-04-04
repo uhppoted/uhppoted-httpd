@@ -185,30 +185,3 @@ func TestLANSetWithDeleted(t *testing.T) {
 		t.Errorf("LAN name unexpectedly updated - expected:%v, got:%v", "Le LAN", l.Name)
 	}
 }
-
-func TestLANSetWhileDeleting(t *testing.T) {
-	l := LAN{
-		CatalogInterface: catalog.CatalogInterface{
-			OID: "0.1.3",
-		},
-		Name: "Le LAN",
-
-		deleted:  types.TimestampNow(),
-		deleting: true,
-	}
-
-	expected := []schema.Object{}
-
-	objects, err := l.set(nil, "0.1.3.1", "Ze LAN", nil)
-	if err != nil {
-		t.Errorf("Unexpected error, got (%v)", err)
-	}
-
-	if !reflect.DeepEqual(objects, expected) {
-		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
-	}
-
-	if l.Name != "Le LAN" {
-		t.Errorf("LAN name unexpectedly updated - expected:%v, got:%v", "Le LAN", l.Name)
-	}
-}

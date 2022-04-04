@@ -28,8 +28,6 @@ type Card struct {
 
 	created types.Timestamp
 	deleted types.Timestamp
-
-	deleting bool
 }
 
 type kv = struct {
@@ -158,11 +156,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	}
 
 	if c.IsDeleted() {
-		if c.deleting {
-			return []schema.Object{}, nil
-		} else {
-			return c.toObjects([]kv{{CardDeleted, c.deleted}}, a), fmt.Errorf("Card has been deleted")
-		}
+		return c.toObjects([]kv{{CardDeleted, c.deleted}}, a), fmt.Errorf("Card has been deleted")
 	}
 
 	f := func(field string, value interface{}) error {
@@ -323,49 +317,6 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		}
 	}
 
-	//	if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
-	//		if a != nil {
-	//			if err := a.CanDelete(clone, auth.Cards); err != nil {
-	//				return nil, err
-	//			}
-	//		}
-	//
-	//		if p := stringify(clone.Card, ""); p != "" {
-	//			c.log(a,
-	//				"delete",
-	//				c.OID,
-	//				"card",
-	//				fmt.Sprintf("Deleted card %v", p),
-	//				"",
-	//				"",
-	//				dbc)
-	//		} else if p = stringify(clone.Name, ""); p != "" {
-	//			c.log(a,
-	//				"delete",
-	//				c.OID,
-	//				"card",
-	//				fmt.Sprintf("Deleted card for %v", p),
-	//				"",
-	//				"",
-	//				dbc)
-	//		} else {
-	//			c.log(a,
-	//				"delete",
-	//				c.OID,
-	//				"card",
-	//				"Deleted card",
-	//				"",
-	//				"",
-	//				dbc)
-	//		}
-	//
-	//		c.deleted = types.TimestampNow()
-	//		c.deleting = true
-	//		list = append(list, kv{CardDeleted, c.deleted})
-	//
-	//		catalog.DeleteT(c.CatalogCard, c.OID)
-	//	}
-
 	list = append(list, kv{CardStatus, c.status()})
 
 	return c.toObjects(list, a), nil
@@ -390,7 +341,6 @@ func (c *Card) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 		}
 
 		c.deleted = types.TimestampNow()
-		c.deleting = true
 
 		list = append(list, kv{CardDeleted, c.deleted})
 		list = append(list, kv{CardStatus, c.status()})
@@ -399,10 +349,6 @@ func (c *Card) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 	}
 
 	return c.toObjects(list, a), nil
-}
-
-func (c *Card) committed() {
-	c.deleting = false
 }
 
 func (c *Card) toObjects(list []kv, a auth.OpAuth) []schema.Object {

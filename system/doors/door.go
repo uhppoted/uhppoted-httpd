@@ -25,8 +25,6 @@ type Door struct {
 	mode    core.ControlState
 	created types.Timestamp
 	deleted types.Timestamp
-
-	deleting bool
 }
 
 type kv = struct {
@@ -169,11 +167,7 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	if d == nil {
 		return []schema.Object{}, nil
 	} else if d.IsDeleted() {
-		if d.deleting {
-			return []schema.Object{}, nil
-		} else {
-			return d.toObjects([]kv{kv{DoorDeleted, d.deleted}}, a), fmt.Errorf("Door has been deleted")
-		}
+		return d.toObjects([]kv{kv{DoorDeleted, d.deleted}}, a), fmt.Errorf("Door has been deleted")
 	}
 
 	list := []kv{}
@@ -231,21 +225,6 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		}
 	}
 
-	//	if !d.IsValid() {
-	//		if a != nil {
-	//			if err := a.CanDelete(d, auth.Doors); err != nil {
-	//				return nil, err
-	//			}
-	//		}
-	//
-	//		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", name), dbc)
-	//		d.deleted = types.TimestampNow()
-	//		d.deleting = true
-	//
-	//		list = append(list, kv{DoorDeleted, d.deleted})
-	//		catalog.DeleteT(d.CatalogDoor, d.OID)
-	//	}
-
 	list = append(list, kv{DoorStatus, d.status()})
 
 	return d.toObjects(list, a), nil
@@ -267,7 +246,6 @@ func (d *Door) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 
 		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", d.Name), dbc)
 		d.deleted = types.TimestampNow()
-		d.deleting = true
 
 		list = append(list, kv{DoorDeleted, d.deleted})
 		list = append(list, kv{DoorStatus, d.status()})
@@ -276,10 +254,6 @@ func (d *Door) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 	}
 
 	return d.toObjects(list, a), nil
-}
-
-func (d *Door) committed() {
-	d.deleting = false
 }
 
 func (d *Door) toObjects(list []kv, a auth.OpAuth) []schema.Object {

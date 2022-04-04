@@ -91,12 +91,6 @@ func (gg *Groups) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]s
 	return []schema.Object{}, nil
 }
 
-func (gg *Groups) Committed() {
-	for _, g := range gg.groups {
-		g.committed()
-	}
-}
-
 func (gg *Groups) Load(blob json.RawMessage) error {
 	rs := []json.RawMessage{}
 	if err := json.Unmarshal(blob, &rs); err != nil {

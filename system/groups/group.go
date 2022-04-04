@@ -22,8 +22,6 @@ type Group struct {
 
 	created types.Timestamp
 	deleted types.Timestamp
-
-	deleting bool
 }
 
 type kv = struct {
@@ -123,11 +121,7 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 	}
 
 	if g.IsDeleted() {
-		if g.deleting {
-			return []schema.Object{}, nil
-		} else {
-			return g.toObjects([]kv{{GroupDeleted, g.deleted}}, a), fmt.Errorf("Group has been deleted")
-		}
+		return g.toObjects([]kv{{GroupDeleted, g.deleted}}, a), fmt.Errorf("Group has been deleted")
 	}
 
 	f := func(field string, value interface{}) error {
@@ -137,8 +131,6 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 
 		return nil
 	}
-
-	//	name := g.Name
 
 	list := []kv{}
 	switch {
@@ -172,22 +164,6 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 		}
 	}
 
-	//	if !g.IsValid() {
-	//		if a != nil {
-	//			if err := a.CanDelete(g, auth.Groups); err != nil {
-	//				return nil, err
-	//			}
-	//		}
-	//
-	//		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", name), dbc)
-	//		g.deleted = types.TimestampNow()
-	//		g.deleting = true
-	//
-	//		list = append(list, kv{GroupDeleted, g.deleted})
-	//
-	//		catalog.DeleteT(g.CatalogGroup, g.OID)
-	//	}
-
 	list = append(list, kv{GroupStatus, g.status()})
 
 	return g.toObjects(list, a), nil
@@ -205,7 +181,6 @@ func (g *Group) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 
 		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", g.Name), dbc)
 		g.deleted = types.TimestampNow()
-		g.deleting = true
 
 		list = append(list, kv{GroupStatus, g.status()})
 		list = append(list, kv{GroupDeleted, g.deleted})
@@ -214,10 +189,6 @@ func (g *Group) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 	}
 
 	return g.toObjects(list, a), nil
-}
-
-func (g *Group) committed() {
-	g.deleting = false
 }
 
 func (g *Group) toObjects(list []kv, a auth.OpAuth) []schema.Object {
