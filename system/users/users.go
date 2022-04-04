@@ -122,11 +122,7 @@ func (uu *Users) Load(blob json.RawMessage) error {
 }
 
 func (uu Users) Save() (json.RawMessage, error) {
-	if err := validate(uu); err != nil {
-		return nil, err
-	}
-
-	if err := uu.scrub(); err != nil {
+	if err := uu.Validate(); err != nil {
 		return nil, err
 	}
 
@@ -189,7 +185,37 @@ func (uu *Users) User(uid string) (auth.IUser, bool) {
 }
 
 func (uu Users) Validate() error {
-	return validate(uu)
+	users := map[string]schema.OID{}
+
+	for k, u := range uu.users {
+		if u.IsDeleted() {
+			continue
+		}
+
+		if u.OID == "" {
+			return fmt.Errorf("Invalid user OID (%v)", u.OID)
+		} else if u.OID != k {
+			return fmt.Errorf("User %s: mismatched user OID %v (expected %v)", u.name, u.OID, k)
+		}
+
+		if !u.isNew && !u.IsValid() {
+			return fmt.Errorf("User is invalid")
+		}
+
+		if oid, ok := users[u.uid]; ok {
+			return &types.HttpdError{
+				Status: http.StatusBadRequest,
+				Err:    fmt.Errorf("Duplicate UID (%v)", u.uid),
+				Detail: fmt.Errorf("UID %v: duplicate entry in records %v and %v", u.uid, oid, u.OID),
+			}
+		}
+
+		if u.uid != "" {
+			users[u.uid] = u.OID
+		}
+	}
+
+	return nil
 }
 
 func (uu Users) Print() {
@@ -224,8 +250,9 @@ func (uu Users) add(a auth.OpAuth, u User) (*User, error) {
 
 	user := u.clone()
 	user.OID = oid
+	user.isNew = true
 	user.created = types.TimestampNow()
-	u.modified = types.TimestampNow()
+	user.modified = types.TimestampNow()
 
 	if a != nil {
 		if err := a.CanAdd(user, auth.Users); err != nil {
@@ -234,36 +261,4 @@ func (uu Users) add(a auth.OpAuth, u User) (*User, error) {
 	}
 
 	return user, nil
-}
-
-func validate(uu Users) error {
-	users := map[string]schema.OID{}
-
-	for _, u := range uu.users {
-		if u.IsDeleted() {
-			continue
-		}
-
-		if u.OID == "" {
-			return fmt.Errorf("Invalid user OID (%v)", u.OID)
-		}
-
-		if oid, ok := users[u.uid]; ok {
-			return &types.HttpdError{
-				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Duplicate UID (%v)", u.uid),
-				Detail: fmt.Errorf("UID %v: duplicate entry in records %v and %v", u.uid, oid, u.OID),
-			}
-		}
-
-		if u.uid != "" {
-			users[u.uid] = u.OID
-		}
-	}
-
-	return nil
-}
-
-func (uu *Users) scrub() error {
-	return nil
 }

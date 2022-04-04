@@ -21,8 +21,10 @@ type Door struct {
 	catalog.CatalogDoor
 	Name string `json:"name"`
 
-	delay   uint8
-	mode    core.ControlState
+	delay uint8
+	mode  core.ControlState
+
+	isNew   bool
 	created types.Timestamp
 	deleted types.Timestamp
 }
@@ -36,13 +38,11 @@ const BLANK = "'blank'"
 
 var created = types.TimestampNow()
 
-func (d *Door) IsValid() bool {
-	if d != nil {
-		door := catalog.GetDoorDeviceDoor(d.OID)
+func (d Door) IsValid() bool {
+	door := catalog.GetDoorDeviceDoor(d.OID)
 
-		if strings.TrimSpace(d.Name) != "" || door != 0 {
-			return true
-		}
+	if strings.TrimSpace(d.Name) != "" || door != 0 {
+		return true
 	}
 
 	return false
@@ -126,7 +126,9 @@ func (d *Door) AsObjects(auth auth.OpAuth) []schema.Object {
 			}
 		}
 
-		list = append(list, kv{DoorStatus, d.status()})
+		d.isNew = false
+
+		list = append(list, kv{DoorStatus, d.Status()})
 		list = append(list, kv{DoorCreated, d.created})
 		list = append(list, kv{DoorDeleted, d.deleted})
 		list = append(list, kv{DoorName, name})
@@ -225,7 +227,7 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		}
 	}
 
-	list = append(list, kv{DoorStatus, d.status()})
+	list = append(list, kv{DoorStatus, d.Status()})
 
 	return d.toObjects(list, a), nil
 }
@@ -248,7 +250,7 @@ func (d *Door) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 		d.deleted = types.TimestampNow()
 
 		list = append(list, kv{DoorDeleted, d.deleted})
-		list = append(list, kv{DoorStatus, d.status()})
+		list = append(list, kv{DoorStatus, d.Status()})
 
 		catalog.DeleteT(d.CatalogDoor, d.OID)
 	}
@@ -283,7 +285,7 @@ func (d *Door) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	return objects
 }
 
-func (d *Door) status() types.Status {
+func (d Door) Status() types.Status {
 	if d.IsDeleted() {
 		return types.StatusDeleted
 	}

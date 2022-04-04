@@ -82,11 +82,7 @@ func (dd *Doors) Load(blob json.RawMessage) error {
 }
 
 func (dd Doors) Save() (json.RawMessage, error) {
-	if err := validate(dd); err != nil {
-		return nil, err
-	}
-
-	if err := scrub(dd); err != nil {
+	if err := dd.Validate(); err != nil {
 		return nil, err
 	}
 
@@ -204,6 +200,7 @@ func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
 
 	record := d.clone()
 	record.OID = oid
+	record.isNew = true
 	record.created = types.TimestampNow()
 
 	if a != nil {
@@ -231,15 +228,7 @@ func (dd *Doors) Clone() Doors {
 	return shadow
 }
 
-func (dd *Doors) Validate() error {
-	if dd != nil {
-		return validate(*dd)
-	}
-
-	return nil
-}
-
-func validate(dd Doors) error {
+func (dd Doors) Validate() error {
 	names := map[string]string{}
 
 	for k, d := range dd.doors {
@@ -249,10 +238,12 @@ func validate(dd Doors) error {
 
 		if d.OID == "" {
 			return fmt.Errorf("Invalid door OID (%v)", d.OID)
+		} else if k != d.OID {
+			return fmt.Errorf("Door %s: mismatched door OID %v (expected %v)", d.Name, d.OID, k)
 		}
 
-		if k != d.OID {
-			return fmt.Errorf("Door %s: mismatched door OID %v (expected %v)", d.Name, d.OID, k)
+		if !d.isNew && !d.IsValid() {
+			return fmt.Errorf("Door is not valid")
 		}
 
 		n := strings.TrimSpace(strings.ToLower(d.Name))
@@ -263,10 +254,6 @@ func validate(dd Doors) error {
 		names[n] = d.Name
 	}
 
-	return nil
-}
-
-func scrub(dd Doors) error {
 	return nil
 }
 

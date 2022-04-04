@@ -1,8 +1,16 @@
 ## v0.7.x
 
+- [ ] Change card number to not be a pointer
+- [ ] Remove all `scrub`
+
 - [ ] Move delete to UI
       - [x] Remove 'deleting' hack
-      - [ ] Throw error if UpdateXXX not valid (i.e. where delete used to be and/or in validate)
+      - [ ] Throw error if UpdateXXX not new and not valid 
+            - [ ] Return more descriptive error (not valid isn't all that helpful)
+            - [ ] Elegantize isNew hack
+                  - only there to skip validation
+                  - at the moment it mostly works because it's not copied in clone
+                  - (??) maybe put in an 'added' list
       - [ ] Genericize commit in interfaces.js
       - [ ] Clean up repetive code:
 ```
@@ -12,11 +20,14 @@ if auth != nil {                                                                
 }
 ```
 
+- [ ] Rework `create`
+      - [ ] Very fragile - uses 'new' status 
+      - [ ] Maybe invoke 'create' explicitly a la delete
+
 - [ ] Events should use local index rather than controller 
       - Get first/last
       - Store all events in the catalog
       - Query catalog for up to N missing events between first/last
-- (?) Invoke 'create' explicitly a la delete ?????
 - [ ] Cleanup audit log
 
 - [ ] Include 'modified' when serializing/deserializing objects

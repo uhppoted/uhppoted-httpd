@@ -61,14 +61,7 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 			} else if c == nil {
 				return nil, fmt.Errorf("Failed to add 'new' card")
 			} else {
-				c.log(auth,
-					"add",
-					c.OID,
-					"card",
-					"Added 'new' card",
-					"",
-					"",
-					dbc)
+				c.log(auth, "add", c.OID, "card", "Added 'new' card", "", "", dbc)
 
 				cc.cards[c.OID] = c
 				catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
@@ -138,11 +131,7 @@ func (cc *Cards) Load(blob json.RawMessage) error {
 }
 
 func (cc *Cards) Save() (json.RawMessage, error) {
-	if err := validate(*cc); err != nil {
-		return nil, err
-	}
-
-	if err := cc.scrub(); err != nil {
+	if err := cc.Validate(); err != nil {
 		return nil, err
 	}
 
@@ -173,9 +162,36 @@ func (cc *Cards) Clone() Cards {
 	return shadow
 }
 
-func (cc *Cards) Validate() error {
-	if cc != nil {
-		return validate(*cc)
+func (cc Cards) Validate() error {
+	cards := map[uint32]string{}
+
+	for k, c := range cc.cards {
+		if c.IsDeleted() {
+			continue
+		}
+
+		if c.OID == "" {
+			return fmt.Errorf("Invalid card OID (%v)", c.OID)
+		} else if k != c.OID {
+			return fmt.Errorf("Card %s: mismatched OID %v (expected %v)", c.Name, c.OID, k)
+		}
+
+		if !c.isNew && !c.IsValid() {
+			return fmt.Errorf("Card is invalid")
+		}
+
+		if c.Card != nil {
+			card := uint32(*c.Card)
+			if id, ok := cards[card]; ok {
+				return &types.HttpdError{
+					Status: http.StatusBadRequest,
+					Err:    fmt.Errorf("Duplicate card number (%v)", card),
+					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", card, id, c.OID),
+				}
+			}
+
+			cards[card] = string(c.OID)
+		}
 	}
 
 	return nil
@@ -227,6 +243,7 @@ func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
 
 	card := c.clone()
 	card.OID = oid
+	card.isNew = true
 	card.created = types.TimestampNow()
 
 	if a != nil {
@@ -236,37 +253,4 @@ func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
 	}
 
 	return card, nil
-}
-
-func validate(cc Cards) error {
-	cards := map[uint32]string{}
-
-	for _, c := range cc.cards {
-		if c.IsDeleted() {
-			continue
-		}
-
-		if c.OID == "" {
-			return fmt.Errorf("Invalid card OID (%v)", c.OID)
-		}
-
-		if c.Card != nil {
-			card := uint32(*c.Card)
-			if id, ok := cards[card]; ok {
-				return &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Duplicate card number (%v)", card),
-					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", card, id, c.OID),
-				}
-			}
-
-			cards[card] = string(c.OID)
-		}
-	}
-
-	return nil
-}
-
-func (cc *Cards) scrub() error {
-	return nil
 }

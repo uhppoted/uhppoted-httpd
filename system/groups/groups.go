@@ -118,7 +118,7 @@ func (gg *Groups) Load(blob json.RawMessage) error {
 }
 
 func (gg Groups) Save() (json.RawMessage, error) {
-	if err := validate(gg); err != nil {
+	if err := gg.Validate(); err != nil {
 		return nil, err
 	}
 
@@ -175,9 +175,30 @@ func (gg *Groups) Clone() Groups {
 	return shadow
 }
 
-func (gg *Groups) Validate() error {
-	if gg != nil {
-		return validate(*gg)
+func (gg Groups) Validate() error {
+	names := map[string]string{}
+
+	for k, g := range gg.groups {
+		if g.IsDeleted() {
+			continue
+		}
+
+		if g.OID == "" {
+			return fmt.Errorf("Invalid group OID (%v)", g.OID)
+		} else if k != g.OID {
+			return fmt.Errorf("Group %s: mismatched group OID %v (expected %v)", g.Name, g.OID, k)
+		}
+
+		if !g.isNew && !g.IsValid() {
+			return fmt.Errorf("Group is invalid")
+		}
+
+		n := strings.TrimSpace(strings.ToLower(g.Name))
+		if v, ok := names[n]; ok && n != "" {
+			return fmt.Errorf("'%v': duplicate group name (%v)", g.Name, v)
+		}
+
+		names[n] = g.Name
 	}
 
 	return nil
@@ -202,6 +223,7 @@ func (gg *Groups) add(a auth.OpAuth, g Group) (*Group, error) {
 
 	record := g.clone()
 	record.OID = oid
+	record.isNew = true
 	record.created = types.TimestampNow()
 
 	if a != nil {
@@ -211,33 +233,6 @@ func (gg *Groups) add(a auth.OpAuth, g Group) (*Group, error) {
 	}
 
 	return &record, nil
-}
-
-func validate(gg Groups) error {
-	names := map[string]string{}
-
-	for k, g := range gg.groups {
-		if g.IsDeleted() {
-			continue
-		}
-
-		if g.OID == "" {
-			return fmt.Errorf("Invalid group OID (%v)", g.OID)
-		}
-
-		if k != g.OID {
-			return fmt.Errorf("Group %s: mismatched group OID %v (expected %v)", g.Name, g.OID, k)
-		}
-
-		n := strings.TrimSpace(strings.ToLower(g.Name))
-		if v, ok := names[n]; ok && n != "" {
-			return fmt.Errorf("'%v': duplicate group name (%v)", g.Name, v)
-		}
-
-		names[n] = g.Name
-	}
-
-	return nil
 }
 
 func scrub(gg Groups) error {

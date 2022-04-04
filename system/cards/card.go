@@ -26,6 +26,7 @@ type Card struct {
 	To     core.Date
 	Groups map[schema.OID]bool
 
+	isNew   bool
 	created types.Timestamp
 	deleted types.Timestamp
 }
@@ -58,15 +59,9 @@ func (c Card) GetName() string {
 	return strings.TrimSpace(c.Name)
 }
 
-func (c *Card) IsValid() bool {
-	if c != nil {
-		if strings.TrimSpace(c.Name) != "" {
-			return true
-		}
-
-		if c.Card != nil && *c.Card != 0 {
-			return true
-		}
+func (c Card) IsValid() bool {
+	if strings.TrimSpace(c.Name) != "" || (c.Card != nil && *c.Card != 0) {
+		return true
 	}
 
 	return false
@@ -87,7 +82,7 @@ func (c *Card) AsObjects(auth auth.OpAuth) []schema.Object {
 		from := c.From
 		to := c.To
 
-		list = append(list, kv{CardStatus, c.status()})
+		list = append(list, kv{CardStatus, c.Status()})
 		list = append(list, kv{CardCreated, c.created})
 		list = append(list, kv{CardDeleted, c.deleted})
 		list = append(list, kv{CardName, name})
@@ -168,7 +163,6 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	}
 
 	list := []kv{}
-	//clone := c.clone()
 
 	switch {
 	case oid == c.OID.Append(CardName):
@@ -317,7 +311,9 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		}
 	}
 
-	list = append(list, kv{CardStatus, c.status()})
+	c.isNew = false
+
+	list = append(list, kv{CardStatus, c.Status()})
 
 	return c.toObjects(list, a), nil
 }
@@ -343,7 +339,7 @@ func (c *Card) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 		c.deleted = types.TimestampNow()
 
 		list = append(list, kv{CardDeleted, c.deleted})
-		list = append(list, kv{CardStatus, c.status()})
+		list = append(list, kv{CardStatus, c.Status()})
 
 		catalog.DeleteT(c.CatalogCard, c.OID)
 	}
@@ -378,7 +374,7 @@ func (c *Card) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	return objects
 }
 
-func (c *Card) status() types.Status {
+func (c *Card) Status() types.Status {
 	if c.IsDeleted() {
 		return types.StatusDeleted
 	}

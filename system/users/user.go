@@ -26,6 +26,7 @@ type User struct {
 	salt     []byte
 	password string
 
+	isNew    bool
 	created  types.Timestamp
 	deleted  types.Timestamp
 	modified types.Timestamp
@@ -83,7 +84,7 @@ func (u User) AsObjects(auth auth.OpAuth) []schema.Object {
 	if u.IsDeleted() {
 		list = append(list, kv{UserDeleted, u.deleted})
 	} else {
-		list = append(list, kv{UserStatus, u.status()})
+		list = append(list, kv{UserStatus, u.Status()})
 		list = append(list, kv{UserCreated, u.created})
 		list = append(list, kv{UserDeleted, u.deleted})
 		list = append(list, kv{UserName, u.name})
@@ -207,7 +208,9 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		}
 	}
 
-	list = append(list, kv{UserStatus, u.status()})
+	u.isNew = false
+
+	list = append(list, kv{UserStatus, u.Status()})
 
 	return u.toObjects(list, a), nil
 }
@@ -234,7 +237,7 @@ func (u *User) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 		u.modified = types.TimestampNow()
 
 		list = append(list, kv{UserDeleted, u.deleted})
-		list = append(list, kv{UserStatus, u.status()})
+		list = append(list, kv{UserStatus, u.Status()})
 
 		catalog.DeleteT(u.CatalogUser, u.OID)
 	}
@@ -269,7 +272,7 @@ func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	return objects
 }
 
-func (u User) status() types.Status {
+func (u User) Status() types.Status {
 	if u.IsDeleted() {
 		return types.StatusDeleted
 	}

@@ -163,16 +163,8 @@ func (cc *Controllers) Load(blob json.RawMessage) error {
 	return nil
 }
 
-func (cc *Controllers) Save() (json.RawMessage, error) {
-	if cc == nil {
-		return nil, nil
-	}
-
-	if err := validate(*cc); err != nil {
-		return nil, err
-	}
-
-	if err := scrub(cc); err != nil {
+func (cc Controllers) Save() (json.RawMessage, error) {
+	if err := cc.Validate(); err != nil {
 		return nil, err
 	}
 
@@ -389,31 +381,7 @@ func (cc *Controllers) UpdateACL(i interfaces.Interfaces, permissions acl.ACL) e
 	return lan.update(cc.controllers, permissions)
 }
 
-func (cc *Controllers) Validate() error {
-	if cc != nil {
-		return validate(*cc)
-	}
-
-	return nil
-}
-
-func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
-	record := c.clone()
-	record.OID = schema.OID(catalog.NewT(c.CatalogController))
-	record.created = types.TimestampNow()
-
-	if a != nil {
-		if err := a.CanAdd(record, auth.Controllers); err != nil {
-			return nil, err
-		}
-	}
-
-	cc.controllers = append(cc.controllers, record)
-
-	return record, nil
-}
-
-func validate(cc Controllers) error {
+func (cc Controllers) Validate() error {
 	devices := map[uint32]string{}
 
 	for _, c := range cc.controllers {
@@ -424,6 +392,10 @@ func validate(cc Controllers) error {
 
 		if c.IsDeleted() {
 			continue
+		}
+
+		if !c.isNew && !c.IsValid() {
+			return fmt.Errorf("Controller is invalid")
 		}
 
 		if c.DeviceID != 0 {
@@ -438,8 +410,21 @@ func validate(cc Controllers) error {
 	return nil
 }
 
-func scrub(cc *Controllers) error {
-	return nil
+func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
+	record := c.clone()
+	record.OID = schema.OID(catalog.NewT(c.CatalogController))
+	record.isNew = true
+	record.created = types.TimestampNow()
+
+	if a != nil {
+		if err := a.CanAdd(record, auth.Controllers); err != nil {
+			return nil, err
+		}
+	}
+
+	cc.controllers = append(cc.controllers, record)
+
+	return record, nil
 }
 
 func info(msg string) {

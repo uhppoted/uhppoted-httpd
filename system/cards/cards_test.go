@@ -39,20 +39,17 @@ func (d *dbc) SetPassword(uid, pwd, role string) error {
 func TestCardAdd(t *testing.T) {
 	catalog.Init(memdb.NewCatalog())
 
-	placeholder := Card{
-		CatalogCard: catalog.CatalogCard{
-			OID: schema.OID("0.4.2"),
-		},
-		Groups: map[schema.OID]bool{},
-	}
-
 	expected := []schema.Object{
 		schema.Object{OID: "0.4.2", Value: "new"},
 		schema.Object{OID: "0.4.2.0.1", Value: types.TimestampNow()},
 	}
 
 	cards := makeCards(hagrid)
-	final := makeCards(hagrid, placeholder)
+	final := makeCards(hagrid, Card{
+		CatalogCard: catalog.CatalogCard{
+			OID: "0.4.2",
+		},
+	})
 
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
@@ -72,9 +69,9 @@ func TestCardAdd(t *testing.T) {
 func TestCardAddWithAuth(t *testing.T) {
 	catalog.Init(memdb.NewCatalog())
 
+	auth := stub{}
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid)
-	auth := stub{}
 
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
@@ -124,9 +121,8 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 
 		db: makeCards(hagrid, Card{
 			CatalogCard: catalog.CatalogCard{
-				OID: schema.OID("0.4.2"),
+				OID: "0.4.2",
 			},
-			Groups: map[schema.OID]bool{},
 		}),
 	}
 
@@ -409,34 +405,6 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 		db   *Cards
 	}{
 		logs: []audit.AuditRecord{
-			//			audit.AuditRecord{
-			//				UID:       "",
-			//				OID:       "0.4.2",
-			//				Component: "card",
-			//				Operation: "update",
-			//				Details: audit.Details{
-			//					ID:          "1234567",
-			//					Name:        "Dobby",
-			//					Field:       "name",
-			//					Description: "Updated name from Dobby to 'blank'",
-			//					Before:      "Dobby",
-			//					After:       "",
-			//				},
-			//			},
-			//			audit.AuditRecord{
-			//				UID:       "",
-			//				OID:       "0.4.2",
-			//				Component: "card",
-			//				Operation: "update",
-			//				Details: audit.Details{
-			//					ID:          "1234567",
-			//					Name:        "",
-			//					Field:       "number",
-			//					Description: "Cleared card number 1234567",
-			//					Before:      "1234567",
-			//					After:       "",
-			//				},
-			//			},
 			audit.AuditRecord{
 				UID:       "",
 				OID:       "0.4.2",
@@ -461,9 +429,6 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 	catalog.PutT(dobby.CatalogCard, dobby.OID)
 
-	//	cards.UpdateByOID(nil, dobby.OID.Append(schema.CardName), "", &trail)
-	//	cards.UpdateByOID(nil, dobby.OID.Append(schema.CardNumber), "", &trail)
-
 	cards.DeleteByOID(nil, dobby.OID, &trail)
 
 	compareDB(cards, expected.db, t)
@@ -472,5 +437,43 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 		t.Error("Invalid audit trail")
 	} else if !reflect.DeepEqual(trail.logs, expected.logs) {
 		t.Errorf("Incorrect audit trail record\n  expected:%+v\n  got:     %+v", expected.logs, trail.logs)
+	}
+}
+
+func TestValidateWithInvalidCard(t *testing.T) {
+	cc := Cards{
+		cards: map[schema.OID]*Card{
+			"0.4.3": &Card{
+				CatalogCard: catalog.CatalogCard{
+					OID: "0.4.3",
+				},
+				Name: "",
+				Card: nil,
+			},
+		},
+	}
+
+	if err := cc.Validate(); err == nil {
+		t.Errorf("Expected error validating cards list with invalid card, got:%v", err)
+	}
+}
+
+func TestValidateWithInvalidCard2(t *testing.T) {
+	card := types.Card(0)
+
+	cc := Cards{
+		cards: map[schema.OID]*Card{
+			"0.4.3": &Card{
+				CatalogCard: catalog.CatalogCard{
+					OID: "0.4.3",
+				},
+				Name: "",
+				Card: &card,
+			},
+		},
+	}
+
+	if err := cc.Validate(); err == nil {
+		t.Errorf("Expected error validating cards list with invalid card, got:%v", err)
 	}
 }

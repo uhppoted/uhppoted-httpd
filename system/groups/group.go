@@ -20,6 +20,7 @@ type Group struct {
 	Name  string              `json:"name"`
 	Doors map[schema.OID]bool `json:"doors"`
 
+	isNew   bool
 	created types.Timestamp
 	deleted types.Timestamp
 }
@@ -57,7 +58,7 @@ func (g *Group) AsObjects(auth auth.OpAuth) []schema.Object {
 	} else {
 		name := g.Name
 
-		list = append(list, kv{GroupStatus, g.status()})
+		list = append(list, kv{GroupStatus, g.Status()})
 		list = append(list, kv{GroupCreated, g.created})
 		list = append(list, kv{GroupDeleted, g.deleted})
 		list = append(list, kv{GroupName, name})
@@ -107,7 +108,7 @@ func (g *Group) AsRuleEntity() (string, interface{}) {
 	return "group", &entity
 }
 
-func (g *Group) status() types.Status {
+func (g Group) Status() types.Status {
 	if g.IsDeleted() {
 		return types.StatusDeleted
 	}
@@ -164,7 +165,9 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 		}
 	}
 
-	list = append(list, kv{GroupStatus, g.status()})
+	g.isNew = false
+
+	list = append(list, kv{GroupStatus, g.Status()})
 
 	return g.toObjects(list, a), nil
 }
@@ -182,7 +185,7 @@ func (g *Group) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", g.Name), dbc)
 		g.deleted = types.TimestampNow()
 
-		list = append(list, kv{GroupStatus, g.status()})
+		list = append(list, kv{GroupStatus, g.Status()})
 		list = append(list, kv{GroupDeleted, g.deleted})
 
 		catalog.DeleteT(g.CatalogGroup, g.OID)

@@ -28,6 +28,7 @@ type Controller struct {
 	Doors    map[uint8]schema.OID
 	timezone string
 
+	isNew        bool
 	created      types.Timestamp
 	deleted      types.Timestamp
 	unconfigured bool
@@ -57,8 +58,8 @@ type cached struct {
 
 var created = types.TimestampNow()
 
-func (c *Controller) IsValid() bool {
-	if c != nil && (c.name != "" || c.DeviceID != 0) {
+func (c Controller) IsValid() bool {
+	if strings.TrimSpace(c.name) != "" || c.DeviceID != 0 {
 		return true
 	}
 
@@ -235,7 +236,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []schema.Object {
 			}
 		}
 
-		list = append(list, kv{ControllerStatus, c.status()})
+		list = append(list, kv{ControllerStatus, c.Status()})
 		list = append(list, kv{ControllerCreated, c.created})
 		list = append(list, kv{ControllerDeleted, c.deleted})
 		list = append(list, kv{ControllerName, name})
@@ -287,7 +288,7 @@ func (c *Controller) String() string {
 	}
 }
 
-func (c *Controller) status() types.Status {
+func (c Controller) Status() types.Status {
 	if c.IsDeleted() {
 		return types.StatusDeleted
 	}
@@ -529,7 +530,9 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		}
 	}
 
-	list = append(list, kv{ControllerStatus, c.status()})
+	c.isNew = false
+
+	list = append(list, kv{ControllerStatus, c.Status()})
 
 	return c.toObjects(list, a), nil
 }
@@ -560,7 +563,7 @@ func (c *Controller) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) 
 		c.deleted = types.TimestampNow()
 
 		list = append(list, kv{ControllerDeleted, c.deleted})
-		list = append(list, kv{ControllerStatus, c.status()})
+		list = append(list, kv{ControllerStatus, c.Status()})
 
 		catalog.DeleteT(c.CatalogController, c.OID)
 	}
