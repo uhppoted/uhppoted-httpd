@@ -170,6 +170,10 @@ func (ii Interfaces) Validate() error {
 			return fmt.Errorf("LAN %s: mismatched LAN OID %v (expected %v)", l.Name, l.OID, k)
 		}
 
+		if !l.IsValid() {
+			return fmt.Errorf("LAN name is blank")
+		}
+
 		n := strings.TrimSpace(strings.ToLower(l.Name))
 		if v, ok := names[n]; ok && n != "" {
 			return fmt.Errorf("'%v': duplicate LAN name (%v)", l.Name, v)

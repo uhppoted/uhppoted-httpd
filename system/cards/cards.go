@@ -177,7 +177,7 @@ func (cc Cards) Validate() error {
 		}
 
 		if !c.isNew && !c.IsValid() {
-			return fmt.Errorf("Card is invalid")
+			return fmt.Errorf("at least one of card name and number must be defined")
 		}
 
 		if c.Card != nil {

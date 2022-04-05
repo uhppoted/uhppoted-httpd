@@ -186,7 +186,7 @@ func (gg Groups) Validate() error {
 		}
 
 		if !g.isNew && !g.IsValid() {
-			return fmt.Errorf("Group is invalid")
+			return fmt.Errorf("group name is blank")
 		}
 
 		n := strings.TrimSpace(strings.ToLower(g.Name))

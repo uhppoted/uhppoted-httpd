@@ -1,12 +1,10 @@
 ## v0.7.x
 
 - [ ] Change card number to not be a pointer
-- [x] Remove all `scrub`
 
 - [ ] Move delete to UI
-      - [x] Remove 'deleting' hack
       - [ ] Throw error if UpdateXXX not new and not valid 
-            - [ ] Return more descriptive error (not valid isn't all that helpful)
+            - [x] Return more descriptive error (not valid isn't all that helpful)
             - [ ] Elegantize isNew hack
                   - only there to skip validation
                   - at the moment it mostly works because it's not copied in clone

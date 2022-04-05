@@ -199,7 +199,7 @@ func (uu Users) Validate() error {
 		}
 
 		if !u.isNew && !u.IsValid() {
-			return fmt.Errorf("User is invalid")
+			return fmt.Errorf("both user name and user ID must not be blank")
 		}
 
 		if oid, ok := users[u.uid]; ok {

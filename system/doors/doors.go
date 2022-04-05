@@ -243,7 +243,7 @@ func (dd Doors) Validate() error {
 		}
 
 		if !d.isNew && !d.IsValid() {
-			return fmt.Errorf("Door is not valid")
+			return fmt.Errorf("door name cannot be blank unless door is assigned to a controller")
 		}
 
 		n := strings.TrimSpace(strings.ToLower(d.Name))
