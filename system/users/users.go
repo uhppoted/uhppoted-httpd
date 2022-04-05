@@ -17,6 +17,7 @@ import (
 
 type Users struct {
 	users map[schema.OID]*User
+	added []schema.OID
 }
 
 var guard sync.RWMutex
@@ -24,6 +25,7 @@ var guard sync.RWMutex
 func NewUsers() Users {
 	return Users{
 		users: map[schema.OID]*User{},
+		added: []schema.OID{},
 	}
 }
 
@@ -63,11 +65,10 @@ func (uu *Users) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 			} else if u == nil {
 				return nil, fmt.Errorf("Failed to add 'new' user")
 			} else {
-				uu.users[u.OID] = u
+				u.log(auth, "add", u.OID, "card", "Added 'new' user", "", "", dbc)
+
 				catalog.Join(&objects, catalog.NewObject(u.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(u.OID, UserCreated, u.created))
-
-				u.log(auth, "add", u.OID, "card", "Added 'new' user", "", "", dbc)
 			}
 		}
 	}
@@ -138,6 +139,8 @@ func (uu Users) Save() (json.RawMessage, error) {
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
+// NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
+//      the 'shadow' copy only
 func (uu Users) Clone() Users {
 	guard.RLock()
 	defer guard.RUnlock()
@@ -172,7 +175,7 @@ func (uu *Users) SetPassword(uid, pwd string, dbc db.DBC) ([]schema.Object, erro
 	return []schema.Object{}, nil
 }
 
-func (uu *Users) User(uid string) (auth.IUser, bool) {
+func (uu Users) User(uid string) (auth.IUser, bool) {
 	if strings.TrimSpace(uid) != "" {
 		for _, u := range uu.users {
 			if u.uid == uid {
@@ -198,10 +201,17 @@ func (uu Users) Validate() error {
 			return fmt.Errorf("User %s: mismatched user OID %v (expected %v)", u.name, u.OID, k)
 		}
 
-		if !u.isNew && !u.IsValid() {
-			return fmt.Errorf("both user name and user ID must not be blank")
+		if !u.IsValid() {
+			for _, v := range uu.added {
+				if v == u.OID {
+					goto ok
+				}
+			}
+
+			return fmt.Errorf("Both user name and user ID must not be blank")
 		}
 
+	ok:
 		if oid, ok := users[u.uid]; ok {
 			return &types.HttpdError{
 				Status: http.StatusBadRequest,
@@ -233,7 +243,7 @@ func (uu Users) Print() {
 	}
 }
 
-func (uu Users) Sweep(retention time.Duration) {
+func (uu *Users) Sweep(retention time.Duration) {
 	cutoff := time.Now().Add(-retention)
 	for k, u := range uu.users {
 		if u.IsDeleted() && u.deleted.Before(cutoff) {
@@ -242,7 +252,7 @@ func (uu Users) Sweep(retention time.Duration) {
 	}
 }
 
-func (uu Users) add(a auth.OpAuth, u User) (*User, error) {
+func (uu *Users) add(a auth.OpAuth, u User) (*User, error) {
 	oid := catalog.NewT(u.CatalogUser)
 	if _, ok := uu.users[oid]; ok {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
@@ -250,7 +260,6 @@ func (uu Users) add(a auth.OpAuth, u User) (*User, error) {
 
 	user := u.clone()
 	user.OID = oid
-	user.isNew = true
 	user.created = types.TimestampNow()
 	user.modified = types.TimestampNow()
 
@@ -259,6 +268,9 @@ func (uu Users) add(a auth.OpAuth, u User) (*User, error) {
 			return nil, err
 		}
 	}
+
+	uu.users[user.OID] = user
+	uu.added = append(uu.added, user.OID)
 
 	return user, nil
 }

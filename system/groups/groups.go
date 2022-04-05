@@ -16,6 +16,7 @@ import (
 
 type Groups struct {
 	groups map[schema.OID]Group
+	added  []schema.OID
 }
 
 var guard sync.RWMutex
@@ -23,6 +24,7 @@ var guard sync.RWMutex
 func NewGroups() Groups {
 	return Groups{
 		groups: map[schema.OID]Group{},
+		added:  []schema.OID{},
 	}
 }
 
@@ -64,7 +66,6 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, db
 			} else {
 				g.log(auth, "add", g.OID, "group", "Added 'new' group", dbc)
 
-				gg.groups[g.OID] = *g
 				catalog.Join(&objects, catalog.NewObject(g.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(g.OID, GroupCreated, g.created))
 			}
@@ -156,6 +157,10 @@ func (gg Groups) Print() {
 	}
 }
 
+// NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
+//      the 'shadow' copy only
+// NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
+//      the 'shadow' copy only
 func (gg *Groups) Clone() Groups {
 	guard.RLock()
 	defer guard.RUnlock()
@@ -185,10 +190,16 @@ func (gg Groups) Validate() error {
 			return fmt.Errorf("Group %s: mismatched group OID %v (expected %v)", g.Name, g.OID, k)
 		}
 
-		if !g.isNew && !g.IsValid() {
+		if !g.IsValid() {
+			for _, v := range gg.added {
+				if v == g.OID {
+					goto ok
+				}
+			}
 			return fmt.Errorf("group name is blank")
 		}
 
+	ok:
 		n := strings.TrimSpace(strings.ToLower(g.Name))
 		if v, ok := names[n]; ok && n != "" {
 			return fmt.Errorf("'%v': duplicate group name (%v)", g.Name, v)
@@ -217,16 +228,18 @@ func (gg *Groups) add(a auth.OpAuth, g Group) (*Group, error) {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
 	}
 
-	record := g.clone()
-	record.OID = oid
-	record.isNew = true
-	record.created = types.TimestampNow()
+	group := g.clone()
+	group.OID = oid
+	group.created = types.TimestampNow()
 
 	if a != nil {
-		if err := a.CanAdd(&record, auth.Groups); err != nil {
+		if err := a.CanAdd(&group, auth.Groups); err != nil {
 			return nil, err
 		}
 	}
 
-	return &record, nil
+	gg.groups[group.OID] = group
+	gg.added = append(gg.added, group.OID)
+
+	return &group, nil
 }

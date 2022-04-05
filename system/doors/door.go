@@ -24,7 +24,6 @@ type Door struct {
 	delay uint8
 	mode  core.ControlState
 
-	isNew   bool
 	created types.Timestamp
 	deleted types.Timestamp
 }
@@ -125,8 +124,6 @@ func (d *Door) AsObjects(auth auth.OpAuth) []schema.Object {
 				control.err = fmt.Sprintf("Door control state ('%v') does not match configuration ('%v')", v, d.mode)
 			}
 		}
-
-		d.isNew = false
 
 		list = append(list, kv{DoorStatus, d.Status()})
 		list = append(list, kv{DoorCreated, d.created})

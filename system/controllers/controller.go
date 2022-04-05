@@ -28,7 +28,6 @@ type Controller struct {
 	Doors    map[uint8]schema.OID
 	timezone string
 
-	isNew        bool
 	created      types.Timestamp
 	deleted      types.Timestamp
 	unconfigured bool
@@ -529,8 +528,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			c.updated(uid, "door:4", clone.Doors[4], c.Doors[4], dbc)
 		}
 	}
-
-	c.isNew = false
 
 	list = append(list, kv{ControllerStatus, c.Status()})
 

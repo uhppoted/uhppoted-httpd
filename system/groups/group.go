@@ -20,7 +20,6 @@ type Group struct {
 	Name  string              `json:"name"`
 	Doors map[schema.OID]bool `json:"doors"`
 
-	isNew   bool
 	created types.Timestamp
 	deleted types.Timestamp
 }
@@ -164,8 +163,6 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 			}
 		}
 	}
-
-	g.isNew = false
 
 	list = append(list, kv{GroupStatus, g.Status()})
 

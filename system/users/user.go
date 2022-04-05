@@ -26,7 +26,6 @@ type User struct {
 	salt     []byte
 	password string
 
-	isNew    bool
 	created  types.Timestamp
 	deleted  types.Timestamp
 	modified types.Timestamp
@@ -207,8 +206,6 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			u.log(a, "update", u.OID, "password", "Updated password", "", "", dbc)
 		}
 	}
-
-	u.isNew = false
 
 	list = append(list, kv{UserStatus, u.Status()})
 

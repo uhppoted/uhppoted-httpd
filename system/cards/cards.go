@@ -16,6 +16,7 @@ import (
 
 type Cards struct {
 	cards map[schema.OID]*Card
+	added []schema.OID
 }
 
 var guard sync.RWMutex
@@ -23,6 +24,7 @@ var guard sync.RWMutex
 func NewCards() Cards {
 	return Cards{
 		cards: map[schema.OID]*Card{},
+		added: []schema.OID{},
 	}
 }
 
@@ -63,7 +65,6 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 			} else {
 				c.log(auth, "add", c.OID, "card", "Added 'new' card", "", "", dbc)
 
-				cc.cards[c.OID] = c
 				catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(c.OID, CardCreated, c.created))
 			}
@@ -147,6 +148,8 @@ func (cc *Cards) Save() (json.RawMessage, error) {
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
+// NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
+//      the 'shadow' copy only
 func (cc *Cards) Clone() Cards {
 	guard.RLock()
 	defer guard.RUnlock()
@@ -176,10 +179,17 @@ func (cc Cards) Validate() error {
 			return fmt.Errorf("Card %s: mismatched OID %v (expected %v)", c.Name, c.OID, k)
 		}
 
-		if !c.isNew && !c.IsValid() {
-			return fmt.Errorf("at least one of card name and number must be defined")
+		if !c.IsValid() {
+			for _, v := range cc.added {
+				if v == c.OID {
+					goto ok
+				}
+			}
+
+			return fmt.Errorf("At least one of card name and number must be defined")
 		}
 
+	ok:
 		if c.Card != nil {
 			card := uint32(*c.Card)
 			if id, ok := cards[card]; ok {
@@ -243,7 +253,6 @@ func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
 
 	card := c.clone()
 	card.OID = oid
-	card.isNew = true
 	card.created = types.TimestampNow()
 
 	if a != nil {
@@ -251,6 +260,9 @@ func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
 			return nil, err
 		}
 	}
+
+	cc.cards[card.OID] = card
+	cc.added = append(cc.added, card.OID)
 
 	return card, nil
 }

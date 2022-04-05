@@ -70,6 +70,7 @@ func date(s string) core.Date {
 func makeCards(list ...Card) *Cards {
 	p := Cards{
 		cards: map[schema.OID]*Card{},
+		added: []schema.OID{},
 	}
 
 	for _, c := range list {

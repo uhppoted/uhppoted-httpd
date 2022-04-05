@@ -26,7 +26,6 @@ type Card struct {
 	To     core.Date
 	Groups map[schema.OID]bool
 
-	isNew   bool
 	created types.Timestamp
 	deleted types.Timestamp
 }
@@ -310,8 +309,6 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			}
 		}
 	}
-
-	c.isNew = false
 
 	list = append(list, kv{CardStatus, c.Status()})
 

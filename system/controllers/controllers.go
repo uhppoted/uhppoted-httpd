@@ -26,6 +26,7 @@ import (
 
 type Controllers struct {
 	controllers []*Controller
+	added       []*Controller
 }
 
 const BLANK = "'blank'"
@@ -54,6 +55,7 @@ func SetWindows(ok, uncertain, systime, cacheExpiry time.Duration) {
 func NewControllers() Controllers {
 	return Controllers{
 		controllers: []*Controller{},
+		added:       []*Controller{},
 	}
 }
 
@@ -252,6 +254,8 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 	}
 }
 
+// NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
+//      the 'shadow' copy only
 func (cc *Controllers) Clone() Controllers {
 	guard.RLock()
 	defer guard.RUnlock()
@@ -394,10 +398,16 @@ func (cc Controllers) Validate() error {
 			continue
 		}
 
-		if !c.isNew && !c.IsValid() {
-			return fmt.Errorf("at least one of controller name and device ID must be valid")
+		if !c.IsValid() {
+			for _, v := range cc.added {
+				if c == v {
+					goto ok
+				}
+			}
+			return fmt.Errorf("At least one of controller name and device ID must be valid")
 		}
 
+	ok:
 		if c.DeviceID != 0 {
 			if _, ok := devices[c.DeviceID]; ok {
 				return fmt.Errorf("Duplicate controller ID (%v)", c.DeviceID)
@@ -413,7 +423,6 @@ func (cc Controllers) Validate() error {
 func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	record := c.clone()
 	record.OID = schema.OID(catalog.NewT(c.CatalogController))
-	record.isNew = true
 	record.created = types.TimestampNow()
 
 	if a != nil {
@@ -423,6 +432,7 @@ func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	}
 
 	cc.controllers = append(cc.controllers, record)
+	cc.added = append(cc.added, record)
 
 	return record, nil
 }

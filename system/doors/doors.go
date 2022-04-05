@@ -18,8 +18,8 @@ import (
 
 type Doors struct {
 	doors map[schema.OID]Door
-
-	file string
+	added []schema.OID
+	file  string
 }
 
 type object schema.Object
@@ -29,6 +29,7 @@ var guard sync.RWMutex
 func NewDoors() Doors {
 	return Doors{
 		doors: map[schema.OID]Door{},
+		added: []schema.OID{},
 	}
 }
 
@@ -163,7 +164,7 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 				return nil, fmt.Errorf("Failed to add 'new' door")
 			} else {
 				d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added 'new' door"), dbc)
-				dd.doors[d.OID] = *d
+
 				catalog.Join(&objects, catalog.NewObject(d.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
 			}
@@ -198,20 +199,24 @@ func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)
 	}
 
-	record := d.clone()
-	record.OID = oid
-	record.isNew = true
-	record.created = types.TimestampNow()
+	door := d.clone()
+	door.OID = oid
+	door.created = types.TimestampNow()
 
 	if a != nil {
-		if err := a.CanAdd(&record, auth.Doors); err != nil {
+		if err := a.CanAdd(&door, auth.Doors); err != nil {
 			return nil, err
 		}
 	}
 
-	return &record, nil
+	dd.doors[door.OID] = door
+	dd.added = append(dd.added, door.OID)
+
+	return &door, nil
 }
 
+// NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
+//      the 'shadow' copy only
 func (dd *Doors) Clone() Doors {
 	guard.RLock()
 	defer guard.RUnlock()
@@ -242,10 +247,16 @@ func (dd Doors) Validate() error {
 			return fmt.Errorf("Door %s: mismatched door OID %v (expected %v)", d.Name, d.OID, k)
 		}
 
-		if !d.isNew && !d.IsValid() {
-			return fmt.Errorf("door name cannot be blank unless door is assigned to a controller")
+		if !d.IsValid() {
+			for _, v := range dd.added {
+				if v == d.OID {
+					goto ok
+				}
+			}
+			return fmt.Errorf("Door name cannot be blank unless door is assigned to a controller")
 		}
 
+	ok:
 		n := strings.TrimSpace(strings.ToLower(d.Name))
 		if v, ok := names[n]; ok && n != "" {
 			return fmt.Errorf("'%v': duplicate door name (%v)", d.Name, v)
