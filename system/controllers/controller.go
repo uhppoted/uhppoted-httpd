@@ -29,6 +29,7 @@ type Controller struct {
 	timezone string
 
 	created      types.Timestamp
+	modified     types.Timestamp
 	deleted      types.Timestamp
 	unconfigured bool
 }
@@ -413,7 +414,9 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			return nil, err
 		} else {
 			c.name = strings.TrimSpace(value)
+			c.modified = types.TimestampNow()
 			c.unconfigured = false
+
 			list = append(list, kv{ControllerName, c.name})
 
 			c.updated(uid, "name", clone.name, c.name, dbc)
@@ -425,7 +428,9 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 			if id, err := strconv.ParseUint(value, 10, 32); err == nil {
 				c.DeviceID = uint32(id)
+				c.modified = types.TimestampNow()
 				c.unconfigured = false
+
 				list = append(list, kv{ControllerDeviceID, c.DeviceID})
 				c.updated(uid, "device-id", clone.DeviceID, c.DeviceID, dbc)
 			}
@@ -439,7 +444,9 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			}
 
 			c.DeviceID = 0
+			c.modified = types.TimestampNow()
 			c.unconfigured = false
+
 			list = append(list, kv{ControllerDeviceID, ""})
 		}
 
@@ -450,6 +457,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			return nil, err
 		} else {
 			c.IP = addr
+			c.modified = types.TimestampNow()
 			c.unconfigured = false
 
 			list = append(list, kv{ControllerEndpointAddress, addr})
@@ -466,6 +474,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			return nil, err
 		} else {
 			c.timezone = tz.String()
+			c.modified = types.TimestampNow()
 			c.unconfigured = false
 
 			if c.DeviceID != 0 {
@@ -489,7 +498,9 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			return nil, err
 		} else {
 			c.Doors[1] = schema.OID(value)
+			c.modified = types.TimestampNow()
 			c.unconfigured = false
+
 			list = append(list, kv{ControllerDoor1, c.Doors[1]})
 
 			c.updated(uid, "door:1", clone.Doors[1], c.Doors[1], dbc)
@@ -500,7 +511,9 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			return nil, err
 		} else {
 			c.Doors[2] = schema.OID(value)
+			c.modified = types.TimestampNow()
 			c.unconfigured = false
+
 			list = append(list, kv{ControllerDoor2, c.Doors[2]})
 
 			c.updated(uid, "door:2", clone.Doors[2], c.Doors[2], dbc)
@@ -511,7 +524,9 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			return nil, err
 		} else {
 			c.Doors[3] = schema.OID(value)
+			c.modified = types.TimestampNow()
 			c.unconfigured = false
+
 			list = append(list, kv{ControllerDoor3, c.Doors[3]})
 
 			c.updated(uid, "door:3", clone.Doors[3], c.Doors[3], dbc)
@@ -522,7 +537,9 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			return nil, err
 		} else {
 			c.Doors[4] = schema.OID(value)
+			c.modified = types.TimestampNow()
 			c.unconfigured = false
+
 			list = append(list, kv{ControllerDoor4, c.Doors[4]})
 
 			c.updated(uid, "door:4", clone.Doors[4], c.Doors[4], dbc)
@@ -558,6 +575,7 @@ func (c *Controller) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) 
 		}
 
 		c.deleted = types.TimestampNow()
+		c.modified = types.TimestampNow()
 
 		list = append(list, kv{ControllerDeleted, c.deleted})
 		list = append(list, kv{ControllerStatus, c.Status()})
@@ -646,7 +664,8 @@ func (c Controller) serialize() ([]byte, error) {
 		Address  *core.Address        `json:"address,omitempty"`
 		Doors    map[uint8]schema.OID `json:"doors"`
 		TimeZone string               `json:"timezone,omitempty"`
-		Created  types.Timestamp      `json:"created"`
+		Created  types.Timestamp      `json:"created,omitempty"`
+		Modified types.Timestamp      `json:"modified,omitempty"`
 	}{
 		OID:      c.OID,
 		Name:     c.name,
@@ -655,6 +674,7 @@ func (c Controller) serialize() ([]byte, error) {
 		Doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
 		TimeZone: c.timezone,
 		Created:  c.created,
+		Modified: c.modified,
 	}
 
 	for k, v := range c.Doors {
@@ -675,6 +695,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 		Doors    map[uint8]string `json:"doors"`
 		TimeZone string           `json:"timezone,omitempty"`
 		Created  types.Timestamp  `json:"created,omitempty"`
+		Modified types.Timestamp  `json:"modified,omitempty"`
 	}{
 		Created: created,
 	}
@@ -690,6 +711,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.Doors = map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
 	c.timezone = record.TimeZone
 	c.created = record.Created
+	c.modified = record.Modified
 	c.unconfigured = false
 
 	for k, v := range record.Doors {
@@ -712,6 +734,7 @@ func (c *Controller) clone() *Controller {
 			Doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
 
 			created:      c.created,
+			modified:     c.modified,
 			deleted:      c.deleted,
 			unconfigured: c.unconfigured,
 		}

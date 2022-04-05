@@ -6,12 +6,16 @@
       - [x] Throw error if UpdateXXX not new and not valid 
             - [x] Return more descriptive error (not valid isn't all that helpful)
             - [x] Elegantize isNew hack
+            - (?) Move error description to IsValid
       - [x] Fix user 'new'
-      - [ ] Can't add -> rollback -> add
+      - [x] Can't add -> rollback -> add
+            - [x] Revert 'added' list - isn't going to work
+            - [x] Use 'modified' object field
 
       - [ ] Genericize commit in interfaces.js
       - (?) Disallow editing of other fields if not valid
             - or at least warn that the record will be deleted
+            - better UX anyway
       - [ ] Clean up repetive code:
 ```
 uid := ""
@@ -20,17 +24,15 @@ if auth != nil {                                                                
 }
 ```
 
-- [ ] Error:
-
+- [ ] Events should use local index rather than controller 
+      - Get first/last
+      - Store all events in the catalog
+      - Query catalog for up to N missing events between first/last
 
 - [ ] Rework `create`
       - [ ] Very fragile - uses 'new' status 
       - [ ] Maybe invoke 'create' explicitly a la delete
 
-- [ ] Events should use local index rather than controller 
-      - Get first/last
-      - Store all events in the catalog
-      - Query catalog for up to N missing events between first/last
 - [ ] Cleanup audit log
 
 - [ ] Include 'modified' when serializing/deserializing objects

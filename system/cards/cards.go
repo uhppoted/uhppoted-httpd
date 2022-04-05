@@ -16,7 +16,6 @@ import (
 
 type Cards struct {
 	cards map[schema.OID]*Card
-	added []schema.OID
 }
 
 var guard sync.RWMutex
@@ -24,7 +23,6 @@ var guard sync.RWMutex
 func NewCards() Cards {
 	return Cards{
 		cards: map[schema.OID]*Card{},
-		added: []schema.OID{},
 	}
 }
 
@@ -179,17 +177,10 @@ func (cc Cards) Validate() error {
 			return fmt.Errorf("Card %s: mismatched OID %v (expected %v)", c.Name, c.OID, k)
 		}
 
-		if !c.IsValid() {
-			for _, v := range cc.added {
-				if v == c.OID {
-					goto ok
-				}
-			}
-
+		if !c.IsValid() && !c.modified.IsZero() {
 			return fmt.Errorf("At least one of card name and number must be defined")
 		}
 
-	ok:
 		if c.Card != nil {
 			card := uint32(*c.Card)
 			if id, ok := cards[card]; ok {
@@ -262,7 +253,6 @@ func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
 	}
 
 	cc.cards[card.OID] = card
-	cc.added = append(cc.added, card.OID)
 
 	return card, nil
 }

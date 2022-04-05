@@ -447,14 +447,16 @@ func TestValidateWithInvalidCard(t *testing.T) {
 				CatalogCard: catalog.CatalogCard{
 					OID: "0.4.3",
 				},
-				Name: "",
-				Card: nil,
+				Name:     "",
+				Card:     nil,
+				created:  types.TimestampNow(),
+				modified: types.TimestampNow(),
 			},
 		},
 	}
 
 	if err := cc.Validate(); err == nil {
-		t.Errorf("Expected error validating cards list with invalid card, got:%v", err)
+		t.Errorf("Expected error validating cards list with invalid card (%v)", err)
 	}
 }
 
@@ -467,13 +469,36 @@ func TestValidateWithInvalidCard2(t *testing.T) {
 				CatalogCard: catalog.CatalogCard{
 					OID: "0.4.3",
 				},
-				Name: "",
-				Card: &card,
+				Name:     "",
+				Card:     &card,
+				created:  types.TimestampNow(),
+				modified: types.TimestampNow(),
 			},
 		},
 	}
 
 	if err := cc.Validate(); err == nil {
-		t.Errorf("Expected error validating cards list with invalid card, got:%v", err)
+		t.Errorf("Expected error validating cards list with invalid card (%v)", err)
+	}
+}
+
+func TestValidateWithNewCard(t *testing.T) {
+	card := types.Card(0)
+
+	cc := Cards{
+		cards: map[schema.OID]*Card{
+			"0.4.3": &Card{
+				CatalogCard: catalog.CatalogCard{
+					OID: "0.4.3",
+				},
+				Name:    "",
+				Card:    &card,
+				created: types.TimestampNow(),
+			},
+		},
+	}
+
+	if err := cc.Validate(); err != nil {
+		t.Errorf("Unexpected error validating cards list with new card (%v)", err)
 	}
 }

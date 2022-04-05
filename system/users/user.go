@@ -285,8 +285,8 @@ func (u User) serialize() ([]byte, error) {
 		Role     string          `json:"role,omitempty"`
 		Salt     string          `json:"salt"`
 		Password string          `json:"password"`
-		Created  types.Timestamp `json:"created"`
-		Modified types.Timestamp `json:"modified"`
+		Created  types.Timestamp `json:"created,omitempty"`
+		Modified types.Timestamp `json:"modified,omitempty"`
 	}{
 		OID:      u.OID,
 		Name:     strings.TrimSpace(u.name),
@@ -311,8 +311,8 @@ func (u *User) deserialize(bytes []byte) error {
 		Role     string          `json:"role,omitempty"`
 		Salt     string          `json:"salt"`
 		Password string          `json:"password"`
-		Created  types.Timestamp `json:"created"`
-		Modified types.Timestamp `json:"modified"`
+		Created  types.Timestamp `json:"created,omitempty"`
+		Modified types.Timestamp `json:"modified,omitempty"`
 	}{
 		Created:  created,
 		Modified: types.TimestampNow(),

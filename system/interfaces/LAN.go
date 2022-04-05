@@ -31,9 +31,10 @@ type LAN struct {
 	ListenAddress    core.ListenAddr
 	Debug            bool
 
-	ch      chan types.EventsList
-	created types.Timestamp
-	deleted types.Timestamp
+	ch       chan types.EventsList
+	created  types.Timestamp
+	modified types.Timestamp
+	deleted  types.Timestamp
 
 	unconfigured bool
 }
@@ -137,7 +138,10 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 				stringify(l.Name, BLANK),
 				stringify(value, BLANK),
 				dbc)
+
 			l.Name = value
+			l.modified = types.TimestampNow()
+
 			list = append(list, kv{LANName, l.Name})
 		}
 
@@ -155,7 +159,10 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 				stringify(l.BindAddress, BLANK),
 				stringify(value, BLANK),
 				dbc)
+
 			l.BindAddress = *addr
+			l.modified = types.TimestampNow()
+
 			list = append(list, kv{LANBindAddress, l.BindAddress})
 		}
 
@@ -173,7 +180,10 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 				stringify(l.BroadcastAddress, BLANK),
 				stringify(value, BLANK),
 				dbc)
+
 			l.BroadcastAddress = *addr
+			l.modified = types.TimestampNow()
+
 			list = append(list, kv{LANBroadcastAddress, l.BroadcastAddress})
 		}
 
@@ -191,7 +201,10 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 				stringify(l.ListenAddress, BLANK),
 				stringify(value, BLANK),
 				dbc)
+
 			l.ListenAddress = *addr
+			l.modified = types.TimestampNow()
+
 			list = append(list, kv{LANListenAddress, l.ListenAddress})
 		}
 	}
@@ -244,6 +257,7 @@ func (l LAN) Clone() LAN {
 		Debug:            l.Debug,
 
 		created:      l.created,
+		modified:     l.modified,
 		deleted:      l.deleted,
 		unconfigured: l.unconfigured,
 	}
@@ -536,23 +550,6 @@ func (l *LAN) UpdateACL(controllers []Controller, permissions acl.ACL) error {
 
 	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
 
-	// var msg bytes.Buffer
-	// fmt.Fprintf(&msg, "ACL updated\n")
-	//
-	// for _, k := range keys {
-	// 	v := rpt[k]
-	// 	fmt.Fprintf(&msg, "                    %v", k)
-	// 	fmt.Fprintf(&msg, " unchanged:%-3v", len(v.Unchanged))
-	// 	fmt.Fprintf(&msg, " updated:%-3v", len(v.Updated))
-	// 	fmt.Fprintf(&msg, " added:%-3v", len(v.Added))
-	// 	fmt.Fprintf(&msg, " deleted:%-3v", len(v.Deleted))
-	// 	fmt.Fprintf(&msg, " failed:%-3v", len(v.Failed))
-	// 	fmt.Fprintf(&msg, " errored:%-3v", len(v.Errored))
-	// 	fmt.Fprintln(&msg)
-	// }
-	//
-	// log.Printf("%v", string(msg.Bytes()))
-
 	info("ACL updated")
 
 	return nil
@@ -566,6 +563,7 @@ func (l LAN) serialize() ([]byte, error) {
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
 		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
 		Created          types.Timestamp    `json:"created,omitempty"`
+		Modified         types.Timestamp    `json:"modified,omitempty"`
 	}{
 		OID:              l.OID,
 		Name:             l.Name,
@@ -573,6 +571,7 @@ func (l LAN) serialize() ([]byte, error) {
 		BroadcastAddress: l.BroadcastAddress,
 		ListenAddress:    l.ListenAddress,
 		Created:          l.created,
+		Modified:         l.modified,
 	}
 
 	return json.MarshalIndent(record, "", "  ")
@@ -588,6 +587,7 @@ func (l *LAN) deserialize(bytes []byte) error {
 		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
 		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
 		Created          types.Timestamp    `json:"created,omitempty"`
+		Modified         types.Timestamp    `json:"modified,omitempty"`
 	}{
 		Created: created,
 	}
@@ -602,6 +602,7 @@ func (l *LAN) deserialize(bytes []byte) error {
 	l.BroadcastAddress = record.BroadcastAddress
 	l.ListenAddress = record.ListenAddress
 	l.created = record.Created
+	l.modified = record.Modified
 	l.unconfigured = false
 
 	return nil

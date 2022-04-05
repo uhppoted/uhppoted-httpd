@@ -18,7 +18,6 @@ import (
 
 type Doors struct {
 	doors map[schema.OID]Door
-	added []schema.OID
 	file  string
 }
 
@@ -29,7 +28,6 @@ var guard sync.RWMutex
 func NewDoors() Doors {
 	return Doors{
 		doors: map[schema.OID]Door{},
-		added: []schema.OID{},
 	}
 }
 
@@ -210,7 +208,6 @@ func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
 	}
 
 	dd.doors[door.OID] = door
-	dd.added = append(dd.added, door.OID)
 
 	return &door, nil
 }
@@ -247,16 +244,10 @@ func (dd Doors) Validate() error {
 			return fmt.Errorf("Door %s: mismatched door OID %v (expected %v)", d.Name, d.OID, k)
 		}
 
-		if !d.IsValid() {
-			for _, v := range dd.added {
-				if v == d.OID {
-					goto ok
-				}
-			}
+		if !d.IsValid() && !d.modified.IsZero() {
 			return fmt.Errorf("Door name cannot be blank unless door is assigned to a controller")
 		}
 
-	ok:
 		n := strings.TrimSpace(strings.ToLower(d.Name))
 		if v, ok := names[n]; ok && n != "" {
 			return fmt.Errorf("'%v': duplicate door name (%v)", d.Name, v)

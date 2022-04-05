@@ -16,7 +16,6 @@ import (
 
 type Groups struct {
 	groups map[schema.OID]Group
-	added  []schema.OID
 }
 
 var guard sync.RWMutex
@@ -24,7 +23,6 @@ var guard sync.RWMutex
 func NewGroups() Groups {
 	return Groups{
 		groups: map[schema.OID]Group{},
-		added:  []schema.OID{},
 	}
 }
 
@@ -190,16 +188,10 @@ func (gg Groups) Validate() error {
 			return fmt.Errorf("Group %s: mismatched group OID %v (expected %v)", g.Name, g.OID, k)
 		}
 
-		if !g.IsValid() {
-			for _, v := range gg.added {
-				if v == g.OID {
-					goto ok
-				}
-			}
-			return fmt.Errorf("group name is blank")
+		if !g.IsValid() && !g.modified.IsZero() {
+			return fmt.Errorf("Group name is blank")
 		}
 
-	ok:
 		n := strings.TrimSpace(strings.ToLower(g.Name))
 		if v, ok := names[n]; ok && n != "" {
 			return fmt.Errorf("'%v': duplicate group name (%v)", g.Name, v)
@@ -239,7 +231,6 @@ func (gg *Groups) add(a auth.OpAuth, g Group) (*Group, error) {
 	}
 
 	gg.groups[group.OID] = group
-	gg.added = append(gg.added, group.OID)
 
 	return &group, nil
 }

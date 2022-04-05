@@ -26,8 +26,9 @@ type Card struct {
 	To     core.Date
 	Groups map[schema.OID]bool
 
-	created types.Timestamp
-	deleted types.Timestamp
+	created  types.Timestamp
+	modified types.Timestamp
+	deleted  types.Timestamp
 }
 
 type kv = struct {
@@ -178,6 +179,8 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 				dbc)
 
 			c.Name = strings.TrimSpace(value)
+			c.modified = types.TimestampNow()
+
 			list = append(list, kv{CardName, stringify(c.Name, "")})
 		}
 
@@ -199,6 +202,8 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 
 				v := types.Card(n)
 				c.Card = &v
+				c.modified = types.TimestampNow()
+
 				list = append(list, kv{CardNumber, c.Card})
 			}
 		} else if value == "" {
@@ -226,6 +231,8 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 				}
 
 				c.Card = nil
+				c.modified = types.TimestampNow()
+
 				list = append(list, kv{CardNumber, ""})
 			}
 		}
@@ -248,6 +255,8 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 				dbc)
 
 			c.From = from
+			c.modified = types.TimestampNow()
+
 			list = append(list, kv{CardFrom, c.From})
 		}
 
@@ -269,6 +278,8 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 				dbc)
 
 			c.To = to
+			c.modified = types.TimestampNow()
+
 			list = append(list, kv{CardTo, c.To})
 		}
 
@@ -305,6 +316,8 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 				}
 
 				c.Groups[k] = value == "true"
+				c.modified = types.TimestampNow()
+
 				list = append(list, kv{CardGroups.Append(gid), c.Groups[k]})
 			}
 		}
@@ -334,6 +347,7 @@ func (c *Card) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 		}
 
 		c.deleted = types.TimestampNow()
+		c.modified = types.TimestampNow()
 
 		list = append(list, kv{CardDeleted, c.deleted})
 		list = append(list, kv{CardStatus, c.Status()})
@@ -381,20 +395,22 @@ func (c *Card) Status() types.Status {
 
 func (c Card) serialize() ([]byte, error) {
 	record := struct {
-		OID     schema.OID      `json:"OID"`
-		Name    string          `json:"name,omitempty"`
-		Card    uint32          `json:"card,omitempty"`
-		From    core.Date       `json:"from,omitempty"`
-		To      core.Date       `json:"to,omitempty"`
-		Groups  []schema.OID    `json:"groups"`
-		Created types.Timestamp `json:"created"`
+		OID      schema.OID      `json:"OID"`
+		Name     string          `json:"name,omitempty"`
+		Card     uint32          `json:"card,omitempty"`
+		From     core.Date       `json:"from,omitempty"`
+		To       core.Date       `json:"to,omitempty"`
+		Groups   []schema.OID    `json:"groups"`
+		Created  types.Timestamp `json:"created,omitempty"`
+		Modified types.Timestamp `json:"modified,omitempty"`
 	}{
-		OID:     c.OID,
-		Name:    strings.TrimSpace(c.Name),
-		From:    c.From,
-		To:      c.To,
-		Groups:  []schema.OID{},
-		Created: c.created,
+		OID:      c.OID,
+		Name:     strings.TrimSpace(c.Name),
+		From:     c.From,
+		To:       c.To,
+		Groups:   []schema.OID{},
+		Created:  c.created,
+		Modified: c.modified,
 	}
 
 	if c.Card != nil {
@@ -416,13 +432,14 @@ func (c *Card) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     schema.OID      `json:"OID"`
-		Name    string          `json:"name,omitempty"`
-		Card    uint32          `json:"card,omitempty"`
-		From    core.Date       `json:"from,omitempty"`
-		To      core.Date       `json:"to,omitempty"`
-		Groups  []schema.OID    `json:"groups"`
-		Created types.Timestamp `json:"created"`
+		OID      schema.OID      `json:"OID"`
+		Name     string          `json:"name,omitempty"`
+		Card     uint32          `json:"card,omitempty"`
+		From     core.Date       `json:"from,omitempty"`
+		To       core.Date       `json:"to,omitempty"`
+		Groups   []schema.OID    `json:"groups"`
+		Created  types.Timestamp `json:"created,omitempty"`
+		Modified types.Timestamp `json:"modified,omitempty"`
 	}{
 		Groups:  []schema.OID{},
 		Created: created,
@@ -438,6 +455,7 @@ func (c *Card) deserialize(bytes []byte) error {
 	c.To = record.To
 	c.Groups = map[schema.OID]bool{}
 	c.created = record.Created
+	c.modified = record.Modified
 
 	if record.Card != 0 {
 		c.Card = (*types.Card)(&record.Card)
@@ -468,8 +486,9 @@ func (c *Card) clone() *Card {
 		To:     c.To,
 		Groups: groups,
 
-		created: c.created,
-		deleted: c.deleted,
+		created:  c.created,
+		modified: c.modified,
+		deleted:  c.deleted,
 	}
 
 	return replicant

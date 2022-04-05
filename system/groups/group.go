@@ -20,8 +20,9 @@ type Group struct {
 	Name  string              `json:"name"`
 	Doors map[schema.OID]bool `json:"doors"`
 
-	created types.Timestamp
-	deleted types.Timestamp
+	created  types.Timestamp
+	modified types.Timestamp
+	deleted  types.Timestamp
 }
 
 type kv = struct {
@@ -140,6 +141,8 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 		} else {
 			g.log(a, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, BLANK), stringify(value, BLANK)), dbc)
 			g.Name = value
+			g.modified = types.TimestampNow()
+
 			list = append(list, kv{GroupName, g.Name})
 		}
 
@@ -159,6 +162,8 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 				}
 
 				g.Doors[k] = value == "true"
+				g.modified = types.TimestampNow()
+
 				list = append(list, kv{GroupDoors.Append(did), g.Doors[k]})
 			}
 		}
@@ -181,6 +186,7 @@ func (g *Group) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 
 		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", g.Name), dbc)
 		g.deleted = types.TimestampNow()
+		g.modified = types.TimestampNow()
 
 		list = append(list, kv{GroupStatus, g.Status()})
 		list = append(list, kv{GroupDeleted, g.deleted})
@@ -220,15 +226,17 @@ func (g *Group) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 
 func (g Group) serialize() ([]byte, error) {
 	record := struct {
-		OID     schema.OID      `json:"OID"`
-		Name    string          `json:"name,omitempty"`
-		Doors   []schema.OID    `json:"doors"`
-		Created types.Timestamp `json:"created"`
+		OID      schema.OID      `json:"OID"`
+		Name     string          `json:"name,omitempty"`
+		Doors    []schema.OID    `json:"doors"`
+		Created  types.Timestamp `json:"created,omitempty"`
+		Modified types.Timestamp `json:"modified,omitempty"`
 	}{
-		OID:     g.OID,
-		Name:    g.Name,
-		Doors:   []schema.OID{},
-		Created: g.created,
+		OID:      g.OID,
+		Name:     g.Name,
+		Doors:    []schema.OID{},
+		Created:  g.created,
+		Modified: g.modified,
 	}
 
 	doors := catalog.GetDoors()
@@ -246,10 +254,11 @@ func (g *Group) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     string          `json:"OID"`
-		Name    string          `json:"name,omitempty"`
-		Doors   []schema.OID    `json:"doors"`
-		Created types.Timestamp `json:"created,omitempty"`
+		OID      string          `json:"OID"`
+		Name     string          `json:"name,omitempty"`
+		Doors    []schema.OID    `json:"doors"`
+		Created  types.Timestamp `json:"created,omitempty"`
+		Modified types.Timestamp `json:"modified,omitempty"`
 	}{
 		Created: created,
 	}
@@ -262,6 +271,7 @@ func (g *Group) deserialize(bytes []byte) error {
 	g.Name = record.Name
 	g.Doors = map[schema.OID]bool{}
 	g.created = record.Created
+	g.modified = record.Modified
 
 	for _, d := range record.Doors {
 		g.Doors[schema.OID(d)] = true
@@ -275,10 +285,11 @@ func (g Group) clone() Group {
 		CatalogGroup: catalog.CatalogGroup{
 			OID: g.OID,
 		},
-		Name:    g.Name,
-		Doors:   map[schema.OID]bool{},
-		created: g.created,
-		deleted: g.deleted,
+		Name:     g.Name,
+		Doors:    map[schema.OID]bool{},
+		created:  g.created,
+		modified: g.modified,
+		deleted:  g.deleted,
 	}
 
 	for k, v := range g.Doors {

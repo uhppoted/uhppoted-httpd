@@ -26,7 +26,6 @@ import (
 
 type Controllers struct {
 	controllers []*Controller
-	added       []*Controller
 }
 
 const BLANK = "'blank'"
@@ -55,7 +54,6 @@ func SetWindows(ok, uncertain, systime, cacheExpiry time.Duration) {
 func NewControllers() Controllers {
 	return Controllers{
 		controllers: []*Controller{},
-		added:       []*Controller{},
 	}
 }
 
@@ -398,16 +396,10 @@ func (cc Controllers) Validate() error {
 			continue
 		}
 
-		if !c.IsValid() {
-			for _, v := range cc.added {
-				if c == v {
-					goto ok
-				}
-			}
+		if !c.IsValid() && !c.modified.IsZero() {
 			return fmt.Errorf("At least one of controller name and device ID must be valid")
 		}
 
-	ok:
 		if c.DeviceID != 0 {
 			if _, ok := devices[c.DeviceID]; ok {
 				return fmt.Errorf("Duplicate controller ID (%v)", c.DeviceID)
@@ -421,20 +413,19 @@ func (cc Controllers) Validate() error {
 }
 
 func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
-	record := c.clone()
-	record.OID = schema.OID(catalog.NewT(c.CatalogController))
-	record.created = types.TimestampNow()
+	controller := c.clone()
+	controller.OID = schema.OID(catalog.NewT(c.CatalogController))
+	controller.created = types.TimestampNow()
 
 	if a != nil {
-		if err := a.CanAdd(record, auth.Controllers); err != nil {
+		if err := a.CanAdd(controller, auth.Controllers); err != nil {
 			return nil, err
 		}
 	}
 
-	cc.controllers = append(cc.controllers, record)
-	cc.added = append(cc.added, record)
+	cc.controllers = append(cc.controllers, controller)
 
-	return record, nil
+	return controller, nil
 }
 
 func info(msg string) {

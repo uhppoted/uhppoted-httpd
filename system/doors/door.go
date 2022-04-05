@@ -24,8 +24,9 @@ type Door struct {
 	delay uint8
 	mode  core.ControlState
 
-	created types.Timestamp
-	deleted types.Timestamp
+	created  types.Timestamp
+	modified types.Timestamp
+	deleted  types.Timestamp
 }
 
 type kv = struct {
@@ -178,7 +179,10 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			return nil, err
 		} else {
 			d.log(a, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, BLANK), stringify(value, BLANK)), dbc)
+
 			d.Name = value
+			d.modified = types.TimestampNow()
+
 			list = append(list, kv{DoorName, d.Name})
 		}
 
@@ -191,6 +195,8 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			return nil, err
 		} else {
 			d.delay = uint8(v)
+			d.modified = types.TimestampNow()
+
 			list = append(list, kv{DoorDelayStatus, types.StatusUncertain})
 			list = append(list, kv{DoorDelayConfigured, d.delay})
 			list = append(list, kv{DoorDelayError, ""})
@@ -214,6 +220,8 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			default:
 				return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
 			}
+
+			d.modified = types.TimestampNow()
 
 			list = append(list, kv{DoorControlStatus, types.StatusUncertain})
 			list = append(list, kv{DoorControlConfigured, d.mode})
@@ -245,6 +253,7 @@ func (d *Door) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 
 		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", d.Name), dbc)
 		d.deleted = types.TimestampNow()
+		d.modified = types.TimestampNow()
 
 		list = append(list, kv{DoorDeleted, d.deleted})
 		list = append(list, kv{DoorStatus, d.Status()})
@@ -292,17 +301,19 @@ func (d Door) Status() types.Status {
 
 func (d Door) serialize() ([]byte, error) {
 	record := struct {
-		OID     schema.OID        `json:"OID"`
-		Name    string            `json:"name,omitempty"`
-		Delay   uint8             `json:"delay,omitempty"`
-		Mode    core.ControlState `json:"mode,omitempty"`
-		Created types.Timestamp   `json:"created"`
+		OID      schema.OID        `json:"OID"`
+		Name     string            `json:"name,omitempty"`
+		Delay    uint8             `json:"delay,omitempty"`
+		Mode     core.ControlState `json:"mode,omitempty"`
+		Created  types.Timestamp   `json:"created,omitempty"`
+		Modified types.Timestamp   `json:"modified,omitempty"`
 	}{
-		OID:     d.OID,
-		Name:    d.Name,
-		Delay:   d.delay,
-		Mode:    d.mode,
-		Created: d.created,
+		OID:      d.OID,
+		Name:     d.Name,
+		Delay:    d.delay,
+		Mode:     d.mode,
+		Created:  d.created,
+		Modified: d.modified,
 	}
 
 	return json.Marshal(record)
@@ -312,11 +323,12 @@ func (d *Door) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID     schema.OID        `json:"OID"`
-		Name    string            `json:"name,omitempty"`
-		Delay   uint8             `json:"delay,omitempty"`
-		Mode    core.ControlState `json:"mode,omitempty"`
-		Created types.Timestamp   `json:"created,omitempty"`
+		OID      schema.OID        `json:"OID"`
+		Name     string            `json:"name,omitempty"`
+		Delay    uint8             `json:"delay,omitempty"`
+		Mode     core.ControlState `json:"mode,omitempty"`
+		Created  types.Timestamp   `json:"created,omitempty"`
+		Modified types.Timestamp   `json:"modified,omitempty"`
 	}{
 		Delay:   5,
 		Mode:    core.Controlled,
@@ -332,6 +344,7 @@ func (d *Door) deserialize(bytes []byte) error {
 	d.delay = record.Delay
 	d.mode = record.Mode
 	d.created = record.Created
+	d.modified = record.Modified
 
 	return nil
 }
@@ -341,11 +354,12 @@ func (d *Door) clone() Door {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: d.OID,
 		},
-		Name:    d.Name,
-		delay:   d.delay,
-		mode:    d.mode,
-		created: d.created,
-		deleted: d.deleted,
+		Name:     d.Name,
+		delay:    d.delay,
+		mode:     d.mode,
+		created:  d.created,
+		modified: d.modified,
+		deleted:  d.deleted,
 	}
 }
 

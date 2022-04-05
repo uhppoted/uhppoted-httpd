@@ -17,7 +17,6 @@ import (
 
 type Users struct {
 	users map[schema.OID]*User
-	added []schema.OID
 }
 
 var guard sync.RWMutex
@@ -25,7 +24,6 @@ var guard sync.RWMutex
 func NewUsers() Users {
 	return Users{
 		users: map[schema.OID]*User{},
-		added: []schema.OID{},
 	}
 }
 
@@ -139,8 +137,6 @@ func (uu Users) Save() (json.RawMessage, error) {
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
-// NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
-//      the 'shadow' copy only
 func (uu Users) Clone() Users {
 	guard.RLock()
 	defer guard.RUnlock()
@@ -201,17 +197,10 @@ func (uu Users) Validate() error {
 			return fmt.Errorf("User %s: mismatched user OID %v (expected %v)", u.name, u.OID, k)
 		}
 
-		if !u.IsValid() {
-			for _, v := range uu.added {
-				if v == u.OID {
-					goto ok
-				}
-			}
-
+		if !u.IsValid() && !u.modified.IsZero() {
 			return fmt.Errorf("Both user name and user ID must not be blank")
 		}
 
-	ok:
 		if oid, ok := users[u.uid]; ok {
 			return &types.HttpdError{
 				Status: http.StatusBadRequest,
@@ -261,7 +250,6 @@ func (uu *Users) add(a auth.OpAuth, u User) (*User, error) {
 	user := u.clone()
 	user.OID = oid
 	user.created = types.TimestampNow()
-	user.modified = types.TimestampNow()
 
 	if a != nil {
 		if err := a.CanAdd(user, auth.Users); err != nil {
@@ -270,7 +258,6 @@ func (uu *Users) add(a auth.OpAuth, u User) (*User, error) {
 	}
 
 	uu.users[user.OID] = user
-	uu.added = append(uu.added, user.OID)
 
 	return user, nil
 }
