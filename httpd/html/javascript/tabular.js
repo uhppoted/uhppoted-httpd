@@ -277,7 +277,7 @@ export function onRollback (tag, event) {
       break
 
     case 'user':
-      rollback('users', row, groups.refreshed)
+      rollback('users', row, users.refreshed)
       break
   }
 }

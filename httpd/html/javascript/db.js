@@ -71,7 +71,7 @@ class DBC {
             break
 
           case 'users':
-            this.users.users.delete(oid)
+            this.tables.users.users.delete(oid)
             break
         }
       }

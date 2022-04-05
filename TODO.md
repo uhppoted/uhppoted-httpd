@@ -3,10 +3,12 @@
 - [ ] Change card number to not be a pointer
 
 - [ ] Move delete to UI
-      - [ ] Throw error if UpdateXXX not new and not valid 
+      - [x] Throw error if UpdateXXX not new and not valid 
             - [x] Return more descriptive error (not valid isn't all that helpful)
             - [x] Elegantize isNew hack
-            - [ ] Fix user 'new'
+      - [x] Fix user 'new'
+      - [ ] Can't add -> rollback -> add
+
       - [ ] Genericize commit in interfaces.js
       - (?) Disallow editing of other fields if not valid
             - or at least warn that the record will be deleted
@@ -17,14 +19,8 @@ if auth != nil {                                                                
     uid = auth.UID()
 }
 ```
-```
 
 - [ ] Error:
-```
-2022/04/05 10:10:30 DEBUG POST /users
-2022/04/05 10:10:30 DEBUG UNPACK {"deleted":null,"objects":[{"oid":"\u003cnew\u003e","value":""}]}
-2022/04/05 10:10:30 INFO  loaded '%!v(PANIC=String method: runtime error: index out of range [7] with length 7)' grule file from /usr/local/etc/com.github.uhppoted/httpd/grules/users.grl
-2022/04/05 10:10:30 WARN  Both user name and user ID must not be blank
 
 
 - [ ] Rework `create`

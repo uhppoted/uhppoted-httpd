@@ -23,7 +23,7 @@ const (
 )
 
 func (r RuleSet) String() string {
-	return [...]string{"interfaces", "controllers", "doors", "cards", "groups", "events", "logs"}[r]
+	return [...]string{"interfaces", "controllers", "doors", "cards", "groups", "events", "logs", "users"}[r]
 }
 
 type IAuthenticate interface {
