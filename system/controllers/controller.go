@@ -28,10 +28,9 @@ type Controller struct {
 	Doors    map[uint8]schema.OID
 	timezone string
 
-	created      types.Timestamp
-	modified     types.Timestamp
-	deleted      types.Timestamp
-	unconfigured bool
+	created  types.Timestamp
+	modified types.Timestamp
+	deleted  types.Timestamp
 }
 
 type kv = struct {
@@ -415,7 +414,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		} else {
 			c.name = strings.TrimSpace(value)
 			c.modified = types.TimestampNow()
-			c.unconfigured = false
 
 			list = append(list, kv{ControllerName, c.name})
 
@@ -429,7 +427,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 			if id, err := strconv.ParseUint(value, 10, 32); err == nil {
 				c.DeviceID = uint32(id)
 				c.modified = types.TimestampNow()
-				c.unconfigured = false
 
 				list = append(list, kv{ControllerDeviceID, c.DeviceID})
 				c.updated(uid, "device-id", clone.DeviceID, c.DeviceID, dbc)
@@ -445,7 +442,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 
 			c.DeviceID = 0
 			c.modified = types.TimestampNow()
-			c.unconfigured = false
 
 			list = append(list, kv{ControllerDeviceID, ""})
 		}
@@ -458,7 +454,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		} else {
 			c.IP = addr
 			c.modified = types.TimestampNow()
-			c.unconfigured = false
 
 			list = append(list, kv{ControllerEndpointAddress, addr})
 			list = append(list, kv{ControllerEndpointConfigured, addr})
@@ -475,7 +470,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		} else {
 			c.timezone = tz.String()
 			c.modified = types.TimestampNow()
-			c.unconfigured = false
 
 			if c.DeviceID != 0 {
 				if cached := c.get(); cached != nil {
@@ -499,7 +493,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		} else {
 			c.Doors[1] = schema.OID(value)
 			c.modified = types.TimestampNow()
-			c.unconfigured = false
 
 			list = append(list, kv{ControllerDoor1, c.Doors[1]})
 
@@ -512,7 +505,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		} else {
 			c.Doors[2] = schema.OID(value)
 			c.modified = types.TimestampNow()
-			c.unconfigured = false
 
 			list = append(list, kv{ControllerDoor2, c.Doors[2]})
 
@@ -525,7 +517,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		} else {
 			c.Doors[3] = schema.OID(value)
 			c.modified = types.TimestampNow()
-			c.unconfigured = false
 
 			list = append(list, kv{ControllerDoor3, c.Doors[3]})
 
@@ -538,7 +529,6 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		} else {
 			c.Doors[4] = schema.OID(value)
 			c.modified = types.TimestampNow()
-			c.unconfigured = false
 
 			list = append(list, kv{ControllerDoor4, c.Doors[4]})
 
@@ -644,7 +634,7 @@ func (c *Controller) refreshed() {
 
 		log.Printf("Controller %v cached values expired", c)
 
-		if c.unconfigured {
+		if c.modified.IsZero() {
 			c.deleted = types.TimestampNow()
 			catalog.DeleteT(c.CatalogController, c.OID)
 			log.Printf("'unconfigured' controller %v removed", c)
@@ -653,7 +643,7 @@ func (c *Controller) refreshed() {
 }
 
 func (c Controller) serialize() ([]byte, error) {
-	if !c.IsValid() || c.IsDeleted() || c.unconfigured {
+	if !c.IsValid() || c.IsDeleted() || c.modified.IsZero() {
 		return nil, nil
 	}
 
@@ -712,7 +702,6 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.timezone = record.TimeZone
 	c.created = record.Created
 	c.modified = record.Modified
-	c.unconfigured = false
 
 	for k, v := range record.Doors {
 		c.Doors[k] = schema.OID(v)
@@ -733,10 +722,9 @@ func (c *Controller) clone() *Controller {
 			timezone: c.timezone,
 			Doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
 
-			created:      c.created,
-			modified:     c.modified,
-			deleted:      c.deleted,
-			unconfigured: c.unconfigured,
+			created:  c.created,
+			modified: c.modified,
+			deleted:  c.deleted,
 		}
 
 		for k, v := range c.Doors {

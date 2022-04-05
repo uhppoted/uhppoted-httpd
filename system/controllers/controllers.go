@@ -234,8 +234,7 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 				CatalogController: catalog.CatalogController{
 					DeviceID: id,
 				},
-				created:      types.TimestampNow(),
-				unconfigured: true,
+				created: types.TimestampNow(),
 			}
 
 			v.OID = catalog.NewT(v.CatalogController)
