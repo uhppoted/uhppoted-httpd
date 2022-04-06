@@ -39,15 +39,18 @@ const BLANK = "'blank'"
 var created = types.TimestampNow()
 
 func (d Door) IsValid() bool {
-	door := catalog.GetDoorDeviceDoor(d.OID)
-
-	if strings.TrimSpace(d.Name) != "" || door != 0 {
-		return true
-	}
-
-	return false
+	return d.validate() == nil
 }
 
+func (d Door) validate() error {
+	door := catalog.GetDoorDeviceDoor(d.OID)
+
+	if strings.TrimSpace(d.Name) == "" && door == 0 {
+		return fmt.Errorf("Door name cannot be blank unless door is assigned to a controller")
+	}
+
+	return nil
+}
 func (d *Door) IsDeleted() bool {
 	return !d.deleted.IsZero()
 }

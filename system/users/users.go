@@ -197,8 +197,10 @@ func (uu Users) Validate() error {
 			return fmt.Errorf("User %s: mismatched user OID %v (expected %v)", u.name, u.OID, k)
 		}
 
-		if !u.IsValid() && !u.modified.IsZero() {
-			return fmt.Errorf("Both user name and user ID must not be blank")
+		if err := u.validate(); err != nil {
+			if !u.modified.IsZero() {
+				return err
+			}
 		}
 
 		if oid, ok := users[u.uid]; ok {

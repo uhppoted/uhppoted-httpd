@@ -244,8 +244,10 @@ func (dd Doors) Validate() error {
 			return fmt.Errorf("Door %s: mismatched door OID %v (expected %v)", d.Name, d.OID, k)
 		}
 
-		if !d.IsValid() && !d.modified.IsZero() {
-			return fmt.Errorf("Door name cannot be blank unless door is assigned to a controller")
+		if err := d.validate(); err != nil {
+			if !d.modified.IsZero() {
+				return err
+			}
 		}
 
 		n := strings.TrimSpace(strings.ToLower(d.Name))

@@ -39,11 +39,15 @@ func (g Group) String() string {
 }
 
 func (g Group) IsValid() bool {
-	if strings.TrimSpace(g.Name) != "" {
-		return true
+	return g.validate() == nil
+}
+
+func (g Group) validate() error {
+	if strings.TrimSpace(g.Name) == "" {
+		return fmt.Errorf("Group name is blank")
 	}
 
-	return false
+	return nil
 }
 
 func (g Group) IsDeleted() bool {

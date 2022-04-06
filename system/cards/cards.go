@@ -177,8 +177,10 @@ func (cc Cards) Validate() error {
 			return fmt.Errorf("Card %s: mismatched OID %v (expected %v)", c.Name, c.OID, k)
 		}
 
-		if !c.IsValid() && !c.modified.IsZero() {
-			return fmt.Errorf("At least one of card name and number must be defined")
+		if err := c.validate(); err != nil {
+			if !c.modified.IsZero() {
+				return err
+			}
 		}
 
 		if c.Card != nil {

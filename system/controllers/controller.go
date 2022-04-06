@@ -58,11 +58,15 @@ type cached struct {
 var created = types.TimestampNow()
 
 func (c Controller) IsValid() bool {
-	if strings.TrimSpace(c.name) != "" || c.DeviceID != 0 {
-		return true
+	return c.validate() == nil
+}
+
+func (c Controller) validate() error {
+	if strings.TrimSpace(c.name) == "" && c.DeviceID == 0 {
+		return fmt.Errorf("At least one of controller name and device ID must be valid")
 	}
 
-	return false
+	return nil
 }
 
 func (c Controller) IsDeleted() bool {

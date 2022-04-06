@@ -60,11 +60,15 @@ func (c Card) GetName() string {
 }
 
 func (c Card) IsValid() bool {
-	if strings.TrimSpace(c.Name) != "" || (c.Card != nil && *c.Card != 0) {
-		return true
+	return c.validate() == nil
+}
+
+func (c Card) validate() error {
+	if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
+		return fmt.Errorf("At least one of card name and number must be defined")
 	}
 
-	return false
+	return nil
 }
 
 func (c Card) IsDeleted() bool {

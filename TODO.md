@@ -4,13 +4,13 @@
 
 - [ ] Move delete to UI
       - [x] Throw error if UpdateXXX not new and not valid 
-            - (?) Move error description to IsValid
+            - [x] Move error description to IsValid
 
       - [ ] Genericize commit in interfaces.js
       - (?) Disallow editing of other fields if not valid
             - or at least warn that the record will be deleted
             - better UX anyway
-      - [x] Clean up repetive code:
+      - [x] Clean up repetive `auth.UID` code:
 
 - [ ] Events should use local index rather than controller 
       - Get first/last
@@ -21,9 +21,9 @@
       - [ ] Very fragile - uses 'new' status 
       - [ ] Maybe invoke 'create' explicitly a la delete
 
-- [ ] Cleanup audit log
+- [ ] Cleanup audit log/logging
 
-- [ ] Include 'modified' when serializing/deserializing objects
+- [x] Include 'modified' when serializing/deserializing objects
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError
 - [ ] Make vtable'able subsystem an interface

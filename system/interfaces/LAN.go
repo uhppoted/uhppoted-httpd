@@ -59,14 +59,16 @@ func (l LAN) String() string {
 	return fmt.Sprintf("%v", l.Name)
 }
 
-func (l *LAN) IsValid() bool {
-	if l != nil {
-		if strings.TrimSpace(l.Name) != "" {
-			return true
-		}
+func (l LAN) IsValid() bool {
+	return l.validate() == nil
+}
+
+func (l LAN) validate() error {
+	if strings.TrimSpace(l.Name) == "" {
+		return fmt.Errorf("LAN name is blank")
 	}
 
-	return false
+	return nil
 }
 
 func (l LAN) IsDeleted() bool {

@@ -41,11 +41,15 @@ const BLANK = "'blank'"
 var created = types.TimestampNow()
 
 func (u User) IsValid() bool {
-	if strings.TrimSpace(u.name) != "" || strings.TrimSpace(u.uid) != "" {
-		return true
+	return u.validate() == nil
+}
+
+func (u User) validate() error {
+	if strings.TrimSpace(u.name) == "" && strings.TrimSpace(u.uid) == "" {
+		return fmt.Errorf("User name and user ID cannot both be blank")
 	}
 
-	return false
+	return nil
 }
 
 func (u User) IsDeleted() bool {

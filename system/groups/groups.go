@@ -188,8 +188,10 @@ func (gg Groups) Validate() error {
 			return fmt.Errorf("Group %s: mismatched group OID %v (expected %v)", g.Name, g.OID, k)
 		}
 
-		if !g.IsValid() && !g.modified.IsZero() {
-			return fmt.Errorf("Group name is blank")
+		if err := g.validate(); err != nil {
+			if !g.modified.IsZero() {
+				return err
+			}
 		}
 
 		n := strings.TrimSpace(strings.ToLower(g.Name))

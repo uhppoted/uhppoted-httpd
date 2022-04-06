@@ -392,8 +392,10 @@ func (cc Controllers) Validate() error {
 			continue
 		}
 
-		if !c.IsValid() && !c.modified.IsZero() {
-			return fmt.Errorf("At least one of controller name and device ID must be valid")
+		if err := c.validate(); err != nil {
+			if !c.modified.IsZero() {
+				return err
+			}
 		}
 
 		if c.DeviceID != 0 {
