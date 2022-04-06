@@ -8,10 +8,6 @@ type stub struct {
 	canView func(auth.RuleSet, auth.Operant, string, interface{}) error
 }
 
-func (x *stub) UID() string {
-	return "stub"
-}
-
 func (x *stub) CanView(object auth.Operant, field string, value interface{}, rulesets ...auth.RuleSet) error {
 	if x.canView != nil && len(rulesets) > 0 {
 		return x.canView(rulesets[0], object, field, value)

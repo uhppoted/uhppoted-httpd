@@ -27,7 +27,7 @@ func NewUsers() Users {
 	}
 }
 
-func (uu *Users) AsObjects(auth auth.OpAuth) []schema.Object {
+func (uu *Users) AsObjects(a *auth.Authorizator) []schema.Object {
 	objects := []schema.Object{}
 	guard.RLock()
 
@@ -35,20 +35,20 @@ func (uu *Users) AsObjects(auth auth.OpAuth) []schema.Object {
 
 	for _, u := range uu.users {
 		if u.IsValid() || u.IsDeleted() {
-			catalog.Join(&objects, u.AsObjects(auth)...)
+			catalog.Join(&objects, u.AsObjects(a)...)
 		}
 	}
 
 	return objects
 }
 
-func (uu *Users) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (uu *Users) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if uu != nil {
 		for k, u := range uu.users {
 			if u.OID.Contains(oid) {
-				objects, err := u.set(auth, oid, value, dbc)
+				objects, err := u.set(a, oid, value, dbc)
 				if err == nil {
 					uu.users[k] = u
 				}
@@ -58,12 +58,12 @@ func (uu *Users) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 		}
 
 		if oid == "<new>" {
-			if u, err := uu.add(auth, User{}); err != nil {
+			if u, err := uu.add(a, User{}); err != nil {
 				return nil, err
 			} else if u == nil {
 				return nil, fmt.Errorf("Failed to add 'new' user")
 			} else {
-				u.log(auth, "add", u.OID, "card", "Added 'new' user", "", "", dbc)
+				u.log(auth.UID(a), "add", u.OID, "card", "Added 'new' user", "", "", dbc)
 
 				catalog.Join(&objects, catalog.NewObject(u.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(u.OID, UserCreated, u.created))
@@ -74,13 +74,13 @@ func (uu *Users) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 	return objects, nil
 }
 
-func (uu *Users) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+func (uu *Users) DeleteByOID(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if uu != nil {
 		for k, u := range uu.users {
 			if u.OID == oid {
-				objects, err := u.delete(auth, dbc)
+				objects, err := u.delete(a, dbc)
 				if err == nil {
 					uu.users[k] = u
 				}

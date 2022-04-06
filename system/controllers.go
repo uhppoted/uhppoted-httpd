@@ -20,7 +20,7 @@ func Controllers(uid, role string) []schema.Object {
 	return objects
 }
 
-func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{}, error) {
+func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interface{}, error) {
 	sys.Lock()
 
 	defer sys.Unlock()
@@ -34,7 +34,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	shadow := sys.controllers.Controllers.Clone()
 
 	for _, o := range updated {
-		if objects, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
+		if objects, err := shadow.UpdateByOID(a, o.OID, o.Value, dbc); err != nil {
 			return nil, err
 		} else {
 			dbc.Stash(objects)
@@ -42,7 +42,7 @@ func UpdateControllers(m map[string]interface{}, auth auth.OpAuth) (interface{},
 	}
 
 	for _, oid := range deleted {
-		if objects, err := shadow.DeleteByOID(auth, oid, dbc); err != nil {
+		if objects, err := shadow.DeleteByOID(a, oid, dbc); err != nil {
 			return nil, err
 		} else {
 			dbc.Stash(objects)

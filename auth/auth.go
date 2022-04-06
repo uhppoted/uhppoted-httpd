@@ -40,9 +40,13 @@ type IUser interface {
 	Role() string
 }
 
-type OpAuth interface {
-	UID() string
+type Authorizator struct {
+	uid  string
+	role string
+	OpAuth
+}
 
+type OpAuth interface {
 	CanView(o Operant, field string, value interface{}, rulesets ...RuleSet) error
 	CanAdd(o Operant, rulesets ...RuleSet) error
 	CanUpdate(o Operant, field string, value interface{}, rulesets ...RuleSet) error
@@ -51,4 +55,20 @@ type OpAuth interface {
 
 type Operant interface {
 	AsRuleEntity() (string, interface{})
+}
+
+func NewAuthorizator(uid, role string) *Authorizator {
+	return &Authorizator{
+		uid:    uid,
+		role:   role,
+		OpAuth: &authorizator{},
+	}
+}
+
+func UID(a *Authorizator) string {
+	if a != nil {
+		return a.uid
+	}
+
+	return ""
 }

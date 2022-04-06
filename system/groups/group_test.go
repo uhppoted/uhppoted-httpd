@@ -152,17 +152,19 @@ func TestGroupAsObjectsWithAuth(t *testing.T) {
 		//	{OID: "0.5.3.1", Value: "Le Groupe"},
 	}
 
-	auth := stub{
-		canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
-			if strings.HasPrefix(field, "group.name") {
-				return errors.New("test")
-			}
+	a := auth.Authorizator{
+		OpAuth: &stub{
+			canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
+				if strings.HasPrefix(field, "group.name") {
+					return errors.New("test")
+				}
 
-			return nil
+				return nil
+			},
 		},
 	}
 
-	objects := g.AsObjects(&auth)
+	objects := g.AsObjects(&a)
 
 	if !reflect.DeepEqual(objects, expected) {
 		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)

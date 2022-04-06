@@ -57,38 +57,35 @@ func NewControllers() Controllers {
 	}
 }
 
-func (cc *Controllers) AsObjects(auth auth.OpAuth) []schema.Object {
+func (cc *Controllers) AsObjects(a *auth.Authorizator) []schema.Object {
 	objects := []schema.Object{}
 
 	for _, c := range cc.controllers {
 		if c.IsValid() {
-			catalog.Join(&objects, c.AsObjects(auth)...)
+			catalog.Join(&objects, c.AsObjects(a)...)
 		}
 	}
 
 	return objects
 }
 
-func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (cc *Controllers) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if cc == nil {
 		return nil, nil
 	}
 
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
+	uid := auth.UID(a)
 
 	for _, c := range cc.controllers {
 		if c != nil && c.OID.Contains(oid) {
-			return c.set(auth, oid, value, dbc)
+			return c.set(a, oid, value, dbc)
 		}
 	}
 
 	objects := []schema.Object{}
 
 	if oid == "<new>" {
-		if c, err := cc.add(auth, Controller{}); err != nil {
+		if c, err := cc.add(a, Controller{}); err != nil {
 			return nil, err
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' controller")
@@ -106,13 +103,13 @@ func (cc *Controllers) UpdateByOID(auth auth.OpAuth, oid schema.OID, value strin
 	return objects, nil
 }
 
-func (cc *Controllers) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+func (cc *Controllers) DeleteByOID(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if cc != nil {
 		for _, c := range cc.controllers {
 			if c != nil && c.OID == oid {
-				return c.delete(auth, dbc)
+				return c.delete(a, dbc)
 			}
 		}
 	}

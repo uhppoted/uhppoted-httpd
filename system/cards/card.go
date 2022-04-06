@@ -71,7 +71,7 @@ func (c Card) IsDeleted() bool {
 	return !c.deleted.IsZero()
 }
 
-func (c *Card) AsObjects(auth auth.OpAuth) []schema.Object {
+func (c *Card) AsObjects(a *auth.Authorizator) []schema.Object {
 	list := []kv{}
 
 	if c.IsDeleted() {
@@ -106,7 +106,7 @@ func (c *Card) AsObjects(auth auth.OpAuth) []schema.Object {
 		}
 	}
 
-	return c.toObjects(list, auth)
+	return c.toObjects(list, a)
 }
 
 func (c *Card) AsRuleEntity() (string, interface{}) {
@@ -145,7 +145,7 @@ func (c *Card) AsRuleEntity() (string, interface{}) {
 	return "card", &entity
 }
 
-func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if c == nil {
 		return []schema.Object{}, nil
 	}
@@ -162,6 +162,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		return nil
 	}
 
+	uid := auth.UID(a)
 	list := []kv{}
 
 	switch {
@@ -169,7 +170,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			c.log(a,
+			c.log(uid,
 				"update",
 				c.OID,
 				"name",
@@ -191,7 +192,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			} else if err := f("number", n); err != nil {
 				return nil, err
 			} else {
-				c.log(a,
+				c.log(uid,
 					"update",
 					c.OID,
 					"card",
@@ -211,7 +212,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 				return nil, err
 			} else {
 				if p := stringify(c.Name, ""); p != "" {
-					c.log(a,
+					c.log(uid,
 						"update",
 						c.OID,
 						"number",
@@ -220,7 +221,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 						stringify(p, ""),
 						dbc)
 				} else {
-					c.log(a,
+					c.log(uid,
 						"update",
 						c.OID,
 						"number",
@@ -245,7 +246,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		} else if !from.IsValid() {
 			return nil, fmt.Errorf("invalid 'from' date (%v)", value)
 		} else {
-			c.log(a,
+			c.log(uid,
 				"update",
 				c.OID,
 				"from",
@@ -268,7 +269,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		} else if !to.IsValid() {
 			return nil, fmt.Errorf("invalid 'to' date (%v)", value)
 		} else {
-			c.log(a,
+			c.log(uid,
 				"update",
 				c.OID,
 				"to",
@@ -296,23 +297,9 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 				group := catalog.GetV(schema.OID(k), GroupName)
 
 				if value == "true" {
-					c.log(a,
-						"update",
-						c.OID,
-						"group",
-						fmt.Sprintf("Granted access to %v", group),
-						"",
-						"",
-						dbc)
+					c.log(uid, "update", c.OID, "group", fmt.Sprintf("Granted access to %v", group), "", "", dbc)
 				} else {
-					c.log(a,
-						"update",
-						c.OID,
-						"group",
-						fmt.Sprintf("Revoked access to %v", group),
-						"",
-						"",
-						dbc)
+					c.log(uid, "update", c.OID, "group", fmt.Sprintf("Revoked access to %v", group), "", "", dbc)
 				}
 
 				c.Groups[k] = value == "true"
@@ -328,7 +315,7 @@ func (c *Card) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	return c.toObjects(list, a), nil
 }
 
-func (c *Card) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
+func (c *Card) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error) {
 	list := []kv{}
 
 	if c != nil {
@@ -338,12 +325,13 @@ func (c *Card) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 			}
 		}
 
+		uid := auth.UID(a)
 		if p := stringify(c.Card, ""); p != "" {
-			c.log(a, "delete", c.OID, "card", fmt.Sprintf("Deleted card %v", p), "", "", dbc)
+			c.log(uid, "delete", c.OID, "card", fmt.Sprintf("Deleted card %v", p), "", "", dbc)
 		} else if p = stringify(c.Name, ""); p != "" {
-			c.log(a, "delete", c.OID, "card", fmt.Sprintf("Deleted card for %v", p), "", "", dbc)
+			c.log(uid, "delete", c.OID, "card", fmt.Sprintf("Deleted card for %v", p), "", "", dbc)
 		} else {
-			c.log(a, "delete", c.OID, "card", "Deleted card", "", "", dbc)
+			c.log(uid, "delete", c.OID, "card", "Deleted card", "", "", dbc)
 		}
 
 		c.deleted = types.TimestampNow()
@@ -358,7 +346,7 @@ func (c *Card) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 	return c.toObjects(list, a), nil
 }
 
-func (c *Card) toObjects(list []kv, a auth.OpAuth) []schema.Object {
+func (c *Card) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	f := func(c *Card, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(c, field, value, auth.Cards); err != nil {
@@ -494,12 +482,7 @@ func (c *Card) clone() *Card {
 	return replicant
 }
 
-func (c *Card) log(auth auth.OpAuth, operation string, oid schema.OID, field, description, before, after string, dbc db.DBC) {
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
-
+func (c *Card) log(uid string, operation string, oid schema.OID, field, description, before, after string, dbc db.DBC) {
 	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       oid,

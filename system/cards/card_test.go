@@ -112,17 +112,19 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.4.3.4", Value: to},
 	}
 
-	auth := stub{
-		canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
-			if strings.HasPrefix(field, "card.number") {
-				return errors.New("test")
-			}
+	a := auth.Authorizator{
+		OpAuth: &stub{
+			canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
+				if strings.HasPrefix(field, "card.number") {
+					return errors.New("test")
+				}
 
-			return nil
+				return nil
+			},
 		},
 	}
 
-	objects := c.AsObjects(&auth)
+	objects := c.AsObjects(&a)
 
 	if !reflect.DeepEqual(objects, expected) {
 		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)

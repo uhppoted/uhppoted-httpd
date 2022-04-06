@@ -113,13 +113,15 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 		//		schema.Object{OID: "0.1.3.3.3", Value: *listen},
 	}
 
-	auth := stub{
-		canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
-			if strings.HasPrefix(field, "LAN.address.listen") {
-				return errors.New("test")
-			}
+	auth := auth.Authorizator{
+		OpAuth: &stub{
+			canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
+				if strings.HasPrefix(field, "LAN.address.listen") {
+					return errors.New("test")
+				}
 
-			return nil
+				return nil
+			},
 		},
 	}
 

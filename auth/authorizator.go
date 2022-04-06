@@ -19,8 +19,7 @@ import (
 )
 
 type authorizator struct {
-	uid  string
-	role string
+	Authorizator
 }
 
 type card struct {
@@ -107,21 +106,6 @@ func Init(rules map[RuleSet]string) error {
 	}
 
 	return nil
-}
-
-func NewAuthorizator(uid, role string) OpAuth {
-	return &authorizator{
-		uid:  uid,
-		role: role,
-	}
-}
-
-func (a *authorizator) UID() string {
-	if a != nil {
-		return a.uid
-	}
-
-	return "?"
 }
 
 func (a *authorizator) CanView(operant Operant, field string, value interface{}, rulesets ...RuleSet) error {

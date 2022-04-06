@@ -30,38 +30,38 @@ func NewInterfaces(ch chan types.EventsList) Interfaces {
 	}
 }
 
-func (ii *Interfaces) AsObjects(auth auth.OpAuth) []schema.Object {
+func (ii *Interfaces) AsObjects(a *auth.Authorizator) []schema.Object {
 	objects := []schema.Object{}
 
 	for _, l := range ii.lans {
 		if l.IsValid() {
-			catalog.Join(&objects, l.AsObjects(auth)...)
+			catalog.Join(&objects, l.AsObjects(a)...)
 		}
 	}
 
 	return objects
 }
 
-func (ii *Interfaces) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (ii *Interfaces) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if ii == nil {
 		return nil, nil
 	}
 
 	for _, l := range ii.lans {
 		if l != nil && l.OID.Contains(oid) {
-			return l.set(auth, oid, value, dbc)
+			return l.set(a, oid, value, dbc)
 		}
 	}
 
 	objects := []schema.Object{}
 
 	if oid == "<new>" {
-		if l, err := ii.add(auth, LAN{}); err != nil {
+		if l, err := ii.add(a, LAN{}); err != nil {
 			return nil, err
 		} else if l == nil {
 			return nil, fmt.Errorf("Failed to add 'new' interface")
 		} else {
-			l.log(auth, "add", l.OID, "interface", fmt.Sprintf("Added 'new' interface"), "", "", dbc)
+			l.log(auth.UID(a), "add", l.OID, "interface", fmt.Sprintf("Added 'new' interface"), "", "", dbc)
 			catalog.Join(&objects, catalog.NewObject(l.OID, "new"))
 			catalog.Join(&objects, catalog.NewObject2(l.OID, LANStatus, "new"))
 			catalog.Join(&objects, catalog.NewObject2(l.OID, LANCreated, l.created))

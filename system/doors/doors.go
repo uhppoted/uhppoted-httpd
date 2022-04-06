@@ -37,12 +37,12 @@ func (dd *Doors) Door(oid schema.OID) (Door, bool) {
 	return d, ok
 }
 
-func (dd *Doors) AsObjects(auth auth.OpAuth) []schema.Object {
+func (dd *Doors) AsObjects(a *auth.Authorizator) []schema.Object {
 	objects := []schema.Object{}
 
 	for _, d := range dd.doors {
 		if d.IsValid() || d.IsDeleted() {
-			catalog.Join(&objects, d.AsObjects(auth)...)
+			catalog.Join(&objects, d.AsObjects(a)...)
 		}
 	}
 
@@ -140,13 +140,13 @@ func (dd Doors) Print() {
 	}
 }
 
-func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (dd *Doors) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if dd != nil {
 		for k, d := range dd.doors {
 			if d.OID.Contains(oid) {
-				objects, err := d.set(auth, oid, value, dbc)
+				objects, err := d.set(a, oid, value, dbc)
 				if err == nil {
 					dd.doors[k] = d
 				}
@@ -156,12 +156,12 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 		}
 
 		if oid == "<new>" {
-			if d, err := dd.add(auth, Door{}); err != nil {
+			if d, err := dd.add(a, Door{}); err != nil {
 				return nil, err
 			} else if d == nil {
 				return nil, fmt.Errorf("Failed to add 'new' door")
 			} else {
-				d.log(auth, "add", d.OID, "door", fmt.Sprintf("Added 'new' door"), dbc)
+				d.log(auth.UID(a), "add", d.OID, "door", fmt.Sprintf("Added 'new' door"), dbc)
 
 				catalog.Join(&objects, catalog.NewObject(d.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
@@ -172,13 +172,13 @@ func (dd *Doors) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 	return objects, nil
 }
 
-func (dd *Doors) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+func (dd *Doors) DeleteByOID(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if dd != nil {
 		for k, d := range dd.doors {
 			if d.OID == oid {
-				objects, err := d.delete(auth, dbc)
+				objects, err := d.delete(a, dbc)
 				if err == nil {
 					dd.doors[k] = d
 				}

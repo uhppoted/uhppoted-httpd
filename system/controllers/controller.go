@@ -124,7 +124,7 @@ func (c *Controller) realized() bool {
 	return false
 }
 
-func (c *Controller) AsObjects(auth auth.OpAuth) []schema.Object {
+func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 	list := []kv{}
 
 	if c.IsDeleted() {
@@ -258,7 +258,7 @@ func (c *Controller) AsObjects(auth auth.OpAuth) []schema.Object {
 		list = append(list, kv{ControllerDoor4, doors[4]})
 	}
 
-	return c.toObjects(list, auth)
+	return c.toObjects(list, a)
 }
 
 func (c *Controller) AsRuleEntity() (string, interface{}) {
@@ -381,7 +381,7 @@ func (c *Controller) get() *cached {
 	return &e
 }
 
-func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if c == nil {
 		return []schema.Object{}, nil
 	}
@@ -398,11 +398,7 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 		return nil
 	}
 
-	uid := ""
-	if a != nil {
-		uid = a.UID()
-	}
-
+	uid := auth.UID(a)
 	OID := c.OID
 	clone := c.clone()
 	list := []kv{}
@@ -541,14 +537,11 @@ func (c *Controller) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC
 	return c.toObjects(list, a), nil
 }
 
-func (c *Controller) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
+func (c *Controller) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error) {
 	list := []kv{}
 
 	if c != nil {
-		uid := ""
-		if a != nil {
-			uid = a.UID()
-		}
+		uid := auth.UID(a)
 
 		if a != nil {
 			if err := a.CanDelete(c, auth.Controllers); err != nil {
@@ -576,7 +569,7 @@ func (c *Controller) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) 
 	return c.toObjects(list, a), nil
 }
 
-func (c *Controller) toObjects(list []kv, a auth.OpAuth) []schema.Object {
+func (c *Controller) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	f := func(c *Controller, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(c, field, value, auth.Controllers); err != nil {

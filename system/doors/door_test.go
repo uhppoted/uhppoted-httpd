@@ -99,27 +99,25 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.3.3.0.1", Value: created},
 		{OID: "0.3.3.0.2", Value: types.Timestamp{}},
 		{OID: "0.3.3.1", Value: "Le Door"},
-		// {OID: "0.3.3.2", Value: types.Uint8(0)},
-		// {OID: "0.3.3.2.1", Value: types.StatusUnknown},
-		// {OID: "0.3.3.2.2", Value: uint8(7)},
-		// {OID: "0.3.3.2.3", Value: ""},
 		{OID: "0.3.3.3", Value: core.ControlState(0)},
 		{OID: "0.3.3.3.1", Value: types.StatusUnknown},
 		{OID: "0.3.3.3.2", Value: core.NormallyOpen},
 		{OID: "0.3.3.3.3", Value: ""},
 	}
 
-	auth := stub{
-		canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
-			if strings.HasPrefix(field, "door.delay") {
-				return errors.New("test")
-			}
+	a := auth.Authorizator{
+		OpAuth: &stub{
+			canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
+				if strings.HasPrefix(field, "door.delay") {
+					return errors.New("test")
+				}
 
-			return nil
+				return nil
+			},
 		},
 	}
 
-	objects := d.AsObjects(&auth)
+	objects := d.AsObjects(&a)
 
 	if !reflect.DeepEqual(objects, expected) {
 		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)

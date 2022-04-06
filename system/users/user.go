@@ -77,7 +77,7 @@ func (u User) String() string {
 	return ""
 }
 
-func (u User) AsObjects(auth auth.OpAuth) []schema.Object {
+func (u User) AsObjects(a *auth.Authorizator) []schema.Object {
 	list := []kv{}
 
 	if u.IsDeleted() {
@@ -92,7 +92,7 @@ func (u User) AsObjects(auth auth.OpAuth) []schema.Object {
 		list = append(list, kv{UserPassword, ""})
 	}
 
-	return u.toObjects(list, auth)
+	return u.toObjects(list, a)
 }
 
 func (u User) AsRuleEntity() (string, interface{}) {
@@ -109,7 +109,7 @@ func (u User) AsRuleEntity() (string, interface{}) {
 	return "user", &entity
 }
 
-func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if u == nil {
 		return []schema.Object{}, nil
 	}
@@ -126,6 +126,7 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		return nil
 	}
 
+	uid := auth.UID(a)
 	list := []kv{}
 	clone := u.clone()
 
@@ -138,7 +139,7 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			u.modified = types.TimestampNow()
 			list = append(list, kv{UserName, stringify(u.name, "")})
 
-			u.log(a,
+			u.log(uid,
 				"update",
 				u.OID,
 				"name",
@@ -156,7 +157,7 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			u.modified = types.TimestampNow()
 			list = append(list, kv{UserUID, stringify(u.uid, "")})
 
-			u.log(a,
+			u.log(uid,
 				"update",
 				u.OID,
 				"uid",
@@ -174,7 +175,7 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			u.modified = types.TimestampNow()
 			list = append(list, kv{UserRole, stringify(u.role, "")})
 
-			u.log(a,
+			u.log(uid,
 				"update",
 				u.OID,
 				"role",
@@ -203,7 +204,7 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 
 			list = append(list, kv{UserPassword, ""})
 
-			u.log(a, "update", u.OID, "password", "Updated password", "", "", dbc)
+			u.log(uid, "update", u.OID, "password", "Updated password", "", "", dbc)
 		}
 	}
 
@@ -212,7 +213,7 @@ func (u *User) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	return u.toObjects(list, a), nil
 }
 
-func (u *User) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
+func (u *User) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error) {
 	list := []kv{}
 
 	if u != nil {
@@ -222,12 +223,13 @@ func (u *User) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 			}
 		}
 
+		uid := auth.UID(a)
 		if p := stringify(u.uid, ""); p != "" {
-			u.log(a, "delete", u.OID, "user", fmt.Sprintf("Deleted UID %v", p), "", "", dbc)
+			u.log(uid, "delete", u.OID, "user", fmt.Sprintf("Deleted UID %v", p), "", "", dbc)
 		} else if p = stringify(u.name, ""); p != "" {
-			u.log(a, "delete", u.OID, "user", fmt.Sprintf("Deleted user %v", p), "", "", dbc)
+			u.log(uid, "delete", u.OID, "user", fmt.Sprintf("Deleted user %v", p), "", "", dbc)
 		} else {
-			u.log(a, "delete", u.OID, "user", "Deleted user", "", "", dbc)
+			u.log(uid, "delete", u.OID, "user", "Deleted user", "", "", dbc)
 		}
 
 		u.deleted = types.TimestampNow()
@@ -359,12 +361,7 @@ func (u User) clone() *User {
 	return &replicant
 }
 
-func (u User) log(auth auth.OpAuth, operation string, oid schema.OID, field, description, before, after string, dbc db.DBC) {
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
-
+func (u User) log(uid string, operation string, oid schema.OID, field, description, before, after string, dbc db.DBC) {
 	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       oid,

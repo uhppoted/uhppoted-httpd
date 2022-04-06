@@ -26,7 +26,7 @@ func NewGroups() Groups {
 	}
 }
 
-func (gg *Groups) AsObjects(auth auth.OpAuth) []schema.Object {
+func (gg *Groups) AsObjects(a *auth.Authorizator) []schema.Object {
 	guard.RLock()
 	defer guard.RUnlock()
 
@@ -34,20 +34,20 @@ func (gg *Groups) AsObjects(auth auth.OpAuth) []schema.Object {
 
 	for _, g := range gg.groups {
 		if g.IsValid() || g.IsDeleted() {
-			catalog.Join(&objects, g.AsObjects(auth)...)
+			catalog.Join(&objects, g.AsObjects(a)...)
 		}
 	}
 
 	return objects
 }
 
-func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (gg *Groups) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if gg != nil {
 		for k, g := range gg.groups {
 			if g.OID.Contains(oid) {
-				objects, err := g.set(auth, oid, value, dbc)
+				objects, err := g.set(a, oid, value, dbc)
 				if err == nil {
 					gg.groups[k] = g
 				}
@@ -57,12 +57,12 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, db
 		}
 
 		if oid == "<new>" {
-			if g, err := gg.add(auth, Group{}); err != nil {
+			if g, err := gg.add(a, Group{}); err != nil {
 				return nil, err
 			} else if g == nil {
 				return nil, fmt.Errorf("Failed to add 'new' group")
 			} else {
-				g.log(auth, "add", g.OID, "group", "Added 'new' group", dbc)
+				g.log(auth.UID(a), "add", g.OID, "group", "Added 'new' group", dbc)
 
 				catalog.Join(&objects, catalog.NewObject(g.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(g.OID, GroupCreated, g.created))
@@ -73,7 +73,7 @@ func (gg *Groups) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, db
 	return objects, nil
 }
 
-func (gg *Groups) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+func (gg *Groups) DeleteByOID(auth *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	if gg != nil {
 		for k, g := range gg.groups {
 			if g.OID == oid {

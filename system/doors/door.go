@@ -56,7 +56,7 @@ func (d Door) String() string {
 	return fmt.Sprintf("%v", d.Name)
 }
 
-func (d *Door) AsObjects(auth auth.OpAuth) []schema.Object {
+func (d *Door) AsObjects(a *auth.Authorizator) []schema.Object {
 	list := []kv{}
 
 	if d.IsDeleted() {
@@ -140,7 +140,7 @@ func (d *Door) AsObjects(auth auth.OpAuth) []schema.Object {
 		list = append(list, kv{DoorControlError, control.err})
 	}
 
-	return d.toObjects(list, auth)
+	return d.toObjects(list, a)
 }
 
 func (d *Door) AsRuleEntity() (string, interface{}) {
@@ -155,7 +155,7 @@ func (d *Door) AsRuleEntity() (string, interface{}) {
 	return "door", &entity
 }
 
-func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	f := func(field string, value interface{}) error {
 		if a == nil {
 			return nil
@@ -170,15 +170,15 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 		return d.toObjects([]kv{kv{DoorDeleted, d.deleted}}, a), fmt.Errorf("Door has been deleted")
 	}
 
+	uid := auth.UID(a)
 	list := []kv{}
-	//name := fmt.Sprintf("%v", d.Name)
 
 	switch oid {
 	case d.OID.Append(DoorName):
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			d.log(a, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, BLANK), stringify(value, BLANK)), dbc)
+			d.log(uid, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, BLANK), stringify(value, BLANK)), dbc)
 
 			d.Name = value
 			d.modified = types.TimestampNow()
@@ -202,7 +202,7 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			list = append(list, kv{DoorDelayError, ""})
 			list = append(list, kv{DoorDelayModified, true})
 
-			d.log(a, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
+			d.log(uid, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
 		}
 
 	case d.OID.Append(DoorControl):
@@ -228,7 +228,7 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 			list = append(list, kv{DoorControlError, ""})
 			list = append(list, kv{DoorControlModified, true})
 
-			d.log(a, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
+			d.log(uid, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
 		}
 	}
 
@@ -237,7 +237,7 @@ func (d *Door) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]s
 	return d.toObjects(list, a), nil
 }
 
-func (d *Door) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
+func (d *Door) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error) {
 	list := []kv{}
 
 	if d != nil {
@@ -251,7 +251,7 @@ func (d *Door) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 			return nil, fmt.Errorf("Cannot delete door %v - assigned to controller", d.Name)
 		}
 
-		d.log(a, "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", d.Name), dbc)
+		d.log(auth.UID(a), "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", d.Name), dbc)
 		d.deleted = types.TimestampNow()
 		d.modified = types.TimestampNow()
 
@@ -264,7 +264,7 @@ func (d *Door) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 	return d.toObjects(list, a), nil
 }
 
-func (d *Door) toObjects(list []kv, a auth.OpAuth) []schema.Object {
+func (d *Door) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	f := func(d *Door, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(d, field, value, auth.Doors); err != nil {
@@ -363,12 +363,7 @@ func (d *Door) clone() Door {
 	}
 }
 
-func (d *Door) log(auth auth.OpAuth, operation string, OID schema.OID, field string, description string, dbc db.DBC) {
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
-
+func (d *Door) log(uid string, operation string, OID schema.OID, field string, description string, dbc db.DBC) {
 	deviceID := catalog.GetDoorDeviceID(d.OID)
 	door := catalog.GetDoorDeviceDoor(d.OID)
 

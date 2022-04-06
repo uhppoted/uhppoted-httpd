@@ -50,7 +50,7 @@ func (g Group) IsDeleted() bool {
 	return !g.deleted.IsZero()
 }
 
-func (g *Group) AsObjects(auth auth.OpAuth) []schema.Object {
+func (g *Group) AsObjects(a *auth.Authorizator) []schema.Object {
 	list := []kv{}
 
 	if g.IsDeleted() {
@@ -79,7 +79,7 @@ func (g *Group) AsObjects(auth auth.OpAuth) []schema.Object {
 		}
 	}
 
-	return g.toObjects(list, auth)
+	return g.toObjects(list, a)
 }
 
 func (g *Group) AsRuleEntity() (string, interface{}) {
@@ -116,7 +116,7 @@ func (g Group) Status() types.Status {
 	return types.StatusOk
 }
 
-func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if g == nil {
 		return []schema.Object{}, nil
 	}
@@ -133,13 +133,15 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 		return nil
 	}
 
+	uid := auth.UID(a)
 	list := []kv{}
+
 	switch {
 	case oid == g.OID.Append(GroupName):
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			g.log(a, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, BLANK), stringify(value, BLANK)), dbc)
+			g.log(uid, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, BLANK), stringify(value, BLANK)), dbc)
 			g.Name = value
 			g.modified = types.TimestampNow()
 
@@ -156,9 +158,9 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 				return nil, err
 			} else {
 				if value == "true" {
-					g.log(a, "update", g.OID, "door", fmt.Sprintf("Granted access to %v", door), dbc)
+					g.log(uid, "update", g.OID, "door", fmt.Sprintf("Granted access to %v", door), dbc)
 				} else {
-					g.log(a, "update", g.OID, "door", fmt.Sprintf("Revoked access to %v", door), dbc)
+					g.log(uid, "update", g.OID, "door", fmt.Sprintf("Revoked access to %v", door), dbc)
 				}
 
 				g.Doors[k] = value == "true"
@@ -174,7 +176,7 @@ func (g *Group) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]
 	return g.toObjects(list, a), nil
 }
 
-func (g *Group) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
+func (g *Group) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error) {
 	list := []kv{}
 
 	if g != nil {
@@ -184,7 +186,7 @@ func (g *Group) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 			}
 		}
 
-		g.log(a, "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", g.Name), dbc)
+		g.log(auth.UID(a), "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", g.Name), dbc)
 		g.deleted = types.TimestampNow()
 		g.modified = types.TimestampNow()
 
@@ -197,7 +199,7 @@ func (g *Group) delete(a auth.OpAuth, dbc db.DBC) ([]schema.Object, error) {
 	return g.toObjects(list, a), nil
 }
 
-func (g *Group) toObjects(list []kv, a auth.OpAuth) []schema.Object {
+func (g *Group) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	f := func(g *Group, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(g, field, value, auth.Groups); err != nil {
@@ -299,11 +301,7 @@ func (g Group) clone() Group {
 	return group
 }
 
-func (g *Group) log(auth auth.OpAuth, operation string, OID schema.OID, field string, description string, dbc db.DBC) {
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
+func (g *Group) log(uid string, operation string, OID schema.OID, field string, description string, dbc db.DBC) {
 
 	record := audit.AuditRecord{
 		UID:       uid,

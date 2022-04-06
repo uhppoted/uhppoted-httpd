@@ -11,8 +11,8 @@ func Users(uid, role string) []schema.Object {
 	sys.RLock()
 	defer sys.RUnlock()
 
-	auth := auth.NewAuthorizator(uid, role)
-	objects := sys.users.AsObjects(auth)
+	a := auth.NewAuthorizator(uid, role)
+	objects := sys.users.AsObjects(a)
 
 	return objects
 }

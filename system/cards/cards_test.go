@@ -69,13 +69,15 @@ func TestCardAdd(t *testing.T) {
 func TestCardAddWithAuth(t *testing.T) {
 	catalog.Init(memdb.NewCatalog())
 
-	auth := stub{}
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid)
+	a := auth.Authorizator{
+		OpAuth: &stub{},
+	}
 
 	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
 
-	r, err := cards.UpdateByOID(&auth, "<new>", "", nil)
+	r, err := cards.UpdateByOID(&a, "<new>", "", nil)
 	if err == nil {
 		t.Errorf("Expected 'not authorised' error adding card, got:%v", err)
 	}
@@ -193,7 +195,9 @@ func TestCardUpdateWithInvalidOID(t *testing.T) {
 func TestCardUpdateWithAuth(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid)
-	auth := stub{}
+	auth := auth.Authorizator{
+		OpAuth: &stub{},
+	}
 
 	if _, err := cards.UpdateByOID(&auth, hagrid.OID.Append(CardNumber), "1234567", nil); err == nil {
 		t.Errorf("Expected 'not authorised' error updating card, got:%v", err)
@@ -383,16 +387,17 @@ func TestCardDelete(t *testing.T) {
 
 func TestCardHolderDeleteWithAuth(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
-	authx := stub{
-		canUpdateCard: func(card auth.Operant, field string, value interface{}) error {
-			return nil
+	auth := auth.Authorizator{
+		OpAuth: &stub{
+			canUpdateCard: func(card auth.Operant, field string, value interface{}) error {
+				return nil
+			},
 		},
 	}
 
-	if _, err := cards.DeleteByOID(&authx, dobby.OID, nil); err == nil {
+	if _, err := cards.DeleteByOID(&auth, dobby.OID, nil); err == nil {
 		t.Fatalf("Expected 'not authorised' error deleting card, got:%v", err)
 	}
-
 }
 
 func TestCardHolderDeleteWithAuditTrail(t *testing.T) {

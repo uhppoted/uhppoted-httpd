@@ -73,7 +73,7 @@ func (l LAN) IsDeleted() bool {
 	return !l.deleted.IsZero()
 }
 
-func (l *LAN) AsObjects(auth auth.OpAuth) []schema.Object {
+func (l *LAN) AsObjects(a *auth.Authorizator) []schema.Object {
 	list := []kv{}
 
 	if l.IsDeleted() {
@@ -89,7 +89,7 @@ func (l *LAN) AsObjects(auth auth.OpAuth) []schema.Object {
 		list = append(list, kv{LANListenAddress, l.ListenAddress})
 	}
 
-	return l.toObjects(list, auth)
+	return l.toObjects(list, a)
 }
 
 func (l *LAN) AsRuleEntity() (string, interface{}) {
@@ -106,7 +106,7 @@ func (l *LAN) AsRuleEntity() (string, interface{}) {
 	return "lan", &entity
 }
 
-func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if l == nil {
 		return []schema.Object{}, nil
 	}
@@ -123,6 +123,7 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 		return nil
 	}
 
+	uid := auth.UID(a)
 	list := []kv{}
 
 	switch oid {
@@ -130,7 +131,7 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			l.log(a,
+			l.log(uid,
 				"update",
 				l.OID,
 				"name",
@@ -151,7 +152,7 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 		} else if err := f("bind", addr); err != nil {
 			return nil, err
 		} else {
-			l.log(a,
+			l.log(uid,
 				"update",
 				l.OID,
 				"bind",
@@ -172,7 +173,7 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 		} else if err := f("broadcast", addr); err != nil {
 			return nil, err
 		} else {
-			l.log(a,
+			l.log(uid,
 				"update",
 				l.OID,
 				"broadcast",
@@ -193,7 +194,7 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 		} else if err = f("listen", addr); err != nil {
 			return nil, err
 		} else {
-			l.log(a,
+			l.log(uid,
 				"update",
 				l.OID,
 				"listen",
@@ -214,7 +215,7 @@ func (l *LAN) set(a auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]sc
 	return l.toObjects(list, a), nil
 }
 
-func (l *LAN) toObjects(list []kv, a auth.OpAuth) []schema.Object {
+func (l *LAN) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	f := func(l *LAN, field string, value interface{}) bool {
 		if a != nil {
 			if err := a.CanView(l, field, value, auth.Interfaces); err != nil {
@@ -608,12 +609,7 @@ func (l *LAN) deserialize(bytes []byte) error {
 	return nil
 }
 
-func (l *LAN) log(auth auth.OpAuth, operation string, OID schema.OID, field, description, before, after string, dbc db.DBC) {
-	uid := ""
-	if auth != nil {
-		uid = auth.UID()
-	}
-
+func (l *LAN) log(uid string, operation string, OID schema.OID, field, description, before, after string, dbc db.DBC) {
 	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       OID,

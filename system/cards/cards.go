@@ -26,27 +26,27 @@ func NewCards() Cards {
 	}
 }
 
-func (cc *Cards) AsObjects(auth auth.OpAuth) []schema.Object {
+func (cc *Cards) AsObjects(a *auth.Authorizator) []schema.Object {
 	guard.RLock()
 	defer guard.RUnlock()
 
 	objects := []schema.Object{}
 	for _, card := range cc.cards {
 		if card.IsValid() || card.IsDeleted() {
-			catalog.Join(&objects, card.AsObjects(auth)...)
+			catalog.Join(&objects, card.AsObjects(a)...)
 		}
 	}
 
 	return objects
 }
 
-func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (cc *Cards) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if cc != nil {
 		for k, c := range cc.cards {
 			if c.OID.Contains(oid) {
-				objects, err := c.set(auth, oid, value, dbc)
+				objects, err := c.set(a, oid, value, dbc)
 				if err == nil {
 					cc.cards[k] = c
 				}
@@ -56,12 +56,12 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 		}
 
 		if oid == "<new>" {
-			if c, err := cc.add(auth, Card{}); err != nil {
+			if c, err := cc.add(a, Card{}); err != nil {
 				return nil, err
 			} else if c == nil {
 				return nil, fmt.Errorf("Failed to add 'new' card")
 			} else {
-				c.log(auth, "add", c.OID, "card", "Added 'new' card", "", "", dbc)
+				c.log(auth.UID(a), "add", c.OID, "card", "Added 'new' card", "", "", dbc)
 
 				catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(c.OID, CardCreated, c.created))
@@ -72,13 +72,13 @@ func (cc *Cards) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string, dbc
 	return objects, nil
 }
 
-func (cc *Cards) DeleteByOID(auth auth.OpAuth, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+func (cc *Cards) DeleteByOID(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if cc != nil {
 		for k, c := range cc.cards {
 			if c.OID == oid {
-				objects, err := c.delete(auth, dbc)
+				objects, err := c.delete(a, dbc)
 				if err == nil {
 					cc.cards[k] = c
 				}
@@ -236,7 +236,7 @@ func (cc *Cards) Lookup(card uint32) *Card {
 	return nil
 }
 
-func (cc *Cards) add(a auth.OpAuth, c Card) (*Card, error) {
+func (cc *Cards) add(a *auth.Authorizator, c Card) (*Card, error) {
 	oid := catalog.NewT(c.CatalogCard)
 	if _, ok := cc.cards[oid]; ok {
 		return nil, fmt.Errorf("catalog returned duplicate OID (%v)", oid)

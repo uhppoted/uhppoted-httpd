@@ -136,7 +136,6 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.2.3.0.1", Value: created},
 		{OID: "0.2.3.0.2", Value: types.Timestamp{}},
 		{OID: "0.2.3.1", Value: name},
-		// {OID: "0.2.3.2", Value: fmt.Sprintf("%v", deviceID)},
 		{OID: "0.2.3.3.0", Value: types.StatusUnknown},
 		{OID: "0.2.3.3.1", Value: fmt.Sprintf("%v", address)},
 		{OID: "0.2.3.3.2", Value: fmt.Sprintf("%v", address)},
@@ -155,17 +154,19 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.2.3.7.4", Value: schema.OID("0.3.11")},
 	}
 
-	auth := stub{
-		canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
-			if strings.HasPrefix(field, "controller.device.ID") {
-				return errors.New("test")
-			}
+	a := auth.Authorizator{
+		OpAuth: &stub{
+			canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
+				if strings.HasPrefix(field, "controller.device.ID") {
+					return errors.New("test")
+				}
 
-			return nil
+				return nil
+			},
 		},
 	}
 
-	objects := c.AsObjects(&auth)
+	objects := c.AsObjects(&a)
 
 	if !reflect.DeepEqual(objects, expected) {
 		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
