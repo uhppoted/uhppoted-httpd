@@ -189,29 +189,54 @@ export function onCommit (tag, event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
 
+  const f = function (page, ...rows) {
+    const updated = []
+    const deleted = []
+
+    rows.forEach(row => {
+      const oid = row.dataset.oid
+
+      if (page.deleted && page.deleted(row)) {
+        deleted.push(oid)
+      } else {
+        const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
+        children.forEach(e => {
+          if (e.classList.contains('modified')) {
+            updated.push(e)
+          }
+        })
+      }
+    })
+
+    return {
+      updated: updated,
+      deleted: deleted
+    }
+  }
+
   switch (tag) {
     case 'interface':
       LAN.commit(event.target)
       break
 
     case 'controller':
-      commit(pages.controllers, row)
+      commit(pages.controllers, f(pages.controllers, row))
       break
 
     case 'door':
-      commit(pages.doors, row)
+      commit(pages.doors, f(pages.doors, row))
       break
 
     case 'card':
-      commit(pages.cards, row)
+      commit(pages.cards, f(pages.cards, row))
       break
 
     case 'group':
-      commit(pages.groups, row)
+      commit(pages.groups, f(pages.groups, row))
       break
 
     case 'user':
-      commit(pages.users, row)
+      commit(pages.users, f(pages.users, row))
       break
   }
 }
@@ -220,6 +245,31 @@ export function onCommitAll (tag, event, table) {
   const tbody = document.getElementById(table).querySelector('table tbody')
   const rows = tbody.rows
   const list = []
+
+  const f = function (page, ...rows) {
+    const updated = []
+    const deleted = []
+
+    rows.forEach(row => {
+      const oid = row.dataset.oid
+
+      if (page.deleted && page.deleted(row)) {
+        deleted.push(oid)
+      } else {
+        const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
+        children.forEach(e => {
+          if (e.classList.contains('modified')) {
+            updated.push(e)
+          }
+        })
+      }
+    })
+
+    return {
+      updated: updated,
+      deleted: deleted
+    }
+  }
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]
@@ -230,23 +280,23 @@ export function onCommitAll (tag, event, table) {
 
   switch (tag) {
     case 'controllers':
-      commit(pages.controllers, ...list)
+      commit(pages.controllers, f(pages.controllers, ...list))
       break
 
     case 'doors':
-      commit(pages.doors, ...list)
+      commit(pages.doors, f(pages.doors, ...list))
       break
 
     case 'cards':
-      commit(pages.cards, ...list)
+      commit(pages.cards, f(pages.cards, ...list))
       break
 
     case 'groups':
-      commit(pages.groups, ...list)
+      commit(pages.groups, f(pages.groups, ...list))
       break
 
     case 'users':
-      commit(pages.users, ...list)
+      commit(pages.users, f(pages.users, ...list))
       break
   }
 }
@@ -595,34 +645,19 @@ function rollback (recordset, row, refreshed) {
   }
 }
 
-function commit (page, ...rows) {
-  const deleted = []
-  const list = []
-
-  rows.forEach(row => {
-    const oid = row.dataset.oid
-
-    if (page.deleted && page.deleted(row)) {
-      deleted.push(oid)
-    } else {
-      const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
-      children.forEach(e => {
-        if (e.classList.contains('modified')) {
-          list.push(e)
-        }
-      })
-    }
-  })
-
+function commit (page, recordset) {
   const records = []
-  list.forEach(e => {
+  const updated = recordset.updated
+  const deleted = recordset.deleted
+
+  updated.forEach(e => {
     const oid = e.dataset.oid
     const value = e.dataset.value
     records.push({ oid: oid, value: value })
   })
 
   const reset = function () {
-    list.forEach(e => {
+    updated.forEach(e => {
       const flag = document.getElementById(`F${e.dataset.oid}`)
       unmark('pending', e, flag)
       mark('modified', e, flag)
@@ -630,13 +665,13 @@ function commit (page, ...rows) {
   }
 
   const cleanup = function () {
-    list.forEach(e => {
+    updated.forEach(e => {
       const flag = document.getElementById(`F${e.dataset.oid}`)
       unmark('pending', e, flag)
     })
   }
 
-  list.forEach(e => {
+  updated.forEach(e => {
     const flag = document.getElementById(`F${e.dataset.oid}`)
     mark('pending', e, flag)
     unmark('modified', e, flag)

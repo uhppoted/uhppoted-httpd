@@ -7,6 +7,8 @@
             - [x] Move error description to IsValid
 
       - [ ] Genericize commit in interfaces.js
+            - [x] Moved record collection out of commit(...)
+            
       - (?) Disallow editing of other fields if not valid
             - or at least warn that the record will be deleted
             - better UX anyway
