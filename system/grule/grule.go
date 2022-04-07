@@ -131,27 +131,21 @@ func (r *rules) Eval(ch cards.Card, gg groups.Groups, dd doors.Doors) ([]doors.D
 	return nil, nil, nil
 }
 
-func makeCard(ch cards.Card, groups groups.Groups) *card {
-	cardNumber := uint32(0)
-	if ch.Card != nil {
-		cardNumber = uint32(*ch.Card)
-	}
-
-	c := card{
-		name:   fmt.Sprintf("%v", ch.Name),
-		card:   cardNumber,
-		groups: []string{},
-	}
-
-	for k, v := range ch.Groups {
+func makeCard(c cards.Card, gg groups.Groups) *card {
+	groups := []string{}
+	for k, v := range c.Groups() {
 		if v {
-			if g, ok := groups.Group(k); ok {
-				c.groups = append(c.groups, g.Name)
+			if g, ok := gg.Group(k); ok {
+				groups = append(groups, g.Name)
 			}
 		}
 	}
 
-	return &c
+	return &card{
+		name:   c.Name(),
+		card:   c.CardNumber(),
+		groups: groups,
+	}
 }
 
 func clean(s string) string {

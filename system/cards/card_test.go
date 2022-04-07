@@ -21,7 +21,6 @@ func TestCardAsObjects(t *testing.T) {
 	catalog.Init(memdb.NewCatalog())
 
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	card := types.Card(8165537)
 	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
@@ -29,10 +28,10 @@ func TestCardAsObjects(t *testing.T) {
 		CatalogCard: catalog.CatalogCard{
 			OID: "0.4.3",
 		},
-		Name:    "Le Card",
-		Card:    &card,
-		From:    from,
-		To:      to,
+		name:    "Le Card",
+		card:    8165537,
+		from:    from,
+		to:      to,
 		created: created,
 	}
 
@@ -42,7 +41,7 @@ func TestCardAsObjects(t *testing.T) {
 		{OID: "0.4.3.0.1", Value: created},
 		{OID: "0.4.3.0.2", Value: types.Timestamp{}},
 		{OID: "0.4.3.1", Value: "Le Card"},
-		{OID: "0.4.3.2", Value: &card},
+		{OID: "0.4.3.2", Value: uint32(8165537)},
 		{OID: "0.4.3.3", Value: from},
 		{OID: "0.4.3.4", Value: to},
 	}
@@ -57,7 +56,6 @@ func TestCardAsObjects(t *testing.T) {
 func TestCardAsObjectsWithDeleted(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	deleted := types.TimestampNow()
-	card := types.Card(8165537)
 	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
@@ -65,10 +63,10 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 		CatalogCard: catalog.CatalogCard{
 			OID: "0.4.3",
 		},
-		Name:    "Le Card",
-		Card:    &card,
-		From:    from,
-		To:      to,
+		name:    "Le Card",
+		card:    8165537,
+		from:    from,
+		to:      to,
 		created: created,
 		deleted: deleted,
 	}
@@ -86,7 +84,6 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 
 func TestCardAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	card := types.Card(8165537)
 	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
 	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
 
@@ -94,10 +91,10 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 		CatalogCard: catalog.CatalogCard{
 			OID: "0.4.3",
 		},
-		Name:    "Le Card",
-		Card:    &card,
-		From:    from,
-		To:      to,
+		name:    "Le Card",
+		card:    8165537,
+		from:    from,
+		to:      to,
 		created: created,
 	}
 
@@ -107,7 +104,6 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.4.3.0.1", Value: created},
 		{OID: "0.4.3.0.2", Value: types.Timestamp{}},
 		{OID: "0.4.3.1", Value: "Le Card"},
-		// {OID: "0.4.3.2", Value: &card},
 		{OID: "0.4.3.3", Value: from},
 		{OID: "0.4.3.4", Value: to},
 	}
@@ -142,7 +138,7 @@ func TestCardSet(t *testing.T) {
 		CatalogCard: catalog.CatalogCard{
 			OID: "0.4.3",
 		},
-		Name: "Le Carte",
+		name: "Le Carte",
 	}
 
 	objects, err := c.set(nil, "0.4.3.1", "Ze Kardt", nil)
@@ -154,8 +150,8 @@ func TestCardSet(t *testing.T) {
 		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
 	}
 
-	if fmt.Sprintf("%v", c.Name) != "Ze Kardt" {
-		t.Errorf("Card name not updated - expected:%v, got:%v", "Ze Kardt", c.Name)
+	if fmt.Sprintf("%v", c.name) != "Ze Kardt" {
+		t.Errorf("Card name not updated - expected:%v, got:%v", "Ze Kardt", c.name)
 	}
 }
 
@@ -164,7 +160,7 @@ func TestCardSetWithDeleted(t *testing.T) {
 		CatalogCard: catalog.CatalogCard{
 			OID: "0.4.3",
 		},
-		Name: "Le Carte",
+		name: "Le Carte",
 
 		deleted: types.TimestampNow(),
 	}
@@ -182,7 +178,7 @@ func TestCardSetWithDeleted(t *testing.T) {
 		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
 	}
 
-	if fmt.Sprintf("%v", c.Name) != "Le Carte" {
-		t.Errorf("Card name unexpectedly updated - expected:%v, got:%v", "Le Carte", c.Name)
+	if fmt.Sprintf("%v", c.name) != "Le Carte" {
+		t.Errorf("Card name unexpectedly updated - expected:%v, got:%v", "Le Carte", c.name)
 	}
 }

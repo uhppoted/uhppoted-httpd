@@ -38,13 +38,13 @@ func permissions() (acl.ACL, error) {
 
 	for _, l := range acl {
 		for _, c := range cards {
-			if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
-				card := uint32(*c.Card)
-				from := types.Date(c.From)
-				to := types.Date(c.To)
+			cardnumber := c.CardNumber()
+			if cardnumber != 0 && c.From().IsValid() && c.To().IsValid() {
+				from := types.Date(c.From())
+				to := types.Date(c.To())
 
-				l[card] = types.Card{
-					CardNumber: card,
+				l[cardnumber] = types.Card{
+					CardNumber: cardnumber,
 					From:       &from,
 					To:         &to,
 					Doors:      map[uint8]int{1: 0, 2: 0, 3: 0, 4: 0},
@@ -80,16 +80,16 @@ func permissions() (acl.ACL, error) {
 	}
 
 	for _, c := range cards {
-		if c.Card.IsValid() && c.From.IsValid() && c.To.IsValid() {
-			for g, member := range c.Groups {
+		cardnumber := c.CardNumber()
+		if cardnumber != 0 && c.From().IsValid() && c.To().IsValid() {
+			for g, member := range c.Groups() {
 				if group, ok := groups.Group(g); ok && member {
 					for d, allowed := range group.Doors {
 						if door, ok := doors.Door(d); ok && allowed {
-							card := uint32(*c.Card)
 							device := catalog.GetDoorDeviceID(door.OID)
 							doorID := catalog.GetDoorDeviceDoor(door.OID)
 
-							grant(card, device, doorID)
+							grant(cardnumber, device, doorID)
 						}
 					}
 				}
@@ -101,23 +101,22 @@ func permissions() (acl.ACL, error) {
 
 	if sys.rules != nil {
 		for _, c := range cards {
+			cardnumber := c.CardNumber()
 			allowed, forbidden, err := sys.rules.Eval(c, sys.groups.Groups, sys.doors.Doors)
 			if err != nil {
 				return nil, err
 			}
 
 			for _, door := range allowed {
-				card := uint32(*c.Card)
 				device := catalog.GetDoorDeviceID(door.OID)
 				doorID := catalog.GetDoorDeviceDoor(door.OID)
-				grant(card, device, doorID)
+				grant(cardnumber, device, doorID)
 			}
 
 			for _, door := range forbidden {
-				card := uint32(*c.Card)
 				device := catalog.GetDoorDeviceID(door.OID)
 				doorID := catalog.GetDoorDeviceDoor(door.OID)
-				revoke(card, device, doorID)
+				revoke(cardnumber, device, doorID)
 			}
 		}
 	}

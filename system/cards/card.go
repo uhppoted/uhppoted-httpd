@@ -20,11 +20,11 @@ import (
 
 type Card struct {
 	catalog.CatalogCard
-	Name   string
-	Card   *types.Card
-	From   core.Date
-	To     core.Date
-	Groups map[schema.OID]bool
+	name   string
+	card   uint32
+	from   core.Date
+	to     core.Date
+	groups map[schema.OID]bool
 
 	created  types.Timestamp
 	modified types.Timestamp
@@ -41,22 +41,38 @@ const BLANK = "'blank'"
 var created = types.TimestampNow()
 
 func (c Card) String() string {
-	name := strings.TrimSpace(c.Name)
+	name := strings.TrimSpace(c.name)
 	if name == "" {
 		name = "-"
 	}
 
 	number := "-"
 
-	if c.Card != nil {
-		number = fmt.Sprintf("%v", c.Card)
+	if c.card != 0 {
+		number = fmt.Sprintf("%v", c.card)
 	}
 
 	return fmt.Sprintf("%v (%v)", number, name)
 }
 
-func (c Card) GetName() string {
-	return strings.TrimSpace(c.Name)
+func (c Card) Name() string {
+	return strings.TrimSpace(c.name)
+}
+
+func (c Card) CardNumber() uint32 {
+	return c.card
+}
+
+func (c Card) From() core.Date {
+	return c.from
+}
+
+func (c Card) To() core.Date {
+	return c.to
+}
+
+func (c Card) Groups() map[schema.OID]bool {
+	return c.groups
 }
 
 func (c Card) IsValid() bool {
@@ -64,7 +80,7 @@ func (c Card) IsValid() bool {
 }
 
 func (c Card) validate() error {
-	if strings.TrimSpace(c.Name) == "" && (c.Card == nil || *c.Card == 0) {
+	if strings.TrimSpace(c.name) == "" && c.card == 0 {
 		return fmt.Errorf("At least one of card name and number must be defined")
 	}
 
@@ -81,16 +97,15 @@ func (c *Card) AsObjects(a *auth.Authorizator) []schema.Object {
 	if c.IsDeleted() {
 		list = append(list, kv{CardDeleted, c.deleted})
 	} else {
-		name := c.Name
-		number := c.Card
-		from := c.From
-		to := c.To
+		name := c.name
+		from := c.from
+		to := c.to
 
 		list = append(list, kv{CardStatus, c.Status()})
 		list = append(list, kv{CardCreated, c.created})
 		list = append(list, kv{CardDeleted, c.deleted})
 		list = append(list, kv{CardName, name})
-		list = append(list, kv{CardNumber, number})
+		list = append(list, kv{CardNumber, c.card})
 		list = append(list, kv{CardFrom, from})
 		list = append(list, kv{CardTo, to})
 
@@ -102,7 +117,7 @@ func (c *Card) AsObjects(a *auth.Authorizator) []schema.Object {
 
 			if m := re.FindStringSubmatch(string(g)); m != nil && len(m) > 2 {
 				gid := m[2]
-				member := c.Groups[g]
+				member := c.groups[g]
 
 				list = append(list, kv{CardGroups.Append(gid), member})
 				list = append(list, kv{CardGroups.Append(gid + ".1"), group})
@@ -123,27 +138,17 @@ func (c *Card) AsRuleEntity() (string, interface{}) {
 	}{}
 
 	if c != nil {
-		name := fmt.Sprintf("%v", c.Name)
-		number := uint32(0)
-		from := fmt.Sprintf("%v", c.From)
-		to := fmt.Sprintf("%v", c.To)
+		entity.Name = c.name
+		entity.Number = c.card
+		entity.From = fmt.Sprintf("%v", c.from)
+		entity.To = fmt.Sprintf("%v", c.to)
+		entity.Groups = []string{}
 
-		if c.Card != nil {
-			number = uint32(*c.Card)
-		}
-
-		groups := []string{}
-		for k, v := range c.Groups {
+		for k, v := range c.groups {
 			if v {
-				groups = append(groups, string(k))
+				entity.Groups = append(entity.Groups, string(k))
 			}
 		}
-
-		entity.Name = name
-		entity.Number = number
-		entity.From = from
-		entity.To = to
-		entity.Groups = groups
 	}
 
 	return "card", &entity
@@ -178,50 +183,49 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 				"update",
 				c.OID,
 				"name",
-				fmt.Sprintf("Updated name from %v to %v", stringify(c.Name, BLANK), stringify(value, BLANK)),
-				stringify(c.Name, ""),
+				fmt.Sprintf("Updated name from %v to %v", stringify(c.name, BLANK), stringify(value, BLANK)),
+				c.name,
 				stringify(value, ""),
 				dbc)
 
-			c.Name = strings.TrimSpace(value)
+			c.name = strings.TrimSpace(value)
 			c.modified = types.TimestampNow()
 
-			list = append(list, kv{CardName, stringify(c.Name, "")})
+			list = append(list, kv{CardName, stringify(c.name, "")})
 		}
 
 	case oid == c.OID.Append(CardNumber):
 		if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
-			if n, err := strconv.ParseUint(value, 10, 32); err != nil {
+			if number, err := strconv.ParseUint(value, 10, 32); err != nil {
 				return nil, err
-			} else if err := f("number", n); err != nil {
+			} else if err := f("number", number); err != nil {
 				return nil, err
 			} else {
 				c.log(uid,
 					"update",
 					c.OID,
 					"card",
-					fmt.Sprintf("Updated card number from %v to %v", c.Card, value),
-					stringify(c.Card, ""),
+					fmt.Sprintf("Updated card number from %v to %v", c.card, value),
+					stringify(c.card, ""),
 					stringify(value, ""),
 					dbc)
 
-				v := types.Card(n)
-				c.Card = &v
+				c.card = uint32(number)
 				c.modified = types.TimestampNow()
 
-				list = append(list, kv{CardNumber, c.Card})
+				list = append(list, kv{CardNumber, c.card})
 			}
 		} else if value == "" {
 			if err := f("number", 0); err != nil {
 				return nil, err
 			} else {
-				if p := stringify(c.Name, ""); p != "" {
+				if p := stringify(c.name, ""); p != "" {
 					c.log(uid,
 						"update",
 						c.OID,
 						"number",
-						fmt.Sprintf("Cleared card number %v for %v", c.Card, p),
-						stringify(c.Card, ""),
+						fmt.Sprintf("Cleared card number %v for %v", c.card, p),
+						stringify(c.card, ""),
 						stringify(p, ""),
 						dbc)
 				} else {
@@ -229,13 +233,13 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 						"update",
 						c.OID,
 						"number",
-						fmt.Sprintf("Cleared card number %v", c.Card),
-						stringify(c.Card, ""),
+						fmt.Sprintf("Cleared card number %v", c.card),
+						stringify(c.card, ""),
 						"",
 						dbc)
 				}
 
-				c.Card = nil
+				c.card = 0
 				c.modified = types.TimestampNow()
 
 				list = append(list, kv{CardNumber, ""})
@@ -254,15 +258,15 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 				"update",
 				c.OID,
 				"from",
-				fmt.Sprintf("Updated VALID FROM date from %v to %v", c.From, value),
-				stringify(c.From, ""),
+				fmt.Sprintf("Updated VALID FROM date from %v to %v", c.from, value),
+				stringify(c.from, ""),
 				stringify(value, ""),
 				dbc)
 
-			c.From = from
+			c.from = from
 			c.modified = types.TimestampNow()
 
-			list = append(list, kv{CardFrom, c.From})
+			list = append(list, kv{CardFrom, c.from})
 		}
 
 	case oid == c.OID.Append(CardTo):
@@ -277,15 +281,15 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 				"update",
 				c.OID,
 				"to",
-				fmt.Sprintf("Updated VALID UNTIL date from %v to %v", c.From, value),
-				stringify(c.From, ""),
+				fmt.Sprintf("Updated VALID UNTIL date from %v to %v", c.to, value),
+				stringify(c.to, ""),
 				stringify(value, ""),
 				dbc)
 
-			c.To = to
+			c.to = to
 			c.modified = types.TimestampNow()
 
-			list = append(list, kv{CardTo, c.To})
+			list = append(list, kv{CardTo, c.to})
 		}
 
 	case schema.OID(c.OID.Append(CardGroups)).Contains(oid):
@@ -306,10 +310,10 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 					c.log(uid, "update", c.OID, "group", fmt.Sprintf("Revoked access to %v", group), "", "", dbc)
 				}
 
-				c.Groups[k] = value == "true"
+				c.groups[k] = value == "true"
 				c.modified = types.TimestampNow()
 
-				list = append(list, kv{CardGroups.Append(gid), c.Groups[k]})
+				list = append(list, kv{CardGroups.Append(gid), c.groups[k]})
 			}
 		}
 	}
@@ -330,9 +334,9 @@ func (c *Card) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 		}
 
 		uid := auth.UID(a)
-		if p := stringify(c.Card, ""); p != "" {
+		if p := stringify(c.card, ""); p != "" {
 			c.log(uid, "delete", c.OID, "card", fmt.Sprintf("Deleted card %v", p), "", "", dbc)
-		} else if p = stringify(c.Name, ""); p != "" {
+		} else if p = stringify(c.name, ""); p != "" {
 			c.log(uid, "delete", c.OID, "card", fmt.Sprintf("Deleted card for %v", p), "", "", dbc)
 		} else {
 			c.log(uid, "delete", c.OID, "card", "Deleted card", "", "", dbc)
@@ -389,7 +393,7 @@ func (c Card) serialize() ([]byte, error) {
 	record := struct {
 		OID      schema.OID      `json:"OID"`
 		Name     string          `json:"name,omitempty"`
-		Card     uint32          `json:"card,omitempty"`
+		Card     types.Uint32    `json:"card,omitempty"`
 		From     core.Date       `json:"from,omitempty"`
 		To       core.Date       `json:"to,omitempty"`
 		Groups   []schema.OID    `json:"groups"`
@@ -397,22 +401,19 @@ func (c Card) serialize() ([]byte, error) {
 		Modified types.Timestamp `json:"modified,omitempty"`
 	}{
 		OID:      c.OID,
-		Name:     strings.TrimSpace(c.Name),
-		From:     c.From,
-		To:       c.To,
+		Name:     strings.TrimSpace(c.name),
+		Card:     types.Uint32(c.card),
+		From:     c.from,
+		To:       c.to,
 		Groups:   []schema.OID{},
 		Created:  c.created,
 		Modified: c.modified,
 	}
 
-	if c.Card != nil {
-		record.Card = uint32(*c.Card)
-	}
-
 	groups := catalog.GetGroups()
 
 	for _, g := range groups {
-		if c.Groups[g] {
+		if c.groups[g] {
 			record.Groups = append(record.Groups, g)
 		}
 	}
@@ -426,7 +427,7 @@ func (c *Card) deserialize(bytes []byte) error {
 	record := struct {
 		OID      schema.OID      `json:"OID"`
 		Name     string          `json:"name,omitempty"`
-		Card     uint32          `json:"card,omitempty"`
+		Card     types.Uint32    `json:"card,omitempty"`
 		From     core.Date       `json:"from,omitempty"`
 		To       core.Date       `json:"to,omitempty"`
 		Groups   []schema.OID    `json:"groups"`
@@ -442,29 +443,25 @@ func (c *Card) deserialize(bytes []byte) error {
 	}
 
 	c.OID = record.OID
-	c.Name = strings.TrimSpace(record.Name)
-	c.From = record.From
-	c.To = record.To
-	c.Groups = map[schema.OID]bool{}
+	c.name = strings.TrimSpace(record.Name)
+	c.card = uint32(record.Card)
+	c.from = record.From
+	c.to = record.To
+	c.groups = map[schema.OID]bool{}
 	c.created = record.Created
 	c.modified = record.Modified
 
-	if record.Card != 0 {
-		c.Card = (*types.Card)(&record.Card)
-	}
-
 	for _, g := range record.Groups {
-		c.Groups[g] = true
+		c.groups[g] = true
 	}
 
 	return nil
 }
 
 func (c *Card) clone() *Card {
-	card := c.Card.Copy()
 	var groups = map[schema.OID]bool{}
 
-	for gid, g := range c.Groups {
+	for gid, g := range c.groups {
 		groups[gid] = g
 	}
 
@@ -472,11 +469,11 @@ func (c *Card) clone() *Card {
 		CatalogCard: catalog.CatalogCard{
 			OID: c.OID,
 		},
-		Name:   c.Name,
-		Card:   card,
-		From:   c.From,
-		To:     c.To,
-		Groups: groups,
+		name:   c.name,
+		card:   c.card,
+		from:   c.from,
+		to:     c.to,
+		groups: groups,
 
 		created:  c.created,
 		modified: c.modified,
@@ -493,8 +490,8 @@ func (c *Card) log(uid string, operation string, oid schema.OID, field, descript
 		Component: "card",
 		Operation: operation,
 		Details: audit.Details{
-			ID:          stringify(c.Card, ""),
-			Name:        stringify(c.Name, ""),
+			ID:          stringify(types.Uint32(c.card), ""),
+			Name:        c.name,
 			Field:       field,
 			Description: description,
 			Before:      before,

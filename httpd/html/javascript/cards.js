@@ -74,7 +74,7 @@ export function deleted (row) {
   const re = /^\s*$/
 
   if (name && name.dataset.oid !== '' && re.test(name.dataset.value) &&
-      card && card.dataset.oid !== '' && re.test(card.dataset.value)) {
+      card && card.dataset.oid !== '' && parseInt(card.dataset.value, 10) === 0) {
     return true
   }
 
@@ -228,7 +228,7 @@ function updateFromDB (oid, record) {
   row.dataset.status = record.status
 
   update(name, record.name)
-  update(number, record.number)
+  update(number, parseInt(record.number, 10) === 0 ? '' : record.number)
   update(from, record.from)
   update(to, record.to)
 

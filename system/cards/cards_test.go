@@ -332,7 +332,7 @@ func TestCardUpdateRemoveGroup(t *testing.T) {
 	catalog.PutT(group.CatalogGroup, oid)
 
 	hagrid2 := makeCard(hagrid.OID, "Hagrid", 6514231)
-	hagrid2.Groups[oid] = false
+	hagrid2.groups[oid] = false
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid2)
 	expected := []schema.Object{
@@ -381,7 +381,7 @@ func TestCardDelete(t *testing.T) {
 	}
 
 	if !cards.cards[dobby.OID].IsDeleted() {
-		t.Errorf("Failed to mark card %v as 'deleted'", dobby.Card)
+		t.Errorf("Failed to mark card %v as 'deleted'", dobby.card)
 	}
 }
 
@@ -452,30 +452,8 @@ func TestValidateWithInvalidCard(t *testing.T) {
 				CatalogCard: catalog.CatalogCard{
 					OID: "0.4.3",
 				},
-				Name:     "",
-				Card:     nil,
-				created:  types.TimestampNow(),
-				modified: types.TimestampNow(),
-			},
-		},
-	}
-
-	if err := cc.Validate(); err == nil {
-		t.Errorf("Expected error validating cards list with invalid card (%v)", err)
-	}
-}
-
-func TestValidateWithInvalidCard2(t *testing.T) {
-	card := types.Card(0)
-
-	cc := Cards{
-		cards: map[schema.OID]*Card{
-			"0.4.3": &Card{
-				CatalogCard: catalog.CatalogCard{
-					OID: "0.4.3",
-				},
-				Name:     "",
-				Card:     &card,
+				name:     "",
+				card:     0,
 				created:  types.TimestampNow(),
 				modified: types.TimestampNow(),
 			},
@@ -488,16 +466,14 @@ func TestValidateWithInvalidCard2(t *testing.T) {
 }
 
 func TestValidateWithNewCard(t *testing.T) {
-	card := types.Card(0)
-
 	cc := Cards{
 		cards: map[schema.OID]*Card{
 			"0.4.3": &Card{
 				CatalogCard: catalog.CatalogCard{
 					OID: "0.4.3",
 				},
-				Name:    "",
-				Card:    &card,
+				name:    "",
+				card:    0,
 				created: types.TimestampNow(),
 			},
 		},

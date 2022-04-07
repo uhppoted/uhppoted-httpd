@@ -83,26 +83,19 @@ func group(id string) types.Group {
 }
 
 func makeCard(oid schema.OID, name string, card uint32, groups ...string) Card {
-	var c *types.Card
-
-	if card > 0 {
-		cc := types.Card(card)
-		c = &cc
-	}
-
 	cardholder := Card{
 		CatalogCard: catalog.CatalogCard{
 			OID: oid,
 		},
-		Name:   name,
-		Card:   c,
-		From:   date("2021-01-02"),
-		To:     date("2021-12-30"),
-		Groups: map[schema.OID]bool{},
+		name:   name,
+		card:   card,
+		from:   date("2021-01-02"),
+		to:     date("2021-12-30"),
+		groups: map[schema.OID]bool{},
 	}
 
 	for _, g := range groups {
-		cardholder.Groups[schema.OID(g)] = true
+		cardholder.groups[schema.OID(g)] = true
 	}
 
 	return cardholder
