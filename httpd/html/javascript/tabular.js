@@ -34,9 +34,13 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
 const pages = {
   overview: {
     get: ['/controllers', '/doors', '/events?range=' + encodeURIComponent('0,15'), '/logs?range=' + encodeURIComponent('0,15')],
-    refreshed: function () {
-      overview.refreshed()
-    }
+    refreshed: overview.refreshed
+  },
+
+  interfaces: {
+    get: ['/interfaces'],
+    post: '/interfaces',
+    refreshed: LAN.refreshed
   },
 
   controllers: {
@@ -189,54 +193,29 @@ export function onCommit (tag, event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
 
-  const f = function (page, ...rows) {
-    const updated = []
-    const deleted = []
-
-    rows.forEach(row => {
-      const oid = row.dataset.oid
-
-      if (page.deleted && page.deleted(row)) {
-        deleted.push(oid)
-      } else {
-        const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
-        children.forEach(e => {
-          if (e.classList.contains('modified')) {
-            updated.push(e)
-          }
-        })
-      }
-    })
-
-    return {
-      updated: updated,
-      deleted: deleted
-    }
-  }
-
   switch (tag) {
     case 'interface':
-      LAN.commit(event.target)
+      commit(pages.interfaces, LAN.changeset(event.target))
       break
 
     case 'controller':
-      commit(pages.controllers, f(pages.controllers, row))
+      commit(pages.controllers, changeset(pages.controllers, row))
       break
 
     case 'door':
-      commit(pages.doors, f(pages.doors, row))
+      commit(pages.doors, changeset(pages.doors, row))
       break
 
     case 'card':
-      commit(pages.cards, f(pages.cards, row))
+      commit(pages.cards, changeset(pages.cards, row))
       break
 
     case 'group':
-      commit(pages.groups, f(pages.groups, row))
+      commit(pages.groups, changeset(pages.groups, row))
       break
 
     case 'user':
-      commit(pages.users, f(pages.users, row))
+      commit(pages.users, changeset(pages.users, row))
       break
   }
 }
@@ -245,31 +224,6 @@ export function onCommitAll (tag, event, table) {
   const tbody = document.getElementById(table).querySelector('table tbody')
   const rows = tbody.rows
   const list = []
-
-  const f = function (page, ...rows) {
-    const updated = []
-    const deleted = []
-
-    rows.forEach(row => {
-      const oid = row.dataset.oid
-
-      if (page.deleted && page.deleted(row)) {
-        deleted.push(oid)
-      } else {
-        const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
-        children.forEach(e => {
-          if (e.classList.contains('modified')) {
-            updated.push(e)
-          }
-        })
-      }
-    })
-
-    return {
-      updated: updated,
-      deleted: deleted
-    }
-  }
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]
@@ -280,23 +234,23 @@ export function onCommitAll (tag, event, table) {
 
   switch (tag) {
     case 'controllers':
-      commit(pages.controllers, f(pages.controllers, ...list))
+      commit(pages.controllers, changeset(pages.controllers, ...list))
       break
 
     case 'doors':
-      commit(pages.doors, f(pages.doors, ...list))
+      commit(pages.doors, changeset(pages.doors, ...list))
       break
 
     case 'cards':
-      commit(pages.cards, f(pages.cards, ...list))
+      commit(pages.cards, changeset(pages.cards, ...list))
       break
 
     case 'groups':
-      commit(pages.groups, f(pages.groups, ...list))
+      commit(pages.groups, changeset(pages.groups, ...list))
       break
 
     case 'users':
-      commit(pages.users, f(pages.users, ...list))
+      commit(pages.users, changeset(pages.users, ...list))
       break
   }
 }
@@ -680,6 +634,31 @@ function commit (page, recordset) {
   post(page, records, deleted, reset, cleanup)
 }
 
+function changeset (page, ...rows) {
+  const updated = []
+  const deleted = []
+
+  rows.forEach(row => {
+    const oid = row.dataset.oid
+
+    if (page.deleted && page.deleted(row)) {
+      deleted.push(oid)
+    } else {
+      const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
+      children.forEach(e => {
+        if (e.classList.contains('modified')) {
+          updated.push(e)
+        }
+      })
+    }
+  })
+
+  return {
+    updated: updated,
+    deleted: deleted
+  }
+}
+
 function create (page) {
   const records = [{ oid: '<new>', value: '' }]
   const reset = function () {}
@@ -697,8 +676,7 @@ function more (page) {
   }
 }
 
-// NOTE: exported only for use by interfaces
-export function post (page, updated, deleted, reset, cleanup) {
+function post (page, updated, deleted, reset, cleanup) {
   busy()
 
   postAsJSON(page.post, { objects: updated, deleted: deleted })

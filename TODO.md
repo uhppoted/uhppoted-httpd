@@ -9,6 +9,9 @@
 - [ ] Move delete to UI
       - [ ] Genericize commit in interfaces.js
             - [x] Moved record collection out of commit(...)
+            - [x] Implement changeset(...)
+            - [ ] Move changeset to pages definition
+            - [ ] Use getPage in commit(...)
       - [ ] Only enable tick on 'new' records if it's not deletable
 
 - [ ] Events should use local index rather than controller 

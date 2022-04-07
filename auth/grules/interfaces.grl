@@ -6,26 +6,26 @@ rule ViewInterface "(allowed)" {
          Retract("ViewInterface");
 }
 
-rule AddInterface "(allowed)" {
+rule AddInterface "(not supported)" {
      when
          OP == "add::interface"
      then
-         RESULT.Allow = true;
+         RESULT.Revoke = true;
          Retract("AddInterface");
 }
 
-rule UpdateInterface "(allowed)" {
+rule UpdateLAN "(allowed)" {
      when
-         OP == "update::interface"
+         OP == "update::lan"
      then
          RESULT.Allow = true;
-         Retract("UpdateInterface");
+         Retract("UpdateLAN");
 }
 
-rule DeleteInterface "(allowed)" {
+rule DeleteInterface "(not supported)" {
      when
          OP == "delete::interface"
      then
-         RESULT.Allow = true;
+         RESULT.Revoke = true;
          Retract("DeleteInterface");
 }

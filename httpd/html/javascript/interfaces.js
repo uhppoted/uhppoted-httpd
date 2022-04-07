@@ -1,4 +1,4 @@
-import { post, mark, unmark } from './tabular.js'
+import { mark, unmark } from './tabular.js'
 import { DB } from './db.js'
 import { schema } from './schema.js'
 
@@ -62,7 +62,7 @@ export function rollback (tag, element) {
   section.classList.remove('modified')
 }
 
-export function commit (element) {
+export function changeset (element) {
   const section = document.getElementById('interface')
   const oid = section.dataset.oid
   const list = []
@@ -74,41 +74,10 @@ export function commit (element) {
     }
   })
 
-  const records = []
-  list.forEach(e => {
-    const oid = e.dataset.oid
-    const value = e.dataset.value
-    records.push({ oid: oid, value: value })
-  })
-
-  const reset = function () {
-    list.forEach(e => {
-      const flag = document.getElementById(`F${e.dataset.oid}`)
-      unmark('pending', e, flag)
-      mark('modified', e, flag)
-    })
+  return {
+    updated: list,
+    deleted: []
   }
-
-  const cleanup = function () {
-    list.forEach(e => {
-      const flag = document.getElementById(`F${e.dataset.oid}`)
-      unmark('pending', e, flag)
-    })
-  }
-
-  list.forEach(e => {
-    const flag = document.getElementById(`F${e.dataset.oid}`)
-    mark('pending', e, flag)
-    unmark('modified', e, flag)
-  })
-
-  const page = {
-    get: ['/interfaces'],
-    post: '/interfaces',
-    refreshed: refreshed
-  }
-
-  post(page, records, null, reset, cleanup)
 }
 
 function modified (oid) {
