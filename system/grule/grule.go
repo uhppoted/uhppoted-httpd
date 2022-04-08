@@ -1,7 +1,6 @@
 package grule
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -11,21 +10,14 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/doors"
-	"github.com/uhppoted/uhppoted-httpd/system/groups"
 )
 
 type Rules interface {
-	Eval(cards.Card, groups.Groups, doors.Doors) ([]doors.Door, []doors.Door, error)
+	Eval(cards.Card, doors.Doors) ([]doors.Door, []doors.Door, error)
 }
 
 type rules struct {
 	grule *ast.KnowledgeLibrary
-}
-
-type card struct {
-	name   string
-	card   uint32
-	groups []string
 }
 
 type permissions struct {
@@ -33,29 +25,14 @@ type permissions struct {
 	forbidden []string
 }
 
-func (c *card) String() string {
-	return fmt.Sprintf("%v (%v)", c.name, c.card)
+type query struct {
 }
 
-func (c *card) Has(field string, value interface{}) bool {
-	f := strings.ToLower(strings.TrimSpace(field))
-
-	var v string
-	if value != nil {
-		v = clean(fmt.Sprintf("%v", value))
-	} else {
-		v = ""
-	}
-
-	switch f {
-	case "name":
-		return clean(c.name) == v
-
-	case "group":
-		for _, g := range c.groups {
-			if v == clean(g) {
-				return true
-			}
+func (q query) HasGroup(groups []string, group string) bool {
+	v := clean(group)
+	for _, g := range groups {
+		if clean(g) == v {
+			return true
 		}
 	}
 
@@ -76,7 +53,7 @@ func NewGrule(library *ast.KnowledgeLibrary) (*rules, error) {
 	}, nil
 }
 
-func (r *rules) Eval(ch cards.Card, gg groups.Groups, dd doors.Doors) ([]doors.Door, []doors.Door, error) {
+func (r *rules) Eval(c cards.Card, dd doors.Doors) ([]doors.Door, []doors.Door, error) {
 	if r != nil {
 		p := permissions{
 			allowed:   []string{},
@@ -85,11 +62,16 @@ func (r *rules) Eval(ch cards.Card, gg groups.Groups, dd doors.Doors) ([]doors.D
 
 		context := ast.NewDataContext()
 
-		if err := context.Add("CARD", makeCard(ch, gg)); err != nil {
+		_, e := c.AsRuleEntity()
+		if err := context.Add("CARD", e); err != nil {
 			return nil, nil, err
 		}
 
 		if err := context.Add("DOORS", &p); err != nil {
+			return nil, nil, err
+		}
+
+		if err := context.Add("QUERY", &query{}); err != nil {
 			return nil, nil, err
 		}
 
@@ -129,23 +111,6 @@ func (r *rules) Eval(ch cards.Card, gg groups.Groups, dd doors.Doors) ([]doors.D
 	}
 
 	return nil, nil, nil
-}
-
-func makeCard(c cards.Card, gg groups.Groups) *card {
-	groups := []string{}
-	for k, v := range c.Groups() {
-		if v {
-			if g, ok := gg.Group(k); ok {
-				groups = append(groups, g.Name)
-			}
-		}
-	}
-
-	return &card{
-		name:   c.Name(),
-		card:   c.CardNumber(),
-		groups: groups,
-	}
 }
 
 func clean(s string) string {

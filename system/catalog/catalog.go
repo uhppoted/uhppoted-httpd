@@ -115,6 +115,7 @@ func GetBool(oid schema.OID, suffix schema.Suffix) (bool, bool) {
 		return b, true
 	}
 }
+
 func GetUint8(oid schema.OID, suffix schema.Suffix) (uint8, bool) {
 	if v := catalog.GetV(oid, suffix); v == nil {
 		return 0, false

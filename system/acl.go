@@ -102,7 +102,7 @@ func permissions() (acl.ACL, error) {
 	if sys.rules != nil {
 		for _, c := range cards {
 			cardnumber := c.CardNumber()
-			allowed, forbidden, err := sys.rules.Eval(c, sys.groups.Groups, sys.doors.Doors)
+			allowed, forbidden, err := sys.rules.Eval(c, sys.doors.Doors)
 			if err != nil {
 				return nil, err
 			}

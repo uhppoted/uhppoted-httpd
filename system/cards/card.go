@@ -55,10 +55,6 @@ func (c Card) String() string {
 	return fmt.Sprintf("%v (%v)", number, name)
 }
 
-func (c Card) Name() string {
-	return strings.TrimSpace(c.name)
-}
-
 func (c Card) CardNumber() uint32 {
 	return c.card
 }
@@ -146,7 +142,9 @@ func (c *Card) AsRuleEntity() (string, interface{}) {
 
 		for k, v := range c.groups {
 			if v {
-				entity.Groups = append(entity.Groups, string(k))
+				if g := catalog.GetV(k, GroupName); g != nil {
+					entity.Groups = append(entity.Groups, fmt.Sprintf("%v", g))
+				}
 			}
 		}
 	}
