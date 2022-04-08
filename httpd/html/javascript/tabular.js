@@ -192,6 +192,7 @@ export function onTick (tag, event) {
 export function onCommit (tag, event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
+  let page
 
   switch (tag) {
     case 'interface':
@@ -199,23 +200,12 @@ export function onCommit (tag, event) {
       break
 
     case 'controller':
-      commit(pages.controllers, changeset(pages.controllers, row))
-      break
-
     case 'door':
-      commit(pages.doors, changeset(pages.doors, row))
-      break
-
     case 'card':
-      commit(pages.cards, changeset(pages.cards, row))
-      break
-
     case 'group':
-      commit(pages.groups, changeset(pages.groups, row))
-      break
-
     case 'user':
-      commit(pages.users, changeset(pages.users, row))
+      page = getPage(tag)
+      commit(page, changeset(page, row))
       break
   }
 }
@@ -224,6 +214,7 @@ export function onCommitAll (tag, event, table) {
   const tbody = document.getElementById(table).querySelector('table tbody')
   const rows = tbody.rows
   const list = []
+  let page
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]
@@ -234,23 +225,12 @@ export function onCommitAll (tag, event, table) {
 
   switch (tag) {
     case 'controllers':
-      commit(pages.controllers, changeset(pages.controllers, ...list))
-      break
-
     case 'doors':
-      commit(pages.doors, changeset(pages.doors, ...list))
-      break
-
     case 'cards':
-      commit(pages.cards, changeset(pages.cards, ...list))
-      break
-
     case 'groups':
-      commit(pages.groups, changeset(pages.groups, ...list))
-      break
-
     case 'users':
-      commit(pages.users, changeset(pages.users, ...list))
+      page = getPage(tag)
+      commit(page, changeset(page, ...list))
       break
   }
 }
@@ -716,15 +696,19 @@ function getPage (tag) {
     case 'overview':
       return pages.overview
 
+    case 'controller':
     case 'controllers':
       return pages.controllers
 
+    case 'door':
     case 'doors':
       return pages.doors
 
+    case 'card':
     case 'cards':
       return pages.cards
 
+    case 'group':
     case 'groups':
       return pages.groups
 
@@ -734,6 +718,7 @@ function getPage (tag) {
     case 'logs':
       return pages.logs
 
+    case 'user':
     case 'users':
       return pages.users
   }

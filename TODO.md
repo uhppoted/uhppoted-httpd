@@ -8,9 +8,9 @@
       - [ ] Internalise card.groups
 
 - [ ] Move delete to UI
-      - [ ] Genericize commit in interfaces.js
-            - [ ] Move changeset to pages definition
-            - [ ] Use getPage in commit(...)
+      - [x] Genericize commit in interfaces.js
+            - [x] Move changeset to pages definition
+            - [x] Use getPage in commit(...)
       - [ ] Only enable tick on 'new' records if it's not deletable
 
 - [ ] Events should use local index rather than controller 
