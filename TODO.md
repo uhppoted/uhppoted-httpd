@@ -1,15 +1,14 @@
 ## v0.7.x
 
 - [ ] Change card number to not be a pointer
-      - [x] Remove types.Card
-      - [x] Fix UI so that 0 card number is same as ""
-      - [x] Try not to export card number, name, etc
-      - [ ] Replace Card.From() etc with e.g. Card.FromValid() or somesuch
+      - [x] Internalise card.name
+      - [ ] Internalise card.card
+      - [x] Internalise card.from
+      - [x] Internalise card.to
+      - [ ] Internalise card.groups
 
 - [ ] Move delete to UI
       - [ ] Genericize commit in interfaces.js
-            - [x] Moved record collection out of commit(...)
-            - [x] Implement changeset(...)
             - [ ] Move changeset to pages definition
             - [ ] Use getPage in commit(...)
       - [ ] Only enable tick on 'new' records if it's not deletable

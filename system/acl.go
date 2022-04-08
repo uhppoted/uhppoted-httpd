@@ -38,17 +38,8 @@ func permissions() (acl.ACL, error) {
 
 	for _, l := range acl {
 		for _, c := range cards {
-			cardnumber := c.CardNumber()
-			if cardnumber != 0 && c.From().IsValid() && c.To().IsValid() {
-				from := types.Date(c.From())
-				to := types.Date(c.To())
-
-				l[cardnumber] = types.Card{
-					CardNumber: cardnumber,
-					From:       &from,
-					To:         &to,
-					Doors:      map[uint8]int{1: 0, 2: 0, 3: 0, 4: 0},
-				}
+			if card, ok := c.AsAclCard(); ok {
+				l[card.CardNumber] = card
 			}
 		}
 	}
@@ -80,8 +71,7 @@ func permissions() (acl.ACL, error) {
 	}
 
 	for _, c := range cards {
-		cardnumber := c.CardNumber()
-		if cardnumber != 0 && c.From().IsValid() && c.To().IsValid() {
+		if card, ok := c.AsAclCard(); ok {
 			for g, member := range c.Groups() {
 				if group, ok := groups.Group(g); ok && member {
 					for d, allowed := range group.Doors {
@@ -89,7 +79,7 @@ func permissions() (acl.ACL, error) {
 							device := catalog.GetDoorDeviceID(door.OID)
 							doorID := catalog.GetDoorDeviceDoor(door.OID)
 
-							grant(cardnumber, device, doorID)
+							grant(card.CardNumber, device, doorID)
 						}
 					}
 				}
@@ -101,7 +91,7 @@ func permissions() (acl.ACL, error) {
 
 	if sys.rules != nil {
 		for _, c := range cards {
-			cardnumber := c.CardNumber()
+			card := c.CardNumber()
 			allowed, forbidden, err := sys.rules.Eval(c, sys.doors.Doors)
 			if err != nil {
 				return nil, err
@@ -110,13 +100,13 @@ func permissions() (acl.ACL, error) {
 			for _, door := range allowed {
 				device := catalog.GetDoorDeviceID(door.OID)
 				doorID := catalog.GetDoorDeviceDoor(door.OID)
-				grant(cardnumber, device, doorID)
+				grant(card, device, doorID)
 			}
 
 			for _, door := range forbidden {
 				device := catalog.GetDoorDeviceID(door.OID)
 				doorID := catalog.GetDoorDeviceDoor(door.OID)
-				revoke(cardnumber, device, doorID)
+				revoke(card, device, doorID)
 			}
 		}
 	}

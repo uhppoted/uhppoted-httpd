@@ -55,16 +55,22 @@ func (c Card) String() string {
 	return fmt.Sprintf("%v (%v)", number, name)
 }
 
+func (c Card) AsAclCard() (core.Card, bool) {
+	from := core.Date(c.from)
+	to := core.Date(c.to)
+
+	card := core.Card{
+		CardNumber: c.card,
+		From:       &from,
+		To:         &to,
+		Doors:      map[uint8]int{1: 0, 2: 0, 3: 0, 4: 0},
+	}
+
+	return card, c.card != 0 && c.from.IsValid() && c.to.IsValid()
+}
+
 func (c Card) CardNumber() uint32 {
 	return c.card
-}
-
-func (c Card) From() core.Date {
-	return c.from
-}
-
-func (c Card) To() core.Date {
-	return c.to
 }
 
 func (c Card) Groups() map[schema.OID]bool {
