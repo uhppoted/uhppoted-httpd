@@ -537,7 +537,7 @@ div.tabular table td span.rollback img {
   filter: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
 }
 
-div.tabular table tbody tr.modified td span.commit {
+div.tabular table tbody tr.modified:not(.newish) td span.commit {
   visibility: visible;
 }
 

@@ -68,7 +68,7 @@ export function refreshed () {
     .catch(err => console.error(err))
 }
 
-export function deleted (row) {
+export function deletable (row) {
   const name = row.querySelector('td input.name')
   const uid = row.querySelector('td input.uid')
   const re = /^\s*$/

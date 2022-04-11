@@ -68,14 +68,15 @@ export function refreshed () {
     .catch(err => console.error(err))
 }
 
-export function deleted (row) {
+export function deletable (row) {
   const name = row.querySelector('td input.name')
   const card = row.querySelector('td input.number')
   const re = /^\s*$/
 
-  if (name && name.dataset.oid !== '' && re.test(name.dataset.value) &&
-      card && card.dataset.oid !== '' && parseInt(card.dataset.value, 10) === 0) {
-    return true
+  if (name && name.dataset.oid !== '' && card && card.dataset.oid !== '') {
+    const v = parseInt(card.dataset.value, 10)
+
+    return re.test(name.dataset.value) && (Number.isNaN(v) || v === 0)
   }
 
   return false

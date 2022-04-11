@@ -50,28 +50,28 @@ const pages = {
       LAN.refreshed()
       controllers.refreshed()
     },
-    deleted: controllers.deleted
+    deletable: controllers.deletable
   },
 
   doors: {
     get: ['/doors', '/controllers'],
     post: '/doors',
     refreshed: doors.refreshed,
-    deleted: doors.deleted
+    deletable: doors.deletable
   },
 
   cards: {
     get: ['/cards', '/groups'],
     post: '/cards',
     refreshed: cards.refreshed,
-    deleted: cards.deleted
+    deletable: cards.deletable
   },
 
   groups: {
     get: ['/groups', '/doors'],
     post: '/groups',
     refreshed: groups.refreshed,
-    deleted: groups.deleted
+    deletable: groups.deletable
   },
 
   events: {
@@ -92,7 +92,7 @@ const pages = {
     get: ['/users'],
     post: '/users',
     refreshed: users.refreshed,
-    deleted: users.deleted
+    deletable: users.deletable
   }
 }
 
@@ -459,6 +459,16 @@ export function modified (oid) {
       }
     })
 
+    // <tr> and 'new' ?
+    if (element.nodeName === 'TR') {
+      const page = pageForRow(element)
+      if (element.classList.contains('new') && page && page.deletable(element)) {
+        element.classList.add('newish')
+      } else {
+        element.classList.remove('newish')
+      }
+    }
+
     // .. count the 'unique parent' OIDs
     const f = (p, q) => p.length > q.length
     const r = (acc, v) => {
@@ -627,7 +637,7 @@ function changeset (page, ...rows) {
   rows.forEach(row => {
     const oid = row.dataset.oid
 
-    if (page.deleted && page.deleted(row)) {
+    if (page.deletable && page.deletable(row)) {
       deleted.push(oid)
     } else {
       const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
@@ -732,6 +742,24 @@ function getPage (tag) {
   return null
 }
 
+function pageForRow (row) {
+  const list = [
+    { tag: 'controller', page: pages.controllers },
+    { tag: 'door', page: pages.doors },
+    { tag: 'card', page: pages.cards },
+    { tag: 'group', page: pages.groups },
+    { tag: 'user', page: pages.users }
+  ]
+
+  for (const v of list) {
+    if (row.classList.contains(v.tag)) {
+      return v.page
+    }
+  }
+
+  return null
+}
+
 function datetime (time) {
   const df = new Intl.DateTimeFormat('default', {
     year: 'numeric',
@@ -753,4 +781,3 @@ function datetime (time) {
 
   return `${year}-${month}-${day} ${hour}:${minute}:${second}`
 }
-

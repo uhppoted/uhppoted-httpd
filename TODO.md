@@ -5,7 +5,12 @@
       - [x] Internalise card.groups
 
 - [ ] Move delete to UI
-      - [ ] Only enable tick on 'new' records if it's not deletable
+      - [x] Only enable tick on 'new' records if it's not deletable
+      - [ ] Remove .enabled from commit/rollback (doesn't seem to be used anywhere)
+      - [ ] tabular.percolate no longer seems to be needed to be exported
+      - [ ] tabular.percolate seems to always invoke modified
+      - [ ] Is tabular.modified used anywhere else ???
+      - [ ] tabular.modified seems to be invoked a lot more than expected
 
 - [ ] Events should use local index rather than controller 
       - Get first/last

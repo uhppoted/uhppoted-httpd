@@ -24,7 +24,7 @@ export function refreshed () {
   })
 }
 
-export function deleted (row) {
+export function deletable (row) {
   const name = row.querySelector('td input.name')
   const id = row.querySelector('td input.ID')
   const re = /^\s*$/
