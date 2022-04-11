@@ -1,16 +1,9 @@
 ## v0.7.x
 
-- [ ] Change card number to not be a pointer
-      - [x] Internalise card.name
-      - [ ] Internalise card.card
-      - [x] Internalise card.from
-      - [x] Internalise card.to
-      - [ ] Internalise card.groups
+- [x] Change card number to not be a pointer
+      - [x] Internalise card.groups
 
 - [ ] Move delete to UI
-      - [x] Genericize commit in interfaces.js
-            - [x] Move changeset to pages definition
-            - [x] Use getPage in commit(...)
       - [ ] Only enable tick on 'new' records if it's not deletable
 
 - [ ] Events should use local index rather than controller 

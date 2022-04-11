@@ -73,8 +73,16 @@ func (c Card) CardNumber() uint32 {
 	return c.card
 }
 
-func (c Card) Groups() map[schema.OID]bool {
-	return c.groups
+func (c Card) Groups() []schema.OID {
+	groups := []schema.OID{}
+
+	for oid, member := range c.groups {
+		if member {
+			groups = append(groups, oid)
+		}
+	}
+
+	return groups
 }
 
 func (c Card) IsValid() bool {
