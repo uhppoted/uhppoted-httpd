@@ -1,5 +1,6 @@
 ## v0.7.x
 
+- [x] Put refreshed timestamp in footer
 - [x] Change card number to not be a pointer
       - [x] Internalise card.groups
 

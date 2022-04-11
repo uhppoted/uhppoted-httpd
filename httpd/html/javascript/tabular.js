@@ -559,6 +559,12 @@ function get (urls, refreshed) {
 
   Promise.all(promises).then((resolved, rejected) => {
     if (resolved) {
+      const timestamp = document.querySelector('footer #timestamp')
+
+      if (timestamp) {
+        timestamp.innerHTML = datetime(new Date())
+      }
+
       refreshed()
     }
   }).catch(err => {
@@ -725,3 +731,26 @@ function getPage (tag) {
 
   return null
 }
+
+function datetime (time) {
+  const df = new Intl.DateTimeFormat('default', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour12: false,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  })
+
+  const m = new Map(df.formatToParts(time).map(o => [o.type, o.value]))
+  const year = m.get('year')
+  const month = m.get('month')
+  const day = m.get('day')
+  const hour = m.get('hour')
+  const minute = m.get('minute')
+  const second = m.get('second')
+
+  return `${year}-${month}-${day} ${hour}:${minute}:${second}`
+}
+

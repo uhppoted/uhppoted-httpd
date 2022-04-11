@@ -74,9 +74,14 @@ main {
 
 footer {
   grid-area: footer;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 8px;
+  padding-right: 8px;
   height: auto;
   overflow: hidden;
-  padding: 6px 0px 6px 0px;
   text-align: center;
   font-size: 0.8em;
   background: #eee8d5;
