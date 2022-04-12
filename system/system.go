@@ -233,7 +233,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		}
 	}
 
-	sys.interfaces.SetEvents(sys.events)
+	sys.interfaces.SetEvents(&sys.events)
 
 	kb := ast.NewKnowledgeLibrary()
 	if err := builder.NewRuleBuilder(kb).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(cfg.HTTPD.DB.Rules.ACL)); err != nil {

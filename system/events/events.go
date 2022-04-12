@@ -215,7 +215,7 @@ func (ee *Events) Validate() error {
 	return nil
 }
 
-func (ee Events) Indices(deviceID uint32) (first uint32, last uint32) {
+func (ee *Events) Indices(deviceID uint32) (first uint32, last uint32) {
 	first, _ = ee.first[deviceID]
 	last, _ = ee.last[deviceID]
 
