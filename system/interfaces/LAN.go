@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net"
 	"sort"
 	"strings"
 	"time"
@@ -39,21 +38,14 @@ type LAN struct {
 	unconfigured bool
 }
 
-type Controller interface {
-	OIDx() schema.OID
-	Name() string
-	ID() uint32
-	EndPoint() *net.UDPAddr
-	TimeZone() *time.Location
-	Door(uint8) (schema.OID, bool)
-}
-
 type kv = struct {
 	field schema.Suffix
 	value interface{}
 }
 
 var created = types.TimestampNow()
+
+const MAX = 5
 
 func (l LAN) String() string {
 	return fmt.Sprintf("%v", l.Name)
@@ -244,10 +236,6 @@ func (l *LAN) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	return objects
 }
 
-func (l *LAN) status() types.Status {
-	return types.StatusOk
-}
-
 func (l LAN) Clone() LAN {
 	return LAN{
 		CatalogInterface: catalog.CatalogInterface{
@@ -264,34 +252,6 @@ func (l LAN) Clone() LAN {
 		deleted:      l.deleted,
 		unconfigured: l.unconfigured,
 	}
-}
-
-func (l *LAN) api(controllers []Controller) *uhppoted.UHPPOTED {
-	devices := []uhppote.Device{}
-
-	for _, v := range controllers {
-		name := v.Name()
-		id := v.ID()
-		addr := v.EndPoint()
-
-		if id > 0 && addr != nil {
-			devices = append(devices, uhppote.Device{
-				Name:     name,
-				DeviceID: id,
-				Address:  addr,
-				Doors:    []string{},
-				TimeZone: time.Local,
-			})
-		}
-	}
-
-	u := uhppote.NewUHPPOTE(l.BindAddress, l.BroadcastAddress, l.ListenAddress, 1*time.Second, devices, l.Debug)
-	api := uhppoted.UHPPOTED{
-		UHPPOTE: u,
-		Log:     log.Default(),
-	}
-
-	return &api
 }
 
 func (l *LAN) Search(controllers []Controller) ([]uint32, error) {
@@ -345,16 +305,6 @@ func (l *LAN) Refresh(c Controller) {
 		catalog.PutV(c.OIDx(), ControllerCardsCount, cards.Cards)
 	}
 
-	if first, last, current, err := api.GetEventIndices(c.ID()); err != nil {
-		log.Printf("%v", err)
-	} else {
-		catalog.PutV(c.OIDx(), ControllerTouched, time.Now())
-		catalog.PutV(c.OIDx(), ControllerEventsStatus, types.StatusOk)
-		catalog.PutV(c.OIDx(), ControllerEventsFirst, first)
-		catalog.PutV(c.OIDx(), ControllerEventsLast, last)
-		catalog.PutV(c.OIDx(), ControllerEventsCurrent, current)
-	}
-
 	for _, d := range []uint8{1, 2, 3, 4} {
 		if delay, err := api.GetDoorDelay(uhppoted.GetDoorDelayRequest{DeviceID: deviceID, Door: d}); err != nil {
 			log.Printf("%v", err)
@@ -374,13 +324,55 @@ func (l *LAN) Refresh(c Controller) {
 			catalog.PutV(door, DoorControl, control.Control)
 		}
 	}
+}
 
-	if events, err := api.GetEvents(c.ID(), 5); err != nil {
+func (l *LAN) GetEvents(c Controller, first, last uint32) {
+	api := l.api([]Controller{c})
+	deviceID := c.ID()
+	oid := c.OIDx()
+
+	log.Printf("%v: retrieving LAN controller events (%v,%v)", deviceID, first, last)
+
+	if start, end, current, err := api.GetEventIndices(deviceID); err != nil {
 		log.Printf("%v", err)
-	} else if l.ch != nil {
-		l.ch <- types.EventsList{
-			DeviceID: c.ID(),
-			Events:   events,
+	} else {
+		catalog.PutV(oid, ControllerTouched, time.Now())
+		catalog.PutV(oid, ControllerEventsStatus, types.StatusOk)
+		catalog.PutV(oid, ControllerEventsFirst, start)
+		catalog.PutV(oid, ControllerEventsLast, end)
+		catalog.PutV(oid, ControllerEventsCurrent, current)
+
+		count := 0
+		events := []uhppoted.Event{}
+
+		f := func(index uint32) {
+			if e, err := api.GetEvent(deviceID, index); err != nil {
+				log.Printf("%v", err)
+			} else if e != nil {
+				say(fmt.Sprintf("got event %v", e.Index))
+				events = append(events, *e)
+			}
+
+			count++
+		}
+
+		index := last + 1
+		for index <= end && count < MAX {
+			f(index)
+			index++
+		}
+
+		index = first - 1
+		for index >= start && count < MAX {
+			f(index)
+			index--
+		}
+
+		if l.ch != nil {
+			l.ch <- types.EventsList{
+				DeviceID: deviceID,
+				Events:   events,
+			}
 		}
 	}
 }
@@ -556,6 +548,38 @@ func (l *LAN) UpdateACL(controllers []Controller, permissions acl.ACL) error {
 	info("ACL updated")
 
 	return nil
+}
+
+func (l *LAN) status() types.Status {
+	return types.StatusOk
+}
+
+func (l *LAN) api(controllers []Controller) *uhppoted.UHPPOTED {
+	devices := []uhppote.Device{}
+
+	for _, v := range controllers {
+		name := v.Name()
+		id := v.ID()
+		addr := v.EndPoint()
+
+		if id > 0 && addr != nil {
+			devices = append(devices, uhppote.Device{
+				Name:     name,
+				DeviceID: id,
+				Address:  addr,
+				Doors:    []string{},
+				TimeZone: time.Local,
+			})
+		}
+	}
+
+	u := uhppote.NewUHPPOTE(l.BindAddress, l.BroadcastAddress, l.ListenAddress, 1*time.Second, devices, l.Debug)
+	api := uhppoted.UHPPOTED{
+		UHPPOTE: u,
+		Log:     log.Default(),
+	}
+
+	return &api
 }
 
 func (l LAN) serialize() ([]byte, error) {

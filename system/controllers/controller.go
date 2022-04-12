@@ -69,39 +69,40 @@ func (c Controller) validate() error {
 	return nil
 }
 
+func (c Controller) realized() bool {
+	if c.DeviceID != 0 && !c.IsDeleted() {
+		return true
+	}
+
+	return false
+}
+
 func (c Controller) IsDeleted() bool {
 	return !c.deleted.IsZero()
 }
 
+// *** START interfaces.Controller
 func (c Controller) OIDx() schema.OID {
 	return c.OID
 }
 
-func (c *Controller) Name() string {
-	if c != nil {
-		return c.name
-	}
-
-	return ""
+func (c Controller) Name() string {
+	return c.name
 }
 
-func (c *Controller) ID() uint32 {
-	if c != nil {
-		return c.DeviceID
-	}
-
-	return 0
+func (c Controller) ID() uint32 {
+	return c.DeviceID
 }
 
-func (c *Controller) EndPoint() *net.UDPAddr {
-	if c != nil && c.IP != nil {
+func (c Controller) EndPoint() *net.UDPAddr {
+	if c.IP != nil {
 		return (*net.UDPAddr)(c.IP)
 	}
 
 	return nil
 }
 
-func (c *Controller) TimeZone() *time.Location {
+func (c Controller) TimeZone() *time.Location {
 	location := time.Local
 	if tz, err := types.Timezone(c.timezone); err == nil && tz != nil {
 		location = tz
@@ -110,23 +111,15 @@ func (c *Controller) TimeZone() *time.Location {
 	return location
 }
 
-func (c *Controller) Door(d uint8) (schema.OID, bool) {
-	if c != nil {
-		if v, ok := c.Doors[d]; ok {
-			return v, true
-		}
+func (c Controller) Door(d uint8) (schema.OID, bool) {
+	if v, ok := c.Doors[d]; ok {
+		return v, true
 	}
 
 	return "", false
 }
 
-func (c *Controller) realized() bool {
-	if c != nil && c.DeviceID != 0 && !c.IsDeleted() {
-		return true
-	}
-
-	return false
-}
+// **** END interfaces.Controller
 
 func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 	list := []kv{}

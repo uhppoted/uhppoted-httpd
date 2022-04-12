@@ -208,7 +208,8 @@ func (cc *Controllers) Refresh(i interfaces.Interfaces) {
 		return
 	} else {
 		lan = LAN{
-			v,
+			interfaces: i,
+			lan:        v,
 		}
 	}
 
@@ -343,7 +344,8 @@ func (cc *Controllers) Sync(i interfaces.Interfaces) {
 		return
 	} else {
 		lan = LAN{
-			v,
+			interfaces: i,
+			lan:        v,
 		}
 	}
 
@@ -358,7 +360,8 @@ func (cc *Controllers) CompareACL(i interfaces.Interfaces, permissions acl.ACL) 
 		return fmt.Errorf("No active LAN subsystem")
 	} else {
 		lan = LAN{
-			v,
+			interfaces: i,
+			lan:        v,
 		}
 	}
 
@@ -372,7 +375,8 @@ func (cc *Controllers) UpdateACL(i interfaces.Interfaces, permissions acl.ACL) e
 		return fmt.Errorf("No active LAN subsystem")
 	} else {
 		lan = LAN{
-			v,
+			interfaces: i,
+			lan:        v,
 		}
 	}
 

@@ -1,21 +1,18 @@
 ## v0.7.x
 
-- [x] Put refreshed timestamp in footer
-- [x] Change card number to not be a pointer
-      - [x] Internalise card.groups
+- [ ] Events should use local index rather than controller 
+      - [x] Get first/last from JSON file
+      - [ ] Fill gaps in JSON event list
+      - [ ] Rework utterly horrible interfaces.Controller interface 
+        - replace with struct
+        - implement Controller.AsIController() (or just internally)
 
 - [ ] Move delete to UI
-      - [x] Only enable tick on 'new' records if it's not deletable
       - [ ] Remove .enabled from commit/rollback (doesn't seem to be used anywhere)
       - [ ] tabular.percolate no longer seems to be needed to be exported
       - [ ] tabular.percolate seems to always invoke modified
       - [ ] Is tabular.modified used anywhere else ???
       - [ ] tabular.modified seems to be invoked a lot more than expected
-
-- [ ] Events should use local index rather than controller 
-      - Get first/last
-      - Store all events in the catalog
-      - Query catalog for up to N missing events between first/last
 
 - [ ] Rework `create`
       - [ ] Very fragile - uses 'new' status 

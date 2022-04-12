@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
+	"os/exec"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -15,8 +18,22 @@ import (
 )
 
 type Interfaces struct {
-	lans map[schema.OID]*LAN
-	ch   chan types.EventsList
+	lans   map[schema.OID]*LAN
+	events Events
+	ch     chan types.EventsList
+}
+
+type Controller interface {
+	OIDx() schema.OID
+	Name() string
+	ID() uint32
+	EndPoint() *net.UDPAddr
+	TimeZone() *time.Location
+	Door(uint8) (schema.OID, bool)
+}
+
+type Events interface {
+	Indices(deviceID uint32) (first uint32, last uint32)
 }
 
 const BLANK = "'blank'"
@@ -28,6 +45,10 @@ func NewInterfaces(ch chan types.EventsList) Interfaces {
 		lans: map[schema.OID]*LAN{},
 		ch:   ch,
 	}
+}
+
+func (ii *Interfaces) SetEvents(events Events) {
+	ii.events = events
 }
 
 func (ii *Interfaces) AsObjects(a *auth.Authorizator) []schema.Object {
@@ -185,6 +206,45 @@ func (ii Interfaces) Validate() error {
 	return nil
 }
 
+func (ii *Interfaces) Refresh(controllers []Controller) {
+	if lan, ok := ii.LAN(); ok {
+		var wg sync.WaitGroup
+
+		for _, c := range controllers {
+			wg.Add(1)
+
+			controller := c
+
+			go func(v Controller) {
+				defer wg.Done()
+				lan.Refresh(controller)
+			}(controller)
+		}
+
+		wg.Wait()
+	}
+}
+
+func (ii *Interfaces) GetEvents(controllers []Controller) {
+	if lan, ok := ii.LAN(); ok {
+		var wg sync.WaitGroup
+
+		for _, c := range controllers {
+			wg.Add(1)
+
+			controller := c
+			first, last := ii.events.Indices(c.ID())
+
+			go func(v Controller) {
+				defer wg.Done()
+				lan.GetEvents(controller, first, last)
+			}(controller)
+		}
+
+		wg.Wait()
+	}
+}
+
 func (ii *Interfaces) add(auth auth.OpAuth, l LAN) (*LAN, error) {
 	return nil, fmt.Errorf("NOT SUPPORTED")
 }
@@ -223,4 +283,8 @@ func info(msg string) {
 
 func warn(err error) {
 	log.Printf("ERROR %v", err)
+}
+
+func say(msg string) {
+	exec.Command("say", msg).Run()
 }

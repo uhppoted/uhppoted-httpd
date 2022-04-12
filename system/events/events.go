@@ -16,6 +16,8 @@ import (
 
 type Events struct {
 	events sync.Map
+	first  map[uint32]uint32
+	last   map[uint32]uint32
 }
 
 type key struct {
@@ -44,7 +46,10 @@ func newKey(deviceID uint32, index uint32, timestamp time.Time) key {
 }
 
 func NewEvents() Events {
-	return Events{}
+	return Events{
+		first: map[uint32]uint32{},
+		last:  map[uint32]uint32{},
+	}
 }
 
 func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
@@ -128,7 +133,17 @@ func (ee *Events) Load(blob json.RawMessage) error {
 	for _, v := range rs {
 		var e Event
 		if err := e.deserialize(v); err == nil {
-			k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
+			deviceID := e.DeviceID
+
+			if f, ok := ee.first[deviceID]; !ok || f > e.Index {
+				ee.first[deviceID] = e.Index
+			}
+
+			if l, ok := ee.last[deviceID]; !ok || l < e.Index {
+				ee.last[deviceID] = e.Index
+			}
+
+			k := newKey(deviceID, e.Index, time.Time(e.Timestamp))
 			if x, ok := ee.events.Load(k); ok {
 				return fmt.Errorf("%v  duplicate events (%v and %v)", k, e.OID, x.(Event).OID)
 			} else {
@@ -200,17 +215,35 @@ func (ee *Events) Validate() error {
 	return nil
 }
 
+func (ee Events) Indices(deviceID uint32) (first uint32, last uint32) {
+	first, _ = ee.first[deviceID]
+	last, _ = ee.last[deviceID]
+
+	return
+}
+
 func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {
 	for _, e := range recent {
 		k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
-		if _, ok := ee.events.Load(k); !ok {
-			oid := catalog.NewT(Event{}.CatalogEvent)
-			if _, ok := ee.events.Load(oid); ok {
-				warn(fmt.Errorf("catalog returned duplicate OID (%v)", oid))
-			} else {
-				device, door, card := lookup(e)
-				ee.events.Store(k, NewEvent(oid, e, device, door, card))
-			}
+		if _, ok := ee.events.Load(k); ok {
+			continue
+		}
+
+		oid := catalog.NewT(Event{}.CatalogEvent)
+		if _, ok := ee.events.Load(oid); ok {
+			warn(fmt.Errorf("catalog returned duplicate OID (%v)", oid))
+			continue
+		}
+
+		device, door, card := lookup(e)
+		ee.events.Store(k, NewEvent(oid, e, device, door, card))
+
+		if ix, ok := ee.first[deviceID]; !ok || e.Index < ix {
+			ee.first[deviceID] = e.Index
+		}
+
+		if ix, ok := ee.last[deviceID]; !ok || e.Index > ix {
+			ee.last[deviceID] = e.Index
 		}
 	}
 }

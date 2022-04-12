@@ -8,13 +8,8 @@ import (
 )
 
 type LAN struct {
-	interfaces.LAN
-}
-
-func (l LAN) clone() LAN {
-	return LAN{
-		l.LAN,
-	}
+	interfaces interfaces.Interfaces
+	lan        interfaces.LAN
 }
 
 func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
@@ -25,20 +20,25 @@ func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
 		}
 	}
 
-	return l.Search(devices)
+	return l.lan.Search(devices)
 }
 
 func (l *LAN) refresh(controllers []*Controller) {
-	f := func(l *LAN, c *Controller) {
-		l.Refresh(c)
+	realized := []interfaces.Controller{}
+
+	for _, c := range controllers {
+		if c.realized() {
+			realized = append(realized, c)
+		}
 	}
 
-	l.exec(controllers, f)
+	l.interfaces.Refresh(realized)
+	l.interfaces.GetEvents(realized)
 }
 
 func (l *LAN) synchTime(controllers []*Controller) {
 	f := func(l *LAN, c *Controller) {
-		l.SynchTime(c)
+		l.lan.SynchTime(c)
 	}
 
 	l.exec(controllers, f)
@@ -46,7 +46,7 @@ func (l *LAN) synchTime(controllers []*Controller) {
 
 func (l *LAN) synchDoors(controllers []*Controller) {
 	f := func(l *LAN, c *Controller) {
-		l.SynchDoors(c)
+		l.lan.SynchDoors(c)
 	}
 
 	l.exec(controllers, f)
@@ -80,7 +80,7 @@ func (l *LAN) compare(controllers []*Controller, permissions acl.ACL) error {
 		}
 	}
 
-	return l.CompareACL(devices, permissions)
+	return l.lan.CompareACL(devices, permissions)
 }
 
 func (l *LAN) update(controllers []*Controller, permissions acl.ACL) error {
@@ -91,5 +91,59 @@ func (l *LAN) update(controllers []*Controller, permissions acl.ACL) error {
 		}
 	}
 
-	return l.UpdateACL(devices, permissions)
+	return l.lan.UpdateACL(devices, permissions)
 }
+
+// type icontroller struct {
+// 	oid      schema.OID
+// 	name     string
+// 	id       uint32
+// 	endpoint *net.UDPAddr
+// 	timezone *time.Location
+// 	doors    map[uint8]schema.OID
+// }
+
+// func makeIController(c Controller) icontroller {
+// 	doors := map[uint8]schema.OID{}
+
+// 	for _, d := range []uint8{1, 2, 3, 4} {
+// 		if oid, ok := c.Doors[d]; ok {
+// 			doors[d] = oid
+// 		}
+// 	}
+
+// 	return icontroller{
+// 		oid:      c.OID,
+// 		name:     c.name,
+// 		id:       c.DeviceID,
+// 		endpoint: c.EndPoint(),
+// 		timezone: c.TimeZone(),
+// 		doors:    doors,
+// 	}
+// }
+
+// func (c icontroller) OIDx() schema.OID {
+// 	return c.oid
+// }
+
+// func (c icontroller) Name() string {
+// 	return c.name
+// }
+
+// func (c icontroller) ID() uint32 {
+// 	return c.id
+// }
+
+// func (c icontroller) EndPoint() *net.UDPAddr {
+// 	return c.endpoint
+// }
+
+// func (c icontroller) TimeZone() *time.Location {
+// 	return c.timezone
+// }
+
+// func (c icontroller) Door(d uint8) (schema.OID, bool) {
+// 	oid, ok := c.doors[d]
+
+// 	return oid, ok
+// }
