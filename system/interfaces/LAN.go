@@ -326,26 +326,27 @@ func (l *LAN) Refresh(c Controller) {
 	}
 }
 
-func (l *LAN) GetEvents(c Controller, first, last uint32) {
+func (l *LAN) GetEvents(c Controller, intervals []types.Interval) {
 	api := l.api([]Controller{c})
 	deviceID := c.ID()
 	oid := c.OIDx()
 
-	log.Infof("%v: retrieving LAN controller events (%v,%v)", deviceID, first, last)
+	log.Infof("%v: retrieving LAN controller events (%v)", deviceID, intervals)
 
-	if start, end, current, err := api.GetEventIndices(deviceID); err != nil {
+	if first, last, current, err := api.GetEventIndices(deviceID); err != nil {
 		log.Warnf("%v", err)
 	} else {
 		catalog.PutV(oid, ControllerTouched, time.Now())
 		catalog.PutV(oid, ControllerEventsStatus, types.StatusOk)
-		catalog.PutV(oid, ControllerEventsFirst, start)
-		catalog.PutV(oid, ControllerEventsLast, end)
+		catalog.PutV(oid, ControllerEventsFirst, first)
+		catalog.PutV(oid, ControllerEventsLast, last)
 		catalog.PutV(oid, ControllerEventsCurrent, current)
 
 		count := 0
 		events := []uhppoted.Event{}
 
 		f := func(index uint32) {
+			log.Sayf("get event %v", index)
 			if e, err := api.GetEvent(deviceID, index); err != nil {
 				log.Warnf("%v", err)
 			} else if e != nil {
@@ -355,21 +356,21 @@ func (l *LAN) GetEvents(c Controller, first, last uint32) {
 			count++
 		}
 
-		// NTS: need this check because index wraps around at MAX_UINT32
-		if last < end {
-			index := last + 1
-			for index <= end && count < MAX {
-				f(index)
-				index++
+		for _, interval := range intervals {
+			if interval.Contains(last) {
+				index := interval.From
+				for index <= last && count < MAX {
+					f(index)
+					index++
+				}
 			}
-		}
 
-		// NTS: need this check because index wraps around at 0
-		if first > start {
-			index := first - 1
-			for index >= start && count < MAX {
-				f(index)
-				index--
+			if interval.Contains(first) {
+				index := interval.To
+				for index >= first && count < MAX {
+					f(index)
+					index--
+				}
 			}
 		}
 

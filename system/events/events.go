@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"sort"
 	"sync"
 	"time"
@@ -11,6 +12,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
@@ -215,20 +217,24 @@ func (ee *Events) Validate() error {
 	return nil
 }
 
-func (ee *Events) Indices() map[uint32][2]uint32 {
-	indices := map[uint32][2]uint32{}
+func (ee *Events) Missing(controllers ...uint32) map[uint32][]types.Interval {
+	missing := map[uint32][]types.Interval{}
 
-	for k, v := range ee.first {
-		indices[k] = [2]uint32{v, 0}
+	for _, c := range controllers {
+		if v := ee.first[c]; v > 1 {
+			missing[c] = append(missing[c], types.Interval{From: 1, To: v - 1})
+		}
 	}
 
-	for k, v := range ee.last {
-		ix := indices[k]
-		ix[1] = v
-		indices[k] = ix
+	for _, c := range controllers {
+		if v := ee.last[c]; v > 1 {
+			missing[c] = append(missing[c], types.Interval{From: v + 1, To: math.MaxUint32})
+		} else {
+			missing[c] = append(missing[c], types.Interval{From: 1, To: math.MaxUint32})
+		}
 	}
 
-	return indices
+	return missing
 }
 
 func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {

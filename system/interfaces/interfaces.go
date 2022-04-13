@@ -254,7 +254,7 @@ func (ii *Interfaces) Refresh(controllers []Controller) {
 	}
 }
 
-func (ii *Interfaces) GetEvents(controllers []Controller, indices map[uint32][2]uint32) {
+func (ii *Interfaces) GetEvents(controllers []Controller, missing map[uint32][]types.Interval) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup
 
@@ -262,11 +262,11 @@ func (ii *Interfaces) GetEvents(controllers []Controller, indices map[uint32][2]
 			wg.Add(1)
 
 			controller := c
-			first, last := indices[c.ID()][0], indices[c.ID()][1]
+			intervals := missing[c.ID()]
 
 			go func(v Controller) {
 				defer wg.Done()
-				lan.GetEvents(controller, first, last)
+				lan.GetEvents(controller, intervals)
 			}(controller)
 		}
 

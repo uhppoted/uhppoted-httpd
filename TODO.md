@@ -3,13 +3,14 @@
 - [ ] Events should use local index rather than controller 
       - [x] Get first/last from JSON file
       - [ ] Fill gaps in JSON event list
+      - [ ] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 
             - (?) Replace with struct
             - [ ] Implement Controller.AsIController() (or just internally)
-      - [ ] Move synch time etc to system
 
 - [x] log.Infof
 - [x] log.Sayf
+- [ ] Move synch time etc to system.refresh
 - [ ] Unify CompareACL and UpdateACL into SynchACL
 
 - [ ] Move delete to UI

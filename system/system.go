@@ -284,8 +284,17 @@ func (s *system) refresh() {
 		return
 	}
 
+	f := func(controllers []interfaces.Controller) []uint32 {
+		list := []uint32{}
+		for _, c := range controllers {
+			list = append(list, c.ID())
+		}
+
+		return list
+	}
+
 	controllers := s.controllers.AsIControllers()
-	indices := s.events.Indices()
+	missing := s.events.Missing(f(controllers)...)
 
 	sys.taskQ.Add(Task{
 		f: func() {
@@ -302,7 +311,7 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			s.interfaces.GetEvents(controllers, indices)
+			s.interfaces.GetEvents(controllers, missing)
 		},
 	})
 
