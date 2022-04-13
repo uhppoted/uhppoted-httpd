@@ -1,25 +1,18 @@
 package controllers
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net"
-	"os"
-	"path/filepath"
 	"sync"
 	"time"
 
 	"github.com/uhppoted/uhppoted-lib/acl"
-	"github.com/uhppoted/uhppoted-lib/config"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
-	"github.com/uhppoted/uhppoted-httpd/system/doors"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -67,6 +60,18 @@ func (cc *Controllers) AsObjects(a *auth.Authorizator) []schema.Object {
 	}
 
 	return objects
+}
+
+func (cc *Controllers) AsIControllers() []interfaces.Controller {
+	list := []interfaces.Controller{}
+
+	for _, c := range cc.controllers {
+		if c.DeviceID != 0 && !c.IsDeleted() {
+			list = append(list, c)
+		}
+	}
+
+	return list
 }
 
 func (cc *Controllers) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
@@ -139,7 +144,7 @@ func (cc *Controllers) Load(blob json.RawMessage) error {
 	for _, v := range rs {
 		var c Controller
 		if err := c.deserialize(v); err != nil {
-			warn(err)
+			log.Warnf("%v", err)
 		} else {
 			cc.controllers = append(cc.controllers, &c)
 		}
@@ -201,51 +206,28 @@ func (cc Controllers) Print() {
 	}
 }
 
-func (cc *Controllers) Refresh(i interfaces.Interfaces) {
-	var lan LAN
-
-	if v, ok := i.LAN(); !ok {
-		return
-	} else {
-		lan = LAN{
-			interfaces: i,
-			lan:        v,
-		}
-	}
-
-	// ... add 'found' controllers to list
-	if found, err := lan.search(cc.controllers); err != nil {
-		warn(err)
-	} else {
-	loop:
-		for _, d := range found {
-			id := d // because .. Go loop variable gotcha (the loop variable is mutable)
-			for _, c := range cc.controllers {
-				if c.ID() == id && !c.IsDeleted() {
-					continue loop
-				}
+func (cc *Controllers) Found(found []uint32) {
+loop:
+	for _, v := range found {
+		for _, c := range cc.controllers {
+			if c.ID() == v && !c.IsDeleted() {
+				continue loop
 			}
-
-			info(fmt.Sprintf("Adding unconfigured controller %v", d))
-
-			v := Controller{
-				CatalogController: catalog.CatalogController{
-					DeviceID: id,
-				},
-				created: types.TimestampNow(),
-			}
-
-			v.OID = catalog.NewT(v.CatalogController)
-
-			cc.controllers = append(cc.controllers, &v)
 		}
-	}
 
-	// ... refresh
-	lan.refresh(cc.controllers)
+		log.Infof("Adding unconfigured controller %v", v)
 
-	for _, c := range cc.controllers {
-		c.refreshed()
+		id := v // because .. Go loop variable gotcha (the loop variable is mutable)
+		c := Controller{
+			CatalogController: catalog.CatalogController{
+				DeviceID: id,
+			},
+			created: types.TimestampNow(),
+		}
+
+		c.OID = catalog.NewT(c.CatalogController)
+
+		cc.controllers = append(cc.controllers, &c)
 	}
 }
 
@@ -264,77 +246,6 @@ func (cc *Controllers) Clone() Controllers {
 	}
 
 	return shadow
-}
-
-func Export(file string, controllers []*Controller, doors map[schema.OID]doors.Door) error {
-	guard.RLock()
-
-	defer guard.RUnlock()
-
-	conf := config.NewConfig()
-	if err := conf.Load(file); err != nil {
-		return err
-	}
-
-	devices := config.DeviceMap{}
-	for _, c := range controllers {
-		if c.realized() {
-			device := config.Device{
-				Name:     c.name,
-				Address:  nil,
-				Doors:    []string{"", "", "", ""},
-				TimeZone: c.timezone,
-			}
-
-			if c.IP != nil {
-				device.Address = (*net.UDPAddr)(c.IP)
-			}
-
-			if d, ok := doors[c.Doors[1]]; ok {
-				device.Doors[0] = d.Name
-			}
-
-			if d, ok := doors[c.Doors[2]]; ok {
-				device.Doors[1] = d.Name
-			}
-
-			if d, ok := doors[c.Doors[3]]; ok {
-				device.Doors[2] = d.Name
-			}
-
-			if d, ok := doors[c.Doors[4]]; ok {
-				device.Doors[3] = d.Name
-			}
-
-			devices[c.DeviceID] = &device
-		}
-	}
-
-	conf.Devices = devices
-
-	var b bytes.Buffer
-	conf.Write(&b)
-
-	tmp, err := ioutil.TempFile(os.TempDir(), "uhppoted.conf_")
-	if err != nil {
-		return err
-	}
-
-	defer os.Remove(tmp.Name())
-
-	if _, err := tmp.Write(b.Bytes()); err != nil {
-		return err
-	}
-
-	if err := tmp.Close(); err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(file), 0770); err != nil {
-		return err
-	}
-
-	return os.Rename(tmp.Name(), file)
 }
 
 func (cc *Controllers) Sync(i interfaces.Interfaces) {
@@ -428,14 +339,6 @@ func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	cc.controllers = append(cc.controllers, controller)
 
 	return controller, nil
-}
-
-func info(msg string) {
-	log.Printf("INFO  %v", msg)
-}
-
-func warn(err error) {
-	log.Printf("ERROR %v", err)
 }
 
 func stringify(i interface{}, defval string) string {

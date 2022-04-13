@@ -233,8 +233,6 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		}
 	}
 
-	sys.interfaces.SetEvents(&sys.events)
-
 	kb := ast.NewKnowledgeLibrary()
 	if err := builder.NewRuleBuilder(kb).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(cfg.HTTPD.DB.Rules.ACL)); err != nil {
 		log.Panicf("Error loading ACL ruleset (%v)", err)
@@ -286,9 +284,25 @@ func (s *system) refresh() {
 		return
 	}
 
+	controllers := s.controllers.AsIControllers()
+	indices := s.events.Indices()
+
 	sys.taskQ.Add(Task{
 		f: func() {
-			s.controllers.Refresh(sys.interfaces.Interfaces)
+			found := s.interfaces.Search(controllers)
+			s.controllers.Found(found)
+		},
+	})
+
+	sys.taskQ.Add(Task{
+		f: func() {
+			s.interfaces.Refresh(controllers)
+		},
+	})
+
+	sys.taskQ.Add(Task{
+		f: func() {
+			s.interfaces.GetEvents(controllers, indices)
 		},
 	})
 
@@ -304,14 +318,6 @@ func (s *system) refresh() {
 }
 
 func (s *system) updated() {
-	//	s.taskQ.Add(Task{
-	//		f: func() {
-	//			if err := controllers.Export(sys.conf, shadow.Controllers, sys.doors.Doors); err != nil {
-	//				warn(err)
-	//			}
-	//		},
-	//	})
-
 	s.taskQ.Add(Task{
 		f: func() {
 			info("Updating controllers from configuration")

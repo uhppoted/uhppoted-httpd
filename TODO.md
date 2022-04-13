@@ -4,8 +4,13 @@
       - [x] Get first/last from JSON file
       - [ ] Fill gaps in JSON event list
       - [ ] Rework utterly horrible interfaces.Controller interface 
-        - replace with struct
-        - implement Controller.AsIController() (or just internally)
+            - (?) Replace with struct
+            - [ ] Implement Controller.AsIController() (or just internally)
+      - [ ] Move synch time etc to system
+
+- [x] log.Infof
+- [x] log.Sayf
+- [ ] Unify CompareACL and UpdateACL into SynchACL
 
 - [ ] Move delete to UI
       - [ ] Remove .enabled from commit/rollback (doesn't seem to be used anywhere)

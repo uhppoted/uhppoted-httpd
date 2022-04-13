@@ -215,11 +215,20 @@ func (ee *Events) Validate() error {
 	return nil
 }
 
-func (ee *Events) Indices(deviceID uint32) (first uint32, last uint32) {
-	first, _ = ee.first[deviceID]
-	last, _ = ee.last[deviceID]
+func (ee *Events) Indices() map[uint32][2]uint32 {
+	indices := map[uint32][2]uint32{}
 
-	return
+	for k, v := range ee.first {
+		indices[k] = [2]uint32{v, 0}
+	}
+
+	for k, v := range ee.last {
+		ix := indices[k]
+		ix[1] = v
+		indices[k] = ix
+	}
+
+	return indices
 }
 
 func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {

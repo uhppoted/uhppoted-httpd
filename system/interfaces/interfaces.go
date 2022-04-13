@@ -3,14 +3,13 @@ package interfaces
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
-	"os/exec"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -18,9 +17,8 @@ import (
 )
 
 type Interfaces struct {
-	lans   map[schema.OID]*LAN
-	events Events
-	ch     chan types.EventsList
+	lans map[schema.OID]*LAN
+	ch   chan types.EventsList
 }
 
 type Controller interface {
@@ -45,10 +43,6 @@ func NewInterfaces(ch chan types.EventsList) Interfaces {
 		lans: map[schema.OID]*LAN{},
 		ch:   ch,
 	}
-}
-
-func (ii *Interfaces) SetEvents(events Events) {
-	ii.events = events
 }
 
 func (ii *Interfaces) AsObjects(a *auth.Authorizator) []schema.Object {
@@ -206,6 +200,41 @@ func (ii Interfaces) Validate() error {
 	return nil
 }
 
+func (ii *Interfaces) Search(controllers []Controller) []uint32 {
+	var mutex sync.Mutex
+	var wg sync.WaitGroup
+	var found = map[uint32]struct{}{}
+
+	f := func(lan *LAN) {
+		defer wg.Done()
+
+		if list, err := lan.Search(controllers); err != nil {
+			log.Warnf("%v", err)
+		} else {
+			mutex.Lock()
+			defer mutex.Unlock()
+			for _, v := range list {
+				found[v] = struct{}{}
+			}
+		}
+
+	}
+
+	for _, lan := range ii.lans {
+		wg.Add(1)
+		go f(lan) // NTS: lan is a pointer so it's more or less ok to reuse the loop variable
+	}
+
+	wg.Wait()
+
+	list := []uint32{}
+	for k, _ := range found {
+		list = append(list, k)
+	}
+
+	return list
+}
+
 func (ii *Interfaces) Refresh(controllers []Controller) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup
@@ -225,7 +254,7 @@ func (ii *Interfaces) Refresh(controllers []Controller) {
 	}
 }
 
-func (ii *Interfaces) GetEvents(controllers []Controller) {
+func (ii *Interfaces) GetEvents(controllers []Controller, indices map[uint32][2]uint32) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup
 
@@ -233,7 +262,7 @@ func (ii *Interfaces) GetEvents(controllers []Controller) {
 			wg.Add(1)
 
 			controller := c
-			first, last := ii.events.Indices(c.ID())
+			first, last := indices[c.ID()][0], indices[c.ID()][1]
 
 			go func(v Controller) {
 				defer wg.Done()
@@ -271,20 +300,4 @@ func stringify(i interface{}, defval string) string {
 	}
 
 	return defval
-}
-
-func debug(msg string) {
-	log.Printf("%-5v %v", "DEBUG", msg)
-}
-
-func info(msg string) {
-	log.Printf("%-5v %v", "INFO", msg)
-}
-
-func warn(err error) {
-	log.Printf("ERROR %v", err)
-}
-
-func say(msg string) {
-	exec.Command("say", msg).Run()
 }

@@ -12,30 +12,6 @@ type LAN struct {
 	lan        interfaces.LAN
 }
 
-func (l *LAN) search(controllers []*Controller) ([]uint32, error) {
-	devices := []interfaces.Controller{}
-	for _, c := range controllers {
-		if c.realized() {
-			devices = append(devices, c)
-		}
-	}
-
-	return l.lan.Search(devices)
-}
-
-func (l *LAN) refresh(controllers []*Controller) {
-	realized := []interfaces.Controller{}
-
-	for _, c := range controllers {
-		if c.realized() {
-			realized = append(realized, c)
-		}
-	}
-
-	l.interfaces.Refresh(realized)
-	l.interfaces.GetEvents(realized)
-}
-
 func (l *LAN) synchTime(controllers []*Controller) {
 	f := func(l *LAN, c *Controller) {
 		l.lan.SynchTime(c)
