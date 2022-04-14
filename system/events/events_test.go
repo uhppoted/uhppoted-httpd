@@ -4,6 +4,7 @@ import (
 	"math"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 
@@ -203,7 +204,12 @@ func BenchmarkMissingEvents(b *testing.B) {
 
 	b.ResetTimer()
 
+    start := time.Now()
 	for i := 0; i < b.N; i++ {
 		lots.Missing(-1, 405419896)
+	}
+	
+	if dt := time.Now().Sub(start).Milliseconds()/int64(b.N); dt > 50 {
+		b.Errorf("too slow (%vms measured over %v iterations)",dt,b.N)
 	}
 }

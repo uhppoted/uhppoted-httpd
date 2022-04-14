@@ -3,7 +3,7 @@
 - [ ] Events should use local index rather than controller 
       - [x] Get first/last from JSON file
       - [x] Fill gaps in JSON event list
-      - [ ] Optimize missing events
+      - (?) Optimize missing events
             - (?) binary search
             - (?) cache device lists
             - (?) seperate device lists
