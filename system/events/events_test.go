@@ -185,8 +185,26 @@ func TestEventsMissingWithGapsLimit(t *testing.T) {
 		},
 	}
 
-	missing := events.Missing(1000, 405419896)
+	missing = events.Missing(1000, 405419896)
 	if !reflect.DeepEqual(missing, expected) {
 		t.Errorf("Incorrect missing events list\n   expected:%v\n   got:     %v", expected, missing)
 	}
 }
+
+func BenchmarkMissingEvents(b *testing.B) {
+lots := Events{}
+
+	for ix := uint32(1); ix <= 100000; ix++ {
+		lots.events.Store(405419896+ix, uhppoted.Event{
+			Index:    ix,
+			DeviceID: 405419896,
+		})
+	}	
+
+b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		lots.Missing(-1, 405419896)
+	}
+}
+
