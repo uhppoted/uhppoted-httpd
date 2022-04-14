@@ -2,7 +2,11 @@
 
 - [ ] Events should use local index rather than controller 
       - [x] Get first/last from JSON file
-      - [ ] Fill gaps in JSON event list
+      - [x] Fill gaps in JSON event list
+      - [ ] Optimize missing events
+            - (?) binary search
+            - (?) cache device lists
+            - (?) seperate device lists
       - [ ] Add event key to catalog entry a la DeviceID
       - [ ] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 

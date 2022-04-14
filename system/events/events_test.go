@@ -192,19 +192,18 @@ func TestEventsMissingWithGapsLimit(t *testing.T) {
 }
 
 func BenchmarkMissingEvents(b *testing.B) {
-lots := Events{}
+	lots := Events{}
 
 	for ix := uint32(1); ix <= 100000; ix++ {
 		lots.events.Store(405419896+ix, uhppoted.Event{
 			Index:    ix,
 			DeviceID: 405419896,
 		})
-	}	
+	}
 
-b.ResetTimer()
+	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
 		lots.Missing(-1, 405419896)
 	}
 }
-
