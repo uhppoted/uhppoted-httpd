@@ -18,8 +18,6 @@ import (
 
 type Events struct {
 	events sync.Map
-	first  map[uint32]uint32
-	last   map[uint32]uint32
 }
 
 type key struct {
@@ -48,10 +46,7 @@ func newKey(deviceID uint32, index uint32, timestamp time.Time) key {
 }
 
 func NewEvents() Events {
-	return Events{
-		first: map[uint32]uint32{},
-		last:  map[uint32]uint32{},
-	}
+	return Events{}
 }
 
 func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
@@ -137,14 +132,6 @@ func (ee *Events) Load(blob json.RawMessage) error {
 		if err := e.deserialize(v); err == nil {
 			deviceID := e.DeviceID
 
-			if f, ok := ee.first[deviceID]; !ok || f > e.Index {
-				ee.first[deviceID] = e.Index
-			}
-
-			if l, ok := ee.last[deviceID]; !ok || l < e.Index {
-				ee.last[deviceID] = e.Index
-			}
-
 			k := newKey(deviceID, e.Index, time.Time(e.Timestamp))
 			if x, ok := ee.events.Load(k); ok {
 				return fmt.Errorf("%v  duplicate events (%v and %v)", k, e.OID, x.(Event).OID)
@@ -217,20 +204,49 @@ func (ee *Events) Validate() error {
 	return nil
 }
 
-func (ee *Events) Missing(controllers ...uint32) map[uint32][]types.Interval {
+func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.Interval {
 	missing := map[uint32][]types.Interval{}
 
 	for _, c := range controllers {
-		if v := ee.first[c]; v > 1 {
-			missing[c] = append(missing[c], types.Interval{From: 1, To: v - 1})
-		}
-	}
+		first := uint32(0)
+		last := uint32(0)
 
-	for _, c := range controllers {
-		if v := ee.last[c]; v > 1 {
-			missing[c] = append(missing[c], types.Interval{From: v + 1, To: math.MaxUint32})
-		} else {
-			missing[c] = append(missing[c], types.Interval{From: 1, To: math.MaxUint32})
+		list := []uint32{}
+		ee.events.Range(func(k, v any) bool {
+			e := v.(uhppoted.Event)
+			if e.DeviceID == c {
+				list = append(list, e.Index)
+			}
+			return true
+		})
+
+		sort.Slice(list, func(i, j int) bool { return list[i] < list[j] })
+
+		if N := len(list); N > 0 {
+			first = list[0]
+			last = list[N-1]
+		}
+
+		missing[c] = append(missing[c], types.Interval{From: last + 1, To: math.MaxUint32})
+		if first > 1 {
+			missing[c] = append(missing[c], types.Interval{From: 1, To: first - 1})
+		}
+
+		next := first
+		ix := 0
+		for ; ix < len(list) && gaps != 0; ix++ {
+			v := list[ix]
+			if v != next {
+				from := next
+				to := v - 1
+				missing[c] = append(missing[c], types.Interval{From: from, To: to})
+				gaps--
+			}
+			next = v + 1
+		}
+
+		if last > 0 && last > next && gaps != 0 {
+			missing[c] = append(missing[c], types.Interval{From: next, To: last})
 		}
 	}
 
@@ -252,14 +268,6 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 
 		device, door, card := lookup(e)
 		ee.events.Store(k, NewEvent(oid, e, device, door, card))
-
-		if ix, ok := ee.first[deviceID]; !ok || e.Index < ix {
-			ee.first[deviceID] = e.Index
-		}
-
-		if ix, ok := ee.last[deviceID]; !ok || e.Index > ix {
-			ee.last[deviceID] = e.Index
-		}
 	}
 }
 

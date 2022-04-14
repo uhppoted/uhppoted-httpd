@@ -3,6 +3,7 @@
 - [ ] Events should use local index rather than controller 
       - [x] Get first/last from JSON file
       - [ ] Fill gaps in JSON event list
+      - [ ] Add event key to catalog entry a la DeviceID
       - [ ] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 
             - (?) Replace with struct
@@ -32,6 +33,7 @@
 
 ### IN PROGRESS
 
+- (??) Rearchitecture as data+rules
 - [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
       be updated from the catalog ??
       - (?) broadcast channel

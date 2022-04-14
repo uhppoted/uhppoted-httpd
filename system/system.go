@@ -294,7 +294,7 @@ func (s *system) refresh() {
 	}
 
 	controllers := s.controllers.AsIControllers()
-	missing := s.events.Missing(f(controllers)...)
+	missing := s.events.Missing(2, f(controllers)...) // Fix at most 2 gaps in each controller's event list
 
 	sys.taskQ.Add(Task{
 		f: func() {
