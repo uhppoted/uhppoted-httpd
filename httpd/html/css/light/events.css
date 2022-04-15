@@ -781,6 +781,7 @@ td input.device {
   width: 72px;
   font-size: 1.1em;
   font-variant: small-caps;
+  font-variant-caps: all-small-caps;
 }
 
 td input.eventType {

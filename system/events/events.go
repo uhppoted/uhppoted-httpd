@@ -21,6 +21,12 @@ type Events struct {
 }
 
 type key struct {
+	deviceID uint32
+	index    uint32
+	//	timestamp time.Time
+}
+
+type keyx struct {
 	deviceID  uint32
 	index     uint32
 	timestamp time.Time
@@ -30,7 +36,7 @@ const EventsOID = schema.EventsOID
 const EventsFirst = schema.EventsFirst
 const EventsLast = schema.EventsLast
 
-func newKey(deviceID uint32, index uint32, timestamp time.Time) key {
+func newKeyX(deviceID uint32, index uint32, timestamp time.Time) keyx {
 	year, month, day := timestamp.Date()
 	hour := timestamp.Hour()
 	minute := timestamp.Minute()
@@ -38,7 +44,7 @@ func newKey(deviceID uint32, index uint32, timestamp time.Time) key {
 	location := timestamp.Location()
 	t := time.Date(year, month, day, hour, minute, second, 0, location)
 
-	return key{
+	return keyx{
 		deviceID:  deviceID,
 		index:     index,
 		timestamp: t,
@@ -51,10 +57,12 @@ func NewEvents() Events {
 
 func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 	objects := []schema.Object{}
-	keys := []key{}
+	keys := []keyx{}
 
 	ee.events.Range(func(k, v interface{}) bool {
-		keys = append(keys, k.(key))
+		e := v.(Event)
+		key := newKeyX(e.DeviceID, e.Index, time.Time(e.Timestamp))
+		keys = append(keys, key)
 		return true
 	})
 
@@ -67,7 +75,11 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 	ix := start
 	count := 0
 	for ix < len(keys) && count < max {
-		k := keys[ix]
+		k := key{
+			deviceID: keys[ix].deviceID,
+			index:    keys[ix].index,
+		}
+
 		if v, ok := ee.events.Load(k); ok {
 			e := v.(Event)
 			if e.IsValid() || e.IsDeleted() {
@@ -132,7 +144,11 @@ func (ee *Events) Load(blob json.RawMessage) error {
 		if err := e.deserialize(v); err == nil {
 			deviceID := e.DeviceID
 
-			k := newKey(deviceID, e.Index, time.Time(e.Timestamp))
+			k := key{
+				deviceID: deviceID,
+				index:    e.Index,
+			}
+
 			if x, ok := ee.events.Load(k); ok {
 				return fmt.Errorf("%v  duplicate events (%v and %v)", k, e.OID, x.(Event).OID)
 			} else {
@@ -306,7 +322,11 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 }
 func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {
 	for _, e := range recent {
-		k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
+		k := key{
+			deviceID: e.DeviceID,
+			index:    e.Index,
+		}
+
 		if _, ok := ee.events.Load(k); ok {
 			continue
 		}
