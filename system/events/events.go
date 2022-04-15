@@ -266,7 +266,7 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 
 		list := []uint32{}
 		ee.events.Range(func(k, v any) bool {
-			e := v.(uhppoted.Event)
+			e := v.(Event)
 			if e.DeviceID == c {
 				list = append(list, e.Index)
 			}
