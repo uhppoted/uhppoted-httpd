@@ -1,10 +1,8 @@
 ## v0.7.x
 
 - [ ] Events should use local index rather than controller 
-      - [x] Get first/last from JSON file
-      - [x] Fill gaps in JSON event list
-      - (?) Optimize missing events
-            - (?) binary search
+      - [ ] Optimize missing events
+            - [x] Binary search
             - (?) cache device lists
             - (?) seperate device lists
       - [ ] Add event key to catalog entry a la DeviceID

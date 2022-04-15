@@ -204,6 +204,59 @@ func (ee *Events) Validate() error {
 	return nil
 }
 
+// NTS: original implementation - uses sequential search
+// func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.Interval {
+// 	missing := map[uint32][]types.Interval{}
+//
+// 	for _, c := range controllers {
+// 		first := uint32(0)
+// 		last := uint32(0)
+//
+// 		list := []uint32{}
+// 		ee.events.Range(func(k, v any) bool {
+// 			e := v.(uhppoted.Event)
+// 			if e.DeviceID == c {
+// 				list = append(list, e.Index)
+// 			}
+// 			return true
+// 		})
+//
+// 		sort.Slice(list, func(i, j int) bool { return list[i] < list[j] })
+//
+// 		if N := len(list); N > 0 {
+// 			first = list[0]
+// 			last = list[N-1]
+// 		}
+//
+// 		missing[c] = append(missing[c], types.Interval{From: last + 1, To: math.MaxUint32})
+// 		if first > 1 {
+// 			missing[c] = append(missing[c], types.Interval{From: 1, To: first - 1})
+// 		}
+//
+// 		next := first
+// 		ix := 0
+// 		for ; ix < len(list) && gaps != 0; ix++ {
+// 			v := list[ix]
+// 			if v != next {
+// 				from := next
+// 				to := v - 1
+// 				missing[c] = append(missing[c], types.Interval{From: from, To: to})
+// 				gaps--
+// 			}
+// 			next = v + 1
+// 		}
+//
+// 		if last > 0 && last > next && gaps != 0 {
+// 			missing[c] = append(missing[c], types.Interval{From: next, To: last})
+// 		}
+// 	}
+//
+// 	return missing
+// }
+
+// NTS: first optimization - uses binary search
+//      No perceived improvement in the benchmarks - looks like the copy from the Map
+//      is the dominant cost. Cleaner algorithm though.
 func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.Interval {
 	missing := map[uint32][]types.Interval{}
 
@@ -232,27 +285,25 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 			missing[c] = append(missing[c], types.Interval{From: 1, To: first - 1})
 		}
 
-		next := first
-		ix := 0
-		for ; ix < len(list) && gaps != 0; ix++ {
-			v := list[ix]
-			if v != next {
-				from := next
-				to := v - 1
+		slice := list[0:]
+		for len(slice) > 0 && gaps != 0 {
+			ix := sort.Search(len(slice), func(i int) bool {
+				return slice[i] != slice[0]+uint32(i)
+			})
+
+			if ix != len(slice) {
+				from := slice[ix-1] + 1
+				to := slice[ix] - 1
 				missing[c] = append(missing[c], types.Interval{From: from, To: to})
 				gaps--
 			}
-			next = v + 1
-		}
 
-		if last > 0 && last > next && gaps != 0 {
-			missing[c] = append(missing[c], types.Interval{From: next, To: last})
+			slice = slice[ix:]
 		}
 	}
 
 	return missing
 }
-
 func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {
 	for _, e := range recent {
 		k := newKey(e.DeviceID, e.Index, time.Time(e.Timestamp))
