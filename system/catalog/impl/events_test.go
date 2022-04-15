@@ -10,21 +10,21 @@ import (
 func TestEventsNewOID(t *testing.T) {
 	tt := events{
 		base: schema.EventsOID,
-		m: map[schema.OID]*record{
-			"0.6.1":  &record{},
-			"0.6.2":  &record{},
-			"0.6.10": &record{},
+		m: map[schema.OID]*event{
+			"0.6.1":  &event{},
+			"0.6.2":  &event{},
+			"0.6.10": &event{},
 		},
 		last: 123,
 	}
 
 	expected := events{
 		base: schema.EventsOID,
-		m: map[schema.OID]*record{
-			"0.6.1":   &record{},
-			"0.6.2":   &record{},
-			"0.6.10":  &record{},
-			"0.6.124": &record{},
+		m: map[schema.OID]*event{
+			"0.6.1":   &event{},
+			"0.6.2":   &event{},
+			"0.6.10":  &event{},
+			"0.6.124": &event{},
 		},
 		last: 124,
 	}
@@ -43,21 +43,21 @@ func TestEventsNewOID(t *testing.T) {
 func TestEventsPut(t *testing.T) {
 	tt := events{
 		base: schema.EventsOID,
-		m: map[schema.OID]*record{
-			"0.6.1":  &record{},
-			"0.6.2":  &record{},
-			"0.6.10": &record{},
+		m: map[schema.OID]*event{
+			"0.6.1":  &event{},
+			"0.6.2":  &event{},
+			"0.6.10": &event{},
 		},
 		last: 123,
 	}
 
 	expected := events{
 		base: schema.EventsOID,
-		m: map[schema.OID]*record{
-			"0.6.1":   &record{},
-			"0.6.2":   &record{},
-			"0.6.10":  &record{},
-			"0.6.124": &record{},
+		m: map[schema.OID]*event{
+			"0.6.1":   &event{},
+			"0.6.2":   &event{},
+			"0.6.10":  &event{},
+			"0.6.124": &event{},
 		},
 		last: 124,
 	}
@@ -71,20 +71,20 @@ func TestEventsPut(t *testing.T) {
 
 func TestEventsDelete(t *testing.T) {
 	tt := events{
-		m: map[schema.OID]*record{
-			"0.6.1":  &record{},
-			"0.6.2":  &record{},
-			"0.6.10": &record{},
+		m: map[schema.OID]*event{
+			"0.6.1":  &event{},
+			"0.6.2":  &event{},
+			"0.6.10": &event{},
 		},
 	}
 
 	expected := events{
-		m: map[schema.OID]*record{
-			"0.6.1": &record{},
-			"0.6.2": &record{
+		m: map[schema.OID]*event{
+			"0.6.1": &event{},
+			"0.6.2": &event{
 				deleted: true,
 			},
-			"0.6.10": &record{},
+			"0.6.10": &event{},
 		},
 	}
 

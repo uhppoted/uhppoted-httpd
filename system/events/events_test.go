@@ -6,24 +6,39 @@ import (
 	"testing"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func TestEventsMissingWithNoGaps(t *testing.T) {
-	events := Events{}
+	events := Events{
+		events: map[key]Event{},
+	}
 
 	for ix := uint32(1001); ix <= 1032; ix++ {
-		events.events.Store(201020304+ix, Event{
-			Index:    ix,
-			DeviceID: 201020304,
-		})
+		k := key{
+			deviceID: 201020304,
+			index:    ix}
+
+		e := Event{
+			CatalogEvent: catalog.CatalogEvent{
+				DeviceID: 201020304,
+				Index:    ix}}
+
+		events.events[k] = e
 	}
 
 	for ix := uint32(1); ix <= 69; ix++ {
-		events.events.Store(405419896+ix, Event{
-			Index:    ix,
-			DeviceID: 405419896,
-		})
+		k := key{
+			deviceID: 405419896,
+			index:    ix}
+
+		e := Event{
+			CatalogEvent: catalog.CatalogEvent{
+				DeviceID: 405419896,
+				Index:    ix}}
+
+		events.events[k] = e
 	}
 
 	expected := map[uint32][]types.Interval{
@@ -46,14 +61,22 @@ func TestEventsMissingWithNoGaps(t *testing.T) {
 }
 
 func TestEventsMissingWithGaps(t *testing.T) {
-	events := Events{}
+	events := Events{
+		events: map[key]Event{},
+	}
 
 	for ix := uint32(1); ix <= 69; ix++ {
 		if ix < 37 || ix > 43 {
-			events.events.Store(405419896+ix, Event{
-				Index:    ix,
-				DeviceID: 405419896,
-			})
+			k := key{
+				deviceID: 405419896,
+				index:    ix}
+
+			e := Event{
+				CatalogEvent: catalog.CatalogEvent{
+					DeviceID: 405419896,
+					Index:    ix}}
+
+			events.events[k] = e
 		}
 	}
 
@@ -72,14 +95,22 @@ func TestEventsMissingWithGaps(t *testing.T) {
 }
 
 func TestEventsMissingWithMultipleGaps(t *testing.T) {
-	events := Events{}
+	events := Events{
+		events: map[key]Event{},
+	}
 
 	for ix := uint32(1); ix <= 69; ix++ {
 		if !(ix >= 13 && ix <= 19) && !(ix >= 37 && ix <= 43) && !(ix >= 53 && ix <= 59) {
-			events.events.Store(405419896+ix, Event{
-				Index:    ix,
-				DeviceID: 405419896,
-			})
+			k := key{
+				deviceID: 405419896,
+				index:    ix}
+
+			e := Event{
+				CatalogEvent: catalog.CatalogEvent{
+					DeviceID: 405419896,
+					Index:    ix}}
+
+			events.events[k] = e
 		}
 	}
 
@@ -100,7 +131,9 @@ func TestEventsMissingWithMultipleGaps(t *testing.T) {
 }
 
 func TestEventsMissingWithGapsLimit(t *testing.T) {
-	events := Events{}
+	events := Events{
+		events: map[key]Event{},
+	}
 
 	for ix := uint32(1); ix <= 69; ix++ {
 		if !(ix <= 5) &&
@@ -109,10 +142,16 @@ func TestEventsMissingWithGapsLimit(t *testing.T) {
 			!(ix >= 37 && ix <= 39) &&
 			!(ix >= 44 && ix <= 48) &&
 			!(ix >= 57 && ix <= 61) {
-			events.events.Store(405419896+ix, Event{
-				Index:    ix,
-				DeviceID: 405419896,
-			})
+			k := key{
+				deviceID: 405419896,
+				index:    ix}
+
+			e := Event{
+				CatalogEvent: catalog.CatalogEvent{
+					DeviceID: 405419896,
+					Index:    ix}}
+
+			events.events[k] = e
 		}
 	}
 
@@ -191,20 +230,28 @@ func TestEventsMissingWithGapsLimit(t *testing.T) {
 }
 
 func BenchmarkMissingEvents(b *testing.B) {
-	lots := Events{}
+	events := Events{
+		events: map[key]Event{},
+	}
 
 	for ix := uint32(1); ix <= 100000; ix++ {
-		lots.events.Store(405419896+ix, Event{
-			Index:    ix,
-			DeviceID: 405419896,
-		})
+		k := key{
+			deviceID: 405419896,
+			index:    ix}
+
+		e := Event{
+			CatalogEvent: catalog.CatalogEvent{
+				DeviceID: 405419896,
+				Index:    ix}}
+
+		events.events[k] = e
 	}
 
 	b.ResetTimer()
 
 	start := time.Now()
 	for i := 0; i < b.N; i++ {
-		lots.Missing(-1, 405419896)
+		events.Missing(-1, 405419896)
 	}
 
 	dt := time.Now().Sub(start).Milliseconds() / int64(b.N)

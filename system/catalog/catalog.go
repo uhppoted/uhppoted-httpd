@@ -55,7 +55,9 @@ type CatalogGroup struct {
 }
 
 type CatalogEvent struct {
-	OID schema.OID
+	OID      schema.OID
+	DeviceID uint32
+	Index    uint32
 }
 
 type CatalogLogEntry struct {

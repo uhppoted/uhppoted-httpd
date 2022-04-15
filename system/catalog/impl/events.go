@@ -11,7 +11,7 @@ import (
 
 type events struct {
 	base schema.OID
-	m    map[schema.OID]*record
+	m    map[schema.OID]*event
 	last uint32
 }
 
@@ -32,7 +32,7 @@ loop:
 			}
 		}
 
-		t.m[oid] = &record{}
+		t.m[oid] = &event{}
 		t.last = suffix
 		return oid
 	}
@@ -55,7 +55,7 @@ func (t *events) Put(oid schema.OID, v any) {
 		panic(fmt.Sprintf("PUT: out of range oid %v for base %v", oid, t.base))
 	}
 
-	t.m[oid] = &record{}
+	t.m[oid] = &event{}
 
 	if v := uint32(index); v > t.last {
 		t.last = v

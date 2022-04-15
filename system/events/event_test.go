@@ -20,10 +20,10 @@ func TestEventAsObjects(t *testing.T) {
 
 	e := Event{
 		CatalogEvent: catalog.CatalogEvent{
-			OID: "0.6.3",
+			OID:      "0.6.3",
+			DeviceID: 405419896,
+			Index:    79,
 		},
-		DeviceID:   405419896,
-		Index:      79,
 		Timestamp:  timestamp,
 		Type:       6,
 		Door:       3,
@@ -63,10 +63,10 @@ func TestEventAsObjectsWithAuth(t *testing.T) {
 
 	e := Event{
 		CatalogEvent: catalog.CatalogEvent{
-			OID: "0.6.3",
+			OID:      "0.6.3",
+			DeviceID: 405419896,
+			Index:    79,
 		},
-		DeviceID:   405419896,
-		Index:      79,
 		Timestamp:  timestamp,
 		Type:       6,
 		Door:       3,

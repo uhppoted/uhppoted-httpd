@@ -15,18 +15,16 @@ import (
 
 type Event struct {
 	catalog.CatalogEvent
-	DeviceID   uint32        `json:"device-id"`
-	Index      uint32        `json:"index"`
-	Timestamp  core.DateTime `json:"timestamp"`
-	Type       eventType     `json:"event-type"`
-	Door       uint8         `json:"door"`
-	Direction  direction     `json:"direction"`
-	Card       uint32        `json:"card"`
-	Granted    bool          `json:"granted"`
-	Reason     reason        `json:"reason"`
-	DeviceName string        `json:"device-name"`
-	DoorName   string        `json:"door-name"`
-	CardName   string        `json:"card-name"`
+	Timestamp  core.DateTime
+	Type       eventType
+	Door       uint8
+	Direction  direction
+	Card       uint32
+	Granted    bool
+	Reason     reason
+	DeviceName string
+	DoorName   string
+	CardName   string
 }
 
 type eventType uint8
@@ -131,10 +129,10 @@ func (r reason) String() string {
 func NewEvent(oid schema.OID, e uhppoted.Event, device, door, card string) Event {
 	return Event{
 		CatalogEvent: catalog.CatalogEvent{
-			OID: oid,
+			OID:      oid,
+			DeviceID: e.DeviceID,
+			Index:    e.Index,
 		},
-		DeviceID:   e.DeviceID,
-		Index:      e.Index,
 		Timestamp:  e.Timestamp,
 		Type:       eventType(e.Type),
 		Door:       e.Door,

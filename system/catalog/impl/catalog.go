@@ -45,7 +45,7 @@ func NewCatalog() *db {
 		},
 		events: &events{
 			base: schema.EventsOID,
-			m:    map[schema.OID]*record{},
+			m:    map[schema.OID]*event{},
 		},
 		logs: &table{
 			base: schema.LogsOID,

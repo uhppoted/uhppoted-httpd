@@ -6,7 +6,7 @@
             - (?) cache device lists
             - (?) seperate device lists
       - [ ] Add event key to catalog entry a la DeviceID
-            - use uint64 key (deviceID <<< 32 | event index)
+      - [ ] Optimize events.AsObjects
       - [ ] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 
             - (?) Replace with struct

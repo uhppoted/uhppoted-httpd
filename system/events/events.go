@@ -17,13 +17,13 @@ import (
 )
 
 type Events struct {
-	events sync.Map
+	events map[key]Event
+	sync.RWMutex
 }
 
 type key struct {
 	deviceID uint32
 	index    uint32
-	//	timestamp time.Time
 }
 
 type keyx struct {
@@ -52,19 +52,21 @@ func newKeyX(deviceID uint32, index uint32, timestamp time.Time) keyx {
 }
 
 func NewEvents() Events {
-	return Events{}
+	return Events{
+		events: map[key]Event{},
+	}
 }
 
 func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
+	ee.RLock()
+	defer ee.RUnlock()
+
 	objects := []schema.Object{}
 	keys := []keyx{}
 
-	ee.events.Range(func(k, v interface{}) bool {
-		e := v.(Event)
-		key := newKeyX(e.DeviceID, e.Index, time.Time(e.Timestamp))
-		keys = append(keys, key)
-		return true
-	})
+	for _, e := range ee.events {
+		keys = append(keys, newKeyX(e.DeviceID, e.Index, time.Time(e.Timestamp)))
+	}
 
 	sort.SliceStable(keys, func(i, j int) bool {
 		p := keys[i]
@@ -80,8 +82,7 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 			index:    keys[ix].index,
 		}
 
-		if v, ok := ee.events.Load(k); ok {
-			e := v.(Event)
+		if e, ok := ee.events[k]; ok {
 			if e.IsValid() || e.IsDeleted() {
 				if l := e.AsObjects(auth); l != nil {
 					catalog.Join(&objects, l...)
@@ -94,46 +95,51 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 	}
 
 	if len(keys) > 0 {
-		first, _ := ee.events.Load(keys[0])
-		last, _ := ee.events.Load(keys[len(keys)-1])
-
-		if first != nil {
-			catalog.Join(&objects, catalog.NewObject2(EventsOID, EventsFirst, first.(Event).OID))
+		k := key{
+			deviceID: keys[0].deviceID,
+			index:    keys[0].index,
 		}
 
-		if last != nil {
-			catalog.Join(&objects, catalog.NewObject2(EventsOID, EventsLast, last.(Event).OID))
+		l := key{
+			keys[len(keys)-1].deviceID,
+			keys[len(keys)-1].index,
+		}
+
+		if first, ok := ee.events[k]; ok {
+			catalog.Join(&objects, catalog.NewObject2(EventsOID, EventsFirst, first.OID))
+		}
+
+		if last, ok := ee.events[l]; ok {
+			catalog.Join(&objects, catalog.NewObject2(EventsOID, EventsLast, last.OID))
 		}
 	}
 
 	return objects
 }
 
+// FIXME searches events list sequentially to find matching OID. But not ever actually invoked (as yet...)
 func (ee *Events) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
-	if ee == nil {
-		return nil, nil
-	}
+	ee.Lock()
+	defer ee.Unlock()
 
 	var objects = []interface{}{}
 	var err error
 
-	ee.events.Range(func(k, v interface{}) bool {
-		e := v.(Event)
-		if !e.OID.Contains(oid) {
-			return true
+	for k, e := range ee.events {
+		if e.OID.Contains(oid) {
+			if objects, err = e.set(auth, oid, value); err == nil {
+				ee.events[k] = e
+			}
 		}
-
-		if objects, err = e.set(auth, oid, value); err == nil {
-			ee.events.Store(k, e)
-		}
-
-		return false
-	})
+	}
 
 	return objects, err
 }
 
 func (ee *Events) Load(blob json.RawMessage) error {
+	ee.Lock()
+	defer ee.Unlock()
+
 	rs := []json.RawMessage{}
 	if err := json.Unmarshal(blob, &rs); err != nil {
 		return err
@@ -149,56 +155,55 @@ func (ee *Events) Load(blob json.RawMessage) error {
 				index:    e.Index,
 			}
 
-			if x, ok := ee.events.Load(k); ok {
-				return fmt.Errorf("%v  duplicate events (%v and %v)", k, e.OID, x.(Event).OID)
+			if u, ok := ee.events[k]; ok {
+				return fmt.Errorf("%v  duplicate events (%v and %v)", k, e.OID, u.OID)
 			} else {
-				ee.events.Store(k, e)
+				ee.events[k] = e
 			}
 		}
 	}
 
-	ee.events.Range(func(k, v interface{}) bool {
-		e := v.(Event)
+	for _, e := range ee.events {
 		catalog.PutT(e.CatalogEvent, e.OID)
-		return true
-	})
+	}
 
 	return nil
 }
 
 func (ee *Events) Save() (json.RawMessage, error) {
+	serializable := []json.RawMessage{}
+
 	if err := ee.Validate(); err != nil {
 		return nil, err
 	}
 
-	serializable := []json.RawMessage{}
+	ee.RLock()
+	defer ee.RUnlock()
 
-	ee.events.Range(func(k, v interface{}) bool {
-		e := v.(Event)
+	for _, e := range ee.events {
 		if e.IsValid() && !e.IsDeleted() {
 			if record, err := e.serialize(); err == nil && record != nil {
 				serializable = append(serializable, record)
 			}
 		}
-
-		return true
-	})
+	}
 
 	return json.MarshalIndent(serializable, "", "  ")
 }
 
 func (ee *Events) Print() {
+	ee.RLock()
+	defer ee.RUnlock()
+
 	serializable := []json.RawMessage{}
-	ee.events.Range(func(k, v interface{}) bool {
-		e := v.(Event)
+
+	for _, e := range ee.events {
 		if e.IsValid() && !e.IsDeleted() {
 			if record, err := e.serialize(); err == nil && record != nil {
 				serializable = append(serializable, record)
 			}
 		}
-
-		return true
-	})
+	}
 
 	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- EVENTS\n%s\n", string(b))
@@ -206,12 +211,16 @@ func (ee *Events) Print() {
 }
 
 func (ee *Events) Clone() *Events {
-	shadow := Events{}
+	ee.RLock()
+	defer ee.RUnlock()
 
-	ee.events.Range(func(k, v interface{}) bool {
-		shadow.events.Store(k, v.(Event).clone())
-		return true
-	})
+	shadow := Events{
+		events: map[key]Event{},
+	}
+
+	for k, e := range ee.events {
+		shadow.events[k] = e.clone()
+	}
 
 	return &shadow
 }
@@ -274,6 +283,9 @@ func (ee *Events) Validate() error {
 //      No perceived improvement in the benchmarks - looks like the copy from the Map
 //      is the dominant cost. Cleaner algorithm though.
 func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.Interval {
+	ee.RLock()
+	defer ee.RUnlock()
+
 	missing := map[uint32][]types.Interval{}
 
 	for _, c := range controllers {
@@ -281,13 +293,11 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 		last := uint32(0)
 
 		list := []uint32{}
-		ee.events.Range(func(k, v any) bool {
-			e := v.(Event)
+		for _, e := range ee.events {
 			if e.DeviceID == c {
 				list = append(list, e.Index)
 			}
-			return true
-		})
+		}
 
 		sort.Slice(list, func(i, j int) bool { return list[i] < list[j] })
 
@@ -321,24 +331,30 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 	return missing
 }
 func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {
+	ee.Lock()
+	ee.Unlock()
+
 	for _, e := range recent {
 		k := key{
 			deviceID: e.DeviceID,
 			index:    e.Index,
 		}
 
-		if _, ok := ee.events.Load(k); ok {
+		if _, ok := ee.events[k]; ok {
 			continue
 		}
 
-		oid := catalog.NewT(Event{}.CatalogEvent)
-		if _, ok := ee.events.Load(oid); ok {
-			warn(fmt.Errorf("catalog returned duplicate OID (%v)", oid))
-			continue
+		event := Event{
+			CatalogEvent: catalog.CatalogEvent{
+				DeviceID: e.DeviceID,
+				Index:    e.Index,
+			},
 		}
 
+		oid := catalog.NewT(event.CatalogEvent)
 		device, door, card := lookup(e)
-		ee.events.Store(k, NewEvent(oid, e, device, door, card))
+
+		ee.events[k] = NewEvent(oid, e, device, door, card)
 	}
 }
 
