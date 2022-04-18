@@ -4,8 +4,7 @@
       - [x] Add event key to catalog entry a la DeviceID
       - [ ] Add OID index to catalog events
       - [ ] Optimize events
-            - [ ] Seperate device lists
-            - (?) cache device lists
+            - (?) cache per device lists
       - [ ] Optimize events.AsObjects
       - [ ] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 
@@ -17,7 +16,7 @@
 - [ ] Unify CompareACL and UpdateACL into SynchACL
 
 - [ ] Move delete to UI
-      - [ ] Remove .enabled from commit/rollback (doesn't seem to be used anywhere)
+      - [x] Remove .enabled from commit/rollback (doesn't seem to be used anywhere)
       - [ ] tabular.percolate no longer seems to be needed to be exported
       - [ ] tabular.percolate seems to always invoke modified
       - [ ] Is tabular.modified used anywhere else ???

@@ -70,12 +70,10 @@ function add (oid, record) {
     const commit = row.querySelector('td span.commit')
     commit.id = uuid + '_commit'
     commit.dataset.record = uuid
-    commit.dataset.enabled = 'false'
 
     const rollback = row.querySelector('td span.rollback')
     rollback.id = uuid + '_rollback'
     rollback.dataset.record = uuid
-    rollback.dataset.enabled = 'false'
 
     const fields = [
       { suffix: 'name', oid: `${oid}${schema.controllers.name}`, selector: 'td input.name', flag: 'td img.name' },

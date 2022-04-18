@@ -115,14 +115,12 @@ function add (oid) {
     if (commit) {
       commit.id = uuid + '_commit'
       commit.dataset.record = uuid
-      commit.dataset.enabled = 'false'
     }
 
     const rollback = row.querySelector('td span.rollback')
     if (rollback) {
       rollback.id = uuid + '_rollback'
       rollback.dataset.record = uuid
-      rollback.dataset.enabled = 'false'
     }
 
     const fields = [
