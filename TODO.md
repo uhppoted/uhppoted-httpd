@@ -1,16 +1,17 @@
 ## v0.7.x
 
 - [ ] Events should use local index rather than controller 
-      - [ ] Optimize missing events
-            - [x] Binary search
+      - [x] Add event key to catalog entry a la DeviceID
+      - [ ] Add OID index to catalog events
+      - [ ] Optimize events
+            - [ ] Seperate device lists
             - (?) cache device lists
-            - (?) seperate device lists
-      - [ ] Add event key to catalog entry a la DeviceID
       - [ ] Optimize events.AsObjects
       - [ ] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 
             - (?) Replace with struct
             - [ ] Implement Controller.AsIController() (or just internally)
+      - [ ] Catalog::Put doesn't need OID
 
 - [ ] Move synch time etc to system.refresh
 - [ ] Unify CompareACL and UpdateACL into SynchACL
@@ -31,6 +32,7 @@
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError
 - [ ] Make vtable'able subsystem an interface
+- [ ] Replace `guard` with embedded sync.Mutex
 
 ### IN PROGRESS
 

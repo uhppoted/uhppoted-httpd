@@ -4,32 +4,40 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
 func TestEventsNewOID(t *testing.T) {
 	tt := events{
 		base: schema.EventsOID,
-		m: map[schema.OID]*event{
-			"0.6.1":  &event{},
-			"0.6.2":  &event{},
-			"0.6.10": &event{},
+		m: map[eventKey]*event{
+			eventKey{405419896, 1}:  &event{},
+			eventKey{405419896, 2}:  &event{},
+			eventKey{405419896, 10}: &event{},
 		},
 		last: 123,
 	}
 
 	expected := events{
 		base: schema.EventsOID,
-		m: map[schema.OID]*event{
-			"0.6.1":   &event{},
-			"0.6.2":   &event{},
-			"0.6.10":  &event{},
-			"0.6.124": &event{},
+		m: map[eventKey]*event{
+			eventKey{405419896, 1}:  &event{},
+			eventKey{405419896, 2}:  &event{},
+			eventKey{405419896, 10}: &event{},
+			eventKey{405419896, 999}: &event{
+				OID:      "0.6.124",
+				deviceID: 405419896,
+				index:    999,
+			},
 		},
 		last: 124,
 	}
 
-	oid := tt.New(struct{}{})
+	oid := tt.New(catalog.CatalogEvent{
+		DeviceID: 405419896,
+		Index:    999,
+	})
 
 	if oid != "0.6.124" {
 		t.Errorf("Incorrect new OID - expected:%v, got:%v", "0.6.124", oid)
@@ -43,26 +51,34 @@ func TestEventsNewOID(t *testing.T) {
 func TestEventsPut(t *testing.T) {
 	tt := events{
 		base: schema.EventsOID,
-		m: map[schema.OID]*event{
-			"0.6.1":  &event{},
-			"0.6.2":  &event{},
-			"0.6.10": &event{},
+		m: map[eventKey]*event{
+			eventKey{405419896, 1}:  &event{},
+			eventKey{405419896, 2}:  &event{},
+			eventKey{405419896, 10}: &event{},
 		},
 		last: 123,
 	}
 
 	expected := events{
 		base: schema.EventsOID,
-		m: map[schema.OID]*event{
-			"0.6.1":   &event{},
-			"0.6.2":   &event{},
-			"0.6.10":  &event{},
-			"0.6.124": &event{},
+		m: map[eventKey]*event{
+			eventKey{405419896, 1}:  &event{},
+			eventKey{405419896, 2}:  &event{},
+			eventKey{405419896, 10}: &event{},
+			eventKey{405419896, 999}: &event{
+				OID:      "0.6.124",
+				deviceID: 405419896,
+				index:    999,
+			},
 		},
 		last: 124,
 	}
 
-	tt.Put("0.6.124", struct{}{})
+	tt.Put("0.6.124", catalog.CatalogEvent{
+		OID:      "0.6.124",
+		DeviceID: 405419896,
+		Index:    999,
+	})
 
 	if !reflect.DeepEqual(tt, expected) {
 		t.Errorf("OID not added to events\n   expected:%v\n   got:     %v", expected, tt)
@@ -71,20 +87,18 @@ func TestEventsPut(t *testing.T) {
 
 func TestEventsDelete(t *testing.T) {
 	tt := events{
-		m: map[schema.OID]*event{
-			"0.6.1":  &event{},
-			"0.6.2":  &event{},
-			"0.6.10": &event{},
+		m: map[eventKey]*event{
+			eventKey{405419896, 1}:  &event{OID: "0.6.1"},
+			eventKey{405419896, 2}:  &event{OID: "0.6.2"},
+			eventKey{405419896, 10}: &event{OID: "0.6.10"},
 		},
 	}
 
 	expected := events{
-		m: map[schema.OID]*event{
-			"0.6.1": &event{},
-			"0.6.2": &event{
-				deleted: true,
-			},
-			"0.6.10": &event{},
+		m: map[eventKey]*event{
+			eventKey{405419896, 1}:  &event{OID: "0.6.1"},
+			eventKey{405419896, 2}:  &event{OID: "0.6.2", deleted: true},
+			eventKey{405419896, 10}: &event{OID: "0.6.10"},
 		},
 	}
 

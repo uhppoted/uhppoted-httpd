@@ -17,8 +17,8 @@ type controllers struct {
 }
 
 type controller struct {
-	deleted bool
 	ID      uint32
+	deleted bool
 }
 
 func (t *controllers) New(v interface{}) schema.OID {
