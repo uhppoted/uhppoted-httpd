@@ -324,7 +324,7 @@ func BenchmarkMissingEventsWithCache(b *testing.B) {
 	}
 
 	dt := time.Now().Sub(start).Milliseconds() / int64(b.N)
-	if dt > 50 {
+	if dt > 5 {
 		b.Errorf("too slow (%vms measured over %v iterations)", dt, b.N)
 	}
 }
