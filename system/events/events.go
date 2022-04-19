@@ -17,43 +17,22 @@ import (
 )
 
 type Events struct {
-	events map[key]Event
+	events map[eventKey]Event
 	sync.RWMutex
 }
 
-type key struct {
+type eventKey struct {
 	deviceID uint32
 	index    uint32
-}
-
-type keyx struct {
-	deviceID  uint32
-	index     uint32
-	timestamp time.Time
 }
 
 const EventsOID = schema.EventsOID
 const EventsFirst = schema.EventsFirst
 const EventsLast = schema.EventsLast
 
-func newKeyX(deviceID uint32, index uint32, timestamp time.Time) keyx {
-	year, month, day := timestamp.Date()
-	hour := timestamp.Hour()
-	minute := timestamp.Minute()
-	second := timestamp.Second()
-	location := timestamp.Location()
-	t := time.Date(year, month, day, hour, minute, second, 0, location)
-
-	return keyx{
-		deviceID:  deviceID,
-		index:     index,
-		timestamp: t,
-	}
-}
-
 func NewEvents() Events {
 	return Events{
-		events: map[key]Event{},
+		events: map[eventKey]Event{},
 	}
 }
 
@@ -62,22 +41,32 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 	defer ee.RUnlock()
 
 	objects := []schema.Object{}
-	keys := []keyx{}
+	keys := []struct {
+		deviceID  uint32
+		index     uint32
+		timestamp time.Time
+	}{}
 
-	for _, e := range ee.events {
-		keys = append(keys, newKeyX(e.DeviceID, e.Index, time.Time(e.Timestamp)))
+	for k, e := range ee.events {
+		keys = append(keys, struct {
+			deviceID  uint32
+			index     uint32
+			timestamp time.Time
+		}{
+			deviceID:  k.deviceID,
+			index:     k.index,
+			timestamp: time.Time(e.Timestamp).Round(time.Second),
+		})
 	}
 
 	sort.SliceStable(keys, func(i, j int) bool {
-		p := keys[i]
-		q := keys[j]
-		return q.timestamp.Before(p.timestamp)
+		return keys[j].timestamp.Before(keys[i].timestamp)
 	})
 
 	ix := start
 	count := 0
 	for ix < len(keys) && count < max {
-		k := key{
+		k := eventKey{
 			deviceID: keys[ix].deviceID,
 			index:    keys[ix].index,
 		}
@@ -95,12 +84,12 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 	}
 
 	if len(keys) > 0 {
-		k := key{
+		k := eventKey{
 			deviceID: keys[0].deviceID,
 			index:    keys[0].index,
 		}
 
-		l := key{
+		l := eventKey{
 			keys[len(keys)-1].deviceID,
 			keys[len(keys)-1].index,
 		}
@@ -150,7 +139,7 @@ func (ee *Events) Load(blob json.RawMessage) error {
 		if err := e.deserialize(v); err == nil {
 			deviceID := e.DeviceID
 
-			k := key{
+			k := eventKey{
 				deviceID: deviceID,
 				index:    e.Index,
 			}
@@ -215,7 +204,7 @@ func (ee *Events) Clone() *Events {
 	defer ee.RUnlock()
 
 	shadow := Events{
-		events: map[key]Event{},
+		events: map[eventKey]Event{},
 	}
 
 	for k, e := range ee.events {
@@ -229,75 +218,27 @@ func (ee *Events) Validate() error {
 	return nil
 }
 
-// NTS: original implementation - uses sequential search
-// func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.Interval {
-// 	missing := map[uint32][]types.Interval{}
-//
-// 	for _, c := range controllers {
-// 		first := uint32(0)
-// 		last := uint32(0)
-//
-// 		list := []uint32{}
-// 		ee.events.Range(func(k, v any) bool {
-// 			e := v.(uhppoted.Event)
-// 			if e.DeviceID == c {
-// 				list = append(list, e.Index)
-// 			}
-// 			return true
-// 		})
-//
-// 		sort.Slice(list, func(i, j int) bool { return list[i] < list[j] })
-//
-// 		if N := len(list); N > 0 {
-// 			first = list[0]
-// 			last = list[N-1]
-// 		}
-//
-// 		missing[c] = append(missing[c], types.Interval{From: last + 1, To: math.MaxUint32})
-// 		if first > 1 {
-// 			missing[c] = append(missing[c], types.Interval{From: 1, To: first - 1})
-// 		}
-//
-// 		next := first
-// 		ix := 0
-// 		for ; ix < len(list) && gaps != 0; ix++ {
-// 			v := list[ix]
-// 			if v != next {
-// 				from := next
-// 				to := v - 1
-// 				missing[c] = append(missing[c], types.Interval{From: from, To: to})
-// 				gaps--
-// 			}
-// 			next = v + 1
-// 		}
-//
-// 		if last > 0 && last > next && gaps != 0 {
-// 			missing[c] = append(missing[c], types.Interval{From: next, To: last})
-// 		}
-// 	}
-//
-// 	return missing
-// }
-
-// NTS: first optimization - uses binary search
-//      No perceived improvement in the benchmarks - looks like the copy from the Map
-//      is the dominant cost. Cleaner algorithm though.
+// NTS: for 1000000 events (i.e. in the expected range), binary search improves only slightly
+//      on a sequential linear traverse but it's a cleaner algorithm and scales somewhat better.
+//      Copying from the map is the dominant cost.
 func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.Interval {
 	ee.RLock()
 	defer ee.RUnlock()
 
 	missing := map[uint32][]types.Interval{}
 
+	cache := map[uint32][]uint32{}
+	for _, e := range ee.events {
+		var k = e.DeviceID
+		var l = cache[k]
+
+		cache[k] = append(l, e.Index)
+	}
+
 	for _, c := range controllers {
 		first := uint32(0)
 		last := uint32(0)
-
-		list := []uint32{}
-		for _, e := range ee.events {
-			if e.DeviceID == c {
-				list = append(list, e.Index)
-			}
-		}
+		list := cache[c]
 
 		sort.Slice(list, func(i, j int) bool { return list[i] < list[j] })
 
@@ -335,7 +276,7 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 	ee.Unlock()
 
 	for _, e := range recent {
-		k := key{
+		k := eventKey{
 			deviceID: e.DeviceID,
 			index:    e.Index,
 		}

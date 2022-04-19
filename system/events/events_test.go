@@ -2,6 +2,7 @@ package events
 
 import (
 	"math"
+	"math/rand"
 	"reflect"
 	"testing"
 	"time"
@@ -12,11 +13,11 @@ import (
 
 func TestEventsMissingWithNoGaps(t *testing.T) {
 	events := Events{
-		events: map[key]Event{},
+		events: map[eventKey]Event{},
 	}
 
 	for ix := uint32(1001); ix <= 1032; ix++ {
-		k := key{
+		k := eventKey{
 			deviceID: 201020304,
 			index:    ix}
 
@@ -29,7 +30,7 @@ func TestEventsMissingWithNoGaps(t *testing.T) {
 	}
 
 	for ix := uint32(1); ix <= 69; ix++ {
-		k := key{
+		k := eventKey{
 			deviceID: 405419896,
 			index:    ix}
 
@@ -62,12 +63,12 @@ func TestEventsMissingWithNoGaps(t *testing.T) {
 
 func TestEventsMissingWithGaps(t *testing.T) {
 	events := Events{
-		events: map[key]Event{},
+		events: map[eventKey]Event{},
 	}
 
 	for ix := uint32(1); ix <= 69; ix++ {
 		if ix < 37 || ix > 43 {
-			k := key{
+			k := eventKey{
 				deviceID: 405419896,
 				index:    ix}
 
@@ -96,12 +97,12 @@ func TestEventsMissingWithGaps(t *testing.T) {
 
 func TestEventsMissingWithMultipleGaps(t *testing.T) {
 	events := Events{
-		events: map[key]Event{},
+		events: map[eventKey]Event{},
 	}
 
 	for ix := uint32(1); ix <= 69; ix++ {
 		if !(ix >= 13 && ix <= 19) && !(ix >= 37 && ix <= 43) && !(ix >= 53 && ix <= 59) {
-			k := key{
+			k := eventKey{
 				deviceID: 405419896,
 				index:    ix}
 
@@ -132,7 +133,7 @@ func TestEventsMissingWithMultipleGaps(t *testing.T) {
 
 func TestEventsMissingWithGapsLimit(t *testing.T) {
 	events := Events{
-		events: map[key]Event{},
+		events: map[eventKey]Event{},
 	}
 
 	for ix := uint32(1); ix <= 69; ix++ {
@@ -142,7 +143,7 @@ func TestEventsMissingWithGapsLimit(t *testing.T) {
 			!(ix >= 37 && ix <= 39) &&
 			!(ix >= 44 && ix <= 48) &&
 			!(ix >= 57 && ix <= 61) {
-			k := key{
+			k := eventKey{
 				deviceID: 405419896,
 				index:    ix}
 
@@ -230,19 +231,34 @@ func TestEventsMissingWithGapsLimit(t *testing.T) {
 }
 
 func BenchmarkMissingEvents(b *testing.B) {
-	events := Events{
-		events: map[key]Event{},
-	}
-
+	list := []Event{}
 	for ix := uint32(1); ix <= 100000; ix++ {
-		k := key{
-			deviceID: 405419896,
-			index:    ix}
+		if (ix >= 20001 && ix <= 20015) ||
+			(ix >= 32101 && ix <= 32111) {
+			continue
+		}
 
 		e := Event{
 			CatalogEvent: catalog.CatalogEvent{
 				DeviceID: 405419896,
 				Index:    ix}}
+
+		list = append(list, e)
+	}
+
+	rand.Shuffle(len(list), func(i, j int) {
+		list[i], list[j] = list[j], list[i]
+	})
+
+	events := Events{
+		events: map[eventKey]Event{},
+	}
+
+	for _, e := range list {
+		k := eventKey{
+			e.DeviceID,
+			e.Index,
+		}
 
 		events.events[k] = e
 	}
