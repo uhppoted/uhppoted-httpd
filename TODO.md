@@ -3,8 +3,7 @@
 - [ ] Events should use local index rather than controller 
       - [x] Add event key to catalog entry a la DeviceID
       - [ ] Add OID index to catalog events
-      - [ ] Optimize events
-            - (?) cache per device lists
+      - [x] Build per-device cache
       - [ ] Optimize events.AsObjects
       - [ ] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 

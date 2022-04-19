@@ -30,6 +30,14 @@ const EventsOID = schema.EventsOID
 const EventsFirst = schema.EventsFirst
 const EventsLast = schema.EventsLast
 
+var cache = struct {
+	dirty  bool
+	events map[uint32][]uint32
+}{
+	dirty:  true,
+	events: map[uint32][]uint32{},
+}
+
 func NewEvents() Events {
 	return Events{
 		events: map[eventKey]Event{},
@@ -152,6 +160,8 @@ func (ee *Events) Load(blob json.RawMessage) error {
 		}
 	}
 
+	cache.dirty = true
+
 	for _, e := range ee.events {
 		catalog.PutT(e.CatalogEvent, e.OID)
 	}
@@ -227,20 +237,28 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 
 	missing := map[uint32][]types.Interval{}
 
-	cache := map[uint32][]uint32{}
-	for _, e := range ee.events {
-		var k = e.DeviceID
-		var l = cache[k]
+	if cache.dirty {
+		m := map[uint32][]uint32{}
+		for _, e := range ee.events {
+			var k = e.DeviceID
+			var l = m[k]
 
-		cache[k] = append(l, e.Index)
+			m[k] = append(l, e.Index)
+		}
+
+		for k, list := range m {
+			sort.Slice(list, func(i, j int) bool { return list[i] < list[j] })
+			m[k] = list
+		}
+
+		cache.dirty = false
+		cache.events = m
 	}
 
 	for _, c := range controllers {
 		first := uint32(0)
 		last := uint32(0)
-		list := cache[c]
-
-		sort.Slice(list, func(i, j int) bool { return list[i] < list[j] })
+		list := cache.events[c]
 
 		if N := len(list); N > 0 {
 			first = list[0]
@@ -271,6 +289,7 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 
 	return missing
 }
+
 func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {
 	ee.Lock()
 	ee.Unlock()
@@ -297,6 +316,8 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 
 		ee.events[k] = NewEvent(oid, e, device, door, card)
 	}
+
+	cache.dirty = true
 }
 
 func warn(err error) {

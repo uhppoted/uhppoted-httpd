@@ -12,6 +12,7 @@ import (
 )
 
 func TestEventsMissingWithNoGaps(t *testing.T) {
+	cache.dirty = true
 	events := Events{
 		events: map[eventKey]Event{},
 	}
@@ -62,6 +63,7 @@ func TestEventsMissingWithNoGaps(t *testing.T) {
 }
 
 func TestEventsMissingWithGaps(t *testing.T) {
+	cache.dirty = true
 	events := Events{
 		events: map[eventKey]Event{},
 	}
@@ -96,6 +98,7 @@ func TestEventsMissingWithGaps(t *testing.T) {
 }
 
 func TestEventsMissingWithMultipleGaps(t *testing.T) {
+	cache.dirty = true
 	events := Events{
 		events: map[eventKey]Event{},
 	}
@@ -132,6 +135,7 @@ func TestEventsMissingWithMultipleGaps(t *testing.T) {
 }
 
 func TestEventsMissingWithGapsLimit(t *testing.T) {
+	cache.dirty = true
 	events := Events{
 		events: map[eventKey]Event{},
 	}
@@ -262,6 +266,55 @@ func BenchmarkMissingEvents(b *testing.B) {
 
 		events.events[k] = e
 	}
+
+	b.ResetTimer()
+
+	start := time.Now()
+	for i := 0; i < b.N; i++ {
+		cache.dirty = true
+		events.Missing(-1, 405419896)
+	}
+
+	dt := time.Now().Sub(start).Milliseconds() / int64(b.N)
+	if dt > 50 {
+		b.Errorf("too slow (%vms measured over %v iterations)", dt, b.N)
+	}
+}
+
+func BenchmarkMissingEventsWithCache(b *testing.B) {
+	list := []Event{}
+	for ix := uint32(1); ix <= 100000; ix++ {
+		if (ix >= 20001 && ix <= 20015) ||
+			(ix >= 32101 && ix <= 32111) {
+			continue
+		}
+
+		e := Event{
+			CatalogEvent: catalog.CatalogEvent{
+				DeviceID: 405419896,
+				Index:    ix}}
+
+		list = append(list, e)
+	}
+
+	rand.Shuffle(len(list), func(i, j int) {
+		list[i], list[j] = list[j], list[i]
+	})
+
+	events := Events{
+		events: map[eventKey]Event{},
+	}
+
+	for _, e := range list {
+		k := eventKey{
+			e.DeviceID,
+			e.Index,
+		}
+
+		events.events[k] = e
+	}
+
+	events.Missing(-1, 405419896)
 
 	b.ResetTimer()
 
