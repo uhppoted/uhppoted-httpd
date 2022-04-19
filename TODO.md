@@ -1,7 +1,6 @@
 ## v0.7.x
 
 - [ ] Events should use local index rather than controller 
-      - [x] Add event key to catalog entry a la DeviceID
       - [ ] Add OID index to catalog events
       - [x] Build per-device cache
       - [ ] Optimize events.AsObjects
@@ -13,12 +12,12 @@
 
 - [ ] Move synch time etc to system.refresh
 - [ ] Unify CompareACL and UpdateACL into SynchACL
+- [ ] Synchronize listener address
 
 - [ ] Move delete to UI
-      - [x] Remove .enabled from commit/rollback (doesn't seem to be used anywhere)
-      - [ ] tabular.percolate no longer seems to be needed to be exported
-      - [ ] tabular.percolate seems to always invoke modified
-      - [ ] Is tabular.modified used anywhere else ???
+      - [x] tabular.percolate
+      - [x] tabular.modified no longer seems to be needed to be exported
+      - [x] tabular.percolate seems to always invoke modified
       - [ ] tabular.modified seems to be invoked a lot more than expected
 
 - [ ] Rework `create`

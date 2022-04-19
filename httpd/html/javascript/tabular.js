@@ -149,7 +149,7 @@ export function onEnter (tag, event) {
 
           if (configured && v !== configured) {
             mark('modified', element, flag)
-            percolate(oid, modified)
+            percolate(oid)
           }
         }
         break
@@ -373,7 +373,7 @@ export function set (element, value, status) {
     unmark('modified', element, flag)
   }
 
-  percolate(oid, modified)
+  percolate(oid)
 }
 
 export function revert (row) {
@@ -412,7 +412,7 @@ export function update (element, value, status) {
         unmark('modified', element, flag)
       }
 
-      percolate(oid, modified)
+      percolate(oid)
       return
     }
 
@@ -443,7 +443,7 @@ export function update (element, value, status) {
   }
 }
 
-export function modified (oid) {
+function modified (oid) {
   const element = document.querySelector(`[data-oid="${oid}"]`)
 
   if (element) {
@@ -524,14 +524,14 @@ export function trim (tag, objects, rows) {
   })
 }
 
-export function percolate (oid, f) {
+function percolate (oid) {
   let oidx = oid
 
   while (oidx) {
     const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
     oidx = match ? match[1] : null
     if (oidx) {
-      f(oidx)
+      modified(oidx)
     }
   }
 }
