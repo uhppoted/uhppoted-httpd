@@ -163,6 +163,7 @@ func (e *Event) AsObjects(a auth.OpAuth) []schema.Object {
 	list := []E{}
 
 	list = append(list, E{EventDeviceID, e.DeviceID})
+	list = append(list, E{EventIndex, e.Index})
 	list = append(list, E{EventTimestamp, e.Timestamp})
 	list = append(list, E{EventType, e.Type})
 	list = append(list, E{EventDoor, e.Door})

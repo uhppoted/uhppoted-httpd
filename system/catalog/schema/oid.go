@@ -29,6 +29,13 @@ func (oid OID) HasPrefix(o OID) bool {
 	return strings.HasPrefix(p, q)
 }
 
+func (oid OID) HasSuffix(suffix Suffix) bool {
+	p := fmt.Sprintf("%v", oid)
+	q := fmt.Sprintf("%v", suffix)
+
+	return strings.HasSuffix(p, q)
+}
+
 func (oid OID) Contains(o OID) bool {
 	p := fmt.Sprintf("%v", oid)
 	q := fmt.Sprintf("%v", o)

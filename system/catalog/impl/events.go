@@ -75,7 +75,7 @@ func (t *events) Put(oid schema.OID, v any) {
 	suffix := strings.TrimPrefix(string(oid), string(t.base))
 	match := regexp.MustCompile(`\.([0-9]+)`).FindStringSubmatch(suffix)
 	if match == nil || len(match) != 2 {
-		panic(fmt.Sprintf("PUT: invalid oid %v for base %v", oid, t.base))
+		panic(fmt.Sprintf("PUT: invalid event oid %v", oid))
 	}
 
 	index, err := strconv.ParseUint(match[1], 10, 32)
@@ -94,8 +94,8 @@ func (t *events) Put(oid schema.OID, v any) {
 	}
 }
 
-// FIXME horrifically inefficient for large event lists but also never invoked
-//       in the current system
+// Horrifically inefficient for large event lists but also never invoked
+// in the current system
 func (t *events) Delete(oid schema.OID) {
 	for _, v := range t.m {
 		if v.OID == oid {

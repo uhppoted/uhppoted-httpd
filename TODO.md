@@ -1,13 +1,13 @@
 ## v0.7.x
 
 - [ ] Events should use local index rather than controller 
-      - [ ] Add OID index to catalog events
       - [x] Build per-device cache
       - [ ] Optimize events.AsObjects
+            - [ ] Check with events.AsObjects expects a zero- or 1 based start
       - [ ] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 
-            - (?) Replace with struct
             - [ ] Implement Controller.AsIController() (or just internally)
+            - (?) Replace with struct
       - [ ] Catalog::Put doesn't need OID
 
 - [ ] Move synch time etc to system.refresh
