@@ -18,6 +18,7 @@ import (
 )
 
 func TestEventsAsObjects(t *testing.T) {
+	cache.objects.dirty = true
 	events := Events{
 		events: map[eventKey]Event{},
 	}
@@ -65,16 +66,17 @@ func TestEventsAsObjects(t *testing.T) {
 }
 
 func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
+	cache.objects.dirty = true
 	events := Events{
 		events: map[eventKey]Event{},
 	}
 
 	oid := schema.EventsOID
 	base := time.Date(2022, time.April, 20, 12, 34, 50, 0, time.UTC)
-
 	delta := 5 * time.Minute
 	for i := 0; i < 32; i++ {
 		ix := uint32(1001 + i)
+		timestamp := base.Add(time.Duration(i) * delta)
 		k := eventKey{deviceID: 201020304, index: ix}
 		e := Event{
 			CatalogEvent: catalog.CatalogEvent{
@@ -82,7 +84,7 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 				DeviceID: 201020304,
 				Index:    uint32(ix),
 			},
-			Timestamp: core.DateTime(base.Add(time.Duration(i) * delta)),
+			Timestamp: core.DateTime(timestamp),
 		}
 
 		events.events[k] = e
@@ -91,6 +93,7 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 	delta = 4 * time.Minute
 	for i := 0; i < 32; i++ {
 		ix := uint32(1 + i)
+		timestamp := base.Add(time.Duration(i) * delta)
 		k := eventKey{deviceID: 405419896, index: ix}
 		e := Event{
 			CatalogEvent: catalog.CatalogEvent{
@@ -98,7 +101,7 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 				DeviceID: 405419896,
 				Index:    uint32(ix),
 			},
-			Timestamp: core.DateTime(base.Add(time.Duration(i) * delta)),
+			Timestamp: core.DateTime(timestamp),
 		}
 
 		events.events[k] = e
@@ -135,7 +138,7 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 }
 
 func TestEventsMissingWithNoGaps(t *testing.T) {
-	cache.dirty = true
+	cache.events.dirty = true
 	events := Events{
 		events: map[eventKey]Event{},
 	}
@@ -178,7 +181,7 @@ func TestEventsMissingWithNoGaps(t *testing.T) {
 }
 
 func TestEventsMissingWithGaps(t *testing.T) {
-	cache.dirty = true
+	cache.events.dirty = true
 	events := Events{
 		events: map[eventKey]Event{},
 	}
@@ -209,7 +212,7 @@ func TestEventsMissingWithGaps(t *testing.T) {
 }
 
 func TestEventsMissingWithMultipleGaps(t *testing.T) {
-	cache.dirty = true
+	cache.events.dirty = true
 	events := Events{
 		events: map[eventKey]Event{},
 	}
@@ -242,7 +245,7 @@ func TestEventsMissingWithMultipleGaps(t *testing.T) {
 }
 
 func TestEventsMissingWithGapsLimit(t *testing.T) {
-	cache.dirty = true
+	cache.events.dirty = true
 	events := Events{
 		events: map[eventKey]Event{},
 	}
@@ -374,7 +377,7 @@ func BenchmarkMissingEvents(b *testing.B) {
 
 	start := time.Now()
 	for i := 0; i < b.N; i++ {
-		cache.dirty = true
+		cache.events.dirty = true
 		events.Missing(-1, 405419896)
 	}
 
@@ -420,6 +423,101 @@ func BenchmarkMissingEventsWithCache(b *testing.B) {
 	start := time.Now()
 	for i := 0; i < b.N; i++ {
 		events.Missing(-1, 405419896)
+	}
+
+	dt := time.Now().Sub(start).Milliseconds() / int64(b.N)
+	if dt > 5 {
+		b.Errorf("too slow (%vms measured over %v iterations)", dt, b.N)
+	}
+}
+
+func BenchmarkEventsAsObjectsWithoutCaching(b *testing.B) {
+	events := Events{
+		events: map[eventKey]Event{},
+	}
+
+	oid := schema.EventsOID
+	base := time.Date(2022, time.April, 20, 12, 34, 50, 0, time.UTC)
+	delta := 5 * time.Minute
+	list := []Event{}
+
+	for i := 0; i < 100000; i++ {
+		ix := uint32(1001 + i)
+		dt := time.Duration(i+rand.Intn(50)-25) * delta
+
+		list = append(list, Event{
+			CatalogEvent: catalog.CatalogEvent{
+				OID:      oid.AppendS(strconv.Itoa(int(ix))),
+				DeviceID: 201020304,
+				Index:    uint32(ix),
+			},
+			Timestamp: core.DateTime(base.Add(dt)),
+		})
+	}
+
+	rand.Shuffle(len(list), func(i, j int) {
+		list[i], list[j] = list[j], list[i]
+	})
+
+	for _, e := range list {
+		k := eventKey{deviceID: e.DeviceID, index: e.Index}
+		events.events[k] = e
+	}
+
+	b.ResetTimer()
+
+	start := time.Now()
+	for i := 0; i < b.N; i++ {
+		cache.objects.dirty = true
+		events.AsObjects(25423, 15, nil)
+	}
+
+	dt := time.Now().Sub(start).Milliseconds() / int64(b.N)
+	if dt > 200 {
+		b.Errorf("too slow (%vms measured over %v iterations)", dt, b.N)
+	}
+}
+
+func BenchmarkEventsAsObjectsWithCaching(b *testing.B) {
+	events := Events{
+		events: map[eventKey]Event{},
+	}
+
+	oid := schema.EventsOID
+	base := time.Date(2022, time.April, 20, 12, 34, 50, 0, time.UTC)
+	delta := 5 * time.Minute
+	list := []Event{}
+
+	for i := 0; i < 100000; i++ {
+		ix := uint32(1001 + i)
+		dt := time.Duration(i+rand.Intn(50)-25) * delta
+
+		list = append(list, Event{
+			CatalogEvent: catalog.CatalogEvent{
+				OID:      oid.AppendS(strconv.Itoa(int(ix))),
+				DeviceID: 201020304,
+				Index:    uint32(ix),
+			},
+			Timestamp: core.DateTime(base.Add(dt)),
+		})
+	}
+
+	rand.Shuffle(len(list), func(i, j int) {
+		list[i], list[j] = list[j], list[i]
+	})
+
+	for _, e := range list {
+		k := eventKey{deviceID: e.DeviceID, index: e.Index}
+		events.events[k] = e
+	}
+
+	events.AsObjects(25423, 15, nil)
+
+	b.ResetTimer()
+
+	start := time.Now()
+	for i := 0; i < b.N; i++ {
+		events.AsObjects(25423, 15, nil)
 	}
 
 	dt := time.Now().Sub(start).Milliseconds() / int64(b.N)

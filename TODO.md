@@ -1,9 +1,8 @@
 ## v0.7.x
 
 - [ ] Events should use local index rather than controller 
-      - [x] Build per-device cache
-      - [ ] Optimize events.AsObjects
-            - [ ] Check with events.AsObjects expects a zero- or 1 based start
+      - [x] Implement caching for events.AsObjects
+      - [ ] Check with events.AsObjects expects a zero- or 1 based start
       - [ ] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 
             - [ ] Implement Controller.AsIController() (or just internally)
@@ -15,9 +14,6 @@
 - [ ] Synchronize listener address
 
 - [ ] Move delete to UI
-      - [x] tabular.percolate
-      - [x] tabular.modified no longer seems to be needed to be exported
-      - [x] tabular.percolate seems to always invoke modified
       - [ ] tabular.modified seems to be invoked a lot more than expected
 
 - [ ] Rework `create`
@@ -243,6 +239,8 @@
 - [Microdata](https://html.spec.whatwg.org/multipage/microdata.html#microdata)
 - [Vercel ](https://vercel.com)
 - [Riffle](https://riffle.systems/essays/prelude)
+- [SASL](https://inspektor.cloud/blog/password-based-authentication-without-tls-using-sasl)
+  - https://en.wikipedia.org/wiki/Salted_Challenge_Response_Authentication_Mechanism
 
 # REFERENCES
 

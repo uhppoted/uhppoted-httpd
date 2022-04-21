@@ -26,16 +26,40 @@ type eventKey struct {
 	index    uint32
 }
 
+type objectKey struct {
+	deviceID  uint32
+	index     uint32
+	timestamp time.Time
+}
+
 const EventsOID = schema.EventsOID
 const EventsFirst = schema.EventsFirst
 const EventsLast = schema.EventsLast
 
 var cache = struct {
-	dirty  bool
-	events map[uint32][]uint32
+	events struct {
+		events map[uint32][]uint32
+		dirty  bool
+	}
+	objects struct {
+		objects []objectKey
+		dirty   bool
+	}
 }{
-	dirty:  true,
-	events: map[uint32][]uint32{},
+	events: struct {
+		events map[uint32][]uint32
+		dirty  bool
+	}{
+		events: map[uint32][]uint32{},
+		dirty:  true,
+	},
+	objects: struct {
+		objects []objectKey
+		dirty   bool
+	}{
+		objects: []objectKey{},
+		dirty:   true,
+	},
 }
 
 func NewEvents() Events {
@@ -49,27 +73,25 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 	defer ee.RUnlock()
 
 	objects := []schema.Object{}
-	keys := []struct {
-		deviceID  uint32
-		index     uint32
-		timestamp time.Time
-	}{}
+	keys := cache.objects.objects
 
-	for k, e := range ee.events {
-		keys = append(keys, struct {
-			deviceID  uint32
-			index     uint32
-			timestamp time.Time
-		}{
-			deviceID:  k.deviceID,
-			index:     k.index,
-			timestamp: time.Time(e.Timestamp).Round(time.Second),
+	if cache.objects.dirty {
+		keys = []objectKey{}
+		for k, e := range ee.events {
+			keys = append(keys, objectKey{
+				deviceID:  k.deviceID,
+				index:     k.index,
+				timestamp: time.Time(e.Timestamp).Round(time.Second),
+			})
+		}
+
+		sort.SliceStable(keys, func(i, j int) bool {
+			return keys[i].timestamp.Before(keys[j].timestamp)
 		})
-	}
 
-	sort.SliceStable(keys, func(i, j int) bool {
-		return keys[i].timestamp.Before(keys[j].timestamp)
-	})
+		cache.objects.objects = keys
+		cache.objects.dirty = false
+	}
 
 	ix := start
 	count := 0
@@ -153,7 +175,8 @@ func (ee *Events) Load(blob json.RawMessage) error {
 		}
 	}
 
-	cache.dirty = true
+	cache.events.dirty = true
+	cache.objects.dirty = true
 
 	for _, e := range ee.events {
 		catalog.PutT(e.CatalogEvent, e.OID)
@@ -230,7 +253,7 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 
 	missing := map[uint32][]types.Interval{}
 
-	if cache.dirty {
+	if cache.events.dirty {
 		m := map[uint32][]uint32{}
 		for _, e := range ee.events {
 			var k = e.DeviceID
@@ -244,14 +267,14 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 			m[k] = list
 		}
 
-		cache.dirty = false
-		cache.events = m
+		cache.events.dirty = false
+		cache.events.events = m
 	}
 
 	for _, c := range controllers {
 		first := uint32(0)
 		last := uint32(0)
-		list := cache.events[c]
+		list := cache.events.events[c]
 
 		if N := len(list); N > 0 {
 			first = list[0]
@@ -310,7 +333,8 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 		ee.events[k] = NewEvent(oid, e, device, door, card)
 	}
 
-	cache.dirty = true
+	cache.events.dirty = true
+	cache.objects.dirty = true
 }
 
 func warn(err error) {
