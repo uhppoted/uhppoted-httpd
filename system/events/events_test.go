@@ -51,6 +51,21 @@ func TestEventsAsObjects(t *testing.T) {
 
 	objects := events.AsObjects(12, 5, nil)
 
+	// Check first/last
+	for _, o := range objects {
+		if o.OID == "0.6.0.1" {
+			if fmt.Sprintf("%v", o.Value) != "0.6.1001" {
+				t.Errorf("Incorrect AsObjects list 'first' event\n   expected:%v\n   got:     %#v", "0.6.1001", o.Value)
+			}
+		}
+
+		if o.OID == "0.6.0.2" {
+			if fmt.Sprintf("%v", o.Value) != "0.6.1032" {
+				t.Errorf("Incorrect AsObjects list 'last' event\n   expected:%v\n   got:     %#v", "0.6.1032", o.Value)
+			}
+		}
+	}
+
 	// Check timestamps
 	timestamps := []schema.Object{}
 	for _, o := range objects {
@@ -60,7 +75,7 @@ func TestEventsAsObjects(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(timestamps, expected) {
-		t.Errorf("Incorrect AsObjects list\n   expected:%#v\n   got:     %#v", expected, timestamps)
+		t.Errorf("Incorrect AsObjects list\n   expected:%v\n   got:     %v", expected, timestamps)
 	}
 }
 
@@ -115,6 +130,21 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 	}
 
 	objects := events.AsObjects(20, 5, nil)
+
+	// Check first/last
+	for _, o := range objects {
+		if o.OID == "0.6.0.1" {
+			if fmt.Sprintf("%v", o.Value) != "0.6.1001" {
+				t.Errorf("Incorrect AsObjects list 'first' event\n   expected:%v\n   got:     %#v", "0.6.1001", o.Value)
+			}
+		}
+
+		if o.OID == "0.6.0.2" {
+			if fmt.Sprintf("%v", o.Value) != "0.6.32" {
+				t.Errorf("Incorrect AsObjects list 'first' event\n   expected:%v\n   got:     %#v", "0.6.32", o.Value)
+			}
+		}
+	}
 
 	// Check timestamps
 	timestamps := []schema.Object{}

@@ -14,7 +14,24 @@
 - [ ] Synchronize listener address
 
 - [ ] Move delete to UI
-      - [ ] tabular.modified seems to be invoked a lot more than expected
+      - [ ] tabular.modified seems to be invoked a lot more than necessary e.g. after a doors edit
+```
+tabular.js:447 modified 0.3.1.0.4
+tabular.js:447 modified 0.3.1.0
+tabular.js:447 modified 0.3.1
+tabular.js:447 modified 0.3
+tabular.js:447 modified 0
+tabular.js:447 modified 0.3.1.0.4
+tabular.js:447 modified 0.3.1.0
+tabular.js:447 modified 0.3.1
+tabular.js:447 modified 0.3
+tabular.js:447 modified 0
+tabular.js:447 modified 0.3.1.0.4
+tabular.js:447 modified 0.3.1.0
+tabular.js:447 modified 0.3.1
+tabular.js:447 modified 0.3
+tabular.js:447 modified 0
+```
 
 - [ ] Rework `create`
       - [ ] Very fragile - uses 'new' status 

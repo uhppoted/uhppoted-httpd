@@ -114,8 +114,8 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 	}
 
 	if len(keys) > 0 {
-		k := eventKey{deviceID: keys[0].deviceID, index: keys[0].index}
-		l := eventKey{keys[len(keys)-1].deviceID, keys[len(keys)-1].index}
+		k := eventKey{keys[len(keys)-1].deviceID, keys[len(keys)-1].index}
+		l := eventKey{deviceID: keys[0].deviceID, index: keys[0].index}
 
 		if first, ok := ee.events[k]; ok {
 			catalog.Join(&objects, catalog.NewObject2(EventsOID, EventsFirst, first.OID))
