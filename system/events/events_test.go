@@ -5,7 +5,6 @@ import (
 	"math"
 	"math/rand"
 	"reflect"
-	"sort"
 	"strconv"
 	"testing"
 	"time"
@@ -43,16 +42,16 @@ func TestEventsAsObjects(t *testing.T) {
 	}
 
 	expected := []schema.Object{
-		schema.Object{OID: "0.6.1016.1", Value: "2022-04-20 13:49:50"},
-		schema.Object{OID: "0.6.1017.1", Value: "2022-04-20 13:54:50"},
-		schema.Object{OID: "0.6.1018.1", Value: "2022-04-20 13:59:50"},
-		schema.Object{OID: "0.6.1019.1", Value: "2022-04-20 14:04:50"},
 		schema.Object{OID: "0.6.1020.1", Value: "2022-04-20 14:09:50"},
+		schema.Object{OID: "0.6.1019.1", Value: "2022-04-20 14:04:50"},
+		schema.Object{OID: "0.6.1018.1", Value: "2022-04-20 13:59:50"},
+		schema.Object{OID: "0.6.1017.1", Value: "2022-04-20 13:54:50"},
+		schema.Object{OID: "0.6.1016.1", Value: "2022-04-20 13:49:50"},
 	}
 
-	objects := events.AsObjects(15, 5, nil)
+	objects := events.AsObjects(12, 5, nil)
 
-	// Only really want to check timestamps
+	// Check timestamps
 	timestamps := []schema.Object{}
 	for _, o := range objects {
 		if o.OID.HasSuffix(".1") && o.OID != "0.6.0.1" {
@@ -90,10 +89,10 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 		events.events[k] = e
 	}
 
-	delta = 4 * time.Minute
+	delta = 5 * time.Minute
 	for i := 0; i < 32; i++ {
 		ix := uint32(1 + i)
-		timestamp := base.Add(time.Duration(i) * delta)
+		timestamp := base.Add(time.Duration(i)*delta + time.Minute)
 		k := eventKey{deviceID: 405419896, index: ix}
 		e := Event{
 			CatalogEvent: catalog.CatalogEvent{
@@ -108,16 +107,16 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 	}
 
 	expected := []schema.Object{
-		schema.Object{OID: "0.6.9.1", Value: "2022-04-20 13:06:50"},
-		schema.Object{OID: "0.6.1008.1", Value: "2022-04-20 13:09:50"},
-		schema.Object{OID: "0.6.10.1", Value: "2022-04-20 13:10:50"},
-		schema.Object{OID: "0.6.1009.1", Value: "2022-04-20 13:14:50"},
-		schema.Object{OID: "0.6.11.1", Value: "2022-04-20 13:14:50"},
+		schema.Object{OID: "0.6.22.1", Value: "2022-04-20 14:20:50"},
+		schema.Object{OID: "0.6.1022.1", Value: "2022-04-20 14:19:50"},
+		schema.Object{OID: "0.6.21.1", Value: "2022-04-20 14:15:50"},
+		schema.Object{OID: "0.6.1021.1", Value: "2022-04-20 14:14:50"},
+		schema.Object{OID: "0.6.20.1", Value: "2022-04-20 14:10:50"},
 	}
 
-	objects := events.AsObjects(15, 5, nil)
+	objects := events.AsObjects(20, 5, nil)
 
-	// Only really want to check timestamps
+	// Check timestamps
 	timestamps := []schema.Object{}
 	for _, o := range objects {
 		if o.OID.HasSuffix(".1") && o.OID != "0.6.0.1" {
@@ -125,12 +124,51 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 		}
 	}
 
-	sort.SliceStable(timestamps, func(i, j int) bool {
-		p := fmt.Sprintf("%v %v", timestamps[i].Value, timestamps[i].OID)
-		q := fmt.Sprintf("%v %v", timestamps[j].Value, timestamps[j].OID)
+	if !reflect.DeepEqual(timestamps, expected) {
+		t.Errorf("Incorrect AsObjects list\n   expected:%#v\n   got:     %#v", expected, timestamps)
+	}
+}
 
-		return p < q
-	})
+func TestEventsAsObjectsFromZero(t *testing.T) {
+	cache.objects.dirty = true
+	events := Events{
+		events: map[eventKey]Event{},
+	}
+
+	oid := schema.EventsOID
+	base := time.Date(2022, time.April, 20, 12, 34, 50, 0, time.UTC)
+	delta := 5 * time.Minute
+
+	for i := 0; i < 32; i++ {
+		ix := uint32(1001 + i)
+		k := eventKey{deviceID: 201020304, index: ix}
+		e := Event{
+			CatalogEvent: catalog.CatalogEvent{
+				OID:      oid.AppendS(strconv.Itoa(int(ix))),
+				DeviceID: 201020304,
+				Index:    uint32(ix),
+			},
+			Timestamp: core.DateTime(base.Add(time.Duration(i) * delta)),
+		}
+
+		events.events[k] = e
+	}
+
+	expected := []schema.Object{
+		schema.Object{OID: "0.6.1032.1", Value: "2022-04-20 15:09:50"},
+		schema.Object{OID: "0.6.1031.1", Value: "2022-04-20 15:04:50"},
+		schema.Object{OID: "0.6.1030.1", Value: "2022-04-20 14:59:50"},
+	}
+
+	objects := events.AsObjects(0, 3, nil)
+
+	// Check timestamps
+	timestamps := []schema.Object{}
+	for _, o := range objects {
+		if o.OID.HasSuffix(".1") && o.OID != "0.6.0.1" {
+			timestamps = append(timestamps, schema.Object{OID: o.OID, Value: fmt.Sprintf("%v", o.Value)})
+		}
+	}
 
 	if !reflect.DeepEqual(timestamps, expected) {
 		t.Errorf("Incorrect AsObjects list\n   expected:%#v\n   got:     %#v", expected, timestamps)

@@ -2,11 +2,11 @@
 
 - [ ] Events should use local index rather than controller 
       - [x] Implement caching for events.AsObjects
-      - [ ] Check with events.AsObjects expects a zero- or 1 based start
+      - [x] Reverse AsObjects list
       - [ ] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 
             - [ ] Implement Controller.AsIController() (or just internally)
-            - (?) Replace with struct
+            - (?) Replace with  struct
       - [ ] Catalog::Put doesn't need OID
 
 - [ ] Move synch time etc to system.refresh

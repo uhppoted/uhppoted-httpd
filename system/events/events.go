@@ -86,7 +86,7 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 		}
 
 		sort.SliceStable(keys, func(i, j int) bool {
-			return keys[i].timestamp.Before(keys[j].timestamp)
+			return keys[j].timestamp.Before(keys[i].timestamp)
 		})
 
 		cache.objects.objects = keys
