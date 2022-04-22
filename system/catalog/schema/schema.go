@@ -104,8 +104,9 @@ type Groups struct {
 type Events struct {
 	OID OID `json:"OID"`
 	Metadata
-	First Suffix `json:"first"`
-	Last  Suffix `json:"last"`
+	Status Suffix `json:"status"`
+	First  Suffix `json:"first"`
+	Last   Suffix `json:"last"`
 
 	Timestamp  Suffix `json:"timestamp"`
 	DeviceID   Suffix `json:"device-id"`
@@ -296,9 +297,10 @@ var schema = Schema{
 	},
 
 	Events: Events{
-		OID:   EventsOID,
-		First: EventsFirst,
-		Last:  EventsLast,
+		OID:    EventsOID,
+		Status: EventsStatus,
+		First:  EventsFirst,
+		Last:   EventsLast,
 
 		Timestamp:  EventTimestamp,
 		DeviceID:   EventDeviceID,
@@ -406,6 +408,7 @@ const CardGroups Suffix = ".5"
 const GroupName Suffix = ".1"
 const GroupDoors Suffix = ".2"
 
+const EventsStatus Suffix = ".0.0"
 const EventsFirst Suffix = ".0.1"
 const EventsLast Suffix = ".0.2"
 

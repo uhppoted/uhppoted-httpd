@@ -54,6 +54,7 @@ $content-table-item-normal:         $solarize-base03 !default;
 $content-table-item-unknown:        $solarize-base1  !default;
 $content-table-item-unconfigured:   $solarize-yellow !default;
 $content-table-item-uncertain:      $solarize-violet !default;
+$content-table-item-incomplete:     lighten($solarize-orange,15%) !default;
 $content-table-item-error:          $solarize-red    !default;
 $content-table-scrollbar-color:     auto             !default;
 

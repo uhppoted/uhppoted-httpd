@@ -105,6 +105,7 @@ export const schema = {
   events: {
     base: '0.6',
 
+    status: '.0.0',
     first: '.0.1',
     last: '.0.2',
 

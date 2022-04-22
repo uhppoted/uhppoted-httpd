@@ -112,6 +112,7 @@
 |
 |- 0.6                                                                       # events
 |    |- 0.6.0                                                                #    metadata
+|    |      |- 0.6.0.0: <status>                                             #       synthesized status
 |    |      |- 0.6.0.1                                                       #       first event OID
 |    |      |- 0.6.0.2                                                       #       last event OID
 |    |

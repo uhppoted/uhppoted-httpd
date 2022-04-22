@@ -10,8 +10,9 @@ const (
 	StatusUnconfigured
 	StatusNew
 	StatusDeleted
+	StatusIncomplete
 )
 
 func (s Status) String() string {
-	return [...]string{"unknown", "ok", "uncertain", "error", "unconfigured", "new", "deleted"}[s]
+	return [...]string{"unknown", "ok", "uncertain", "error", "unconfigured", "new", "deleted", "incomplete"}[s]
 }

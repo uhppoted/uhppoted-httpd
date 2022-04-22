@@ -1,13 +1,16 @@
 ## v0.7.x
 
 - [ ] Events should use local index rather than controller 
-      - [x] Implement caching for events.AsObjects
-      - [x] Reverse AsObjects list
-      - [ ] Set event status on whether it's complete or not
+      - [x] Set event status on whether it's complete or not
       - [ ] Rework utterly horrible interfaces.Controller interface 
             - [ ] Implement Controller.AsIController() (or just internally)
             - (?) Replace with  struct
       - [ ] Catalog::Put doesn't need OID
+      - ??
+      ```
+      INTERNAL SERVER ERROR: event at index 1 has been overwritten
+      ```
+      - [ ] GetEvents not retrieving interval [65:65]
 
 - [ ] Move synch time etc to system.refresh
 - [ ] Unify CompareACL and UpdateACL into SynchACL

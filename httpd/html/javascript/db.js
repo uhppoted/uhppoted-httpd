@@ -14,6 +14,7 @@ class DBC {
 
     this.tables = {
       events: {
+        status: 'unknown',
         first: null,
         last: null,
         events: new Map()
@@ -534,6 +535,11 @@ function groups (o) {
 
 function events (o) {
   const oid = o.OID
+
+  if (oid === `${schema.events.base}${schema.events.status}`) {
+    DB.tables.events.status = o.value
+    return
+  }
 
   if (oid === `${schema.events.base}${schema.events.first}`) {
     DB.tables.events.first = o.value

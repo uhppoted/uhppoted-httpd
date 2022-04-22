@@ -157,6 +157,7 @@ function updateFromDB (oid, record) {
   })
 
   // ... set record values
+
   row.dataset.status = record.status
 
   update(name, record.name)
@@ -164,7 +165,7 @@ function updateFromDB (oid, record) {
   update(address, record.address.address, record.address.status)
   update(datetime, record.datetime.datetime, record.datetime.status)
   update(cards, record.cards.cards, record.cards.status)
-  update(events, record.events.last)
+  update(events, record.events.last, record.events.status)
   update(door1, record.doors[1])
   update(door2, record.doors[2])
   update(door3, record.doors[3])

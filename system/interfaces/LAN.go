@@ -337,16 +337,24 @@ func (l *LAN) GetEvents(c Controller, intervals []types.Interval) {
 		log.Warnf("%v", err)
 	} else {
 		catalog.PutV(oid, ControllerTouched, time.Now())
-		catalog.PutV(oid, ControllerEventsStatus, types.StatusOk)
 		catalog.PutV(oid, ControllerEventsFirst, first)
 		catalog.PutV(oid, ControllerEventsLast, last)
 		catalog.PutV(oid, ControllerEventsCurrent, current)
+
+		status := types.StatusOk
+		for _, interval := range intervals {
+			if interval.Contains(last) || interval.Contains(first) || (interval.From >= first && interval.To <= last) {
+				status = types.StatusIncomplete
+				break
+			}
+		}
+
+		catalog.PutV(oid, ControllerEventsStatus, status)
 
 		count := 0
 		events := []uhppoted.Event{}
 
 		f := func(index uint32) {
-			log.Sayf("get event %v", index)
 			if e, err := api.GetEvent(deviceID, index); err != nil {
 				log.Warnf("%v", err)
 			} else if e != nil {

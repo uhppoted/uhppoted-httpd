@@ -597,10 +597,6 @@ tr[data-status=uncertain] td input {
   color: #6c71c4;
 }
 
-tr[data-status=error] td input {
-  color: #dc322f;
-}
-
 tr td input[data-status=unknown] {
   color: #93a1a1;
   font-style: italic;
@@ -613,6 +609,12 @@ tr td input[data-status=unconfigured] {
 
 tr td input[data-status=uncertain] {
   color: #6c71c4;
+  font-style: italic;
+  font-weight: bold;
+}
+
+tr td input[data-status=incomplete] {
+  color: #eb7443;
   font-style: italic;
   font-weight: bold;
 }

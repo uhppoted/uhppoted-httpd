@@ -73,10 +73,6 @@ tr[data-status="uncertain"] td input {
   color: $content-table-item-uncertain;
 }
 
-tr[data-status="error"] td input {
-  color: $content-table-item-error;
-}
-
 tr td input[data-status="unknown"] {
   color: $content-table-item-unknown;
   font-style: italic;
@@ -89,6 +85,12 @@ tr td input[data-status="unconfigured"] {
 
 tr td input[data-status="uncertain"] {
   color: $content-table-item-uncertain;
+  font-style: italic;
+  font-weight: bold;
+}
+
+tr td input[data-status="incomplete"] {
+  color: $content-table-item-incomplete;
   font-style: italic;
   font-weight: bold;
 }
