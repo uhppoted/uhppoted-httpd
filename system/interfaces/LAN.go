@@ -367,6 +367,10 @@ func (l *LAN) GetEvents(c Controller, intervals []types.Interval) {
 		for _, interval := range intervals {
 			if interval.Contains(last) {
 				index := interval.From
+				if index < first {
+					index = first
+				}
+
 				for index <= last && count < MAX {
 					f(index)
 					index++
@@ -375,9 +379,19 @@ func (l *LAN) GetEvents(c Controller, intervals []types.Interval) {
 
 			if interval.Contains(first) {
 				index := interval.To
+				if index > last {
+					index = last
+				}
+
 				for index >= first && count < MAX {
 					f(index)
 					index--
+				}
+			}
+
+			if interval.From >= first && interval.To <= last {
+				for index := interval.From; index <= interval.To; index++ {
+					f(index)
 				}
 			}
 		}

@@ -6,11 +6,8 @@
             - [ ] Implement Controller.AsIController() (or just internally)
             - (?) Replace with  struct
       - [ ] Catalog::Put doesn't need OID
-      - ??
-      ```
-      INTERNAL SERVER ERROR: event at index 1 has been overwritten
-      ```
-      - [ ] GetEvents not retrieving interval [65:65]
+      - [x] Fixed `INTERNAL SERVER ERROR: event at index 1 has been overwritten`
+      - [x] GetEvents not retrieving interval [65:65]
 
 - [ ] Move synch time etc to system.refresh
 - [ ] Unify CompareACL and UpdateACL into SynchACL

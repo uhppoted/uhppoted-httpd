@@ -157,20 +157,20 @@ func (h *HTTPD) Run(interrupt chan os.Signal) {
 
 		select {
 		case <-interrupt:
-			infox("HTTPD", "terminated")
+			info("HTTPD", "terminated")
 		}
 
 		cancel()
 
 		if srv != nil {
 			if err := srv.Shutdown(context.Background()); err != nil {
-				warnx("HTTPD", fmt.Errorf("HTTP server shutdown error: %w", err))
+				warn("HTTPD", fmt.Errorf("HTTP server shutdown error: %w", err))
 			}
 		}
 
 		if srvs != nil {
 			if err := srvs.Shutdown(context.Background()); err != nil {
-				warnx("HTTPD", fmt.Errorf("HTTPS server shutdown error: %w", err))
+				warn("HTTPD", fmt.Errorf("HTTPS server shutdown error: %w", err))
 			}
 		}
 
@@ -179,7 +179,7 @@ func (h *HTTPD) Run(interrupt chan os.Signal) {
 
 	if srv != nil {
 		go func() {
-			infox("HTTPD", fmt.Sprintf("HTTP  server starting on port %v", srv.Addr))
+			info("HTTPD", fmt.Sprintf("HTTP  server starting on port %v", srv.Addr))
 			if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 				log.Panicf("ERROR: %v", err)
 			}
@@ -188,7 +188,7 @@ func (h *HTTPD) Run(interrupt chan os.Signal) {
 
 	if srvs != nil {
 		go func() {
-			infox("HTTPD", fmt.Sprintf("HTTPS server starting on port %v", srvs.Addr))
+			info("HTTPD", fmt.Sprintf("HTTPS server starting on port %v", srvs.Addr))
 			if err := srvs.ListenAndServeTLS(h.TLSCertificate, h.TLSKey); err != http.ErrServerClosed {
 				log.Panicf("ERROR: %v", err)
 			}
@@ -233,13 +233,13 @@ func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request) {
 func (d *dispatcher) authenticated(r *http.Request, w http.ResponseWriter) (string, string, bool) {
 	cookie, err := r.Cookie(auth.SessionCookie)
 	if err != nil {
-		warn(fmt.Errorf("No session cookie in request"))
+		warn("", fmt.Errorf("No session cookie in request"))
 		return "", "", false
 	}
 
 	uid, role, cookie2, err := d.auth.Authenticated(cookie)
 	if err != nil {
-		warn(err)
+		warn("", err)
 		return "", "", false
 	}
 
@@ -252,7 +252,7 @@ func (d *dispatcher) authenticated(r *http.Request, w http.ResponseWriter) (stri
 
 func (d *dispatcher) authorised(uid, role, path string) bool {
 	if err := d.auth.Authorised(uid, role, path); err != nil {
-		warn(err)
+		warn("", err)
 		return false
 	}
 
@@ -295,18 +295,18 @@ func debug(msg string) {
 	log.Printf("%-5s %s", "DEBUG", msg)
 }
 
-func info(msg string) {
-	log.Printf("%-5s %s", "INFO", msg)
+func info(subsystem string, msg string) {
+	if subsystem == "" {
+		log.Printf("%-5s %s", "INFO", msg)
+	} else {
+		log.Printf("%-5s %-8v  %v", "INFO", subsystem, msg)
+	}
 }
 
-func infox(subsystem string, msg string) {
-	log.Printf("%-5s %-8v  %v", "INFO", subsystem, msg)
-}
-
-func warn(err error) {
-	log.Printf("%-5s %v", "WARN", err)
-}
-
-func warnx(subsystem string, err error) {
-	log.Printf("%-5s %-8v  %v", "WARN", subsystem, err)
+func warn(subsystem string, err error) {
+	if subsystem == "" {
+		log.Printf("%-5s %v", "WARN", err)
+	} else {
+		log.Printf("%-5s %-8v  %v", "WARN", subsystem, err)
+	}
 }

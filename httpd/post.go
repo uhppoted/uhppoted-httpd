@@ -59,7 +59,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		"/groups",
 		"/users":
 		if handler := d.vtable(path); handler == nil || handler.post == nil {
-			warn(fmt.Errorf("No vtable entry for %v", path))
+			warn("", fmt.Errorf("No vtable entry for %v", path))
 			http.Error(w, "internal system error", http.StatusInternalServerError)
 		} else {
 			d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
@@ -95,7 +95,7 @@ func (d *dispatcher) login(w http.ResponseWriter, r *http.Request) {
 	case "application/json":
 		blob, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			warn(err)
+			warn("", err)
 			http.Error(w, "Error reading request", http.StatusInternalServerError)
 			return
 		}
@@ -106,7 +106,7 @@ func (d *dispatcher) login(w http.ResponseWriter, r *http.Request) {
 		}{}
 
 		if err := json.Unmarshal(blob, &body); err != nil {
-			warn(err)
+			warn("", err)
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
 			return
 		}
@@ -117,20 +117,20 @@ func (d *dispatcher) login(w http.ResponseWriter, r *http.Request) {
 
 	loginCookie, err := r.Cookie(auth.LoginCookie)
 	if err != nil {
-		warn(err)
+		warn("", err)
 		d.unauthenticated(r, w)
 		return
 	}
 
 	if loginCookie == nil {
-		warn(fmt.Errorf("Missing login cookie"))
+		warn("", fmt.Errorf("Missing login cookie"))
 		http.Error(w, "Missing login cookie", http.StatusBadRequest)
 		return
 	}
 
 	sessionCookie, err := d.auth.Authenticate(uid, pwd, loginCookie)
 	if err != nil {
-		warn(err)
+		warn("", err)
 		http.Error(w, "Invalid login credentials", http.StatusUnauthorized)
 		return
 	}
@@ -257,13 +257,13 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 
 	select {
 	case <-ctx.Done():
-		warn(ctx.Err())
+		warn("", ctx.Err())
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 		return
 
 	case err := <-ch:
 		if err != nil {
-			warn(err)
+			warn("", err)
 
 			switch e := err.(type) {
 			case *types.HttpdError:
