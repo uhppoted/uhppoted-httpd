@@ -171,7 +171,7 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 	oid := schema.OID("0.2.1")
 	expected := "Alpha"
 
-	catalog.PutT(catalog.CatalogController{DeviceID: 405419896}, oid)
+	catalog.PutT(catalog.CatalogController{OID: "0.2.1", DeviceID: 405419896})
 	catalog.PutV(oid, schema.ControllerName, "Alpha")
 
 	name := eventController(event)
@@ -191,7 +191,7 @@ func TestLookupHistoricalDeviceName(t *testing.T) {
 	oid := schema.OID("0.2.1")
 	expected := "Alpha7"
 
-	catalog.PutT(catalog.CatalogController{DeviceID: 405419896}, oid)
+	catalog.PutT(catalog.CatalogController{OID: "0.2.1", DeviceID: 405419896})
 	catalog.PutV(oid, schema.ControllerName, "Alpha")
 
 	name := eventController(event)
@@ -222,7 +222,7 @@ func TestLookupCardName(t *testing.T) {
 	}
 	expected := "FredF"
 
-	catalog.PutT(card.CatalogCard, oid)
+	catalog.PutT(card.CatalogCard)
 	catalog.PutV(oid, schema.CardNumber, uint32(8165538))
 	catalog.PutV(oid, schema.CardName, "FredF")
 
@@ -248,7 +248,7 @@ func TestLookupHistoricalCardName(t *testing.T) {
 	}
 	expected := "Barney"
 
-	catalog.PutT(card.CatalogCard, oid)
+	catalog.PutT(card.CatalogCard)
 	catalog.PutV(oid, schema.CardNumber, uint32(8165538))
 	catalog.PutV(oid, schema.CardName, "FredF")
 
@@ -280,12 +280,12 @@ func TestLookupDoorName(t *testing.T) {
 		},
 	}
 
-	catalog.PutT(catalog.CatalogController{DeviceID: 405419896}, controller)
+	catalog.PutT(catalog.CatalogController{OID: "0.2.1", DeviceID: 405419896})
 	catalog.PutV(controller, schema.ControllerName, "Alpha")
 	catalog.PutV(controller, schema.ControllerDeviceID, 405419896)
 	catalog.PutV(controller, schema.ControllerDoor3, oid)
 
-	catalog.PutT(door.CatalogDoor, oid)
+	catalog.PutT(door.CatalogDoor)
 	catalog.PutV(oid, schema.DoorName, "Gringotts")
 
 	expected := "Gringotts"
@@ -312,12 +312,12 @@ func TestLookupHistoricalDoorName(t *testing.T) {
 		},
 	}
 
-	catalog.PutT(catalog.CatalogController{DeviceID: 405419896}, controller)
+	catalog.PutT(catalog.CatalogController{OID: "0.2.1", DeviceID: 405419896})
 	catalog.PutV(controller, schema.ControllerName, "Alpha")
 	catalog.PutV(controller, schema.ControllerDeviceID, 405419896)
 	catalog.PutV(controller, schema.ControllerDoor3, oid)
 
-	catalog.PutT(door.CatalogDoor, oid)
+	catalog.PutT(door.CatalogDoor)
 	catalog.PutV(oid, schema.DoorName, "Gringotts")
 
 	expected := "Cupboard"

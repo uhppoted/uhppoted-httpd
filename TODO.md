@@ -1,38 +1,33 @@
 ## v0.7.x
 
-- [ ] Events should use local index rather than controller 
+- [x] Events should use local index rather than controller 
       - [x] Rework utterly horrible interfaces.Controller interface 
-            - [ ] Implement Controller.AsIController()
-      - [ ] Catalog::Put doesn't need OID
+            - [x] Implement Controller.AsIController()
+      - [x] Catalog::PutT shouldn't need OID
 
 - [x] Move synch doors etc to system.refresh
 - [x] Move synch time etc to system.refresh
-      - (?) Updating timezone for all controllers to PDT
 
-- [ ] Unify CompareACL and UpdateACL into SynchACL
 - [ ] Synchronize listener address
+- (?) Updating timezone for all controllers to PDT
+- [ ] Unify CompareACL and UpdateACL into SynchACL
+      - [ ] wrap ACL update in goroutine
+      - [ ] Error handling ??
 
 - [ ] Rework `create`
       - [ ] Very fragile - uses 'new' status 
       - [ ] Maybe invoke 'create' explicitly a la delete
 
 - [ ] Cleanup audit log/logging
-
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError
 - [ ] Make vtable'able subsystem an interface
 - [ ] Replace `guard` with embedded sync.Mutex
 - [ ] Remove BLANK thing everywhere
-
+- [ ] Fix bottom right of scrollbar
+      - [ ] Scrollbar 'goes funny' if -webkit styles are modified
+  
 ### IN PROGRESS
-
-- (??) Rearchitecture as data+rules
-- [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
-      be updated from the catalog ??
-      - (?) broadcast channel
-      - (?) event bus
-      - (?) condition handlers a la Lisp
-      - (?) package audit logger
 
 - [ ] README
       - [ ] uhppoted.conf
@@ -57,9 +52,6 @@
         - [ ] Return error for edits to card without name or number (e.g.'new' card)
         - [ ] What happens if other edits happen before card name/number is updated (e.g. for delete/add)?
 
-  - [ ] Fix bottom right of scrollbar
-        - [ ] Scrollbar 'goes funny' if -webkit styles are modified
-
   - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] `refresh` is overwriting pending group edits
   - [ ] Replace dataset.original with value from DB
@@ -67,24 +59,17 @@
 
 #### System
       - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name
-      - [ ] (?) Update interfaces.js to defer to tabular.js
-            - [ ] rollback
-            - [ ] commit
-            - [ ] set
+      - [x] Rethink controller device ID (pointer implementation is unnecessarily messy)
 
-      - [ ] Rethink controller device ID (pointer implementation is unnecessarily messy)
-            - (maybeeeeeeee) make generic type for uint32 that handles nil/0 on String()
-            - 'natural' number type :-)
-
-      - Export to uhppoted.conf
-        - 'export' command line argument 
-        - 'export' admin menu option
-        - 'auto-export' option (?)
+      - (?) Export to uhppoted.conf
+            - 'export' command line argument 
+            - 'export' admin menu option
+            - 'auto-export' option (?)
 
       - (?) Import from uhppoted.conf
-        - 'import' command line argument 
-        - 'import' admin menu option
-        - 'auto-import' option (?)
+            - 'import' command line argument 
+            - 'import' admin menu option
+            - 'auto-import' option (?)
 
       - logic around correcting time is weird
         -- enter to update doesn't always work
@@ -96,15 +81,22 @@
       - limit number of pending 'update' requests (e.g. if device is not responding)
       - use uhppoted-lib::healthcheck
 
-#### Other
+## TODO
+
+- (?) Rearchitecture as data+rules
+- (?) Rearchitecture with channels 
+- [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could
+      be updated from the catalog ??
+      - (?) broadcast channel
+      - (?) event bus
+      - (?) condition handlers a la Lisp
+      - (?) package audit logger
+      - ... although ... could be useful for (upcoming) server sent events
+
+- (?) 'Natural' number type (i.e. starts at 1) for device ID, card number, etc
 
 - [ ] Fix Firefox layout
-      - spacing/padding/margins
       - https://css-tricks.com/snippets/css/better-helvetica/
-
-- [ ] ACL
-      - wrap ACL update in goroutine
-        -- error handling ??
 
 - [ ] Loading bar a la cybercode
       - progresss
@@ -112,8 +104,6 @@
 
 - [ ] User settings
       - automatic logout enabled/timeout
-
-## TODO
 
 ### Cleanup
 

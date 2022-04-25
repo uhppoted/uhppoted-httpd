@@ -31,41 +31,8 @@ type CatalogType interface {
 		CatalogEvent |
 		CatalogLogEntry |
 		CatalogUser
-}
 
-type CatalogInterface struct {
-	OID schema.OID
-}
-
-type CatalogController struct {
-	OID      schema.OID
-	DeviceID uint32
-}
-
-type CatalogDoor struct {
-	OID schema.OID
-}
-
-type CatalogCard struct {
-	OID schema.OID
-}
-
-type CatalogGroup struct {
-	OID schema.OID
-}
-
-type CatalogEvent struct {
-	OID      schema.OID
-	DeviceID uint32
-	Index    uint32
-}
-
-type CatalogLogEntry struct {
-	OID schema.OID
-}
-
-type CatalogUser struct {
-	OID schema.OID
+	oid() schema.OID
 }
 
 var catalog Catalog
@@ -96,7 +63,9 @@ func NewT[T CatalogType](v T) schema.OID {
 	return catalog.NewT(v)
 }
 
-func PutT[T CatalogType](v T, oid schema.OID) {
+func PutT[T CatalogType](v T) {
+	oid := v.oid()
+
 	catalog.PutT(v, oid)
 }
 
@@ -128,7 +97,7 @@ func GetUint8(oid schema.OID, suffix schema.Suffix) (uint8, bool) {
 	}
 }
 
-func Put(oid schema.OID, v interface{}) {
+func Put(oid schema.OID, v any) {
 	catalog.Put(oid, v)
 }
 

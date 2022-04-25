@@ -32,7 +32,7 @@ func TestControllerAsObjects(t *testing.T) {
 		},
 		name: name,
 		IP:   address,
-		Doors: map[uint8]schema.OID{
+		doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
 			3: "0.3.9",
@@ -87,7 +87,7 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 		},
 		name: name,
 		IP:   address,
-		Doors: map[uint8]schema.OID{
+		doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
 			3: "0.3.9",
@@ -121,7 +121,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 		},
 		name: name,
 		IP:   address,
-		Doors: map[uint8]schema.OID{
+		doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
 			3: "0.3.9",

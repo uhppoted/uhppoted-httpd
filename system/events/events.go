@@ -179,7 +179,7 @@ func (ee *Events) Load(blob json.RawMessage) error {
 	cache.objects.dirty = true
 
 	for _, e := range ee.events {
-		catalog.PutT(e.CatalogEvent, e.OID)
+		catalog.PutT(e.CatalogEvent)
 	}
 
 	return nil

@@ -10,8 +10,8 @@ import (
 )
 
 type Table interface {
-	New(interface{}) schema.OID
-	Put(schema.OID, interface{})
+	New(any) schema.OID
+	Put(schema.OID, any)
 	Delete(schema.OID)
 	List() []schema.OID
 	Has(v any, oid schema.OID) bool
@@ -27,7 +27,7 @@ type record struct {
 	deleted bool
 }
 
-func (t *table) New(v interface{}) schema.OID {
+func (t *table) New(v any) schema.OID {
 	suffix := t.last
 
 loop:
@@ -46,7 +46,7 @@ loop:
 	}
 }
 
-func (t *table) Put(oid schema.OID, v interface{}) {
+func (t *table) Put(oid schema.OID, v any) {
 	if !oid.HasPrefix(t.base) {
 		panic(fmt.Sprintf("PUT: illegal oid %v for base %v", oid, t.base))
 	}

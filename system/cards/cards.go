@@ -121,7 +121,7 @@ func (cc *Cards) Load(blob json.RawMessage) error {
 	}
 
 	for _, c := range cc.cards {
-		catalog.PutT(c.CatalogCard, c.OID)
+		catalog.PutT(c.CatalogCard)
 		catalog.PutV(c.OID, CardNumber, c.card)
 		catalog.PutV(c.OID, CardName, c.name)
 	}

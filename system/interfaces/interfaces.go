@@ -110,8 +110,8 @@ func (ii *Interfaces) Load(blob json.RawMessage) error {
 		}
 	}
 
-	for _, v := range ii.lans {
-		catalog.PutT(v.CatalogInterface, v.OID)
+	for _, i := range ii.lans {
+		catalog.PutT(i.CatalogInterface)
 	}
 
 	return nil

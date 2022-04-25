@@ -151,8 +151,8 @@ func (ll *Logs) Load(blob json.RawMessage) error {
 		}
 	}
 
-	for _, v := range logs {
-		catalog.PutT(v.CatalogLogEntry, v.OID)
+	for _, l := range logs {
+		catalog.PutT(l.CatalogLogEntry)
 	}
 
 	ll.logs = logs

@@ -51,7 +51,7 @@ func TestCardAdd(t *testing.T) {
 		},
 	})
 
-	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
+	catalog.PutT(hagrid.CatalogCard)
 
 	r, err := cards.UpdateByOID(nil, "<new>", "", nil)
 	if err != nil {
@@ -75,7 +75,7 @@ func TestCardAddWithAuth(t *testing.T) {
 		OpAuth: &stub{},
 	}
 
-	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
+	catalog.PutT(hagrid.CatalogCard)
 
 	r, err := cards.UpdateByOID(&a, "<new>", "", nil)
 	if err == nil {
@@ -130,7 +130,7 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 
 	cards := makeCards(hagrid)
 
-	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
+	catalog.PutT(hagrid.CatalogCard)
 
 	r, err := cards.UpdateByOID(nil, "<new>", "", &trail)
 	if err != nil {
@@ -299,7 +299,7 @@ func TestCardUpdateAddGroup(t *testing.T) {
 		},
 	}
 
-	catalog.PutT(group.CatalogGroup, oid)
+	catalog.PutT(group.CatalogGroup)
 
 	cards := makeCards(hagrid)
 	final := makeCards(makeCard(hagrid.OID, "Hagrid", 6514231, fmt.Sprintf("%v", oid)))
@@ -329,7 +329,7 @@ func TestCardUpdateRemoveGroup(t *testing.T) {
 			OID: oid,
 		},
 	}
-	catalog.PutT(group.CatalogGroup, oid)
+	catalog.PutT(group.CatalogGroup)
 
 	hagrid2 := makeCard(hagrid.OID, "Hagrid", 6514231)
 	hagrid2.groups[oid] = false
@@ -370,7 +370,7 @@ func TestCardUpdateWithInvalidGroup(t *testing.T) {
 func TestCardDelete(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 
-	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
+	catalog.PutT(hagrid.CatalogCard)
 
 	if _, err := cards.DeleteByOID(nil, dobby.OID, nil); err != nil {
 		t.Fatalf("Unexpected error deleting card (%v)", err)
@@ -431,8 +431,8 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 
 	cards := makeCards(hagrid, dobby)
 
-	catalog.PutT(hagrid.CatalogCard, hagrid.OID)
-	catalog.PutT(dobby.CatalogCard, dobby.OID)
+	catalog.PutT(hagrid.CatalogCard)
+	catalog.PutT(dobby.CatalogCard)
 
 	cards.DeleteByOID(nil, dobby.OID, &trail)
 

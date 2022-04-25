@@ -68,13 +68,13 @@ func (dd *Doors) Load(blob json.RawMessage) error {
 		}
 	}
 
-	for _, v := range dd.doors {
-		catalog.PutT(v.CatalogDoor, v.OID)
-		catalog.PutV(v.OID, DoorName, v.Name)
-		catalog.PutV(v.OID, DoorDelayConfigured, v.delay)
-		catalog.PutV(v.OID, DoorDelayModified, false)
-		catalog.PutV(v.OID, DoorControlConfigured, v.mode)
-		catalog.PutV(v.OID, DoorControlModified, false)
+	for _, d := range dd.doors {
+		catalog.PutT(d.CatalogDoor)
+		catalog.PutV(d.OID, DoorName, d.Name)
+		catalog.PutV(d.OID, DoorDelayConfigured, d.delay)
+		catalog.PutV(d.OID, DoorDelayModified, false)
+		catalog.PutV(d.OID, DoorControlConfigured, d.mode)
+		catalog.PutV(d.OID, DoorControlModified, false)
 	}
 
 	return nil
