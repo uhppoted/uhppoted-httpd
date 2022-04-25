@@ -62,12 +62,12 @@ func (cc *Controllers) AsObjects(a *auth.Authorizator) []schema.Object {
 	return objects
 }
 
-func (cc *Controllers) AsIControllers() []interfaces.Controller {
-	list := []interfaces.Controller{}
+func (cc *Controllers) AsIControllers() []interfaces.IController {
+	list := []interfaces.IController{}
 
 	for _, c := range cc.controllers {
 		if c.DeviceID != 0 && !c.IsDeleted() {
-			list = append(list, c)
+			list = append(list, c.AsIController())
 		}
 	}
 
@@ -156,10 +156,10 @@ func (cc *Controllers) Load(blob json.RawMessage) error {
 		catalog.PutV(oid, ControllerName, c.name)
 		catalog.PutV(oid, ControllerDeviceID, c.DeviceID)
 		catalog.PutV(oid, ControllerDateTimeModified, false)
-		catalog.PutV(oid, ControllerDoor1, c.Doors[1])
-		catalog.PutV(oid, ControllerDoor2, c.Doors[2])
-		catalog.PutV(oid, ControllerDoor3, c.Doors[3])
-		catalog.PutV(oid, ControllerDoor4, c.Doors[4])
+		catalog.PutV(oid, ControllerDoor1, c.doors[1])
+		catalog.PutV(oid, ControllerDoor2, c.doors[2])
+		catalog.PutV(oid, ControllerDoor3, c.doors[3])
+		catalog.PutV(oid, ControllerDoor4, c.doors[4])
 	}
 
 	return nil
@@ -210,7 +210,7 @@ func (cc *Controllers) Found(found []uint32) {
 loop:
 	for _, v := range found {
 		for _, c := range cc.controllers {
-			if c.ID() == v && !c.IsDeleted() {
+			if c.DeviceID == v && !c.IsDeleted() {
 				continue loop
 			}
 		}
@@ -246,22 +246,6 @@ func (cc *Controllers) Clone() Controllers {
 	}
 
 	return shadow
-}
-
-func (cc *Controllers) Sync(i interfaces.Interfaces) {
-	var lan LAN
-
-	if v, ok := i.LAN(); !ok {
-		return
-	} else {
-		lan = LAN{
-			interfaces: i,
-			lan:        v,
-		}
-	}
-
-	lan.synchTime(cc.controllers)
-	lan.synchDoors(cc.controllers)
 }
 
 func (cc *Controllers) CompareACL(i interfaces.Interfaces, permissions acl.ACL) error {

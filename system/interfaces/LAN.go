@@ -254,7 +254,7 @@ func (l LAN) Clone() LAN {
 	}
 }
 
-func (l *LAN) Search(controllers []Controller) ([]uint32, error) {
+func (l *LAN) search(controllers []IController) ([]uint32, error) {
 	list := []uint32{}
 
 	api := l.api(controllers)
@@ -272,10 +272,10 @@ func (l *LAN) Search(controllers []Controller) ([]uint32, error) {
 }
 
 // A long-running function i.e. expects to be invoked from an external goroutine
-func (l *LAN) Refresh(c Controller) {
+func (l *LAN) refresh(c IController) {
 	log.Infof("%v: refreshing LAN controller status", c.ID())
 
-	api := l.api([]Controller{c})
+	api := l.api([]IController{c})
 	deviceID := uhppoted.DeviceID(c.ID())
 
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: deviceID}); err != nil {
@@ -283,8 +283,8 @@ func (l *LAN) Refresh(c Controller) {
 	} else if info == nil {
 		log.Warnf("Got %v response to get-device request for %v", info, deviceID)
 	} else {
-		catalog.PutV(c.OIDx(), ControllerTouched, time.Now())
-		catalog.PutV(c.OIDx(), ControllerEndpointAddress, core.Address(info.Address))
+		catalog.PutV(c.OID(), ControllerTouched, time.Now())
+		catalog.PutV(c.OID(), ControllerEndpointAddress, core.Address(info.Address))
 	}
 
 	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: deviceID}); err != nil {
@@ -292,8 +292,8 @@ func (l *LAN) Refresh(c Controller) {
 	} else if status == nil {
 		log.Warnf("Got %v response to get-status request for %v", status, deviceID)
 	} else {
-		catalog.PutV(c.OIDx(), ControllerTouched, time.Now())
-		catalog.PutV(c.OIDx(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
+		catalog.PutV(c.OID(), ControllerTouched, time.Now())
+		catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
 	}
 
 	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: deviceID}); err != nil {
@@ -301,8 +301,8 @@ func (l *LAN) Refresh(c Controller) {
 	} else if cards == nil {
 		log.Warnf("Got %v response to get-card-records request for %v", cards, deviceID)
 	} else {
-		catalog.PutV(c.OIDx(), ControllerTouched, time.Now())
-		catalog.PutV(c.OIDx(), ControllerCardsCount, cards.Cards)
+		catalog.PutV(c.OID(), ControllerTouched, time.Now())
+		catalog.PutV(c.OID(), ControllerCardsCount, cards.Cards)
 	}
 
 	for _, d := range []uint8{1, 2, 3, 4} {
@@ -326,10 +326,10 @@ func (l *LAN) Refresh(c Controller) {
 	}
 }
 
-func (l *LAN) GetEvents(c Controller, intervals []types.Interval) {
-	api := l.api([]Controller{c})
+func (l *LAN) getEvents(c IController, intervals []types.Interval) {
+	api := l.api([]IController{c})
 	deviceID := c.ID()
-	oid := c.OIDx()
+	oid := c.OID()
 
 	log.Infof("%v: retrieving LAN controller events (%v)", deviceID, intervals)
 
@@ -405,8 +405,8 @@ func (l *LAN) GetEvents(c Controller, intervals []types.Interval) {
 	}
 }
 
-func (l *LAN) SynchTime(c Controller) {
-	api := l.api([]Controller{c})
+func (l *LAN) synchTime(c IController) {
+	api := l.api([]IController{c})
 	deviceID := uhppoted.DeviceID(c.ID())
 	location := c.TimeZone()
 	now := time.Now().In(location)
@@ -420,22 +420,22 @@ func (l *LAN) SynchTime(c Controller) {
 	if response, err := api.SetTime(request); err != nil {
 		log.Warnf("%v", err)
 	} else if response != nil {
-		catalog.PutV(c.OIDx(), ControllerDateTimeModified, false)
+		catalog.PutV(c.OID(), ControllerDateTimeModified, false)
 
 		if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: deviceID}); err != nil {
 			log.Warnf("%v", err)
 		} else if status == nil {
 			log.Warnf("Got %v response to get-status request for %v", status, deviceID)
 		} else {
-			catalog.PutV(c.OIDx(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
+			catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
 		}
 
 		log.Infof("synchronized device-time %v %v", response.DeviceID, response.DateTime)
 	}
 }
 
-func (l *LAN) SynchDoors(c Controller) {
-	api := l.api([]Controller{c})
+func (l *LAN) synchDoors(c IController) {
+	api := l.api([]IController{c})
 	deviceID := c.ID()
 
 	// ... update door delays
@@ -501,7 +501,7 @@ func (l *LAN) SynchDoors(c Controller) {
 	}
 }
 
-func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
+func (l *LAN) CompareACL(controllers []IController, permissions acl.ACL) error {
 	log.Debugf("%v", "Comparing ACL")
 
 	devices := []uhppote.Device{}
@@ -545,9 +545,9 @@ func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
 			if c.ID() == d.DeviceID {
 				rs := compare[c.ID()]
 				if len(rs.Updated)+len(rs.Added)+len(rs.Deleted) > 0 {
-					catalog.PutV(c.OIDx(), ControllerCardsStatus, types.StatusError)
+					catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusError)
 				} else {
-					catalog.PutV(c.OIDx(), ControllerCardsStatus, types.StatusOk)
+					catalog.PutV(c.OID(), ControllerCardsStatus, types.StatusOk)
 				}
 				break
 			}
@@ -557,7 +557,7 @@ func (l *LAN) CompareACL(controllers []Controller, permissions acl.ACL) error {
 	return nil
 }
 
-func (l *LAN) UpdateACL(controllers []Controller, permissions acl.ACL) error {
+func (l *LAN) UpdateACL(controllers []IController, permissions acl.ACL) error {
 	log.Infof("%v", "Updating ACL")
 
 	api := l.api(controllers)
@@ -582,13 +582,14 @@ func (l *LAN) status() types.Status {
 	return types.StatusOk
 }
 
-func (l *LAN) api(controllers []Controller) *uhppoted.UHPPOTED {
+func (l *LAN) api(controllers []IController) *uhppoted.UHPPOTED {
 	devices := []uhppote.Device{}
 
 	for _, v := range controllers {
 		name := v.Name()
 		id := v.ID()
 		addr := v.EndPoint()
+		tz := v.TimeZone()
 
 		if id > 0 && addr != nil {
 			devices = append(devices, uhppote.Device{
@@ -596,7 +597,7 @@ func (l *LAN) api(controllers []Controller) *uhppoted.UHPPOTED {
 				DeviceID: id,
 				Address:  addr,
 				Doors:    []string{},
-				TimeZone: time.Local,
+				TimeZone: tz,
 			})
 		}
 	}

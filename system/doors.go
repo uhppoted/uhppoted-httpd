@@ -55,7 +55,7 @@ func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error
 
 	controllers := sys.controllers.List()
 	for _, c := range controllers {
-		for k, v := range c.Doors {
+		for k, v := range c.Doors() {
 			if v != "" {
 				if door, ok := shadow.Door(v); !ok {
 					return nil, types.BadRequest(fmt.Errorf("Door %v not defined for controller %v", k, c), fmt.Errorf("controller %v: invalid door (%v)", c, k))

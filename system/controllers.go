@@ -66,21 +66,21 @@ func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interfac
 	return list, nil
 }
 
-func validate(c *controllers.Controllers) error {
-	if err := c.Validate(); err != nil {
+func validate(cc *controllers.Controllers) error {
+	if err := cc.Validate(); err != nil {
 		return types.BadRequest(err, err)
 	}
 
 	doors := map[schema.OID]string{}
-	controllers := c.List()
+	controllers := cc.List()
 
 	for _, r := range controllers {
-		for _, v := range r.Doors {
+		for _, v := range r.Doors() {
 			if v != "" {
 				if _, ok := sys.doors.Door(schema.OID(v)); !ok {
 					return types.BadRequest(
 						fmt.Errorf("Invalid door ID"),
-						fmt.Errorf("controller %v: invalid door ID (%v)", r.OIDx(), v))
+						fmt.Errorf("controller %v: invalid door ID (%v)", r.OID, v))
 				}
 			}
 
@@ -88,10 +88,10 @@ func validate(c *controllers.Controllers) error {
 				d, _ := sys.doors.Door(v)
 				return types.BadRequest(
 					fmt.Errorf("%v door assigned to more than one controller", d.Name),
-					fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OIDx()))
+					fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID))
 			}
 
-			doors[v] = string(r.OIDx())
+			doors[v] = string(r.OID)
 		}
 	}
 

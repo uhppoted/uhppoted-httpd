@@ -18,6 +18,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
+	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -25,12 +26,21 @@ type Controller struct {
 	catalog.CatalogController
 	name     string
 	IP       *core.Address
-	Doors    map[uint8]schema.OID
+	doors    map[uint8]schema.OID
 	timezone string
 
 	created  types.Timestamp
 	modified types.Timestamp
 	deleted  types.Timestamp
+}
+
+type icontroller struct {
+	oid      schema.OID
+	name     string
+	id       uint32
+	endpoint *net.UDPAddr
+	timezone *time.Location
+	doors    map[uint8]schema.OID
 }
 
 type kv = struct {
@@ -81,45 +91,9 @@ func (c Controller) IsDeleted() bool {
 	return !c.deleted.IsZero()
 }
 
-// *** START interfaces.Controller
-func (c Controller) OIDx() schema.OID {
-	return c.OID
+func (c Controller) Doors() map[uint8]schema.OID {
+	return c.doors
 }
-
-func (c Controller) Name() string {
-	return c.name
-}
-
-func (c Controller) ID() uint32 {
-	return c.DeviceID
-}
-
-func (c Controller) EndPoint() *net.UDPAddr {
-	if c.IP != nil {
-		return (*net.UDPAddr)(c.IP)
-	}
-
-	return nil
-}
-
-func (c Controller) TimeZone() *time.Location {
-	location := time.Local
-	if tz, err := types.Timezone(c.timezone); err == nil && tz != nil {
-		location = tz
-	}
-
-	return location
-}
-
-func (c Controller) Door(d uint8) (schema.OID, bool) {
-	if v, ok := c.Doors[d]; ok {
-		return v, true
-	}
-
-	return "", false
-}
-
-// **** END interfaces.Controller
 
 func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 	list := []kv{}
@@ -170,7 +144,7 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		}
 
 		for _, i := range []uint8{1, 2, 3, 4} {
-			if d, ok := c.Doors[i]; ok {
+			if d, ok := c.doors[i]; ok {
 				doors[i] = d
 			}
 		}
@@ -272,15 +246,44 @@ func (c *Controller) AsRuleEntity() (string, interface{}) {
 	return "controller", &v
 }
 
+func (c *Controller) AsIController() interfaces.IController {
+	var endpoint *net.UDPAddr
+	var location *time.Location = time.Local
+	var doors = map[uint8]schema.OID{}
+
+	if c.IP != nil {
+		endpoint = (*net.UDPAddr)(c.IP)
+	}
+
+	if tz, err := types.Timezone(c.timezone); err == nil && tz != nil {
+		location = tz
+	}
+
+	for _, d := range []uint8{1, 2, 3, 4} {
+		if oid, ok := c.doors[d]; ok {
+			doors[d] = oid
+		}
+	}
+
+	return &icontroller{
+		oid:      c.OID,
+		name:     c.name,
+		id:       c.DeviceID,
+		endpoint: endpoint,
+		timezone: location,
+		doors:    doors,
+	}
+}
+
 func (c *Controller) String() string {
 	if c == nil {
 		return ""
 	}
 
 	if deviceID := c.DeviceID; deviceID == 0 {
-		return fmt.Sprintf("%v", c.Name())
+		return fmt.Sprintf("%v", c.name)
 	} else {
-		return fmt.Sprintf("%v (%v)", c.Name(), deviceID)
+		return fmt.Sprintf("%v (%v)", c.name, deviceID)
 	}
 }
 
@@ -484,48 +487,48 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		if err := f("door[1]", value); err != nil {
 			return nil, err
 		} else {
-			c.Doors[1] = schema.OID(value)
+			c.doors[1] = schema.OID(value)
 			c.modified = types.TimestampNow()
 
-			list = append(list, kv{ControllerDoor1, c.Doors[1]})
+			list = append(list, kv{ControllerDoor1, c.doors[1]})
 
-			c.updated(uid, "door:1", clone.Doors[1], c.Doors[1], dbc)
+			c.updated(uid, "door:1", clone.doors[1], c.doors[1], dbc)
 		}
 
 	case OID.Append(ControllerDoor2):
 		if err := f("door[2]", value); err != nil {
 			return nil, err
 		} else {
-			c.Doors[2] = schema.OID(value)
+			c.doors[2] = schema.OID(value)
 			c.modified = types.TimestampNow()
 
-			list = append(list, kv{ControllerDoor2, c.Doors[2]})
+			list = append(list, kv{ControllerDoor2, c.doors[2]})
 
-			c.updated(uid, "door:2", clone.Doors[2], c.Doors[2], dbc)
+			c.updated(uid, "door:2", clone.doors[2], c.doors[2], dbc)
 		}
 
 	case OID.Append(ControllerDoor3):
 		if err := f("door[3]", value); err != nil {
 			return nil, err
 		} else {
-			c.Doors[3] = schema.OID(value)
+			c.doors[3] = schema.OID(value)
 			c.modified = types.TimestampNow()
 
-			list = append(list, kv{ControllerDoor3, c.Doors[3]})
+			list = append(list, kv{ControllerDoor3, c.doors[3]})
 
-			c.updated(uid, "door:3", clone.Doors[3], c.Doors[3], dbc)
+			c.updated(uid, "door:3", clone.doors[3], c.doors[3], dbc)
 		}
 
 	case OID.Append(ControllerDoor4):
 		if err := f("door[4]", value); err != nil {
 			return nil, err
 		} else {
-			c.Doors[4] = schema.OID(value)
+			c.doors[4] = schema.OID(value)
 			c.modified = types.TimestampNow()
 
-			list = append(list, kv{ControllerDoor4, c.Doors[4]})
+			list = append(list, kv{ControllerDoor4, c.doors[4]})
 
-			c.updated(uid, "door:4", clone.Doors[4], c.Doors[4], dbc)
+			c.updated(uid, "door:4", clone.doors[4], c.doors[4], dbc)
 		}
 	}
 
@@ -616,7 +619,7 @@ func (c *Controller) refreshed() {
 		catalog.PutV(c.OID, ControllerEventsCurrent, 0)
 
 		for _, d := range []uint8{1, 2, 3, 4} {
-			if door, ok := c.Door(d); ok {
+			if door, ok := c.doors[d]; ok {
 				catalog.PutV(door, DoorDelay, nil)
 				catalog.PutV(door, DoorControl, nil)
 			}
@@ -657,7 +660,7 @@ func (c Controller) serialize() ([]byte, error) {
 		Modified: c.modified,
 	}
 
-	for k, v := range c.Doors {
+	for k, v := range c.doors {
 		record.Doors[k] = v
 	}
 
@@ -688,13 +691,13 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.name = strings.TrimSpace(record.Name)
 	c.DeviceID = record.DeviceID
 	c.IP = record.Address
-	c.Doors = map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
+	c.doors = map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
 	c.timezone = record.TimeZone
 	c.created = record.Created
 	c.modified = record.Modified
 
 	for k, v := range record.Doors {
-		c.Doors[k] = schema.OID(v)
+		c.doors[k] = schema.OID(v)
 	}
 
 	return nil
@@ -710,15 +713,15 @@ func (c *Controller) clone() *Controller {
 			name:     c.name,
 			IP:       c.IP,
 			timezone: c.timezone,
-			Doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
+			doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
 
 			created:  c.created,
 			modified: c.modified,
 			deleted:  c.deleted,
 		}
 
-		for k, v := range c.Doors {
-			replicant.Doors[k] = v
+		for k, v := range c.doors {
+			replicant.doors[k] = v
 		}
 
 		return &replicant
@@ -769,4 +772,30 @@ func (c *Controller) log(uid string, operation string, OID schema.OID, field, de
 	if dbc != nil {
 		dbc.Write(record)
 	}
+}
+
+func (c icontroller) OID() schema.OID {
+	return c.oid
+}
+
+func (c icontroller) Name() string {
+	return c.name
+}
+
+func (c icontroller) ID() uint32 {
+	return c.id
+}
+
+func (c icontroller) EndPoint() *net.UDPAddr {
+	return c.endpoint
+}
+
+func (c icontroller) TimeZone() *time.Location {
+	return c.timezone
+}
+
+func (c icontroller) Door(d uint8) (schema.OID, bool) {
+	oid, ok := c.doors[d]
+
+	return oid, ok
 }

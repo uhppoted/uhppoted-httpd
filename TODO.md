@@ -1,20 +1,17 @@
 ## v0.7.x
 
 - [ ] Events should use local index rather than controller 
-      - [x] Set event status on whether it's complete or not
-      - [ ] Rework utterly horrible interfaces.Controller interface 
-            - [ ] Implement Controller.AsIController() (or just internally)
-            - (?) Replace with  struct
+      - [x] Rework utterly horrible interfaces.Controller interface 
+            - [ ] Implement Controller.AsIController()
       - [ ] Catalog::Put doesn't need OID
-      - [x] Fixed `INTERNAL SERVER ERROR: event at index 1 has been overwritten`
-      - [x] GetEvents not retrieving interval [65:65]
 
-- [ ] Move synch time etc to system.refresh
+- [x] Move synch doors etc to system.refresh
+- [x] Move synch time etc to system.refresh
+      - (?) Updating timezone for all controllers to PDT
+
 - [ ] Unify CompareACL and UpdateACL into SynchACL
 - [ ] Synchronize listener address
 
-- [x] Move delete to UI
-      - [x] tabular.modified seems to be invoked a lot more than necessary e.g. after a doors edit
 - [ ] Rework `create`
       - [ ] Very fragile - uses 'new' status 
       - [ ] Maybe invoke 'create' explicitly a la delete
@@ -25,6 +22,7 @@
 - [ ] System XXX.validate should not return HttpdError
 - [ ] Make vtable'able subsystem an interface
 - [ ] Replace `guard` with embedded sync.Mutex
+- [ ] Remove BLANK thing everywhere
 
 ### IN PROGRESS
 

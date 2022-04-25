@@ -284,7 +284,7 @@ func (s *system) refresh() {
 		return
 	}
 
-	f := func(controllers []interfaces.Controller) []uint32 {
+	f := func(controllers []interfaces.IController) []uint32 {
 		list := []uint32{}
 		for _, c := range controllers {
 			list = append(list, c.ID())
@@ -327,11 +327,24 @@ func (s *system) refresh() {
 }
 
 func (s *system) updated() {
+	info("Synchronizing controllers to updated configuration")
+
+	controllers := s.controllers.AsIControllers()
+
+	sys.taskQ.Add(Task{
+		f: func() {
+			s.interfaces.SynchTime(controllers)
+		},
+	})
+
+	sys.taskQ.Add(Task{
+		f: func() {
+			s.interfaces.SynchDoors(controllers)
+		},
+	})
+
 	s.taskQ.Add(Task{
 		f: func() {
-			info("Updating controllers from configuration")
-			sys.controllers.Sync(sys.interfaces.Interfaces)
-
 			UpdateACL()
 		},
 	})

@@ -21,17 +21,13 @@ type Interfaces struct {
 	ch   chan types.EventsList
 }
 
-type Controller interface {
-	OIDx() schema.OID
+type IController interface {
+	OID() schema.OID
 	Name() string
 	ID() uint32
 	EndPoint() *net.UDPAddr
 	TimeZone() *time.Location
 	Door(uint8) (schema.OID, bool)
-}
-
-type Events interface {
-	Indices(deviceID uint32) (first uint32, last uint32)
 }
 
 const BLANK = "'blank'"
@@ -200,7 +196,7 @@ func (ii Interfaces) Validate() error {
 	return nil
 }
 
-func (ii *Interfaces) Search(controllers []Controller) []uint32 {
+func (ii *Interfaces) Search(controllers []IController) []uint32 {
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
 	var found = map[uint32]struct{}{}
@@ -208,7 +204,7 @@ func (ii *Interfaces) Search(controllers []Controller) []uint32 {
 	f := func(lan *LAN) {
 		defer wg.Done()
 
-		if list, err := lan.Search(controllers); err != nil {
+		if list, err := lan.search(controllers); err != nil {
 			log.Warnf("%v", err)
 		} else {
 			mutex.Lock()
@@ -220,9 +216,10 @@ func (ii *Interfaces) Search(controllers []Controller) []uint32 {
 
 	}
 
-	for _, lan := range ii.lans {
+	for _, l := range ii.lans {
+		lan := l
 		wg.Add(1)
-		go f(lan) // NTS: lan is a pointer so it's more or less ok to reuse the loop variable
+		go f(lan)
 	}
 
 	wg.Wait()
@@ -235,7 +232,7 @@ func (ii *Interfaces) Search(controllers []Controller) []uint32 {
 	return list
 }
 
-func (ii *Interfaces) Refresh(controllers []Controller) {
+func (ii *Interfaces) Refresh(controllers []IController) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup
 
@@ -244,9 +241,9 @@ func (ii *Interfaces) Refresh(controllers []Controller) {
 
 			controller := c
 
-			go func(v Controller) {
+			go func(v IController) {
 				defer wg.Done()
-				lan.Refresh(controller)
+				lan.refresh(controller)
 			}(controller)
 		}
 
@@ -254,7 +251,7 @@ func (ii *Interfaces) Refresh(controllers []Controller) {
 	}
 }
 
-func (ii *Interfaces) GetEvents(controllers []Controller, missing map[uint32][]types.Interval) {
+func (ii *Interfaces) GetEvents(controllers []IController, missing map[uint32][]types.Interval) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup
 
@@ -264,9 +261,47 @@ func (ii *Interfaces) GetEvents(controllers []Controller, missing map[uint32][]t
 			controller := c
 			intervals := missing[c.ID()]
 
-			go func(v Controller) {
+			go func(v IController) {
 				defer wg.Done()
-				lan.GetEvents(controller, intervals)
+				lan.getEvents(controller, intervals)
+			}(controller)
+		}
+
+		wg.Wait()
+	}
+}
+
+func (ii *Interfaces) SynchTime(controllers []IController) {
+	if lan, ok := ii.LAN(); ok {
+		var wg sync.WaitGroup
+
+		for _, c := range controllers {
+			wg.Add(1)
+
+			controller := c
+
+			go func(v IController) {
+				defer wg.Done()
+				lan.synchTime(controller)
+			}(controller)
+		}
+
+		wg.Wait()
+	}
+}
+
+func (ii *Interfaces) SynchDoors(controllers []IController) {
+	if lan, ok := ii.LAN(); ok {
+		var wg sync.WaitGroup
+
+		for _, c := range controllers {
+			wg.Add(1)
+
+			controller := c
+
+			go func(v IController) {
+				defer wg.Done()
+				lan.synchDoors(controller)
 			}(controller)
 		}
 
