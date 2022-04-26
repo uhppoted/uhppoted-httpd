@@ -1,14 +1,6 @@
 ## v0.7.x
 
-- [x] Events should use local index rather than controller 
-      - [x] Rework utterly horrible interfaces.Controller interface 
-            - [x] Implement Controller.AsIController()
-      - [x] Catalog::PutT shouldn't need OID
-
-- [x] Move synch doors etc to system.refresh
-- [x] Move synch time etc to system.refresh
-
-- [ ] Synchronize listener address
+- [x] Synchronize listener address
 - (?) Updating timezone for all controllers to PDT
 - [ ] Unify CompareACL and UpdateACL into SynchACL
       - [ ] wrap ACL update in goroutine

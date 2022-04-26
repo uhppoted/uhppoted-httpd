@@ -501,6 +501,21 @@ func (l *LAN) synchDoors(c IController) {
 	}
 }
 
+func (l *LAN) synchEventListener(c IController) {
+	api := l.api([]IController{c})
+	deviceID := c.ID()
+	addr := l.ListenAddress
+
+	if ok, err := api.SetEventListener(deviceID, addr); err != nil {
+		log.Warnf("%v", err)
+	} else if !ok {
+		log.Warnf("%v  set-event-listener failed", deviceID)
+	} else {
+		log.Infof("%v  synchronized event listener (%v)", deviceID, addr)
+		log.Sayf("synchronized event listener")
+	}
+}
+
 func (l *LAN) CompareACL(controllers []IController, permissions acl.ACL) error {
 	log.Debugf("%v", "Comparing ACL")
 

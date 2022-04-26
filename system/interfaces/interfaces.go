@@ -309,6 +309,25 @@ func (ii *Interfaces) SynchDoors(controllers []IController) {
 	}
 }
 
+func (ii *Interfaces) SynchEventListeners(controllers []IController) {
+	if lan, ok := ii.LAN(); ok {
+		var wg sync.WaitGroup
+
+		for _, c := range controllers {
+			wg.Add(1)
+
+			controller := c
+
+			go func(v IController) {
+				defer wg.Done()
+				lan.synchEventListener(controller)
+			}(controller)
+		}
+
+		wg.Wait()
+	}
+}
+
 func (ii *Interfaces) add(auth auth.OpAuth, l LAN) (*LAN, error) {
 	return nil, fmt.Errorf("NOT SUPPORTED")
 }
