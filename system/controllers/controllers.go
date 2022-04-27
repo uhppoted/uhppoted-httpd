@@ -62,8 +62,8 @@ func (cc *Controllers) AsObjects(a *auth.Authorizator) []schema.Object {
 	return objects
 }
 
-func (cc *Controllers) AsIControllers() []interfaces.IController {
-	list := []interfaces.IController{}
+func (cc *Controllers) AsIControllers() []types.IController {
+	list := []types.IController{}
 
 	for _, c := range cc.controllers {
 		if c.DeviceID != 0 && !c.IsDeleted() {

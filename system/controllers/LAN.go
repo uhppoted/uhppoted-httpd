@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
+	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
@@ -11,7 +12,7 @@ type LAN struct {
 }
 
 func (l *LAN) compare(controllers []*Controller, permissions acl.ACL) error {
-	devices := []interfaces.IController{}
+	devices := []types.IController{}
 	for _, c := range controllers {
 		if c.realized() {
 			devices = append(devices, c.AsIController())
@@ -22,7 +23,7 @@ func (l *LAN) compare(controllers []*Controller, permissions acl.ACL) error {
 }
 
 func (l *LAN) update(controllers []*Controller, permissions acl.ACL) error {
-	devices := []interfaces.IController{}
+	devices := []types.IController{}
 	for _, c := range controllers {
 		if c.realized() {
 			devices = append(devices, c.AsIController())

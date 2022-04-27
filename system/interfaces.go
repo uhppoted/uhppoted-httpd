@@ -46,7 +46,7 @@ func UpdateInterfaces(uid, role string, m map[string]interface{}) (interface{}, 
 		return nil, err
 	}
 
-	dbc.Commit()
+	dbc.Commit(&sys)
 
 	sys.interfaces.Interfaces = shadow
 	sys.updated()

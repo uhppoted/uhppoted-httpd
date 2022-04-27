@@ -3,7 +3,6 @@ package interfaces
 import (
 	"encoding/json"
 	"fmt"
-	"net"
 	"strings"
 	"sync"
 	"time"
@@ -19,15 +18,6 @@ import (
 type Interfaces struct {
 	lans map[schema.OID]*LAN
 	ch   chan types.EventsList
-}
-
-type IController interface {
-	OID() schema.OID
-	Name() string
-	ID() uint32
-	EndPoint() *net.UDPAddr
-	TimeZone() *time.Location
-	Door(uint8) (schema.OID, bool)
 }
 
 const BLANK = "'blank'"
@@ -196,7 +186,7 @@ func (ii Interfaces) Validate() error {
 	return nil
 }
 
-func (ii *Interfaces) Search(controllers []IController) []uint32 {
+func (ii *Interfaces) Search(controllers []types.IController) []uint32 {
 	var mutex sync.Mutex
 	var wg sync.WaitGroup
 	var found = map[uint32]struct{}{}
@@ -232,7 +222,7 @@ func (ii *Interfaces) Search(controllers []IController) []uint32 {
 	return list
 }
 
-func (ii *Interfaces) Refresh(controllers []IController) {
+func (ii *Interfaces) Refresh(controllers []types.IController) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup
 
@@ -241,7 +231,7 @@ func (ii *Interfaces) Refresh(controllers []IController) {
 
 			controller := c
 
-			go func(v IController) {
+			go func(v types.IController) {
 				defer wg.Done()
 				lan.refresh(controller)
 			}(controller)
@@ -251,7 +241,7 @@ func (ii *Interfaces) Refresh(controllers []IController) {
 	}
 }
 
-func (ii *Interfaces) GetEvents(controllers []IController, missing map[uint32][]types.Interval) {
+func (ii *Interfaces) GetEvents(controllers []types.IController, missing map[uint32][]types.Interval) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup
 
@@ -261,7 +251,7 @@ func (ii *Interfaces) GetEvents(controllers []IController, missing map[uint32][]
 			controller := c
 			intervals := missing[c.ID()]
 
-			go func(v IController) {
+			go func(v types.IController) {
 				defer wg.Done()
 				lan.getEvents(controller, intervals)
 			}(controller)
@@ -271,7 +261,13 @@ func (ii *Interfaces) GetEvents(controllers []IController, missing map[uint32][]
 	}
 }
 
-func (ii *Interfaces) SynchTime(controllers []IController) {
+func (ii *Interfaces) SetTime(controller types.IController, t time.Time) {
+	if lan, ok := ii.LAN(); ok {
+		lan.setTime(controller, t)
+	}
+}
+
+func (ii *Interfaces) SynchTime(controllers []types.IController) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup
 
@@ -280,7 +276,7 @@ func (ii *Interfaces) SynchTime(controllers []IController) {
 
 			controller := c
 
-			go func(v IController) {
+			go func(v types.IController) {
 				defer wg.Done()
 				lan.synchTime(controller)
 			}(controller)
@@ -290,7 +286,7 @@ func (ii *Interfaces) SynchTime(controllers []IController) {
 	}
 }
 
-func (ii *Interfaces) SynchDoors(controllers []IController) {
+func (ii *Interfaces) SynchDoors(controllers []types.IController) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup
 
@@ -299,7 +295,7 @@ func (ii *Interfaces) SynchDoors(controllers []IController) {
 
 			controller := c
 
-			go func(v IController) {
+			go func(v types.IController) {
 				defer wg.Done()
 				lan.synchDoors(controller)
 			}(controller)
@@ -309,7 +305,7 @@ func (ii *Interfaces) SynchDoors(controllers []IController) {
 	}
 }
 
-func (ii *Interfaces) SynchEventListeners(controllers []IController) {
+func (ii *Interfaces) SynchEventListeners(controllers []types.IController) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup
 
@@ -318,7 +314,7 @@ func (ii *Interfaces) SynchEventListeners(controllers []IController) {
 
 			controller := c
 
-			go func(v IController) {
+			go func(v types.IController) {
 				defer wg.Done()
 				lan.synchEventListener(controller)
 			}(controller)

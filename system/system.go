@@ -284,7 +284,7 @@ func (s *system) refresh() {
 		return
 	}
 
-	f := func(controllers []interfaces.IController) []uint32 {
+	f := func(controllers []types.IController) []uint32 {
 		list := []uint32{}
 		for _, c := range controllers {
 			list = append(list, c.ID())
@@ -331,11 +331,12 @@ func (s *system) updated() {
 
 	controllers := s.controllers.AsIControllers()
 
-	sys.taskQ.Add(Task{
-		f: func() {
-			s.interfaces.SynchTime(controllers)
-		},
-	})
+	// FIXME temporarily removed pending implementation of 'mode:monitor', 'mode:synchronize', etc
+	//	sys.taskQ.Add(Task{
+	//		f: func() {
+	//			s.interfaces.SynchTime(controllers)
+	//		},
+	//	})
 
 	sys.taskQ.Add(Task{
 		f: func() {
@@ -343,6 +344,7 @@ func (s *system) updated() {
 		},
 	})
 
+	// FIXME temporarily removed pending implementation of 'mode:monitor', 'mode:synchronize', etc
 	// sys.taskQ.Add(Task{
 	// 	f: func() {
 	// 		s.interfaces.SynchEventListeners(controllers)
@@ -354,6 +356,14 @@ func (s *system) updated() {
 			UpdateACL()
 		},
 	})
+}
+
+func (s *system) Update(controller types.IController, field schema.Suffix, value any) {
+	if field == schema.ControllerDateTime {
+		go func() {
+			s.interfaces.SetTime(controller, value.(time.Time))
+		}()
+	}
 }
 
 func (s *system) sweep() {

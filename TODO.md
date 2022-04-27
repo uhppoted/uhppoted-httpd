@@ -1,8 +1,14 @@
 ## v0.7.x
 
-- [ ] `monitor-only` 
-- [ ] Remove event listener stuff (not used)
-- (?) Updating timezone for all controllers to PDT
+- [x] Remove event listener stuff (not used)
+- [ ] Controller date/time
+      - [x] Update only changed controller
+      - [ ] Africa/Cairo not a valid TZ ?
+      - [ ] Rework system.updated and system.Update to be channels
+      - [ ] Move squoosh to dbc.Objects()
+
+- [ ] `mode:monitor` 
+- (?) `mode:synchronize`
 - [ ] Unify CompareACL and UpdateACL into SynchACL
       - [ ] wrap ACL update in goroutine
       - [ ] Error handling ??
@@ -42,27 +48,16 @@
 
 #### Cards
   - [ ] Weirdness around card add/delete
-        - [ ] Return error for edits to card without name or number (e.g.'new' card)
+        - [x] Return error for edits to card without name or number (e.g.'new' card)
         - [ ] What happens if other edits happen before card name/number is updated (e.g. for delete/add)?
 
-  - [ ] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
+  - [x] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] `refresh` is overwriting pending group edits
   - [ ] Replace dataset.original with value from DB
-  - [ ] Unit test for AsObjects
+  - [x] Unit test for AsObjects
 
 #### System
       - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name
-      - [x] Rethink controller device ID (pointer implementation is unnecessarily messy)
-
-      - (?) Export to uhppoted.conf
-            - 'export' command line argument 
-            - 'export' admin menu option
-            - 'auto-export' option (?)
-
-      - (?) Import from uhppoted.conf
-            - 'import' command line argument 
-            - 'import' admin menu option
-            - 'auto-import' option (?)
 
       - logic around correcting time is weird
         -- enter to update doesn't always work
@@ -97,6 +92,16 @@
 
 - [ ] User settings
       - automatic logout enabled/timeout
+
+      - (?) Export to uhppoted.conf
+            - 'export' command line argument 
+            - 'export' admin menu option
+            - 'auto-export' option (?)
+
+      - (?) Import from uhppoted.conf
+            - 'import' command line argument 
+            - 'import' admin menu option
+            - 'auto-import' option (?)
 
 ### Cleanup
 

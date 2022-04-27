@@ -54,7 +54,7 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 		return nil, err
 	}
 
-	dbc.Commit()
+	dbc.Commit(&sys)
 
 	sys.users.Users = shadow
 	sys.updated()
@@ -89,7 +89,7 @@ func SetPassword(uid, pwd string) error {
 		return err
 	}
 
-	dbc.Commit()
+	dbc.Commit(&sys)
 	sys.users.Users = shadow
 	sys.updated()
 

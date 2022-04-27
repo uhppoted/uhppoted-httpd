@@ -254,7 +254,7 @@ func (l LAN) Clone() LAN {
 	}
 }
 
-func (l *LAN) search(controllers []IController) ([]uint32, error) {
+func (l *LAN) search(controllers []types.IController) ([]uint32, error) {
 	list := []uint32{}
 
 	api := l.api(controllers)
@@ -272,10 +272,10 @@ func (l *LAN) search(controllers []IController) ([]uint32, error) {
 }
 
 // A long-running function i.e. expects to be invoked from an external goroutine
-func (l *LAN) refresh(c IController) {
+func (l *LAN) refresh(c types.IController) {
 	log.Infof("%v: refreshing LAN controller status", c.ID())
 
-	api := l.api([]IController{c})
+	api := l.api([]types.IController{c})
 	deviceID := uhppoted.DeviceID(c.ID())
 
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: deviceID}); err != nil {
@@ -326,8 +326,8 @@ func (l *LAN) refresh(c IController) {
 	}
 }
 
-func (l *LAN) getEvents(c IController, intervals []types.Interval) {
-	api := l.api([]IController{c})
+func (l *LAN) getEvents(c types.IController, intervals []types.Interval) {
+	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 	oid := c.OID()
 
@@ -405,8 +405,36 @@ func (l *LAN) getEvents(c IController, intervals []types.Interval) {
 	}
 }
 
-func (l *LAN) synchTime(c IController) {
-	api := l.api([]IController{c})
+func (l *LAN) setTime(c types.IController, t time.Time) {
+	api := l.api([]types.IController{c})
+	deviceID := uhppoted.DeviceID(c.ID())
+	location := c.TimeZone()
+	datetime := core.DateTime(t.In(location))
+
+	request := uhppoted.SetTimeRequest{
+		DeviceID: deviceID,
+		DateTime: datetime,
+	}
+
+	if response, err := api.SetTime(request); err != nil {
+		log.Warnf("%v", err)
+	} else if response != nil {
+		catalog.PutV(c.OID(), ControllerDateTimeModified, false)
+
+		if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: deviceID}); err != nil {
+			log.Warnf("%v", err)
+		} else if status == nil {
+			log.Warnf("Got %v response to get-status request for %v", status, deviceID)
+		} else {
+			catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
+		}
+
+		log.Infof("synchronized device-time %v %v", response.DeviceID, response.DateTime)
+	}
+}
+
+func (l *LAN) synchTime(c types.IController) {
+	api := l.api([]types.IController{c})
 	deviceID := uhppoted.DeviceID(c.ID())
 	location := c.TimeZone()
 	now := time.Now().In(location)
@@ -434,8 +462,8 @@ func (l *LAN) synchTime(c IController) {
 	}
 }
 
-func (l *LAN) synchDoors(c IController) {
-	api := l.api([]IController{c})
+func (l *LAN) synchDoors(c types.IController) {
+	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 
 	// ... update door delays
@@ -501,8 +529,8 @@ func (l *LAN) synchDoors(c IController) {
 	}
 }
 
-func (l *LAN) synchEventListener(c IController) {
-	api := l.api([]IController{c})
+func (l *LAN) synchEventListener(c types.IController) {
+	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 	addr := l.ListenAddress
 
@@ -516,7 +544,7 @@ func (l *LAN) synchEventListener(c IController) {
 	}
 }
 
-func (l *LAN) CompareACL(controllers []IController, permissions acl.ACL) error {
+func (l *LAN) CompareACL(controllers []types.IController, permissions acl.ACL) error {
 	log.Debugf("%v", "Comparing ACL")
 
 	devices := []uhppote.Device{}
@@ -572,7 +600,7 @@ func (l *LAN) CompareACL(controllers []IController, permissions acl.ACL) error {
 	return nil
 }
 
-func (l *LAN) UpdateACL(controllers []IController, permissions acl.ACL) error {
+func (l *LAN) UpdateACL(controllers []types.IController, permissions acl.ACL) error {
 	log.Infof("%v", "Updating ACL")
 
 	api := l.api(controllers)
@@ -597,7 +625,7 @@ func (l *LAN) status() types.Status {
 	return types.StatusOk
 }
 
-func (l *LAN) api(controllers []IController) *uhppoted.UHPPOTED {
+func (l *LAN) api(controllers []types.IController) *uhppoted.UHPPOTED {
 	devices := []uhppote.Device{}
 
 	for _, v := range controllers {

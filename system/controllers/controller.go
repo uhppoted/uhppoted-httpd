@@ -18,7 +18,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
-	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -246,7 +245,7 @@ func (c *Controller) AsRuleEntity() (string, interface{}) {
 	return "controller", &v
 }
 
-func (c *Controller) AsIController() interfaces.IController {
+func (c *Controller) AsIController() types.IController {
 	var endpoint *net.UDPAddr
 	var location *time.Location = time.Local
 	var doors = map[uint8]schema.OID{}
@@ -476,6 +475,8 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 						list = append(list, kv{ControllerDateTimeStatus, types.StatusUncertain})
 						list = append(list, kv{ControllerDateTime, dt.Format("2006-01-02 15:04 MST")})
 						list = append(list, kv{ControllerDateTimeModified, true})
+
+						dbc.Updated(c.AsIController(), ControllerDateTime, dt)
 					}
 				}
 			}

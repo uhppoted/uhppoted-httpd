@@ -10,6 +10,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/system/groups"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -25,11 +26,14 @@ func (d *dbc) Write(record audit.AuditRecord) {
 func (d *dbc) Stash(objects []schema.Object) {
 }
 
+func (d *dbc) Updated(controller types.IController, field schema.Suffix, value any) {
+}
+
 func (d *dbc) Objects() []schema.Object {
 	return []schema.Object{}
 }
 
-func (d *dbc) Commit() {
+func (d *dbc) Commit(sys db.System) {
 }
 
 func (d *dbc) SetPassword(uid, pwd, role string) error {
