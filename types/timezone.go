@@ -50,17 +50,10 @@ func Timezone(s string) (*time.Location, error) {
 		return time.FixedZone(fmt.Sprintf("UTC%+d", offset/3600), offset), nil
 	}
 
-	re := regexp.MustCompile("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} UTC([+-][0-9]+)")
+	re := regexp.MustCompile(`[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}(?:\:[0-9]{2})?\s+(.+)`)
 	if match := re.FindStringSubmatch(s); match != nil {
-		if offset, err := strconv.Atoi(match[1]); err == nil {
-			return time.FixedZone(fmt.Sprintf("UTC%+d", offset), offset*3600), nil
-		}
-	}
-
-	re = regexp.MustCompile("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2} UTC([+-][0-9]+)")
-	if match := re.FindStringSubmatch(s); match != nil {
-		if offset, err := strconv.Atoi(match[1]); err == nil {
-			return time.FixedZone(fmt.Sprintf("UTC%+d", offset), offset*3600), nil
+		if tz, err := time.LoadLocation(match[1]); err == nil {
+			return tz, nil
 		}
 	}
 

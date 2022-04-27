@@ -59,3 +59,17 @@ func TestTimezone(t *testing.T) {
 		}
 	}
 }
+
+func TestTimezoneAfricaCairo(t *testing.T) {
+	s := "2022-04-27 20:05:33 Africa/Cairo"
+	expected, _ := time.LoadLocation("Africa/Cairo")
+
+	tz, err := Timezone(s)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	if tz.String() != expected.String() {
+		t.Errorf("%s: incorrect timezone - expected:%v, got:%v", s, expected, tz)
+	}
+}

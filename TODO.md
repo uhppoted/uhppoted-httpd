@@ -3,8 +3,13 @@
 - [x] Remove event listener stuff (not used)
 - [ ] Controller date/time
       - [x] Update only changed controller
-      - [ ] Africa/Cairo not a valid TZ ?
+      - [x] Africa/Cairo not a valid TZ
+      - [ ] Africa/Cairo displaying as EET and wrong time
+      - (?) logic around correcting time is weird
+            - enter to update doesn't always work
+            - set() is updating dataset.original which seems wrong but ...
       - [ ] Rework system.updated and system.Update to be channels
+      - [ ] system.Update(door ....)
       - [ ] Move squoosh to dbc.Objects()
 
 - [ ] `mode:monitor` 
@@ -58,13 +63,8 @@
 
 #### System
       - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name
-
-      - logic around correcting time is weird
-        -- enter to update doesn't always work
-        -- set() is updating dataset.original which seems wrong but ...
-
-      - add controller name to uhppote-core
-      - add timezone to uhppote-core
+      - [x] Add controller name to uhppote-core
+      - [x] Add timezone to uhppote-core
       - validate Local::Device timezone on initialization
       - limit number of pending 'update' requests (e.g. if device is not responding)
       - use uhppoted-lib::healthcheck
@@ -90,9 +90,8 @@
       - progresss
       - indefinite
 
-- [ ] User settings
+- [ ] User menu
       - automatic logout enabled/timeout
-
       - (?) Export to uhppoted.conf
             - 'export' command line argument 
             - 'export' admin menu option
