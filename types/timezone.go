@@ -16,12 +16,12 @@ func Timezone(s string) (*time.Location, error) {
 		return time.Local, nil
 	}
 
-	t, err := time.ParseInLocation("2006-01-02 15:04:05 MST", s, utc)
+	t, err := time.ParseInLocation("2006-01-02 15:04:05 MST", strings.ToUpper(s), utc)
 	if err == nil {
 		return t.Location(), nil
 	}
 
-	t, err = time.ParseInLocation("2006-01-02 15:04 MST", s, utc)
+	t, err = time.ParseInLocation("2006-01-02 15:04 MST", strings.ToUpper(s), utc)
 	if err == nil {
 		return t.Location(), nil
 	}
@@ -38,13 +38,13 @@ func Timezone(s string) (*time.Location, error) {
 		return time.FixedZone(fmt.Sprintf("UTC%+d", offset/3600), offset), nil
 	}
 
-	t, err = time.Parse("2006-01-02 15:04:05 Z07:00", s)
+	t, err = time.Parse("2006-01-02 15:04:05 Z07:00", strings.ToUpper(s))
 	if err == nil {
 		_, offset := t.Zone()
 		return time.FixedZone(fmt.Sprintf("UTC%+d", offset/3600), offset), nil
 	}
 
-	t, err = time.Parse("2006-01-02 15:04 Z07:00", s)
+	t, err = time.Parse("2006-01-02 15:04 Z07:00", strings.ToUpper(s))
 	if err == nil {
 		_, offset := t.Zone()
 		return time.FixedZone(fmt.Sprintf("UTC%+d", offset/3600), offset), nil
@@ -72,7 +72,7 @@ func Timezone(s string) (*time.Location, error) {
 		return tz, nil
 	}
 
-	if match := re.FindStringSubmatch(s); match != nil {
+	if match := re.FindStringSubmatch(strings.ToUpper(s)); match != nil {
 		if offset, err := strconv.Atoi(match[1]); err == nil {
 			if offset != 0 {
 				return time.FixedZone(fmt.Sprintf("UTC%+d", offset), offset*3600), nil

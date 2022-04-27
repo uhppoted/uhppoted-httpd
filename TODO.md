@@ -3,8 +3,9 @@
 - [x] Remove event listener stuff (not used)
 - [ ] Controller date/time
       - [x] Update only changed controller
+      - [x] Allow lowercase timezones
       - [x] Africa/Cairo not a valid TZ
-      - [ ] Africa/Cairo displaying as EET and wrong time
+      - [ ] Africa/Cairo displaying as EET/EEET and wrong time
       - (?) logic around correcting time is weird
             - enter to update doesn't always work
             - set() is updating dataset.original which seems wrong but ...
