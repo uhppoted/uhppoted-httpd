@@ -1,6 +1,7 @@
 ## v0.7.x
 
-- [x] Synchronize listener address
+- [ ] `monitor-only` 
+- [ ] Remove event listener stuff (not used)
 - (?) Updating timezone for all controllers to PDT
 - [ ] Unify CompareACL and UpdateACL into SynchACL
       - [ ] wrap ACL update in goroutine

@@ -343,11 +343,11 @@ func (s *system) updated() {
 		},
 	})
 
-	sys.taskQ.Add(Task{
-		f: func() {
-			s.interfaces.SynchEventListeners(controllers)
-		},
-	})
+	// sys.taskQ.Add(Task{
+	// 	f: func() {
+	// 		s.interfaces.SynchEventListeners(controllers)
+	// 	},
+	// })
 
 	s.taskQ.Add(Task{
 		f: func() {

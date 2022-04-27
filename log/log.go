@@ -2,9 +2,9 @@ package log
 
 import (
 	"fmt"
-	syslog "log"
 	"os/exec"
-	"strings"
+
+	syslog "log"
 )
 
 var queue = make(chan string, 8)
@@ -39,10 +39,13 @@ func Warnf(format string, args ...any) {
 	s := fmt.Sprintf(format, args...)
 
 	syslog.Printf("%-5v %v", "WARN", s)
+}
 
-	if strings.HasPrefix(s, "INTERNAL SERVER ERROR") {
-		panic("ooops")
-	}
+func Fatalf(format string, args ...any) {
+	s := fmt.Sprintf(format, args...)
+
+	syslog.Printf("%-5v %v", "FATAL", s)
+	panic(s)
 }
 
 func say() {
