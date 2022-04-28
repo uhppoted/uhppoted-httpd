@@ -276,6 +276,7 @@ func (l *LAN) refresh(c types.IController) {
 	log.Infof("%v: refreshing LAN controller status", c.ID())
 
 	api := l.api([]types.IController{c})
+	deviceIDu := c.ID()
 	deviceID := uhppoted.DeviceID(c.ID())
 
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: deviceID}); err != nil {
@@ -287,13 +288,13 @@ func (l *LAN) refresh(c types.IController) {
 		catalog.PutV(c.OID(), ControllerEndpointAddress, core.Address(info.Address))
 	}
 
-	if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: deviceID}); err != nil {
+	if status, err := api.UHPPOTE.GetStatus(deviceIDu); err != nil {
 		log.Warnf("%v", err)
 	} else if status == nil {
 		log.Warnf("Got %v response to get-status request for %v", status, deviceID)
 	} else {
 		catalog.PutV(c.OID(), ControllerTouched, time.Now())
-		catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
+		catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.SystemDateTime)
 	}
 
 	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: deviceID}); err != nil {
@@ -407,29 +408,24 @@ func (l *LAN) getEvents(c types.IController, intervals []types.Interval) {
 
 func (l *LAN) setTime(c types.IController, t time.Time) {
 	api := l.api([]types.IController{c})
-	deviceID := uhppoted.DeviceID(c.ID())
+	deviceID := c.ID()
 	location := c.TimeZone()
-	datetime := core.DateTime(t.In(location))
+	datetime := time.Time(t.In(location))
 
-	request := uhppoted.SetTimeRequest{
-		DeviceID: deviceID,
-		DateTime: datetime,
-	}
-
-	if response, err := api.SetTime(request); err != nil {
+	if response, err := api.UHPPOTE.SetTime(deviceID, datetime); err != nil {
 		log.Warnf("%v", err)
 	} else if response != nil {
 		catalog.PutV(c.OID(), ControllerDateTimeModified, false)
 
-		if status, err := api.GetStatus(uhppoted.GetStatusRequest{DeviceID: deviceID}); err != nil {
+		if status, err := api.UHPPOTE.GetStatus(deviceID); err != nil {
 			log.Warnf("%v", err)
 		} else if status == nil {
 			log.Warnf("Got %v response to get-status request for %v", status, deviceID)
 		} else {
-			catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
+			catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.SystemDateTime)
 		}
 
-		log.Infof("synchronized device-time %v %v", response.DeviceID, response.DateTime)
+		log.Infof("synchronized device-time %v %v", deviceID, response.DateTime)
 	}
 }
 

@@ -1,17 +1,14 @@
 ## v0.7.x
 
-- [x] Remove event listener stuff (not used)
 - [ ] Controller date/time
-      - [x] Update only changed controller
-      - [x] Allow lowercase timezones
-      - [x] Africa/Cairo not a valid TZ
-      - [ ] Africa/Cairo displaying as EET/EEET and wrong time
-      - (?) logic around correcting time is weird
-            - enter to update doesn't always work
+      - [x] Africa/Cairo displaying as EET/EEET
+      - [ ] Date/time dropdown not working with Africa/Cairo
+      - (?) Logic around correcting time is weird
             - set() is updating dataset.original which seems wrong but ...
       - [ ] Rework system.updated and system.Update to be channels
       - [ ] system.Update(door ....)
       - [ ] Move squoosh to dbc.Objects()
+      - [ ] created/modified should be in UTC
 
 - [ ] `mode:monitor` 
 - (?) `mode:synchronize`
@@ -26,6 +23,7 @@
 - [ ] Cleanup audit log/logging
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError
+      - (?) maybe return SysError that might contain HTTP error
 - [ ] Make vtable'able subsystem an interface
 - [ ] Replace `guard` with embedded sync.Mutex
 - [ ] Remove BLANK thing everywhere
@@ -152,6 +150,8 @@
 
 
 ### Functionality
+
+- (?) Morton codes for catalog
 
 - [ ] [TOML](https://toml.io) files
 - [ ] Hamburger menu (?)
