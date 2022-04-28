@@ -27,33 +27,33 @@ class Combobox {
   }
 
   initialise () {
-      const now = new Date()
-      const options = new Set([...timezones.entries()].map(([tz, f]) => { return f(now, tz) }).sort())
+    const now = new Date()
+    const options = new Set([...timezones.entries()].map(([tz, f]) => { return f(now, tz) }).sort())
 
-      for (const e of [...(this.list.children)]) {
-        this.list.removeChild(e)
-      }
+    for (const e of [...(this.list.children)]) {
+      this.list.removeChild(e)
+    }
 
-      this.options.length = 0
-      this.first = null
-      this.last = null
+    this.options.length = 0
+    this.first = null
+    this.last = null
 
-      options.forEach(o => {
-        const li = document.createElement('li')
+    options.forEach(o => {
+      const li = document.createElement('li')
 
-        li.appendChild(document.createTextNode(o))
-        li.addEventListener('click', this.onOptionClick.bind(this))
-        li.addEventListener('mouseover', this.onMouseOver.bind(this))
-        li.addEventListener('mouseout', this.onMouseOut.bind(this))
+      li.appendChild(document.createTextNode(o))
+      li.addEventListener('click', this.onOptionClick.bind(this))
+      li.addEventListener('mouseover', this.onMouseOver.bind(this))
+      li.addEventListener('mouseout', this.onMouseOut.bind(this))
 
-        this.list.appendChild(li)
-        this.options.push(li)
-      })
+      this.list.appendChild(li)
+      this.options.push(li)
+    })
 
-      if (this.options.length > 0) {
-        this.first = this.options[0]
-        this.last = this.options[this.options.length - 1]
-      }
+    if (this.options.length > 0) {
+      this.first = this.options[0]
+      this.last = this.options[this.options.length - 1]
+    }
   }
 
   setValue (value) {
@@ -332,6 +332,6 @@ export function initialise (combobox) {
 
 export function set (cb, dt) {
   if (dt && !Number.isNaN(dt)) {
-      // ??? What to do ??
+    // ??? What to do ??
   }
 }

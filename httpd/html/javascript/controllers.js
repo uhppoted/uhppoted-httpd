@@ -158,7 +158,7 @@ function updateFromDB (oid, record) {
 
   // ... set record values
 
-  row.dataset.status = record.status
+  row.dataset.status = record.statu
 
   update(name, record.name)
   update(deviceID, record.deviceID)
@@ -176,7 +176,7 @@ function updateFromDB (oid, record) {
 
   // .. initialise date/time picker
   const cb = dropdowns.get(`${oid}${schema.controllers.datetime.current}`)
-  
+
   if (cb) {
     combobox.set(cb, Date.parse(record.datetime.datetime))
   }

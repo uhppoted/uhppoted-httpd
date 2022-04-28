@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"math"
 	"net"
 	"regexp"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -167,6 +167,7 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 
 				// ... get system date/time field from cached value
 				if !cached.datetime.datetime.IsZero() {
+					// FIXME: either use controllers.timezone or types.Timezone consistently
 					tz := timezone(c.timezone)
 					now := time.Now().In(tz)
 					t := time.Time(cached.datetime.datetime)
@@ -458,6 +459,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		}
 
 	case OID.Append(ControllerDateTimeCurrent):
+		// FIXME: either use controllers.timezone or types.Timezone consistently
 		if tz, err := types.Timezone(value); err != nil {
 			return nil, err
 		} else if err := f("timezone", tz); err != nil {
@@ -469,9 +471,12 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 			if c.DeviceID != 0 {
 				if cached := c.get(); cached != nil {
 					if !cached.datetime.datetime.IsZero() {
+						// FIXME: either use controllers.timezone or types.Timezone consistently
 						tz := timezone(c.timezone)
-						t := time.Time(cached.datetime.datetime)
-						dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+						// t := time.Time(cached.datetime.datetime)
+						// dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+						dt := time.Now().In(tz)
+
 						list = append(list, kv{ControllerDateTimeStatus, types.StatusUncertain})
 						list = append(list, kv{ControllerDateTime, dt.Format("2006-01-02 15:04 MST")})
 						list = append(list, kv{ControllerDateTimeModified, true})
@@ -626,12 +631,12 @@ func (c *Controller) refreshed() {
 			}
 		}
 
-		log.Printf("Controller %v cached values expired", c)
+		log.Infof("Controller %v cached values expired", c)
 
 		if c.modified.IsZero() {
 			c.deleted = types.TimestampNow()
 			catalog.DeleteT(c.CatalogController, c.OID)
-			log.Printf("'unconfigured' controller %v removed", c)
+			log.Infof("'unconfigured' controller %v removed", c)
 		}
 	}
 }

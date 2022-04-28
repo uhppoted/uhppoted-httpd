@@ -425,7 +425,7 @@ func (l *LAN) setTime(c types.IController, t time.Time) {
 			catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.SystemDateTime)
 		}
 
-		log.Infof("synchronized device-time %v %v", deviceID, response.DateTime)
+		log.Infof("Set controller time %v %v", deviceID, response.DateTime)
 	}
 }
 
@@ -454,7 +454,7 @@ func (l *LAN) synchTime(c types.IController) {
 			catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.Status.SystemDateTime)
 		}
 
-		log.Infof("synchronized device-time %v %v", response.DeviceID, response.DateTime)
+		log.Infof("Synchronized controller time %v %v", response.DeviceID, response.DateTime)
 	}
 }
 

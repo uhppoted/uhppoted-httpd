@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"time"
 )
 
@@ -71,6 +72,14 @@ func timezone(tz string) *time.Location {
 		_, offset := time.Now().In(location).Zone()
 
 		return time.FixedZone(location.String(), offset)
+	}
+
+	// Workaround for 'PDT unknown timezone' (ref. https://github.com/golang/go/issues/12388)
+	now := fmt.Sprintf("%v %v", time.Now().Format("2006-01-02 15:04:05"), tz)
+	if t, err := time.ParseInLocation("2006-01-02 15:04:05 MST", now, time.Local); err == nil {
+		zone, offset := time.Now().In(t.Location()).Zone()
+
+		return time.FixedZone(zone, offset)
 	}
 
 	// ... default to Local

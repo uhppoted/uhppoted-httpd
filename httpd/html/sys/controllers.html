@@ -52,17 +52,6 @@
                           data-original=""
                           data-value="" /></td>
             </tr>
-<!--            
-            <tr>
-              <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Listen }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
-              <td>listen:</td>
-              <td><input type="text" class="listen" value="" placeholder="-"
-                          onchange="onEdited('interface', event)" 
-                          data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Listen }}"
-                          data-original=""
-                          data-value="" /></td>
-            </tr>
--->            
           </table>
 
           <div id="controls" data-oid="{{ .schema.Controllers.OID }}">
@@ -149,8 +138,8 @@
                          value=""
                          placeholder="-"
                          autocomplete="off" 
-                         onkeydown="onEnter('controller', event)" 
-                         onchange="onEdited('controller', event)" 
+                         onkeydown="onDateTime('controller', event)"
+                         onchange="onDateTime('controller', event)"
                          data-record=""
                          data-original=""
                          data-value=""
@@ -316,6 +305,12 @@
         console.debug('onMenu is not defined')
       }
     }
+
+    function onDateTime(tag,event) {
+      event.target.dataset.original = ''
+      onEdited(tag,event)
+    }
+
   </script>
 
 </html>
