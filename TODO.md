@@ -2,8 +2,9 @@
 
 - [ ] Controller date/time
       - [x] Africa/Cairo displaying as EET/EEET
-      - [ ] Date/time dropdown not working with Africa/Cairo
-      - (?) Logic around correcting time is weird
+      - [x] Date/time dropdown not working with Africa/Cairo
+      - [ ] Logic around correcting time is weird
+            - [ ] Doesn't set modified on enter or click
             - set() is updating dataset.original which seems wrong but ...
       - [ ] Rework system.updated and system.Update to be channels
       - [ ] system.Update(door ....)

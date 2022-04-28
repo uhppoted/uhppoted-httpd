@@ -26,9 +26,8 @@ class Combobox {
     this.list.addEventListener('mouseout', this.onMouseOut.bind(this))
   }
 
-  initialise (dt) {
-    if (dt && !Number.isNaN(dt)) {
-      const now = new Date(dt)
+  initialise () {
+      const now = new Date()
       const options = new Set([...timezones.entries()].map(([tz, f]) => { return f(now, tz) }).sort())
 
       for (const e of [...(this.list.children)]) {
@@ -55,7 +54,6 @@ class Combobox {
         this.first = this.options[0]
         this.last = this.options[this.options.length - 1]
       }
-    }
   }
 
   setValue (value) {
@@ -327,9 +325,13 @@ export function initialise (combobox) {
   const list = combobox.querySelector('ul')
   const cb = new Combobox(input, list)
 
+  cb.initialise()
+
   return cb
 }
 
 export function set (cb, dt) {
-  cb.initialise(dt)
+  if (dt && !Number.isNaN(dt)) {
+      // ??? What to do ??
+  }
 }
