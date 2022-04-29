@@ -9,6 +9,7 @@ import (
 func TestTimezone(t *testing.T) {
 	local := time.Local
 	pst := time.FixedZone("PST", +8*60*60) // NOTE: this is potentially problematic - there doesn't seem to be a way to reliably get a timezone by short code
+	pdt := time.FixedZone("PDT", +7*60*60) // NOTE: ditto
 	mst, _ := time.LoadLocation("MST")
 	utc, _ := time.LoadLocation("UTC")
 	utc7p := time.FixedZone("UTC+7", +7*60*60)
@@ -20,6 +21,7 @@ func TestTimezone(t *testing.T) {
 	}{
 		{"", local},
 		{"2021-02-18 12:26:23 PST", pst},
+		{"2021-02-18 12:26:23 PDT", pdt},
 		{"2021-02-18 12:26:23 MST", mst},
 		{"2021-02-18 12:26:23 UTC", utc},
 		{"2021-02-18 12:26:23 UTC+7", utc7p},
@@ -33,6 +35,7 @@ func TestTimezone(t *testing.T) {
 		{"2021-02-18 12:26:23 utc-7", utc7n},
 
 		{"2021-02-18 12:26 PST", pst},
+		{"2021-02-18 12:26 PDT", pdt},
 		{"2021-02-18 12:26 MST", mst},
 		{"2021-02-18 12:26 UTC", utc},
 		{"2021-02-18 12:26 UTC+7", utc7p},
@@ -42,6 +45,9 @@ func TestTimezone(t *testing.T) {
 		{"2021-02-18 12:26 -0700", utc7n},
 		{"2021-02-18 12:26 -07:00", utc7n},
 		{"2021-02-18 12:26", local},
+
+		{"PST", pst},
+		{"PDT", pdt},
 
 		{"UTC", utc},
 		{"UTC+0", utc},
@@ -63,15 +69,16 @@ func TestTimezone(t *testing.T) {
 }
 
 func TestTimezoneAfricaCairo(t *testing.T) {
-	s := "2022-04-27 20:05:33 Africa/Cairo"
-	expected, _ := time.LoadLocation("Africa/Cairo")
+	expected := "Africa/Cairo"
 
-	tz, err := Timezone(s)
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
+	for _, s := range []string{"2022-04-27 20:05:33 Africa/Cairo", "Africa/Cairo"} {
+		tz, err := Timezone(s)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
 
-	if tz.String() != expected.String() {
-		t.Errorf("%s: incorrect timezone - expected:%v, got:%v", s, expected, tz)
+		if tz.String() != expected {
+			t.Errorf("%s: incorrect timezone - expected:%v, got:%v", s, expected, tz)
+		}
 	}
 }

@@ -85,7 +85,7 @@ release: update-release build-all
 
 debug: format
 	go build -trimpath -o bin ./...
-	go test -run TestTimezone ./types
+	go test -run TestTimezoneAfricaCairo ./types
 
 delve: format
 	go build -trimpath -o bin ./...

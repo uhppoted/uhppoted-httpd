@@ -167,8 +167,11 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 
 				// ... get system date/time field from cached value
 				if !cached.datetime.datetime.IsZero() {
-					// FIXME: either use controllers.timezone or types.Timezone consistently
-					tz := timezone(c.timezone)
+					tz, err := types.Timezone(c.timezone)
+					if err != nil {
+						tz = time.Local
+					}
+
 					now := time.Now().In(tz)
 					t := time.Time(cached.datetime.datetime)
 					T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
@@ -471,10 +474,11 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 			if c.DeviceID != 0 {
 				if cached := c.get(); cached != nil {
 					if !cached.datetime.datetime.IsZero() {
-						// FIXME: either use controllers.timezone or types.Timezone consistently
-						tz := timezone(c.timezone)
-						// t := time.Time(cached.datetime.datetime)
-						// dt := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+						tz, err := types.Timezone(c.timezone)
+						if err != nil {
+							tz = time.Local
+						}
+
 						dt := time.Now().In(tz)
 
 						list = append(list, kv{ControllerDateTimeStatus, types.StatusUncertain})

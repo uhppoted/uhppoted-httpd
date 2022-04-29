@@ -53,7 +53,9 @@ func Timezone(s string) (*time.Location, error) {
 	re := regexp.MustCompile(`[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}(?:\:[0-9]{2})?\s+(.+)`)
 	if match := re.FindStringSubmatch(s); match != nil {
 		if tz, err := time.LoadLocation(match[1]); err == nil {
-			return tz, nil
+			_, offset := time.Now().In(tz).Zone()
+
+			return time.FixedZone(tz.String(), offset), nil
 		}
 	}
 
@@ -67,11 +69,14 @@ func Timezone(s string) (*time.Location, error) {
 		return time.Local, nil
 	}
 
-	re = regexp.MustCompile("UTC([+-][0-9]{1,2})")
+	// e.g. Africa/Cairo
 	if tz, err := time.LoadLocation(s); err == nil {
-		return tz, nil
+		_, offset := time.Now().In(tz).Zone()
+
+		return time.FixedZone(tz.String(), offset), nil
 	}
 
+	re = regexp.MustCompile("UTC([+-][0-9]{1,2})")
 	if match := re.FindStringSubmatch(strings.ToUpper(s)); match != nil {
 		if offset, err := strconv.Atoi(match[1]); err == nil {
 			if offset != 0 {
@@ -82,6 +87,14 @@ func Timezone(s string) (*time.Location, error) {
 				return tz, nil
 			}
 		}
+	}
+
+	// Workaround for 'PDT unknown timezone' (ref. https://github.com/golang/go/issues/12388)
+	now := fmt.Sprintf("%v %v", time.Now().Format("2006-01-02 15:04:05"), s)
+	if t, err := time.ParseInLocation("2006-01-02 15:04:05 MST", now, utc); err == nil {
+		zone, offset := time.Now().In(t.Location()).Zone()
+
+		return time.FixedZone(zone, offset), nil
 	}
 
 	return nil, fmt.Errorf("Invalid timezone (%v)", s)

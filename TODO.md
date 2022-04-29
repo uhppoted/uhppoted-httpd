@@ -1,13 +1,10 @@
 ## v0.7.x
 
 - [ ] Controller date/time
-      - [x] Africa/Cairo displaying as EET/EEET
-      - [x] Date/time dropdown not working with Africa/Cairo
       - [ ] Logic around correcting time is weird
-            - [x] Doesn't set modified on enter/selected
-            - [x] Doesn't recognize PDT
             - [ ] Doesn't recognize GMT+2
-            - [ ] Controller uses types.Timezone and local `timezone`
+            - [ ] PDT time is set incorrectly to UTC
+            - [x] Controller uses types.Timezone and local `timezone`
             - [ ] Not styled as modified on enter/selected
             - [ ] Showing unmodified time until refreshed
             - (?) set() is updating dataset.original which seems wrong but ...
