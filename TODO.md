@@ -5,7 +5,7 @@
             - [x] Doesn't recognize GMT+2
             - [x] PDT time is set incorrectly to UTC
             - [x] Controller uses types.Timezone and local `timezone`
-            - [ ] Don't display 'Local'
+            - [x] Don't display 'Local'
             - [ ] Not styled as modified on enter/selected
             - [ ] Showing unmodified time until refreshed
             - (?) set() is updating dataset.original which seems wrong but ...
@@ -13,7 +13,7 @@
       - [ ] Rework system.updated and system.Update to be channels
       - [ ] system.Update(door ....)
       - [ ] Move squoosh to dbc.Objects()
-      - [ ] created/modified should be in UTC
+      - [ ] created/modified should be serialized as UTC
 
 - [ ] `mode:monitor` 
 - (?) `mode:synchronize`

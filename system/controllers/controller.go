@@ -177,8 +177,13 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 					T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
 					delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
 
-					datetime.datetime = T.Format("2006-01-02 15:04:05 MST")
-					datetime.system = now.Format("2006-01-02 15:04:05 MST")
+					if tz.String() == time.Local.String() {
+						datetime.datetime = T.Format("2006-01-02 15:04:05")
+						datetime.system = now.Format("2006-01-02 15:04:05")
+					} else {
+						datetime.datetime = T.Format("2006-01-02 15:04:05 MST")
+						datetime.system = now.Format("2006-01-02 15:04:05 MST")
+					}
 
 					switch {
 					case cached.datetime.modified:
