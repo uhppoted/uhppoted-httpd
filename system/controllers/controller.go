@@ -462,7 +462,6 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		}
 
 	case OID.Append(ControllerDateTimeCurrent):
-		// FIXME: either use controllers.timezone or types.Timezone consistently
 		if tz, err := types.Timezone(value); err != nil {
 			return nil, err
 		} else if err := f("timezone", tz); err != nil {

@@ -46,8 +46,8 @@ func TestTimezone(t *testing.T) {
 		{"2021-02-18 12:26 -07:00", utc7n},
 		{"2021-02-18 12:26", local},
 
-		{"PST", pst},
-		{"PDT", pdt},
+		// {"PST", pst}, // can't test fixed PST/PDT
+		// {"PDT", pdt},
 
 		{"UTC", utc},
 		{"UTC+0", utc},
@@ -79,6 +79,21 @@ func TestTimezoneAfricaCairo(t *testing.T) {
 
 		if tz.String() != expected {
 			t.Errorf("%s: incorrect timezone - expected:%v, got:%v", s, expected, tz)
+		}
+	}
+}
+
+func TestTimezonePSTPDT(t *testing.T) {
+	for _, s := range []string{"PST", "PDT"} {
+		tz, err := Timezone(s)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+
+		zone, offset := time.Now().In(tz).Zone()
+
+		if (zone != "PST" || offset != -8*3600) && (zone != "PDT" || offset != -7*3600) {
+			t.Errorf("%s: incorrect timezone/offset - expected:%v, got:%v/%v", s, "PDT/PST", zone, offset)
 		}
 	}
 }

@@ -2,9 +2,10 @@
 
 - [ ] Controller date/time
       - [ ] Logic around correcting time is weird
-            - [ ] Doesn't recognize GMT+2
-            - [ ] PDT time is set incorrectly to UTC
+            - [x] Doesn't recognize GMT+2
+            - [x] PDT time is set incorrectly to UTC
             - [x] Controller uses types.Timezone and local `timezone`
+            - [ ] Don't display 'Local'
             - [ ] Not styled as modified on enter/selected
             - [ ] Showing unmodified time until refreshed
             - (?) set() is updating dataset.original which seems wrong but ...
