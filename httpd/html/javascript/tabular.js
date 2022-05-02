@@ -380,13 +380,18 @@ export function revert (row) {
   const fields = row.querySelectorAll('.field')
 
   fields.forEach((item) => {
-    if (item && item.type === 'checkbox') {
-      item.checked = item.dataset.original === 'true'
-    } else {
-      item.value = item.dataset.original
+    let [value,ok] = DB.get(item.dataset.oid)
+    if (!ok) {
+      value = item.dataset.original
     }
 
-    set(item, item.dataset.original, item.dataset.status)
+    if (item && item.type === 'checkbox') {
+      item.checked = value === 'true'
+    } else {
+      item.value = value
+    }
+
+    set(item, value, item.dataset.status)
   })
 
   row.classList.remove('modified')

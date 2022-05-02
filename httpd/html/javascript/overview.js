@@ -156,7 +156,7 @@ function updateController (oid, record) {
   update(door3, doors.get(record.doors[3]))
   update(door4, doors.get(record.doors[4]))
 
-  datetime.dataset.original = record.datetime.expected
+  datetime.dataset.original = record.datetime.configured
 
   return row
 }

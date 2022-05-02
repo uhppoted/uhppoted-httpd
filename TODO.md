@@ -5,6 +5,7 @@
             - [x] Showing unmodified time until refreshed
             - [x] `flag` field has gone missing
             - [ ] rollback clears endpoint and date/time ?????????
+                  - dataset.original is being mysteriously cleared somewhere
             - [ ] PSTPDT timezone test fails on github
             - (?) set() is updating dataset.original which seems wrong but ...
                   -- because it's used by updateFromDB as well as onEdited

@@ -31,6 +31,10 @@ class DBC {
       }
     }
 
+    this.get = function (oid) {
+      return [null,false]
+    }
+
     this.updated = function (tag, recordset) {
       if (recordset) {
         switch (tag) {

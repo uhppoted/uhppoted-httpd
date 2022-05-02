@@ -241,7 +241,7 @@ export function onReload () {
   }).then(response => {
     window.location = '/index.html'
   }).catch(function (err) {
-    console.log(err)
+    console.error(err)
     message.innerHTML = '(still offline)'
   })
 }

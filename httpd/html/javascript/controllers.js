@@ -161,7 +161,6 @@ function updateFromDB (oid, record) {
   row.dataset.status = record.status
 
   const dt = record.datetime.status === 'uncertain' ? record.datetime.configured : record.datetime.datetime
-  console.log('>>', record.deviceID, record.datetime.status, record.datetime.configured, record.datetime.datetime)
 
   update(name, record.name)
   update(deviceID, record.deviceID)
