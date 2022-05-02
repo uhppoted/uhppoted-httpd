@@ -41,10 +41,10 @@ type Controllers struct {
 		Configured Suffix `json:"configured"`
 	} `json:"endpoint"`
 	DateTime struct {
-		Status   Suffix `json:"status"`
-		Current  Suffix `json:"datetime"`
-		System   Suffix `json:"system"`
-		Modified Suffix `json:"modified"`
+		Status     Suffix `json:"status"`
+		Current    Suffix `json:"datetime"`
+		Configured Suffix `json:"configured"`
+		Modified   Suffix `json:"modified"`
 	} `json:"datetime"`
 	Cards struct {
 		Status Suffix `json:"status"`
@@ -188,15 +188,15 @@ var schema = Schema{
 			Configured: ControllerEndpointConfigured,
 		},
 		DateTime: struct {
-			Status   Suffix `json:"status"`
-			Current  Suffix `json:"datetime"`
-			System   Suffix `json:"system"`
-			Modified Suffix `json:"modified"`
+			Status     Suffix `json:"status"`
+			Current    Suffix `json:"datetime"`
+			Configured Suffix `json:"configured"`
+			Modified   Suffix `json:"modified"`
 		}{
-			Status:   ControllerDateTimeStatus,
-			Current:  ControllerDateTimeCurrent,
-			System:   ControllerDateTimeSystem,
-			Modified: ControllerDateTimeModified,
+			Status:     ControllerDateTimeStatus,
+			Current:    ControllerDateTimeCurrent,
+			Configured: ControllerDateTimeConfigured,
+			Modified:   ControllerDateTimeModified,
 		},
 		Cards: struct {
 			Status Suffix `json:"status"`
@@ -374,7 +374,7 @@ const ControllerEndpointConfigured Suffix = ".3.2"
 const ControllerDateTime Suffix = ".4" //TODO Fix when rationalizing the whole date/time/timezone mess
 const ControllerDateTimeStatus Suffix = ".4.0"
 const ControllerDateTimeCurrent Suffix = ".4.1"
-const ControllerDateTimeSystem Suffix = ".4.2"
+const ControllerDateTimeConfigured Suffix = ".4.2"
 const ControllerDateTimeModified Suffix = ".4.3"
 const ControllerCardsStatus Suffix = ".5.0"
 const ControllerCardsCount Suffix = ".5.1"

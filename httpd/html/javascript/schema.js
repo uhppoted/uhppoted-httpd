@@ -35,7 +35,7 @@ export const schema = {
     datetime: {
       status: '.4.0',
       current: '.4.1',
-      system: '.4.2'
+      configured: '.4.2'
     },
     cards: {
       status: '.5.0',

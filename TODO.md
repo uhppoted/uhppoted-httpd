@@ -2,12 +2,10 @@
 
 - [ ] Controller date/time
       - [ ] Logic around correcting time is weird
-            - [x] Doesn't recognize GMT+2
-            - [x] PDT time is set incorrectly to UTC
-            - [x] Controller uses types.Timezone and local `timezone`
-            - [x] Don't display 'Local'
-            - [ ] Not styled as modified on enter/selected
-            - [ ] Showing unmodified time until refreshed
+            - [x] Showing unmodified time until refreshed
+            - [ ] `flag` field has gone missing
+            - [ ] rollback clears endpoint and date/time ?????????
+            - [ ] PSTPDT timezone test fails on github
             - (?) set() is updating dataset.original which seems wrong but ...
                   -- because it's used by updateFromDB as well as onEdited
       - [ ] Rework system.updated and system.Update to be channels
@@ -231,6 +229,8 @@
 - [Riffle](https://riffle.systems/essays/prelude)
 - [SASL](https://inspektor.cloud/blog/password-based-authentication-without-tls-using-sasl)
   - https://en.wikipedia.org/wiki/Salted_Challenge_Response_Authentication_Mechanism
+- https://maori.geek.nz/golang-desktop-app-webview-vs-lorca-vs-electron-a5e6b2869391
+- https://github.com/wailsapp/wails
 
 # REFERENCES
 

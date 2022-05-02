@@ -28,7 +28,7 @@ const ControllerEndpointConfigured = schema.ControllerEndpointConfigured
 const ControllerDateTime = schema.ControllerDateTime
 const ControllerDateTimeStatus = schema.ControllerDateTimeStatus
 const ControllerDateTimeCurrent = schema.ControllerDateTimeCurrent
-const ControllerDateTimeSystem = schema.ControllerDateTimeSystem
+const ControllerDateTimeConfigured = schema.ControllerDateTimeConfigured
 const ControllerDateTimeModified = schema.ControllerDateTimeModified
 const ControllerCardsStatus = schema.ControllerCardsStatus
 const ControllerCardsCount = schema.ControllerCardsCount
@@ -54,7 +54,7 @@ var lookup = map[schema.Suffix]string{
 	ControllerDateTime:           "controller.datetime",
 	ControllerDateTimeStatus:     "controller.datetime.status",
 	ControllerDateTimeCurrent:    "controller.datetime.current",
-	ControllerDateTimeSystem:     "controller.datetime.system",
+	ControllerDateTimeConfigured: "controller.datetime.configured",
 	ControllerDateTimeModified:   "controller.datetime.modified",
 	ControllerCardsStatus:        "controller.cards.status",
 	ControllerCardsCount:         "controller.cards.count",

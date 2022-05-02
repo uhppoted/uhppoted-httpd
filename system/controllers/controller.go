@@ -107,9 +107,9 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		}
 
 		type tinfo struct {
-			datetime string
-			system   string
-			status   types.Status
+			datetime   string
+			configured string
+			status     types.Status
 		}
 
 		type cinfo struct {
@@ -179,10 +179,10 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 
 					if tz.String() == time.Local.String() {
 						datetime.datetime = T.Format("2006-01-02 15:04:05")
-						datetime.system = now.Format("2006-01-02 15:04:05")
+						datetime.configured = now.Format("2006-01-02 15:04:05")
 					} else {
 						datetime.datetime = T.Format("2006-01-02 15:04:05 MST")
-						datetime.system = now.Format("2006-01-02 15:04:05 MST")
+						datetime.configured = now.Format("2006-01-02 15:04:05 MST")
 					}
 
 					switch {
@@ -224,7 +224,7 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{ControllerEndpointConfigured, address.configured})
 		list = append(list, kv{ControllerDateTimeStatus, datetime.status})
 		list = append(list, kv{ControllerDateTimeCurrent, datetime.datetime})
-		list = append(list, kv{ControllerDateTimeSystem, datetime.system})
+		list = append(list, kv{ControllerDateTimeConfigured, datetime.configured})
 		list = append(list, kv{ControllerCardsStatus, cards.status})
 		list = append(list, kv{ControllerCardsCount, cards.cards})
 		list = append(list, kv{ControllerEventsStatus, events.status})
@@ -486,8 +486,14 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 						dt := time.Now().In(tz)
 
 						list = append(list, kv{ControllerDateTimeStatus, types.StatusUncertain})
-						list = append(list, kv{ControllerDateTime, dt.Format("2006-01-02 15:04 MST")})
+						list = append(list, kv{ControllerDateTimeConfigured, dt.Format("2006-01-02 15:04 MST")})
 						list = append(list, kv{ControllerDateTimeModified, true})
+
+						if tz.String() == time.Local.String() {
+							list = append(list, kv{ControllerDateTimeConfigured, dt.Format("2006-01-02 15:04")})
+						} else {
+							list = append(list, kv{ControllerDateTimeConfigured, dt.Format("2006-01-02 15:04 MST")})
+						}
 
 						dbc.Updated(c.AsIController(), ControllerDateTime, dt)
 					}

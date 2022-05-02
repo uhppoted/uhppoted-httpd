@@ -210,7 +210,7 @@ function controllers (o) {
       name: '',
       deviceID: '',
       address: { address: '', configured: '', status: 'unknown' },
-      datetime: { datetime: '', expected: '', status: 'unknown' },
+      datetime: { datetime: '', configured: '', status: 'unknown' },
       cards: { cards: '', status: 'unknown' },
       events: { events: '', status: 'unknown' },
       doors: { 1: '', 2: '', 3: '', 4: '' },
@@ -264,8 +264,8 @@ function controllers (o) {
       v.datetime.datetime = o.value
       break
 
-    case `${base}${schema.controllers.datetime.system}`:
-      v.datetime.expected = o.value
+    case `${base}${schema.controllers.datetime.configured}`:
+      v.datetime.configured = o.value
       break
 
     case `${base}${schema.controllers.cards.status}`:
