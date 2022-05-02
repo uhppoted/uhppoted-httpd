@@ -379,6 +379,10 @@ tr td:last-child {
   width: 100%;
 }
 
+tr td img.flag {
+  visibility: hidden;
+}
+
 tr td img.flag.modified {
   filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
   visibility: visible;

@@ -476,22 +476,6 @@ div.tabular table td img.flag {
   top: 0px;
   width: 10px;
   height: 10px;
-  visibility: hidden;
-}
-
-div.tabular table td.modified img.flag {
-  filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
-  visibility: visible;
-}
-
-div.tabular table td.pending img.flag {
-  filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
-  visibility: visible;
-}
-
-div.tabular table td.conflict img.flag {
-  filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
-  visibility: visible;
 }
 
 div.tabular table td.conflict input {
@@ -574,6 +558,10 @@ tr {
 
 tr td:last-child {
   width: 100%;
+}
+
+tr td img.flag {
+  visibility: hidden;
 }
 
 tr td img.flag.modified {

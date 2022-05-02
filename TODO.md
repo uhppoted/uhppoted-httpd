@@ -3,7 +3,7 @@
 - [ ] Controller date/time
       - [ ] Logic around correcting time is weird
             - [x] Showing unmodified time until refreshed
-            - [ ] `flag` field has gone missing
+            - [x] `flag` field has gone missing
             - [ ] rollback clears endpoint and date/time ?????????
             - [ ] PSTPDT timezone test fails on github
             - (?) set() is updating dataset.original which seems wrong but ...

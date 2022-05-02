@@ -36,23 +36,7 @@ table.interface td img.flag {
   height: 6px;
   margin-left: 0px;
   margin-right: 6px;
-  visibility: hidden;
  }
-
-table.interface td img.flag.modified {
-   filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
-   visibility: visible;
-}
-
-table.interface td img.flag.pending {
-   filter: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
-   visibility: visible;
-}
-
-table.interface td img.flag.conflict {
-   filter: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
-   visibility: visible;
-}
 
 table.interface td input {
   padding: 2px 4px 2px 4px;
