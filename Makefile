@@ -85,7 +85,7 @@ release: update-release build-all
 
 debug: format
 	go build -trimpath -o bin ./...
-	go test -run TestTimezonePDT ./types
+	go test -run TestTimezonePSTPDT ./types
 
 delve: format
 	go build -trimpath -o bin ./...

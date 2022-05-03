@@ -15,6 +15,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type Run struct {
@@ -65,6 +66,12 @@ func (cmd *Run) execute(f func(c config.Config)) error {
 	conf := config.NewConfig()
 	if err := conf.Load(cmd.configuration); err != nil {
 		log.Printf("%5s Could not load configuration (%v)", "WARN", err)
+	}
+
+	// ... initialise timezones
+
+	if conf.HTTPD.Timezones != "" {
+		types.LoadTimezones(conf.HTTPD.Timezones)
 	}
 
 	// ... create lockfile

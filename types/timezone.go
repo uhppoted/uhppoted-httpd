@@ -1,14 +1,44 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/uhppoted/uhppoted-httpd/log"
 )
 
-// Ref. https://github.com/golang/go/issues/12388
+var timezones = []struct {
+	Zone   string `json:"zone"`
+	Offset int    `json:"offset"`
+}{
+	{"PDT", -7 * 3600},
+	{"PST", -8 * 3600},
+}
+
+func LoadTimezones(file string) {
+	zones := struct {
+		Timezones []struct {
+			Zone   string `json:"zone"`
+			Offset int    `json:"offset"`
+		} `json:"timezones"`
+	}{}
+
+	if bytes, err := os.ReadFile(file); err != nil {
+		log.Warnf("Error loading fixed timezones (%v)", err)
+	} else if err := json.Unmarshal(bytes, &zones); err != nil {
+		log.Warnf("Error unmarshalling fixed timezones (%v)", err)
+	} else {
+		timezones = zones.Timezones
+	}
+}
+
+// Timezones are a complete nightmare
+// e.g. https://github.com/golang/go/issues/12388
 func Timezone(s string) (*time.Location, error) {
 	utc, _ := time.LoadLocation("UTC")
 
@@ -89,12 +119,12 @@ func Timezone(s string) (*time.Location, error) {
 		}
 	}
 
-	// Workaround for 'PDT unknown timezone' (ref. https://github.com/golang/go/issues/12388)
-	now := fmt.Sprintf("%v %v", time.Now().Format("2006-01-02 15:04:05"), s)
-	if t, err := time.ParseInLocation("2006-01-02 15:04:05 MST", now, time.Local); err == nil {
-		zone, offset := time.Now().In(t.Location()).Zone()
-
-		return time.FixedZone(zone, offset), nil
+	// Hardcoded workaround for e.g. PDT/PST - there seems to be no reasonable way to reliably get
+	// the zone and offset. // Ref. https://github.com/golang/go/issues/12388)
+	for _, tz := range timezones {
+		if tz.Zone == s {
+			return time.FixedZone(tz.Zone, tz.Offset), nil
+		}
 	}
 
 	return nil, fmt.Errorf("Invalid timezone (%v)", s)
