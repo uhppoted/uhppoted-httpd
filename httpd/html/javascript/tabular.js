@@ -380,7 +380,7 @@ export function revert (row) {
   const fields = row.querySelectorAll('.field')
 
   fields.forEach((item) => {
-    let [value,ok] = DB.get(item.dataset.oid)
+    let [value, ok] = DB.get(item.dataset.oid)
     if (!ok) {
       value = item.dataset.original
     }

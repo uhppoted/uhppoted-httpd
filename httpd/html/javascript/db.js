@@ -32,7 +32,7 @@ class DBC {
     }
 
     this.get = function (oid) {
-      return [null,false]
+      return [null, false]
     }
 
     this.updated = function (tag, recordset) {

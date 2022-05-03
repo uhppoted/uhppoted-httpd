@@ -301,14 +301,13 @@
     function onMenu(event, state) {
       if (window.onMenuX) {
         window.onMenuX(event, state)
-      } else {
-        console.debug('onMenu is not defined')
       }
     }
 
     function onDateTime(tag,event) {
-      event.target.dataset.original = ''
-      onEdited(tag,event)
+      if ((event.type === "keydown" && event.key === "Enter") || event.type === "change" ) {
+        onEdited(tag,event)          
+      } 
     }
 
   </script>
