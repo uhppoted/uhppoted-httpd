@@ -1,10 +1,13 @@
 ## v0.7.x
 
 - [ ] Controller date/time
+      - [ ] SIGH!!!
+            - going from Africa/Cairo to PDT doesn't work
+            - now flag is set permanently
       - [x] Logic around correcting time is weird
             - [x] onEnter/change should force date/time synchronize
-      - [ ] Rework system.updated and system.Update to be channels
       - [ ] system.Update(door ....)
+      - [ ] Rework system.updated and system.Update to be channels
       - [ ] Move squoosh to dbc.Objects()
       - [ ] created/modified should be serialized as UTC
 

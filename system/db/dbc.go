@@ -6,19 +6,18 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type DBC interface {
 	Stash([]schema.Object)
-	Updated(controller types.IController, suffix schema.Suffix, value any)
+	Updated(oid schema.OID, suffix schema.Suffix, value any)
 	Objects() []schema.Object
 	Commit(sys System)
 	Write(audit.AuditRecord)
 }
 
 type System interface {
-	Update(controller types.IController, field schema.Suffix, value any)
+	Update(oid schema.OID, field schema.Suffix, value any)
 }
 
 type dbc struct {
@@ -30,9 +29,9 @@ type dbc struct {
 }
 
 type update struct {
-	controller types.IController
-	field      schema.Suffix
-	value      any
+	object schema.OID
+	field  schema.Suffix
+	value  any
 }
 
 func NewDBC(trail audit.AuditTrail) DBC {
@@ -53,14 +52,14 @@ func (d *dbc) Stash(list []schema.Object) {
 	}
 }
 
-func (d *dbc) Updated(controller types.IController, field schema.Suffix, value any) {
+func (d *dbc) Updated(oid schema.OID, field schema.Suffix, value any) {
 	d.Lock()
 	defer d.Unlock()
 
 	d.updated = append(d.updated, update{
-		controller: controller,
-		field:      field,
-		value:      value,
+		object: oid,
+		field:  field,
+		value:  value,
 	})
 }
 
@@ -87,7 +86,7 @@ func (d *dbc) Commit(sys System) {
 	d.logs = []audit.AuditRecord{}
 
 	for _, v := range d.updated {
-		sys.Update(v.controller, v.field, v.value)
+		sys.Update(v.object, v.field, v.value)
 	}
 }
 

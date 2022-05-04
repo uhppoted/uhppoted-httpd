@@ -358,11 +358,19 @@ func (s *system) updated() {
 	})
 }
 
-func (s *system) Update(controller types.IController, field schema.Suffix, value any) {
-	if field == schema.ControllerDateTime {
-		go func() {
-			s.interfaces.SetTime(controller, value.(time.Time))
-		}()
+func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
+	controllers := s.controllers.AsIControllers()
+
+	switch field {
+	case schema.ControllerDateTime:
+		for _, c := range controllers {
+			if c.OID() == oid {
+				go func() {
+					s.interfaces.SetTime(c, value.(time.Time))
+				}()
+				break
+			}
+		}
 	}
 }
 
