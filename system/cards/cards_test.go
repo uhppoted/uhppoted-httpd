@@ -26,7 +26,7 @@ func (d *dbc) Write(record audit.AuditRecord) {
 func (d *dbc) Stash(objects []schema.Object) {
 }
 
-func (d *dbc) Updated(controller types.IController, field schema.Suffix, value any) {
+func (d *dbc) Updated(oid schema.OID, field schema.Suffix, value any) {
 }
 
 func (d *dbc) Objects() []schema.Object {
