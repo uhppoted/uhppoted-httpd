@@ -329,22 +329,22 @@ func (s *system) refresh() {
 func (s *system) updated() {
 	info("Synchronizing controllers to updated configuration")
 
-	controllers := s.controllers.AsIControllers()
-
 	// FIXME temporarily removed pending implementation of 'mode:monitor', 'mode:synchronize', etc
+	//
+	// controllers := s.controllers.AsIControllers()
+	//
 	//	sys.taskQ.Add(Task{
 	//		f: func() {
 	//			s.interfaces.SynchTime(controllers)
 	//		},
 	//	})
-
-	sys.taskQ.Add(Task{
-		f: func() {
-			s.interfaces.SynchDoors(controllers)
-		},
-	})
-
-	// FIXME temporarily removed pending implementation of 'mode:monitor', 'mode:synchronize', etc
+	//
+	// sys.taskQ.Add(Task{
+	// 	f: func() {
+	// 		s.interfaces.SynchDoors(controllers)
+	// 	},
+	// })
+	//
 	// sys.taskQ.Add(Task{
 	// 	f: func() {
 	// 		s.interfaces.SynchEventListeners(controllers)
@@ -359,17 +359,43 @@ func (s *system) updated() {
 }
 
 func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
-	controllers := s.controllers.AsIControllers()
+	var controllers = s.controllers.AsIControllers()
+	var controller types.IController
+	var door uint8
 
 	switch field {
 	case schema.ControllerDateTime:
 		for _, c := range controllers {
 			if c.OID() == oid {
-				go func() {
-					s.interfaces.SetTime(c, value.(time.Time))
-				}()
+				controller = c
 				break
 			}
+		}
+
+	case schema.DoorDelay:
+	loop:
+		for _, c := range controllers {
+			for _, i := range []uint8{1, 2, 3, 4} {
+				if d, ok := c.Door(i); ok && d == oid {
+					controller = c
+					door = i
+					break loop
+				}
+			}
+		}
+	}
+
+	if controller != nil {
+		switch field {
+		case schema.ControllerDateTime:
+			go func() {
+				s.interfaces.SetTime(controller, value.(time.Time))
+			}()
+
+		case schema.DoorDelay:
+			go func() {
+				s.interfaces.SetDoorDelay(controller, door, value.(uint8))
+			}()
 		}
 	}
 }

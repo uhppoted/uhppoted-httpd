@@ -425,7 +425,23 @@ func (l *LAN) setTime(c types.IController, t time.Time) {
 			catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.SystemDateTime)
 		}
 
-		log.Infof("Set controller time %v %v", deviceID, response.DateTime)
+		log.Infof("%v  set date/time: %v", deviceID, response.DateTime)
+	}
+}
+
+func (l *LAN) setDoorDelay(c types.IController, door uint8, delay uint8) {
+	api := l.api([]types.IController{c})
+	deviceID := c.ID()
+
+	if err := api.SetDoorDelay(deviceID, door, delay); err != nil {
+		log.Warnf("%v", err)
+	} else {
+		if oid, ok := c.Door(door); ok {
+			catalog.PutV(oid, DoorDelay, delay)
+			catalog.PutV(oid, DoorDelayModified, false)
+		}
+
+		log.Infof("%v  set door %v delay: %vs", deviceID, door, delay)
 	}
 }
 
@@ -476,18 +492,13 @@ func (l *LAN) synchDoors(c types.IController) {
 			if configured != nil && (actual == nil || actual != configured) && modified {
 				delay := configured.(uint8)
 
-				request := uhppoted.SetDoorDelayRequest{
-					DeviceID: uhppoted.DeviceID(deviceID),
-					Door:     door,
-					Delay:    delay,
-				}
-
-				if response, err := api.SetDoorDelay(request); err != nil {
+				if err := api.SetDoorDelay(deviceID, door, delay); err != nil {
 					log.Warnf("%v", err)
-				} else if response != nil {
+				} else {
 					catalog.PutV(oid, DoorDelay, delay)
 					catalog.PutV(oid, DoorDelayModified, false)
-					log.Infof("%v: synchronized door %v delay (%v)", response.DeviceID, door, delay)
+
+					log.Infof("%v: synchronized door %v delay (%v)", deviceID, door, delay)
 				}
 			}
 		}

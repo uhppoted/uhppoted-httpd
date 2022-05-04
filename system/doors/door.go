@@ -205,7 +205,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			list = append(list, kv{DoorDelayError, ""})
 			list = append(list, kv{DoorDelayModified, true})
 
-			// #### dbc.Updated(c.AsIController(), ControllerDoorDelay, dt)
+			dbc.Updated(d.OID, DoorDelay, d.delay)
 
 			d.log(uid, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
 		}

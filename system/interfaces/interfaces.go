@@ -267,6 +267,12 @@ func (ii *Interfaces) SetTime(controller types.IController, t time.Time) {
 	}
 }
 
+func (ii *Interfaces) SetDoorDelay(controller types.IController, door uint8, delay uint8) {
+	if lan, ok := ii.LAN(); ok {
+		lan.setDoorDelay(controller, door, delay)
+	}
+}
+
 func (ii *Interfaces) SynchTime(controllers []types.IController) {
 	if lan, ok := ii.LAN(); ok {
 		var wg sync.WaitGroup

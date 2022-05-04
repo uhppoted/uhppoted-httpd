@@ -6,7 +6,8 @@
             - now flag is set permanently
       - [x] Logic around correcting time is weird
             - [x] onEnter/change should force date/time synchronize
-      - [ ] system.Update(door ....)
+      - [x] system.UpdateDoorDelay
+      - [ ] system.UpdateDoorMode
       - [ ] Rework system.updated and system.Update to be channels
       - [ ] Move squoosh to dbc.Objects()
       - [ ] created/modified should be serialized as UTC
