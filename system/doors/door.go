@@ -233,7 +233,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			list = append(list, kv{DoorControlError, ""})
 			list = append(list, kv{DoorControlModified, true})
 
-			// #### dbc.Updated(c.AsIController(), ControllerDoorMode, dt)
+			dbc.Updated(d.OID, DoorControl, d.mode)
 
 			d.log(uid, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
 		}

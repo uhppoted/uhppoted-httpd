@@ -445,6 +445,22 @@ func (l *LAN) setDoorDelay(c types.IController, door uint8, delay uint8) {
 	}
 }
 
+func (l *LAN) setDoorControl(c types.IController, door uint8, mode core.ControlState) {
+	api := l.api([]types.IController{c})
+	deviceID := c.ID()
+
+	if err := api.SetDoorControl(deviceID, door, mode); err != nil {
+		log.Warnf("%v", err)
+	} else {
+		if oid, ok := c.Door(door); ok {
+			catalog.PutV(oid, DoorControl, mode)
+			catalog.PutV(oid, DoorControlModified, false)
+		}
+
+		log.Infof("%v  set door %v mode: %vs", deviceID, door, mode)
+	}
+}
+
 func (l *LAN) synchTime(c types.IController) {
 	api := l.api([]types.IController{c})
 	deviceID := uhppoted.DeviceID(c.ID())
@@ -518,18 +534,12 @@ func (l *LAN) synchDoors(c types.IController) {
 			if configured != nil && (actual == nil || actual != configured) && modified {
 				mode := configured.(core.ControlState)
 
-				request := uhppoted.SetDoorControlRequest{
-					DeviceID: uhppoted.DeviceID(deviceID),
-					Door:     door,
-					Control:  mode,
-				}
-
-				if response, err := api.SetDoorControl(request); err != nil {
+				if err := api.SetDoorControl(deviceID, door, mode); err != nil {
 					log.Warnf("%v", err)
-				} else if response != nil {
+				} else {
 					catalog.PutV(oid, DoorControl, mode)
 					catalog.PutV(oid, DoorControlModified, false)
-					log.Infof("%v: synchronized door %v control (%v)", response.DeviceID, door, mode)
+					log.Infof("%v: synchronized door %v control (%v)", deviceID, door, mode)
 				}
 			}
 		}

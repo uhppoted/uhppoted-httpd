@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	core "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -264,6 +266,12 @@ func (ii *Interfaces) GetEvents(controllers []types.IController, missing map[uin
 func (ii *Interfaces) SetTime(controller types.IController, t time.Time) {
 	if lan, ok := ii.LAN(); ok {
 		lan.setTime(controller, t)
+	}
+}
+
+func (ii *Interfaces) SetDoorControl(controller types.IController, door uint8, mode core.ControlState) {
+	if lan, ok := ii.LAN(); ok {
+		lan.setDoorControl(controller, door, mode)
 	}
 }
 

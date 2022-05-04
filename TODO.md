@@ -7,7 +7,7 @@
       - [x] Logic around correcting time is weird
             - [x] onEnter/change should force date/time synchronize
       - [x] system.UpdateDoorDelay
-      - [ ] system.UpdateDoorMode
+      - [x] system.UpdateDoorMode
       - [ ] Rework system.updated and system.Update to be channels
       - [ ] Move squoosh to dbc.Objects()
       - [ ] created/modified should be serialized as UTC

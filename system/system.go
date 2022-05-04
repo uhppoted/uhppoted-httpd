@@ -15,6 +15,7 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/builder"
 	"github.com/hyperjumptech/grule-rule-engine/pkg"
 
+	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-lib/config"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
@@ -372,7 +373,8 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 			}
 		}
 
-	case schema.DoorDelay:
+	case schema.DoorControl,
+		schema.DoorDelay:
 	loop:
 		for _, c := range controllers {
 			for _, i := range []uint8{1, 2, 3, 4} {
@@ -390,6 +392,11 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 		case schema.ControllerDateTime:
 			go func() {
 				s.interfaces.SetTime(controller, value.(time.Time))
+			}()
+
+		case schema.DoorControl:
+			go func() {
+				s.interfaces.SetDoorControl(controller, door, value.(core.ControlState))
 			}()
 
 		case schema.DoorDelay:
