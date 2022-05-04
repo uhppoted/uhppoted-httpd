@@ -1,14 +1,8 @@
 ## v0.7.x
 
 - [ ] Controller date/time
-      - [ ] Logic around correcting time is weird
-            - [x] rollback clears and date/time
-            - [x] PSTPDT timezone test fails on github
-            - [x] Get fixed zone/offset from file
-            - [ ] onEnter/change should force date/time synchronize
-                  - set the date/time value to minutes only
-            - (?) set() is updating dataset.original which seems wrong but ...
-                  -- because it's used by updateFromDB as well as onEdited
+      - [x] Logic around correcting time is weird
+            - [x] onEnter/change should force date/time synchronize
       - [ ] Rework system.updated and system.Update to be channels
       - [ ] system.Update(door ....)
       - [ ] Move squoosh to dbc.Objects()
