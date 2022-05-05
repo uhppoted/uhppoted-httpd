@@ -46,10 +46,10 @@ func UpdateInterfaces(uid, role string, m map[string]interface{}) (interface{}, 
 		return nil, err
 	}
 
-	dbc.Commit(&sys)
-
-	sys.interfaces.Interfaces = shadow
-	sys.updated()
+	dbc.Commit(&sys, func() {
+		sys.interfaces.Interfaces = shadow
+		sys.updated()
+	})
 
 	list := squoosh(dbc.Objects())
 

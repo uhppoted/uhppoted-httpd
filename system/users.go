@@ -54,10 +54,10 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 		return nil, err
 	}
 
-	dbc.Commit(&sys)
-
-	sys.users.Users = shadow
-	sys.updated()
+	dbc.Commit(&sys, func() {
+		sys.users.Users = shadow
+		sys.updated()
+	})
 
 	list := squoosh(dbc.Objects())
 
@@ -89,9 +89,10 @@ func SetPassword(uid, pwd string) error {
 		return err
 	}
 
-	dbc.Commit(&sys)
-	sys.users.Users = shadow
-	sys.updated()
+	dbc.Commit(&sys, func() {
+		sys.users.Users = shadow
+		sys.updated()
+	})
 
 	return nil
 }

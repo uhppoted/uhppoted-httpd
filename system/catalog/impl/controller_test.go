@@ -99,10 +99,6 @@ func TestControllerDelete(t *testing.T) {
 
 	if !reflect.DeepEqual(tt, expected) {
 		t.Errorf("'delete' failed\n   expected:%v\n   got:     %v", expected, tt)
-
-		for k, v := range tt.m {
-			t.Errorf(">>> %v %v", k, v)
-		}
 	}
 }
 

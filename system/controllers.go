@@ -57,9 +57,10 @@ func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interfac
 		return nil, err
 	}
 
-	dbc.Commit(&sys)
-	sys.controllers.Controllers = shadow
-	sys.updated()
+	dbc.Commit(&sys, func() {
+		sys.controllers.Controllers = shadow
+		sys.updated()
+	})
 
 	list := squoosh(dbc.Objects())
 

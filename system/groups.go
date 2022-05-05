@@ -54,9 +54,10 @@ func UpdateGroups(uid, role string, m map[string]interface{}) (interface{}, erro
 		return nil, err
 	}
 
-	dbc.Commit(&sys)
-	sys.groups.Groups = shadow
-	sys.updated()
+	dbc.Commit(&sys, func() {
+		sys.groups.Groups = shadow
+		sys.updated()
+	})
 
 	list := squoosh(dbc.Objects())
 

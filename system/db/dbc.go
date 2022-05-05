@@ -12,7 +12,7 @@ type DBC interface {
 	Stash([]schema.Object)
 	Updated(oid schema.OID, suffix schema.Suffix, value any)
 	Objects() []schema.Object
-	Commit(sys System)
+	Commit(sys System, hook func())
 	Write(audit.AuditRecord)
 }
 
@@ -67,7 +67,7 @@ func (d *dbc) Objects() []schema.Object {
 	return d.objects
 }
 
-func (d *dbc) Commit(sys System) {
+func (d *dbc) Commit(sys System, hook func()) {
 	d.Lock()
 	defer d.Unlock()
 
@@ -84,6 +84,8 @@ func (d *dbc) Commit(sys System) {
 	}
 
 	d.logs = []audit.AuditRecord{}
+
+	hook()
 
 	for _, v := range d.updated {
 		sys.Update(v.object, v.field, v.value)

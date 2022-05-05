@@ -55,9 +55,10 @@ func UpdateCards(uid, role string, m map[string]interface{}) (interface{}, error
 		return nil, err
 	}
 
-	dbc.Commit(&sys)
-	sys.cards.Cards = shadow
-	sys.updated()
+	dbc.Commit(&sys, func() {
+		sys.cards.Cards = shadow
+		sys.updated()
+	})
 
 	list := squoosh(dbc.Objects())
 
