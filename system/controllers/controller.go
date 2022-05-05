@@ -676,8 +676,8 @@ func (c Controller) serialize() ([]byte, error) {
 		Address:  c.IP,
 		Doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
 		TimeZone: c.timezone,
-		Created:  c.created,
-		Modified: c.modified,
+		Created:  c.created.UTC(),
+		Modified: c.modified.UTC(),
 	}
 
 	for k, v := range c.doors {

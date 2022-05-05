@@ -418,8 +418,8 @@ func (c Card) serialize() ([]byte, error) {
 		From:     c.from,
 		To:       c.to,
 		Groups:   []schema.OID{},
-		Created:  c.created,
-		Modified: c.modified,
+		Created:  c.created.UTC(),
+		Modified: c.modified.UTC(),
 	}
 
 	groups := catalog.GetGroups()

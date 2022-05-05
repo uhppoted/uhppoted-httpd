@@ -686,8 +686,8 @@ func (l LAN) serialize() ([]byte, error) {
 		BindAddress:      l.BindAddress,
 		BroadcastAddress: l.BroadcastAddress,
 		ListenAddress:    l.ListenAddress,
-		Created:          l.created,
-		Modified:         l.modified,
+		Created:          l.created.UTC(),
+		Modified:         l.modified.UTC(),
 	}
 
 	return json.MarshalIndent(record, "", "  ")

@@ -35,6 +35,10 @@ func (ts Timestamp) String() string {
 	return time.Time(ts).Format("2006-01-02 15:04:05 MST")
 }
 
+func (ts Timestamp) UTC() Timestamp {
+	return Timestamp(time.Time(ts).UTC())
+}
+
 func (ts Timestamp) MarshalJSON() ([]byte, error) {
 	if ts.IsZero() {
 		return json.Marshal("")

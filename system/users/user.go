@@ -300,8 +300,8 @@ func (u User) serialize() ([]byte, error) {
 		Role:     strings.TrimSpace(u.role),
 		Salt:     hex.EncodeToString(u.salt[:]),
 		Password: u.password,
-		Created:  u.created,
-		Modified: u.modified,
+		Created:  u.created.UTC(),
+		Modified: u.modified.UTC(),
 	}
 
 	return json.Marshal(record)

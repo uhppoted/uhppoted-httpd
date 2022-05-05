@@ -241,8 +241,8 @@ func (g Group) serialize() ([]byte, error) {
 		OID:      g.OID,
 		Name:     g.Name,
 		Doors:    []schema.OID{},
-		Created:  g.created,
-		Modified: g.modified,
+		Created:  g.created.UTC(),
+		Modified: g.modified.UTC(),
 	}
 
 	doors := catalog.GetDoors()

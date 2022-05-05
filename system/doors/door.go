@@ -319,8 +319,8 @@ func (d Door) serialize() ([]byte, error) {
 		Name:     d.Name,
 		Delay:    d.delay,
 		Mode:     d.mode,
-		Created:  d.created,
-		Modified: d.modified,
+		Created:  d.created.UTC(),
+		Modified: d.modified.UTC(),
 	}
 
 	return json.Marshal(record)
