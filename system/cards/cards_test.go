@@ -33,7 +33,7 @@ func (d *dbc) Objects() []schema.Object {
 	return []schema.Object{}
 }
 
-func (d *dbc) Commit(sys db.System) {
+func (d *dbc) Commit(sys db.System, hook func()) {
 }
 
 func (d *dbc) SetPassword(uid, pwd, role string) error {
