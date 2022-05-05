@@ -62,9 +62,7 @@ func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interfac
 		sys.updated()
 	})
 
-	list := squoosh(dbc.Objects())
-
-	return list, nil
+	return dbc.Objects(), nil
 }
 
 func validate(cc *controllers.Controllers) error {

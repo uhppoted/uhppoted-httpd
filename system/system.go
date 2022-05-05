@@ -504,25 +504,6 @@ func save(file string, tag string, v serializable) error {
 	return os.Rename(tmp.Name(), file)
 }
 
-// Returns a deduplicated list of objects, retaining only the the last (i.e. latest) value.
-// NOTE: this implementation is horribly inefficient but the list is expected to almost always
-//       be tiny since it is the result of a manual edit.
-func squoosh(objects []schema.Object) []schema.Object {
-	keys := map[schema.OID]struct{}{}
-	list := []schema.Object{}
-
-	for i := len(objects); i > 0; i-- {
-		object := objects[i-1]
-		oid := object.OID
-		if _, ok := keys[oid]; !ok {
-			keys[oid] = struct{}{}
-			list = append([]schema.Object{object}, list...)
-		}
-	}
-
-	return list
-}
-
 func clean(s string) string {
 	return strings.ReplaceAll(strings.ToLower(s), " ", "")
 }

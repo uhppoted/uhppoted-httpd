@@ -63,8 +63,9 @@ func (d *dbc) Updated(oid schema.OID, field schema.Suffix, value any) {
 	})
 }
 
+// Returns a deduplicated list of objects, retaining only the the last (i.e. latest) value.
 func (d *dbc) Objects() []schema.Object {
-	return d.objects
+	return squoosh(d.objects)
 }
 
 func (d *dbc) Commit(sys System, hook func()) {
@@ -97,4 +98,23 @@ func (d *dbc) Write(record audit.AuditRecord) {
 	defer d.Unlock()
 
 	d.logs = append(d.logs, record)
+}
+
+// Returns a deduplicated list of objects, retaining only the the last (i.e. latest) value.
+// NOTE: this implementation is horribly inefficient but the list is expected to almost always
+//       be tiny since it is the result of a manual edit.
+func squoosh(objects []schema.Object) []schema.Object {
+	keys := map[schema.OID]struct{}{}
+	list := []schema.Object{}
+
+	for i := len(objects); i > 0; i-- {
+		object := objects[i-1]
+		oid := object.OID
+		if _, ok := keys[oid]; !ok {
+			keys[oid] = struct{}{}
+			list = append([]schema.Object{object}, list...)
+		}
+	}
+
+	return list
 }

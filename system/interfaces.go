@@ -51,7 +51,5 @@ func UpdateInterfaces(uid, role string, m map[string]interface{}) (interface{}, 
 		sys.updated()
 	})
 
-	list := squoosh(dbc.Objects())
-
-	return list, nil
+	return dbc.Objects(), nil
 }

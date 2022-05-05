@@ -59,9 +59,7 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 		sys.updated()
 	})
 
-	list := squoosh(dbc.Objects())
-
-	return list, nil
+	return dbc.Objects(), nil
 }
 
 func User(uid string) (auth.IUser, bool) {

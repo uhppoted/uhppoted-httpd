@@ -60,7 +60,5 @@ func UpdateCards(uid, role string, m map[string]interface{}) (interface{}, error
 		sys.updated()
 	})
 
-	list := squoosh(dbc.Objects())
-
-	return list, nil
+	return dbc.Objects(), nil
 }

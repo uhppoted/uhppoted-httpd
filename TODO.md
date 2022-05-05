@@ -2,11 +2,9 @@
 
 - [ ] Controller date/time
       - [x] Going from Africa/Cairo to PDT doesn't work
-            ... because dbc.Commit invoked sys.Update *before* the shadow copy is committed
-
-      - [ ] Rework system.updated and system.Update to be channels
-      - [ ] Move squoosh to dbc.Objects()
+      - [x] Move squoosh to dbc.Objects()
       - [ ] created/modified should be serialized as UTC
+      - [ ] Rework system.updated and system.Update to be channels
 
 - [ ] `mode:monitor` 
 - (?) `mode:synchronize`

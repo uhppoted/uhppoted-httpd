@@ -59,7 +59,5 @@ func UpdateGroups(uid, role string, m map[string]interface{}) (interface{}, erro
 		sys.updated()
 	})
 
-	list := squoosh(dbc.Objects())
-
-	return list, nil
+	return dbc.Objects(), nil
 }
