@@ -48,7 +48,7 @@ func MakeTrail() AuditTrail {
 	return &auditTrail
 }
 
-func SetAuditFile(file string) {
+func SetAuditFile(file string) error {
 	guard.Lock()
 	defer guard.Unlock()
 
@@ -67,6 +67,10 @@ func SetAuditFile(file string) {
 	}()
 
 	auditTrail.logger = logger
+
+	// Basic sanity check because log.Printf(...) does not return an error if the logfile
+	// is not writeable
+	return logger.Output(2, "AUDIT TRAIL START")
 }
 
 func (t *trail) Write(records ...AuditRecord) {

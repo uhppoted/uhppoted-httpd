@@ -1,11 +1,14 @@
 ## v0.7.x
 
-- [ ] Controller date/time
-      - [ ] Move sys.Updated into DBC.Commit()
+- [x] Controller date/time
+      - [x] Move sys.Updated into DBC.Commit()
+
+- [ ] Cleanup audit log/logging
+- (?) use :before or :content for flags
 
 - [ ] `mode:monitor` 
 - (?) `mode:synchronize`
-- [ ] Unify CompareACL and UpdateACL into SynchACL
+- (?) Unify CompareACL and UpdateACL into SynchACL
       - [ ] wrap ACL update in goroutine
       - [ ] Error handling ??
 
@@ -13,7 +16,6 @@
       - [ ] Very fragile - uses 'new' status 
       - [ ] Maybe invoke 'create' explicitly a la delete
 
-- [ ] Cleanup audit log/logging
 - [ ] Commonalise all the stringifys
 - [ ] System XXX.validate should not return HttpdError
       - (?) maybe return SysError that might contain HTTP error
@@ -109,16 +111,11 @@
 
 - [ ] Cards
       - unit tests for auth rules
-      - card type should probably be a string (because otherwise 0 is a reserved number)
-        -- 'nil' it if it's 0 ?
-        -- think it through anyway
       - add
         - shadow DOM ???
       - wrap templating in a decent error handler
         - redirect to error page
-
       - custom webelement (https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
-
       - pin selected rows
       - virtual DOM
       - search & pin
@@ -134,7 +131,6 @@
       - unit tests for ACL rules
 
 - [ ] tabular
-      - (experiment) use :before or :content for flags???
       - New table row submitted with error cannot be discarded
       - Empty list: make first row a 'new' row (?)
       - filter columns

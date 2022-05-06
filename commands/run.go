@@ -116,16 +116,18 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 	default:
 		p, err := local.NewAuthProvider(conf.HTTPD.Security.AuthDB, conf.HTTPD.Security.LoginExpiry, conf.HTTPD.Security.SessionExpiry)
 		if err != nil {
-			log.Panicf("%5s Error instantiating auth provider (%v)", "FATAL", err)
+			panic(fmt.Sprintf("Error instantiating auth provider (%v)", err))
 		}
 
 		authentication, err = auth.NewBasic(p, conf.HTTPD.Security.AuthDB, conf.HTTPD.Security.CookieMaxAge)
 		if err != nil {
-			log.Panicf("%5s Error instantiating 'basic' auth provider (%v)", "FATAL", err)
+			panic(fmt.Sprintf("Error instantiating 'basic' auth provider (%v)", err))
 		}
 	}
 
-	audit.SetAuditFile(conf.HTTPD.Audit.File)
+	if err := audit.SetAuditFile(conf.HTTPD.Audit.File); err != nil {
+		panic(err)
+	}
 
 	provider.Init(map[provider.RuleSet]string{
 		provider.Interfaces:  conf.HTTPD.DB.Rules.Interfaces,
