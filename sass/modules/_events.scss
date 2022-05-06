@@ -84,12 +84,14 @@ td input.eventType {
   width: 56px;
   font-size: 1.1em;
   font-variant: small-caps;
+  font-variant-caps: all-small-caps;
 }
 
 td input.direction {
   width: 16px;
   font-size: 1.1em;
   font-variant: small-caps;
+  font-variant-caps: all-small-caps;
 }
 
 td input.doorid {
@@ -102,6 +104,7 @@ td input.door {
   width: 96px;
   font-size: 1.1em;
   font-variant: small-caps;
+  font-variant-caps: all-small-caps;
 }
 
 td input.cardno {
@@ -113,17 +116,20 @@ td input.card {
   width: 120px;
   font-size: 1.1em;
   font-variant: small-caps;
+  font-variant-caps: all-small-caps;
 }
 
 td input.access {
   width: 60px;
   font-size: 1.1em;
   font-variant: small-caps;
+  font-variant-caps: all-small-caps;
 }
 
 td input.reason {
   font-size: 1.1em;
   font-variant: small-caps;
+  font-variant-caps: all-small-caps;
 }
 
 @-moz-document url-prefix('') {

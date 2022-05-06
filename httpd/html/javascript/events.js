@@ -125,9 +125,12 @@ function add (oid) {
 
     const fields = [
       { suffix: 'timestamp', oid: `${oid}${schema.events.timestamp}`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
+      { suffix: 'deviceID', oid: `${oid}${schema.events.deviceID}`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
       { suffix: 'device', oid: `${oid}${schema.events.deviceName}`, selector: 'td input.device', flag: 'td img.device' },
       { suffix: 'eventType', oid: `${oid}${schema.events.type}`, selector: 'td input.eventType', flag: 'td img.eventType' },
+      { suffix: 'doorid', oid: `${oid}${schema.events.door}`, selector: 'td input.doorid', flag: 'td img.doorid' },
       { suffix: 'door', oid: `${oid}${schema.events.doorName}`, selector: 'td input.door', flag: 'td img.door' },
+      { suffix: 'direction', oid: `${oid}${schema.events.direction}`, selector: 'td input.direction', flag: 'td img.direction' },
       { suffix: 'cardno', oid: `${oid}${schema.events.card}`, selector: 'td input.cardno', flag: 'td img.cardno' },
       { suffix: 'card', oid: `${oid}${schema.events.cardName}`, selector: 'td input.card', flag: 'td img.card' },
       { suffix: 'access', oid: `${oid}${schema.events.granted}`, selector: 'td input.access', flag: 'td img.access' },
@@ -159,12 +162,16 @@ function add (oid) {
 }
 
 function updateFromDB (oid, record) {
+  console.log(record)
   const row = document.querySelector("div#events tr[data-oid='" + oid + "']")
 
   const timestamp = row.querySelector(`[data-oid="${oid}${schema.events.timestamp}"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}${schema.events.deviceID}"]`)
   const device = row.querySelector(`[data-oid="${oid}${schema.events.deviceName}"]`)
   const eventType = row.querySelector(`[data-oid="${oid}${schema.events.type}"]`)
+  const doorid = row.querySelector(`[data-oid="${oid}${schema.events.door}"]`)
   const door = row.querySelector(`[data-oid="${oid}${schema.events.doorName}"]`)
+  const direction = row.querySelector(`[data-oid="${oid}${schema.events.direction}"]`)
   const cardno = row.querySelector(`[data-oid="${oid}${schema.events.card}"]`)
   const card = row.querySelector(`[data-oid="${oid}${schema.events.cardName}"]`)
   const access = row.querySelector(`[data-oid="${oid}${schema.events.granted}"]`)
@@ -173,11 +180,14 @@ function updateFromDB (oid, record) {
   row.dataset.status = record.status
 
   update(timestamp, record.timestamp)
+  update(deviceID, record.deviceID)
   update(device, record.deviceName)
   update(eventType, record.eventType)
-  update(door, record.doorName.toLowerCase())
+  update(doorid, record.door)
+  update(door, record.doorName)
+  update(direction, record.direction)
   update(cardno, record.card)
-  update(card, record.cardName.toLowerCase())
+  update(card, record.cardName)
   update(access, record.granted === 'true' ? 'granted' : (record.granted === 'false' ? 'denied' : ''))
   update(reason, record.reason)
 
