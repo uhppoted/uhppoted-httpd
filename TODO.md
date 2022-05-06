@@ -1,10 +1,7 @@
 ## v0.7.x
 
 - [ ] Controller date/time
-      - [x] Going from Africa/Cairo to PDT doesn't work
-      - [x] Move squoosh to dbc.Objects()
-      - [x] created/modified should be serialized as UTC
-      - [ ] Rework system.updated and system.Update to be channels
+      - [ ] Move sys.Updated into DBC.Commit()
 
 - [ ] `mode:monitor` 
 - (?) `mode:synchronize`

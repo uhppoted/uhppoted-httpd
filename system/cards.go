@@ -57,7 +57,6 @@ func UpdateCards(uid, role string, m map[string]interface{}) (interface{}, error
 
 	dbc.Commit(&sys, func() {
 		sys.cards.Cards = shadow
-		sys.updated()
 	})
 
 	return dbc.Objects(), nil

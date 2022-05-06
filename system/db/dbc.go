@@ -18,6 +18,7 @@ type DBC interface {
 
 type System interface {
 	Update(oid schema.OID, field schema.Suffix, value any)
+	Updated()
 }
 
 type dbc struct {
@@ -91,6 +92,8 @@ func (d *dbc) Commit(sys System, hook func()) {
 	for _, v := range d.updated {
 		sys.Update(v.object, v.field, v.value)
 	}
+
+	sys.Updated()
 }
 
 func (d *dbc) Write(record audit.AuditRecord) {
@@ -101,8 +104,8 @@ func (d *dbc) Write(record audit.AuditRecord) {
 }
 
 // Returns a deduplicated list of objects, retaining only the the last (i.e. latest) value.
-// NOTE: this implementation is horribly inefficient but the list is expected to almost always
-//       be tiny since it is the result of a manual edit.
+// NOTE: this implementation is horrifically inefficient but the list is expected to almost
+//       always be tiny since it is the result of a manual edit.
 func squoosh(objects []schema.Object) []schema.Object {
 	keys := map[schema.OID]struct{}{}
 	list := []schema.Object{}

@@ -59,7 +59,6 @@ func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interfac
 
 	dbc.Commit(&sys, func() {
 		sys.controllers.Controllers = shadow
-		sys.updated()
 	})
 
 	return dbc.Objects(), nil

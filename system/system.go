@@ -327,30 +327,8 @@ func (s *system) refresh() {
 	})
 }
 
-func (s *system) updated() {
-	info("Synchronizing controllers to updated configuration")
-
-	// FIXME temporarily removed pending implementation of 'mode:monitor', 'mode:synchronize', etc
-	//
-	// controllers := s.controllers.AsIControllers()
-	//
-	//	sys.taskQ.Add(Task{
-	//		f: func() {
-	//			s.interfaces.SynchTime(controllers)
-	//		},
-	//	})
-	//
-	// sys.taskQ.Add(Task{
-	// 	f: func() {
-	// 		s.interfaces.SynchDoors(controllers)
-	// 	},
-	// })
-	//
-	// sys.taskQ.Add(Task{
-	// 	f: func() {
-	// 		s.interfaces.SynchEventListeners(controllers)
-	// 	},
-	// })
+func (s *system) Updated() {
+	info("Synchronizing ACL across controllers")
 
 	s.taskQ.Add(Task{
 		f: func() {

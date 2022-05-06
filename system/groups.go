@@ -56,7 +56,6 @@ func UpdateGroups(uid, role string, m map[string]interface{}) (interface{}, erro
 
 	dbc.Commit(&sys, func() {
 		sys.groups.Groups = shadow
-		sys.updated()
 	})
 
 	return dbc.Objects(), nil
