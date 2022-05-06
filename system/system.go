@@ -113,6 +113,7 @@ var sys = system{
 		tag:   "users",
 	},
 
+	history:   history{},
 	taskQ:     NewTaskQ(),
 	retention: 6 * time.Hour,
 }
@@ -173,6 +174,7 @@ type system struct {
 	taskQ     TaskQ
 	retention time.Duration // time after which 'deleted' items are permanently removed
 	trail     trail
+	history   history
 	debug     bool
 }
 

@@ -15,7 +15,7 @@ import (
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 )
 
-var event = uhppoted.Event{
+var EVENT = uhppoted.Event{
 	DeviceID:   405419896,
 	Index:      17,
 	Type:       1,
@@ -27,14 +27,14 @@ var event = uhppoted.Event{
 	Reason:     1,
 }
 
-var history = map[[20]byte]logs.LogEntry{}
+var LOGS = map[[20]byte]logs.LogEntry{}
 
 func init() {
 	hash := func(s string) [20]byte {
 		return sha1.Sum([]byte(s))
 	}
 
-	history[hash("CONTROLLER.1")] = logs.LogEntry{
+	LOGS[hash("CONTROLLER.1")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 1, 12, 34, 15, 0, time.Local),
 		Item:      "controller",
 		ItemID:    "405419896",
@@ -43,7 +43,7 @@ func init() {
 		After:     "Alpha2",
 	}
 
-	history[hash("CONTROLLER.2")] = logs.LogEntry{
+	LOGS[hash("CONTROLLER.2")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 17, 12, 34, 15, 0, time.Local),
 		Item:      "controller",
 		ItemID:    "405419896",
@@ -52,7 +52,7 @@ func init() {
 		After:     "Alpha4",
 	}
 
-	history[hash("CONTROLLER.3")] = logs.LogEntry{
+	LOGS[hash("CONTROLLER.3")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 25, 12, 34, 15, 0, time.Local),
 		Item:      "controller",
 		ItemID:    "405419896",
@@ -61,7 +61,7 @@ func init() {
 		After:     "Alpha6",
 	}
 
-	history[hash("CONTROLLER.4")] = logs.LogEntry{
+	LOGS[hash("CONTROLLER.4")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 27, 12, 34, 15, 0, time.Local),
 		Item:      "controller",
 		ItemID:    "405419896",
@@ -70,7 +70,7 @@ func init() {
 		After:     "Alpha8",
 	}
 
-	history[hash("CARD.1")] = logs.LogEntry{
+	LOGS[hash("CARD.1")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 1, 12, 34, 15, 0, time.Local),
 		Item:      "card",
 		ItemID:    "8165538",
@@ -79,7 +79,7 @@ func init() {
 		After:     "Card2",
 	}
 
-	history[hash("CARD.2")] = logs.LogEntry{
+	LOGS[hash("CARD.2")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 17, 12, 34, 15, 0, time.Local),
 		Item:      "card",
 		ItemID:    "8165538",
@@ -88,7 +88,7 @@ func init() {
 		After:     "Card4",
 	}
 
-	history[hash("CARD.3")] = logs.LogEntry{
+	LOGS[hash("CARD.3")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 25, 12, 34, 15, 0, time.Local),
 		Item:      "card",
 		ItemID:    "8165538",
@@ -97,7 +97,7 @@ func init() {
 		After:     "Card6",
 	}
 
-	history[hash("CARD.4")] = logs.LogEntry{
+	LOGS[hash("CARD.4")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 27, 12, 34, 15, 0, time.Local),
 		Item:      "card",
 		ItemID:    "8165538",
@@ -106,7 +106,7 @@ func init() {
 		After:     "Card8",
 	}
 
-	history[hash("DOOR.1")] = logs.LogEntry{
+	LOGS[hash("DOOR.1")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 1, 12, 34, 15, 0, time.Local),
 		Item:      "door",
 		ItemID:    "405419896:3",
@@ -115,7 +115,7 @@ func init() {
 		After:     "Door2",
 	}
 
-	history[hash("DOOR.2")] = logs.LogEntry{
+	LOGS[hash("DOOR.2")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 17, 12, 34, 15, 0, time.Local),
 		Item:      "door",
 		ItemID:    "405419896:3",
@@ -124,7 +124,7 @@ func init() {
 		After:     "Door4",
 	}
 
-	history[hash("DOOR.3")] = logs.LogEntry{
+	LOGS[hash("DOOR.3")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 25, 12, 34, 15, 0, time.Local),
 		Item:      "door",
 		ItemID:    "405419896:3",
@@ -133,7 +133,7 @@ func init() {
 		After:     "Door6",
 	}
 
-	history[hash("DOOR.4")] = logs.LogEntry{
+	LOGS[hash("DOOR.4")] = logs.LogEntry{
 		Timestamp: time.Date(2021, time.October, 27, 12, 34, 15, 0, time.Local),
 		Item:      "door",
 		ItemID:    "405419896:3",
@@ -150,7 +150,10 @@ func TestLookupDefaultDeviceName(t *testing.T) {
 
 	expected := ""
 
-	name := eventController(event)
+	timestamp := time.Time(EVENT.Timestamp)
+	deviceID := EVENT.DeviceID
+	name := sys.history.lookupController(timestamp, deviceID)
+
 	if name != expected {
 		t.Errorf("incorrect device name - expected:%v, got:%v", expected, name)
 	}
@@ -160,8 +163,8 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 	catalog.Init(memdb.NewCatalog())
 
 	h := []logs.LogEntry{}
-	for _, v := range history {
-		if v.Timestamp.Before(time.Time(event.Timestamp)) {
+	for _, v := range LOGS {
+		if v.Timestamp.Before(time.Time(EVENT.Timestamp)) {
 			h = append(h, v)
 		}
 	}
@@ -174,7 +177,10 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 	catalog.PutT(catalog.CatalogController{OID: "0.2.1", DeviceID: 405419896})
 	catalog.PutV(oid, schema.ControllerName, "Alpha")
 
-	name := eventController(event)
+	timestamp := time.Time(EVENT.Timestamp)
+	deviceID := EVENT.DeviceID
+	name := sys.history.lookupController(timestamp, deviceID)
+
 	if name != expected {
 		t.Errorf("incorrect device name - expected:%v, got:%v", expected, name)
 	}
@@ -182,7 +188,7 @@ func TestLookupDeviceNameWithoutRelevantLogs(t *testing.T) {
 
 func TestLookupHistoricalDeviceName(t *testing.T) {
 	h := []logs.LogEntry{}
-	for _, v := range history {
+	for _, v := range LOGS {
 		h = append(h, v)
 	}
 
@@ -194,7 +200,9 @@ func TestLookupHistoricalDeviceName(t *testing.T) {
 	catalog.PutT(catalog.CatalogController{OID: "0.2.1", DeviceID: 405419896})
 	catalog.PutV(oid, schema.ControllerName, "Alpha")
 
-	name := eventController(event)
+	timestamp := time.Time(EVENT.Timestamp)
+	deviceID := EVENT.DeviceID
+	name := sys.history.lookupController(timestamp, deviceID)
 	if name != expected {
 		t.Errorf("incorrect device name - expected:%v, got:%v", expected, name)
 	}
@@ -205,7 +213,10 @@ func TestLookupDefaultCardName(t *testing.T) {
 
 	expected := ""
 
-	name := eventCard(event)
+	timestamp := time.Time(EVENT.Timestamp)
+	card := EVENT.CardNumber
+	name := sys.history.lookupCard(timestamp, card)
+
 	if name != expected {
 		t.Errorf("incorrect card name - expected:%v, got:%v", expected, name)
 	}
@@ -226,7 +237,10 @@ func TestLookupCardName(t *testing.T) {
 	catalog.PutV(oid, schema.CardNumber, uint32(8165538))
 	catalog.PutV(oid, schema.CardName, "FredF")
 
-	name := eventCard(event)
+	timestamp := time.Time(EVENT.Timestamp)
+	cardNumber := EVENT.CardNumber
+	name := sys.history.lookupCard(timestamp, cardNumber)
+
 	if name != expected {
 		t.Errorf("incorrect card name - expected:%v, got:%v", expected, name)
 	}
@@ -234,7 +248,7 @@ func TestLookupCardName(t *testing.T) {
 
 func TestLookupHistoricalCardName(t *testing.T) {
 	h := []logs.LogEntry{}
-	for _, v := range history {
+	for _, v := range LOGS {
 		h = append(h, v)
 	}
 
@@ -252,7 +266,10 @@ func TestLookupHistoricalCardName(t *testing.T) {
 	catalog.PutV(oid, schema.CardNumber, uint32(8165538))
 	catalog.PutV(oid, schema.CardName, "FredF")
 
-	name := eventCard(event)
+	timestamp := time.Time(EVENT.Timestamp)
+	cardNumber := EVENT.CardNumber
+	name := sys.history.lookupCard(timestamp, cardNumber)
+
 	if name != expected {
 		t.Errorf("incorrect card name - expected:%v, got:%v", expected, name)
 	}
@@ -263,14 +280,28 @@ func TestLookupDefaultDoorName(t *testing.T) {
 
 	expected := ""
 
-	name := eventDoor(event)
-	if name != expected {
-		t.Errorf("incorrect door name - expected:%v, got:%v", expected, name)
+	timestamp := time.Time(EVENT.Timestamp)
+	deviceID := EVENT.DeviceID
+	doorID := EVENT.Door
+	door := sys.history.lookupDoor(timestamp, deviceID, doorID)
+
+	if door != expected {
+		t.Errorf("incorrect door name - expected:%v, got:%v", expected, door)
 	}
 }
 
 func TestLookupDoorName(t *testing.T) {
-	sys.logs.Logs = logs.NewLogs()
+	catalog.Init(memdb.NewCatalog())
+
+	sys = system{
+		logs: struct {
+			logs.Logs
+			file string
+			tag  string
+		}{
+			Logs: logs.NewLogs(),
+		},
+	}
 
 	controller := schema.OID("0.2.1")
 	oid := schema.OID("0.3.1")
@@ -290,7 +321,11 @@ func TestLookupDoorName(t *testing.T) {
 
 	expected := "Gringotts"
 
-	name := eventDoor(event)
+	timestamp := time.Time(EVENT.Timestamp)
+	deviceID := EVENT.DeviceID
+	doorID := EVENT.Door
+	name := sys.history.lookupDoor(timestamp, deviceID, doorID)
+
 	if name != expected {
 		t.Errorf("incorrect door name - expected:%v, got:%v", expected, name)
 	}
@@ -298,7 +333,7 @@ func TestLookupDoorName(t *testing.T) {
 
 func TestLookupHistoricalDoorName(t *testing.T) {
 	h := []logs.LogEntry{}
-	for _, v := range history {
+	for _, v := range LOGS {
 		h = append(h, v)
 	}
 
@@ -322,7 +357,11 @@ func TestLookupHistoricalDoorName(t *testing.T) {
 
 	expected := "Cupboard"
 
-	name := eventDoor(event)
+	timestamp := time.Time(EVENT.Timestamp)
+	deviceID := EVENT.DeviceID
+	doorID := EVENT.Door
+	name := sys.history.lookupDoor(timestamp, deviceID, doorID)
+
 	if name != expected {
 		t.Errorf("incorrect door name - expected:%v, got:%v", expected, name)
 	}

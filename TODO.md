@@ -4,10 +4,11 @@
       - [x] Move sys.Updated into DBC.Commit()
 
 - [ ] Cleanup audit log/logging
-      - [ ] Event item detail is missing on UI
-      - [ ] Record system state on startup
+      - [x] Event item detail is missing on UI
+      - [ ] System state history for event detail lookup
+            - [ ] Generate from logs on startup
+            - [ ] Record system state on startup
       - [ ] Remove before/after fields
-      - [ ] Separate system history from logs/audits/etc
 
 - (?) use :before or :content for flags
 

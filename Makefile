@@ -85,7 +85,7 @@ release: update-release build-all
 
 debug: format
 	go build -trimpath -o bin ./...
-	go test -run TestTimezonePSTPDT ./types
+	go test -run TestLookupDoorName ./system
 
 delve: format
 	go build -trimpath -o bin ./...
