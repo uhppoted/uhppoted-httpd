@@ -205,7 +205,7 @@ func (ll *Logs) Clone() *Logs {
 	return &shadow
 }
 
-func (ll *Logs) Validate() error {
+func (ll Logs) Validate() error {
 	return nil
 }
 

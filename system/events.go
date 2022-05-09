@@ -29,9 +29,9 @@ func AppendEvents(list types.EventsList) {
 		doorID := e.Door
 		cardID := e.CardNumber
 
-		device := sys.history.lookupController(timestamp, deviceID)
-		door := sys.history.lookupDoor(timestamp, deviceID, doorID)
-		name := sys.history.lookupCard(timestamp, cardID)
+		device := sys.histxxx.lookupController(timestamp, deviceID)
+		door := sys.histxxx.lookupDoor(timestamp, deviceID, doorID)
+		name := sys.histxxx.lookupCard(timestamp, cardID)
 
 		return device, door, name
 	}

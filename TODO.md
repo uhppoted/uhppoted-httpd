@@ -1,13 +1,9 @@
 ## v0.7.x
 
-- [x] Controller date/time
-      - [x] Move sys.Updated into DBC.Commit()
-
 - [ ] Cleanup audit log/logging
-      - [x] Event item detail is missing on UI
       - [ ] System state history for event detail lookup
-            - [ ] Generate from logs on startup
-            - [ ] Record system state on startup
+            - [ ] Load on startup
+            - [ ] Record system state on startup/updated
       - [ ] Remove before/after fields
 
 - (?) use :before or :content for flags

@@ -28,6 +28,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/events"
 	"github.com/uhppoted/uhppoted-httpd/system/groups"
 	"github.com/uhppoted/uhppoted-httpd/system/grule"
+	"github.com/uhppoted/uhppoted-httpd/system/history"
 	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/system/logs"
 	"github.com/uhppoted/uhppoted-httpd/system/users"
@@ -113,7 +114,16 @@ var sys = system{
 		tag:   "users",
 	},
 
-	history:   history{},
+	history: struct {
+		history.History
+		file string
+		tag  string
+	}{
+		History: history.NewHistory(),
+		tag:     "history",
+	},
+
+	histxxx:   histxxx{},
 	taskQ:     NewTaskQ(),
 	retention: 6 * time.Hour,
 }
@@ -170,11 +180,17 @@ type system struct {
 		tag  string
 	}
 
+	history struct {
+		history.History
+		file string
+		tag  string
+	}
+
 	rules     grule.Rules
 	taskQ     TaskQ
 	retention time.Duration // time after which 'deleted' items are permanently removed
 	trail     trail
-	history   history
+	histxxx   histxxx
 	debug     bool
 }
 

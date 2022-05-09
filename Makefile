@@ -85,7 +85,7 @@ release: update-release build-all
 
 debug: format
 	go build -trimpath -o bin ./...
-	go test -run TestLookupDoorName ./system
+	go test -run Test ./system/history
 
 delve: format
 	go build -trimpath -o bin ./...

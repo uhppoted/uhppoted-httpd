@@ -9,10 +9,10 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-type history struct {
+type histxxx struct {
 }
 
-func (h history) lookupController(timestamp time.Time, deviceID uint32) string {
+func (h histxxx) lookupController(timestamp time.Time, deviceID uint32) string {
 	name := ""
 
 	if deviceID != 0 {
@@ -48,7 +48,7 @@ func (h history) lookupController(timestamp time.Time, deviceID uint32) string {
 	return name
 }
 
-func (h history) lookupCard(timestamp time.Time, card uint32) string {
+func (h histxxx) lookupCard(timestamp time.Time, card uint32) string {
 	name := ""
 
 	if card != 0 {
@@ -85,7 +85,7 @@ func (h history) lookupCard(timestamp time.Time, card uint32) string {
 	return name
 }
 
-func (h history) lookupDoor(timestamp time.Time, deviceID uint32, door uint8) string {
+func (h histxxx) lookupDoor(timestamp time.Time, deviceID uint32, door uint8) string {
 	name := ""
 
 	if deviceID != 0 && door >= 1 && door <= 4 {
