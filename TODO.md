@@ -4,6 +4,8 @@
       - [ ] System state history for event detail lookup
             - [x] Load on startup
             - [ ] Didn't match card name for latest event
+            - [ ] RLock/RUnlock when reading
+            - [ ] Rethink not embedding RWMutex
       - [ ] Remove before/after fields
       - [ ] LAN is in HUGE capitals
       - [ ] Genericize system tables (for save/load)

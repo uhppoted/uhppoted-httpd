@@ -15,8 +15,12 @@ import (
 
 type History struct {
 	history []Entry
-	sync.RWMutex
 }
+
+// NTS: external to History struct because there's only ever really one of them
+//      and you can't copy safely pass a struct with an embedded mutex except by
+//      pointer.
+var guard sync.RWMutex
 
 func NewHistory(entries ...Entry) History {
 	history := History{
@@ -236,8 +240,8 @@ func (h History) Validate() error {
 }
 
 func (h *History) Received(records ...audit.AuditRecord) {
-	h.Lock()
-	defer h.Unlock()
+	guard.Lock()
+	defer guard.Unlock()
 
 	for _, record := range records {
 		unknown := time.Time{}
