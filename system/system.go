@@ -123,7 +123,6 @@ var sys = system{
 		tag:     "history",
 	},
 
-	histxxx:   histxxx{},
 	taskQ:     NewTaskQ(),
 	retention: 6 * time.Hour,
 }
@@ -190,7 +189,6 @@ type system struct {
 	taskQ     TaskQ
 	retention time.Duration // time after which 'deleted' items are permanently removed
 	trail     trail
-	histxxx   histxxx
 	debug     bool
 }
 
@@ -229,6 +227,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 	sys.events.file = cfg.HTTPD.System.Events
 	sys.logs.file = cfg.HTTPD.System.Logs
 	sys.users.file = cfg.HTTPD.System.Users
+	sys.history.file = cfg.HTTPD.System.History
 
 	list := []struct {
 		serializable
@@ -243,6 +242,7 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		{&sys.events, sys.events.file, sys.events.tag},
 		{&sys.logs, sys.logs.file, sys.logs.tag},
 		{&sys.users, sys.users.file, sys.users.tag},
+		{&sys.history, sys.history.file, sys.history.tag},
 	}
 
 	for _, v := range list {
@@ -251,6 +251,10 @@ func Init(cfg config.Config, conf string, debug bool) error {
 			return err
 		}
 	}
+
+	sys.history.UseLogs(sys.logs.Logs, func() {
+		save(sys.history.file, sys.history.tag, &sys.history.History)
+	})
 
 	kb := ast.NewKnowledgeLibrary()
 	if err := builder.NewRuleBuilder(kb).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(cfg.HTTPD.DB.Rules.ACL)); err != nil {
@@ -262,13 +266,13 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		log.Panicf("Error initialising ACL ruleset (%v)", err)
 	}
 
+	sys.debug = debug
 	sys.conf = conf
 	sys.rules = rules
 	sys.retention = cfg.HTTPD.Retention
 	sys.trail = trail{
 		trail: audit.MakeTrail(),
 	}
-	sys.debug = debug
 
 	controllers.SetWindows(cfg.HTTPD.System.Windows.Ok,
 		cfg.HTTPD.System.Windows.Uncertain,
@@ -405,6 +409,7 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 
 func (s *system) sweep() {
 	cutoff := time.Now().Add(-s.retention)
+
 	log.Printf("INFO  Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
 
 	s.controllers.Sweep(s.retention)

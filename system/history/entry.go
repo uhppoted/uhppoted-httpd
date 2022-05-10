@@ -23,71 +23,46 @@ func (e Entry) IsDeleted() bool {
 
 func (e Entry) serialize() ([]byte, error) {
 	record := struct {
-		// Timestamp time.Time `json:"timestamp"`
-		// UID       string
-		// OID       schema.OID `json:"OID"`
-		// Item      string     `json:"item"`
-		// ItemID    string     `json:"id"`
-		// ItemName  string     `json:"name"`
-		// Field     string     `json:"field"`
-		// Details   string     `json:"details"`
-		// Before    string     `json:"before,omitempty"`
-		// After     string     `json:"after,omitempty"`
+		Timestamp time.Time `json:"timestamp"`
+		Item      string    `json:"item"`
+		ItemID    string    `json:"id"`
+		Field     string    `json:"field"`
+		Value     string    `json:"value,omitempty"`
 	}{
-		// Timestamp: l.Timestamp,
-		// UID:       l.UID,
-		// OID:       l.OID,
-		// Item:      l.Item,
-		// ItemID:    l.ItemID,
-		// ItemName:  l.ItemName,
-		// Field:     l.Field,
-		// Details:   l.Details,
-		// Before:    l.Before,
-		// After:     l.After,
+		Timestamp: e.Timestamp,
+		Item:      e.Item,
+		ItemID:    e.ItemID,
+		Field:     e.Field,
+		Value:     e.Value,
 	}
 
 	return json.Marshal(record)
 }
 
 func (e *Entry) deserialize(bytes []byte) error {
-	// record := struct {
-	//     Timestamp time.Time `json:"timestamp"`
-	//     UID       string
-	//     OID       schema.OID `json:"OID"`
-	//     Item      string     `json:"item"`
-	//     ItemID    string     `json:"id"`
-	//     ItemName  string     `json:"name"`
-	//     Field     string     `json:"field"`
-	//     Details   string     `json:"details"`
-	//     Before    string     `json:"before"`
-	//     After     string     `json:"after"`
-	// }{
-	//     Timestamp: l.Timestamp,
-	//     UID:       l.UID,
-	//     OID:       l.OID,
-	//     Item:      l.Item,
-	//     ItemID:    l.ItemID,
-	//     ItemName:  l.ItemName,
-	//     Field:     l.Field,
-	//     Details:   l.Details,
-	//     Before:    l.Before,
-	//     After:     l.After,
-	// }
+	record := struct {
+		Timestamp time.Time `json:"timestamp"`
+		Item      string    `json:"item"`
+		ItemID    string    `json:"id"`
+		Field     string    `json:"field"`
+		Value     string    `json:"value"`
+	}{
+		Timestamp: e.Timestamp,
+		Item:      e.Item,
+		ItemID:    e.ItemID,
+		Field:     e.Field,
+		Value:     e.Value,
+	}
 
-	// if err := json.Unmarshal(bytes, &record); err != nil {
-	//     return err
-	// }
+	if err := json.Unmarshal(bytes, &record); err != nil {
+		return err
+	}
 
-	// l.Timestamp = record.Timestamp
-	// l.UID = record.UID
-	// l.OID = record.OID
-	// l.Item = record.Item
-	// l.ItemID = record.ItemID
-	// l.ItemName = record.ItemName
-	// l.Field = record.Field
-	// l.Details = record.Details
-	// l.Before = record.Before
-	// l.After = record.After
+	e.Timestamp = record.Timestamp
+	e.Item = record.Item
+	e.ItemID = record.ItemID
+	e.Field = record.Field
+	e.Value = record.Value
 
 	return nil
 }

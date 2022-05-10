@@ -1,53 +1,19 @@
 package history
 
 import (
-	// "crypto/sha1"
 	"encoding/json"
 	"fmt"
-	// "os"
 	"sort"
-	// "sync"
 	"time"
 
-	// "github.com/uhppoted/uhppoted-httpd/audit"
-	// "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/logs"
 )
 
 type History struct {
 	history []Entry
-	// logs map[key]LogEntry
 }
-
-type key [20]byte
-
-// var guard sync.RWMutex
-
-// func newKey(timestamp time.Time, uid, item, id, name, field, details string) key {
-//     r := struct {
-//         Timestamp time.Time `json:"timestamp"`
-//         UID       string    `json:"uid"`
-//         Item      string    `json:"item"`
-//         ID        string    `json:"id"`
-//         Name      string    `json:"name"`
-//         Field     string    `json:"field"`
-//         Details   string    `json:"details"`
-//     }{
-//         Timestamp: timestamp,
-//         UID:       uid,
-//         Item:      item,
-//         ID:        id,
-//         Name:      name,
-//         Field:     field,
-//         Details:   details,
-//     }
-
-//     b, _ := json.Marshal(r)
-//     hash := sha1.Sum(b)
-
-//     return key(hash)
-// }
 
 func NewHistory(entries ...Entry) History {
 	history := History{
@@ -57,6 +23,25 @@ func NewHistory(entries ...Entry) History {
 	copy(history.history, entries)
 
 	return history
+}
+
+func (h *History) UseLogs(logs logs.Logs, save func()) {
+	history := []Entry{}
+	for _, v := range logs.List() {
+		history = append(history, Entry{
+			Timestamp: v.Timestamp,
+			Item:      v.Item,
+			ItemID:    v.ItemID,
+			Field:     v.Field,
+			Value:     v.After,
+		})
+	}
+
+	h.history = history
+
+	if save != nil {
+		save()
+	}
 }
 
 func (h History) LookupController(timestamp time.Time, deviceID uint32) string {
@@ -91,14 +76,97 @@ func (h History) LookupController(timestamp time.Time, deviceID uint32) string {
 	return ""
 }
 
-func (h *History) Load(blob json.RawMessage) error {
-	f := func(bytes json.RawMessage) (*Entry, key) {
-		var e Entry
-		if err := e.deserialize(bytes); err != nil {
-			return nil, key{}
+func (h History) LookupCard(timestamp time.Time, card uint32) string {
+	if card != 0 {
+		edits := h.query("card", fmt.Sprintf("%v", card), "name")
+
+		sort.SliceStable(edits, func(i, j int) bool {
+			p := edits[i].Timestamp
+			q := edits[j].Timestamp
+
+			return p.Before(q)
+		})
+
+		name := ""
+		for _, v := range edits {
+			if v.Timestamp.After(timestamp) {
+				return name
+			}
+
+			name = v.Value
 		}
 
-		return &e, key{}
+		if oid, ok := catalog.Find(schema.CardsOID, schema.CardNumber, card); ok && oid != "" {
+			oid = oid.Trim(schema.CardNumber)
+			if v := catalog.GetV(oid, schema.CardName); v != nil {
+				name = fmt.Sprintf("%v", v)
+			}
+		}
+
+		return name
+	}
+
+	return ""
+}
+
+func (h History) LookupDoor(timestamp time.Time, deviceID uint32, door uint8) string {
+	if deviceID != 0 && door >= 1 && door <= 4 {
+		edits := h.query("door", fmt.Sprintf("%v:%v", deviceID, door), "name")
+
+		sort.SliceStable(edits, func(i, j int) bool {
+			p := edits[i].Timestamp
+			q := edits[j].Timestamp
+
+			return p.Before(q)
+		})
+
+		name := ""
+		for _, v := range edits {
+			if v.Timestamp.After(timestamp) {
+				return name
+			}
+
+			name = v.Value
+		}
+
+		if controller := catalog.FindController(deviceID); controller != "" {
+			var u interface{}
+
+			switch door {
+			case 1:
+				u = catalog.GetV(controller, schema.ControllerDoor1)
+			case 2:
+				u = catalog.GetV(controller, schema.ControllerDoor2)
+			case 3:
+				u = catalog.GetV(controller, schema.ControllerDoor3)
+
+			case 4:
+				u = catalog.GetV(controller, schema.ControllerDoor4)
+			}
+
+			if u != nil {
+				if oid, ok := u.(schema.OID); ok {
+					if v := catalog.GetV(oid, schema.DoorName); v != nil {
+						name = fmt.Sprintf("%v", v)
+					}
+				}
+			}
+		}
+
+		return name
+	}
+
+	return ""
+}
+
+func (h *History) Load(blob json.RawMessage) error {
+	f := func(bytes json.RawMessage) (*Entry, string) {
+		var e Entry
+		if err := e.deserialize(bytes); err != nil {
+			return nil, ""
+		}
+
+		return &e, fmt.Sprintf("%v:%v", e.Timestamp, e.ItemID)
 	}
 
 	rs := []json.RawMessage{}
@@ -106,16 +174,20 @@ func (h *History) Load(blob json.RawMessage) error {
 		return err
 	}
 
-	history := []Entry{}
+	list := map[string]Entry{}
 	for _, v := range rs {
-		if record, _ := f(v); record != nil {
-			// if e, ok := logs[k]; ok {
-			//     return fmt.Errorf("duplicate record (%#v and %#v)", record, x)
-			// } else {
-			//     logs[k] = *record
-			// }
-			history = append(history, *record)
+		if record, key := f(v); record != nil {
+			if e, ok := list[key]; ok && e.Value != record.Value {
+				return fmt.Errorf("duplicate record (%#v and %#v)", record, e)
+			}
+
+			list[key] = *record
 		}
+	}
+
+	history := []Entry{}
+	for _, e := range list {
+		history = append(history, e)
 	}
 
 	h.history = history
@@ -184,21 +256,6 @@ func (h History) Validate() error {
 //             ll.logs[k] = NewLogEntry(oid, timestamp, record)
 //         }
 //     }
-// }
-
-// func load(file string) ([]json.RawMessage, error) {
-//     blob := map[string][]json.RawMessage{}
-
-//     bytes, err := os.ReadFile(file)
-//     if err != nil {
-//         return nil, err
-//     }
-
-//     if err = json.Unmarshal(bytes, &blob); err != nil {
-//         return nil, err
-//     }
-
-//     return blob["logs"], nil
 // }
 
 func (h History) query(item, id, field string) []Entry {

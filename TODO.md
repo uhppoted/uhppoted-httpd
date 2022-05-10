@@ -5,6 +5,7 @@
             - [ ] Load on startup
             - [ ] Record system state on startup/updated
       - [ ] Remove before/after fields
+      - [ ] LAN is in HUGE capitals
 
 - (?) use :before or :content for flags
 

@@ -4,8 +4,6 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"log"
-	"os"
 	"sort"
 	"sync"
 	"time"
@@ -60,6 +58,16 @@ func NewLogs(entries ...LogEntry) Logs {
 	}
 
 	return logs
+}
+
+func (ll *Logs) List() []LogEntry {
+	list := []LogEntry{}
+
+	for _, v := range ll.logs {
+		list = append(list, v)
+	}
+
+	return list
 }
 
 func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
@@ -235,33 +243,139 @@ func (ll *Logs) Received(records ...audit.AuditRecord) {
 	}
 }
 
-func (ll *Logs) Query(item, id, field string) []LogEntry {
-	records := []LogEntry{}
+// func (ll *Logs) Query(item, id, field string) []LogEntry {
+// 	records := []LogEntry{}
+//
+// 	for _, v := range ll.logs {
+// 		if v.Item == item && v.ItemID == id && v.Field == field {
+// 			records = append(records, v)
+// 		}
+// 	}
+//
+// 	return records
+// }
 
-	for _, v := range ll.logs {
-		if v.Item == item && v.ItemID == id && v.Field == field {
-			records = append(records, v)
-		}
-	}
+// func (ll Logs) LookupController(timestamp time.Time, deviceID uint32) string {
+// 	name := ""
+//
+// 	if deviceID != 0 {
+// 		if oid := catalog.FindController(deviceID); oid != "" {
+// 			if v := catalog.GetV(oid, schema.ControllerName); v != nil {
+// 				name = fmt.Sprintf("%v", v)
+// 			}
+// 		}
+//
+// 		edits := ll.Query("controller", fmt.Sprintf("%v", deviceID), "name")
+//
+// 		sort.SliceStable(edits, func(i, j int) bool {
+// 			p := edits[i].Timestamp
+// 			q := edits[j].Timestamp
+//
+// 			return q.Before(p)
+// 		})
+//
+// 		for _, v := range edits {
+// 			if v.Timestamp.After(timestamp) {
+// 				switch {
+// 				case v.Before != "":
+// 					name = v.Before
+// 					break
+// 				case v.After != "":
+// 					name = v.After
+// 					break
+// 				}
+// 			}
+// 		}
+// 	}
+//
+// 	return name
+// }
 
-	return records
-}
+// func (ll Logs) LookupCard(timestamp time.Time, card uint32) string {
+// 	name := ""
+//
+// 	if card != 0 {
+// 		if oid, ok := catalog.Find(schema.CardsOID, schema.CardNumber, card); ok && oid != "" {
+// 			oid = oid.Trim(schema.CardNumber)
+// 			if v := catalog.GetV(oid, schema.CardName); v != nil {
+// 				name = fmt.Sprintf("%v", v)
+// 			}
+// 		}
+//
+// 		edits := ll.Query("card", fmt.Sprintf("%v", card), "name")
+//
+// 		sort.SliceStable(edits, func(i, j int) bool {
+// 			p := edits[i].Timestamp
+// 			q := edits[j].Timestamp
+//
+// 			return q.Before(p)
+// 		})
+//
+// 		for _, v := range edits {
+// 			if v.Timestamp.After(timestamp) {
+// 				switch {
+// 				case v.Before != "":
+// 					name = v.Before
+// 					break
+// 				case v.After != "":
+// 					name = v.After
+// 					break
+// 				}
+// 			}
+// 		}
+// 	}
+//
+// 	return name
+// }
 
-func load(file string) ([]json.RawMessage, error) {
-	blob := map[string][]json.RawMessage{}
-
-	bytes, err := os.ReadFile(file)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = json.Unmarshal(bytes, &blob); err != nil {
-		return nil, err
-	}
-
-	return blob["logs"], nil
-}
-
-func warn(err error) {
-	log.Printf("ERROR %v", err)
-}
+// func (ll Logs) LookupDoor(timestamp time.Time, deviceID uint32, door uint8) string {
+// 	name := ""
+//
+// 	if deviceID != 0 && door >= 1 && door <= 4 {
+// 		if oid := catalog.FindController(deviceID); oid != "" {
+// 			var dOID interface{}
+//
+// 			switch door {
+// 			case 1:
+// 				dOID = catalog.GetV(oid, schema.ControllerDoor1)
+// 			case 2:
+// 				dOID = catalog.GetV(oid, schema.ControllerDoor2)
+// 			case 3:
+// 				dOID = catalog.GetV(oid, schema.ControllerDoor3)
+//
+// 			case 4:
+// 				dOID = catalog.GetV(oid, schema.ControllerDoor4)
+// 			}
+//
+// 			if dOID != nil {
+// 				if v := catalog.GetV(dOID.(schema.OID), schema.DoorName); v != nil {
+// 					name = fmt.Sprintf("%v", v)
+// 				}
+// 			}
+// 		}
+//
+// 		edits := ll.Query("door", fmt.Sprintf("%v:%v", deviceID, door), "name")
+//
+// 		sort.SliceStable(edits, func(i, j int) bool {
+// 			p := edits[i].Timestamp
+// 			q := edits[j].Timestamp
+//
+// 			return q.Before(p)
+// 		})
+//
+// 		for _, v := range edits {
+// 			if v.Timestamp.After(timestamp) {
+// 				switch {
+// 				case v.Before != "":
+// 					name = v.Before
+// 					break
+// 				case v.After != "":
+// 					name = v.After
+// 					break
+// 				}
+// 			}
+// 		}
+// 	}
+//
+// 	return name
+// }
