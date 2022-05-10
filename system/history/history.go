@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"sync"
 	"time"
 
+	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/logs"
@@ -13,6 +15,7 @@ import (
 
 type History struct {
 	history []Entry
+	sync.RWMutex
 }
 
 func NewHistory(entries ...Entry) History {
@@ -232,31 +235,26 @@ func (h History) Validate() error {
 	return nil
 }
 
-// func (ll *Logs) Received(records ...audit.AuditRecord) {
-//     for _, record := range records {
-//         unknown := time.Time{}
-//         timestamp := record.Timestamp
-//         if record.Timestamp == unknown {
-//             timestamp = time.Now()
-//         }
-//
-//         guard.Lock()
-//         defer guard.Unlock()
-//
-//         k := newKey(record.Timestamp,
-//             record.UID,
-//             record.Component,
-//             record.Details.ID,
-//             record.Details.Name,
-//             record.Details.Field,
-//             record.Details.Description)
-//
-//         if _, ok := ll.logs[k]; !ok {
-//             oid := catalog.NewT(LogEntry{}.CatalogLogEntry)
-//             ll.logs[k] = NewLogEntry(oid, timestamp, record)
-//         }
-//     }
-// }
+func (h *History) Received(records ...audit.AuditRecord) {
+	h.Lock()
+	defer h.Unlock()
+
+	for _, record := range records {
+		unknown := time.Time{}
+		timestamp := record.Timestamp
+		if record.Timestamp == unknown {
+			timestamp = time.Now()
+		}
+
+		h.history = append(h.history, Entry{
+			Timestamp: timestamp,
+			Item:      record.Component,
+			ItemID:    record.Details.ID,
+			Field:     record.Details.Field,
+			Value:     record.Details.After,
+		})
+	}
+}
 
 func (h History) query(item, id, field string) []Entry {
 	records := []Entry{}

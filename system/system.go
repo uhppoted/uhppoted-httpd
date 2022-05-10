@@ -199,8 +199,13 @@ type trail struct {
 func (t trail) Write(records ...audit.AuditRecord) {
 	t.trail.Write(records...)
 	sys.logs.Received(records...)
+	sys.history.Received(records...)
 
 	if err := save(sys.logs.file, sys.logs.tag, &sys.logs); err != nil {
+		warn(err)
+	}
+
+	if err := save(sys.history.file, sys.history.tag, &sys.history); err != nil {
 		warn(err)
 	}
 }
@@ -252,9 +257,9 @@ func Init(cfg config.Config, conf string, debug bool) error {
 		}
 	}
 
-	sys.history.UseLogs(sys.logs.Logs, func() {
-		save(sys.history.file, sys.history.tag, &sys.history.History)
-	})
+	// sys.history.UseLogs(sys.logs.Logs, func() {
+	// 	save(sys.history.file, sys.history.tag, &sys.history.History)
+	// })
 
 	kb := ast.NewKnowledgeLibrary()
 	if err := builder.NewRuleBuilder(kb).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(cfg.HTTPD.DB.Rules.ACL)); err != nil {

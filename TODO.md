@@ -2,10 +2,11 @@
 
 - [ ] Cleanup audit log/logging
       - [ ] System state history for event detail lookup
-            - [ ] Load on startup
-            - [ ] Record system state on startup/updated
+            - [x] Load on startup
+            - [ ] Didn't match card name for latest event
       - [ ] Remove before/after fields
       - [ ] LAN is in HUGE capitals
+      - [ ] Genericize system tables (for save/load)
 
 - (?) use :before or :content for flags
 
