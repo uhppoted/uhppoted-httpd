@@ -2,7 +2,7 @@
 
 - [ ] Cleanup audit log/logging
       - [ ] System state history for event detail lookup
-            - [ ] Didn't match card name for latest event
+            - [x] Didn't match card name for latest event
             - [x] RLock/RUnlock when reading
             - [ ] Optimisation: store as sorted
             - [ ] Rethink not embedding RWMutex

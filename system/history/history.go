@@ -18,7 +18,7 @@ type History struct {
 }
 
 // NTS: external to History struct because there's only ever really one of them
-//      and you can't copy safely/pass as an argument with an embedded mutex 
+//      and you can't copy safely/pass as an argument with an embedded mutex
 //      except by address.
 var guard sync.RWMutex
 
@@ -40,7 +40,8 @@ func (h *History) UseLogs(logs logs.Logs, save func()) {
 			Item:      v.Item,
 			ItemID:    v.ItemID,
 			Field:     v.Field,
-			Value:     v.After,
+			Before:    v.Before,
+			After:     v.After,
 		})
 	}
 
@@ -55,60 +56,43 @@ func (h History) LookupController(timestamp time.Time, deviceID uint32) string {
 	guard.RLock()
 	defer guard.RUnlock()
 
+	name := ""
+
 	if deviceID != 0 {
-		edits := h.query("controller", fmt.Sprintf("%v", deviceID), "name")
-
-		sort.SliceStable(edits, func(i, j int) bool {
-			p := edits[i].Timestamp
-			q := edits[j].Timestamp
-
-			return p.Before(q)
-		})
-
-		name := ""
-		for _, v := range edits {
-			if v.Timestamp.After(timestamp) {
-				return name
-			}
-
-			name = v.Value
-		}
-
 		if oid := catalog.FindController(deviceID); oid != "" {
 			if v := catalog.GetV(oid, schema.ControllerName); v != nil {
 				name = fmt.Sprintf("%v", v)
 			}
 		}
 
-		return name
+		edits := h.query("controller", fmt.Sprintf("%v", deviceID), "name")
+
+		sort.SliceStable(edits, func(i, j int) bool {
+			p := edits[i].Timestamp
+			q := edits[j].Timestamp
+
+			return q.Before(p)
+		})
+
+		for _, v := range edits {
+			if v.Timestamp.Before(timestamp) {
+				break
+			}
+
+			name = v.Before
+		}
 	}
 
-	return ""
+	return name
 }
 
 func (h History) LookupCard(timestamp time.Time, card uint32) string {
 	guard.RLock()
 	defer guard.RUnlock()
 
+	name := ""
+
 	if card != 0 {
-		edits := h.query("card", fmt.Sprintf("%v", card), "name")
-
-		sort.SliceStable(edits, func(i, j int) bool {
-			p := edits[i].Timestamp
-			q := edits[j].Timestamp
-
-			return p.Before(q)
-		})
-
-		name := ""
-		for _, v := range edits {
-			if v.Timestamp.After(timestamp) {
-				return name
-			}
-
-			name = v.Value
-		}
-
 		if oid, ok := catalog.Find(schema.CardsOID, schema.CardNumber, card); ok && oid != "" {
 			oid = oid.Trim(schema.CardNumber)
 			if v := catalog.GetV(oid, schema.CardName); v != nil {
@@ -116,35 +100,34 @@ func (h History) LookupCard(timestamp time.Time, card uint32) string {
 			}
 		}
 
-		return name
+		edits := h.query("card", fmt.Sprintf("%v", card), "name")
+
+		sort.SliceStable(edits, func(i, j int) bool {
+			p := edits[i].Timestamp
+			q := edits[j].Timestamp
+
+			return q.Before(p)
+		})
+
+		for _, v := range edits {
+			if v.Timestamp.Before(timestamp) {
+				break
+			}
+
+			name = v.Before
+		}
 	}
 
-	return ""
+	return name
 }
 
 func (h History) LookupDoor(timestamp time.Time, deviceID uint32, door uint8) string {
 	guard.RLock()
 	defer guard.RUnlock()
 
+	name := ""
+
 	if deviceID != 0 && door >= 1 && door <= 4 {
-		edits := h.query("door", fmt.Sprintf("%v:%v", deviceID, door), "name")
-
-		sort.SliceStable(edits, func(i, j int) bool {
-			p := edits[i].Timestamp
-			q := edits[j].Timestamp
-
-			return p.Before(q)
-		})
-
-		name := ""
-		for _, v := range edits {
-			if v.Timestamp.After(timestamp) {
-				return name
-			}
-
-			name = v.Value
-		}
-
 		if controller := catalog.FindController(deviceID); controller != "" {
 			var u interface{}
 
@@ -169,10 +152,25 @@ func (h History) LookupDoor(timestamp time.Time, deviceID uint32, door uint8) st
 			}
 		}
 
-		return name
+		edits := h.query("door", fmt.Sprintf("%v:%v", deviceID, door), "name")
+
+		sort.SliceStable(edits, func(i, j int) bool {
+			p := edits[i].Timestamp
+			q := edits[j].Timestamp
+
+			return q.Before(p)
+		})
+
+		for _, v := range edits {
+			if v.Timestamp.Before(timestamp) {
+				break
+			}
+
+			name = v.Before
+		}
 	}
 
-	return ""
+	return name
 }
 
 func (h *History) Load(blob json.RawMessage) error {
@@ -196,7 +194,7 @@ func (h *History) Load(blob json.RawMessage) error {
 	list := map[string]Entry{}
 	for _, v := range rs {
 		if record, key := f(v); record != nil {
-			if e, ok := list[key]; ok && e.Value != record.Value {
+			if e, ok := list[key]; ok && (e.Before != record.Before || e.After != record.After) {
 				return fmt.Errorf("duplicate record (%#v and %#v)", record, e)
 			}
 
@@ -273,7 +271,8 @@ func (h *History) Received(records ...audit.AuditRecord) {
 			Item:      record.Component,
 			ItemID:    record.Details.ID,
 			Field:     record.Details.Field,
-			Value:     record.Details.After,
+			Before:    record.Details.Before,
+			After:     record.Details.After,
 		})
 	}
 }

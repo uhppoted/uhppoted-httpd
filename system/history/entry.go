@@ -10,7 +10,8 @@ type Entry struct {
 	Item      string
 	ItemID    string
 	Field     string
-	Value     string
+	Before    string
+	After     string
 }
 
 func (e Entry) IsValid() bool {
@@ -27,13 +28,15 @@ func (e Entry) serialize() ([]byte, error) {
 		Item      string    `json:"item"`
 		ItemID    string    `json:"id"`
 		Field     string    `json:"field"`
-		Value     string    `json:"value,omitempty"`
+		Before    string    `json:"before,omitempty"`
+		After     string    `json:"after,omitempty"`
 	}{
 		Timestamp: e.Timestamp,
 		Item:      e.Item,
 		ItemID:    e.ItemID,
 		Field:     e.Field,
-		Value:     e.Value,
+		Before:    e.Before,
+		After:     e.After,
 	}
 
 	return json.Marshal(record)
@@ -45,13 +48,15 @@ func (e *Entry) deserialize(bytes []byte) error {
 		Item      string    `json:"item"`
 		ItemID    string    `json:"id"`
 		Field     string    `json:"field"`
-		Value     string    `json:"value"`
+		Before    string    `json:"before"`
+		After     string    `json:"after"`
 	}{
 		Timestamp: e.Timestamp,
 		Item:      e.Item,
 		ItemID:    e.ItemID,
 		Field:     e.Field,
-		Value:     e.Value,
+		Before:    e.Before,
+		After:     e.After,
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -62,7 +67,8 @@ func (e *Entry) deserialize(bytes []byte) error {
 	e.Item = record.Item
 	e.ItemID = record.ItemID
 	e.Field = record.Field
-	e.Value = record.Value
+	e.Before = record.Before
+	e.After = record.After
 
 	return nil
 }
