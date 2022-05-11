@@ -18,8 +18,8 @@ type History struct {
 }
 
 // NTS: external to History struct because there's only ever really one of them
-//      and you can't copy safely pass a struct with an embedded mutex except by
-//      pointer.
+//      and you can't copy safely/pass as an argument with an embedded mutex 
+//      except by address.
 var guard sync.RWMutex
 
 func NewHistory(entries ...Entry) History {
@@ -52,6 +52,9 @@ func (h *History) UseLogs(logs logs.Logs, save func()) {
 }
 
 func (h History) LookupController(timestamp time.Time, deviceID uint32) string {
+	guard.RLock()
+	defer guard.RUnlock()
+
 	if deviceID != 0 {
 		edits := h.query("controller", fmt.Sprintf("%v", deviceID), "name")
 
@@ -84,6 +87,9 @@ func (h History) LookupController(timestamp time.Time, deviceID uint32) string {
 }
 
 func (h History) LookupCard(timestamp time.Time, card uint32) string {
+	guard.RLock()
+	defer guard.RUnlock()
+
 	if card != 0 {
 		edits := h.query("card", fmt.Sprintf("%v", card), "name")
 
@@ -117,6 +123,9 @@ func (h History) LookupCard(timestamp time.Time, card uint32) string {
 }
 
 func (h History) LookupDoor(timestamp time.Time, deviceID uint32, door uint8) string {
+	guard.RLock()
+	defer guard.RUnlock()
+
 	if deviceID != 0 && door >= 1 && door <= 4 {
 		edits := h.query("door", fmt.Sprintf("%v:%v", deviceID, door), "name")
 
@@ -167,6 +176,9 @@ func (h History) LookupDoor(timestamp time.Time, deviceID uint32, door uint8) st
 }
 
 func (h *History) Load(blob json.RawMessage) error {
+	guard.Lock()
+	defer guard.Unlock()
+
 	f := func(bytes json.RawMessage) (*Entry, string) {
 		var e Entry
 		if err := e.deserialize(bytes); err != nil {
@@ -203,6 +215,9 @@ func (h *History) Load(blob json.RawMessage) error {
 }
 
 func (h History) Save() (json.RawMessage, error) {
+	guard.RLock()
+	defer guard.RUnlock()
+
 	if err := h.Validate(); err != nil {
 		return nil, err
 	}
@@ -221,6 +236,9 @@ func (h History) Save() (json.RawMessage, error) {
 }
 
 func (h History) Print() {
+	guard.RLock()
+	defer guard.RUnlock()
+
 	serializable := []json.RawMessage{}
 	for _, e := range h.history {
 		if e.IsValid() && !e.IsDeleted() {

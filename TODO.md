@@ -2,9 +2,9 @@
 
 - [ ] Cleanup audit log/logging
       - [ ] System state history for event detail lookup
-            - [x] Load on startup
             - [ ] Didn't match card name for latest event
-            - [ ] RLock/RUnlock when reading
+            - [x] RLock/RUnlock when reading
+            - [ ] Optimisation: store as sorted
             - [ ] Rethink not embedding RWMutex
       - [ ] Remove before/after fields
       - [ ] LAN is in HUGE capitals
