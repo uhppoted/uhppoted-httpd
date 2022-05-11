@@ -4,9 +4,9 @@
       - [ ] System state history for event detail lookup
             - [x] Didn't match card name for latest event
             - [x] RLock/RUnlock when reading
-            - [ ] Optimisation: store as sorted
-            - [ ] Rethink not embedding RWMutex
-      - [ ] Remove before/after fields
+            - [x] Optimisation: store as sorted
+            - (?) Rethink not embedding RWMutex
+      - [ ] Remove before/after fields from logs
       - [ ] LAN is in HUGE capitals
       - [ ] Genericize system tables (for save/load)
 

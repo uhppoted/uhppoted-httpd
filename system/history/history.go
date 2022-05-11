@@ -27,7 +27,7 @@ func NewHistory(entries ...Entry) History {
 		history: make([]Entry, len(entries)),
 	}
 
-	copy(history.history, entries)
+	history.set(entries...)
 
 	return history
 }
@@ -45,7 +45,7 @@ func (h *History) UseLogs(logs logs.Logs, save func()) {
 		})
 	}
 
-	h.history = history
+	h.set(history...)
 
 	if save != nil {
 		save()
@@ -66,13 +66,6 @@ func (h History) LookupController(timestamp time.Time, deviceID uint32) string {
 		}
 
 		edits := h.query("controller", fmt.Sprintf("%v", deviceID), "name")
-
-		sort.SliceStable(edits, func(i, j int) bool {
-			p := edits[i].Timestamp
-			q := edits[j].Timestamp
-
-			return q.Before(p)
-		})
 
 		for _, v := range edits {
 			if v.Timestamp.Before(timestamp) {
@@ -101,13 +94,6 @@ func (h History) LookupCard(timestamp time.Time, card uint32) string {
 		}
 
 		edits := h.query("card", fmt.Sprintf("%v", card), "name")
-
-		sort.SliceStable(edits, func(i, j int) bool {
-			p := edits[i].Timestamp
-			q := edits[j].Timestamp
-
-			return q.Before(p)
-		})
 
 		for _, v := range edits {
 			if v.Timestamp.Before(timestamp) {
@@ -153,13 +139,6 @@ func (h History) LookupDoor(timestamp time.Time, deviceID uint32, door uint8) st
 		}
 
 		edits := h.query("door", fmt.Sprintf("%v:%v", deviceID, door), "name")
-
-		sort.SliceStable(edits, func(i, j int) bool {
-			p := edits[i].Timestamp
-			q := edits[j].Timestamp
-
-			return q.Before(p)
-		})
 
 		for _, v := range edits {
 			if v.Timestamp.Before(timestamp) {
@@ -207,7 +186,7 @@ func (h *History) Load(blob json.RawMessage) error {
 		history = append(history, e)
 	}
 
-	h.history = history
+	h.set(history...)
 
 	return nil
 }
@@ -259,6 +238,8 @@ func (h *History) Received(records ...audit.AuditRecord) {
 	guard.Lock()
 	defer guard.Unlock()
 
+	history := h.history
+
 	for _, record := range records {
 		unknown := time.Time{}
 		timestamp := record.Timestamp
@@ -266,7 +247,7 @@ func (h *History) Received(records ...audit.AuditRecord) {
 			timestamp = time.Now()
 		}
 
-		h.history = append(h.history, Entry{
+		history = append(history, Entry{
 			Timestamp: timestamp,
 			Item:      record.Component,
 			ItemID:    record.Details.ID,
@@ -275,6 +256,19 @@ func (h *History) Received(records ...audit.AuditRecord) {
 			After:     record.Details.After,
 		})
 	}
+
+	h.set(history...)
+}
+
+func (h *History) set(list ...Entry) {
+	sort.SliceStable(list, func(i, j int) bool {
+		p := list[i].Timestamp
+		q := list[j].Timestamp
+
+		return q.Before(p)
+	})
+
+	h.history = list
 }
 
 func (h History) query(item, id, field string) []Entry {
