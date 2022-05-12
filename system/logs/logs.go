@@ -279,42 +279,42 @@ func (ll *Logs) Received(records ...audit.AuditRecord) {
 // 	return name
 // }
 
-func (ll Logs) LookupCard(timestamp time.Time, card uint32) string {
-	name := ""
-
-	if card != 0 {
-		if oid, ok := catalog.Find(schema.CardsOID, schema.CardNumber, card); ok && oid != "" {
-			oid = oid.Trim(schema.CardNumber)
-			if v := catalog.GetV(oid, schema.CardName); v != nil {
-				name = fmt.Sprintf("%v", v)
-			}
-		}
-
-		edits := ll.query("card", fmt.Sprintf("%v", card), "name")
-
-		sort.SliceStable(edits, func(i, j int) bool {
-			p := edits[i].Timestamp
-			q := edits[j].Timestamp
-
-			return q.Before(p)
-		})
-
-		for _, v := range edits {
-			if v.Timestamp.After(timestamp) {
-				switch {
-				case v.Before != "":
-					name = v.Before
-					break
-				case v.After != "":
-					name = v.After
-					break
-				}
-			}
-		}
-	}
-
-	return name
-}
+// func (ll Logs) LookupCard(timestamp time.Time, card uint32) string {
+// 	name := ""
+//
+// 	if card != 0 {
+// 		if oid, ok := catalog.Find(schema.CardsOID, schema.CardNumber, card); ok && oid != "" {
+// 			oid = oid.Trim(schema.CardNumber)
+// 			if v := catalog.GetV(oid, schema.CardName); v != nil {
+// 				name = fmt.Sprintf("%v", v)
+// 			}
+// 		}
+//
+// 		edits := ll.query("card", fmt.Sprintf("%v", card), "name")
+//
+// 		sort.SliceStable(edits, func(i, j int) bool {
+// 			p := edits[i].Timestamp
+// 			q := edits[j].Timestamp
+//
+// 			return q.Before(p)
+// 		})
+//
+// 		for _, v := range edits {
+// 			if v.Timestamp.After(timestamp) {
+// 				switch {
+// 				case v.Before != "":
+// 					name = v.Before
+// 					break
+// 				case v.After != "":
+// 					name = v.After
+// 					break
+// 				}
+// 			}
+// 		}
+// 	}
+//
+// 	return name
+// }
 
 // func (ll Logs) LookupDoor(timestamp time.Time, deviceID uint32, door uint8) string {
 // 	name := ""
@@ -368,14 +368,14 @@ func (ll Logs) LookupCard(timestamp time.Time, card uint32) string {
 // 	return name
 // }
 
-func (ll *Logs) query(item, id, field string) []LogEntry {
-	records := []LogEntry{}
-
-	for _, v := range ll.logs {
-		if v.Item == item && v.ItemID == id && v.Field == field {
-			records = append(records, v)
-		}
-	}
-
-	return records
-}
+// func (ll *Logs) query(item, id, field string) []LogEntry {
+// 	records := []LogEntry{}
+//
+// 	for _, v := range ll.logs {
+// 		if v.Item == item && v.ItemID == id && v.Field == field {
+// 			records = append(records, v)
+// 		}
+// 	}
+//
+// 	return records
+// }

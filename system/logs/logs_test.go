@@ -27,8 +27,6 @@ func TestLogEntryAsObjects(t *testing.T) {
 		ItemName:  "A Thyngge",
 		Field:     "widget",
 		Details:   "grokked the widget thing",
-		Before:    "wodget",
-		After:     "gadget",
 	}
 
 	expected := []schema.Object{
@@ -63,8 +61,6 @@ func TestLogEntryAsObjectsWithAuth(t *testing.T) {
 		ItemName:  "A Thyngge",
 		Field:     "widget",
 		Details:   "grokked the widget thing",
-		Before:    "wodget",
-		After:     "gadget",
 	}
 
 	expected := []schema.Object{

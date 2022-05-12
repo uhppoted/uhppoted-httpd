@@ -1,18 +1,20 @@
 ## v0.7.x
 
 - [ ] Cleanup audit log/logging
-      - [ ] System state history for event detail lookup
+      - [x] System state history for event detail lookup
             - [x] Didn't match card name for latest event
             - [x] RLock/RUnlock when reading
             - [x] Optimisation: store as sorted
-            - (?) Rethink not embedding RWMutex
-      - [ ] Remove before/after fields from logs
+      - [x] Remove before/after fields from logs
       - [ ] LAN is in HUGE capitals
       - [ ] Genericize system tables (for save/load)
 
 - (?) use :before or :content for flags
 
 - [ ] `mode:monitor` 
+      - show MONITORING instead of ONLINE
+      - disable submit/mark readonly/somesuch
+
 - (?) `mode:synchronize`
 - (?) Unify CompareACL and UpdateACL into SynchACL
       - [ ] wrap ACL update in goroutine

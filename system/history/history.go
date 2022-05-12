@@ -10,7 +10,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/system/logs"
 )
 
 type History struct {
@@ -32,25 +31,25 @@ func NewHistory(entries ...Entry) History {
 	return history
 }
 
-func (h *History) UseLogs(logs logs.Logs, save func()) {
-	history := []Entry{}
-	for _, v := range logs.List() {
-		history = append(history, Entry{
-			Timestamp: v.Timestamp,
-			Item:      v.Item,
-			ItemID:    v.ItemID,
-			Field:     v.Field,
-			Before:    v.Before,
-			After:     v.After,
-		})
-	}
-
-	h.set(history...)
-
-	if save != nil {
-		save()
-	}
-}
+// func (h *History) UseLogs(logs logs.Logs, save func()) {
+// 	history := []Entry{}
+// 	for _, v := range logs.List() {
+// 		history = append(history, Entry{
+// 			Timestamp: v.Timestamp,
+// 			Item:      v.Item,
+// 			ItemID:    v.ItemID,
+// 			Field:     v.Field,
+// 			Before:    v.Before,
+// 			After:     v.After,
+// 		})
+// 	}
+//
+// 	h.set(history...)
+//
+// 	if save != nil {
+// 		save()
+// 	}
+// }
 
 func (h History) LookupController(timestamp time.Time, deviceID uint32) string {
 	guard.RLock()
