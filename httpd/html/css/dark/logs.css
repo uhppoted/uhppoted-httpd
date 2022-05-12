@@ -751,53 +751,50 @@ th.timestamp {
   white-space: nowrap;
 }
 
+td input {
+  height: 18px;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  font-variant-caps: all-small-caps;
+}
+
 td input.timestamp {
   width: 140px;
-  height: 18px;
-  font-size: 0.88em;
 }
 
 td input.uid {
   width: 72px;
-  white-space: nowrap;
-  font-variant: small-caps;
-  font-size: 1.2em;
 }
 
 td input.item {
   width: 96px;
-  font-variant: small-caps;
-  font-size: 1.2em;
 }
 
 td input.item-id {
   width: 72px;
-  font-variant: small-caps;
-  font-size: 0.88em;
 }
 
 td input.item-name {
   width: 120px;
-  font-variant: small-caps;
-  font-size: 1.1em;
 }
 
 td input.item-field {
   width: 96px;
-  font-variant: small-caps;
-  font-variant-caps: all-petite-caps;
-  font-size: 1.1em;
 }
 
 td input.details {
   width: 90%;
   font-style: italic;
+  font-variant: normal;
+  font-variant-caps: normal;
+  font-size: 0.9em;
 }
 
 @-moz-document url-prefix("") {
-  td input.field {
+  td input {
     font-family: "Arial", san-serif;
     font-size: 1em;
+    font-variant-numeric: proportional-nums;
   }
 
   td input.timestamp {
@@ -806,9 +803,5 @@ td input.details {
 
   td input.item-id {
     font-size: 0.88em;
-  }
-
-  td input.details {
-    font-size: 0.9em;
   }
 }

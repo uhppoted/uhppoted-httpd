@@ -780,78 +780,56 @@ th.reason {
   min-width: 100px;
 }
 
+td input {
+  height: 18px;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  font-variant-caps: all-small-caps;
+}
+
 td input.timestamp {
   width: 140px;
-  height: 18px;
-  font-size: 0.88em;
 }
 
 td input.deviceID {
   width: 80px;
-  font-size: 0.88em;
 }
 
 td input.device {
   width: 72px;
-  font-size: 1.1em;
-  font-variant: small-caps;
-  font-variant-caps: all-small-caps;
 }
 
 td input.eventType {
   width: 56px;
-  font-size: 1.1em;
-  font-variant: small-caps;
-  font-variant-caps: all-small-caps;
 }
 
 td input.direction {
   width: 16px;
-  font-size: 1.1em;
-  font-variant: small-caps;
-  font-variant-caps: all-small-caps;
 }
 
 td input.doorid {
   width: 8px;
   text-align: center;
-  font-size: 0.88em;
 }
 
 td input.door {
   width: 96px;
-  font-size: 1.1em;
-  font-variant: small-caps;
-  font-variant-caps: all-small-caps;
 }
 
 td input.cardno {
   width: 56px;
-  font-size: 0.88em;
 }
 
 td input.card {
   width: 120px;
-  font-size: 1.1em;
-  font-variant: small-caps;
-  font-variant-caps: all-small-caps;
 }
 
 td input.access {
   width: 60px;
-  font-size: 1.1em;
-  font-variant: small-caps;
-  font-variant-caps: all-small-caps;
-}
-
-td input.reason {
-  font-size: 1.1em;
-  font-variant: small-caps;
-  font-variant-caps: all-small-caps;
 }
 
 @-moz-document url-prefix("") {
-  td input.field {
+  td input {
     font-family: "Arial", san-serif;
     font-size: 1em;
   }

@@ -110,50 +110,65 @@ div#events {
     min-width: 100px;
   }
 
+  td input {
+    height: 18px;
+    font-size: 1.2em;
+    font-variant: small-caps;
+    font-variant-caps: all-small-caps;
+  }
+
   td input.timestamp {
     width: 140px;
-    height: 18px;
-    font-size: 0.88em;
   }
 
   td input.device {
     width: 72px;
-    font-size: 1.1em;
-    font-variant: small-caps;
   }
 
   td input.eventType {
     width: 56px;
-    font-size: 1.1em;
-    font-variant: small-caps;
   }
 
   td input.door {
     width: 96px;
-    font-size: 1.1em;
-    font-variant: small-caps;
   }
 
   td input.cardno {
     width: 56px;
-    font-size: 0.88em;
   }
 
   td input.card {
     width: 120px;
-    font-size: 1.1em;
-    font-variant: small-caps;
   }
 
   td input.access {
     width: 72px;
-    font-size: 1.1em;
-    font-variant: small-caps;
   }
 
   td input.reason {
-    font-size: 1.1em;
-    font-variant: small-caps;
+  }
+
+  @-moz-document url-prefix("") {
+    td input {
+      font-family: "Arial", san-serif;
+      font-size: 1em;
+    }
+  
+    td input.timestamp {
+      font-size: 0.88em;
+    }
+  
+    td input.deviceID {
+      font-size: 0.88em;
+    }
+  
+    td input.doorid {
+      font-size: 0.88em;
+    }
+  
+    td input.cardno {
+      font-size: 0.88em;
+    }
   }
 }
 
@@ -176,43 +191,42 @@ div#logs {
     min-width: 140px;
   }
 
+  td input {
+    height: 18px;
+    font-size: 1.2em;
+    font-variant: small-caps;
+    font-variant-caps: all-small-caps;  
+}
+
   td input.timestamp {
     width: 140px;
-    height: 18px;
-    font-size: 0.88em;
   }
 
   td input.uid {
     width: 72px;
     white-space: nowrap;
-    font-variant: small-caps;
-    font-size: 1.2em;
   }
 
   td input.details {
     width: 90%;
+    font-variant: normal;
     font-style: italic;
-  }
-}
-
-@-moz-document url-prefix('') {
-  td input.field {
-    font-family: "Arial", san-serif;
-    font-size: 1em;
-  }
-  td input.access {
-    font-size: 0.88em;
-  }
-
-  td input.timestamp {
-    font-size: 0.88em;
-  }
-
-  td input.uid {
-    font-size: 0.88em;
-  }
-
-  td input.details {
     font-size: 0.9em;
   }
+
+  @-moz-document url-prefix("") {
+    td input {
+      font-family: "Arial", san-serif;
+      font-size: 1em;
+    }
+  
+    td input.timestamp {
+      font-size: 0.88em;
+    }
+  
+    td input.details {
+      font-size: 0.9em;
+    }
+  }
 }
+

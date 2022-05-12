@@ -6,7 +6,8 @@
             - [x] RLock/RUnlock when reading
             - [x] Optimisation: store as sorted
       - [x] Remove before/after fields from logs
-      - [ ] LAN is in HUGE capitals
+      - [x] LAN is in HUGE capitals
+      - [ ] Rework log funcs to take fmt + varargs
       - [ ] Genericize system tables (for save/load)
 
 - (?) use :before or :content for flags

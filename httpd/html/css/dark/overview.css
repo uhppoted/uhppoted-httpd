@@ -801,43 +801,50 @@ div#events th.access {
 div#events th.reason {
   min-width: 100px;
 }
+div#events td input {
+  height: 18px;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  font-variant-caps: all-small-caps;
+}
 div#events td input.timestamp {
   width: 140px;
-  height: 18px;
-  font-size: 0.88em;
 }
 div#events td input.device {
   width: 72px;
-  font-size: 1.1em;
-  font-variant: small-caps;
 }
 div#events td input.eventType {
   width: 56px;
-  font-size: 1.1em;
-  font-variant: small-caps;
 }
 div#events td input.door {
   width: 96px;
-  font-size: 1.1em;
-  font-variant: small-caps;
 }
 div#events td input.cardno {
   width: 56px;
-  font-size: 0.88em;
 }
 div#events td input.card {
   width: 120px;
-  font-size: 1.1em;
-  font-variant: small-caps;
 }
 div#events td input.access {
   width: 72px;
-  font-size: 1.1em;
-  font-variant: small-caps;
 }
-div#events td input.reason {
-  font-size: 1.1em;
-  font-variant: small-caps;
+@-moz-document url-prefix("") {
+  div#events td input {
+    font-family: "Arial", san-serif;
+    font-size: 1em;
+  }
+  div#events td input.timestamp {
+    font-size: 0.88em;
+  }
+  div#events td input.deviceID {
+    font-size: 0.88em;
+  }
+  div#events td input.doorid {
+    font-size: 0.88em;
+  }
+  div#events td input.cardno {
+    font-size: 0.88em;
+  }
 }
 
 div#logs {
@@ -856,44 +863,38 @@ div#logs th.details {
   white-space: nowrap;
   min-width: 140px;
 }
+div#logs td input {
+  height: 18px;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  font-variant-caps: all-small-caps;
+}
 div#logs td input.timestamp {
   width: 140px;
-  height: 18px;
-  font-size: 0.88em;
 }
 div#logs td input.uid {
   width: 72px;
   white-space: nowrap;
-  font-variant: small-caps;
-  font-size: 1.2em;
 }
 div#logs td input.details {
   width: 90%;
+  font-variant: normal;
   font-style: italic;
+  font-size: 0.9em;
 }
-
 @-moz-document url-prefix("") {
-  td input.field {
+  div#logs td input {
     font-family: "Arial", san-serif;
     font-size: 1em;
   }
-
-  td input.access {
+  div#logs td input.timestamp {
     font-size: 0.88em;
   }
-
-  td input.timestamp {
-    font-size: 0.88em;
-  }
-
-  td input.uid {
-    font-size: 0.88em;
-  }
-
-  td input.details {
+  div#logs td input.details {
     font-size: 0.9em;
   }
 }
+
 .combobox ul {
   display: none;
   background: #93a1a1;
