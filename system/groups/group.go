@@ -145,7 +145,7 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			g.log(uid, "update", g.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(g.Name, BLANK), stringify(value, BLANK)), dbc)
+			g.log(dbc, uid, "update", g.OID, "name", g.Name, value, "Updated name from %v to %v", g.Name, value)
 			g.Name = value
 			g.modified = types.TimestampNow()
 
@@ -162,9 +162,9 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 				return nil, err
 			} else {
 				if value == "true" {
-					g.log(uid, "update", g.OID, "door", fmt.Sprintf("Granted access to %v", door), dbc)
+					g.log(dbc, uid, "update", g.OID, "door", "", "", "Granted access to %v", door)
 				} else {
-					g.log(uid, "update", g.OID, "door", fmt.Sprintf("Revoked access to %v", door), dbc)
+					g.log(dbc, uid, "update", g.OID, "door", "", "", "Revoked access to %v", door)
 				}
 
 				g.Doors[k] = value == "true"
@@ -190,7 +190,7 @@ func (g *Group) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error
 			}
 		}
 
-		g.log(auth.UID(a), "delete", g.OID, "group", fmt.Sprintf("Deleted group %v", g.Name), dbc)
+		g.log(dbc, auth.UID(a), "delete", g.OID, "group", g.Name, "", "Deleted group %v", g.Name)
 		g.deleted = types.TimestampNow()
 		g.modified = types.TimestampNow()
 
@@ -305,8 +305,7 @@ func (g Group) clone() Group {
 	return group
 }
 
-func (g *Group) log(uid string, operation string, OID schema.OID, field string, description string, dbc db.DBC) {
-
+func (g *Group) log(dbc db.DBC, uid, operation string, OID schema.OID, field string, before, after any, format string, fields ...any) {
 	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       OID,
@@ -316,7 +315,9 @@ func (g *Group) log(uid string, operation string, OID schema.OID, field string, 
 			ID:          "",
 			Name:        stringify(g.Name, ""),
 			Field:       field,
-			Description: description,
+			Description: fmt.Sprintf(format, fields...),
+			Before:      stringify(before, ""),
+			After:       stringify(after, ""),
 		},
 	}
 

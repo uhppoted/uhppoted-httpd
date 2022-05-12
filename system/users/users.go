@@ -63,7 +63,7 @@ func (uu *Users) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string,
 			} else if u == nil {
 				return nil, fmt.Errorf("Failed to add 'new' user")
 			} else {
-				u.log(auth.UID(a), "add", u.OID, "card", "Added 'new' user", "", "", dbc)
+				u.log(dbc, auth.UID(a), "add", u.OID, "user", "", "", "Added 'new' user")
 
 				catalog.Join(&objects, catalog.NewObject(u.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(u.OID, UserCreated, u.created))

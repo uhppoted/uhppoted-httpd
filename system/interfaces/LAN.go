@@ -125,14 +125,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			l.log(uid,
-				"update",
-				l.OID,
-				"name",
-				fmt.Sprintf("Updated name from %v to %v", stringify(l.Name, BLANK), stringify(value, BLANK)),
-				stringify(l.Name, BLANK),
-				stringify(value, BLANK),
-				dbc)
+			l.log(dbc, uid, "update", l.OID, "name", l.Name, value, "Updated name from %v to %v", l.Name, value)
 
 			l.Name = value
 			l.modified = types.TimestampNow()
@@ -146,14 +139,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		} else if err := f("bind", addr); err != nil {
 			return nil, err
 		} else {
-			l.log(uid,
-				"update",
-				l.OID,
-				"bind",
-				fmt.Sprintf("Updated bind address from %v to %v", stringify(l.BindAddress, BLANK), stringify(value, BLANK)),
-				stringify(l.BindAddress, BLANK),
-				stringify(value, BLANK),
-				dbc)
+			l.log(dbc, uid, "update", l.OID, "bind", l.BindAddress, value, "Updated bind address from %v to %v", l.BindAddress, value)
 
 			l.BindAddress = *addr
 			l.modified = types.TimestampNow()
@@ -167,14 +153,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		} else if err := f("broadcast", addr); err != nil {
 			return nil, err
 		} else {
-			l.log(uid,
-				"update",
-				l.OID,
-				"broadcast",
-				fmt.Sprintf("Updated broadcast address from %v to %v", stringify(l.BroadcastAddress, BLANK), stringify(value, BLANK)),
-				stringify(l.BroadcastAddress, BLANK),
-				stringify(value, BLANK),
-				dbc)
+			l.log(dbc, uid, "update", l.OID, "broadcast", l.BroadcastAddress, value, "Updated broadcast address from %v to %v", l.BroadcastAddress, value)
 
 			l.BroadcastAddress = *addr
 			l.modified = types.TimestampNow()
@@ -188,14 +167,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		} else if err = f("listen", addr); err != nil {
 			return nil, err
 		} else {
-			l.log(uid,
-				"update",
-				l.OID,
-				"listen",
-				fmt.Sprintf("Updated listen address from %v to %v", stringify(l.ListenAddress, BLANK), stringify(value, BLANK)),
-				stringify(l.ListenAddress, BLANK),
-				stringify(value, BLANK),
-				dbc)
+			l.log(dbc, uid, "update", l.OID, "listen", l.ListenAddress, value, "Updated listen address from %v to %v", l.ListenAddress, value)
 
 			l.ListenAddress = *addr
 			l.modified = types.TimestampNow()
@@ -724,7 +696,7 @@ func (l *LAN) deserialize(bytes []byte) error {
 	return nil
 }
 
-func (l *LAN) log(uid string, operation string, OID schema.OID, field, description, before, after string, dbc db.DBC) {
+func (l *LAN) log(dbc db.DBC, uid string, operation string, OID schema.OID, field string, before, after any, format string, fields ...any) {
 	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       OID,
@@ -734,9 +706,9 @@ func (l *LAN) log(uid string, operation string, OID schema.OID, field, descripti
 			ID:          "LAN",
 			Name:        stringify(l.Name, ""),
 			Field:       field,
-			Description: description,
-			Before:      before,
-			After:       after,
+			Description: fmt.Sprintf(format, fields...),
+			Before:      stringify(before, ""),
+			After:       stringify(after, ""),
 		},
 	}
 

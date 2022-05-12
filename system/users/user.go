@@ -143,14 +143,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			u.modified = types.TimestampNow()
 			list = append(list, kv{UserName, stringify(u.name, "")})
 
-			u.log(uid,
-				"update",
-				u.OID,
-				"name",
-				fmt.Sprintf("Updated name from %v to %v", stringify(clone.name, BLANK), stringify(u.name, BLANK)),
-				stringify(u.name, ""),
-				stringify(value, ""),
-				dbc)
+			u.log(dbc, uid, "update", u.OID, "name", u.name, value, "Updated name from %v to %v", clone.name, u.name)
 		}
 
 	case oid == u.OID.Append(UserUID):
@@ -161,14 +154,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			u.modified = types.TimestampNow()
 			list = append(list, kv{UserUID, stringify(u.uid, "")})
 
-			u.log(uid,
-				"update",
-				u.OID,
-				"uid",
-				fmt.Sprintf("Updated UID from %v to %v", stringify(clone.uid, BLANK), stringify(u.uid, BLANK)),
-				stringify(clone.uid, ""),
-				stringify(u.uid, ""),
-				dbc)
+			u.log(dbc, uid, "update", u.OID, "uid", clone.uid, u.uid, "Updated UID from %v to %v", clone.uid, u.uid)
 		}
 
 	case oid == u.OID.Append(UserRole):
@@ -179,14 +165,13 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			u.modified = types.TimestampNow()
 			list = append(list, kv{UserRole, stringify(u.role, "")})
 
-			u.log(uid,
+			u.log(dbc, uid,
 				"update",
 				u.OID,
 				"role",
-				fmt.Sprintf("Updated role from %v to %v", stringify(clone.role, BLANK), stringify(u.role, BLANK)),
-				stringify(clone.role, ""),
-				stringify(u.role, ""),
-				dbc)
+				clone.role,
+				u.role,
+				"Updated role from %v to %v", clone.role, u.role)
 		}
 
 	case oid == u.OID.Append(UserPassword):
@@ -208,7 +193,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 			list = append(list, kv{UserPassword, ""})
 
-			u.log(uid, "update", u.OID, "password", "Updated password", "", "", dbc)
+			u.log(dbc, uid, "update", u.OID, "password", "", "", "Updated password")
 		}
 	}
 
@@ -229,11 +214,11 @@ func (u *User) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 
 		uid := auth.UID(a)
 		if p := stringify(u.uid, ""); p != "" {
-			u.log(uid, "delete", u.OID, "user", fmt.Sprintf("Deleted UID %v", p), "", "", dbc)
+			u.log(dbc, uid, "delete", u.OID, "user", p, "", "Deleted UID %v", p)
 		} else if p = stringify(u.name, ""); p != "" {
-			u.log(uid, "delete", u.OID, "user", fmt.Sprintf("Deleted user %v", p), "", "", dbc)
+			u.log(dbc, uid, "delete", u.OID, "user", p, "", "Deleted user %v", p)
 		} else {
-			u.log(uid, "delete", u.OID, "user", "Deleted user", "", "", dbc)
+			u.log(dbc, uid, "delete", u.OID, "user", "", "", "Deleted user")
 		}
 
 		u.deleted = types.TimestampNow()
@@ -365,7 +350,7 @@ func (u User) clone() *User {
 	return &replicant
 }
 
-func (u User) log(uid string, operation string, oid schema.OID, field, description, before, after string, dbc db.DBC) {
+func (u User) log(dbc db.DBC, uid, operation string, oid schema.OID, field string, before, after any, format string, fields ...any) {
 	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       oid,
@@ -375,9 +360,9 @@ func (u User) log(uid string, operation string, oid schema.OID, field, descripti
 			ID:          stringify(u.uid, ""),
 			Name:        stringify(u.name, ""),
 			Field:       field,
-			Description: description,
-			Before:      before,
-			After:       after,
+			Description: fmt.Sprintf(format, fields...),
+			Before:      stringify(before, ""),
+			After:       stringify(after, ""),
 		},
 	}
 

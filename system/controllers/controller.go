@@ -437,11 +437,11 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 			}
 		} else if value == "" {
 			if p := stringify(c.DeviceID, ""); p != "" {
-				c.log(uid, "update", OID, "device-id", fmt.Sprintf("Cleared device ID %v", p), p, "", dbc)
+				c.log(dbc, uid, "update", OID, "device-id", p, "", "Cleared device ID %v", p)
 			} else if p = stringify(c.name, ""); p != "" {
-				c.log(uid, "update", OID, "device-id", fmt.Sprintf("Cleared device ID for %v", p), "", "", dbc)
+				c.log(dbc, uid, "update", OID, "device-id", "", "", "Cleared device ID for %v", p)
 			} else {
-				c.log(uid, "update", OID, "device-id", fmt.Sprintf("Cleared device ID"), "", "", dbc)
+				c.log(dbc, uid, "update", OID, "device-id", "", "", "Cleared device ID")
 			}
 
 			c.DeviceID = 0
@@ -570,11 +570,11 @@ func (c *Controller) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, 
 		}
 
 		if p := stringify(c.name, ""); p != "" {
-			c.log(uid, "delete", c.OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
+			c.log(dbc, uid, "delete", c.OID, "device-id", "", "", "Deleted controller %v", p)
 		} else if p = stringify(c.DeviceID, ""); p != "" {
-			c.log(uid, "delete", c.OID, "device-id", fmt.Sprintf("Deleted controller %v", p), "", "", dbc)
+			c.log(dbc, uid, "delete", c.OID, "device-id", "", "", "Deleted controller %v", p)
 		} else {
-			c.log(uid, "delete", c.OID, "device-id", fmt.Sprintf("Deleted controller"), "", "", dbc)
+			c.log(dbc, uid, "delete", c.OID, "device-id", "", "", "Deleted controller")
 		}
 
 		c.deleted = types.TimestampNow()
@@ -773,7 +773,7 @@ func (c Controller) updated(uid, field string, before, after interface{}, dbc db
 	}
 }
 
-func (c *Controller) log(uid string, operation string, OID schema.OID, field, description, before, after string, dbc db.DBC) {
+func (c *Controller) log(dbc db.DBC, uid, operation string, OID schema.OID, field string, before, after any, format string, fields ...any) {
 	record := audit.AuditRecord{
 		UID:       uid,
 		OID:       OID,
@@ -783,9 +783,9 @@ func (c *Controller) log(uid string, operation string, OID schema.OID, field, de
 			ID:          stringify(c.DeviceID, ""),
 			Name:        stringify(c.name, ""),
 			Field:       field,
-			Description: description,
-			Before:      before,
-			After:       after,
+			Description: fmt.Sprintf(format, fields...),
+			Before:      stringify(before, ""),
+			After:       stringify(after, ""),
 		},
 	}
 

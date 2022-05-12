@@ -64,7 +64,7 @@ func (ii *Interfaces) UpdateByOID(a *auth.Authorizator, oid schema.OID, value st
 		} else if l == nil {
 			return nil, fmt.Errorf("Failed to add 'new' interface")
 		} else {
-			l.log(auth.UID(a), "add", l.OID, "interface", fmt.Sprintf("Added 'new' interface"), "", "", dbc)
+			l.log(dbc, auth.UID(a), "add", l.OID, "interface", "", "", "Added 'new' interface")
 			catalog.Join(&objects, catalog.NewObject(l.OID, "new"))
 			catalog.Join(&objects, catalog.NewObject2(l.OID, LANStatus, "new"))
 			catalog.Join(&objects, catalog.NewObject2(l.OID, LANCreated, l.created))

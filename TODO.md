@@ -7,7 +7,8 @@
             - [x] Optimisation: store as sorted
       - [x] Remove before/after fields from logs
       - [x] LAN is in HUGE capitals
-      - [ ] Rework log funcs to take fmt + varargs
+      - [x] Rework log funcs to take fmt + varargs
+      - [ ] Move log funcs to DBC
       - [ ] Genericize system tables (for save/load)
 
 - (?) use :before or :content for flags

@@ -181,7 +181,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			d.log(uid, "update", d.OID, "name", fmt.Sprintf("Updated name from %v to %v", stringify(d.Name, BLANK), stringify(value, BLANK)), dbc)
+			d.log(dbc, uid, "update", d.OID, "name", d.Name, value, "Updated name from %v to %v", d.Name, value)
 
 			d.Name = value
 			d.modified = types.TimestampNow()
@@ -207,7 +207,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 			dbc.Updated(d.OID, DoorDelay, d.delay)
 
-			d.log(uid, "update", d.OID, "delay", fmt.Sprintf("Updated delay from %vs to %vs", delay, value), dbc)
+			d.log(dbc, uid, "update", d.OID, "delay", delay, value, "Updated delay from %vs to %vs", delay, value)
 		}
 
 	case d.OID.Append(DoorControl):
@@ -235,7 +235,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 			dbc.Updated(d.OID, DoorControl, d.mode)
 
-			d.log(uid, "update", d.OID, "mode", fmt.Sprintf("Updated mode from %v to %v", mode, value), dbc)
+			d.log(dbc, uid, "update", d.OID, "mode", mode, value, "Updated mode from %v to %v", mode, value)
 		}
 	}
 
@@ -258,7 +258,7 @@ func (d *Door) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 			return nil, fmt.Errorf("Cannot delete door %v - assigned to controller", d.Name)
 		}
 
-		d.log(auth.UID(a), "delete", d.OID, "name", fmt.Sprintf("Deleted door %v", d.Name), dbc)
+		d.log(dbc, auth.UID(a), "delete", d.OID, "name", d.Name, "", "Deleted door %v", d.Name)
 		d.deleted = types.TimestampNow()
 		d.modified = types.TimestampNow()
 
@@ -370,7 +370,7 @@ func (d *Door) clone() Door {
 	}
 }
 
-func (d *Door) log(uid string, operation string, OID schema.OID, field string, description string, dbc db.DBC) {
+func (d *Door) log(dbc db.DBC, uid string, operation string, OID schema.OID, field string, before, after any, format string, fields ...any) {
 	deviceID := catalog.GetDoorDeviceID(d.OID)
 	door := catalog.GetDoorDeviceDoor(d.OID)
 
@@ -383,7 +383,9 @@ func (d *Door) log(uid string, operation string, OID schema.OID, field string, d
 			ID:          fmt.Sprintf("%v/%v", deviceID, door),
 			Name:        stringify(d.Name, ""),
 			Field:       field,
-			Description: description,
+			Description: fmt.Sprintf(format, fields...),
+			Before:      stringify(before, ""),
+			After:       stringify(after, ""),
 		},
 	}
 

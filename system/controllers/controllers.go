@@ -101,7 +101,7 @@ func (cc *Controllers) UpdateByOID(a *auth.Authorizator, oid schema.OID, value s
 			catalog.Join(&objects, catalog.NewObject2(OID, ControllerStatus, "new"))
 			catalog.Join(&objects, catalog.NewObject2(OID, ControllerCreated, c.created))
 
-			c.log(uid, "add", OID, "controller", fmt.Sprintf("Added 'new' controller"), "", "", dbc)
+			c.log(dbc, uid, "add", OID, "controller", "", "", "Added 'new' controller")
 		}
 	}
 
