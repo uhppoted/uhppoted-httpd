@@ -62,7 +62,7 @@ func (gg *Groups) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string
 			} else if g == nil {
 				return nil, fmt.Errorf("Failed to add 'new' group")
 			} else {
-				g.log(dbc, auth.UID(a), "add", g.OID, "group", "", "", "Added 'new' group")
+				g.log(dbc, auth.UID(a), "add", "group", "", "", "Added 'new' group")
 
 				catalog.Join(&objects, catalog.NewObject(g.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(g.OID, GroupCreated, g.created))

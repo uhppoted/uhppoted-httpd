@@ -1,8 +1,8 @@
 ## v0.7.x
 
-- [ ] Cleanup audit log/logging
+- [x] Cleanup audit log/logging
       - [x] Genericize system tables (for save/load)
-      - [ ] Move log funcs to DBC
+      - [x] Move log funcs to DBC
 
 - (?) use :before or :content for flags
 

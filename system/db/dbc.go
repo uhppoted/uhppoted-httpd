@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
@@ -13,7 +14,7 @@ type DBC interface {
 	Updated(oid schema.OID, suffix schema.Suffix, value any)
 	Objects() []schema.Object
 	Commit(sys System, hook func())
-	Write(audit.AuditRecord)
+	Log(uid, operation string, OID schema.OID, component string, ID, name any, field string, before, after any, format string, fields ...any)
 }
 
 type System interface {
@@ -96,11 +97,28 @@ func (d *dbc) Commit(sys System, hook func()) {
 	sys.Updated()
 }
 
-func (d *dbc) Write(record audit.AuditRecord) {
-	d.Lock()
-	defer d.Unlock()
+func (d *dbc) Log(uid, operation string, OID schema.OID, component string, ID, name any, field string, before, after any, format string, fields ...any) {
+	if d != nil {
+		d.Lock()
+		defer d.Unlock()
 
-	d.logs = append(d.logs, record)
+		record := audit.AuditRecord{
+			UID:       uid,
+			OID:       OID,
+			Component: component,
+			Operation: operation,
+			Details: audit.Details{
+				ID:          stringify(ID),
+				Name:        stringify(name),
+				Field:       field,
+				Description: fmt.Sprintf(format, fields...),
+				Before:      stringify(before),
+				After:       stringify(after),
+			},
+		}
+
+		d.logs = append(d.logs, record)
+	}
 }
 
 // Returns a deduplicated list of objects, retaining only the the last (i.e. latest) value.
@@ -120,4 +138,23 @@ func squoosh(objects []schema.Object) []schema.Object {
 	}
 
 	return list
+}
+
+func stringify(a any) string {
+	switch v := a.(type) {
+	case *uint32:
+		if v != nil {
+			return fmt.Sprintf("%v", *v)
+		}
+
+	case *string:
+		if v != nil {
+			return fmt.Sprintf("%v", *v)
+		}
+
+	default:
+		return fmt.Sprintf("%v", a)
+	}
+
+	return ""
 }

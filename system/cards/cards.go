@@ -61,7 +61,7 @@ func (cc *Cards) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string,
 			} else if c == nil {
 				return nil, fmt.Errorf("Failed to add 'new' card")
 			} else {
-				c.log(dbc, auth.UID(a), "add", c.OID, "card", "", "", "Added 'new' card")
+				c.log(dbc, auth.UID(a), "add", "card", "", "", "Added 'new' card")
 
 				catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(c.OID, CardCreated, c.created))

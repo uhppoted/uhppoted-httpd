@@ -13,7 +13,6 @@ import (
 	"github.com/uhppoted/uhppoted-lib/acl"
 	"github.com/uhppoted/uhppoted-lib/uhppoted"
 
-	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -696,23 +695,10 @@ func (l *LAN) deserialize(bytes []byte) error {
 	return nil
 }
 
-func (l *LAN) log(dbc db.DBC, uid string, operation string, OID schema.OID, field string, before, after any, format string, fields ...any) {
-	record := audit.AuditRecord{
-		UID:       uid,
-		OID:       OID,
-		Component: "LAN",
-		Operation: operation,
-		Details: audit.Details{
-			ID:          "LAN",
-			Name:        stringify(l.Name, ""),
-			Field:       field,
-			Description: fmt.Sprintf(format, fields...),
-			Before:      stringify(before, ""),
-			After:       stringify(after, ""),
-		},
-	}
+func (l *LAN) log(dbc db.DBC, uid string, op string, OID schema.OID, field string, before, after any, format string, fields ...any) {
+	name := stringify(l.Name, "")
 
 	if dbc != nil {
-		dbc.Write(record)
+		dbc.Log(uid, op, OID, "interface", "LAN", name, field, before, after, format, fields...)
 	}
 }

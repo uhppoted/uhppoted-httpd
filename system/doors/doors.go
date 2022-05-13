@@ -161,10 +161,10 @@ func (dd *Doors) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string,
 			} else if d == nil {
 				return nil, fmt.Errorf("Failed to add 'new' door")
 			} else {
-				d.log(dbc, auth.UID(a), "add", d.OID, "door", "", "", "Added 'new' door")
-
 				catalog.Join(&objects, catalog.NewObject(d.OID, "new"))
 				catalog.Join(&objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
+
+				d.log(dbc, auth.UID(a), "add", "door", "", "", "Added 'new' door")
 			}
 		}
 	}

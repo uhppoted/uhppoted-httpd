@@ -95,13 +95,11 @@ func (cc *Controllers) UpdateByOID(a *auth.Authorizator, oid schema.OID, value s
 		} else if c == nil {
 			return nil, fmt.Errorf("Failed to add 'new' controller")
 		} else {
-			OID := c.OID
+			catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(c.OID, ControllerStatus, "new"))
+			catalog.Join(&objects, catalog.NewObject2(c.OID, ControllerCreated, c.created))
 
-			catalog.Join(&objects, catalog.NewObject(OID, "new"))
-			catalog.Join(&objects, catalog.NewObject2(OID, ControllerStatus, "new"))
-			catalog.Join(&objects, catalog.NewObject2(OID, ControllerCreated, c.created))
-
-			c.log(dbc, uid, "add", OID, "controller", "", "", "Added 'new' controller")
+			c.log(dbc, uid, "add", "controller", "", "", "Added 'new' controller")
 		}
 	}
 

@@ -9,7 +9,6 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 
-	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
@@ -181,7 +180,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			d.log(dbc, uid, "update", d.OID, "name", d.Name, value, "Updated name from %v to %v", d.Name, value)
+			d.log(dbc, uid, "update", "name", d.Name, value, "Updated name from %v to %v", d.Name, value)
 
 			d.Name = value
 			d.modified = types.TimestampNow()
@@ -207,7 +206,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 			dbc.Updated(d.OID, DoorDelay, d.delay)
 
-			d.log(dbc, uid, "update", d.OID, "delay", delay, value, "Updated delay from %vs to %vs", delay, value)
+			d.log(dbc, uid, "update", "delay", delay, value, "Updated delay from %vs to %vs", delay, value)
 		}
 
 	case d.OID.Append(DoorControl):
@@ -235,7 +234,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 			dbc.Updated(d.OID, DoorControl, d.mode)
 
-			d.log(dbc, uid, "update", d.OID, "mode", mode, value, "Updated mode from %v to %v", mode, value)
+			d.log(dbc, uid, "update", "mode", mode, value, "Updated mode from %v to %v", mode, value)
 		}
 	}
 
@@ -258,7 +257,7 @@ func (d *Door) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 			return nil, fmt.Errorf("Cannot delete door %v - assigned to controller", d.Name)
 		}
 
-		d.log(dbc, auth.UID(a), "delete", d.OID, "name", d.Name, "", "Deleted door %v", d.Name)
+		d.log(dbc, auth.UID(a), "delete", "name", d.Name, "", "Deleted door %v", d.Name)
 		d.deleted = types.TimestampNow()
 		d.modified = types.TimestampNow()
 
@@ -370,27 +369,14 @@ func (d *Door) clone() Door {
 	}
 }
 
-func (d *Door) log(dbc db.DBC, uid string, operation string, OID schema.OID, field string, before, after any, format string, fields ...any) {
+func (d *Door) log(dbc db.DBC, uid string, operation string, field string, before, after any, format string, fields ...any) {
 	deviceID := catalog.GetDoorDeviceID(d.OID)
 	door := catalog.GetDoorDeviceDoor(d.OID)
-
-	record := audit.AuditRecord{
-		UID:       uid,
-		OID:       OID,
-		Component: "door",
-		Operation: operation,
-		Details: audit.Details{
-			ID:          fmt.Sprintf("%v/%v", deviceID, door),
-			Name:        stringify(d.Name, ""),
-			Field:       field,
-			Description: fmt.Sprintf(format, fields...),
-			Before:      stringify(before, ""),
-			After:       stringify(after, ""),
-		},
-	}
+	ID := fmt.Sprintf("%v/%v", deviceID, door)
+	name := stringify(d.Name, "")
 
 	if dbc != nil {
-		dbc.Write(record)
+		dbc.Log(uid, operation, d.OID, "door", ID, name, field, before, after, format, fields...)
 	}
 }
 

@@ -12,7 +12,6 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 
-	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -407,12 +406,11 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 	}
 
 	uid := auth.UID(a)
-	OID := c.OID
 	clone := c.clone()
 	list := []kv{}
 
 	switch oid {
-	case OID.Append(ControllerName):
+	case c.OID.Append(ControllerName):
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
@@ -421,10 +419,10 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 
 			list = append(list, kv{ControllerName, c.name})
 
-			c.updated(uid, "name", clone.name, c.name, dbc)
+			c.updated(dbc, uid, "name", clone.name, c.name)
 		}
 
-	case OID.Append(ControllerDeviceID):
+	case c.OID.Append(ControllerDeviceID):
 		if err := f("deviceID", value); err != nil {
 			return nil, err
 		} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
@@ -433,15 +431,15 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 				c.modified = types.TimestampNow()
 
 				list = append(list, kv{ControllerDeviceID, c.DeviceID})
-				c.updated(uid, "device-id", clone.DeviceID, c.DeviceID, dbc)
+				c.updated(dbc, uid, "device-id", clone.DeviceID, c.DeviceID)
 			}
 		} else if value == "" {
 			if p := stringify(c.DeviceID, ""); p != "" {
-				c.log(dbc, uid, "update", OID, "device-id", p, "", "Cleared device ID %v", p)
+				c.log(dbc, uid, "update", "device-id", p, "", "Cleared device ID %v", p)
 			} else if p = stringify(c.name, ""); p != "" {
-				c.log(dbc, uid, "update", OID, "device-id", "", "", "Cleared device ID for %v", p)
+				c.log(dbc, uid, "update", "device-id", "", "", "Cleared device ID for %v", p)
 			} else {
-				c.log(dbc, uid, "update", OID, "device-id", "", "", "Cleared device ID")
+				c.log(dbc, uid, "update", "device-id", "", "", "Cleared device ID")
 			}
 
 			c.DeviceID = 0
@@ -450,7 +448,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 			list = append(list, kv{ControllerDeviceID, ""})
 		}
 
-	case OID.Append(ControllerEndpointAddress):
+	case c.OID.Append(ControllerEndpointAddress):
 		if addr, err := core.ResolveAddr(value); err != nil {
 			return nil, err
 		} else if err := f("address", addr); err != nil {
@@ -463,10 +461,10 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 			list = append(list, kv{ControllerEndpointConfigured, addr})
 			list = append(list, kv{ControllerEndpointStatus, types.StatusUncertain})
 
-			c.updated(uid, "address", clone.IP, c.IP, dbc)
+			c.updated(dbc, uid, "address", clone.IP, c.IP)
 		}
 
-	case OID.Append(ControllerDateTimeCurrent):
+	case c.OID.Append(ControllerDateTimeCurrent):
 		if tz, err := types.Timezone(value); err != nil {
 			return nil, err
 		} else if err := f("timezone", tz); err != nil {
@@ -500,10 +498,10 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 				}
 			}
 
-			c.updated(uid, "timezone", clone.timezone, c.timezone, dbc)
+			c.updated(dbc, uid, "timezone", clone.timezone, c.timezone)
 		}
 
-	case OID.Append(ControllerDoor1):
+	case c.OID.Append(ControllerDoor1):
 		if err := f("door[1]", value); err != nil {
 			return nil, err
 		} else {
@@ -512,10 +510,10 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 
 			list = append(list, kv{ControllerDoor1, c.doors[1]})
 
-			c.updated(uid, "door:1", clone.doors[1], c.doors[1], dbc)
+			c.updated(dbc, uid, "door:1", clone.doors[1], c.doors[1])
 		}
 
-	case OID.Append(ControllerDoor2):
+	case c.OID.Append(ControllerDoor2):
 		if err := f("door[2]", value); err != nil {
 			return nil, err
 		} else {
@@ -524,10 +522,10 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 
 			list = append(list, kv{ControllerDoor2, c.doors[2]})
 
-			c.updated(uid, "door:2", clone.doors[2], c.doors[2], dbc)
+			c.updated(dbc, uid, "door:2", clone.doors[2], c.doors[2])
 		}
 
-	case OID.Append(ControllerDoor3):
+	case c.OID.Append(ControllerDoor3):
 		if err := f("door[3]", value); err != nil {
 			return nil, err
 		} else {
@@ -536,10 +534,10 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 
 			list = append(list, kv{ControllerDoor3, c.doors[3]})
 
-			c.updated(uid, "door:3", clone.doors[3], c.doors[3], dbc)
+			c.updated(dbc, uid, "door:3", clone.doors[3], c.doors[3])
 		}
 
-	case OID.Append(ControllerDoor4):
+	case c.OID.Append(ControllerDoor4):
 		if err := f("door[4]", value); err != nil {
 			return nil, err
 		} else {
@@ -548,7 +546,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 
 			list = append(list, kv{ControllerDoor4, c.doors[4]})
 
-			c.updated(uid, "door:4", clone.doors[4], c.doors[4], dbc)
+			c.updated(dbc, uid, "door:4", clone.doors[4], c.doors[4])
 		}
 	}
 
@@ -570,11 +568,11 @@ func (c *Controller) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, 
 		}
 
 		if p := stringify(c.name, ""); p != "" {
-			c.log(dbc, uid, "delete", c.OID, "device-id", "", "", "Deleted controller %v", p)
+			c.log(dbc, uid, "delete", "device-id", "", "", "Deleted controller %v", p)
 		} else if p = stringify(c.DeviceID, ""); p != "" {
-			c.log(dbc, uid, "delete", c.OID, "device-id", "", "", "Deleted controller %v", p)
+			c.log(dbc, uid, "delete", "device-id", "", "", "Deleted controller %v", p)
 		} else {
-			c.log(dbc, uid, "delete", c.OID, "device-id", "", "", "Deleted controller")
+			c.log(dbc, uid, "delete", "device-id", "", "", "Deleted controller")
 		}
 
 		c.deleted = types.TimestampNow()
@@ -750,47 +748,13 @@ func (c *Controller) clone() *Controller {
 	return nil
 }
 
-func (c Controller) updated(uid, field string, before, after interface{}, dbc db.DBC) {
-	if dbc != nil {
-		description := fmt.Sprintf("Updated %[1]v from %[2]v to %[3]v", field, stringify(before, BLANK), stringify(after, BLANK))
-
-		record := audit.AuditRecord{
-			UID:       uid,
-			OID:       c.OID,
-			Component: "controller",
-			Operation: "update",
-			Details: audit.Details{
-				ID:          stringify(c.DeviceID, ""),
-				Name:        stringify(c.name, ""),
-				Field:       field,
-				Description: description,
-				Before:      stringify(before, BLANK),
-				After:       stringify(after, BLANK),
-			},
-		}
-
-		dbc.Write(record)
-	}
+func (c Controller) updated(dbc db.DBC, uid, field string, before, after interface{}) {
+	c.log(dbc, uid, "update", field, before, after, "Updated %[1]v from '%[2]v' to '%[3]v'", field, stringify(before, ""), stringify(after, ""))
 }
 
-func (c *Controller) log(dbc db.DBC, uid, operation string, OID schema.OID, field string, before, after any, format string, fields ...any) {
-	record := audit.AuditRecord{
-		UID:       uid,
-		OID:       OID,
-		Component: "controller",
-		Operation: operation,
-		Details: audit.Details{
-			ID:          stringify(c.DeviceID, ""),
-			Name:        stringify(c.name, ""),
-			Field:       field,
-			Description: fmt.Sprintf(format, fields...),
-			Before:      stringify(before, ""),
-			After:       stringify(after, ""),
-		},
-	}
-
+func (c *Controller) log(dbc db.DBC, uid, op string, field string, before, after any, format string, fields ...any) {
 	if dbc != nil {
-		dbc.Write(record)
+		dbc.Log(uid, op, c.OID, "controller", c.DeviceID, c.name, field, before, after, format, fields...)
 	}
 }
 

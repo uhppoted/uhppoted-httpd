@@ -10,7 +10,6 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 
-	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
@@ -191,7 +190,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			c.log(dbc, uid, "update", c.OID, "name", c.name, value, "Updated name from '%v' to '%v'", c.name, value)
+			c.log(dbc, uid, "update", "name", c.name, value, "Updated name from '%v' to '%v'", c.name, value)
 
 			c.name = strings.TrimSpace(value)
 			c.modified = types.TimestampNow()
@@ -206,7 +205,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			} else if err := f("number", number); err != nil {
 				return nil, err
 			} else {
-				c.log(dbc, uid, "update", c.OID, "card", c.card, number, "Updated card number from %v to %v", c.card, value)
+				c.log(dbc, uid, "update", "card", c.card, number, "Updated card number from %v to %v", c.card, value)
 
 				c.card = uint32(number)
 				c.modified = types.TimestampNow()
@@ -218,9 +217,9 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 				return nil, err
 			} else {
 				if p := stringify(c.name, ""); p != "" {
-					c.log(dbc, uid, "update", c.OID, "number", c.card, p, "Cleared card number %v for %v", c.card, p)
+					c.log(dbc, uid, "update", "number", c.card, p, "Cleared card number %v for %v", c.card, p)
 				} else {
-					c.log(dbc, uid, "update", c.OID, "number", c.card, "", "Cleared card number %v", c.card)
+					c.log(dbc, uid, "update", "number", c.card, "", "Cleared card number %v", c.card)
 				}
 
 				c.card = 0
@@ -238,7 +237,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		} else if !from.IsValid() {
 			return nil, fmt.Errorf("invalid 'from' date (%v)", value)
 		} else {
-			c.log(dbc, uid, "update", c.OID, "from", c.from, value, "Updated VALID FROM date from %v to %v", c.from, value)
+			c.log(dbc, uid, "update", "from", c.from, value, "Updated VALID FROM date from %v to %v", c.from, value)
 
 			c.from = from
 			c.modified = types.TimestampNow()
@@ -254,7 +253,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		} else if !to.IsValid() {
 			return nil, fmt.Errorf("invalid 'to' date (%v)", value)
 		} else {
-			c.log(dbc, uid, "update", c.OID, "to", c.to, value, "Updated VALID UNTIL date from %v to %v", c.to, value)
+			c.log(dbc, uid, "update", "to", c.to, value, "Updated VALID UNTIL date from %v to %v", c.to, value)
 			c.to = to
 			c.modified = types.TimestampNow()
 
@@ -274,9 +273,9 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 				group := catalog.GetV(schema.OID(k), GroupName)
 
 				if value == "true" {
-					c.log(dbc, uid, "update", c.OID, "group", "", "", "Granted access to %v", group)
+					c.log(dbc, uid, "update", "group", "", "", "Granted access to %v", group)
 				} else {
-					c.log(dbc, uid, "update", c.OID, "group", "", "", "Revoked access to %v", group)
+					c.log(dbc, uid, "update", "group", "", "", "Revoked access to %v", group)
 				}
 
 				c.groups[k] = value == "true"
@@ -304,11 +303,11 @@ func (c *Card) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 
 		uid := auth.UID(a)
 		if p := stringify(c.card, ""); p != "" {
-			c.log(dbc, uid, "delete", c.OID, "card", "", "", "Deleted card %v", p)
+			c.log(dbc, uid, "delete", "card", "", "", "Deleted card %v", p)
 		} else if p = stringify(c.name, ""); p != "" {
-			c.log(dbc, uid, "delete", c.OID, "card", "", "", "Deleted card for %v", p)
+			c.log(dbc, uid, "delete", "card", "", "", "Deleted card for %v", p)
 		} else {
-			c.log(dbc, uid, "delete", c.OID, "card", "", "", "Deleted card")
+			c.log(dbc, uid, "delete", "card", "", "", "Deleted card")
 		}
 
 		c.deleted = types.TimestampNow()
@@ -452,24 +451,11 @@ func (c *Card) clone() *Card {
 	return replicant
 }
 
-func (c *Card) log(dbc db.DBC, uid, operation string, oid schema.OID, field string, before, after any, format string, fields ...any) {
-	record := audit.AuditRecord{
-		UID:       uid,
-		OID:       oid,
-		Component: "card",
-		Operation: operation,
-		Details: audit.Details{
-			ID:          stringify(types.Uint32(c.card), ""),
-			Name:        c.name,
-			Field:       field,
-			Description: fmt.Sprintf(format, fields...),
-			Before:      stringify(before, ""),
-			After:       stringify(after, ""),
-		},
-	}
+func (c *Card) log(dbc db.DBC, uid, op string, field string, before, after any, format string, fields ...any) {
+	ID := stringify(types.Uint32(c.card), "")
 
 	if dbc != nil {
-		dbc.Write(record)
+		dbc.Log(uid, op, c.OID, "card", ID, c.name, field, before, after, format, fields...)
 	}
 }
 

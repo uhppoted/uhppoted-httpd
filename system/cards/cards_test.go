@@ -19,8 +19,25 @@ type dbc struct {
 	logs []audit.AuditRecord
 }
 
-func (d *dbc) Write(record audit.AuditRecord) {
-	d.logs = append(d.logs, record)
+func (d *dbc) Log(uid, operation string, OID schema.OID, component string, ID, name any, field string, before, after any, format string, fields ...any) {
+	if d != nil {
+		record := audit.AuditRecord{
+			UID:       uid,
+			OID:       OID,
+			Component: component,
+			Operation: operation,
+			Details: audit.Details{
+				ID:          stringify(ID, ""),
+				Name:        stringify(name, ""),
+				Field:       field,
+				Description: fmt.Sprintf(format, fields...),
+				Before:      stringify(before, ""),
+				After:       stringify(after, ""),
+			},
+		}
+
+		d.logs = append(d.logs, record)
+	}
 }
 
 func (d *dbc) Stash(objects []schema.Object) {

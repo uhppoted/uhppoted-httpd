@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
@@ -145,7 +144,7 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			g.log(dbc, uid, "update", g.OID, "name", g.Name, value, "Updated name from %v to %v", g.Name, value)
+			g.log(dbc, uid, "update", "name", g.Name, value, "Updated name from %v to %v", g.Name, value)
 			g.Name = value
 			g.modified = types.TimestampNow()
 
@@ -162,9 +161,9 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 				return nil, err
 			} else {
 				if value == "true" {
-					g.log(dbc, uid, "update", g.OID, "door", "", "", "Granted access to %v", door)
+					g.log(dbc, uid, "update", "door", "", "", "Granted access to %v", door)
 				} else {
-					g.log(dbc, uid, "update", g.OID, "door", "", "", "Revoked access to %v", door)
+					g.log(dbc, uid, "update", "door", "", "", "Revoked access to %v", door)
 				}
 
 				g.Doors[k] = value == "true"
@@ -190,7 +189,7 @@ func (g *Group) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error
 			}
 		}
 
-		g.log(dbc, auth.UID(a), "delete", g.OID, "group", g.Name, "", "Deleted group %v", g.Name)
+		g.log(dbc, auth.UID(a), "delete", "group", g.Name, "", "Deleted group %v", g.Name)
 		g.deleted = types.TimestampNow()
 		g.modified = types.TimestampNow()
 
@@ -305,24 +304,9 @@ func (g Group) clone() Group {
 	return group
 }
 
-func (g *Group) log(dbc db.DBC, uid, operation string, OID schema.OID, field string, before, after any, format string, fields ...any) {
-	record := audit.AuditRecord{
-		UID:       uid,
-		OID:       OID,
-		Component: "group",
-		Operation: operation,
-		Details: audit.Details{
-			ID:          "",
-			Name:        stringify(g.Name, ""),
-			Field:       field,
-			Description: fmt.Sprintf(format, fields...),
-			Before:      stringify(before, ""),
-			After:       stringify(after, ""),
-		},
-	}
-
+func (g *Group) log(dbc db.DBC, uid, op string, field string, before, after any, format string, fields ...any) {
 	if dbc != nil {
-		dbc.Write(record)
+		dbc.Log(uid, op, g.OID, "group", "", g.Name, field, before, after, format, fields...)
 	}
 }
 
