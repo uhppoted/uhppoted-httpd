@@ -50,12 +50,12 @@ func UpdateGroups(uid, role string, m map[string]interface{}) (interface{}, erro
 		return nil, types.BadRequest(err, err)
 	}
 
-	if err := save(sys.groups.file, sys.groups.tag, &shadow); err != nil {
+	if err := save(TagGroups, &shadow); err != nil {
 		return nil, err
 	}
 
 	dbc.Commit(&sys, func() {
-		sys.groups.Groups = shadow
+		sys.groups = shadow
 	})
 
 	return dbc.Objects(), nil

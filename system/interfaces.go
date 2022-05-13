@@ -28,7 +28,7 @@ func UpdateInterfaces(uid, role string, m map[string]interface{}) (interface{}, 
 
 	auth := auth.NewAuthorizator(uid, role)
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.interfaces.Interfaces.Clone()
+	shadow := sys.interfaces.Clone()
 
 	for _, o := range updated {
 		if objects, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -42,12 +42,12 @@ func UpdateInterfaces(uid, role string, m map[string]interface{}) (interface{}, 
 		return nil, types.BadRequest(err, err)
 	}
 
-	if err := save(sys.interfaces.file, sys.interfaces.tag, &shadow); err != nil {
+	if err := save(TagInterfaces, &shadow); err != nil {
 		return nil, err
 	}
 
 	dbc.Commit(&sys, func() {
-		sys.interfaces.Interfaces = shadow
+		sys.interfaces = shadow
 	})
 
 	return dbc.Objects(), nil

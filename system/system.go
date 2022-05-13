@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -35,6 +34,20 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
+type Tag string
+
+const (
+	TagInterfaces  Tag = "interfaces"
+	TagControllers Tag = "controllers"
+	TagDoors       Tag = "doors"
+	TagCards       Tag = "cards"
+	TagGroups      Tag = "groups"
+	TagEvents      Tag = "events"
+	TagLogs        Tag = "logs"
+	TagUsers       Tag = "users"
+	TagHistory     Tag = "history"
+)
+
 var channels = struct {
 	events chan types.EventsList
 }{
@@ -42,86 +55,15 @@ var channels = struct {
 }
 
 var sys = system{
-	interfaces: struct {
-		interfaces.Interfaces
-		file string
-		tag  string
-	}{
-		Interfaces: interfaces.NewInterfaces(channels.events),
-		tag:        "interfaces",
-	},
-
-	controllers: struct {
-		controllers.Controllers
-		file string
-		tag  string
-	}{
-		Controllers: controllers.NewControllers(),
-		tag:         "controllers",
-	},
-
-	doors: struct {
-		doors.Doors
-		file string
-		tag  string
-	}{
-		Doors: doors.NewDoors(),
-		tag:   "doors",
-	},
-
-	cards: struct {
-		cards.Cards
-		file string
-		tag  string
-	}{
-		Cards: cards.NewCards(),
-		tag:   "cards",
-	},
-
-	groups: struct {
-		groups.Groups
-		file string
-		tag  string
-	}{
-		Groups: groups.NewGroups(),
-		tag:    "groups",
-	},
-
-	events: struct {
-		events.Events
-		file string
-		tag  string
-	}{
-		Events: events.NewEvents(),
-		tag:    "events",
-	},
-
-	logs: struct {
-		logs.Logs
-		file string
-		tag  string
-	}{
-		Logs: logs.NewLogs(),
-		tag:  "logs",
-	},
-
-	users: struct {
-		users.Users
-		file string
-		tag  string
-	}{
-		Users: users.NewUsers(),
-		tag:   "users",
-	},
-
-	history: struct {
-		history.History
-		file string
-		tag  string
-	}{
-		History: history.NewHistory(),
-		tag:     "history",
-	},
+	interfaces:  interfaces.NewInterfaces(channels.events),
+	controllers: controllers.NewControllers(),
+	doors:       doors.NewDoors(),
+	cards:       cards.NewCards(),
+	groups:      groups.NewGroups(),
+	events:      events.NewEvents(),
+	logs:        logs.NewLogs(),
+	users:       users.NewUsers(),
+	history:     history.NewHistory(),
 
 	taskQ:     NewTaskQ(),
 	retention: 6 * time.Hour,
@@ -131,60 +73,17 @@ type system struct {
 	sync.RWMutex
 	conf string
 
-	interfaces struct {
-		interfaces.Interfaces
-		file string
-		tag  string
-	}
+	interfaces  interfaces.Interfaces
+	controllers controllers.Controllers
+	doors       doors.Doors
+	cards       cards.Cards
+	groups      groups.Groups
+	events      events.Events
+	logs        logs.Logs
+	users       users.Users
+	history     history.History
 
-	controllers struct {
-		controllers.Controllers
-		file string
-		tag  string
-	}
-
-	doors struct {
-		doors.Doors
-		file string
-		tag  string
-	}
-
-	cards struct {
-		cards.Cards
-		file string
-		tag  string
-	}
-
-	groups struct {
-		groups.Groups
-		file string
-		tag  string
-	}
-
-	events struct {
-		events.Events
-		file string
-		tag  string
-	}
-
-	logs struct {
-		logs.Logs
-		file string
-		tag  string
-	}
-
-	users struct {
-		users.Users
-		file string
-		tag  string
-	}
-
-	history struct {
-		history.History
-		file string
-		tag  string
-	}
-
+	files     map[Tag]string
 	rules     grule.Rules
 	taskQ     TaskQ
 	retention time.Duration // time after which 'deleted' items are permanently removed
@@ -201,11 +100,11 @@ func (t trail) Write(records ...audit.AuditRecord) {
 	sys.logs.Received(records...)
 	sys.history.Received(records...)
 
-	if err := save(sys.logs.file, sys.logs.tag, &sys.logs); err != nil {
+	if err := save(TagLogs, &sys.logs); err != nil {
 		warn(err)
 	}
 
-	if err := save(sys.history.file, sys.history.tag, &sys.history); err != nil {
+	if err := save(TagHistory, &sys.history); err != nil {
 		warn(err)
 	}
 }
@@ -224,42 +123,25 @@ type serializable interface {
 func Init(cfg config.Config, conf string, debug bool) error {
 	catalog.Init(memdb.NewCatalog())
 
-	sys.interfaces.file = cfg.HTTPD.System.Interfaces
-	sys.controllers.file = cfg.HTTPD.System.Controllers
-	sys.doors.file = cfg.HTTPD.System.Doors
-	sys.cards.file = cfg.HTTPD.System.Cards
-	sys.groups.file = cfg.HTTPD.System.Groups
-	sys.events.file = cfg.HTTPD.System.Events
-	sys.logs.file = cfg.HTTPD.System.Logs
-	sys.users.file = cfg.HTTPD.System.Users
-	sys.history.file = cfg.HTTPD.System.History
-
-	list := []struct {
-		serializable
-		file string
-		tag  string
-	}{
-		{&sys.interfaces, sys.interfaces.file, sys.interfaces.tag},
-		{&sys.controllers, sys.controllers.file, sys.controllers.tag},
-		{&sys.doors, sys.doors.file, sys.doors.tag},
-		{&sys.cards, sys.cards.file, sys.cards.tag},
-		{&sys.groups, sys.groups.file, sys.groups.tag},
-		{&sys.events, sys.events.file, sys.events.tag},
-		{&sys.logs, sys.logs.file, sys.logs.tag},
-		{&sys.users, sys.users.file, sys.users.tag},
-		{&sys.history, sys.history.file, sys.history.tag},
+	sys.files = map[Tag]string{
+		TagInterfaces:  cfg.HTTPD.System.Interfaces,
+		TagControllers: cfg.HTTPD.System.Controllers,
+		TagDoors:       cfg.HTTPD.System.Doors,
+		TagCards:       cfg.HTTPD.System.Cards,
+		TagGroups:      cfg.HTTPD.System.Groups,
+		TagEvents:      cfg.HTTPD.System.Events,
+		TagLogs:        cfg.HTTPD.System.Logs,
+		TagUsers:       cfg.HTTPD.System.Users,
+		TagHistory:     cfg.HTTPD.System.History,
 	}
 
+	list := subsystems()
 	for _, v := range list {
-		if err := load(v.file, v.tag, v.serializable); err != nil {
-			log.Printf("%5s Unable to load %v from %v (%v)", "ERROR", v.tag, v.file, err)
+		if err := load(v.tag, v.serializable); err != nil {
+			log.Printf("%5s Unable to load %v from %v (%v)", "ERROR", v.tag, sys.files[v.tag], err)
 			return err
 		}
 	}
-
-	// sys.history.UseLogs(sys.logs.Logs, func() {
-	// 	save(sys.history.file, sys.history.tag, &sys.history.History)
-	// })
 
 	kb := ast.NewKnowledgeLibrary()
 	if err := builder.NewRuleBuilder(kb).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(cfg.HTTPD.DB.Rules.ACL)); err != nil {
@@ -424,6 +306,26 @@ func (s *system) sweep() {
 	s.users.Sweep(s.retention)
 }
 
+func subsystems() []struct {
+	serializable
+	tag Tag
+} {
+	return []struct {
+		serializable
+		tag Tag
+	}{
+		{&sys.interfaces, TagInterfaces},
+		{&sys.controllers, TagControllers},
+		{&sys.doors, TagDoors},
+		{&sys.cards, TagCards},
+		{&sys.groups, TagGroups},
+		{&sys.events, TagEvents},
+		{&sys.logs, TagLogs},
+		{&sys.users, TagUsers},
+		{&sys.history, TagHistory},
+	}
+}
+
 func unpack(m map[string]interface{}) ([]object, []schema.OID, error) {
 	f := func(err error) error {
 		return types.BadRequest(fmt.Errorf("Invalid request (%v)", err), fmt.Errorf("Error unpacking 'post' request (%w)", err))
@@ -450,27 +352,34 @@ func unpack(m map[string]interface{}) ([]object, []schema.OID, error) {
 	return o.Objects, o.Deleted, nil
 }
 
-func load(file string, tag string, v serializable) error {
-	bytes, err := os.ReadFile(file)
-	if err != nil {
-		if !os.IsNotExist(err) {
+func load(tag Tag, v serializable) error {
+	if file, ok := sys.files[tag]; !ok || file == "" {
+		return nil
+	} else {
+		bytes, err := os.ReadFile(file)
+		if err != nil {
+			if !os.IsNotExist(err) {
+				return err
+			}
+
+			warn(err)
+			return nil
+		}
+
+		blob := map[Tag]json.RawMessage{}
+		if err = json.Unmarshal(bytes, &blob); err != nil {
 			return err
 		}
 
-		warn(err)
-		return nil
+		return v.Load(blob[tag])
 	}
-
-	blob := map[string]json.RawMessage{}
-	if err = json.Unmarshal(bytes, &blob); err != nil {
-		return err
-	}
-
-	return v.Load(blob[tag])
 }
 
-func save(file string, tag string, v serializable) error {
-	if file == "" {
+func save(tag Tag, v serializable) error {
+	var file string
+	var ok bool
+
+	if file, ok = sys.files[tag]; !ok || file == "" {
 		return nil
 	}
 
@@ -479,7 +388,7 @@ func save(file string, tag string, v serializable) error {
 		return err
 	}
 
-	blob := map[string]json.RawMessage{
+	blob := map[Tag]json.RawMessage{
 		tag: bytes,
 	}
 
@@ -520,14 +429,4 @@ func info(msg string) {
 
 func warn(err error) {
 	log.Printf("ERROR %v", err)
-}
-
-// TODO remove - debugging only
-func beep() {
-	exec.Command("say", "beep").Run()
-}
-
-// TODO remove - debugging only
-func beep2() {
-	exec.Command("say", "beep beep").Run()
 }

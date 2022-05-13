@@ -10,22 +10,22 @@ func UpdateACL() {
 	if acl, err := permissions(); err != nil {
 		warn(err)
 	} else {
-		sys.controllers.UpdateACL(sys.interfaces.Interfaces, acl)
+		sys.controllers.UpdateACL(sys.interfaces, acl)
 	}
 }
 
 func CompareACL() {
 	if acl, err := permissions(); err != nil {
 		warn(err)
-	} else if err := sys.controllers.CompareACL(sys.interfaces.Interfaces, acl); err != nil {
+	} else if err := sys.controllers.CompareACL(sys.interfaces, acl); err != nil {
 		warn(err)
 	}
 }
 
 func permissions() (acl.ACL, error) {
 	cards := sys.cards.List()
-	groups := sys.groups.Groups
-	doors := sys.doors.Doors
+	groups := sys.groups
+	doors := sys.doors
 	controllers := sys.controllers.List()
 
 	// initialise empty ACL
@@ -92,7 +92,7 @@ func permissions() (acl.ACL, error) {
 	if sys.rules != nil {
 		for _, c := range cards {
 			card := c.CardNumber()
-			allowed, forbidden, err := sys.rules.Eval(c, sys.doors.Doors)
+			allowed, forbidden, err := sys.rules.Eval(c, sys.doors)
 			if err != nil {
 				return nil, err
 			}

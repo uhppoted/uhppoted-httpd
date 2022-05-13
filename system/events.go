@@ -39,7 +39,7 @@ func AppendEvents(list types.EventsList) {
 	sys.events.Received(deviceID, recent, l)
 
 	if len(recent) > 0 {
-		if err := save(sys.events.file, sys.events.tag, &sys.events); err != nil {
+		if err := save(TagEvents, &sys.events); err != nil {
 			warn(err)
 		}
 	}

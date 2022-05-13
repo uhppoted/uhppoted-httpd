@@ -28,7 +28,7 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 
 	auth := auth.NewAuthorizator(uid, role)
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.users.Users.Clone()
+	shadow := sys.users.Clone()
 
 	for _, o := range updated {
 		if objects, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
@@ -50,12 +50,12 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 		return nil, types.BadRequest(err, err)
 	}
 
-	if err := save(sys.users.file, sys.users.tag, &shadow); err != nil {
+	if err := save(TagUsers, &shadow); err != nil {
 		return nil, err
 	}
 
 	dbc.Commit(&sys, func() {
-		sys.users.Users = shadow
+		sys.users = shadow
 	})
 
 	return dbc.Objects(), nil
@@ -70,7 +70,7 @@ func SetPassword(uid, pwd string) error {
 	defer sys.Unlock()
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.users.Users.Clone()
+	shadow := sys.users.Clone()
 
 	if updated, err := shadow.SetPassword(uid, pwd, dbc); err != nil {
 		return err
@@ -82,12 +82,12 @@ func SetPassword(uid, pwd string) error {
 		return types.BadRequest(err, err)
 	}
 
-	if err := save(sys.users.file, sys.users.tag, &shadow); err != nil {
+	if err := save(TagUsers, &shadow); err != nil {
 		return err
 	}
 
 	dbc.Commit(&sys, func() {
-		sys.users.Users = shadow
+		sys.users = shadow
 	})
 
 	return nil

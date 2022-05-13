@@ -1,15 +1,8 @@
 ## v0.7.x
 
 - [ ] Cleanup audit log/logging
-      - [x] System state history for event detail lookup
-            - [x] Didn't match card name for latest event
-            - [x] RLock/RUnlock when reading
-            - [x] Optimisation: store as sorted
-      - [x] Remove before/after fields from logs
-      - [x] LAN is in HUGE capitals
-      - [x] Rework log funcs to take fmt + varargs
+      - [x] Genericize system tables (for save/load)
       - [ ] Move log funcs to DBC
-      - [ ] Genericize system tables (for save/load)
 
 - (?) use :before or :content for flags
 
@@ -18,9 +11,12 @@
       - disable submit/mark readonly/somesuch
 
 - (?) `mode:synchronize`
-- (?) Unify CompareACL and UpdateACL into SynchACL
+- (?) Rework ACL
       - [ ] wrap ACL update in goroutine
       - [ ] Error handling ??
+      - (?) Only update affected cards
+      - (?) Flag cards with incorrect permissions
+      - (?) Unify CompareACL and UpdateACL into SynchACL
 
 - [ ] Rework `create`
       - [ ] Very fragile - uses 'new' status 

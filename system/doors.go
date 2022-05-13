@@ -74,12 +74,12 @@ func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error
 	}
 
 	// ... save
-	if err := save(sys.doors.file, sys.doors.tag, &shadow); err != nil {
+	if err := save(TagDoors, &shadow); err != nil {
 		return nil, err
 	}
 
 	dbc.Commit(&sys, func() {
-		sys.doors.Doors = shadow
+		sys.doors = shadow
 	})
 
 	return dbc.Objects(), nil

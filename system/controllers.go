@@ -31,7 +31,7 @@ func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interfac
 	}
 
 	dbc := db.NewDBC(sys.trail)
-	shadow := sys.controllers.Controllers.Clone()
+	shadow := sys.controllers.Clone()
 
 	for _, o := range updated {
 		if objects, err := shadow.UpdateByOID(a, o.OID, o.Value, dbc); err != nil {
@@ -53,12 +53,12 @@ func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interfac
 		return nil, err
 	}
 
-	if err := save(sys.controllers.file, sys.controllers.tag, &shadow); err != nil {
+	if err := save(TagControllers, &shadow); err != nil {
 		return nil, err
 	}
 
 	dbc.Commit(&sys, func() {
-		sys.controllers.Controllers = shadow
+		sys.controllers = shadow
 	})
 
 	return dbc.Objects(), nil
