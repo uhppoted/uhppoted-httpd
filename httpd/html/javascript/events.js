@@ -124,22 +124,21 @@ function add (oid) {
     }
 
     const fields = [
-      { suffix: 'timestamp', oid: `${oid}${schema.events.timestamp}`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
-      { suffix: 'deviceID', oid: `${oid}${schema.events.deviceID}`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
-      { suffix: 'device', oid: `${oid}${schema.events.deviceName}`, selector: 'td input.device', flag: 'td img.device' },
-      { suffix: 'eventType', oid: `${oid}${schema.events.type}`, selector: 'td input.eventType', flag: 'td img.eventType' },
-      { suffix: 'doorid', oid: `${oid}${schema.events.door}`, selector: 'td input.doorid', flag: 'td img.doorid' },
-      { suffix: 'door', oid: `${oid}${schema.events.doorName}`, selector: 'td input.door', flag: 'td img.door' },
-      { suffix: 'direction', oid: `${oid}${schema.events.direction}`, selector: 'td input.direction', flag: 'td img.direction' },
-      { suffix: 'cardno', oid: `${oid}${schema.events.card}`, selector: 'td input.cardno', flag: 'td img.cardno' },
-      { suffix: 'card', oid: `${oid}${schema.events.cardName}`, selector: 'td input.card', flag: 'td img.card' },
-      { suffix: 'access', oid: `${oid}${schema.events.granted}`, selector: 'td input.access', flag: 'td img.access' },
-      { suffix: 'reason', oid: `${oid}${schema.events.reason}`, selector: 'td input.reason', flag: 'td img.reason' }
+      { suffix: 'timestamp', oid: `${oid}${schema.events.timestamp}`, selector: 'td input.timestamp' },
+      { suffix: 'deviceID', oid: `${oid}${schema.events.deviceID}`, selector: 'td input.deviceID' },
+      { suffix: 'device', oid: `${oid}${schema.events.deviceName}`, selector: 'td input.device' },
+      { suffix: 'eventType', oid: `${oid}${schema.events.type}`, selector: 'td input.eventType' },
+      { suffix: 'doorid', oid: `${oid}${schema.events.door}`, selector: 'td input.doorid' },
+      { suffix: 'door', oid: `${oid}${schema.events.doorName}`, selector: 'td input.door' },
+      { suffix: 'direction', oid: `${oid}${schema.events.direction}`, selector: 'td input.direction' },
+      { suffix: 'cardno', oid: `${oid}${schema.events.card}`, selector: 'td input.cardno' },
+      { suffix: 'card', oid: `${oid}${schema.events.cardName}`, selector: 'td input.card' },
+      { suffix: 'access', oid: `${oid}${schema.events.granted}`, selector: 'td input.access' },
+      { suffix: 'reason', oid: `${oid}${schema.events.reason}`, selector: 'td input.reason' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
 
       if (field) {
         field.id = uuid + '-' + f.suffix
@@ -148,10 +147,6 @@ function add (oid) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
-
-        if (flag) {
-          flag.id = 'F' + f.oid
-        }
       } else {
         console.error(f)
       }

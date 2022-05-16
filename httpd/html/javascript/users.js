@@ -118,16 +118,14 @@ function add (oid, record) {
     rollback.dataset.record = uuid
 
     const fields = [
-      { suffix: 'name', oid: `${oid}${schema.users.name}`, selector: 'td input.name', flag: 'td img.name' },
-      { suffix: 'uid', oid: `${oid}${schema.users.uid}`, selector: 'td input.uid', flag: 'td img.uid' },
-      { suffix: 'role', oid: `${oid}${schema.users.role}`, selector: 'td input.role', flag: 'td img.role' },
-      { suffix: 'password', oid: `${oid}${schema.users.password}`, selector: 'td input.password', flag: 'td img.password' }
+      { suffix: 'name', oid: `${oid}${schema.users.name}`, selector: 'td input.name' },
+      { suffix: 'uid', oid: `${oid}${schema.users.uid}`, selector: 'td input.uid' },
+      { suffix: 'role', oid: `${oid}${schema.users.role}`, selector: 'td input.role' },
+      { suffix: 'password', oid: `${oid}${schema.users.password}`, selector: 'td input.password' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
-
       if (field) {
         field.id = uuid + '-' + f.suffix
         field.value = ''
@@ -135,8 +133,6 @@ function add (oid, record) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
-
-        flag.id = 'F' + f.oid
       } else {
         console.error(f)
       }

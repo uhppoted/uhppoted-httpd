@@ -459,6 +459,26 @@ div.tabular table tbody tr td input:read-only {
   border: none;
 }
 
+div.tabular table tbody tr td.modified::before {
+  content: url("/images/default/corner.svg");
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+}
+
+div.tabular table tbody tr td label.modified::before {
+  content: url("/images/default/corner.svg");
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+}
+
 div.tabular table td.conflict input {
   background-color: rgba(203, 75, 22, 0.25);
 }
@@ -730,11 +750,18 @@ table.interface tr td:last-child {
   width: min-content;
 }
 
-table.interface td img.flag {
+table.interface td {
+  position: relative;
+}
+
+table.interface td.modified::before {
+  content: url("/images/default/block.svg");
+  position: absolute;
+  left: 0px;
+  top: -4px;
   width: 6px;
   height: 6px;
-  margin-left: 0px;
-  margin-right: 6px;
+  filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
 }
 
 table.interface td input {
@@ -742,6 +769,7 @@ table.interface td input {
   border: 1px solid transparent;
   border-radius: 3px;
   outline: none;
+  margin-left: 4px;
   color: #586e75;
   font: 400 0.9em Arial;
 }

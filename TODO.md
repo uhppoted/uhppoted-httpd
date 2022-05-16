@@ -5,7 +5,18 @@
       - [x] disable/readonly for all input fields
       - [x] disable in POST handler
 
-- (?) use :before or :content for flags
+- [ ] Use :before for flags
+      - [x] td
+      - [x] label (checkboxes)
+      - [x] Roll the parent td/label into mark/unmark
+      - [x] modified
+      - [x] controller::interfaces
+      - [ ] Themed flags
+      - [ ] pending
+      - [ ] conflict
+      - [x] remove flag from HTML throughout
+      - [ ] remove flag from JS throughout
+      - [ ] remove flag from CSS throughout
 
 - (?) `mode:synchronize`
 - (?) Rework ACL
@@ -20,11 +31,11 @@
       - [ ] Maybe invoke 'create' explicitly a la delete
 
 - [ ] Commonalise all the stringifys
+      - [ ] Remove BLANK thing everywhere
 - [ ] System XXX.validate should not return HttpdError
       - (?) maybe return SysError that might contain HTTP error
 - [ ] Make vtable'able subsystem an interface
 - [ ] Replace `guard` with embedded sync.Mutex
-- [ ] Remove BLANK thing everywhere
 - [ ] Fix bottom right of scrollbar
       - [ ] Scrollbar 'goes funny' if -webkit styles are modified
   

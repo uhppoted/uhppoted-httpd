@@ -250,17 +250,17 @@ function connected (ok) {
   const element = document.querySelector('header #disconnected')
   let monitor = false
 
-  if (window.constants && window.constants.mode && window.constants.mode === "monitor") {
+  if (window.constants && window.constants.mode && window.constants.mode === 'monitor') {
     monitor = true
   }
 
   if (element) {
     if (!ok) {
       element.classList.add('visible')
-      element.innerHTML = "disconnected"
+      element.innerHTML = 'disconnected'
     } else if (ok && monitor) {
       element.classList.add('visible')
-      element.innerHTML = "monitor"
+      element.innerHTML = 'monitor'
     } else {
       element.classList.remove('visible')
     }

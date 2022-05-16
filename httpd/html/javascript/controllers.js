@@ -76,30 +76,28 @@ function add (oid, record) {
     rollback.dataset.record = uuid
 
     const fields = [
-      { suffix: 'name', oid: `${oid}${schema.controllers.name}`, selector: 'td input.name', flag: 'td img.name' },
-      { suffix: 'ID', oid: `${oid}${schema.controllers.deviceID}`, selector: 'td input.ID', flag: 'td img.ID' },
-      { suffix: 'IP', oid: `${oid}${schema.controllers.endpoint.address}`, selector: 'td input.IP', flag: 'td img.IP' },
-      { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime.current}`, selector: 'td input.datetime', flag: 'td img.datetime' },
-      { suffix: 'cards', oid: `${oid}${schema.controllers.cards.count}`, selector: 'td input.cards', flag: 'td img.cards' },
-      { suffix: 'events', oid: `${oid}${schema.controllers.events.last}`, selector: 'td input.events', flag: 'td img.events' },
-      { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td select.door1', flag: 'td img.door1' },
-      { suffix: 'door-2', oid: `${oid}${schema.controllers.door2}`, selector: 'td select.door2', flag: 'td img.door2' },
-      { suffix: 'door-3', oid: `${oid}${schema.controllers.door3}`, selector: 'td select.door3', flag: 'td img.door3' },
-      { suffix: 'door-4', oid: `${oid}${schema.controllers.door4}`, selector: 'td select.door4', flag: 'td img.door4' }
+      { suffix: 'name', oid: `${oid}${schema.controllers.name}`, selector: 'td input.name' },
+      { suffix: 'ID', oid: `${oid}${schema.controllers.deviceID}`, selector: 'td input.ID' },
+      { suffix: 'IP', oid: `${oid}${schema.controllers.endpoint.address}`, selector: 'td input.IP' },
+      { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime.current}`, selector: 'td input.datetime' },
+      { suffix: 'cards', oid: `${oid}${schema.controllers.cards.count}`, selector: 'td input.cards' },
+      { suffix: 'events', oid: `${oid}${schema.controllers.events.last}`, selector: 'td input.events' },
+      { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td select.door1' },
+      { suffix: 'door-2', oid: `${oid}${schema.controllers.door2}`, selector: 'td select.door2' },
+      { suffix: 'door-3', oid: `${oid}${schema.controllers.door3}`, selector: 'td select.door3' },
+      { suffix: 'door-4', oid: `${oid}${schema.controllers.door4}`, selector: 'td select.door4' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
-
-      field.id = uuid + '-' + f.suffix
-      field.value = ''
-      field.dataset.oid = f.oid
-      field.dataset.record = uuid
-      field.dataset.original = ''
-      field.dataset.value = ''
-
-      flag.id = 'F' + f.oid
+      if (field) {
+        field.id = uuid + '-' + f.suffix
+        field.value = ''
+        field.dataset.oid = f.oid
+        field.dataset.record = uuid
+        field.dataset.original = ''
+        field.dataset.value = ''
+      }
     })
 
     // .. initialise date/time picker

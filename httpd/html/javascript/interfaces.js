@@ -28,14 +28,14 @@ export function set (element, value, status) {
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
-  const flag = document.getElementById(`F${oid}`)
+  const parent = element.parentElement
 
   element.dataset.value = v
 
   if (v !== original) {
-    mark('modified', element, flag)
+    mark('modified', element, parent)
   } else {
-    unmark('modified', element, flag)
+    unmark('modified', element, parent)
   }
 
   percolate(oid)
@@ -47,16 +47,14 @@ export function rollback (tag, element) {
 
   const children = section.querySelectorAll(`[data-oid^="${oid}."]`)
   children.forEach(e => {
-    const flag = document.getElementById(`F${e.dataset.oid}`)
+    const parent = e.parentElement
 
     e.dataset.value = e.dataset.original
     e.value = e.dataset.original
     e.classList.remove('modified')
 
-    if (flag) {
-      flag.classList.remove('modified')
-      flag.classList.remove('pending')
-    }
+    parent.classList.remove('modified')
+    parent.classList.remove('pending')
   })
 
   section.classList.remove('modified')

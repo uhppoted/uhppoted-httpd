@@ -92,13 +92,7 @@ function realize (groups) {
       cell.dataset.door = o.OID
       cell.innerHTML = template.innerHTML
 
-      const flag = cell.querySelector('.flag')
       const field = cell.querySelector('.field')
-
-      flag.classList.add(`d${door}`)
-      field.classList.add(`d${door}`)
-
-      flag.id = 'F' + oid
 
       field.id = uuid + '-' + `d${door}`
       field.dataset.oid = oid
@@ -138,13 +132,11 @@ function add (oid, record) {
     rollback.dataset.record = uuid
 
     const fields = [
-      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' }
+      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
-
       if (field) {
         field.id = uuid + '-' + f.suffix
         field.value = ''
@@ -152,8 +144,6 @@ function add (oid, record) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
-
-        flag.id = 'F' + f.oid
       } else {
         console.error(f)
       }

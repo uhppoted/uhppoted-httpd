@@ -71,18 +71,16 @@ function add (oid) {
     rollback.dataset.record = uuid
 
     const fields = [
-      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name', flag: 'td img.name' },
-      { suffix: 'controller', oid: `${oid}.0.4.2`, selector: 'td input.controller', flag: 'td img.controller' },
-      { suffix: 'deviceID', oid: `${oid}.0.4.3`, selector: 'td input.deviceID', flag: 'td img.deviceID' },
-      { suffix: 'doorID', oid: `${oid}.0.4.4`, selector: 'td input.doorID', flag: 'td img.doorID' },
-      { suffix: 'delay', oid: `${oid}.2`, selector: 'td input.delay', flag: 'td img.delay' },
-      { suffix: 'mode', oid: `${oid}.3`, selector: 'td select.mode', flag: 'td img.mode' }
+      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name' },
+      { suffix: 'controller', oid: `${oid}.0.4.2`, selector: 'td input.controller' },
+      { suffix: 'deviceID', oid: `${oid}.0.4.3`, selector: 'td input.deviceID' },
+      { suffix: 'doorID', oid: `${oid}.0.4.4`, selector: 'td input.doorID' },
+      { suffix: 'delay', oid: `${oid}.2`, selector: 'td input.delay' },
+      { suffix: 'mode', oid: `${oid}.3`, selector: 'td select.mode' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
-
       if (field) {
         field.id = uuid + '-' + f.suffix
         field.value = ''
@@ -90,8 +88,6 @@ function add (oid) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
-
-        flag.id = 'F' + f.oid
       } else {
         console.error(f)
       }

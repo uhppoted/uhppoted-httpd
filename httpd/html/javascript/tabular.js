@@ -145,10 +145,10 @@ export function onEnter (tag, event) {
           const configured = element.dataset.configured
           const v = element.dataset.value
           const oid = element.dataset.oid
-          const flag = document.getElementById(`F${oid}`)
+          const parent = element.parentElement
 
           if (configured && v !== configured) {
-            mark('modified', element, flag)
+            mark('modified', element, parent)
             percolate(oid)
           }
         }
@@ -357,7 +357,7 @@ export function set (element, value, status) {
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
-  const flag = document.getElementById(`F${oid}`)
+  const parent = element.parentElement
 
   element.dataset.value = v
 
@@ -368,9 +368,9 @@ export function set (element, value, status) {
   }
 
   if (v !== original) {
-    mark('modified', element, flag)
+    mark('modified', element, parent)
   } else {
-    unmark('modified', element, flag)
+    unmark('modified', element, parent)
   }
 
   percolate(oid)

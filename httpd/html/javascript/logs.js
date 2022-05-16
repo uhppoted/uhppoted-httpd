@@ -131,7 +131,6 @@ function add (oid) {
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(`td img.${f.suffix}`)
 
       if (field) {
         field.id = uuid + '-' + f.suffix
@@ -140,10 +139,6 @@ function add (oid) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
-
-        if (flag) {
-          flag.id = 'F' + f.oid
-        }
       } else {
         console.error(f)
       }

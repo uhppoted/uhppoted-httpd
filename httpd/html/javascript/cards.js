@@ -142,13 +142,7 @@ function realize (cards) {
       cell.dataset.group = o.OID
       cell.innerHTML = template.innerHTML
 
-      const flag = cell.querySelector('.flag')
       const field = cell.querySelector('.field')
-
-      flag.classList.add(`g${group}`)
-      field.classList.add(`g${group}`)
-
-      flag.id = 'F' + oid
 
       field.id = uuid + '-' + `g${group}`
       field.dataset.oid = oid
@@ -187,15 +181,14 @@ function add (oid, record) {
     rollback.dataset.record = uuid
 
     const fields = [
-      { suffix: 'name', oid: `${oid}${schema.cards.name}`, selector: 'td input.name', flag: 'td img.name' },
-      { suffix: 'number', oid: `${oid}${schema.cards.card}`, selector: 'td input.number', flag: 'td img.number' },
-      { suffix: 'from', oid: `${oid}${schema.cards.from}`, selector: 'td input.from', flag: 'td img.from' },
-      { suffix: 'to', oid: `${oid}${schema.cards.to}`, selector: 'td input.to', flag: 'td img.to' }
+      { suffix: 'name', oid: `${oid}${schema.cards.name}`, selector: 'td input.name' },
+      { suffix: 'number', oid: `${oid}${schema.cards.card}`, selector: 'td input.number' },
+      { suffix: 'from', oid: `${oid}${schema.cards.from}`, selector: 'td input.from' },
+      { suffix: 'to', oid: `${oid}${schema.cards.to}`, selector: 'td input.to' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
 
       if (field) {
         field.id = uuid + '-' + f.suffix
@@ -204,8 +197,6 @@ function add (oid, record) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
-
-        flag.id = 'F' + f.oid
       } else {
         console.error(f)
       }

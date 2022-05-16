@@ -99,29 +99,27 @@ function addController (oid, record) {
     row.innerHTML = template.innerHTML
 
     const fields = [
-      { suffix: 'name', oid: `${oid}${schema.controllers.name}`, selector: 'td input.name', flag: 'td img.name' },
-      { suffix: 'ID', oid: `${oid}${schema.controllers.deviceID}`, selector: 'td input.ID', flag: 'td img.ID' },
-      { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime.current}`, selector: 'td input.datetime', flag: 'td img.datetime' },
-      { suffix: 'cards', oid: `${oid}${schema.controllers.cards.count}`, selector: 'td input.cards', flag: 'td img.cards' },
-      { suffix: 'events', oid: `${oid}${schema.controllers.events.last}`, selector: 'td input.events', flag: 'td img.events' },
-      { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td input.door1', flag: 'td img.door1' },
-      { suffix: 'door-2', oid: `${oid}${schema.controllers.door2}`, selector: 'td input.door2', flag: 'td img.door2' },
-      { suffix: 'door-3', oid: `${oid}${schema.controllers.door3}`, selector: 'td input.door3', flag: 'td img.door3' },
-      { suffix: 'door-4', oid: `${oid}${schema.controllers.door4}`, selector: 'td input.door4', flag: 'td img.door4' }
+      { suffix: 'name', oid: `${oid}${schema.controllers.name}`, selector: 'td input.name' },
+      { suffix: 'ID', oid: `${oid}${schema.controllers.deviceID}`, selector: 'td input.ID' },
+      { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime.current}`, selector: 'td input.datetime' },
+      { suffix: 'cards', oid: `${oid}${schema.controllers.cards.count}`, selector: 'td input.cards' },
+      { suffix: 'events', oid: `${oid}${schema.controllers.events.last}`, selector: 'td input.events' },
+      { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td input.door1' },
+      { suffix: 'door-2', oid: `${oid}${schema.controllers.door2}`, selector: 'td input.door2' },
+      { suffix: 'door-3', oid: `${oid}${schema.controllers.door3}`, selector: 'td input.door3' },
+      { suffix: 'door-4', oid: `${oid}${schema.controllers.door4}`, selector: 'td input.door4' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
-
-      field.id = uuid + '-' + f.suffix
-      field.value = ''
-      field.dataset.oid = f.oid
-      field.dataset.record = uuid
-      field.dataset.original = ''
-      field.dataset.value = ''
-
-      flag.id = 'F' + f.oid
+      if (field) {
+        field.id = uuid + '-' + f.suffix
+        field.value = ''
+        field.dataset.oid = f.oid
+        field.dataset.record = uuid
+        field.dataset.original = ''
+        field.dataset.value = ''
+      }
     })
 
     return row
@@ -190,20 +188,18 @@ function addEvent (oid) {
     row.innerHTML = template.innerHTML
 
     const fields = [
-      { suffix: 'timestamp', oid: `${oid}${schema.events.timestamp}`, selector: 'td input.timestamp', flag: 'td img.timestamp' },
-      { suffix: 'device', oid: `${oid}${schema.events.deviceName}`, selector: 'td input.device', flag: 'td img.device' },
-      { suffix: 'eventType', oid: `${oid}${schema.events.type}`, selector: 'td input.eventType', flag: 'td img.eventType' },
-      { suffix: 'door', oid: `${oid}${schema.events.doorName}`, selector: 'td input.door', flag: 'td img.door' },
-      { suffix: 'cardno', oid: `${oid}${schema.events.card}`, selector: 'td input.cardno', flag: 'td img.cardno' },
-      { suffix: 'card', oid: `${oid}${schema.events.cardName}`, selector: 'td input.card', flag: 'td img.card' },
-      { suffix: 'access', oid: `${oid}${schema.events.granted}`, selector: 'td input.access', flag: 'td img.access' },
-      { suffix: 'reason', oid: `${oid}${schema.events.reason}`, selector: 'td input.reason', flag: 'td img.reason' }
+      { suffix: 'timestamp', oid: `${oid}${schema.events.timestamp}`, selector: 'td input.timestamp' },
+      { suffix: 'device', oid: `${oid}${schema.events.deviceName}`, selector: 'td input.device' },
+      { suffix: 'eventType', oid: `${oid}${schema.events.type}`, selector: 'td input.eventType' },
+      { suffix: 'door', oid: `${oid}${schema.events.doorName}`, selector: 'td input.door' },
+      { suffix: 'cardno', oid: `${oid}${schema.events.card}`, selector: 'td input.cardno' },
+      { suffix: 'card', oid: `${oid}${schema.events.cardName}`, selector: 'td input.card' },
+      { suffix: 'access', oid: `${oid}${schema.events.granted}`, selector: 'td input.access' },
+      { suffix: 'reason', oid: `${oid}${schema.events.reason}`, selector: 'td input.reason' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(f.flag)
-
       if (field) {
         field.id = uuid + '-' + f.suffix
         field.value = ''
@@ -211,10 +207,6 @@ function addEvent (oid) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
-
-        if (flag) {
-          flag.id = 'F' + f.oid
-        }
       } else {
         console.error(f)
       }
@@ -292,8 +284,6 @@ function addLog (oid) {
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
-      const flag = row.querySelector(`td img.${f.suffix}`)
-
       if (field) {
         field.id = uuid + '-' + f.suffix
         field.value = ''
@@ -301,10 +291,6 @@ function addLog (oid) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
-
-        if (flag) {
-          flag.id = 'F' + f.oid
-        }
       } else {
         console.error(f)
       }
