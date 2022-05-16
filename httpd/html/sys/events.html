@@ -233,7 +233,8 @@
   <!-- global information initialised by Go template -->
   <script>
     var constants = {
-      theme: {{$.context.Theme}}
+      theme: {{$.context.Theme}},
+      mode: {{ $.context.Mode}},
     }
 
     function onMenu(event, state) {

@@ -60,6 +60,7 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 	acceptsGzip := parseHeader(r)
 	context := map[string]interface{}{
 		"Theme": parseSettings(r),
+		"Mode":  d.mode,
 	}
 
 	// ... normalise path
@@ -116,6 +117,7 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 	acceptsGzip := parseHeader(r)
 	context := map[string]interface{}{
 		"Theme": parseSettings(r),
+		"Mode":  d.mode,
 		"User":  uid,
 	}
 
@@ -152,6 +154,7 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 
 	page["context"] = context
 	page["schema"] = schema.GetSchema()
+	page["mode"] = ""
 
 	if d.mode == Monitor {
 		page["readonly"] = "readonly"

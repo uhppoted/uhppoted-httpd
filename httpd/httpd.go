@@ -27,6 +27,10 @@ const (
 	Synchronize
 )
 
+func (r RunMode) String() string {
+	return []string{"normal", "monitor", "synchronize"}[r]
+}
+
 type HTTPD struct {
 	HTML                     string
 	AuthProvider             auth.IAuth

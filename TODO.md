@@ -1,7 +1,7 @@
 ## v0.7.x
 
-- [ ] `mode:monitor` 
-      - [ ] show MONITORING instead of ONLINE
+- [x] `mode:monitor` 
+      - [x] show MONITORING instead of ONLINE
       - [x] disable/readonly for all input fields
       - [x] disable in POST handler
 
