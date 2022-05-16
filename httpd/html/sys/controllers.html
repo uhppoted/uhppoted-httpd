@@ -5,7 +5,7 @@
     <title>uhppoted-httpd: System</title>
     <link rel="manifest"   href="/manifest.json">
     <link rel="icon"       href="/images/favicon.svg">
-    <link rel="stylesheet" href="/css/{{$.context.Theme}}/system.css" type="text/css">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/controllers.css" type="text/css">
     <meta charset="UTF-8">
   </head>
 
@@ -41,7 +41,8 @@
                           onchange="onEdited('interface', event)" 
                           data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Bind }}"
                           data-original=""
-                          data-value="" /></td>
+                          data-value="" 
+                          {{ .readonly }} /></td>
             </tr>
             <tr>
               <td><img id="F{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}" class="flag" src="/images/{{$.context.Theme}}/block.svg" /></td>
@@ -50,7 +51,8 @@
                           onchange="onEdited('interface', event)" 
                           data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}"
                           data-original=""
-                          data-value="" /></td>
+                          data-value="" 
+                          {{ .readonly }} /></td>
             </tr>
           </table>
 
@@ -95,7 +97,8 @@
                          onchange="onEdited('controller', event)" 
                          data-record="" 
                          data-original="" 
-                         data-value="" />
+                         data-value="" 
+                         {{ .readonly }} />
                   <span class="control commit"   onclick="onCommit('controller', event)"   data-record="">
                     <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                   </span>
@@ -114,7 +117,8 @@
                          onchange="onEdited('controller', event)" 
                          data-record=""
                          data-original=""
-                         data-value="" />
+                         data-value="" 
+                         {{ .readonly }} />
                 </td>
 
                 <td>
@@ -128,7 +132,8 @@
                          data-record=""
                          data-original=""
                          data-value=""  
-                         data-status="" />
+                         data-status="" 
+                         {{ .readonly }} />
                 </td>
 
                 <td class="combobox">
@@ -143,7 +148,9 @@
                          data-record=""
                          data-original=""
                          data-value=""
-                         data-status="" />
+                         data-status=""
+                         {{if eq .readonly "readonly"}}disabled{{end}}  
+                         {{ .readonly }} />
                   <ul style="position:fixed; left:0px; top:0px; z-index:2; width:fit-content; max-height:120px; overflow:auto;"/>
                 </td>
 
@@ -185,7 +192,8 @@
                           onchange="onEdited('controller', event)" 
                           data-record=""
                           data-original=""
-                          data-value="">
+                          data-value=""
+                          {{if eq .readonly "readonly"}}disabled{{end}} >
                     <option value="">-</option>
                   </select>
                 </td>
@@ -199,8 +207,8 @@
                           onchange="onEdited('controller', event)" 
                           data-record=""
                           data-original=""
-                          data-value=""  
-                          readonly>
+                          data-value=""
+                          {{if eq .readonly "readonly"}}disabled{{end}} >
                     <option value="">-</option>
                   </select>
                 </td>
@@ -214,8 +222,8 @@
                           onchange="onEdited('controller', event)" 
                           data-record=""
                           data-original=""
-                          data-value=""  
-                          readonly>
+                          data-value=""
+                          {{if eq .readonly "readonly"}}disabled{{end}} >
                     <option value="">-</option>
                   </select>
                 </td>
@@ -229,7 +237,8 @@
                           onchange="onEdited('controller', event)" 
                           data-record=""
                           data-original=""
-                          data-value="">
+                          data-value=""
+                          {{if eq .readonly "readonly"}}disabled{{end}} >
                     <option value="">-</option>
                   </select>
                 </td>

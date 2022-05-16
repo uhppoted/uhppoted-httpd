@@ -55,7 +55,8 @@
                          onkeydown="onEnter('group', event)" 
                          data-record="" 
                          data-original="" 
-                         data-value="" />
+                         data-value=""
+                         {{ .readonly }} />
                   <span class="control commit"   onclick="onCommit('group', event)"   data-record="">
                     <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                   </span>
@@ -76,7 +77,8 @@
                          onclick="onTick('group', event)"
                          data-record="" 
                          data-original="" 
-                         data-value="" />
+                         data-value=""
+                         {{if eq .readonly "readonly"}}disabled{{end}} />
                   <img class="no"  src="/images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
                   <img class="yes" src="/images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
                 </label>

@@ -454,6 +454,11 @@ div.tabular table td img.flag {
   height: 10px;
 }
 
+div.tabular table tbody tr td input:read-only {
+  outline: none;
+  border: none;
+}
+
 div.tabular table td.conflict input {
   background-color: rgba(203, 75, 22, 0.25);
 }

@@ -61,6 +61,9 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		if handler := d.vtable(path); handler == nil || handler.post == nil {
 			warn("", fmt.Errorf("No vtable entry for %v", path))
 			http.Error(w, "internal system error", http.StatusInternalServerError)
+		} else if d.mode == Monitor {
+			warn("", fmt.Errorf("POST request in 'monitor' mode"))
+			http.Error(w, "Configuration changes are disabled in monitor-only mode", http.StatusBadRequest)
 		} else {
 			d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
 				return handler.post(uid, role, m)

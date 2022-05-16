@@ -114,6 +114,11 @@ div.tabular table td img.flag {
 div.tabular table tbody tr td input {
 }
 
+div.tabular table tbody tr td input:read-only {
+  outline: none;
+  border: none;
+}
+
 div.tabular table td.conflict input {
   background-color: $content-table-item-conflict;
 }

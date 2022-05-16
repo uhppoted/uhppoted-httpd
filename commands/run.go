@@ -20,6 +20,7 @@ import (
 
 type Run struct {
 	console       bool
+	mode          string
 	configuration string
 	debug         bool
 	workdir       string
@@ -30,9 +31,10 @@ type Run struct {
 func (r *Run) FlagSet() *flag.FlagSet {
 	flagset := flag.NewFlagSet("", flag.ExitOnError)
 
-	flagset.BoolVar(&r.console, "console", r.console, "Runs as a console application rather than a service")
+	flagset.BoolVar(&r.console, "console", false, "Runs as a console application rather than a service")
+	flagset.StringVar(&r.mode, "mode", "update", "Sets the run mode ('monitor', 'update', 'synchronize') Defaults to 'update'")
 	flagset.StringVar(&r.configuration, "config", r.configuration, "Sets the configuration file path")
-	flagset.BoolVar(&r.debug, "debug", r.debug, "Enables detailed debugging logs")
+	flagset.BoolVar(&r.debug, "debug", false, "Enables detailed debugging logs")
 
 	return flagset
 }
@@ -101,7 +103,13 @@ func (cmd *Run) execute(f func(c config.Config)) error {
 
 	defer os.Remove(lockfile)
 
-	f(*conf)
+	switch cmd.mode {
+	case "monitor":
+		f(*conf)
+
+	default:
+		f(*conf)
+	}
 
 	return nil
 }
@@ -156,5 +164,11 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 		panic(fmt.Errorf("Could not load system configuration (%v)", err))
 	}
 
-	h.Run(interrupt)
+	switch cmd.mode {
+	case "monitor":
+		h.Run(httpd.Monitor, interrupt)
+
+	default:
+		h.Run(httpd.Normal, interrupt)
+	}
 }

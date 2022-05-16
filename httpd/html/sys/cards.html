@@ -56,7 +56,8 @@
                        onchange="onEdited('card', event)" 
                        data-record=""
                        data-original=""
-                       data-value="" />
+                       data-value=""
+                       {{ .readonly }} />
                 <span class="control commit"   onclick="onCommit('card', event)"   data-record="">
                   <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                 </span>
@@ -73,7 +74,8 @@
                        onchange="onEdited('card', event)" 
                        data-record=""
                        data-original=""
-                       data-value="" />
+                       data-value=""
+                       {{ .readonly }} />
               </td>
               <td>
                 <img class="flag from" src="/images/{{$.context.Theme}}/corner.svg" />
@@ -82,7 +84,8 @@
                        onchange="onEdited('card', event)" 
                        data-record=""
                        data-original=""
-                       data-value="" 
+                       data-value=""
+                       {{ .readonly }} 
                        required />
               </td>
               <td>
@@ -92,7 +95,8 @@
                        onchange="onEdited('card', event)" 
                        data-record=""
                        data-original=""
-                       data-value="" 
+                       data-value=""
+                       {{ .readonly }} 
                        required />
               </td>              
               <!-- 'padding' column (CSS: tr::last-child) -->
@@ -107,7 +111,8 @@
                          onclick="onTick('card', event)"
                          data-record="" 
                          data-original="" 
-                         data-value="" />
+                         data-value=""
+                         {{if eq .readonly "readonly"}}disabled{{end}} />
                   <img class="no"  src="/images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
                   <img class="yes" src="/images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
                 </label>

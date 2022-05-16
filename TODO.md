@@ -1,14 +1,11 @@
 ## v0.7.x
 
-- [x] Cleanup audit log/logging
-      - [x] Genericize system tables (for save/load)
-      - [x] Move log funcs to DBC
+- [ ] `mode:monitor` 
+      - [ ] show MONITORING instead of ONLINE
+      - [x] disable/readonly for all input fields
+      - [x] disable in POST handler
 
 - (?) use :before or :content for flags
-
-- [ ] `mode:monitor` 
-      - show MONITORING instead of ONLINE
-      - disable submit/mark readonly/somesuch
 
 - (?) `mode:synchronize`
 - (?) Rework ACL
@@ -145,6 +142,11 @@
 
 
 ### Functionality
+
+- (?) Restructure using event sourcing
+  -- https://kickstarter.engineering/event-sourcing-made-simple-4a2625113224
+  -- [CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)
+  
 
 - (?) Morton codes for catalog
 

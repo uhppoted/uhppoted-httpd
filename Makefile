@@ -111,6 +111,9 @@ help: build
 run: build
 	$(CMD) --debug --console
 
+monitor: build
+	$(CMD) --debug --console --mode monitor
+
 daemonize: build
 	sudo $(CMD) daemonize
 

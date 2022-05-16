@@ -58,7 +58,8 @@
                          onkeydown="onEnter('user', event)" 
                          data-record="" 
                          data-original="" 
-                         data-value="" />
+                         data-value=""
+                         {{ .readonly }} />
                   <span class="control commit"   onclick="onCommit('user', event)"   data-record="">
                     <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                   </span>
@@ -76,7 +77,8 @@
                          onkeydown="onEnter('user', event)" 
                          data-record=""
                          data-original=""
-                         data-value="" />
+                         data-value=""
+                         {{ .readonly }} />
                 </td>
 
                 <td>
@@ -88,7 +90,8 @@
                          onkeydown="onEnter('user', event)" 
                          data-record=""
                          data-original=""
-                         data-value="" />
+                         data-value=""
+                         {{ .readonly }} />
                 </td>
 
                 <td>
@@ -101,7 +104,8 @@
                          data-record=""
                          data-original=""
                          data-value="" 
-                         autocomplete="new-password" />
+                         autocomplete="new-password"
+                         {{ .readonly }} />
                 </td>
                 
                 <!-- 'padding' column (CSS: tr::last-child) -->

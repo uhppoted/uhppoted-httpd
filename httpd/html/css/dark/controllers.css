@@ -728,32 +728,172 @@ tr td select[data-status=error] {
   height: 100%;
 }
 
+table.interface {
+  background: #05232b;
+  color: #586e75;
+  width: min-content;
+  margin-bottom: 4px;
+  padding-top: 0px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+  font: 400 0.9em Arial;
+  border-radius: 3px;
+}
+
+table.interface tr {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+table.interface td {
+  font-variant: small-caps;
+}
+
+table.interface tr td:last-child {
+  width: min-content;
+}
+
+table.interface td img.flag {
+  width: 6px;
+  height: 6px;
+  margin-left: 0px;
+  margin-right: 6px;
+}
+
+table.interface td input {
+  padding: 2px 4px 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  outline: none;
+  color: #586e75;
+  font: 400 0.9em Arial;
+}
+
+table.interface td input:focus {
+  border: 1px solid red;
+}
+
+table.interface td input.name {
+  padding: 0px 0px 0px 0px;
+  border: none;
+  font-weight: bold;
+}
+
+table.interface td span.control {
+  padding: 0px 0px 0px 0px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+  visibility: hidden;
+}
+
+table.interface td span.commit {
+  color: #227dbc;
+}
+
+table.interface td span.rollback {
+  color: #b9221f;
+}
+
+table.interface.modified td span.control {
+  visibility: visible;
+}
+
 th.name {
   min-width: 90px;
   border-bottom: 1px;
 }
 
-tr.door td input.name {
+th.ID {
+  min-width: 88px;
+}
+
+th.datetime {
+  min-width: 176px;
+}
+
+th.cards {
+  text-align: center;
+}
+
+th.events {
+  text-align: center;
+}
+
+tr.controller td input.name {
   width: 90px;
 }
 
-tr.door td input.controller {
-  pointer-events: none;
+tr.controller td input.ID {
+  width: 88px;
+  -moz-appearance: textfield;
 }
 
-tr.door td input.deviceID {
-  pointer-events: none;
+tr.controller td input.IP {
+  width: 112px;
 }
 
-tr.door td input.doorID {
-  width: 16px;
-  pointer-events: none;
+tr.controller td input.datetime {
+  min-width: 176px;
 }
 
-tr.door td input.mode {
+tr.controller td input.cards {
+  width: 72px;
   text-align: center;
+  pointer-events: none;
 }
 
-tr.door td input.delay {
+tr.controller td input.events {
+  width: 72px;
   text-align: center;
+  pointer-events: none;
+}
+
+tr.controller td select.door1, .door2, .door3, .door4 {
+  width: 72px;
+}
+
+.combobox ul {
+  display: none;
+  background: #93a1a1;
+  width: fit-content;
+  max-height: 32em;
+  margin-top: 4px;
+  margin-left: 4px;
+  padding-left: 1px;
+  padding-top: 2px;
+  padding-bottom: 4px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow: auto;
+  z-index: 2;
+  list-style: none;
+  box-sizing: border-box;
+  border: 1px solid #93a1a1;
+  border-radius: 2px;
+  font-size: 0.95em;
+}
+
+.combobox ul li {
+  display: block;
+  padding-left: 0.4em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  padding-right: 8px;
+  text-align: left;
+  color: #666666;
+}
+
+.combobox ul li.selected {
+  background-color: #def;
+}
+
+.combobox ul li:hover {
+  background-color: #def;
+}
+
+tr.controller td input[data-status=error] {
+  font-weight: normal;
 }
