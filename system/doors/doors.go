@@ -61,7 +61,7 @@ func (dd *Doors) Load(blob json.RawMessage) error {
 			warn(err)
 		} else {
 			if _, ok := dd.doors[d.OID]; ok {
-				return fmt.Errorf("door '%v': duplicate OID (%v)", d.Name, d.OID)
+				return fmt.Errorf("door '%v': duplicate OID (%v)", d.name, d.OID)
 			}
 
 			dd.doors[d.OID] = d
@@ -70,7 +70,7 @@ func (dd *Doors) Load(blob json.RawMessage) error {
 
 	for _, d := range dd.doors {
 		catalog.PutT(d.CatalogDoor)
-		catalog.PutV(d.OID, DoorName, d.Name)
+		catalog.PutV(d.OID, DoorName, d.name)
 		catalog.PutV(d.OID, DoorDelayConfigured, d.delay)
 		catalog.PutV(d.OID, DoorDelayModified, false)
 		catalog.PutV(d.OID, DoorControlConfigured, d.mode)
@@ -114,7 +114,7 @@ func (dd *Doors) ByName(name string) (Door, bool) {
 	}
 
 	for _, d := range dd.doors {
-		p := clean(d.Name)
+		p := clean(d.name)
 		q := clean(name)
 
 		if p == q {
@@ -241,7 +241,7 @@ func (dd Doors) Validate() error {
 		if d.OID == "" {
 			return fmt.Errorf("Invalid door OID (%v)", d.OID)
 		} else if k != d.OID {
-			return fmt.Errorf("Door %s: mismatched door OID %v (expected %v)", d.Name, d.OID, k)
+			return fmt.Errorf("Door %s: mismatched door OID %v (expected %v)", d.name, d.OID, k)
 		}
 
 		if err := d.validate(); err != nil {
@@ -250,12 +250,12 @@ func (dd Doors) Validate() error {
 			}
 		}
 
-		n := strings.TrimSpace(strings.ToLower(d.Name))
+		n := strings.TrimSpace(strings.ToLower(d.name))
 		if v, ok := names[n]; ok && n != "" {
-			return fmt.Errorf("'%v': duplicate door name (%v)", d.Name, v)
+			return fmt.Errorf("'%v': duplicate door name (%v)", d.name, v)
 		}
 
-		names[n] = d.Name
+		names[n] = d.name
 	}
 
 	return nil

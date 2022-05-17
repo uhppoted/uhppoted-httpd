@@ -18,7 +18,7 @@ import (
 
 type Door struct {
 	catalog.CatalogDoor
-	Name string `json:"name"`
+	name string
 
 	delay uint8
 	mode  core.ControlState
@@ -33,8 +33,6 @@ type kv = struct {
 	value interface{}
 }
 
-const BLANK = "'blank'"
-
 var created = types.TimestampNow()
 
 func (d Door) IsValid() bool {
@@ -44,7 +42,7 @@ func (d Door) IsValid() bool {
 func (d Door) validate() error {
 	door := catalog.GetDoorDeviceDoor(d.OID)
 
-	if strings.TrimSpace(d.Name) == "" && door == 0 {
+	if strings.TrimSpace(d.name) == "" && door == 0 {
 		return fmt.Errorf("Door name cannot be blank unless door is assigned to a controller")
 	}
 
@@ -55,7 +53,7 @@ func (d *Door) IsDeleted() bool {
 }
 
 func (d Door) String() string {
-	return fmt.Sprintf("%v", d.Name)
+	return d.name
 }
 
 func (d *Door) AsObjects(a *auth.Authorizator) []schema.Object {
@@ -64,7 +62,7 @@ func (d *Door) AsObjects(a *auth.Authorizator) []schema.Object {
 	if d.IsDeleted() {
 		list = append(list, kv{DoorDeleted, d.deleted})
 	} else {
-		name := d.Name
+		name := d.name
 
 		delay := struct {
 			delay      uint8
@@ -151,7 +149,7 @@ func (d *Door) AsRuleEntity() (string, interface{}) {
 	}{}
 
 	if d != nil {
-		entity.Name = fmt.Sprintf("%v", d.Name)
+		entity.Name = d.name
 	}
 
 	return "door", &entity
@@ -180,12 +178,12 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			d.log(dbc, uid, "update", "name", d.Name, value, "Updated name from %v to %v", d.Name, value)
+			d.log(dbc, uid, "update", "name", d.name, value, "Updated name from %v to %v", d.name, value)
 
-			d.Name = value
+			d.name = value
 			d.modified = types.TimestampNow()
 
-			list = append(list, kv{DoorName, d.Name})
+			list = append(list, kv{DoorName, d.name})
 		}
 
 	case d.OID.Append(DoorDelay):
@@ -222,7 +220,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			case "normally closed":
 				d.mode = core.NormallyClosed
 			default:
-				return nil, fmt.Errorf("%v: invalid control state (%v)", d.Name, value)
+				return nil, fmt.Errorf("%v: invalid control state (%v)", d.name, value)
 			}
 
 			d.modified = types.TimestampNow()
@@ -254,10 +252,10 @@ func (d *Door) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 		}
 
 		if door := catalog.GetDoorDeviceDoor(d.OID); door != 0 {
-			return nil, fmt.Errorf("Cannot delete door %v - assigned to controller", d.Name)
+			return nil, fmt.Errorf("Cannot delete door %v - assigned to controller", d.name)
 		}
 
-		d.log(dbc, auth.UID(a), "delete", "name", d.Name, "", "Deleted door %v", d.Name)
+		d.log(dbc, auth.UID(a), "delete", "name", d.name, "", "Deleted door %v", d.name)
 		d.deleted = types.TimestampNow()
 		d.modified = types.TimestampNow()
 
@@ -315,7 +313,7 @@ func (d Door) serialize() ([]byte, error) {
 		Modified types.Timestamp   `json:"modified,omitempty"`
 	}{
 		OID:      d.OID,
-		Name:     d.Name,
+		Name:     d.name,
 		Delay:    d.delay,
 		Mode:     d.mode,
 		Created:  d.created.UTC(),
@@ -346,7 +344,7 @@ func (d *Door) deserialize(bytes []byte) error {
 	}
 
 	d.OID = record.OID
-	d.Name = record.Name
+	d.name = record.Name
 	d.delay = record.Delay
 	d.mode = record.Mode
 	d.created = record.Created
@@ -360,7 +358,7 @@ func (d *Door) clone() Door {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: d.OID,
 		},
-		Name:     d.Name,
+		name:     d.name,
 		delay:    d.delay,
 		mode:     d.mode,
 		created:  d.created,
@@ -373,36 +371,9 @@ func (d *Door) log(dbc db.DBC, uid string, operation string, field string, befor
 	deviceID := catalog.GetDoorDeviceID(d.OID)
 	door := catalog.GetDoorDeviceDoor(d.OID)
 	ID := fmt.Sprintf("%v/%v", deviceID, door)
-	name := stringify(d.Name, "")
+	name := d.name
 
 	if dbc != nil {
 		dbc.Log(uid, operation, d.OID, "door", ID, name, field, before, after, format, fields...)
 	}
-}
-
-func stringify(i interface{}, defval string) string {
-	s := ""
-
-	switch v := i.(type) {
-	case *uint32:
-		if v != nil {
-			s = fmt.Sprintf("%v", *v)
-		}
-
-	case *string:
-		if v != nil {
-			s = fmt.Sprintf("%v", *v)
-		}
-
-	default:
-		if i != nil {
-			s = fmt.Sprintf("%v", i)
-		}
-	}
-
-	if s != "" {
-		return s
-	}
-
-	return defval
 }

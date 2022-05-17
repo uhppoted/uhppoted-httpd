@@ -25,7 +25,7 @@ func TestDoorAsObjects(t *testing.T) {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: "0.3.3",
 		},
-		Name:    "Le Door",
+		name:    "Le Door",
 		delay:   7,
 		mode:    core.NormallyOpen,
 		created: created,
@@ -62,7 +62,7 @@ func TestDoorAsObjectsWithDeleted(t *testing.T) {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: "0.3.3",
 		},
-		Name:    "Le Door",
+		name:    "Le Door",
 		delay:   7,
 		mode:    core.NormallyOpen,
 		created: created,
@@ -87,7 +87,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: "0.3.3",
 		},
-		Name:    "Le Door",
+		name:    "Le Door",
 		delay:   7,
 		mode:    core.NormallyOpen,
 		created: created,
@@ -135,7 +135,7 @@ func TestDoorSet(t *testing.T) {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: "0.3.3",
 		},
-		Name:  "Le Door",
+		name:  "Le Door",
 		delay: 7,
 		mode:  core.NormallyOpen,
 	}
@@ -149,8 +149,8 @@ func TestDoorSet(t *testing.T) {
 		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
 	}
 
-	if d.Name != "Eine Kleine Dooren" {
-		t.Errorf("Door name not updated - expected:%v, got:%v", "Eine Kleine Dooren", d.Name)
+	if d.name != "Eine Kleine Dooren" {
+		t.Errorf("Door name not updated - expected:%v, got:%v", "Eine Kleine Dooren", d.name)
 	}
 }
 
@@ -159,7 +159,7 @@ func TestDoorSetWithDeleted(t *testing.T) {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: "0.3.3",
 		},
-		Name:  "Le Door",
+		name:  "Le Door",
 		delay: 7,
 		mode:  core.NormallyOpen,
 
@@ -179,7 +179,7 @@ func TestDoorSetWithDeleted(t *testing.T) {
 		t.Errorf("Invalid result\n   expected:%#v\n   got:     %#v", expected, objects)
 	}
 
-	if d.Name != "Le Door" {
-		t.Errorf("Door name unexpectedly updated - expected:%v, got:%v", "Le Door", d.Name)
+	if d.name != "Le Door" {
+		t.Errorf("Door name unexpectedly updated - expected:%v, got:%v", "Le Door", d.name)
 	}
 }

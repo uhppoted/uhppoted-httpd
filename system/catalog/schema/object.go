@@ -7,7 +7,7 @@ import (
 
 type Object struct {
 	OID   OID
-	Value interface{}
+	Value any
 }
 
 func (o Object) MarshalJSON() ([]byte, error) {
@@ -38,7 +38,7 @@ func (o *Object) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func stringify(i interface{}) string {
+func stringify(i any) string {
 	switch v := i.(type) {
 	case *uint32:
 		if v != nil {

@@ -434,10 +434,10 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 				c.updated(dbc, uid, "device-id", clone.DeviceID, c.DeviceID)
 			}
 		} else if value == "" {
-			if p := stringify(c.DeviceID, ""); p != "" {
+			if p := fmt.Sprintf("%v", types.Uint32(c.DeviceID)); p != "" {
 				c.log(dbc, uid, "update", "device-id", p, "", "Cleared device ID %v", p)
-			} else if p = stringify(c.name, ""); p != "" {
-				c.log(dbc, uid, "update", "device-id", "", "", "Cleared device ID for %v", p)
+			} else if c.name != "" {
+				c.log(dbc, uid, "update", "device-id", "", "", "Cleared device ID for %v", c.name)
 			} else {
 				c.log(dbc, uid, "update", "device-id", "", "", "Cleared device ID")
 			}
@@ -567,10 +567,10 @@ func (c *Controller) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, 
 			}
 		}
 
-		if p := stringify(c.name, ""); p != "" {
-			c.log(dbc, uid, "delete", "device-id", "", "", "Deleted controller %v", p)
-		} else if p = stringify(c.DeviceID, ""); p != "" {
-			c.log(dbc, uid, "delete", "device-id", "", "", "Deleted controller %v", p)
+		if c.name != "" {
+			c.log(dbc, uid, "delete", "device-id", "", "", "Deleted controller %v", c.name)
+		} else if s := fmt.Sprintf("%v", types.Uint32(c.DeviceID)); s != "" {
+			c.log(dbc, uid, "delete", "device-id", "", "", "Deleted controller %v", s)
 		} else {
 			c.log(dbc, uid, "delete", "device-id", "", "", "Deleted controller")
 		}
@@ -749,7 +749,7 @@ func (c *Controller) clone() *Controller {
 }
 
 func (c Controller) updated(dbc db.DBC, uid, field string, before, after interface{}) {
-	c.log(dbc, uid, "update", field, before, after, "Updated %[1]v from '%[2]v' to '%[3]v'", field, stringify(before, ""), stringify(after, ""))
+	c.log(dbc, uid, "update", field, before, after, "Updated %[1]v from '%[2]v' to '%[3]v'", field, before, after)
 }
 
 func (c *Controller) log(dbc db.DBC, uid, op string, field string, before, after any, format string, fields ...any) {

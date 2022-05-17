@@ -1,5 +1,8 @@
 ## v0.7.x
 
+- [x] Commonalise all the stringifys
+- [x] Remove BLANK thing everywhere
+
 - [x] Use :before for flags
       - [x] td
       - [x] label (checkboxes)
@@ -15,7 +18,6 @@
       - [x] Attach flag to td always (i.e. not label)
       - [x] Fix interfaces flag layout
 
-- (?) `mode:synchronize`
 - [ ] Rework ACL
       - [ ] Update edited card only
       - [ ] Update affected cards only for group/door edit
@@ -25,12 +27,12 @@
       - (?) Flag cards with incorrect permissions
       - (?) Unify CompareACL and UpdateACL into SynchACL
 
+- (?) `mode:synchronize`
+
 - [ ] Rework `create`
       - [ ] Very fragile - uses 'new' status 
       - [ ] Maybe invoke 'create' explicitly a la delete
 
-- [ ] Commonalise all the stringifys
-      - [ ] Remove BLANK thing everywhere
 - [ ] System XXX.validate should not return HttpdError
       - (?) maybe return SysError that might contain HTTP error
 - [ ] Make vtable'able subsystem an interface

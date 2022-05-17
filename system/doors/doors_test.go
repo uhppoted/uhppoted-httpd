@@ -15,7 +15,7 @@ func TestValidateWithInvalid(t *testing.T) {
 				CatalogDoor: catalog.CatalogDoor{
 					OID: "0.3.5",
 				},
-				Name:     "",
+				name:     "",
 				created:  types.TimestampNow(),
 				modified: types.TimestampNow(),
 			},
@@ -34,7 +34,7 @@ func TestValidateWithNewDoor(t *testing.T) {
 				CatalogDoor: catalog.CatalogDoor{
 					OID: "0.3.5",
 				},
-				Name:    "",
+				name:    "",
 				created: types.TimestampNow(),
 			},
 		},

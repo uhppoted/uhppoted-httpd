@@ -309,30 +309,3 @@ func (g *Group) log(dbc db.DBC, uid, op string, field string, before, after any,
 		dbc.Log(uid, op, g.OID, "group", "", g.Name, field, before, after, format, fields...)
 	}
 }
-
-func stringify(i interface{}, defval string) string {
-	s := ""
-
-	switch v := i.(type) {
-	case *uint32:
-		if v != nil {
-			s = fmt.Sprintf("%v", *v)
-		}
-
-	case *string:
-		if v != nil {
-			s = fmt.Sprintf("%v", *v)
-		}
-
-	default:
-		if i != nil {
-			s = fmt.Sprintf("%v", i)
-		}
-	}
-
-	if s != "" {
-		return s
-	}
-
-	return defval
-}

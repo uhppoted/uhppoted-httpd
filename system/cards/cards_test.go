@@ -27,12 +27,12 @@ func (d *dbc) Log(uid, operation string, OID schema.OID, component string, ID, n
 			Component: component,
 			Operation: operation,
 			Details: audit.Details{
-				ID:          stringify(ID, ""),
-				Name:        stringify(name, ""),
+				ID:          fmt.Sprintf("%v", ID),
+				Name:        fmt.Sprintf("%v", name),
 				Field:       field,
 				Description: fmt.Sprintf(format, fields...),
-				Before:      stringify(before, ""),
-				After:       stringify(after, ""),
+				Before:      fmt.Sprintf("%v", before),
+				After:       fmt.Sprintf("%v", after),
 			},
 		}
 

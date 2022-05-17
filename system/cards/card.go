@@ -35,8 +35,6 @@ type kv = struct {
 	value interface{}
 }
 
-const BLANK = "'blank'"
-
 var created = types.TimestampNow()
 
 func (c Card) String() string {
@@ -195,7 +193,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			c.name = strings.TrimSpace(value)
 			c.modified = types.TimestampNow()
 
-			list = append(list, kv{CardName, stringify(c.name, "")})
+			list = append(list, kv{CardName, c.name})
 		}
 
 	case oid == c.OID.Append(CardNumber):
@@ -216,8 +214,8 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			if err := f("number", 0); err != nil {
 				return nil, err
 			} else {
-				if p := stringify(c.name, ""); p != "" {
-					c.log(dbc, uid, "update", "number", c.card, p, "Cleared card number %v for %v", c.card, p)
+				if c.name != "" {
+					c.log(dbc, uid, "update", "number", c.card, c.name, "Cleared card number %v for %v", c.card, c.name)
 				} else {
 					c.log(dbc, uid, "update", "number", c.card, "", "Cleared card number %v", c.card)
 				}
@@ -302,10 +300,10 @@ func (c *Card) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 		}
 
 		uid := auth.UID(a)
-		if p := stringify(c.card, ""); p != "" {
+		if p := fmt.Sprintf("%v", types.Uint32(c.card)); p != "" {
 			c.log(dbc, uid, "delete", "card", "", "", "Deleted card %v", p)
-		} else if p = stringify(c.name, ""); p != "" {
-			c.log(dbc, uid, "delete", "card", "", "", "Deleted card for %v", p)
+		} else if c.name != "" {
+			c.log(dbc, uid, "delete", "card", "", "", "Deleted card for %v", c.name)
 		} else {
 			c.log(dbc, uid, "delete", "card", "", "", "Deleted card")
 		}
@@ -452,36 +450,7 @@ func (c *Card) clone() *Card {
 }
 
 func (c *Card) log(dbc db.DBC, uid, op string, field string, before, after any, format string, fields ...any) {
-	ID := stringify(types.Uint32(c.card), "")
-
 	if dbc != nil {
-		dbc.Log(uid, op, c.OID, "card", ID, c.name, field, before, after, format, fields...)
+		dbc.Log(uid, op, c.OID, "card", types.Uint32(c.card), c.name, field, before, after, format, fields...)
 	}
-}
-
-func stringify(i interface{}, defval string) string {
-	s := ""
-
-	switch v := i.(type) {
-	case *uint32:
-		if v != nil {
-			s = fmt.Sprintf("%v", *v)
-		}
-
-	case *string:
-		if v != nil {
-			s = fmt.Sprintf("%v", *v)
-		}
-
-	default:
-		if v != nil {
-			s = fmt.Sprintf("%v", v)
-		}
-	}
-
-	if s != "" {
-		return s
-	}
-
-	return defval
 }

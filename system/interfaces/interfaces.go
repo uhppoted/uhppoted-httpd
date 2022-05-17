@@ -22,8 +22,6 @@ type Interfaces struct {
 	ch   chan types.EventsList
 }
 
-const BLANK = "'blank'"
-
 var guard sync.RWMutex
 
 func NewInterfaces(ch chan types.EventsList) Interfaces {
@@ -340,28 +338,4 @@ func (ii *Interfaces) SynchEventListeners(controllers []types.IController) {
 
 func (ii *Interfaces) add(auth auth.OpAuth, l LAN) (*LAN, error) {
 	return nil, fmt.Errorf("NOT SUPPORTED")
-}
-
-func stringify(i interface{}, defval string) string {
-	s := ""
-	switch v := i.(type) {
-	case *uint32:
-		if v != nil {
-			s = fmt.Sprintf("%v", *v)
-		}
-
-	case *string:
-		if v != nil {
-			s = fmt.Sprintf("%v", *v)
-		}
-
-	default:
-		s = fmt.Sprintf("%v", i)
-	}
-
-	if s != "" {
-		return s
-	}
-
-	return defval
 }

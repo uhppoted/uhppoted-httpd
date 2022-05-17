@@ -21,8 +21,6 @@ type Controllers struct {
 	controllers []*Controller
 }
 
-const BLANK = "'blank'"
-
 var guard sync.RWMutex
 
 var windows = struct {
@@ -321,28 +319,4 @@ func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	cc.controllers = append(cc.controllers, controller)
 
 	return controller, nil
-}
-
-func stringify(i interface{}, defval string) string {
-	s := ""
-	switch v := i.(type) {
-	case *uint32:
-		if v != nil {
-			s = fmt.Sprintf("%v", *v)
-		}
-
-	case *string:
-		if v != nil {
-			s = fmt.Sprintf("%v", *v)
-		}
-
-	default:
-		s = fmt.Sprintf("%v", i)
-	}
-
-	if s != "" {
-		return s
-	}
-
-	return defval
 }

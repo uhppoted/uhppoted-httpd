@@ -85,7 +85,7 @@ func validate(cc *controllers.Controllers) error {
 			if rid, ok := doors[v]; ok && v != "" {
 				d, _ := sys.doors.Door(v)
 				return types.BadRequest(
-					fmt.Errorf("%v door assigned to more than one controller", d.Name),
+					fmt.Errorf("%v door assigned to more than one controller", d),
 					fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID))
 			}
 

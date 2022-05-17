@@ -35,8 +35,6 @@ type kv = struct {
 	value interface{}
 }
 
-const BLANK = "'blank'"
-
 var created = types.TimestampNow()
 
 func (u User) IsValid() bool {
@@ -140,7 +138,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		} else {
 			u.name = strings.TrimSpace(value)
 			u.modified = types.TimestampNow()
-			list = append(list, kv{UserName, stringify(u.name, "")})
+			list = append(list, kv{UserName, u.name})
 
 			u.log(dbc, uid, "update", "name", u.name, value, "Updated name from %v to %v", clone.name, u.name)
 		}
@@ -151,7 +149,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		} else {
 			u.uid = strings.TrimSpace(value)
 			u.modified = types.TimestampNow()
-			list = append(list, kv{UserUID, stringify(u.uid, "")})
+			list = append(list, kv{UserUID, u.uid})
 
 			u.log(dbc, uid, "update", "uid", clone.uid, u.uid, "Updated UID from %v to %v", clone.uid, u.uid)
 		}
@@ -162,7 +160,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		} else {
 			u.role = strings.TrimSpace(value)
 			u.modified = types.TimestampNow()
-			list = append(list, kv{UserRole, stringify(u.role, "")})
+			list = append(list, kv{UserRole, u.role})
 
 			u.log(dbc, uid, "update", "role", clone.role, u.role, "Updated role from %v to %v", clone.role, u.role)
 		}
@@ -206,10 +204,10 @@ func (u *User) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 		}
 
 		uid := auth.UID(a)
-		if p := stringify(u.uid, ""); p != "" {
-			u.log(dbc, uid, "delete", "user", p, "", "Deleted UID %v", p)
-		} else if p = stringify(u.name, ""); p != "" {
-			u.log(dbc, uid, "delete", "user", p, "", "Deleted user %v", p)
+		if u.uid != "" {
+			u.log(dbc, uid, "delete", "user", u.uid, "", "Deleted UID %v", u.uid)
+		} else if u.name != "" {
+			u.log(dbc, uid, "delete", "user", u.name, "", "Deleted user %v", u.name)
 		} else {
 			u.log(dbc, uid, "delete", "user", "", "", "Deleted user")
 		}
@@ -347,21 +345,4 @@ func (u User) log(dbc db.DBC, uid, op string, field string, before, after any, f
 	if dbc != nil {
 		dbc.Log(uid, op, u.OID, "user", u.uid, u.name, field, before, after, format, fields...)
 	}
-}
-
-func stringify(i interface{}, defval string) string {
-	s := ""
-
-	switch v := i.(type) {
-	default:
-		if v != nil {
-			s = fmt.Sprintf("%v", v)
-		}
-	}
-
-	if s != "" {
-		return s
-	}
-
-	return defval
 }
