@@ -103,14 +103,6 @@ div.tabular table tbody tr.new td.rowheader {
   background: $content-table-row-new;
 }
 
-div.tabular table td img.flag {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 10px;
-  height: 10px;
- }
-
 div.tabular table tbody tr td input {
 }
 
@@ -120,23 +112,33 @@ div.tabular table tbody tr td input:read-only {
 }
 
 div.tabular table tbody tr td.modified::before {
-  content: url('/images/default/corner.svg');  
+  content: $content-table-flag;
   position: absolute;
   left: 0px;
   top: -4px;
   width: 10px;
   height: 10px;
-  filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+  filter: $content-table-flag-modified;
 }
 
-div.tabular table tbody tr td label.modified::before {
-  content: url('/images/default/corner.svg');  
+div.tabular table tbody tr td.conflict::before {
+  content: $content-table-flag;
   position: absolute;
   left: 0px;
   top: -4px;
   width: 10px;
   height: 10px;
-  filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+  filter: $content-table-flag-conflict;
+}
+
+div.tabular table tbody tr td.pending::before {
+  content: $content-table-flag;
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  filter: $content-table-flag-pending;
 }
 
 div.tabular table td.conflict input {

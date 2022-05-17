@@ -24,6 +24,7 @@ table.interface tr {
 } 
 
 table.interface td {
+  position: relative;
   font-variant: small-caps;
 }
 
@@ -31,18 +32,37 @@ table.interface tr td:last-child {
   width:min-content; 
 } 
 
-table.interface td {
-  position: relative;
+table.interface td.modified::before {
+  content: url('/images/default/block.svg');  
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 6px;
+  height: 6px;
+  line-height:0px;  // only hack that works :-(
+  filter: $content-table-flag-modified;
 }
 
-table.interface td.modified::before {
+table.interface td.conflict::before {
   content: url('/images/default/block.svg');  
   position: absolute;
   left: 0px;
   top: -4px;
   width: 6px;
   height: 6px;
-  filter: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+  line-height:0px;  // only hack that works :-(
+  filter: $content-table-flag-conflict;
+}
+
+table.interface td.pending::before {
+  content: url('/images/default/block.svg');  
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 6px;
+  height: 6px;
+  line-height:0px;  // only hack that works :-(
+  filter: $content-table-flag-pending;
 }
 
 table.interface td input {
@@ -50,7 +70,7 @@ table.interface td input {
   border: 1px solid transparent;
   border-radius: 3px;
   outline: none;
-  margin-left: 4px;
+  margin-left: 2px;
   color: $solarize-base01;
   font: 400 0.9em Arial;
 }

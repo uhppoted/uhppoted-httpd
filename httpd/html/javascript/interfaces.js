@@ -15,12 +15,10 @@ function updateFromDB (oid, record) {
     const name = section.querySelector(`[data-oid="${oid}${schema.interfaces.name}"]`)
     const bind = section.querySelector(`[data-oid="${oid}${schema.interfaces.bind}"]`)
     const broadcast = section.querySelector(`[data-oid="${oid}${schema.interfaces.broadcast}"]`)
-    // const listen = section.querySelector(`[data-oid="${oid}${schema.interfaces.listen}"]`)
 
     update(name, record.name)
     update(bind, record.bind)
     update(broadcast, record.broadcast)
-    // update(listen, record.listen)
   }
 }
 
@@ -100,7 +98,7 @@ function update (element, value, status) {
   if (element) {
     const v = value.toString()
     const oid = element.dataset.oid
-    const flag = document.getElementById(`F${oid}`)
+    const td = element.parentElement
     const previous = element.dataset.original
 
     element.dataset.original = v
@@ -108,12 +106,12 @@ function update (element, value, status) {
     // check for conflicts with concurrently edited fields
     if (element.classList.contains('modified')) {
       if (previous !== v && element.dataset.value !== v) {
-        mark('conflict', element, flag)
+        mark('conflict', element, td)
       } else if (element.dataset.value !== v) {
-        unmark('conflict', element, flag)
+        unmark('conflict', element, td)
       } else {
-        unmark('conflict', element, flag)
-        unmark('modified', element, flag)
+        unmark('conflict', element, td)
+        unmark('modified', element, td)
       }
 
       percolate(oid)
@@ -123,9 +121,9 @@ function update (element, value, status) {
     // check for conflicts with concurrently submitted fields
     if (element.classList.contains('pending')) {
       if (previous !== v && element.dataset.value !== v) {
-        mark('conflict', element, flag)
+        mark('conflict', element, td)
       } else {
-        unmark('conflict', element, flag)
+        unmark('conflict', element, td)
       }
 
       return

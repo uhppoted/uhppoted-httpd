@@ -1,25 +1,24 @@
 ## v0.7.x
 
-- [x] `mode:monitor` 
-      - [x] show MONITORING instead of ONLINE
-      - [x] disable/readonly for all input fields
-      - [x] disable in POST handler
-
-- [ ] Use :before for flags
+- [x] Use :before for flags
       - [x] td
       - [x] label (checkboxes)
       - [x] Roll the parent td/label into mark/unmark
       - [x] modified
       - [x] controller::interfaces
-      - [ ] Themed flags
-      - [ ] pending
-      - [ ] conflict
+      - [x] Themed flags
+      - [x] pending
+      - [x] conflict
       - [x] remove flag from HTML throughout
-      - [ ] remove flag from JS throughout
-      - [ ] remove flag from CSS throughout
+      - [x] remove flag from JS throughout
+      - [x] remove flag from CSS throughout
+      - [x] Attach flag to td always (i.e. not label)
+      - [x] Fix interfaces flag layout
 
 - (?) `mode:synchronize`
-- (?) Rework ACL
+- [ ] Rework ACL
+      - [ ] Update edited card only
+      - [ ] Update affected cards only for group/door edit
       - [ ] wrap ACL update in goroutine
       - [ ] Error handling ??
       - (?) Only update affected cards

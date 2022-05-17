@@ -357,7 +357,7 @@ export function set (element, value, status) {
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
-  const parent = element.parentElement
+  const td = cell(element)
 
   element.dataset.value = v
 
@@ -368,9 +368,9 @@ export function set (element, value, status) {
   }
 
   if (v !== original) {
-    mark('modified', element, parent)
+    mark('modified', element, td)
   } else {
-    unmark('modified', element, parent)
+    unmark('modified', element, td)
   }
 
   percolate(oid)
@@ -401,7 +401,7 @@ export function update (element, value, status) {
   if (element && value !== undefined) {
     const v = value.toString()
     const oid = element.dataset.oid
-    const flag = document.getElementById(`F${oid}`)
+    const td = element.parentElement
     const previous = element.dataset.original
 
     element.dataset.original = v
@@ -409,12 +409,12 @@ export function update (element, value, status) {
     // check for conflicts with concurrently edited fields
     if (element.classList.contains('modified')) {
       if (previous !== v && element.dataset.value !== v) {
-        mark('conflict', element, flag)
+        mark('conflict', element, td)
       } else if (element.dataset.value !== v) {
-        unmark('conflict', element, flag)
+        unmark('conflict', element, td)
       } else {
-        unmark('conflict', element, flag)
-        unmark('modified', element, flag)
+        unmark('conflict', element, td)
+        unmark('modified', element, td)
       }
 
       percolate(oid)
@@ -424,9 +424,9 @@ export function update (element, value, status) {
     // check for conflicts with concurrently submitted fields
     if (element.classList.contains('pending')) {
       if (previous !== v && element.dataset.value !== v) {
-        mark('conflict', element, flag)
+        mark('conflict', element, td)
       } else {
-        unmark('conflict', element, flag)
+        unmark('conflict', element, td)
       }
 
       return
@@ -613,23 +613,23 @@ function commit (page, recordset) {
 
   const reset = function () {
     updated.forEach(e => {
-      const flag = document.getElementById(`F${e.dataset.oid}`)
-      unmark('pending', e, flag)
-      mark('modified', e, flag)
+      const td = e.parentElement
+      unmark('pending', e, td)
+      mark('modified', e, td)
     })
   }
 
   const cleanup = function () {
     updated.forEach(e => {
-      const flag = document.getElementById(`F${e.dataset.oid}`)
-      unmark('pending', e, flag)
+      const td = e.parentElement
+      unmark('pending', e, td)
     })
   }
 
   updated.forEach(e => {
-    const flag = document.getElementById(`F${e.dataset.oid}`)
-    mark('pending', e, flag)
-    unmark('modified', e, flag)
+    const td = e.parentElement
+    mark('pending', e, td)
+    unmark('modified', e, td)
   })
 
   post(page, records, deleted, reset, cleanup)
@@ -760,6 +760,20 @@ function pageForRow (row) {
     if (row.classList.contains(v.tag)) {
       return v.page
     }
+  }
+
+  return null
+}
+
+/* Returns the enclosing <td> element for an input/checkbox field
+ */
+function cell (element) {
+  const parent = element.parentElement
+
+  if (parent && parent.nodeName === 'TD') {
+    return parent
+  } else if (parent && parent.nodeName === 'LABEL' && parent.parentElement && parent.parentElement.nodeName === 'TD') {
+    return parent.parentElement
   }
 
   return null

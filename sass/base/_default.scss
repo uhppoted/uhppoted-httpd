@@ -57,6 +57,10 @@ $content-table-item-uncertain:      $solarize-violet !default;
 $content-table-item-incomplete:     lighten($solarize-orange,15%) !default;
 $content-table-item-error:          $solarize-red    !default;
 $content-table-scrollbar-color:     auto             !default;
+$content-table-flag:                url('/images/default/corner.svg');  
+$content-table-flag-modified:       invert(61%) sepia(14%) saturate(250%)  hue-rotate(138deg) brightness(92%) contrast(92%);
+$content-table-flag-conflict:       invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
+$content-table-flag-pending:        invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
 
 $content-svg-filter-commit:   invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%) !default;
 $content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%) !default;
