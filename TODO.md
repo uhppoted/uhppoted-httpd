@@ -1,30 +1,15 @@
 ## v0.7.x
 
-- [x] Commonalise all the stringifys
-- [x] Remove BLANK thing everywhere
-
-- [x] Use :before for flags
-      - [x] td
-      - [x] label (checkboxes)
-      - [x] Roll the parent td/label into mark/unmark
-      - [x] modified
-      - [x] controller::interfaces
-      - [x] Themed flags
-      - [x] pending
-      - [x] conflict
-      - [x] remove flag from HTML throughout
-      - [x] remove flag from JS throughout
-      - [x] remove flag from CSS throughout
-      - [x] Attach flag to td always (i.e. not label)
-      - [x] Fix interfaces flag layout
+- [ ] Replace `guard` with embedded sync.Mutex
+- [ ] <sigh> date/time flag is sometimes not going away
+- [ ] door delay/control :: update onEnter if error'ed
 
 - [ ] Rework ACL
       - [ ] Update edited card only
+      - [ ] Update 'old' card number too
       - [ ] Update affected cards only for group/door edit
-      - [ ] wrap ACL update in goroutine
       - [ ] Error handling ??
-      - (?) Only update affected cards
-      - (?) Flag cards with incorrect permissions
+      - [ ] Flag cards with incorrect permissions
       - (?) Unify CompareACL and UpdateACL into SynchACL
 
 - (?) `mode:synchronize`
@@ -36,7 +21,6 @@
 - [ ] System XXX.validate should not return HttpdError
       - (?) maybe return SysError that might contain HTTP error
 - [ ] Make vtable'able subsystem an interface
-- [ ] Replace `guard` with embedded sync.Mutex
 - [ ] Fix bottom right of scrollbar
       - [ ] Scrollbar 'goes funny' if -webkit styles are modified
   

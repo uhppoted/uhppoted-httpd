@@ -11,11 +11,11 @@ type Catalog interface {
 	ListT(schema.OID) []schema.OID
 	HasT(any, schema.OID) bool
 
-	GetV(schema.OID, schema.Suffix) interface{}
-	Put(schema.OID, interface{})
-	PutV(schema.OID, schema.Suffix, interface{})
+	GetV(schema.OID, schema.Suffix) any
+	Put(schema.OID, any)
+	PutV(schema.OID, schema.Suffix, any)
 
-	Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool)
+	Find(prefix schema.OID, suffix schema.Suffix, value any) (schema.OID, bool)
 	FindController(v CatalogController) schema.OID
 
 	GetDoorDeviceID(door schema.OID) uint32

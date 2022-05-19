@@ -284,6 +284,11 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		}
 	}
 
+	// FIXME: also update 'old' card number
+	if dbc != nil {
+		dbc.Updated(c.OID, "", c.card)
+	}
+
 	list = append(list, kv{CardStatus, c.Status()})
 
 	return c.toObjects(list, a), nil

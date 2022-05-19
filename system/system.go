@@ -248,48 +248,55 @@ func (s *system) Updated() {
 
 func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 	var controllers = s.controllers.AsIControllers()
-	var controller types.IController
-	var door uint8
 
-	switch field {
-	case schema.ControllerDateTime:
+	switch {
+	case oid.HasPrefix(schema.CardsOID):
+		if card, ok := value.(uint32); ok && card != 0 {
+			for _, c := range controllers {
+				controller := c
+				acl := getCardPermissions(controller, card)
+				fmt.Printf(">>>>>>>>>>>>>> %v CARD: %v %v\n", controller.ID(), card, acl)
+			}
+		}
+		return
+
+	case oid.HasPrefix(schema.ControllersOID) && field == schema.ControllerDateTime:
 		for _, c := range controllers {
 			if c.OID() == oid {
-				controller = c
-				break
+				controller := c
+				go func() {
+					s.interfaces.SetTime(controller, value.(time.Time))
+				}()
+				return
 			}
 		}
 
-	case schema.DoorControl,
-		schema.DoorDelay:
-	loop:
+	case oid.HasPrefix(schema.DoorsOID) && field == schema.DoorControl:
 		for _, c := range controllers {
 			for _, i := range []uint8{1, 2, 3, 4} {
 				if d, ok := c.Door(i); ok && d == oid {
-					controller = c
-					door = i
-					break loop
+					controller := c
+					door := i
+					go func() {
+						s.interfaces.SetDoorControl(controller, door, value.(core.ControlState))
+					}()
+					return
 				}
 			}
 		}
-	}
 
-	if controller != nil {
-		switch field {
-		case schema.ControllerDateTime:
-			go func() {
-				s.interfaces.SetTime(controller, value.(time.Time))
-			}()
-
-		case schema.DoorControl:
-			go func() {
-				s.interfaces.SetDoorControl(controller, door, value.(core.ControlState))
-			}()
-
-		case schema.DoorDelay:
-			go func() {
-				s.interfaces.SetDoorDelay(controller, door, value.(uint8))
-			}()
+	case oid.HasPrefix(schema.DoorsOID) && (field == schema.DoorControl || field == schema.DoorDelay):
+		for _, c := range controllers {
+			controller := c
+			for _, i := range []uint8{1, 2, 3, 4} {
+				door := i
+				if d, ok := c.Door(i); ok && d == oid {
+					go func() {
+						s.interfaces.SetDoorDelay(controller, door, value.(uint8))
+					}()
+					return
+				}
+			}
 		}
 	}
 }

@@ -428,7 +428,7 @@ func (l *LAN) setDoorControl(c types.IController, door uint8, mode core.ControlS
 			catalog.PutV(oid, DoorControlModified, false)
 		}
 
-		log.Infof("%v  set door %v mode: %vs", deviceID, door, mode)
+		log.Infof("%v  set door %v mode: %v", deviceID, door, mode)
 	}
 }
 

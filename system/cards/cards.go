@@ -26,6 +26,21 @@ func NewCards() Cards {
 	}
 }
 
+func (cc Cards) Lookup(card uint32) *Card {
+	guard.RLock()
+	defer guard.RUnlock()
+
+	if card != 0 {
+		for _, v := range cc.cards {
+			if v.card == card {
+				return v
+			}
+		}
+	}
+
+	return nil
+}
+
 func (cc *Cards) AsObjects(a *auth.Authorizator) []schema.Object {
 	guard.RLock()
 	defer guard.RUnlock()
@@ -223,18 +238,6 @@ func (cc *Cards) Sweep(retention time.Duration) {
 			}
 		}
 	}
-}
-
-func (cc *Cards) Lookup(card uint32) *Card {
-	if card != 0 {
-		for _, c := range cc.cards {
-			if c.card == card {
-				return c
-			}
-		}
-	}
-
-	return nil
 }
 
 func (cc *Cards) add(a *auth.Authorizator, c Card) (*Card, error) {

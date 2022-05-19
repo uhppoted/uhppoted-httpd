@@ -26,6 +26,22 @@ func NewGroups() Groups {
 	}
 }
 
+func (gg Groups) Doors(groups ...schema.OID) []schema.OID {
+	doors := []schema.OID{}
+
+	for _, oid := range groups {
+		if g, ok := gg.groups[oid]; ok {
+			for k, v := range g.Doors {
+				if v {
+					doors = append(doors, k)
+				}
+			}
+		}
+	}
+
+	return doors
+}
+
 func (gg *Groups) AsObjects(a *auth.Authorizator) []schema.Object {
 	guard.RLock()
 	defer guard.RUnlock()

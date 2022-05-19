@@ -1,8 +1,10 @@
 package system
 
 import (
-	"github.com/uhppoted/uhppote-core/types"
+	lib "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
+	"github.com/uhppoted/uhppoted-httpd/types"
 	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
@@ -22,6 +24,33 @@ func CompareACL() {
 	}
 }
 
+// NTS: revoke all if card is nil because card number may have changed and the old
+//      card will no longer have access
+func getCardPermissions(controller types.IController, cardID uint32) any {
+	acl := map[uint8]uint8{
+		1: 0,
+		2: 0,
+		3: 0,
+		4: 0,
+	}
+
+	if card := sys.cards.Lookup(cardID); card != nil {
+		groups := card.Groups()
+		doors := sys.groups.Doors(groups...)
+
+		for _, door := range doors {
+			for _, d := range []uint8{1, 2, 3, 4} {
+				doorID := d
+				if oid, ok := controller.Door(d); ok && oid == door {
+					acl[doorID] = 1
+				}
+			}
+		}
+	}
+
+	return acl
+}
+
 func permissions() (acl.ACL, error) {
 	cards := sys.cards.List()
 	groups := sys.groups
@@ -32,7 +61,7 @@ func permissions() (acl.ACL, error) {
 	acl := make(acl.ACL)
 	for _, b := range controllers {
 		if v := b.DeviceID; v != 0 {
-			acl[v] = map[uint32]types.Card{}
+			acl[v] = map[uint32]lib.Card{}
 		}
 	}
 
