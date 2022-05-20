@@ -6,7 +6,7 @@
 
 - [ ] Rework ACL
       - [x] Update edited card only
-      - [ ] Update 'old' card number too
+      - [x] Update 'old' card number too
       - [ ] Update affected cards only for group/door edit
       - [ ] Error handling ??
       - [ ] Flag cards with incorrect permissions

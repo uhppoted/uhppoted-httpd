@@ -190,6 +190,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 	uid := auth.UID(a)
 	list := []kv{}
+	original := c.clone()
 
 	switch {
 	case oid == c.OID.Append(CardName):
@@ -292,9 +293,12 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		}
 	}
 
-	// FIXME: also update 'old' card number
 	if dbc != nil {
 		dbc.Updated(c.OID, "", c.card)
+
+		if original.card != c.card {
+			dbc.Updated(c.OID, "", original.card)
+		}
 	}
 
 	list = append(list, kv{CardStatus, c.Status()})
