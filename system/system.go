@@ -237,13 +237,13 @@ func (s *system) refresh() {
 }
 
 func (s *system) Updated() {
-	info("Synchronizing ACL across controllers")
+	// info("Synchronizing ACL across controllers")
 
-	s.taskQ.Add(Task{
-		f: func() {
-			UpdateACL()
-		},
-	})
+	// s.taskQ.Add(Task{
+	// 	f: func() {
+	// 		UpdateACL()
+	// 	},
+	// })
 }
 
 func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
@@ -254,8 +254,9 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 		if card, ok := value.(uint32); ok && card != 0 {
 			for _, c := range controllers {
 				controller := c
-				acl := getCardPermissions(controller, card)
-				fmt.Printf(">>>>>>>>>>>>>> %v CARD: %v %v\n", controller.ID(), card, acl)
+				go func() {
+					s.updateCardPermissions(controller, card)
+				}()
 			}
 		}
 		return

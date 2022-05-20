@@ -1,6 +1,8 @@
 package system
 
 import (
+	"time"
+
 	lib "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -26,7 +28,7 @@ func CompareACL() {
 
 // NTS: revoke all if card is nil because card number may have changed and the old
 //      card will no longer have access
-func getCardPermissions(controller types.IController, cardID uint32) any {
+func (s *system) updateCardPermissions(controller types.IController, cardID uint32) {
 	acl := map[uint8]uint8{
 		1: 0,
 		2: 0,
@@ -34,9 +36,15 @@ func getCardPermissions(controller types.IController, cardID uint32) any {
 		4: 0,
 	}
 
-	if card := sys.cards.Lookup(cardID); card != nil {
+	year := time.Now().Year()
+	from := lib.ToDate(year, time.January, 1)
+	to := lib.ToDate(year, time.December, 31)
+
+	if card := s.cards.Lookup(cardID); card != nil {
+		from = card.From()
+		to = card.To()
 		groups := card.Groups()
-		doors := sys.groups.Doors(groups...)
+		doors := s.groups.Doors(groups...)
 
 		for _, door := range doors {
 			for _, d := range []uint8{1, 2, 3, 4} {
@@ -48,7 +56,7 @@ func getCardPermissions(controller types.IController, cardID uint32) any {
 		}
 	}
 
-	return acl
+	s.interfaces.SetCard(controller, cardID, from, to, acl)
 }
 
 func permissions() (acl.ACL, error) {

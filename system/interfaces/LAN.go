@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
+	lib "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-lib/acl"
@@ -24,9 +24,9 @@ import (
 type LAN struct {
 	catalog.CatalogInterface
 	Name             string
-	BindAddress      core.BindAddr
-	BroadcastAddress core.BroadcastAddr
-	ListenAddress    core.ListenAddr
+	BindAddress      lib.BindAddr
+	BroadcastAddress lib.BroadcastAddr
+	ListenAddress    lib.ListenAddr
 	Debug            bool
 
 	ch       chan types.EventsList
@@ -133,7 +133,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		}
 
 	case l.OID.Append(LANBindAddress):
-		if addr, err := core.ResolveBindAddr(value); err != nil {
+		if addr, err := lib.ResolveBindAddr(value); err != nil {
 			return nil, err
 		} else if err := f("bind", addr); err != nil {
 			return nil, err
@@ -147,7 +147,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		}
 
 	case l.OID.Append(LANBroadcastAddress):
-		if addr, err := core.ResolveBroadcastAddr(value); err != nil {
+		if addr, err := lib.ResolveBroadcastAddr(value); err != nil {
 			return nil, err
 		} else if err := f("broadcast", addr); err != nil {
 			return nil, err
@@ -161,7 +161,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		}
 
 	case l.OID.Append(LANListenAddress):
-		if addr, err := core.ResolveListenAddr(value); err != nil {
+		if addr, err := lib.ResolveListenAddr(value); err != nil {
 			return nil, err
 		} else if err = f("listen", addr); err != nil {
 			return nil, err
@@ -256,7 +256,7 @@ func (l *LAN) refresh(c types.IController) {
 		log.Warnf("Got %v response to get-device request for %v", info, deviceID)
 	} else {
 		catalog.PutV(c.OID(), ControllerTouched, time.Now())
-		catalog.PutV(c.OID(), ControllerEndpointAddress, core.Address(info.Address))
+		catalog.PutV(c.OID(), ControllerEndpointAddress, lib.Address(info.Address))
 	}
 
 	if status, err := api.UHPPOTE.GetStatus(deviceIDu); err != nil {
@@ -416,7 +416,7 @@ func (l *LAN) setDoorDelay(c types.IController, door uint8, delay uint8) {
 	}
 }
 
-func (l *LAN) setDoorControl(c types.IController, door uint8, mode core.ControlState) {
+func (l *LAN) setDoorControl(c types.IController, door uint8, mode lib.ControlState) {
 	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 
@@ -432,12 +432,37 @@ func (l *LAN) setDoorControl(c types.IController, door uint8, mode core.ControlS
 	}
 }
 
+func (l *LAN) setCard(c types.IController, cardID uint32, from, to lib.Date, permissions map[uint8]uint8) {
+	api := l.api([]types.IController{c})
+	deviceID := c.ID()
+
+	card := lib.Card{
+		CardNumber: cardID,
+		From:       &from,
+		To:         &to,
+		Doors: map[uint8]uint8{
+			1: permissions[1],
+			2: permissions[2],
+			3: permissions[3],
+			4: permissions[4],
+		},
+	}
+
+	if ok, err := api.UHPPOTE.PutCard(deviceID, card); err != nil {
+		log.Warnf("%v", err)
+	} else if !ok {
+		log.Warnf("%v", fmt.Errorf("failed to update card %v", cardID))
+	} else {
+		log.Infof("%v  set card %v", deviceID, card)
+	}
+}
+
 func (l *LAN) synchTime(c types.IController) {
 	api := l.api([]types.IController{c})
 	deviceID := uhppoted.DeviceID(c.ID())
 	location := c.TimeZone()
 	now := time.Now().In(location)
-	datetime := core.DateTime(now)
+	datetime := lib.DateTime(now)
 
 	request := uhppoted.SetTimeRequest{
 		DeviceID: deviceID,
@@ -503,7 +528,7 @@ func (l *LAN) synchDoors(c types.IController) {
 			}
 
 			if configured != nil && (actual == nil || actual != configured) && modified {
-				mode := configured.(core.ControlState)
+				mode := configured.(lib.ControlState)
 
 				if err := api.SetDoorControl(deviceID, door, mode); err != nil {
 					log.Warnf("%v", err)
@@ -644,13 +669,13 @@ func (l *LAN) api(controllers []types.IController) *uhppoted.UHPPOTED {
 
 func (l LAN) serialize() ([]byte, error) {
 	record := struct {
-		OID              schema.OID         `json:"OID"`
-		Name             string             `json:"name,omitempty"`
-		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
-		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
-		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
-		Created          types.Timestamp    `json:"created,omitempty"`
-		Modified         types.Timestamp    `json:"modified,omitempty"`
+		OID              schema.OID        `json:"OID"`
+		Name             string            `json:"name,omitempty"`
+		BindAddress      lib.BindAddr      `json:"bind-address,omitempty"`
+		BroadcastAddress lib.BroadcastAddr `json:"broadcast-address,omitempty"`
+		ListenAddress    lib.ListenAddr    `json:"listen-address,omitempty"`
+		Created          types.Timestamp   `json:"created,omitempty"`
+		Modified         types.Timestamp   `json:"modified,omitempty"`
 	}{
 		OID:              l.OID,
 		Name:             l.Name,
@@ -668,13 +693,13 @@ func (l *LAN) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID              schema.OID         `json:"OID"`
-		Name             string             `json:"name,omitempty"`
-		BindAddress      core.BindAddr      `json:"bind-address,omitempty"`
-		BroadcastAddress core.BroadcastAddr `json:"broadcast-address,omitempty"`
-		ListenAddress    core.ListenAddr    `json:"listen-address,omitempty"`
-		Created          types.Timestamp    `json:"created,omitempty"`
-		Modified         types.Timestamp    `json:"modified,omitempty"`
+		OID              schema.OID        `json:"OID"`
+		Name             string            `json:"name,omitempty"`
+		BindAddress      lib.BindAddr      `json:"bind-address,omitempty"`
+		BroadcastAddress lib.BroadcastAddr `json:"broadcast-address,omitempty"`
+		ListenAddress    lib.ListenAddr    `json:"listen-address,omitempty"`
+		Created          types.Timestamp   `json:"created,omitempty"`
+		Modified         types.Timestamp   `json:"modified,omitempty"`
 	}{
 		Created: created,
 	}

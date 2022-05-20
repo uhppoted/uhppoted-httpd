@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
+	lib "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -21,8 +21,8 @@ type Card struct {
 	catalog.CatalogCard
 	name   string
 	card   uint32
-	from   core.Date
-	to     core.Date
+	from   lib.Date
+	to     lib.Date
 	groups map[schema.OID]bool
 
 	created  types.Timestamp
@@ -52,15 +52,15 @@ func (c Card) String() string {
 	return fmt.Sprintf("%v (%v)", number, name)
 }
 
-func (c Card) AsAclCard() (core.Card, bool) {
-	from := core.Date(c.from)
-	to := core.Date(c.to)
+func (c Card) AsAclCard() (lib.Card, bool) {
+	from := lib.Date(c.from)
+	to := lib.Date(c.to)
 
-	card := core.Card{
+	card := lib.Card{
 		CardNumber: c.card,
 		From:       &from,
 		To:         &to,
-		Doors:      map[uint8]int{1: 0, 2: 0, 3: 0, 4: 0},
+		Doors:      map[uint8]uint8{1: 0, 2: 0, 3: 0, 4: 0},
 	}
 
 	return card, c.card != 0 && c.from.IsValid() && c.to.IsValid()
@@ -68,6 +68,14 @@ func (c Card) AsAclCard() (core.Card, bool) {
 
 func (c Card) CardNumber() uint32 {
 	return c.card
+}
+
+func (c Card) From() lib.Date {
+	return c.from
+}
+
+func (c Card) To() lib.Date {
+	return c.to
 }
 
 func (c Card) Groups() []schema.OID {
@@ -230,7 +238,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	case oid == c.OID.Append(CardFrom):
 		if err := f("from", value); err != nil {
 			return nil, err
-		} else if from, err := core.DateFromString(value); err != nil {
+		} else if from, err := lib.DateFromString(value); err != nil {
 			return nil, err
 		} else if !from.IsValid() {
 			return nil, fmt.Errorf("invalid 'from' date (%v)", value)
@@ -246,7 +254,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	case oid == c.OID.Append(CardTo):
 		if err := f("to", value); err != nil {
 			return nil, err
-		} else if to, err := core.DateFromString(value); err != nil {
+		} else if to, err := lib.DateFromString(value); err != nil {
 			return nil, err
 		} else if !to.IsValid() {
 			return nil, fmt.Errorf("invalid 'to' date (%v)", value)
@@ -365,8 +373,8 @@ func (c Card) serialize() ([]byte, error) {
 		OID      schema.OID      `json:"OID"`
 		Name     string          `json:"name,omitempty"`
 		Card     types.Uint32    `json:"card,omitempty"`
-		From     core.Date       `json:"from,omitempty"`
-		To       core.Date       `json:"to,omitempty"`
+		From     lib.Date        `json:"from,omitempty"`
+		To       lib.Date        `json:"to,omitempty"`
 		Groups   []schema.OID    `json:"groups"`
 		Created  types.Timestamp `json:"created,omitempty"`
 		Modified types.Timestamp `json:"modified,omitempty"`
@@ -399,8 +407,8 @@ func (c *Card) deserialize(bytes []byte) error {
 		OID      schema.OID      `json:"OID"`
 		Name     string          `json:"name,omitempty"`
 		Card     types.Uint32    `json:"card,omitempty"`
-		From     core.Date       `json:"from,omitempty"`
-		To       core.Date       `json:"to,omitempty"`
+		From     lib.Date        `json:"from,omitempty"`
+		To       lib.Date        `json:"to,omitempty"`
 		Groups   []schema.OID    `json:"groups"`
 		Created  types.Timestamp `json:"created,omitempty"`
 		Modified types.Timestamp `json:"modified,omitempty"`

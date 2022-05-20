@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
+	lib "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/log"
@@ -267,7 +267,7 @@ func (ii *Interfaces) SetTime(controller types.IController, t time.Time) {
 	}
 }
 
-func (ii *Interfaces) SetDoorControl(controller types.IController, door uint8, mode core.ControlState) {
+func (ii *Interfaces) SetDoorControl(controller types.IController, door uint8, mode lib.ControlState) {
 	if lan, ok := ii.LAN(); ok {
 		lan.setDoorControl(controller, door, mode)
 	}
@@ -276,6 +276,12 @@ func (ii *Interfaces) SetDoorControl(controller types.IController, door uint8, m
 func (ii *Interfaces) SetDoorDelay(controller types.IController, door uint8, delay uint8) {
 	if lan, ok := ii.LAN(); ok {
 		lan.setDoorDelay(controller, door, delay)
+	}
+}
+
+func (ii *Interfaces) SetCard(controller types.IController, card uint32, from, to lib.Date, permissions map[uint8]uint8) {
+	if lan, ok := ii.LAN(); ok {
+		lan.setCard(controller, card, from, to, permissions)
 	}
 }
 

@@ -5,7 +5,7 @@
 - [ ] door delay/control :: update onEnter if error'ed
 
 - [ ] Rework ACL
-      - [ ] Update edited card only
+      - [x] Update edited card only
       - [ ] Update 'old' card number too
       - [ ] Update affected cards only for group/door edit
       - [ ] Error handling ??
