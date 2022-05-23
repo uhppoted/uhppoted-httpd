@@ -46,12 +46,12 @@ type Local struct {
 	logins   sessions
 	sessions sessions
 
-	guard sync.RWMutex
+	sync.RWMutex
 }
 
 type sessions struct {
-	list  map[uuid.UUID]time.Time
-	guard sync.Mutex
+	list map[uuid.UUID]time.Time
+	sync.Mutex
 }
 
 type salt []byte
@@ -145,8 +145,8 @@ func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, er
 }
 
 func (p *Local) Preauthenticate() (string, error) {
-	p.guard.RLock()
-	defer p.guard.RUnlock()
+	p.RLock()
+	defer p.RUnlock()
 
 	secret := p.keys[0]
 	expiry := p.loginExpiry
@@ -194,8 +194,8 @@ func (p *Local) Preauthenticate() (string, error) {
 }
 
 func (p *Local) Authenticate(uid, pwd string) (string, error) {
-	p.guard.RLock()
-	defer p.guard.RUnlock()
+	p.RLock()
+	defer p.RUnlock()
 
 	secret := p.keys[0]
 	expiry := p.sessionExpiry
@@ -388,8 +388,8 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 		return claims.Session.LoggedInAs, claims.Session.Role, "", nil
 	}
 
-	p.guard.RLock()
-	defer p.guard.RUnlock()
+	p.RLock()
+	defer p.RUnlock()
 	secret := p.keys[0]
 
 	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
@@ -427,8 +427,8 @@ func (p *Local) deserialize(r io.Reader) error {
 }
 
 func (p *Local) getToken(cookie string) (*jwt.Token, int, error) {
-	p.guard.RLock()
-	defer p.guard.RUnlock()
+	p.RLock()
+	defer p.RUnlock()
 
 	secrets := p.keys
 	for ix, secret := range secrets {
@@ -461,8 +461,8 @@ func (p *Local) getToken(cookie string) (*jwt.Token, int, error) {
 }
 
 func (p *Local) regenerate() {
-	p.guard.Lock()
-	defer p.guard.Unlock()
+	p.Lock()
+	defer p.Unlock()
 
 	key, err := genKey()
 	if err != nil {
@@ -512,7 +512,7 @@ func (p *Local) sweep() {
 	cutoff := time.Now().Add(-2 * constants.IDLETIME)
 
 	for _, c := range caches {
-		c.cache.guard.Lock()
+		c.cache.Lock()
 
 		list := []uuid.UUID{}
 		for k, touched := range c.cache.list {
@@ -526,7 +526,7 @@ func (p *Local) sweep() {
 			log.Printf(c.format, "INFO", k)
 		}
 
-		c.cache.guard.Unlock()
+		c.cache.Unlock()
 	}
 }
 
@@ -541,8 +541,8 @@ func genKey() ([]byte, error) {
 }
 
 func (ss *sessions) touched(uuid uuid.UUID) {
-	ss.guard.Lock()
-	defer ss.guard.Unlock()
+	ss.Lock()
+	defer ss.Unlock()
 
 	ss.list[uuid] = time.Now()
 }
@@ -550,8 +550,8 @@ func (ss *sessions) touched(uuid uuid.UUID) {
 func (ss *sessions) extant(uuid uuid.UUID) error {
 	cutoff := time.Now().Add(-constants.IDLETIME)
 
-	ss.guard.Lock()
-	defer ss.guard.Unlock()
+	ss.Lock()
+	defer ss.Unlock()
 
 	if touched, ok := ss.list[uuid]; !ok {
 		return fmt.Errorf("No extant session for ID '%v'", uuid)
@@ -563,8 +563,8 @@ func (ss *sessions) extant(uuid uuid.UUID) error {
 }
 
 func (ss *sessions) delete(uuid uuid.UUID) {
-	ss.guard.Lock()
-	defer ss.guard.Unlock()
+	ss.Lock()
+	defer ss.Unlock()
 
 	delete(ss.list, uuid)
 }

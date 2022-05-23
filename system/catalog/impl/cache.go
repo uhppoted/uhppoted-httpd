@@ -12,14 +12,14 @@ type value interface{}
 
 var cache = struct {
 	cache map[schema.OID]value
-	guard sync.RWMutex
+	sync.RWMutex
 }{
 	cache: map[schema.OID]value{},
 }
 
 func Get(oid schema.OID) interface{} {
-	cache.guard.RLock()
-	defer cache.guard.RUnlock()
+	cache.RLock()
+	defer cache.RUnlock()
 
 	if v, ok := cache.cache[oid]; ok {
 		return v
@@ -29,8 +29,8 @@ func Get(oid schema.OID) interface{} {
 }
 
 func (cc *db) GetV(oid schema.OID, suffix schema.Suffix) interface{} {
-	cache.guard.RLock()
-	defer cache.guard.RUnlock()
+	cache.RLock()
+	defer cache.RUnlock()
 
 	if v, ok := cache.cache[oid.Append(suffix)]; ok {
 		return v
@@ -40,23 +40,23 @@ func (cc *db) GetV(oid schema.OID, suffix schema.Suffix) interface{} {
 }
 
 func (cc *db) Put(oid schema.OID, v interface{}) {
-	cache.guard.Lock()
-	defer cache.guard.Unlock()
+	cache.Lock()
+	defer cache.Unlock()
 
 	cache.cache[oid] = v
 }
 
 func (cc *db) PutV(oid schema.OID, suffix schema.Suffix, v interface{}) {
-	cache.guard.Lock()
-	defer cache.guard.Unlock()
+	cache.Lock()
+	defer cache.Unlock()
 
 	cache.cache[oid.Append(suffix)] = v
 }
 
 func PutL(objects []schema.Object) {
 	if objects != nil && len(objects) > 0 {
-		cache.guard.Lock()
-		defer cache.guard.Unlock()
+		cache.Lock()
+		defer cache.Unlock()
 
 		for _, o := range objects {
 			cache.cache[o.OID] = o.Value
@@ -65,8 +65,8 @@ func PutL(objects []schema.Object) {
 }
 
 func (cc *db) Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool) {
-	cache.guard.RLock()
-	defer cache.guard.RUnlock()
+	cache.RLock()
+	defer cache.RUnlock()
 
 	s := fmt.Sprintf("%v", value)
 

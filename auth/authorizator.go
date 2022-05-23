@@ -51,7 +51,7 @@ type ruleset struct {
 
 var grules = struct {
 	ruleset map[RuleSet]ruleset
-	guard   sync.RWMutex
+	sync.RWMutex
 }{
 	ruleset: map[RuleSet]ruleset{},
 }
@@ -60,8 +60,8 @@ var grules = struct {
 var GRULES embed.FS
 
 func Init(rules map[RuleSet]string) error {
-	grules.guard.Lock()
-	defer grules.guard.Unlock()
+	grules.Lock()
+	defer grules.Unlock()
 
 	// ... initialise from embedded grules files
 	var touched time.Time
@@ -301,9 +301,9 @@ func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]
 }
 
 func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
-	grules.guard.RLock()
+	grules.RLock()
 	v, ok := grules.ruleset[r]
-	grules.guard.RUnlock()
+	grules.RUnlock()
 
 	if !ok || (v.kb == nil && v.file == "") {
 		return nil, fmt.Errorf("No rules knowledgebase for ruleset '%v'", r)
@@ -331,8 +331,8 @@ func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
 		return nil, fmt.Errorf("Error loading %v auth ruleset (%v)", tag, err)
 	}
 
-	grules.guard.Lock()
-	defer grules.guard.Unlock()
+	grules.Lock()
+	defer grules.Unlock()
 
 	grules.ruleset[r] = ruleset{
 		kb:      kb,

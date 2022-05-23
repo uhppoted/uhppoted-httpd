@@ -24,7 +24,7 @@ type Basic struct {
 	auth         auth.IAuthenticate
 	cookieMaxAge int
 	resources    []resource
-	guard        sync.RWMutex
+	sync.RWMutex
 }
 
 type resource struct {
@@ -130,8 +130,8 @@ func (b *Basic) Logout(cookie *http.Cookie) {
 }
 
 func (b *Basic) Authorised(uid, role, path string) error {
-	b.guard.RLock()
-	defer b.guard.RUnlock()
+	b.RLock()
+	defer b.RUnlock()
 
 	for _, r := range b.resources {
 		if r.Path.MatchString(path) && r.Authorised.MatchString(role) {
@@ -169,9 +169,9 @@ func (b *Basic) deserialize(r io.Reader) error {
 		return err
 	}
 
-	b.guard.Lock()
+	b.Lock()
 	b.resources = serializable.Resources
-	b.guard.Unlock()
+	b.Unlock()
 
 	return nil
 }

@@ -17,7 +17,7 @@ type db struct {
 	events      Table
 	logs        Table
 	users       Table
-	guard       sync.RWMutex
+	sync.RWMutex
 }
 
 func NewCatalog() *db {
@@ -69,8 +69,8 @@ func (cc *db) NewT(v any) schema.OID {
 		panic(fmt.Sprintf("Unsupported catalog type (%T)", v))
 	}
 
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
+	cc.Lock()
+	defer cc.Unlock()
 
 	return tt.New(v)
 }
@@ -81,8 +81,8 @@ func (cc *db) PutT(v any, oid schema.OID) {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	}
 
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
+	cc.Lock()
+	defer cc.Unlock()
 
 	tt.Put(oid, v)
 }
@@ -93,15 +93,15 @@ func (cc *db) DeleteT(v any, oid schema.OID) {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	}
 
-	cc.guard.Lock()
-	defer cc.guard.Unlock()
+	cc.Lock()
+	defer cc.Unlock()
 
 	tt.Delete(oid)
 }
 
 func (cc *db) ListT(oid schema.OID) []schema.OID {
-	cc.guard.RLock()
-	defer cc.guard.RUnlock()
+	cc.RLock()
+	defer cc.RUnlock()
 
 	if tt := tableFor(cc, oid); tt != nil {
 		return tt.List()
@@ -116,15 +116,15 @@ func (cc *db) HasT(v any, oid schema.OID) bool {
 		panic(fmt.Sprintf("Unsupported catalog type: %T", v))
 	}
 
-	cc.guard.RLock()
-	defer cc.guard.RUnlock()
+	cc.RLock()
+	defer cc.RUnlock()
 
 	return tt.Has(v, oid)
 }
 
 func (cc *db) FindController(v catalog.CatalogController) schema.OID {
-	cc.guard.RLock()
-	defer cc.guard.RUnlock()
+	cc.RLock()
+	defer cc.RUnlock()
 
 	if t, ok := cc.controllers.(*controllers); ok {
 		return t.Find(v)

@@ -1,7 +1,6 @@
 ## v0.7.x
 
-
-- [ ] Replace `guard` with embedded sync.Mutex
+- [x] Replace `guard` with embedded sync.Mutex
 - [ ] <sigh> date/time flag is sometimes not going away
 - [ ] door delay/control :: update onEnter if error'ed
 - [ ] CSS triangle-top-left
