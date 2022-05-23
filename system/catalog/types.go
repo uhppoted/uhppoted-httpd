@@ -72,7 +72,8 @@ func (t CatalogDoor) oid() schema.OID {
 }
 
 type CatalogCard struct {
-	OID schema.OID
+	OID    schema.OID
+	CardID uint32
 }
 
 func (t CatalogCard) TypeOf() Type {

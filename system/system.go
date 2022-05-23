@@ -276,7 +276,7 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 			for _, c := range controllers {
 				controller := c
 				go func() {
-					s.updateCardPermissions(controller, card.CardNumber())
+					s.updateCardPermissions(controller, card.CardID)
 				}()
 			}
 		}

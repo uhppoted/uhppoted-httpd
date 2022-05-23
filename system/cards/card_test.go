@@ -26,10 +26,10 @@ func TestCardAsObjects(t *testing.T) {
 
 	c := Card{
 		CatalogCard: catalog.CatalogCard{
-			OID: "0.4.3",
+			OID:    "0.4.3",
+			CardID: 8165537,
 		},
 		name:    "Le Card",
-		card:    8165537,
 		from:    from,
 		to:      to,
 		created: created,
@@ -61,10 +61,10 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 
 	c := Card{
 		CatalogCard: catalog.CatalogCard{
-			OID: "0.4.3",
+			OID:    "0.4.3",
+			CardID: 8165537,
 		},
 		name:    "Le Card",
-		card:    8165537,
 		from:    from,
 		to:      to,
 		created: created,
@@ -89,10 +89,10 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 
 	c := Card{
 		CatalogCard: catalog.CatalogCard{
-			OID: "0.4.3",
+			OID:    "0.4.3",
+			CardID: 8165537,
 		},
 		name:    "Le Card",
-		card:    8165537,
 		from:    from,
 		to:      to,
 		created: created,

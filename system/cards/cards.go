@@ -32,7 +32,7 @@ func (cc Cards) Lookup(card uint32) *Card {
 
 	if card != 0 {
 		for _, v := range cc.cards {
-			if v.card == card {
+			if v.CardID == card {
 				return v
 			}
 		}
@@ -128,7 +128,7 @@ func (cc *Cards) Load(blob json.RawMessage) error {
 		var c Card
 		if err := c.deserialize(v); err == nil {
 			if _, ok := cc.cards[c.OID]; ok {
-				return fmt.Errorf("card '%v': duplicate OID (%v)", c.card, c.OID)
+				return fmt.Errorf("card '%v': duplicate OID (%v)", c.CardID, c.OID)
 			}
 
 			cc.cards[c.OID] = &c
@@ -137,7 +137,7 @@ func (cc *Cards) Load(blob json.RawMessage) error {
 
 	for _, c := range cc.cards {
 		catalog.PutT(c.CatalogCard)
-		catalog.PutV(c.OID, CardNumber, c.card)
+		catalog.PutV(c.OID, CardNumber, c.CardID)
 		catalog.PutV(c.OID, CardName, c.name)
 	}
 
@@ -198,16 +198,16 @@ func (cc Cards) Validate() error {
 			}
 		}
 
-		if c.card != 0 {
-			if id, ok := cards[c.card]; ok {
+		if c.CardID != 0 {
+			if id, ok := cards[c.CardID]; ok {
 				return &types.HttpdError{
 					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Duplicate card number (%v)", c.card),
-					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", c.card, id, c.OID),
+					Err:    fmt.Errorf("Duplicate card number (%v)", c.CardID),
+					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", c.CardID, id, c.OID),
 				}
 			}
 
-			cards[c.card] = string(c.OID)
+			cards[c.CardID] = string(c.OID)
 		}
 	}
 

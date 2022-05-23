@@ -137,7 +137,7 @@ func permissions() (acl.ACL, error) {
 	}
 
 	for _, c := range cards {
-		card := c.CardNumber()
+		card := c.CardID
 		membership := c.Groups()
 		for _, g := range membership {
 			if group, ok := groups.Group(g); ok {
@@ -157,7 +157,7 @@ func permissions() (acl.ACL, error) {
 
 	if sys.rules != nil {
 		for _, c := range cards {
-			card := c.CardNumber()
+			card := c.CardID
 			allowed, forbidden, err := sys.rules.Eval(c, sys.doors)
 			if err != nil {
 				return nil, err

@@ -85,10 +85,10 @@ func group(id string) types.Group {
 func makeCard(oid schema.OID, name string, card uint32, groups ...string) Card {
 	cardholder := Card{
 		CatalogCard: catalog.CatalogCard{
-			OID: oid,
+			OID:    oid,
+			CardID: card,
 		},
 		name:   name,
-		card:   card,
 		from:   date("2021-01-02"),
 		to:     date("2021-12-30"),
 		groups: map[schema.OID]bool{},

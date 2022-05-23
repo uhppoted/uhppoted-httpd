@@ -402,7 +402,7 @@ func TestCardDelete(t *testing.T) {
 	}
 
 	if !cards.cards[dobby.OID].IsDeleted() {
-		t.Errorf("Failed to mark card %v as 'deleted'", dobby.card)
+		t.Errorf("Failed to mark card %v as 'deleted'", dobby.CardID)
 	}
 }
 
@@ -471,10 +471,10 @@ func TestValidateWithInvalidCard(t *testing.T) {
 		cards: map[schema.OID]*Card{
 			"0.4.3": &Card{
 				CatalogCard: catalog.CatalogCard{
-					OID: "0.4.3",
+					OID:    "0.4.3",
+					CardID: 0,
 				},
 				name:     "",
-				card:     0,
 				created:  types.TimestampNow(),
 				modified: types.TimestampNow(),
 			},
@@ -491,10 +491,10 @@ func TestValidateWithNewCard(t *testing.T) {
 		cards: map[schema.OID]*Card{
 			"0.4.3": &Card{
 				CatalogCard: catalog.CatalogCard{
-					OID: "0.4.3",
+					OID:    "0.4.3",
+					CardID: 0,
 				},
 				name:    "",
-				card:    0,
 				created: types.TimestampNow(),
 			},
 		},
