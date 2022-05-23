@@ -31,6 +31,23 @@ func NewDoors() Doors {
 	}
 }
 
+func (dd *Doors) ByName(name string) (Door, bool) {
+	clean := func(s string) string {
+		return strings.ToLower(regexp.MustCompile(`\s+`).ReplaceAllString(s, ""))
+	}
+
+	for _, d := range dd.doors {
+		p := clean(d.name)
+		q := clean(name)
+
+		if p == q {
+			return d, true
+		}
+	}
+
+	return Door{}, false
+}
+
 func (dd *Doors) Door(oid schema.OID) (Door, bool) {
 	d, ok := dd.doors[oid]
 
@@ -106,23 +123,6 @@ func (dd *Doors) Sweep(retention time.Duration) {
 			}
 		}
 	}
-}
-
-func (dd *Doors) ByName(name string) (Door, bool) {
-	clean := func(s string) string {
-		return strings.ToLower(regexp.MustCompile(`\s+`).ReplaceAllString(s, ""))
-	}
-
-	for _, d := range dd.doors {
-		p := clean(d.name)
-		q := clean(name)
-
-		if p == q {
-			return d, false
-		}
-	}
-
-	return Door{}, false
 }
 
 func (dd Doors) Print() {

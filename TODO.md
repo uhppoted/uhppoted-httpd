@@ -1,16 +1,20 @@
 ## v0.7.x
 
+
 - [ ] Replace `guard` with embedded sync.Mutex
 - [ ] <sigh> date/time flag is sometimes not going away
 - [ ] door delay/control :: update onEnter if error'ed
+- [ ] CSS triangle-top-left
+      https://css-tricks.com/the-shapes-of-css/
 
 - [ ] Rework ACL
       - [x] Update edited card only
       - [x] Update 'old' card number too
+      - [x] Apply grules
       - [ ] Update affected cards only for group/door edit
-      - [ ] Error handling ??
       - [ ] Flag cards with incorrect permissions
-      - (?) Unify CompareACL and UpdateACL into SynchACL
+      - [ ] OnEnter handling for cards with incorrect permissions
+      - [ ] 'synchronize ACL' option on admin menu
 
 - (?) `mode:synchronize`
 

@@ -43,6 +43,8 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 	if card := s.cards.Lookup(cardID); card != nil {
 		from = card.From()
 		to = card.To()
+
+		// ... get base permissions from groups
 		groups := card.Groups()
 		doors := s.groups.Doors(groups...)
 
@@ -51,6 +53,33 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 				doorID := d
 				if oid, ok := controller.Door(d); ok && oid == door {
 					acl[doorID] = 1
+				}
+			}
+		}
+
+		// ... updated base permissions with grules
+		if sys.rules != nil {
+			allowed, forbidden, err := sys.rules.Eval(*card, sys.doors)
+			if err != nil {
+				warn(err)
+				return
+			}
+
+			for _, door := range allowed {
+				for _, d := range []uint8{1, 2, 3, 4} {
+					doorID := d
+					if oid, ok := controller.Door(d); ok && oid == door.OID {
+						acl[doorID] = 1
+					}
+				}
+			}
+
+			for _, door := range forbidden {
+				for _, d := range []uint8{1, 2, 3, 4} {
+					doorID := d
+					if oid, ok := controller.Door(d); ok && oid == door.OID {
+						acl[doorID] = 0
+					}
 				}
 			}
 		}
