@@ -137,6 +137,7 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 	}
 
 	uid := auth.UID(a)
+	original := g.clone()
 	list := []kv{}
 
 	switch {
@@ -144,11 +145,12 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 		if err := f("name", value); err != nil {
 			return nil, err
 		} else {
-			g.log(dbc, uid, "update", "name", g.Name, value, "Updated name from %v to %v", g.Name, value)
 			g.Name = value
 			g.modified = types.TimestampNow()
 
 			list = append(list, kv{GroupName, g.Name})
+
+			g.log(dbc, uid, "update", "name", g.Name, value, "Updated name from %v to %v", original.Name, g.Name)
 		}
 
 	case schema.OID(g.OID.Append(GroupDoors)).Contains(oid):
@@ -172,6 +174,10 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 				list = append(list, kv{GroupDoors.Append(did), g.Doors[k]})
 			}
 		}
+	}
+
+	if dbc != nil {
+		dbc.Updated(g.OID, "", g.Doors)
 	}
 
 	list = append(list, kv{GroupStatus, g.Status()})

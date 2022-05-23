@@ -189,8 +189,8 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	}
 
 	uid := auth.UID(a)
-	list := []kv{}
 	original := c.clone()
+	list := []kv{}
 
 	switch {
 	case oid == c.OID.Append(CardName):

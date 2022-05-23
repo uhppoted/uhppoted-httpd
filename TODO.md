@@ -11,10 +11,12 @@
       - [x] Update edited card only
       - [x] Update 'old' card number too
       - [x] Apply grules
-      - [ ] Update affected cards only for group/door edit
+      - [x] Update affected cards only for group/door edit
+      - [ ] Move card ID to catalog.Card and remove card.CardNumber()
       - [ ] Flag cards with incorrect permissions
       - [ ] OnEnter handling for cards with incorrect permissions
       - [ ] 'synchronize ACL' option on admin menu
+      - [ ] DBC should not be a pointer for controller.set, etc
 
 - (?) `mode:synchronize`
 

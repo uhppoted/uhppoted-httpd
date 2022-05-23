@@ -261,6 +261,28 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 		}
 		return
 
+	case oid.HasPrefix(schema.GroupsOID):
+		list := map[schema.OID]cards.Card{}
+		for _, c := range s.cards.List() {
+			card := c
+			for _, g := range c.Groups() {
+				if g == oid {
+					list[c.OID] = card
+				}
+			}
+		}
+
+		for _, card := range list {
+			for _, c := range controllers {
+				controller := c
+				go func() {
+					s.updateCardPermissions(controller, card.CardNumber())
+				}()
+			}
+		}
+
+		return
+
 	case oid.HasPrefix(schema.ControllersOID) && field == schema.ControllerDateTime:
 		for _, c := range controllers {
 			if c.OID() == oid {
