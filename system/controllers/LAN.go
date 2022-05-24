@@ -11,17 +11,6 @@ type LAN struct {
 	lan        interfaces.LAN
 }
 
-func (l *LAN) compare(controllers []*Controller, permissions acl.ACL) error {
-	devices := []types.IController{}
-	for _, c := range controllers {
-		if c.realized() {
-			devices = append(devices, c.AsIController())
-		}
-	}
-
-	return l.lan.CompareACL(devices, permissions)
-}
-
 func (l *LAN) update(controllers []*Controller, permissions acl.ACL) error {
 	devices := []types.IController{}
 	for _, c := range controllers {

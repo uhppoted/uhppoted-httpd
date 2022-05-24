@@ -231,19 +231,9 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			CompareACL()
+			s.compareACL(controllers)
 		},
 	})
-}
-
-func (s *system) Updated() {
-	// info("Synchronizing ACL across controllers")
-
-	// s.taskQ.Add(Task{
-	// 	f: func() {
-	// 		UpdateACL()
-	// 	},
-	// })
 }
 
 func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
@@ -459,4 +449,12 @@ func info(msg string) {
 
 func warn(err error) {
 	log.Printf("ERROR %v", err)
+}
+
+func infof(format string, args ...any) {
+	log.Printf("%-5v %v", "INFO", fmt.Sprintf(format, args...))
+}
+
+func warnf(format string, args ...any) {
+	log.Printf("%-5v %v", "WARN", fmt.Sprintf(format, args...))
 }

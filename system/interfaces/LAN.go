@@ -557,7 +557,7 @@ func (l *LAN) synchEventListener(c types.IController) {
 	}
 }
 
-func (l *LAN) CompareACL(controllers []types.IController, permissions acl.ACL) error {
+func (l *LAN) compareACL(controllers []types.IController, permissions acl.ACL) (map[uint32]acl.Diff, error) {
 	log.Debugf("%v", "Comparing ACL")
 
 	devices := []uhppote.Device{}
@@ -574,9 +574,9 @@ func (l *LAN) CompareACL(controllers []types.IController, permissions acl.ACL) e
 
 	compare, err := acl.Compare(permissions, current)
 	if err != nil {
-		return err
+		return nil, err
 	} else if compare == nil {
-		return fmt.Errorf("Invalid ACL compare report: %v", compare)
+		return nil, fmt.Errorf("Invalid ACL compare report: %v", compare)
 	}
 
 	for k, v := range compare {
@@ -586,7 +586,7 @@ func (l *LAN) CompareACL(controllers []types.IController, permissions acl.ACL) e
 	diff := acl.SystemDiff(compare)
 	report := diff.Consolidate()
 	if report == nil {
-		return fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
+		return nil, fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
 	}
 
 	unchanged := len(report.Unchanged)
@@ -610,7 +610,7 @@ func (l *LAN) CompareACL(controllers []types.IController, permissions acl.ACL) e
 		}
 	}
 
-	return nil
+	return compare, nil
 }
 
 func (l *LAN) UpdateACL(controllers []types.IController, permissions acl.ACL) error {
@@ -647,7 +647,9 @@ func (l *LAN) api(controllers []types.IController) *uhppoted.UHPPOTED {
 		addr := v.EndPoint()
 		tz := v.TimeZone()
 
-		if id > 0 && addr != nil {
+		// NTS: allow 'found' controllers
+		// if id > 0 && addr != nil {
+		if id > 0 {
 			devices = append(devices, uhppote.Device{
 				Name:     name,
 				DeviceID: id,

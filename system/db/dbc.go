@@ -19,7 +19,6 @@ type DBC interface {
 
 type System interface {
 	Update(oid schema.OID, field schema.Suffix, value any)
-	Updated()
 }
 
 type dbc struct {
@@ -93,8 +92,6 @@ func (d *dbc) Commit(sys System, hook func()) {
 	for _, v := range d.updated {
 		sys.Update(v.object, v.field, v.value)
 	}
-
-	sys.Updated()
 }
 
 func (d *dbc) Log(uid, operation string, OID schema.OID, component string, ID, name any, field string, before, after any, format string, fields ...any) {

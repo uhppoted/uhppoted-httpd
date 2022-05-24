@@ -244,21 +244,6 @@ func (cc *Controllers) Clone() Controllers {
 	return shadow
 }
 
-func (cc *Controllers) CompareACL(i interfaces.Interfaces, permissions acl.ACL) error {
-	var lan LAN
-
-	if v, ok := i.LAN(); !ok {
-		return fmt.Errorf("No active LAN subsystem")
-	} else {
-		lan = LAN{
-			interfaces: i,
-			lan:        v,
-		}
-	}
-
-	return lan.compare(cc.controllers, permissions)
-}
-
 func (cc *Controllers) UpdateACL(i interfaces.Interfaces, permissions acl.ACL) error {
 	var lan LAN
 

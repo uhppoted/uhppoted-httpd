@@ -8,6 +8,7 @@ import (
 	"time"
 
 	lib "github.com/uhppoted/uhppote-core/types"
+	"github.com/uhppoted/uhppoted-lib/acl"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/log"
@@ -283,6 +284,14 @@ func (ii *Interfaces) SetCard(controller types.IController, card uint32, from, t
 	if lan, ok := ii.LAN(); ok {
 		lan.setCard(controller, card, from, to, permissions)
 	}
+}
+
+func (ii *Interfaces) CompareACL(controllers []types.IController, permissions acl.ACL) (map[uint32]acl.Diff, error) {
+	if lan, ok := ii.LAN(); ok {
+		return lan.compareACL(controllers, permissions)
+	}
+
+	return nil, nil
 }
 
 func (ii *Interfaces) SynchTime(controllers []types.IController) {

@@ -454,6 +454,10 @@ div.tabular table tbody td.rowheader {
   z-index: 2;
 }
 
+div.tabular table tbody tr[data-status=error] {
+  background: #eb8886;
+}
+
 div.tabular table tbody tr:nth-child(odd) td.rowheader {
   background: #00171d;
 }
@@ -464,6 +468,10 @@ div.tabular table tbody tr:nth-child(even) td.rowheader {
 
 div.tabular table tbody tr.modified td.rowheader {
   background: #124466;
+}
+
+div.tabular table tbody tr[data-status=error] td.rowheader {
+  background: #eb8886;
 }
 
 div.tabular table tbody tr.new td.rowheader {

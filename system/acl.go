@@ -10,21 +10,46 @@ import (
 	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
-func UpdateACL() {
-	if acl, err := permissions(); err != nil {
-		warn(err)
+func (s *system) compareACL(controllers []types.IController) {
+	if acl, err := permissions(controllers); err != nil {
+		warnf("%v", err)
+	} else if diff, err := s.interfaces.CompareACL(controllers, acl); err != nil {
+		warnf("%v", err)
+	} else if diff == nil {
+		warnf("Invalid ACL diff (%v)", diff)
 	} else {
-		sys.controllers.UpdateACL(sys.interfaces, acl)
+		cards := map[uint32]struct{}{}
+
+		for _, v := range diff {
+			for _, v := range v.Updated {
+				cards[v.CardNumber] = struct{}{}
+			}
+
+			for _, v := range v.Added {
+				cards[v.CardNumber] = struct{}{}
+			}
+
+			for _, v := range v.Deleted {
+				cards[v.CardNumber] = struct{}{}
+			}
+		}
+
+		list := []uint32{}
+		for k, _ := range cards {
+			list = append(list, k)
+		}
+
+		sys.cards.MarkIncorrect(list)
 	}
 }
 
-func CompareACL() {
-	if acl, err := permissions(); err != nil {
-		warn(err)
-	} else if err := sys.controllers.CompareACL(sys.interfaces, acl); err != nil {
-		warn(err)
-	}
-}
+// func UpdateACL() {
+// 	if acl, err := permissions(); err != nil {
+// 		warn(err)
+// 	} else {
+// 		sys.controllers.UpdateACL(sys.interfaces, acl)
+// 	}
+// }
 
 // NTS: revoke all if card is nil because card number may have changed and the old
 //      card will no longer have access
@@ -88,16 +113,15 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 	s.interfaces.SetCard(controller, cardID, from, to, acl)
 }
 
-func permissions() (acl.ACL, error) {
+func permissions(controllers []types.IController) (acl.ACL, error) {
 	cards := sys.cards.List()
 	groups := sys.groups
 	doors := sys.doors
-	controllers := sys.controllers.List()
 
 	// initialise empty ACL
 	acl := make(acl.ACL)
 	for _, b := range controllers {
-		if v := b.DeviceID; v != 0 {
+		if v := b.ID(); v != 0 {
 			acl[v] = map[uint32]lib.Card{}
 		}
 	}

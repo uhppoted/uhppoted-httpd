@@ -19,15 +19,15 @@ import (
 
 type Card struct {
 	catalog.CatalogCard
-	name string
-	// card   uint32
+	name   string
 	from   lib.Date
 	to     lib.Date
 	groups map[schema.OID]bool
 
-	created  types.Timestamp
-	modified types.Timestamp
-	deleted  types.Timestamp
+	incorrect bool
+	created   types.Timestamp
+	modified  types.Timestamp
+	deleted   types.Timestamp
 }
 
 type kv = struct {
@@ -293,6 +293,8 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		}
 	}
 
+	c.incorrect = false
+
 	if dbc != nil {
 		dbc.Updated(c.OID, "", c.CardID)
 
@@ -367,6 +369,8 @@ func (c *Card) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 func (c *Card) Status() types.Status {
 	if c.IsDeleted() {
 		return types.StatusDeleted
+	} else if c.incorrect {
+		return types.StatusError
 	}
 
 	return types.StatusOk
@@ -458,9 +462,10 @@ func (c *Card) clone() *Card {
 		to:     c.to,
 		groups: groups,
 
-		created:  c.created,
-		modified: c.modified,
-		deleted:  c.deleted,
+		incorrect: c.incorrect,
+		created:   c.created,
+		modified:  c.modified,
+		deleted:   c.deleted,
 	}
 
 	return replicant

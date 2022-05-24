@@ -118,6 +118,26 @@ func (cc *Cards) List() []Card {
 	return list
 }
 
+func (cc *Cards) MarkIncorrect(list []uint32) {
+	if cc != nil {
+	loop:
+		for _, card := range cc.cards {
+			for _, c := range list {
+				if c == card.CardID {
+					card.incorrect = true
+					continue loop
+				}
+			}
+
+			card.incorrect = false
+		}
+
+		for _, c := range cc.cards {
+			catalog.PutV(c.OID, CardStatus, c.Status())
+		}
+	}
+}
+
 func (cc *Cards) Load(blob json.RawMessage) error {
 	rs := []json.RawMessage{}
 	if err := json.Unmarshal(blob, &rs); err != nil {

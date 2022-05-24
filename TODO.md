@@ -1,22 +1,18 @@
 ## v0.7.x
 
-- [x] Replace `guard` with embedded sync.Mutex
-- [ ] <sigh> date/time flag is sometimes not going away
 - [ ] door delay/control :: update onEnter if error'ed
-- [ ] CSS triangle-top-left
-      https://css-tricks.com/the-shapes-of-css/
 
 - [ ] Rework ACL
-      - [x] Update edited card only
-      - [x] Update 'old' card number too
-      - [x] Apply grules
-      - [x] Update affected cards only for group/door edit
-      - [x] Move card ID to catalog.Card and remove card.CardNumber()
-      - [ ] Flag cards with incorrect permissions
+      - [x] Flag cards with incorrect permissions
       - [ ] OnEnter handling for cards with incorrect permissions
-      - (?) DBC should not be a pointer for controller.set, etc
-      - [ ] 'synchronize ACL' option on admin menu
+      - [ ] 'synchronize ACL' admin menu option
 
+- (?) Maybe DBC should not be an interface ?
+      - having to check for nil everywhere
+      - make it a struct with an internal implementation ?
+
+- [ ] 'synchronize date/time' admin menu option
+- [ ] 'synchronize doors' admin menu option
 - (?) `mode:synchronize`
 
 - [ ] Rework `create`
@@ -28,6 +24,9 @@
 - [ ] Make vtable'able subsystem an interface
 - [ ] Fix bottom right of scrollbar
       - [ ] Scrollbar 'goes funny' if -webkit styles are modified
+- [ ] <sigh> date/time flag is sometimes not going away
+- [ ] CSS triangle-top-left
+      https://css-tricks.com/the-shapes-of-css/
   
 ### IN PROGRESS
 
