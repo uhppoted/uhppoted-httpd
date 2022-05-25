@@ -157,7 +157,6 @@ function add (oid) {
 }
 
 function updateFromDB (oid, record) {
-  console.log(record)
   const row = document.querySelector("div#events tr[data-oid='" + oid + "']")
 
   const timestamp = row.querySelector(`[data-oid="${oid}${schema.events.timestamp}"]`)

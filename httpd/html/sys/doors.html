@@ -59,7 +59,7 @@
                          data-record="" 
                          data-original="" 
                          data-value=""
-                         {{ .readonly }} />
+                         {{if eq .readonly "readonly"}}readonly{{end}}  />
                   <span class="control commit"   onclick="onCommit('door', event)"   data-record="">
                     <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                   </span>
@@ -104,11 +104,32 @@
                          data-value="" 
                          readonly />
                 </td>
+
+                <td class="combobox">
+                  <input class="field mode"
+                         type="text" 
+                         value=""
+                         placeholder="-"
+                         autocomplete="off" 
+                         onchange="onEdited('door', event)"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         data-status=""
+                         {{if eq .readonly "readonly"}}disabled{{end}}  
+                         {{ .readonly }} />
+                  <ul style="position:fixed; left:0px; top:0px; z-index:2; width:fit-content; max-height:120px; overflow:auto;"/>
+                  <div class="tooltip-content">
+                    <p></p>
+                  </div> 
+                </td>
+<!--
                 <td class="tooltip-wrap">
                   <select class="field mode"
                           type="text" 
                           value=""
                           placeholder="-"
+                          onclick="onEnter('door',event)"
                           onchange="onEdited('door', event)" 
                           data-record=""
                           data-original=""
@@ -123,6 +144,7 @@
                     <p></p>
                   </div> 
                 </td>
+-->
                 <td class="tooltip-wrap">
                   <input class="field delay"
                          type="number" 

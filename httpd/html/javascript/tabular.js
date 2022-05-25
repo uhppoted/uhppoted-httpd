@@ -136,22 +136,22 @@ export function onEnter (tag, event) {
         break
 
       case 'door':
-        set(event.target, event.target.value, event.target.dataset.status)
+        // set(event.target, event.target.value, event.target.dataset.status)
+        //
+        // { // Handles the case where 'Enter' is pressed on a field
+        //   // to 'accept' the actual value which is different from
+        //   // the 'configured' value.
+        //   const element = event.target
+        //   const configured = element.dataset.configured
+        //   const v = element.dataset.value
+        //   const oid = element.dataset.oid
+        //   const parent = element.parentElement
 
-        { // Handles the case where 'Enter' is pressed on a field
-          // to 'accept' the actual value which is different from
-          // the 'configured' value.
-          const element = event.target
-          const configured = element.dataset.configured
-          const v = element.dataset.value
-          const oid = element.dataset.oid
-          const parent = element.parentElement
-
-          if (configured && v !== configured) {
-            mark('modified', element, parent)
-            percolate(oid)
-          }
-        }
+        //   if (configured && v !== configured) {
+        //     mark('modified', element, parent)
+        //     percolate(oid)
+        //   }
+        // }
         break
 
       case 'card':

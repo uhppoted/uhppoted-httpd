@@ -155,6 +155,7 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 	page["context"] = context
 	page["schema"] = schema.GetSchema()
 	page["mode"] = ""
+	page["readonly"] = ""
 
 	if d.mode == Monitor {
 		page["readonly"] = "readonly"

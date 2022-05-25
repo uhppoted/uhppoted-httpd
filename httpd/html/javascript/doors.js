@@ -1,5 +1,9 @@
 import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
+import { schema } from './schema.js'
+import * as combobox from './mode.js'
+
+const dropdowns = new Map()
 
 export function refreshed () {
   const doors = [...DB.doors.values()]
@@ -76,7 +80,7 @@ function add (oid) {
       { suffix: 'deviceID', oid: `${oid}.0.4.3`, selector: 'td input.deviceID' },
       { suffix: 'doorID', oid: `${oid}.0.4.4`, selector: 'td input.doorID' },
       { suffix: 'delay', oid: `${oid}.2`, selector: 'td input.delay' },
-      { suffix: 'mode', oid: `${oid}.3`, selector: 'td select.mode' }
+      { suffix: 'mode', oid: `${oid}.3`, selector: 'td input.mode' }
     ]
 
     fields.forEach(f => {
@@ -92,6 +96,11 @@ function add (oid) {
         console.error(f)
       }
     })
+
+    // .. initialise mode picker
+    const cb = combobox.initialise(row.querySelector('td.combobox'))
+
+    dropdowns.set(`${oid}${schema.doors.mode}`, cb)
 
     return row
   }
@@ -119,6 +128,13 @@ function updateFromDB (oid, record) {
   update(door, c.door)
   update(delay, d, record.delay.status)
   update(mode, m, record.mode.status)
+
+  // .. initialise mode picker
+  const cb = dropdowns.get(`${oid}${schema.doors.mode}`)
+
+  if (cb) {
+    combobox.set(cb, record.mode.configured)
+  }
 
   // ... set tooltips for error'd values
   { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)

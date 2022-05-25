@@ -1,6 +1,13 @@
 ## v0.7.x
 
-- [ ] door delay/control :: update onEnter if error'ed
+- [ ] door mode:  force update onEnter if error'ed
+      - [x] Force update
+      - [ ] Reinstate tooltips
+      - [ ] Fix dropdown styling
+      - [ ] Fix combobox thing where it needs map of dropdowns for updateDB
+      - [ ] WTF?? {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
+
+- [ ] door delay: force update onEnter if error'ed
 
 - [ ] Rework ACL
       - [x] OnEnter handling for cards with incorrect permissions
@@ -13,6 +20,7 @@
 - [ ] 'synchronize date/time' admin menu option
 - [ ] 'synchronize doors' admin menu option
 - (?) `mode:synchronize`
+- [ ] genericize combobox
 
 - [ ] Rework `create`
       - [ ] Very fragile - uses 'new' status 
