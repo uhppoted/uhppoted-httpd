@@ -123,28 +123,6 @@
                     <p></p>
                   </div> 
                 </td>
-<!--
-                <td class="tooltip-wrap">
-                  <select class="field mode"
-                          type="text" 
-                          value=""
-                          placeholder="-"
-                          onclick="onEnter('door',event)"
-                          onchange="onEdited('door', event)" 
-                          data-record=""
-                          data-original=""
-                          data-value=""
-                          {{if eq .readonly "readonly"}}disabled{{end}} >
-                    <option value="">-</option>
-                    <option value="controlled">controlled</option>
-                    <option value="normally open">normally open</option>
-                    <option value="normally closed">normally closed</option>
-                  </select>
-                  <div class="tooltip-content">
-                    <p></p>
-                  </div> 
-                </td>
--->
                 <td class="tooltip-wrap">
                   <input class="field delay"
                          type="number" 
@@ -152,8 +130,8 @@
                          max="60"
                          value=""
                          placeholder="-"
-                         onchange="onEdited('door', event)" 
                          onkeydown="onEnter('door', event)" 
+                         onchange="onEdited('door', event)" 
                          data-record=""
                          data-original=""
                          data-value="" 

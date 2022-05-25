@@ -136,36 +136,43 @@ export function onEnter (tag, event) {
         break
 
       case 'door':
-        // set(event.target, event.target.value, event.target.dataset.status)
-        //
-        // { // Handles the case where 'Enter' is pressed on a field
-        //   // to 'accept' the actual value which is different from
-        //   // the 'configured' value.
-        //   const element = event.target
-        //   const configured = element.dataset.configured
-        //   const v = element.dataset.value
-        //   const oid = element.dataset.oid
-        //   const parent = element.parentElement
+        {
+          const errored = event.target.dataset.status === 'error'
 
-        //   if (configured && v !== configured) {
-        //     mark('modified', element, parent)
-        //     percolate(oid)
-        //   }
-        // }
+          // Allow 'forced' controller update for an error'd door
+          if (errored) {
+          //   const element = event.target
+          //   const tr = row(event.target)
+          //   const td = cell(element)
+          //   const oid = element.dataset.oid
+
+          //   if (tr && tr.dataset.status === 'error') {
+          //     mark('modified', element, td)
+          //     percolate(oid)
+          //   }
+          }
+
+          set(event.target, event.target.value)
+        }
         break
 
       case 'card':
-        set(event.target, event.target.value, event.target.dataset.status)
+        {
+          const errored = event.target.dataset.status === 'error'
 
-        // Allow 'forced' controller update for an error'd card
-        { const element = event.target
-          const tr = row(event.target)
-          const td = cell(element)
-          const oid = element.dataset.oid
+          set(event.target, event.target.value)
 
-          if (tr && tr.dataset.status === 'error') {
-            mark('modified', element, td)
-            percolate(oid)
+          // Allow 'forced' controller update for an error'd card
+          if (errored) {
+            const element = event.target
+            const tr = row(event.target)
+            const td = cell(element)
+            const oid = element.dataset.oid
+
+            if (tr && tr.dataset.status === 'error') {
+              mark('modified', element, td)
+              percolate(oid)
+            }
           }
         }
         break
