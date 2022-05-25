@@ -3,8 +3,7 @@
 - [ ] door delay/control :: update onEnter if error'ed
 
 - [ ] Rework ACL
-      - [x] Flag cards with incorrect permissions
-      - [ ] OnEnter handling for cards with incorrect permissions
+      - [x] OnEnter handling for cards with incorrect permissions
       - [ ] 'synchronize ACL' admin menu option
 
 - (?) Maybe DBC should not be an interface ?

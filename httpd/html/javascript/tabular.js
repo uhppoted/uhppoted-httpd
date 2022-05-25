@@ -154,6 +154,22 @@ export function onEnter (tag, event) {
         }
         break
 
+      case 'card':
+        set(event.target, event.target.value, event.target.dataset.status)
+
+        // Allow 'forced' controller update for an error'd card
+        { const element = event.target
+          const tr = row(event.target)
+          const td = cell(element)
+          const oid = element.dataset.oid
+
+          if (tr && tr.dataset.status === 'error') {
+            mark('modified', element, td)
+            percolate(oid)
+          }
+        }
+        break
+
       case 'group':
         set(event.target, event.target.value)
         break
@@ -774,6 +790,19 @@ function cell (element) {
     return parent
   } else if (parent && parent.nodeName === 'LABEL' && parent.parentElement && parent.parentElement.nodeName === 'TD') {
     return parent.parentElement
+  }
+
+  return null
+}
+
+/* Returns the enclosing <tr> element for an input/checkbox field
+ */
+function row (element) {
+  const td = cell(element)
+  const parent = td ? td.parentElement : null
+
+  if (parent && parent.nodeName === 'TR') {
+    return parent
   }
 
   return null
