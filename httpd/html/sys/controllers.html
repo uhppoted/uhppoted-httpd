@@ -41,7 +41,7 @@
                           data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Bind }}"
                           data-original=""
                           data-value="" 
-                          {{ .readonly }} /></td>
+                          {{if .readonly}}readonly{{end}} /></td>
             </tr>
             <tr>
               <td>broadcast:</td>
@@ -50,7 +50,7 @@
                           data-oid="{{ .schema.Interfaces.OID }}.1{{ .schema.Interfaces.Broadcast }}"
                           data-original=""
                           data-value="" 
-                          {{ .readonly }} /></td>
+                          {{if .readonly}}readonly{{end}} /></td>
             </tr>
           </table>
 
@@ -95,7 +95,7 @@
                          data-record="" 
                          data-original="" 
                          data-value="" 
-                         {{ .readonly }} />
+                         {{if .readonly}}readonly{{end}} />
                   <span class="control commit"   onclick="onCommit('controller', event)"   data-record="">
                     <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                   </span>
@@ -114,7 +114,7 @@
                          data-record=""
                          data-original=""
                          data-value="" 
-                         {{ .readonly }} />
+                         {{if .readonly}}readonly{{end}} />
                 </td>
 
                 <td>
@@ -128,7 +128,7 @@
                          data-original=""
                          data-value=""  
                          data-status="" 
-                         {{ .readonly }} />
+                         {{if .readonly}}readonly{{end}} />
                 </td>
 
                 <td class="combobox">
@@ -143,8 +143,8 @@
                          data-original=""
                          data-value=""
                          data-status=""
-                         {{if eq .readonly "readonly"}}disabled{{end}}  
-                         {{ .readonly }} />
+                         {{if .readonly}}disabled{{end}}  
+                         {{if .readonly}}readonly{{end}} />
                   <ul style="position:fixed; left:0px; top:0px; z-index:2; width:fit-content; max-height:120px; overflow:auto;"></ul>
                 </td>
 
@@ -184,7 +184,7 @@
                           data-record=""
                           data-original=""
                           data-value=""
-                          {{if eq .readonly "readonly"}}disabled{{end}} >
+                          {{if .readonly}}disabled{{end}} >
                     <option value="">-</option>
                   </select>
                 </td>
@@ -198,7 +198,7 @@
                           data-record=""
                           data-original=""
                           data-value=""
-                          {{if eq .readonly "readonly"}}disabled{{end}} >
+                          {{if .readonly}}disabled{{end}} >
                     <option value="">-</option>
                   </select>
                 </td>
@@ -212,7 +212,7 @@
                           data-record=""
                           data-original=""
                           data-value=""
-                          {{if eq .readonly "readonly"}}disabled{{end}} >
+                          {{if .readonly}}disabled{{end}} >
                     <option value="">-</option>
                   </select>
                 </td>
@@ -226,7 +226,7 @@
                           data-record=""
                           data-original=""
                           data-value=""
-                          {{if eq .readonly "readonly"}}disabled{{end}} >
+                          {{if .readonly}}disabled{{end}} >
                     <option value="">-</option>
                   </select>
                 </td>

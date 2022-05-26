@@ -1,9 +1,9 @@
 ## v0.7.x
 
 - [ ] Fix bottom right of scrollbar
-      - [ ] Scrollbar 'goes funny' if -webkit styles are modified
+      - [ ] Scrollbar goes funny if -webkit styles are modified
 
-- [ ] door mode:  force update onEnter if error'ed
+- [x] door mode:  force update onEnter if error'ed
       - [x] force update if error'd
       - [x] combobox should not be editable
       - [x] Reinstate tooltips
@@ -11,12 +11,13 @@
       - [x] Error style is disappearing on rollback
       - [x] Fix dropdown styling
       - [x] Fix combobox thing where it needs map of dropdowns for updateDB
-      - [ ] WTF?? {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
 
 - [ ] door delay: force update onEnter if error'ed
 
+- [ ] {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
+      - standalone test case - may be a Go bug
+
 - [ ] Rework ACL
-      - [x] OnEnter handling for cards with incorrect permissions
       - [ ] 'synchronize ACL' admin menu option
 
 - (?) Maybe DBC should not be an interface ?

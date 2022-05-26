@@ -58,7 +58,7 @@
                          data-record="" 
                          data-original="" 
                          data-value=""
-                         {{ .readonly }} />
+                         {{if .readonly}}readonly{{end}} />
                   <span class="control commit"   onclick="onCommit('user', event)"   data-record="">
                     <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                   </span>
@@ -76,7 +76,7 @@
                          data-record=""
                          data-original=""
                          data-value=""
-                         {{ .readonly }} />
+                         {{if .readonly}}readonly{{end}} />
                 </td>
 
                 <td>
@@ -88,7 +88,7 @@
                          data-record=""
                          data-original=""
                          data-value=""
-                         {{ .readonly }} />
+                         {{if .readonly}}readonly{{end}} />
                 </td>
 
                 <td>
@@ -101,7 +101,7 @@
                          data-original=""
                          data-value="" 
                          autocomplete="new-password"
-                         {{ .readonly }} />
+                         {{if .readonly}}readonly{{end}} />
                 </td>
                 
                 <!-- 'padding' column (CSS: tr::last-child) -->

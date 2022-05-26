@@ -155,10 +155,10 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 	page["context"] = context
 	page["schema"] = schema.GetSchema()
 	page["mode"] = ""
-	page["readonly"] = ""
+	page["readonly"] = false
 
 	if d.mode == Monitor {
-		page["readonly"] = "readonly"
+		page["readonly"] = true
 	}
 
 	// For a FS, use path.Join rather than filepath.Join (ref. https://pkg.go.dev/io/fs#ValidPath)

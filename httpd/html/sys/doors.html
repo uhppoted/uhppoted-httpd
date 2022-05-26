@@ -59,7 +59,7 @@
                          data-record="" 
                          data-original="" 
                          data-value=""
-                         {{if eq .readonly "readonly"}}readonly{{end}}  />
+                         {{if .readonly}}readonly{{end}}  />
                   <span class="control commit"   onclick="onCommit('door', event)"   data-record="">
                     <img src="/images/{{$.context.Theme}}/check-solid.svg" />
                   </span>
@@ -117,7 +117,7 @@
                          data-value=""
                          data-status=""
                          readonly 
-                         {{if eq .readonly "readonly"}}disabled{{end}} />
+                         {{if .readonly}}disabled{{end}} />
                   <ul style="position:fixed; left:0px; top:0px; z-index:2; width:fit-content; max-height:120px; overflow:auto;"></ul>
                   <div class="tooltip-content">
                     <p></p>
@@ -135,7 +135,7 @@
                          data-record=""
                          data-original=""
                          data-value="" 
-                         {{ .readonly }} />
+                         {{if .readonly}}readonly{{end}} />
                   <div class="tooltip-content">
                     <p></p>
                   </div> 
