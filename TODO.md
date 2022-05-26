@@ -1,8 +1,15 @@
 ## v0.7.x
 
+- [ ] Fix bottom right of scrollbar
+      - [ ] Scrollbar 'goes funny' if -webkit styles are modified
+
 - [ ] door mode:  force update onEnter if error'ed
-      - [x] Force update
-      - [ ] Reinstate tooltips
+      - [x] force update if error'd
+      - [x] combobox should not be editable
+      - [x] Reinstate tooltips
+      - [x] Reinstate 'ENTER' key
+      - [ ] modified flag is disappearing
+      - [ ] Error style is disappearing on rollback
       - [ ] Fix dropdown styling
       - [ ] Fix combobox thing where it needs map of dropdowns for updateDB
       - [ ] WTF?? {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
@@ -29,9 +36,6 @@
 - [ ] System XXX.validate should not return HttpdError
       - (?) maybe return SysError that might contain HTTP error
 - [ ] Make vtable'able subsystem an interface
-- [ ] Fix bottom right of scrollbar
-      - [ ] Scrollbar 'goes funny' if -webkit styles are modified
-- [ ] <sigh> date/time flag is sometimes not going away
 - [ ] CSS triangle-top-left
       https://css-tricks.com/the-shapes-of-css/
   

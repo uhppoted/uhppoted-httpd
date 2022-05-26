@@ -163,6 +163,7 @@ class DoorMode {
       case 'Enter':
         if (this.listHasFocus) {
           this.setValue(this.option.textContent)
+          this.input.dispatchEvent(new Event('change', { bubbles: false, cancelable: true }))
         }
         this.close(true)
         this.setFocusDoorMode()
@@ -210,8 +211,8 @@ class DoorMode {
           this.close(true)
           this.setFocusDoorMode()
         } else {
-          this.setValue('')
-          this.input.value = ''
+          // this.setValue('')
+          // this.input.value = ''
         }
         this.option = null
         flag = true

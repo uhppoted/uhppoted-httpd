@@ -154,7 +154,7 @@ function updateFromDB (oid, record) {
     }
   }
 
-  { const tooltip = row.querySelector(`[data-oid="${oid}.3"] + div.tooltip-content`)
+  { const tooltip = row.querySelector(`[data-oid="${oid}.3"] + ul + div`)
 
     if (tooltip) {
       const p = tooltip.querySelector('p')

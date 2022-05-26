@@ -97,6 +97,7 @@ const pages = {
 }
 
 export function onEdited (tag, event) {
+  let errored = false
   switch (tag) {
     case 'interface':
       LAN.set(event.target, event.target.value)
@@ -107,7 +108,20 @@ export function onEdited (tag, event) {
       break
 
     case 'door':
+      errored = event.target.dataset.status === 'error'
       set(event.target, event.target.value)
+      // Allow 'forced' controller update for an error'd door
+      if (errored) {
+        const element = event.target
+        const tr = row(event.target)
+        const td = cell(element)
+        const oid = element.dataset.oid
+
+        if (tr) {
+          mark('modified', element, td)
+          percolate(oid)
+        }
+      }
       break
 
     case 'card':
@@ -125,6 +139,7 @@ export function onEdited (tag, event) {
 }
 
 export function onEnter (tag, event) {
+  console.log('onEnter', tag)
   if (event.key === 'Enter') {
     switch (tag) {
       case 'interface':
@@ -136,24 +151,8 @@ export function onEnter (tag, event) {
         break
 
       case 'door':
-        {
-          const errored = event.target.dataset.status === 'error'
-
-          // Allow 'forced' controller update for an error'd door
-          if (errored) {
-          //   const element = event.target
-          //   const tr = row(event.target)
-          //   const td = cell(element)
-          //   const oid = element.dataset.oid
-
-          //   if (tr && tr.dataset.status === 'error') {
-          //     mark('modified', element, td)
-          //     percolate(oid)
-          //   }
-          }
-
-          set(event.target, event.target.value)
-        }
+        console.log('onEnter', tag)
+        set(event.target, event.target.value)
         break
 
       case 'card':
