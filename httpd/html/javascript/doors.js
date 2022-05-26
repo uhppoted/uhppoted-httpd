@@ -1,9 +1,6 @@
 import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
-import { schema } from './schema.js'
 import * as combobox from './mode.js'
-
-const dropdowns = new Map()
 
 export function refreshed () {
   const doors = [...DB.doors.values()]
@@ -97,10 +94,7 @@ function add (oid) {
       }
     })
 
-    // .. initialise mode picker
-    const cb = combobox.initialise(row.querySelector('td.combobox'))
-
-    dropdowns.set(`${oid}${schema.doors.mode}`, cb)
+    combobox.initialise(row.querySelector('td.combobox'))
 
     return row
   }
@@ -128,13 +122,6 @@ function updateFromDB (oid, record) {
   update(door, c.door)
   update(delay, d, record.delay.status)
   update(mode, m, record.mode.status)
-
-  // .. initialise mode picker
-  const cb = dropdowns.get(`${oid}${schema.doors.mode}`)
-
-  if (cb) {
-    combobox.set(cb, record.mode.configured)
-  }
 
   // ... set tooltips for error'd values
   { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)

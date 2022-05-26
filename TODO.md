@@ -10,7 +10,7 @@
       - [x] Reinstate 'ENTER' key
       - [x] Error style is disappearing on rollback
       - [x] Fix dropdown styling
-      - [ ] Fix combobox thing where it needs map of dropdowns for updateDB
+      - [x] Fix combobox thing where it needs map of dropdowns for updateDB
       - [ ] WTF?? {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
 
 - [ ] door delay: force update onEnter if error'ed

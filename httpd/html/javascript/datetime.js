@@ -329,9 +329,3 @@ export function initialise (combobox) {
 
   return cb
 }
-
-export function set (cb, dt) {
-  if (dt && !Number.isNaN(dt)) {
-    // ??? What to do ??
-  }
-}
