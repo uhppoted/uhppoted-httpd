@@ -5,3 +5,16 @@
 @import '_common';
 @import '../../stylesheets/doors';
 
+tr.door input.mode + ul {
+  background: lighten($solarize-base01,10%);
+}
+
+tr.door input.mode + ul li {
+  color: $solarize-base02;
+}
+
+.tooltip-wrap .tooltip-content {
+  color: #800000ff;
+  background-color: lighten($solarize-base01,10%);
+}
+

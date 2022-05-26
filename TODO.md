@@ -9,7 +9,7 @@
       - [x] Reinstate tooltips
       - [x] Reinstate 'ENTER' key
       - [x] Error style is disappearing on rollback
-      - [ ] Fix dropdown styling
+      - [x] Fix dropdown styling
       - [ ] Fix combobox thing where it needs map of dropdowns for updateDB
       - [ ] WTF?? {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
 

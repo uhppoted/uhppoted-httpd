@@ -28,10 +28,22 @@ tr.door td input.doorID {
 }
 
 tr.door td input.mode {
-  text-align: center; 
+  text-align: left; 
+  font-size: 1.1em;
+  font-family: sans-serif;
+  font-variant: small-caps;
 }
 
 tr.door td input.delay {
   text-align: center; 
 }
 
+tr.door input.mode + ul {
+  background: $combobox-mode-background;
+}
+
+tr.door input.mode + ul li {
+  font-family: sans-serif;
+  font-variant: small-caps;
+  font-caps-variant: all-small-caps;
+}

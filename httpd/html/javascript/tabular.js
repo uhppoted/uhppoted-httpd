@@ -97,7 +97,7 @@ const pages = {
 }
 
 export function onEdited (tag, event) {
-  let status = ""
+  let status = ''
   let errored = false
 
   switch (tag) {

@@ -78,6 +78,8 @@ $combobox-border: 1px solid #93a1a1;
 $combobox-li-colour: #666666;
 $combobox-li-selected: #def;
 
+$combobox-mode-background: lighten($solarize-base3,10%);
+
 $eye-colour: $solarize-green;
 $dashboard-windmill: $solarize-blue;
 $link-colour: $solarize-blue;
