@@ -98,6 +98,7 @@ const pages = {
 
 export function onEdited (tag, event) {
   let errored = false
+
   switch (tag) {
     case 'interface':
       LAN.set(event.target, event.target.value)
@@ -109,9 +110,10 @@ export function onEdited (tag, event) {
 
     case 'door':
       errored = event.target.dataset.status === 'error'
+
       set(event.target, event.target.value)
-      // Allow 'forced' controller update for an error'd door
-      if (errored) {
+
+      if (errored) { // Allow 'forced' controller update for an error'd door
         const element = event.target
         const tr = row(event.target)
         const td = cell(element)
@@ -139,8 +141,9 @@ export function onEdited (tag, event) {
 }
 
 export function onEnter (tag, event) {
-  console.log('onEnter', tag)
   if (event.key === 'Enter') {
+    let errored = false
+
     switch (tag) {
       case 'interface':
         LAN.set(event.target, event.target.value)
@@ -151,27 +154,37 @@ export function onEnter (tag, event) {
         break
 
       case 'door':
-        console.log('onEnter', tag)
+        errored = event.target.dataset.status === 'error'
+
         set(event.target, event.target.value)
+
+        if (errored) { // Allow 'forced' controller update for an error'd door
+          const element = event.target
+          const tr = row(event.target)
+          const td = cell(element)
+          const oid = element.dataset.oid
+
+          if (tr) {
+            mark('modified', element, td)
+            percolate(oid)
+          }
+        }
         break
 
       case 'card':
-        {
-          const errored = event.target.dataset.status === 'error'
+        errored = event.target.dataset.status === 'error'
 
-          set(event.target, event.target.value)
+        set(event.target, event.target.value)
 
-          // Allow 'forced' controller update for an error'd card
-          if (errored) {
-            const element = event.target
-            const tr = row(event.target)
-            const td = cell(element)
-            const oid = element.dataset.oid
+        if (errored) { // Allow 'forced' controller update for an error'd card
+          const element = event.target
+          const tr = row(event.target)
+          const td = cell(element)
+          const oid = element.dataset.oid
 
-            if (tr && tr.dataset.status === 'error') {
-              mark('modified', element, td)
-              percolate(oid)
-            }
+          if (tr && tr.dataset.status === 'error') {
+            mark('modified', element, td)
+            percolate(oid)
           }
         }
         break

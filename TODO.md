@@ -8,8 +8,8 @@
       - [x] combobox should not be editable
       - [x] Reinstate tooltips
       - [x] Reinstate 'ENTER' key
-      - [ ] modified flag is disappearing
       - [ ] Error style is disappearing on rollback
+      - [ ] 'modified' flag is disappearing
       - [ ] Fix dropdown styling
       - [ ] Fix combobox thing where it needs map of dropdowns for updateDB
       - [ ] WTF?? {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
