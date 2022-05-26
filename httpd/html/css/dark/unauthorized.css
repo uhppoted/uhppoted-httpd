@@ -215,6 +215,7 @@ footer {
   font-size: 0.9em;
   font-family: sans-serif;
   font-variant: small-caps;
+  font-variant-caps: all-small-caps;
   text-decoration: none;
   text-align: left;
 }

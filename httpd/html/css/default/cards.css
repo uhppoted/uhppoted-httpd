@@ -207,6 +207,7 @@ footer {
   font-size: 0.9em;
   font-family: sans-serif;
   font-variant: small-caps;
+  font-variant-caps: all-small-caps;
   text-decoration: none;
   text-align: left;
 }
@@ -368,7 +369,7 @@ div.tabular::-webkit-scrollbar-thumb {
 
 div.tabular::-webkit-scrollbar-corner {
   background: transparent;
-  border: 2px solid #fdf6e3;
+  border: none;
 }
 
 div.tabular table {

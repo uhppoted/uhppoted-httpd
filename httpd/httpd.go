@@ -106,6 +106,7 @@ func (h *HTTPD) Run(mode RunMode, interrupt chan os.Signal) {
 	mux.HandleFunc("/events", d.dispatch)
 	mux.HandleFunc("/logs", d.dispatch)
 	mux.HandleFunc("/users", d.dispatch)
+	mux.HandleFunc("/synchronize/ACL", d.dispatch)
 
 	mux.HandleFunc("/", d.getWithAuth)
 	mux.HandleFunc("/usr/", d.getNoAuth)

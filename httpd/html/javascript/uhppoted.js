@@ -56,6 +56,32 @@ export function onSignOut (event) {
     })
 }
 
+export function onSynchronizeACL (event) {
+  if (event != null) {
+    event.preventDefault()
+  }
+
+  const location = window.location
+
+  postAsJSON('/synchronize/ACL', {})
+    .then(response => {
+      if (response.status === 200 && response.redirected) {
+        window.location = response.url
+      } else if (response.status === 200) {
+        window.location = location
+      } else {
+        return response.text()
+      }
+    })
+    .then(msg => {
+      warning(msg)
+    })
+    .catch(function (err) {
+      console.error(err)
+      offline()
+    })
+}
+
 export function onShowHidePassword (event, id) {
   const pwd = document.getElementById(id)
   const eye = event.target

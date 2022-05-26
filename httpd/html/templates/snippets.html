@@ -10,6 +10,7 @@
           <a href="/sys/password.html">password</a>
           <a href="#" onclick="retheme('light')">light</a>
           <a href="#" onclick="retheme('dark')">dark</a>
+          {{if not .readonly}}<a href="#" onclick="onSynchronizeACL(event)">synchronize ACL</a>{{end}}
         </div>
       </div>
 {{end}}
@@ -49,4 +50,46 @@
           {{if .Authorised.Users}}{{if eq .Page "users" }}<li class="selected">USERS</li> {{else}}<li><a href="/sys/users.html">USERS</a></li>{{end}}{{end}}
         </ul>
       </nav>
+{{end}}
+
+{{define "uhppoted.js"}}
+    import { retheme, 
+             dismiss, 
+             resetIdle, 
+             onMenu, 
+             onSignOut, 
+             onReload, 
+             setRefresh, 
+             onSynchronizeACL } from "/javascript/uhppoted.js"
+{{end}}
+
+{{define "tabular.js"}}
+    import { onEdited, 
+             onEnter, 
+             onTick, 
+             onCommit, 
+             onCommitAll, 
+             onRollback, 
+             onRollbackAll, 
+             onNew, 
+             onRefresh } from "/javascript/tabular.js"
+{{end}}
+
+{{define "window.js"}}
+    window.retheme = retheme
+    window.dismiss = dismiss
+    window.onMenuX = onMenu
+    window.onSignOut = onSignOut
+    window.onReload = onReload
+
+    window.onEdited = onEdited
+    window.onEnter = onEnter
+    window.onTick = onTick
+    window.onCommit = onCommit
+    window.onCommitAll = onCommitAll
+    window.onRollback = onRollback
+    window.onRollbackAll = onRollbackAll
+    window.onNew = onNew
+    window.onRefresh = onRefresh
+    window.onSynchronizeACL = onSynchronizeACL
 {{end}}

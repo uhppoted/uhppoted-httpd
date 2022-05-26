@@ -71,6 +71,13 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 
+	case "/synchronize/ACL":
+		if d.mode == Monitor {
+			http.Error(w, "Synchronize ACL not allowed in 'monitor' mode", http.StatusBadRequest)
+		} else {
+			http.Error(w, "API not implemented yet", http.StatusNotImplemented)
+		}
+
 	default:
 		http.Error(w, "API not implemented", http.StatusNotImplemented)
 		return

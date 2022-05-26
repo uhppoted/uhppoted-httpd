@@ -335,39 +335,9 @@
   <!-- SCRIPTS -->
 
   <script type="module">
-    import { retheme,
-             dismiss,
-             resetIdle,
-             onMenu,
-             onSignOut,
-             onReload,
-             setRefresh } from "/javascript/uhppoted.js"
-
-    import { onEdited,
-             onEnter,
-             onTick,
-             onCommit,
-             onCommitAll,
-             onRollback,
-             onRollbackAll,
-             onNew,
-             onRefresh } from "/javascript/tabular.js"
-
-    window.retheme = retheme
-    window.dismiss = dismiss
-    window.onMenuX = onMenu
-    window.onSignOut = onSignOut
-    window.onReload = onReload
-
-    window.onEnter = onEnter
-    window.onEdited = onEdited
-    window.onTick = onTick
-    window.onCommit = onCommit
-    window.onCommitAll = onCommitAll
-    window.onRollback = onRollback
-    window.onRollbackAll = onRollbackAll
-    window.onNew = onNew
-    window.onRefresh = onRefresh
+    {{template "uhppoted.js" .}}
+    {{template "tabular.js"  .}}
+    {{template "window.js"   .}}
 
     const refresh = function() {
       onRefresh('overview')
