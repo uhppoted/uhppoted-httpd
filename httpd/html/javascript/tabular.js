@@ -97,6 +97,7 @@ const pages = {
 }
 
 export function onEdited (tag, event) {
+  let status = ""
   let errored = false
 
   switch (tag) {
@@ -109,9 +110,10 @@ export function onEdited (tag, event) {
       break
 
     case 'door':
+      status = event.target.dataset.status
       errored = event.target.dataset.status === 'error'
 
-      set(event.target, event.target.value)
+      set(event.target, event.target.value, status)
 
       if (errored) { // Allow 'forced' controller update for an error'd door
         const element = event.target
