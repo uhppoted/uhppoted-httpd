@@ -1,7 +1,6 @@
 ## v0.7.x
 
-- [ ] Fix bottom right of scrollbar
-      - [ ] Scrollbar goes funny if -webkit styles are modified
+- [x] Fix bottom right of scrollbar when both scrollbars visible
 
 - [x] door mode:  force update onEnter if error'ed
       - [x] force update if error'd
