@@ -1,6 +1,7 @@
 package system
 
 import (
+	"sync"
 	"time"
 
 	lib "github.com/uhppoted/uhppote-core/types"
@@ -10,8 +11,56 @@ import (
 	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
-func (s *system) compareACL(controllers []types.IController) {
-	if acl, err := permissions(controllers); err != nil {
+func (s *system) synchronizeACL() error {
+	year := time.Now().Year()
+	from := lib.ToDate(year, time.January, 1)
+	to := lib.ToDate(year, time.December, 31)
+	controllers := s.controllers.AsIControllers()
+
+	if acl, err := s.permissions(controllers); err != nil {
+		return err
+	} else {
+		var wg sync.WaitGroup
+		for _, c := range controllers {
+			wg.Add(1)
+
+			controller := c
+			list := []lib.Card{}
+			for _, card := range acl[controller.ID()] {
+				list = append(list, card)
+			}
+
+			go func(v types.IController, cards []lib.Card) {
+				defer wg.Done()
+
+				for _, card := range cards {
+					start := from
+					end := to
+					permissions := card.Doors
+
+					if card.From != nil {
+						start = *card.From
+					}
+
+					if card.To != nil {
+						end = *card.To
+					}
+
+					s.interfaces.SetCard(controller, card.CardNumber, start, end, permissions)
+				}
+			}(controller, list)
+		}
+
+		wg.Wait()
+	}
+
+	return nil
+}
+
+func (s *system) compareACL() {
+	controllers := s.controllers.AsIControllers()
+
+	if acl, err := s.permissions(controllers); err != nil {
 		warnf("%v", err)
 	} else if diff, err := s.interfaces.CompareACL(controllers, acl); err != nil {
 		warnf("%v", err)
@@ -42,14 +91,6 @@ func (s *system) compareACL(controllers []types.IController) {
 		sys.cards.MarkIncorrect(list)
 	}
 }
-
-// func UpdateACL() {
-// 	if acl, err := permissions(); err != nil {
-// 		warn(err)
-// 	} else {
-// 		sys.controllers.UpdateACL(sys.interfaces, acl)
-// 	}
-// }
 
 // NTS: revoke all if card is nil because card number may have changed and the old
 //      card will no longer have access
@@ -113,10 +154,10 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 	s.interfaces.SetCard(controller, cardID, from, to, acl)
 }
 
-func permissions(controllers []types.IController) (acl.ACL, error) {
-	cards := sys.cards.List()
-	groups := sys.groups
-	doors := sys.doors
+func (s *system) permissions(controllers []types.IController) (acl.ACL, error) {
+	cards := s.cards.List()
+	groups := s.groups
+	doors := s.doors
 
 	// initialise empty ACL
 	acl := make(acl.ACL)
@@ -135,7 +176,6 @@ func permissions(controllers []types.IController) (acl.ACL, error) {
 	}
 
 	// ... populate ACL from cards + groups + doors
-
 	grant := func(card uint32, device uint32, door uint8) {
 		if card > 0 && device > 0 && door >= 1 && door <= 4 {
 			if _, ok := acl[device]; ok {
@@ -178,7 +218,6 @@ func permissions(controllers []types.IController) (acl.ACL, error) {
 	}
 
 	// ... post-process ACL with rules
-
 	if sys.rules != nil {
 		for _, c := range cards {
 			card := c.CardID
@@ -200,13 +239,6 @@ func permissions(controllers []types.IController) (acl.ACL, error) {
 			}
 		}
 	}
-
-	// ... 'k, done
-
-	// var b bytes.Buffer
-	//
-	// acl.Print(&b)
-	// log.Printf("INFO %v", fmt.Sprintf("ACL\n%s", string(b.Bytes())))
 
 	return acl, nil
 }

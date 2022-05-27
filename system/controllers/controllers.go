@@ -6,14 +6,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/uhppoted/uhppoted-lib/acl"
-
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
-	"github.com/uhppoted/uhppoted-httpd/system/interfaces"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -242,21 +239,6 @@ func (cc *Controllers) Clone() Controllers {
 	}
 
 	return shadow
-}
-
-func (cc *Controllers) UpdateACL(i interfaces.Interfaces, permissions acl.ACL) error {
-	var lan LAN
-
-	if v, ok := i.LAN(); !ok {
-		return fmt.Errorf("No active LAN subsystem")
-	} else {
-		lan = LAN{
-			interfaces: i,
-			lan:        v,
-		}
-	}
-
-	return lan.update(cc.controllers, permissions)
 }
 
 func (cc Controllers) Validate() error {

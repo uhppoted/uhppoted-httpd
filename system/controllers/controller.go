@@ -77,14 +77,6 @@ func (c Controller) validate() error {
 	return nil
 }
 
-func (c Controller) realized() bool {
-	if c.DeviceID != 0 && !c.IsDeleted() {
-		return true
-	}
-
-	return false
-}
-
 func (c Controller) IsDeleted() bool {
 	return !c.deleted.IsZero()
 }

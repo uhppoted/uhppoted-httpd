@@ -11,6 +11,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
+	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -49,7 +50,6 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
 			return users.Password(m, role, d.auth)
 		})
-		return
 
 	case
 		"/interfaces",
@@ -69,18 +69,16 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 				return handler.post(uid, role, m)
 			})
 		}
-		return
 
 	case "/synchronize/ACL":
 		if d.mode == Monitor {
-			http.Error(w, "Synchronize ACL not allowed in 'monitor' mode", http.StatusBadRequest)
+			http.Error(w, "Synchronize ACL disabled in 'monitor' mode", http.StatusBadRequest)
 		} else {
-			http.Error(w, "API not implemented yet", http.StatusNotImplemented)
+			d.synchronizeACL(w, r)
 		}
 
 	default:
 		http.Error(w, "API not implemented", http.StatusNotImplemented)
-		return
 	}
 }
 
@@ -160,6 +158,37 @@ func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
 	clear(auth.SessionCookie, w)
 
 	http.Redirect(w, r, "/index.html", http.StatusFound)
+}
+
+func (d *dispatcher) synchronizeACL(w http.ResponseWriter, r *http.Request) {
+	ch := make(chan struct{})
+	ctx, cancel := context.WithTimeout(d.context, d.timeout)
+
+	defer cancel()
+
+	go func() {
+		if err := system.SynchronizeACL(); err != nil {
+			warn("", err)
+
+			switch e := err.(type) {
+			case *types.HttpdError:
+				http.Error(w, e.Error(), e.Status)
+
+			default:
+				http.Error(w, e.Error(), http.StatusInternalServerError)
+			}
+		}
+
+		close(ch)
+	}()
+
+	select {
+	case <-ctx.Done():
+		warn("", ctx.Err())
+		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
+
+	case <-ch:
+	}
 }
 
 func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[string]interface{}) (interface{}, error)) {

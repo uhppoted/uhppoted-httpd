@@ -231,13 +231,17 @@ func (s *system) refresh() {
 
 	sys.taskQ.Add(Task{
 		f: func() {
-			s.compareACL(controllers)
+			s.compareACL()
 		},
 	})
 }
 
+func SynchronizeACL() error {
+	return sys.synchronizeACL()
+}
+
 func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
-	var controllers = s.controllers.AsIControllers()
+	controllers := s.controllers.AsIControllers()
 
 	switch {
 	case oid.HasPrefix(schema.CardsOID):

@@ -1,10 +1,10 @@
 ## v0.7.x
 
-- [ ] 'synchronize ACL' admin menu option
+- [x] 'synchronize ACL' admin menu option
       - [x] Add to menu 
       - [x] Set default auth in daemonize
-      - [ ] system.synchronize(...)
-      - [ ] Check readonly on POST requests
+      - [x] system.synchronize(...)
+      - [x] Check readonly on POST requests
 
 - [x] door delay: force update onEnter if error'ed
 
