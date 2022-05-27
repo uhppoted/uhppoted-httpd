@@ -1,26 +1,16 @@
 ## v0.7.x
 
-- [ ] Rework ACL
-      - [x] 'synchronize ACL' admin menu option
+- [ ] 'synchronize ACL' admin menu option
+      - [x] Add to menu 
       - [x] Set default auth in daemonize
       - [ ] system.synchronize(...)
       - [ ] Check readonly on POST requests
 
-- [x] Fix bottom right of scrollbar when both scrollbars visible
-
-- [x] door mode:  force update onEnter if error'ed
-      - [x] force update if error'd
-      - [x] combobox should not be editable
-      - [x] Reinstate tooltips
-      - [x] Reinstate 'ENTER' key
-      - [x] Error style is disappearing on rollback
-      - [x] Fix dropdown styling
-      - [x] Fix combobox thing where it needs map of dropdowns for updateDB
-
-- [ ] door delay: force update onEnter if error'ed
+- [x] door delay: force update onEnter if error'ed
 
 - [ ] {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
-      - standalone test case - may be a Go bug
+      - [x] Replace with bool
+      - [ ] standalone test case - may be a Go bug
 
 - (?) Maybe DBC should not be an interface ?
       - having to check for nil everywhere

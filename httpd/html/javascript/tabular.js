@@ -97,8 +97,7 @@ const pages = {
 }
 
 export function onEdited (tag, event) {
-  let status = ''
-  let errored = false
+  const status = event.target.dataset.status
 
   switch (tag) {
     case 'interface':
@@ -110,12 +109,9 @@ export function onEdited (tag, event) {
       break
 
     case 'door':
-      status = event.target.dataset.status
-      errored = event.target.dataset.status === 'error'
-
       set(event.target, event.target.value, status)
 
-      if (errored) { // Allow 'forced' controller update for an error'd door
+      if (status === 'error') { // Allow 'forced' controller update for an error'd door
         const element = event.target
         const tr = row(event.target)
         const td = cell(element)
@@ -143,9 +139,8 @@ export function onEdited (tag, event) {
 }
 
 export function onEnter (tag, event) {
+  const status = event.target.dataset.status
   if (event.key === 'Enter') {
-    let errored = false
-
     switch (tag) {
       case 'interface':
         LAN.set(event.target, event.target.value)
@@ -156,11 +151,9 @@ export function onEnter (tag, event) {
         break
 
       case 'door':
-        errored = event.target.dataset.status === 'error'
+        set(event.target, event.target.value, status)
 
-        set(event.target, event.target.value)
-
-        if (errored) { // Allow 'forced' controller update for an error'd door
+        if (status === 'error') { // Allow 'forced' controller update for an error'd door
           const element = event.target
           const tr = row(event.target)
           const td = cell(element)
@@ -174,11 +167,9 @@ export function onEnter (tag, event) {
         break
 
       case 'card':
-        errored = event.target.dataset.status === 'error'
-
         set(event.target, event.target.value)
 
-        if (errored) { // Allow 'forced' controller update for an error'd card
+        if (status === 'error') { // Allow 'forced' controller update for an error'd door
           const element = event.target
           const tr = row(event.target)
           const td = cell(element)
