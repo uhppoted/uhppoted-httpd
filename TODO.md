@@ -8,9 +8,11 @@
 
 - [x] door delay: force update onEnter if error'ed
 
-- [ ] {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
+- [x] {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
       - [x] Replace with bool
-      - [ ] standalone test case - may be a Go bug
+      - [x] standalone test case - may be a Go bug
+
+- [ ] avatar jumps when opening menu
 
 - (?) Maybe DBC should not be an interface ?
       - having to check for nil everywhere

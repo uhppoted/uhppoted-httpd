@@ -228,7 +228,7 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 	}
 
 	var b bytes.Buffer
-	if err := t.Execute(&b, &page); err != nil {
+	if err := t.Execute(&b, page); err != nil {
 		warn("", fmt.Errorf("Error formatting page '%s' (%w)", file, err))
 		http.Error(w, "Error formatting page", http.StatusInternalServerError)
 		return
