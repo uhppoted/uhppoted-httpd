@@ -240,6 +240,20 @@ func SynchronizeACL() error {
 	return sys.synchronizeACL()
 }
 
+func SynchronizeDateTime() error {
+	controllers := sys.controllers.AsIControllers()
+	now := time.Now()
+
+	for _, c := range controllers {
+		controller := c
+		go func() {
+			sys.interfaces.SetTime(controller, now)
+		}()
+	}
+
+	return nil
+}
+
 func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 	controllers := s.controllers.AsIControllers()
 

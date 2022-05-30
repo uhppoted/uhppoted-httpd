@@ -77,6 +77,13 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 			d.synchronizeACL(w, r)
 		}
 
+	case "/synchronize/datetime":
+		if d.mode == Monitor {
+			http.Error(w, "Synchronize date/time disabled in 'monitor' mode", http.StatusBadRequest)
+		} else {
+			d.synchronizeDateTime(w, r)
+		}
+
 	default:
 		http.Error(w, "API not implemented", http.StatusNotImplemented)
 	}
@@ -158,37 +165,6 @@ func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
 	clear(auth.SessionCookie, w)
 
 	http.Redirect(w, r, "/index.html", http.StatusFound)
-}
-
-func (d *dispatcher) synchronizeACL(w http.ResponseWriter, r *http.Request) {
-	ch := make(chan struct{})
-	ctx, cancel := context.WithTimeout(d.context, d.timeout)
-
-	defer cancel()
-
-	go func() {
-		if err := system.SynchronizeACL(); err != nil {
-			warn("", err)
-
-			switch e := err.(type) {
-			case *types.HttpdError:
-				http.Error(w, e.Error(), e.Status)
-
-			default:
-				http.Error(w, e.Error(), http.StatusInternalServerError)
-			}
-		}
-
-		close(ch)
-	}()
-
-	select {
-	case <-ctx.Done():
-		warn("", ctx.Err())
-		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
-
-	case <-ch:
-	}
 }
 
 func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[string]interface{}) (interface{}, error)) {
@@ -314,5 +290,67 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 
 			return
 		}
+	}
+}
+
+func (d *dispatcher) synchronizeACL(w http.ResponseWriter, r *http.Request) {
+	ch := make(chan struct{})
+	ctx, cancel := context.WithTimeout(d.context, d.timeout)
+
+	defer cancel()
+
+	go func() {
+		if err := system.SynchronizeACL(); err != nil {
+			warn("", err)
+
+			switch e := err.(type) {
+			case *types.HttpdError:
+				http.Error(w, e.Error(), e.Status)
+
+			default:
+				http.Error(w, e.Error(), http.StatusInternalServerError)
+			}
+		}
+
+		close(ch)
+	}()
+
+	select {
+	case <-ctx.Done():
+		warn("", ctx.Err())
+		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
+
+	case <-ch:
+	}
+}
+
+func (d *dispatcher) synchronizeDateTime(w http.ResponseWriter, r *http.Request) {
+	ch := make(chan struct{})
+	ctx, cancel := context.WithTimeout(d.context, d.timeout)
+
+	defer cancel()
+
+	go func() {
+		if err := system.SynchronizeDateTime(); err != nil {
+			warn("", err)
+
+			switch e := err.(type) {
+			case *types.HttpdError:
+				http.Error(w, e.Error(), e.Status)
+
+			default:
+				http.Error(w, e.Error(), http.StatusInternalServerError)
+			}
+		}
+
+		close(ch)
+	}()
+
+	select {
+	case <-ctx.Done():
+		warn("", ctx.Err())
+		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
+
+	case <-ch:
 	}
 }

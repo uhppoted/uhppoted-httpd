@@ -145,6 +145,10 @@ const default_auth = `
     {
       "path": "^/synchronize/ACL$",
       "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/synchronize/datetime$",
+      "authorised": "^(admin)$"
     }
   ]
 }

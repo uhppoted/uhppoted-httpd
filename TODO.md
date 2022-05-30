@@ -1,26 +1,17 @@
 ## v0.7.x
 
-- [x] 'synchronize ACL' admin menu option
-      - [x] Add to menu 
-      - [x] Set default auth in daemonize
-      - [x] system.synchronize(...)
-      - [x] Check readonly on POST requests
-
-- [x] door delay: force update onEnter if error'ed
-
-- [x] {{ .readonly }} renders as 'zgotmplz' if page[readonly] is ""
-      - [x] Replace with bool
-      - [x] standalone test case - may be a Go bug
-
-- [ ] avatar jumps when opening menu
+- [x] 'synchronize date/time' admin menu option
+      - [x] table overlays menu
+      - [x] avatar jumps when opening menu
+      - [x] update default auth.json for daemonize
 
 - (?) Maybe DBC should not be an interface ?
       - having to check for nil everywhere
       - make it a struct with an internal implementation ?
 
-- [ ] 'synchronize date/time' admin menu option
 - [ ] 'synchronize doors' admin menu option
 - (?) `mode:synchronize`
+- (?) 'find' on controller but not in DB
 - [ ] genericize combobox
 
 - [ ] Rework `create`
