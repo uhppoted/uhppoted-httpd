@@ -108,6 +108,34 @@ export function onSynchronizeDateTime (event) {
     })
 }
 
+export function onSynchronizeDoors (event) {
+  console.log('onSynchronizeDoors')
+  if (event != null) {
+    event.preventDefault()
+  }
+
+  const location = window.location
+
+  postAsJSON('/synchronize/doors', {})
+    .then(response => {
+      console.error('> 1', response)
+      if (response.status === 200 && response.redirected) {
+        window.location = response.url
+      } else if (response.status === 200) {
+        window.location = location
+      } else {
+        return response.text()
+      }
+    })
+    .then(msg => {
+      warning(msg)
+    })
+    .catch(function (err) {
+      console.error(err)
+      offline()
+    })
+}
+
 export function onShowHidePassword (event, id) {
   const pwd = document.getElementById(id)
   const eye = event.target
@@ -152,14 +180,16 @@ export function retheme (theme) {
 }
 
 export function warning (msg) {
-  const message = document.getElementById('message')
-  const text = document.getElementById('warning')
+  if (msg) {
+    const message = document.getElementById('message')
+    const text = document.getElementById('warning')
 
-  if (text != null) {
-    text.innerText = msg
-    message.style.visibility = 'visible'
-  } else {
-    alert(msg)
+    if (text != null) {
+      text.innerText = msg
+      message.style.visibility = 'visible'
+    } else {
+      alert(msg)
+    }
   }
 }
 

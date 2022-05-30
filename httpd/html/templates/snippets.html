@@ -12,6 +12,7 @@
           <a href="#" onclick="retheme('dark')">dark</a>
           {{if not .readonly}}<a href="#" onclick="onSynchronizeACL(event)">synchronize ACL</a>{{end}}
           {{if not .readonly}}<a href="#" onclick="onSynchronizeDateTime(event)">synchronize date/time</a>{{end}}
+          {{if not .readonly}}<a href="#" onclick="onSynchronizeDoors(event)">synchronize doors</a>{{end}}
         </div>
       </div>
 {{end}}
@@ -62,7 +63,8 @@
              onReload, 
              setRefresh, 
              onSynchronizeACL,
-             onSynchronizeDateTime } from "/javascript/uhppoted.js"
+             onSynchronizeDateTime,
+             onSynchronizeDoors } from "/javascript/uhppoted.js"
 {{end}}
 
 {{define "tabular.js"}}
@@ -95,4 +97,5 @@
     window.onRefresh = onRefresh
     window.onSynchronizeACL = onSynchronizeACL
     window.onSynchronizeDateTime = onSynchronizeDateTime
+    window.onSynchronizeDoors = onSynchronizeDoors
 {{end}}

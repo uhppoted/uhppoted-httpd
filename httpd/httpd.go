@@ -108,6 +108,7 @@ func (h *HTTPD) Run(mode RunMode, interrupt chan os.Signal) {
 	mux.HandleFunc("/users", d.dispatch)
 	mux.HandleFunc("/synchronize/ACL", d.dispatch)
 	mux.HandleFunc("/synchronize/datetime", d.dispatch)
+	mux.HandleFunc("/synchronize/doors", d.dispatch)
 
 	mux.HandleFunc("/", d.getWithAuth)
 	mux.HandleFunc("/usr/", d.getNoAuth)

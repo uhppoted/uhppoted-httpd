@@ -48,8 +48,25 @@ func (d Door) validate() error {
 
 	return nil
 }
+
 func (d *Door) IsDeleted() bool {
 	return !d.deleted.IsZero()
+}
+
+func (d *Door) Mode() core.ControlState {
+	if d != nil {
+		return d.mode
+	}
+
+	return core.ModeUnknown
+}
+
+func (d *Door) Delay() uint8 {
+	if d != nil {
+		return d.delay
+	}
+
+	return 0
 }
 
 func (d Door) String() string {

@@ -400,35 +400,33 @@ func (l *LAN) setTime(c types.IController, t time.Time) {
 	}
 }
 
-func (l *LAN) setDoorDelay(c types.IController, door uint8, delay uint8) {
+func (l *LAN) setDoor(c types.IController, door uint8, mode lib.ControlState, delay uint8) error {
 	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 
-	if err := api.SetDoorDelay(deviceID, door, delay); err != nil {
-		log.Warnf("%v", err)
+	if state, err := api.UHPPOTE.GetDoorControlState(deviceID, door); err != nil {
+		return err
+	} else if state == nil {
+		return fmt.Errorf("Got %v response to get-door request for %v", state, deviceID)
 	} else {
-		if oid, ok := c.Door(door); ok {
-			catalog.PutV(oid, DoorDelay, delay)
-			catalog.PutV(oid, DoorDelayModified, false)
+		m := mode
+		d := delay
+
+		if m == lib.ModeUnknown {
+			m = state.ControlState
 		}
 
-		log.Infof("%v  set door %v delay: %vs", deviceID, door, delay)
-	}
-}
-
-func (l *LAN) setDoorControl(c types.IController, door uint8, mode lib.ControlState) {
-	api := l.api([]types.IController{c})
-	deviceID := c.ID()
-
-	if err := api.SetDoorControl(deviceID, door, mode); err != nil {
-		log.Warnf("%v", err)
-	} else {
-		if oid, ok := c.Door(door); ok {
-			catalog.PutV(oid, DoorControl, mode)
-			catalog.PutV(oid, DoorControlModified, false)
+		if d == 0 {
+			d = state.Delay
 		}
 
-		log.Infof("%v  set door %v mode: %v", deviceID, door, mode)
+		if _, err := api.UHPPOTE.SetDoorControlState(deviceID, door, m, d); err != nil {
+			return err
+		}
+
+		log.Infof("%v  set door %v mode:%v delay: %vs", deviceID, door, m, d)
+
+		return nil
 	}
 }
 

@@ -254,6 +254,28 @@ func SynchronizeDateTime() error {
 	return nil
 }
 
+func SynchronizeDoors() error {
+	controllers := sys.controllers.AsIControllers()
+
+	for _, c := range controllers {
+		controller := c
+
+		for _, d := range []uint8{1, 2, 3, 4} {
+			if oid, ok := controller.Door(d); ok {
+				if door, ok := sys.doors.Door(oid); ok {
+					doorID := d
+
+					go func(id uint8, door doors.Door) {
+						sys.interfaces.SetDoor(controller, id, door.Mode(), door.Delay())
+					}(doorID, door)
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
 func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 	controllers := s.controllers.AsIControllers()
 

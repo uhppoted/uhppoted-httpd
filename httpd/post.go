@@ -74,14 +74,21 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		if d.mode == Monitor {
 			http.Error(w, "Synchronize ACL disabled in 'monitor' mode", http.StatusBadRequest)
 		} else {
-			d.synchronizeACL(w, r)
+			d.synchronize(w, r, system.SynchronizeACL)
 		}
 
 	case "/synchronize/datetime":
 		if d.mode == Monitor {
 			http.Error(w, "Synchronize date/time disabled in 'monitor' mode", http.StatusBadRequest)
 		} else {
-			d.synchronizeDateTime(w, r)
+			d.synchronize(w, r, system.SynchronizeDateTime)
+		}
+
+	case "/synchronize/doors":
+		if d.mode == Monitor {
+			http.Error(w, "Synchronize doors disabled in 'monitor' mode", http.StatusBadRequest)
+		} else {
+			d.synchronize(w, r, system.SynchronizeDoors)
 		}
 
 	default:
@@ -332,6 +339,37 @@ func (d *dispatcher) synchronizeDateTime(w http.ResponseWriter, r *http.Request)
 
 	go func() {
 		if err := system.SynchronizeDateTime(); err != nil {
+			warn("", err)
+
+			switch e := err.(type) {
+			case *types.HttpdError:
+				http.Error(w, e.Error(), e.Status)
+
+			default:
+				http.Error(w, e.Error(), http.StatusInternalServerError)
+			}
+		}
+
+		close(ch)
+	}()
+
+	select {
+	case <-ctx.Done():
+		warn("", ctx.Err())
+		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
+
+	case <-ch:
+	}
+}
+
+func (d *dispatcher) synchronize(w http.ResponseWriter, r *http.Request, f func() error) {
+	ch := make(chan struct{})
+	ctx, cancel := context.WithTimeout(d.context, d.timeout)
+
+	defer cancel()
+
+	go func() {
+		if err := f(); err != nil {
 			warn("", err)
 
 			switch e := err.(type) {

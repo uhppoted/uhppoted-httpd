@@ -5,13 +5,16 @@
       - [x] avatar jumps when opening menu
       - [x] update default auth.json for daemonize
 
+- [x] 'synchronize doors' admin menu option
+      - [x] update default auth.json for daemonize
+      - [x] replace LAN.setDoorControl and LAN.setDoorDelay with setDoor
+
 - (?) Maybe DBC should not be an interface ?
       - having to check for nil everywhere
       - make it a struct with an internal implementation ?
 
-- [ ] 'synchronize doors' admin menu option
 - (?) `mode:synchronize`
-- (?) 'find' on controller but not in DB
+- (?) 'find' cards on controller but not in DB
 - [ ] genericize combobox
 
 - [ ] Rework `create`

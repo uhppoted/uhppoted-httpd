@@ -268,15 +268,33 @@ func (ii *Interfaces) SetTime(controller types.IController, t time.Time) {
 	}
 }
 
+func (ii *Interfaces) SetDoor(controller types.IController, door uint8, mode lib.ControlState, delay uint8) {
+	if lan, ok := ii.LAN(); ok {
+		if err := lan.setDoor(controller, door, mode, delay); err != nil {
+			log.Warnf("%v", err)
+		}
+	}
+}
+
 func (ii *Interfaces) SetDoorControl(controller types.IController, door uint8, mode lib.ControlState) {
 	if lan, ok := ii.LAN(); ok {
-		lan.setDoorControl(controller, door, mode)
+		if err := lan.setDoor(controller, door, mode, 0); err != nil {
+			log.Warnf("%v", err)
+		} else if oid, ok := controller.Door(door); ok {
+			catalog.PutV(oid, DoorControl, mode)
+			catalog.PutV(oid, DoorControlModified, false)
+		}
 	}
 }
 
 func (ii *Interfaces) SetDoorDelay(controller types.IController, door uint8, delay uint8) {
 	if lan, ok := ii.LAN(); ok {
-		lan.setDoorDelay(controller, door, delay)
+		if err := lan.setDoor(controller, door, lib.ModeUnknown, delay); err != nil {
+			log.Warnf("%v", err)
+		} else if oid, ok := controller.Door(door); ok {
+			catalog.PutV(oid, DoorDelay, delay)
+			catalog.PutV(oid, DoorDelayModified, false)
+		}
 	}
 }
 
