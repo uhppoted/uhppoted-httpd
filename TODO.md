@@ -1,21 +1,16 @@
 ## v0.7.x
 
-- [x] 'synchronize date/time' admin menu option
-      - [x] table overlays menu
-      - [x] avatar jumps when opening menu
-      - [x] update default auth.json for daemonize
-
-- [x] 'synchronize doors' admin menu option
-      - [x] update default auth.json for daemonize
-      - [x] replace LAN.setDoorControl and LAN.setDoorDelay with setDoor
+- [ ] 'find' cards on controller
+      - [x] Mark as configured on edit
+      - [ ] Delete cards from controller on delete
+      - [ ] OnEnter to synchronize single card
 
 - (?) Maybe DBC should not be an interface ?
       - having to check for nil everywhere
       - make it a struct with an internal implementation ?
 
 - (?) `mode:synchronize`
-- (?) 'find' cards on controller but not in DB
-- [ ] genericize combobox
+- [ ] Genericize combobox
 
 - [ ] Rework `create`
       - [ ] Very fragile - uses 'new' status 
@@ -67,6 +62,8 @@
 
 ## TODO
 
+- (?) Appliance
+      - https://gokrazy.org
 - (?) Rearchitecture as data+rules
 - (?) Rearchitecture with channels 
 - [ ] Rethink passing DBC to every call - it's only for the logs and maybe the audit trail could

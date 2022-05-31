@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -118,6 +119,38 @@ func (cc *Cards) List() []Card {
 	return list
 }
 
+func (cc *Cards) Found(list []uint32) {
+	if cc != nil {
+	loop:
+		for _, c := range list {
+			for _, card := range cc.cards {
+				if c == card.CardID {
+					continue loop
+				}
+			}
+
+			card := Card{
+				CatalogCard: catalog.CatalogCard{
+					CardID: c,
+				},
+			}
+
+			oid := catalog.NewT(card.CatalogCard)
+			if _, ok := cc.cards[oid]; ok {
+				log.Warnf("Duplicate catalog entry (%v) for unconfigured card %v", oid, c)
+			} else {
+				card.OID = oid
+				card.created = types.TimestampNow()
+				card.unconfigured = true
+
+				cc.cards[card.OID] = &card
+
+				log.Infof("Adding unconfigured card %v", c)
+			}
+		}
+	}
+}
+
 func (cc *Cards) MarkIncorrect(list []uint32) {
 	if cc != nil {
 	loop:
@@ -171,7 +204,7 @@ func (cc *Cards) Save() (json.RawMessage, error) {
 
 	serializable := []json.RawMessage{}
 	for _, c := range cc.cards {
-		if c.IsValid() && !c.IsDeleted() {
+		if c.IsValid() && !c.IsDeleted() && !c.unconfigured {
 			if record, err := c.serialize(); err == nil && record != nil {
 				serializable = append(serializable, record)
 			}

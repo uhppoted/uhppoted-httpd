@@ -24,10 +24,11 @@ type Card struct {
 	to     lib.Date
 	groups map[schema.OID]bool
 
-	incorrect bool
-	created   types.Timestamp
-	modified  types.Timestamp
-	deleted   types.Timestamp
+	incorrect    bool
+	unconfigured bool
+	created      types.Timestamp
+	modified     types.Timestamp
+	deleted      types.Timestamp
 }
 
 type kv = struct {
@@ -294,6 +295,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	}
 
 	c.incorrect = false
+	c.unconfigured = false
 
 	if dbc != nil {
 		dbc.Updated(c.OID, "", c.CardID)
@@ -462,10 +464,12 @@ func (c *Card) clone() *Card {
 		to:     c.to,
 		groups: groups,
 
-		incorrect: c.incorrect,
-		created:   c.created,
-		modified:  c.modified,
-		deleted:   c.deleted,
+		created:  c.created,
+		modified: c.modified,
+		deleted:  c.deleted,
+
+		incorrect:    c.incorrect,
+		unconfigured: c.unconfigured,
 	}
 
 	return replicant

@@ -67,6 +67,7 @@ func (s *system) compareACL() {
 	} else if diff == nil {
 		warnf("Invalid ACL diff (%v)", diff)
 	} else {
+		found := map[uint32]struct{}{}
 		cards := map[uint32]struct{}{}
 
 		for _, v := range diff {
@@ -83,12 +84,23 @@ func (s *system) compareACL() {
 			}
 		}
 
-		list := []uint32{}
-		for k, _ := range cards {
-			list = append(list, k)
+		for _, v := range diff {
+			for _, v := range v.Added {
+				found[v.CardNumber] = struct{}{}
+			}
 		}
 
-		sys.cards.MarkIncorrect(list)
+		remap := func(cards map[uint32]struct{}) []uint32 {
+			list := []uint32{}
+			for k, _ := range cards {
+				list = append(list, k)
+			}
+
+			return list
+		}
+
+		sys.cards.Found(remap(found))
+		sys.cards.MarkIncorrect(remap(cards))
 	}
 }
 
