@@ -46,7 +46,7 @@ func (s *system) synchronizeACL() error {
 						end = *card.To
 					}
 
-					s.interfaces.SetCard(controller, card.CardNumber, start, end, permissions)
+					s.interfaces.PutCard(controller, card.CardNumber, start, end, permissions)
 				}
 			}(controller, list)
 		}
@@ -107,6 +107,10 @@ func (s *system) compareACL() {
 // NTS: revoke all if card is nil because card number may have changed and the old
 //      card will no longer have access
 func (s *system) updateCardPermissions(controller types.IController, cardID uint32) {
+	if cardID == 0 {
+		return
+	}
+
 	acl := map[uint8]uint8{
 		1: 0,
 		2: 0,
@@ -117,8 +121,9 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 	year := time.Now().Year()
 	from := lib.ToDate(year, time.January, 1)
 	to := lib.ToDate(year, time.December, 31)
+	card := s.cards.Lookup(cardID)
 
-	if card := s.cards.Lookup(cardID); card != nil {
+	if card != nil {
 		from = card.From()
 		to = card.To()
 
@@ -163,7 +168,11 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 		}
 	}
 
-	s.interfaces.SetCard(controller, cardID, from, to, acl)
+	s.interfaces.PutCard(controller, cardID, from, to, acl)
+
+	if card == nil || card.IsDeleted() {
+		s.interfaces.DeleteCard(controller, cardID)
+	}
 }
 
 func (s *system) permissions(controllers []types.IController) (acl.ACL, error) {

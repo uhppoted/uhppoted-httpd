@@ -430,7 +430,7 @@ func (l *LAN) setDoor(c types.IController, door uint8, mode lib.ControlState, de
 	}
 }
 
-func (l *LAN) setCard(c types.IController, cardID uint32, from, to lib.Date, permissions map[uint8]uint8) {
+func (l *LAN) putCard(c types.IController, cardID uint32, from, to lib.Date, permissions map[uint8]uint8) {
 	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 
@@ -451,7 +451,20 @@ func (l *LAN) setCard(c types.IController, cardID uint32, from, to lib.Date, per
 	} else if !ok {
 		log.Warnf("%v", fmt.Errorf("failed to update card %v", cardID))
 	} else {
-		log.Infof("%v  set card %v", deviceID, card)
+		log.Infof("%v  put card %v", deviceID, card)
+	}
+}
+
+func (l *LAN) deleteCard(c types.IController, card uint32) {
+	api := l.api([]types.IController{c})
+	deviceID := c.ID()
+
+	if ok, err := api.UHPPOTE.DeleteCard(deviceID, card); err != nil {
+		log.Warnf("%v", err)
+	} else if !ok {
+		log.Warnf("%v", fmt.Errorf("failed to delete card %v", card))
+	} else {
+		log.Infof("%v  deleted card %v", deviceID, card)
 	}
 }
 

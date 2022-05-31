@@ -321,6 +321,8 @@ func (c *Card) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 		}
 
 		uid := auth.UID(a)
+		original := c.clone()
+
 		if p := fmt.Sprintf("%v", types.Uint32(c.CardID)); p != "" {
 			c.log(dbc, uid, "delete", "card", "", "", "Deleted card %v", p)
 		} else if c.name != "" {
@@ -336,6 +338,14 @@ func (c *Card) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 		list = append(list, kv{CardStatus, c.Status()})
 
 		catalog.DeleteT(c.CatalogCard, c.OID)
+
+		if dbc != nil {
+			dbc.Updated(c.OID, "", c.CardID)
+
+			if original.CardID != c.CardID {
+				dbc.Updated(c.OID, "", original.CardID)
+			}
+		}
 	}
 
 	return c.toObjects(list, a), nil

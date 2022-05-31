@@ -298,9 +298,15 @@ func (ii *Interfaces) SetDoorDelay(controller types.IController, door uint8, del
 	}
 }
 
-func (ii *Interfaces) SetCard(controller types.IController, card uint32, from, to lib.Date, permissions map[uint8]uint8) {
+func (ii *Interfaces) PutCard(controller types.IController, card uint32, from, to lib.Date, permissions map[uint8]uint8) {
 	if lan, ok := ii.LAN(); ok {
-		lan.setCard(controller, card, from, to, permissions)
+		lan.putCard(controller, card, from, to, permissions)
+	}
+}
+
+func (ii *Interfaces) DeleteCard(controller types.IController, card uint32) {
+	if lan, ok := ii.LAN(); ok {
+		lan.deleteCard(controller, card)
 	}
 }
 

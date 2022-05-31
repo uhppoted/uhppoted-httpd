@@ -2,7 +2,7 @@
 
 - [ ] 'find' cards on controller
       - [x] Mark as configured on edit
-      - [ ] Delete cards from controller on delete
+      - [x] Delete cards from controller on delete
       - [ ] OnEnter to synchronize single card
 
 - (?) Maybe DBC should not be an interface ?
