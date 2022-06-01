@@ -11,90 +11,45 @@ import (
 	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
-// func (s *system) synchronizeACL() error {
-// 	year := time.Now().Year()
-// 	from := lib.ToDate(year, time.January, 1)
-// 	to := lib.ToDate(year, time.December, 31)
-// 	controllers := s.controllers.AsIControllers()
-
-// 	if acl, err := s.permissions(controllers); err != nil {
-// 		return err
-// 	} else {
-// 		var wg sync.WaitGroup
-// 		for _, c := range controllers {
-// 			wg.Add(1)
-
-// 			controller := c
-// 			list := []lib.Card{}
-// 			for _, card := range acl[controller.ID()] {
-// 				list = append(list, card)
-// 			}
-
-// 			go func(v types.IController, cards []lib.Card) {
-// 				defer wg.Done()
-
-// 				for _, card := range cards {
-// 					start := from
-// 					end := to
-// 					permissions := card.Doors
-
-// 					if card.From != nil {
-// 						start = *card.From
-// 					}
-
-// 					if card.To != nil {
-// 						end = *card.To
-// 					}
-
-// 					s.interfaces.PutCard(controller, card.CardNumber, start, end, permissions)
-// 				}
-// 			}(controller, list)
-// 		}
-
-// 		wg.Wait()
-// 	}
-
-// 	return nil
-// }
-
 func (s *system) synchronizeACL() error {
-	year := time.Now().Year()
-	from := lib.ToDate(year, time.January, 1)
-	to := lib.ToDate(year, time.December, 31)
 	controllers := s.controllers.AsIControllers()
 
 	if acl, err := s.permissions(controllers); err != nil {
-		return err
+		warnf("%v", err)
+	} else if diff, err := s.interfaces.CompareACL(controllers, acl); err != nil {
+		warnf("%v", err)
+	} else if diff == nil {
+		warnf("Invalid ACL diff (%v)", diff)
 	} else {
+		list := map[uint32]struct{}{}
+
+		for _, v := range diff {
+			for _, v := range v.Updated {
+				list[v.CardNumber] = struct{}{}
+			}
+
+			for _, v := range v.Added {
+				list[v.CardNumber] = struct{}{}
+			}
+
+			for _, v := range v.Deleted {
+				list[v.CardNumber] = struct{}{}
+			}
+		}
+
 		var wg sync.WaitGroup
+
 		for _, c := range controllers {
 			wg.Add(1)
 
 			controller := c
-			list := []lib.Card{}
-			for _, card := range acl[controller.ID()] {
-				list = append(list, card)
-			}
-
-			go func(v types.IController, cards []lib.Card) {
+			go func(v types.IController) {
 				defer wg.Done()
 
-				for _, card := range cards {
-					start := from
-					end := to
-					permissions := card.Doors
-
-					if card.From != nil {
-						start = *card.From
-					}
-
-					if card.To != nil {
-						end = *card.To
-					}
-
-					s.interfaces.PutCard(controller, card.CardNumber, start, end, permissions)
+				for card, _ := range list {
+					s.updateCardPermissions(controller, card)
 				}
-			}(controller, list)
+			}(controller)
 		}
 
 		wg.Wait()
@@ -167,7 +122,7 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 	year := time.Now().Year()
 	from := lib.ToDate(year, time.January, 1)
 	to := lib.ToDate(year, time.December, 31)
-	card := s.cards.Lookup(cardID)
+	card, unconfigured := s.cards.Lookup(cardID)
 
 	if card != nil {
 		from = card.From()
@@ -214,10 +169,10 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 		}
 	}
 
-	s.interfaces.PutCard(controller, cardID, from, to, acl)
-
-	if card == nil || card.IsDeleted() {
+	if card == nil || card.IsDeleted() || unconfigured {
 		s.interfaces.DeleteCard(controller, cardID)
+	} else {
+		s.interfaces.PutCard(controller, cardID, from, to, acl)
 	}
 }
 

@@ -27,19 +27,19 @@ func NewCards() Cards {
 	}
 }
 
-func (cc Cards) Lookup(card uint32) *Card {
+func (cc Cards) Lookup(card uint32) (*Card, bool) {
 	guard.RLock()
 	defer guard.RUnlock()
 
 	if card != 0 {
 		for _, v := range cc.cards {
 			if v.CardID == card {
-				return v
+				return v, v.unconfigured
 			}
 		}
 	}
 
-	return nil
+	return nil, false
 }
 
 func (cc *Cards) AsObjects(a *auth.Authorizator) []schema.Object {
@@ -120,33 +120,63 @@ func (cc *Cards) List() []Card {
 }
 
 func (cc *Cards) Found(list []uint32) {
-	if cc != nil {
-	loop:
-		for _, c := range list {
-			for _, card := range cc.cards {
-				if c == card.CardID {
-					continue loop
+	if cc == nil {
+		return
+	}
+
+	guard.Lock()
+	defer guard.Unlock()
+
+	remove := []*Card{}
+	add := []uint32{}
+
+	// FIXME O(N*M) - replace with merge (?)
+loop1:
+	for _, card := range cc.cards {
+		if card.unconfigured {
+			for _, c := range list {
+				if card.CardID == c {
+					continue loop1
 				}
 			}
 
-			card := Card{
-				CatalogCard: catalog.CatalogCard{
-					CardID: c,
-				},
+			remove = append(remove, card)
+		}
+	}
+
+loop2:
+	for _, c := range list {
+		for _, card := range cc.cards {
+			if c == card.CardID {
+				continue loop2
 			}
+		}
 
-			oid := catalog.NewT(card.CatalogCard)
-			if _, ok := cc.cards[oid]; ok {
-				log.Warnf("Duplicate catalog entry (%v) for unconfigured card %v", oid, c)
-			} else {
-				card.OID = oid
-				card.created = types.TimestampNow()
-				card.unconfigured = true
+		add = append(add, c)
+	}
 
-				cc.cards[card.OID] = &card
+	for _, card := range remove {
+		delete(cc.cards, card.OID)
+	}
 
-				log.Infof("Adding unconfigured card %v", c)
-			}
+	for _, c := range add {
+		card := Card{
+			CatalogCard: catalog.CatalogCard{
+				CardID: c,
+			},
+		}
+
+		oid := catalog.NewT(card.CatalogCard)
+		if _, ok := cc.cards[oid]; ok {
+			log.Warnf("Duplicate catalog entry (%v) for unconfigured card %v", oid, c)
+		} else {
+			card.OID = oid
+			card.created = types.TimestampNow()
+			card.unconfigured = true
+
+			cc.cards[card.OID] = &card
+
+			log.Infof("Adding unconfigured card %v", c)
 		}
 	}
 }
