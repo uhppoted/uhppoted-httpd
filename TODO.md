@@ -5,7 +5,9 @@
       - [x] Delete cards from controller on delete
       - [x] Run compare after update
       - [x] Delete cards on synchronize
-      - [ ] OnEnter to synchronize single card
+      - [x] OnEnter to synchronize single card
+      - [ ] Handle 'found' cards that were previously deleted
+            (e.g. delete found card and restart simulator)
 
 - (?) Maybe DBC should not be an interface ?
       - having to check for nil everywhere

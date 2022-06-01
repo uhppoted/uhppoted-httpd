@@ -139,26 +139,27 @@ export function onEdited (tag, event) {
 }
 
 export function onEnter (tag, event) {
+  const element = event.target
+  const tr = row(element)
+  const td = cell(element)
+  const oid = element.dataset.oid
   const status = event.target.dataset.status
+
   if (event.key === 'Enter') {
     switch (tag) {
       case 'interface':
-        LAN.set(event.target, event.target.value)
+        LAN.set(element, element.value)
         break
 
       case 'controller':
-        set(event.target, event.target.value)
+        set(element, element.value)
         break
 
       case 'door':
-        set(event.target, event.target.value, status)
+        set(element, element.value, status)
 
-        if (status === 'error') { // Allow 'forced' controller update for an error'd door
-          const element = event.target
-          const tr = row(event.target)
-          const td = cell(element)
-          const oid = element.dataset.oid
-
+        // Allow 'forced' controller update for an errored door mode/delay
+        if (status === 'error') {
           if (tr) {
             mark('modified', element, td)
             percolate(oid)
@@ -167,27 +168,21 @@ export function onEnter (tag, event) {
         break
 
       case 'card':
-        set(event.target, event.target.value)
+        set(element, element.value)
 
-        if (status === 'error') { // Allow 'forced' controller update for an error'd door
-          const element = event.target
-          const tr = row(event.target)
-          const td = cell(element)
-          const oid = element.dataset.oid
-
-          if (tr && tr.dataset.status === 'error') {
-            mark('modified', element, td)
-            percolate(oid)
-          }
+        // Allow 'forced' controller update for an errored card
+        if (status === 'error' || (tr && tr.dataset.status === 'error')) {
+          mark('modified', element, td)
+          percolate(oid)
         }
         break
 
       case 'group':
-        set(event.target, event.target.value)
+        set(element, element.value)
         break
 
       case 'user':
-        set(event.target, event.target.value)
+        set(element, element.value)
         break
     }
   }
