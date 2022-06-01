@@ -128,31 +128,24 @@ func (cc *Cards) Found(list []uint32) {
 	defer guard.Unlock()
 
 	remove := []*Card{}
-	add := []uint32{}
+	add := make([]uint32, len(list))
 
-	// FIXME O(N*M) - replace with merge (?)
-loop1:
+	copy(add, list)
+
+loop:
 	for _, card := range cc.cards {
-		if card.unconfigured {
-			for _, c := range list {
-				if card.CardID == c {
-					continue loop1
-				}
-			}
+		for ix, c := range add {
+			if card.CardID == c {
+				add[ix] = add[len(add)-1]
+				add = add[:len(add)-1]
 
+				continue loop
+			}
+		}
+
+		if card.unconfigured {
 			remove = append(remove, card)
 		}
-	}
-
-loop2:
-	for _, c := range list {
-		for _, card := range cc.cards {
-			if c == card.CardID {
-				continue loop2
-			}
-		}
-
-		add = append(add, c)
 	}
 
 	for _, card := range remove {
