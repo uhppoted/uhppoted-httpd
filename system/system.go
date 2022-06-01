@@ -237,7 +237,13 @@ func (s *system) refresh() {
 }
 
 func SynchronizeACL() error {
-	return sys.synchronizeACL()
+	if err := sys.synchronizeACL(); err != nil {
+		return err
+	}
+
+	sys.compareACL()
+
+	return nil
 }
 
 func SynchronizeDateTime() error {

@@ -11,6 +11,52 @@ import (
 	"github.com/uhppoted/uhppoted-lib/acl"
 )
 
+// func (s *system) synchronizeACL() error {
+// 	year := time.Now().Year()
+// 	from := lib.ToDate(year, time.January, 1)
+// 	to := lib.ToDate(year, time.December, 31)
+// 	controllers := s.controllers.AsIControllers()
+
+// 	if acl, err := s.permissions(controllers); err != nil {
+// 		return err
+// 	} else {
+// 		var wg sync.WaitGroup
+// 		for _, c := range controllers {
+// 			wg.Add(1)
+
+// 			controller := c
+// 			list := []lib.Card{}
+// 			for _, card := range acl[controller.ID()] {
+// 				list = append(list, card)
+// 			}
+
+// 			go func(v types.IController, cards []lib.Card) {
+// 				defer wg.Done()
+
+// 				for _, card := range cards {
+// 					start := from
+// 					end := to
+// 					permissions := card.Doors
+
+// 					if card.From != nil {
+// 						start = *card.From
+// 					}
+
+// 					if card.To != nil {
+// 						end = *card.To
+// 					}
+
+// 					s.interfaces.PutCard(controller, card.CardNumber, start, end, permissions)
+// 				}
+// 			}(controller, list)
+// 		}
+
+// 		wg.Wait()
+// 	}
+
+// 	return nil
+// }
+
 func (s *system) synchronizeACL() error {
 	year := time.Now().Year()
 	from := lib.ToDate(year, time.January, 1)
