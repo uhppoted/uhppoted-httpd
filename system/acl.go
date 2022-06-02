@@ -1,7 +1,6 @@
 package system
 
 import (
-	"fmt"
 	"sync"
 
 	lib "github.com/uhppoted/uhppote-core/types"
@@ -68,14 +67,6 @@ func (s *system) compareACL() {
 	} else if diff == nil {
 		warnf("Invalid ACL diff (%v)", diff)
 	} else {
-		for k, v := range acl {
-			fmt.Printf("??????? \n%v %+v\n", k, v)
-		}
-
-		for k, v := range diff {
-			fmt.Printf(">>>>>>> \n%v %+v\n", k, v)
-		}
-
 		found := map[uint32]struct{}{}
 		cards := map[uint32]struct{}{}
 
@@ -198,7 +189,7 @@ func (s *system) permissions(controllers []types.IController) (acl.ACL, error) {
 
 	for _, l := range acl {
 		for _, c := range cards {
-			if card, ok := c.AsAclCard(); ok {
+			if card, ok := c.AsAclCard(); ok && !c.IsDeleted() {
 				l[card.CardNumber] = card
 			}
 		}

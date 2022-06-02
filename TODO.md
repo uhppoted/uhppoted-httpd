@@ -8,7 +8,7 @@
       - [x] OnEnter to synchronize single card
       - [x] Handle 'found' cards that were previously added and then deleted
       - [x] Missing controller ID in log message
-      - [x] Found cards are still errored after edit????
+      - [x] Found cards are still errored after edit
 
 - (?) Maybe DBC should not be an interface ?
       - there's only one of the things anyway so the nil value is for testing convenience only

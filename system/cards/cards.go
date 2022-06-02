@@ -168,10 +168,6 @@ loop:
 		}
 	}
 
-	fmt.Printf(">> FOUND:  %v\n", found)
-	fmt.Printf(">> ADD:    %v\n", add)
-	fmt.Printf(">> REMOVE: %v\n", remove)
-
 	for _, card := range remove {
 		delete(cc.cards, card.OID)
 	}

@@ -5,14 +5,14 @@ go 1.18
 require (
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.3.0
-	github.com/hyperjumptech/grule-rule-engine v1.10.5
-	github.com/uhppoted/uhppote-core v0.7.3-0.20220530185650-4712a4c7232c
-	github.com/uhppoted/uhppoted-lib v0.7.3-0.20220525190100-0d782e10818f
+	github.com/hyperjumptech/grule-rule-engine v1.10.6
+	github.com/uhppoted/uhppote-core v0.7.4-0.20220602202019-fd260ffd5ad9
+	github.com/uhppoted/uhppoted-lib v0.7.3
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
 )
 
 require (
-	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20210928164016-886d244c73ef // indirect
+	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220527190237-ee62e23da966 // indirect
 	github.com/bmatcuk/doublestar v1.3.2 // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
