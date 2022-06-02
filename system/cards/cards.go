@@ -137,7 +137,7 @@ func (cc *Cards) List() []Card {
  * 7. This is insanely more complicated than it should be and there has to be a better
  *    way :-(
  */
-func (cc *Cards) Found(list []uint32) {
+func (cc *Cards) Found(found []uint32) {
 	if cc == nil {
 		return
 	}
@@ -146,16 +146,18 @@ func (cc *Cards) Found(list []uint32) {
 	defer guard.Unlock()
 
 	remove := []*Card{}
-	add := make([]uint32, len(list))
+	add := make([]uint32, len(found))
 
-	copy(add, list)
+	copy(add, found)
 
 loop:
 	for _, card := range cc.cards {
 		for ix, c := range add {
-			if card.CardID == c && !card.IsDeleted() {
-				add[ix] = add[len(add)-1]
-				add = add[:len(add)-1]
+			if card.CardID == c {
+				if !card.IsDeleted() {
+					add[ix] = add[len(add)-1]
+					add = add[:len(add)-1]
+				}
 
 				continue loop
 			}
@@ -165,6 +167,10 @@ loop:
 			remove = append(remove, card)
 		}
 	}
+
+	fmt.Printf(">> FOUND:  %v\n", found)
+	fmt.Printf(">> ADD:    %v\n", add)
+	fmt.Printf(">> REMOVE: %v\n", remove)
 
 	for _, card := range remove {
 		delete(cc.cards, card.OID)
@@ -221,7 +227,9 @@ func (cc *Cards) Load(blob json.RawMessage) error {
 
 	for _, v := range rs {
 		var c Card
-		if err := c.deserialize(v); err == nil {
+		if err := c.deserialize(v); err != nil {
+			fmt.Printf("#### LOAD/ERR: %v\n", err)
+		} else {
 			if _, ok := cc.cards[c.OID]; ok {
 				return fmt.Errorf("card '%v': duplicate OID (%v)", c.CardID, c.OID)
 			}

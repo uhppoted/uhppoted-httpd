@@ -1,8 +1,8 @@
 package system
 
 import (
+	"fmt"
 	"sync"
-	"time"
 
 	lib "github.com/uhppoted/uhppote-core/types"
 
@@ -68,6 +68,14 @@ func (s *system) compareACL() {
 	} else if diff == nil {
 		warnf("Invalid ACL diff (%v)", diff)
 	} else {
+		for k, v := range acl {
+			fmt.Printf("??????? \n%v %+v\n", k, v)
+		}
+
+		for k, v := range diff {
+			fmt.Printf(">>>>>>> \n%v %+v\n", k, v)
+		}
+
 		found := map[uint32]struct{}{}
 		cards := map[uint32]struct{}{}
 
@@ -119,9 +127,8 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 		4: 0,
 	}
 
-	year := time.Now().Year()
-	from := lib.ToDate(year, time.January, 1)
-	to := lib.ToDate(year, time.December, 31)
+	from := lib.Date{}
+	to := lib.Date{}
 	card, unconfigured := s.cards.Lookup(cardID)
 
 	if card != nil {

@@ -1,15 +1,14 @@
 ## v0.7.x
 
-- [ ] 'find' cards on controller
+- [x] 'find' cards on controller
       - [x] Mark as configured on edit
       - [x] Delete cards from controller on delete
       - [x] Run compare after update
       - [x] Delete cards on synchronize
       - [x] OnEnter to synchronize single card
       - [x] Handle 'found' cards that were previously added and then deleted
-      - [ ] Found cards are still errored after edit????
-            - because from/to
       - [x] Missing controller ID in log message
+      - [x] Found cards are still errored after edit????
 
 - (?) Maybe DBC should not be an interface ?
       - there's only one of the things anyway so the nil value is for testing convenience only

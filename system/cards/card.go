@@ -64,12 +64,8 @@ func (c Card) AsAclCard() (lib.Card, bool) {
 		Doors:      map[uint8]uint8{1: 0, 2: 0, 3: 0, 4: 0},
 	}
 
-	return card, c.CardID != 0 && c.from.IsValid() && c.to.IsValid()
+	return card, c.CardID != 0 && !c.unconfigured
 }
-
-// func (c Card) CardNumber() uint32 {
-// 	return c.card
-// }
 
 func (c Card) From() lib.Date {
 	return c.from
