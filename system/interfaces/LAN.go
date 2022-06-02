@@ -449,7 +449,7 @@ func (l *LAN) putCard(c types.IController, cardID uint32, from, to lib.Date, per
 	if ok, err := api.UHPPOTE.PutCard(deviceID, card); err != nil {
 		log.Warnf("%v", err)
 	} else if !ok {
-		log.Warnf("%v", fmt.Errorf("failed to update card %v", cardID))
+		log.Warnf("%v", fmt.Errorf("%v  failed to update card %v", deviceID, cardID))
 	} else {
 		log.Infof("%v  put card %v", deviceID, card)
 	}
@@ -462,7 +462,7 @@ func (l *LAN) deleteCard(c types.IController, card uint32) {
 	if ok, err := api.UHPPOTE.DeleteCard(deviceID, card); err != nil {
 		log.Warnf("%v", err)
 	} else if !ok {
-		log.Warnf("%v", fmt.Errorf("failed to delete card %v", card))
+		log.Warnf("%v", fmt.Errorf("%v  failed to delete card %v", deviceID, card))
 	} else {
 		log.Infof("%v  deleted card %v", deviceID, card)
 	}

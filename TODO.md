@@ -6,10 +6,13 @@
       - [x] Run compare after update
       - [x] Delete cards on synchronize
       - [x] OnEnter to synchronize single card
-      - [ ] Handle 'found' cards that were previously deleted
-            (e.g. delete found card and restart simulator)
+      - [x] Handle 'found' cards that were previously added and then deleted
+      - [ ] Found cards are still errored after edit????
+            - because from/to
+      - [x] Missing controller ID in log message
 
 - (?) Maybe DBC should not be an interface ?
+      - there's only one of the things anyway so the nil value is for testing convenience only
       - having to check for nil everywhere
       - make it a struct with an internal implementation ?
 

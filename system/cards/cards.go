@@ -119,6 +119,24 @@ func (cc *Cards) List() []Card {
 	return list
 }
 
+/* Some of this is a bit obscure, so:
+ *
+ * 1. FOUND cards are cards present on any one of the controllers that are not
+ *    in the cards list
+ * 2. A FOUND card is marked 'unconfigured' until manually edited which adds it
+ *    to the known list
+ * 3. A FOUND card that is deleted externally (e.g. by uhppote-cli) is automatically
+ *    removed
+ * 4. A FOUND card that is deleted is marked as deleted but left unconfigured. It is
+ *    removed from the controllers but not from the internal cards list until the next
+ *    scan.
+ * 5. The deleted flag is removed from a FOUND card that is deleted and subsequently
+ *    reinstated externally
+ * 6. A card that is 'known' but deleted and then reinstated externally is marked 'found'
+ *    and marked not deleted
+ * 7. This is insanely more complicated than it should be and there has to be a better
+ *    way :-(
+ */
 func (cc *Cards) Found(list []uint32) {
 	if cc == nil {
 		return
@@ -135,7 +153,7 @@ func (cc *Cards) Found(list []uint32) {
 loop:
 	for _, card := range cc.cards {
 		for ix, c := range add {
-			if card.CardID == c {
+			if card.CardID == c && !card.IsDeleted() {
 				add[ix] = add[len(add)-1]
 				add = add[:len(add)-1]
 
@@ -160,6 +178,7 @@ loop:
 		}
 
 		oid := catalog.NewT(card.CatalogCard)
+
 		if _, ok := cc.cards[oid]; ok {
 			log.Warnf("Duplicate catalog entry (%v) for unconfigured card %v", oid, c)
 		} else {
