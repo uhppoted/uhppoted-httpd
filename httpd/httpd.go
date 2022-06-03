@@ -17,19 +17,8 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/html"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
-
-type RunMode int
-
-const (
-	Normal RunMode = iota
-	Monitor
-	Synchronize
-)
-
-func (r RunMode) String() string {
-	return []string{"normal", "monitor", "synchronize"}[r]
-}
 
 type HTTPD struct {
 	HTML                     string
@@ -48,14 +37,14 @@ type dispatcher struct {
 	auth    auth.IAuth
 	context context.Context
 	timeout time.Duration
-	mode    RunMode
+	mode    types.RunMode
 }
 
 const (
 	SettingsCookie = "uhppoted-settings"
 )
 
-func (h *HTTPD) Run(mode RunMode, interrupt chan os.Signal) {
+func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 	// ... initialisation
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

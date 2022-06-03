@@ -114,6 +114,9 @@ run: build
 monitor: build
 	$(CMD) --debug --console --mode monitor
 
+synchronize: build
+	$(CMD) --debug --console --mode synchronize
+
 daemonize: build
 	sudo $(CMD) daemonize
 

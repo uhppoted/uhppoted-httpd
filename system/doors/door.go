@@ -53,6 +53,33 @@ func (d *Door) IsDeleted() bool {
 	return !d.deleted.IsZero()
 }
 
+func (d Door) IsOk() bool {
+	mode := types.StatusUnknown
+	delay := types.StatusUnknown
+
+	if v := catalog.GetV(d.OID, DoorControl); v != nil {
+		if b, ok := catalog.GetBool(d.OID, DoorControlModified); ok && b {
+			mode = types.StatusUncertain
+		} else if d.mode == v.(core.ControlState) {
+			mode = types.StatusOk
+		} else {
+			mode = types.StatusError
+		}
+	}
+
+	if v, ok := catalog.GetUint8(d.OID, DoorDelay); ok {
+		if b, ok := catalog.GetBool(d.OID, DoorDelayModified); ok && b {
+			delay = types.StatusUncertain
+		} else if v == d.delay {
+			delay = types.StatusOk
+		} else {
+			delay = types.StatusError
+		}
+	}
+
+	return mode != types.StatusError && delay != types.StatusError
+}
+
 func (d *Door) Mode() core.ControlState {
 	if d != nil {
 		return d.mode

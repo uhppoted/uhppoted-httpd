@@ -14,4 +14,6 @@ type IController interface {
 	EndPoint() *net.UDPAddr
 	TimeZone() *time.Location
 	Door(uint8) (schema.OID, bool)
+
+	DateTimeOk() bool
 }

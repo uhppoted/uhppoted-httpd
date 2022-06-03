@@ -32,7 +32,7 @@ func (r *Run) FlagSet() *flag.FlagSet {
 	flagset := flag.NewFlagSet("", flag.ExitOnError)
 
 	flagset.BoolVar(&r.console, "console", false, "Runs as a console application rather than a service")
-	flagset.StringVar(&r.mode, "mode", "update", "Sets the run mode ('monitor', 'update', 'synchronize') Defaults to 'update'")
+	flagset.StringVar(&r.mode, "mode", "update", "Sets the run mode (normal/monitor/synchronize). Defaults to 'normal'")
 	flagset.StringVar(&r.configuration, "config", r.configuration, "Sets the configuration file path")
 	flagset.BoolVar(&r.debug, "debug", false, "Enables detailed debugging logs")
 
@@ -103,13 +103,7 @@ func (cmd *Run) execute(f func(c config.Config)) error {
 
 	defer os.Remove(lockfile)
 
-	switch cmd.mode {
-	case "monitor":
-		f(*conf)
-
-	default:
-		f(*conf)
-	}
+	f(*conf)
 
 	return nil
 }
@@ -160,15 +154,11 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 		RequestTimeout:           conf.HTTPD.RequestTimeout,
 	}
 
-	if err := system.Init(conf, cmd.configuration, cmd.debug); err != nil {
+	runMode := types.ParseRunMode(cmd.mode)
+
+	if err := system.Init(conf, cmd.configuration, runMode, cmd.debug); err != nil {
 		panic(fmt.Errorf("Could not load system configuration (%v)", err))
 	}
 
-	switch cmd.mode {
-	case "monitor":
-		h.Run(httpd.Monitor, interrupt)
-
-	default:
-		h.Run(httpd.Normal, interrupt)
-	}
+	h.Run(runMode, interrupt)
 }

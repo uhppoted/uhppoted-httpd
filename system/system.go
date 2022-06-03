@@ -65,6 +65,7 @@ var sys = system{
 	users:       users.NewUsers(),
 	history:     history.NewHistory(),
 
+	mode:      types.Normal,
 	taskQ:     NewTaskQ(),
 	retention: 6 * time.Hour,
 }
@@ -88,6 +89,7 @@ type system struct {
 	taskQ     TaskQ
 	retention time.Duration // time after which 'deleted' items are permanently removed
 	trail     trail
+	mode      types.RunMode
 	debug     bool
 }
 
@@ -120,8 +122,10 @@ type serializable interface {
 	Print()
 }
 
-func Init(cfg config.Config, conf string, debug bool) error {
+func Init(cfg config.Config, conf string, mode types.RunMode, debug bool) error {
 	catalog.Init(memdb.NewCatalog())
+
+	sys.mode = mode
 
 	sys.files = map[Tag]string{
 		TagInterfaces:  cfg.HTTPD.System.Interfaces,
@@ -234,6 +238,78 @@ func (s *system) refresh() {
 			s.compareACL()
 		},
 	})
+
+	if sys.mode == types.Synchronize {
+		sys.taskQ.Add(Task{
+			f: func() {
+				s.synchronize()
+			},
+		})
+	}
+}
+
+func (s *system) synchronize() {
+	infof("Checking system synchronization")
+	controllers := sys.controllers.AsIControllers()
+
+	unsynchronized := struct {
+		datetime bool
+		doors    bool
+		ACL      bool
+	}{}
+
+	for _, c := range controllers {
+		if !c.DateTimeOk() {
+			warnf("Controller %v date/time out of synch", c.ID())
+			unsynchronized.datetime = true
+		}
+
+		for _, d := range []uint8{1, 2, 3, 4} {
+			if oid, ok := c.Door(d); ok {
+				if door, ok := sys.doors.Door(oid); ok {
+					if !door.IsOk() {
+						warnf("Door '%v' out of synch", door)
+						unsynchronized.doors = true
+					}
+				}
+			}
+		}
+	}
+
+	if acl, err := s.permissions(controllers); err != nil {
+		warnf("%v", err)
+	} else if diff, err := s.interfaces.CompareACL(controllers, acl); err != nil {
+		warnf("%v", err)
+	} else if diff == nil {
+		warnf("Invalid ACL diff (%v)", diff)
+	} else {
+		count := 0
+		for _, v := range diff {
+			count += len(v.Updated)
+			count += len(v.Added)
+			count += len(v.Deleted)
+		}
+
+		if count > 0 {
+			warnf("ACL out of synch")
+			unsynchronized.ACL = true
+		}
+	}
+
+	if unsynchronized.datetime {
+		warnf("Resynchronizing all controller date/times")
+		SynchronizeDateTime()
+	}
+
+	if unsynchronized.doors {
+		warnf("Resynchronizing mode and delay for all doors")
+		SynchronizeDoors()
+	}
+
+	if unsynchronized.ACL {
+		warnf("Resynchronizing ACL")
+		SynchronizeACL()
+	}
 }
 
 func SynchronizeACL() error {

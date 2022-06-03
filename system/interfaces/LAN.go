@@ -424,7 +424,7 @@ func (l *LAN) setDoor(c types.IController, door uint8, mode lib.ControlState, de
 			return err
 		}
 
-		log.Infof("%v  set door %v mode:%v delay: %vs", deviceID, door, m, d)
+		log.Infof("%v  set door %v mode:%-15v delay:%vs", deviceID, door, m, d)
 
 		return nil
 	}

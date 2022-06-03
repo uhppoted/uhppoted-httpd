@@ -33,12 +33,13 @@ type Controller struct {
 }
 
 type icontroller struct {
-	oid      schema.OID
-	name     string
-	id       uint32
-	endpoint *net.UDPAddr
-	timezone *time.Location
-	doors    map[uint8]schema.OID
+	oid          schema.OID
+	name         string
+	id           uint32
+	endpoint     *net.UDPAddr
+	timezone     *time.Location
+	doors        map[uint8]schema.OID
+	synchronized types.Status
 }
 
 type kv = struct {
@@ -264,13 +265,33 @@ func (c *Controller) AsIController() types.IController {
 		}
 	}
 
+	// ... get system date/time synchronization
+	synchronized := types.StatusUnknown
+	if cached := c.get(); cached != nil && !cached.datetime.datetime.IsZero() && !cached.datetime.modified {
+		tz, err := types.Timezone(c.timezone)
+		if err != nil {
+			tz = time.Local
+		}
+
+		t := time.Time(cached.datetime.datetime)
+		T := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), tz)
+		delta := math.Abs(time.Since(T).Round(time.Second).Seconds())
+
+		if delta <= math.Abs(windows.systime.Seconds()) {
+			synchronized = types.StatusOk
+		} else {
+			synchronized = types.StatusError
+		}
+	}
+
 	return &icontroller{
-		oid:      c.OID,
-		name:     c.name,
-		id:       c.DeviceID,
-		endpoint: endpoint,
-		timezone: location,
-		doors:    doors,
+		oid:          c.OID,
+		name:         c.name,
+		id:           c.DeviceID,
+		endpoint:     endpoint,
+		timezone:     location,
+		doors:        doors,
+		synchronized: synchronized,
 	}
 }
 
@@ -776,4 +797,8 @@ func (c icontroller) Door(d uint8) (schema.OID, bool) {
 	oid, ok := c.doors[d]
 
 	return oid, ok
+}
+
+func (c icontroller) DateTimeOk() bool {
+	return c.synchronized != types.StatusError
 }

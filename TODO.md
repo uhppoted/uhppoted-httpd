@@ -1,21 +1,13 @@
 ## v0.7.x
 
-- [x] 'find' cards on controller
-      - [x] Mark as configured on edit
-      - [x] Delete cards from controller on delete
-      - [x] Run compare after update
-      - [x] Delete cards on synchronize
-      - [x] OnEnter to synchronize single card
-      - [x] Handle 'found' cards that were previously added and then deleted
-      - [x] Missing controller ID in log message
-      - [x] Found cards are still errored after edit
+- [x] `mode:synchronize`
 
 - (?) Maybe DBC should not be an interface ?
-      - there's only one of the things anyway so the nil value is for testing convenience only
-      - having to check for nil everywhere
+      - have to check for nil everywhere :-(
+      - there's only one implementation anyway so the nil value is really for testing convenience
+      - BUT it's a shared value thing so should be passed as a pointer anyway (?)
       - make it a struct with an internal implementation ?
 
-- (?) `mode:synchronize`
 - [ ] Genericize combobox
 
 - [ ] Rework `create`
@@ -25,8 +17,6 @@
 - [ ] System XXX.validate should not return HttpdError
       - (?) maybe return SysError that might contain HTTP error
 - [ ] Make vtable'able subsystem an interface
-- [ ] CSS triangle-top-left
-      https://css-tricks.com/the-shapes-of-css/
   
 ### IN PROGRESS
 

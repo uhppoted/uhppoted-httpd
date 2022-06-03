@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 const GZIP_MINIMUM = 16384
@@ -157,7 +158,7 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 	page["mode"] = ""
 	page["readonly"] = false
 
-	if d.mode == Monitor {
+	if d.mode == types.Monitor {
 		page["readonly"] = true
 	}
 

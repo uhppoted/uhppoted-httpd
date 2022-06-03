@@ -61,7 +61,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		if handler := d.vtable(path); handler == nil || handler.post == nil {
 			warn("", fmt.Errorf("No vtable entry for %v", path))
 			http.Error(w, "internal system error", http.StatusInternalServerError)
-		} else if d.mode == Monitor {
+		} else if d.mode == types.Monitor {
 			warn("", fmt.Errorf("POST request in 'monitor' mode"))
 			http.Error(w, "Configuration changes are disabled in monitor-only mode", http.StatusBadRequest)
 		} else {
@@ -71,21 +71,21 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case "/synchronize/ACL":
-		if d.mode == Monitor {
+		if d.mode == types.Monitor {
 			http.Error(w, "Synchronize ACL disabled in 'monitor' mode", http.StatusBadRequest)
 		} else {
 			d.synchronize(w, r, system.SynchronizeACL)
 		}
 
 	case "/synchronize/datetime":
-		if d.mode == Monitor {
+		if d.mode == types.Monitor {
 			http.Error(w, "Synchronize date/time disabled in 'monitor' mode", http.StatusBadRequest)
 		} else {
 			d.synchronize(w, r, system.SynchronizeDateTime)
 		}
 
 	case "/synchronize/doors":
-		if d.mode == Monitor {
+		if d.mode == types.Monitor {
 			http.Error(w, "Synchronize doors disabled in 'monitor' mode", http.StatusBadRequest)
 		} else {
 			d.synchronize(w, r, system.SynchronizeDoors)
