@@ -40,6 +40,8 @@ const cards = `{ "cards": [] }`
 const groups = `{ "groups": [] }`
 const events = `{ "events": [] }`
 const logs = `{ "logs": [] }`
+const users = `{ "users": [] }`
+const history = `{ "history": [] }`
 const acl = ``
 
 const default_auth = `
@@ -474,6 +476,8 @@ func (cmd *Daemonize) sysinit(i info) error {
 		{"groups.json", groups},
 		{"events.json", events},
 		{"logs.json", logs},
+		{"users.json", users},
+		{"history.json", history},
 	}
 
 	for _, v := range files {

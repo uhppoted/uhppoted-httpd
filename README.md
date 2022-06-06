@@ -59,10 +59,18 @@ The `daemonize` command will create all the necessary files for `uhppoted-httpd`
 ### Building from source
 
 Required tools:
-- [Go 1.17+](https://go.dev)
+- [Go 1.18+](https://go.dev)
 - [sass](https://sass-lang.com)
 - make (optional but recommended)
 - [eslint](https://eslint.org) (optional but recommended)
+- [eslint-config-standard](https://www.npmjs.com/package/eslint-config-standard) (optional but recommended)
+
+**NOTE:**
+
+_`apt install` sass on Ubuntu installs `ruby-sass` which was marked [obsolete](https://sass-lang.com/ruby-sass)
+in 2019. Please follow the installation instructions on the [Sass homepage](https://sass-lang.com) to install
+the current version._
+
 
 To build using the included Makefile:
 
@@ -76,6 +84,7 @@ Without using `make`:
 ```
 git clone https://github.com/uhppoted/uhppoted-httpd.git
 cd uhppoted-httpd
+mkdir bin
 sass --no-source-map sass/themes/light:httpd/html/css/default
 sass --no-source-map sass/themes/light:httpd/html/css/light
 sass --no-source-map sass/themes/dark:httpd/html/css/dark

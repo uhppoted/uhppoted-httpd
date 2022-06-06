@@ -691,8 +691,8 @@ tr td select[data-status=error] {
 }
 
 .tooltip-wrap .tooltip-content {
-  color: #800000ff;
-  background-color: #ff000020;
+  color: maroon;
+  background-color: rgba(255, 0, 0, 0.1254901961);
   width: fit-content;
   white-space: nowrap;
   padding-top: 0.2em;

@@ -3,6 +3,11 @@
 - [x] Maybe DBC should not be an interface ?
 - [x] Setting both door mode and delay unsets the other one
 
+- [ ] Fix initial startup error:
+```
+2022/06/06 18:24:22 ERROR open /var/uhppoted/httpd/system/history.json: no such file or directory
+```
+
 - [ ] Genericize combobox
 
 - [ ] Rework `create`
