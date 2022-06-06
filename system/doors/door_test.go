@@ -13,6 +13,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -140,7 +141,7 @@ func TestDoorSet(t *testing.T) {
 		mode:  core.NormallyOpen,
 	}
 
-	objects, err := d.set(nil, "0.3.3.1", "Eine Kleine Dooren", nil)
+	objects, err := d.set(nil, "0.3.3.1", "Eine Kleine Dooren", db.DBC{})
 	if err != nil {
 		t.Errorf("Unexpected error (%v)", err)
 	}
@@ -170,7 +171,7 @@ func TestDoorSetWithDeleted(t *testing.T) {
 		schema.Object{OID: "0.3.3.0.2", Value: d.deleted},
 	}
 
-	objects, err := d.set(nil, "0.3.3.1", "Eine Kleine Dooren", nil)
+	objects, err := d.set(nil, "0.3.3.1", "Eine Kleine Dooren", db.DBC{})
 	if err == nil {
 		t.Errorf("Expected error, got (%v)", err)
 	}

@@ -506,9 +506,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 							list = append(list, kv{ControllerDateTimeConfigured, dt.Format("2006-01-02 15:04 MST")})
 						}
 
-						if dbc != nil {
-							dbc.Updated(c.OID, ControllerDateTime, dt)
-						}
+						dbc.Updated(c.OID, ControllerDateTime, dt)
 					}
 				}
 			}
@@ -768,9 +766,7 @@ func (c Controller) updated(dbc db.DBC, uid, field string, before, after interfa
 }
 
 func (c *Controller) log(dbc db.DBC, uid, op string, field string, before, after any, format string, fields ...any) {
-	if dbc != nil {
-		dbc.Log(uid, op, c.OID, "controller", c.DeviceID, c.name, field, before, after, format, fields...)
-	}
+	dbc.Log(uid, op, c.OID, "controller", c.DeviceID, c.name, field, before, after, format, fields...)
 }
 
 func (c icontroller) OID() schema.OID {

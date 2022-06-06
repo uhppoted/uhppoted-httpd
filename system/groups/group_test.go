@@ -11,6 +11,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -189,7 +190,7 @@ func TestGroupSet(t *testing.T) {
 		},
 	}
 
-	objects, err := g.set(nil, "0.5.3.1", "Ze Gruppe", nil)
+	objects, err := g.set(nil, "0.5.3.1", "Ze Gruppe", db.DBC{})
 	if err != nil {
 		t.Errorf("Unexpected error (%v)", err)
 	}
@@ -221,7 +222,7 @@ func TestGroupSetWithDeleted(t *testing.T) {
 		schema.Object{OID: "0.5.3.0.2", Value: g.deleted},
 	}
 
-	objects, err := g.set(nil, "0.5.3.1", "Ze Gruppe", nil)
+	objects, err := g.set(nil, "0.5.3.1", "Ze Gruppe", db.DBC{})
 	if err == nil {
 		t.Errorf("Expected error, got (%v)", err)
 	}

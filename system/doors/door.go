@@ -246,9 +246,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			list = append(list, kv{DoorDelayError, ""})
 			list = append(list, kv{DoorDelayModified, true})
 
-			if dbc != nil {
-				dbc.Updated(d.OID, DoorDelay, d.delay)
-			}
+			dbc.Updated(d.OID, DoorDelay, d.delay)
 
 			d.log(dbc, uid, "update", "delay", delay, value, "Updated delay from %vs to %vs", delay, value)
 		}
@@ -276,9 +274,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			list = append(list, kv{DoorControlError, ""})
 			list = append(list, kv{DoorControlModified, true})
 
-			if dbc != nil {
-				dbc.Updated(d.OID, DoorControl, d.mode)
-			}
+			dbc.Updated(d.OID, DoorControl, d.mode)
 
 			d.log(dbc, uid, "update", "mode", mode, value, "Updated mode from %v to %v", mode, value)
 		}
@@ -421,7 +417,5 @@ func (d *Door) log(dbc db.DBC, uid string, operation string, field string, befor
 	ID := fmt.Sprintf("%v/%v", deviceID, door)
 	name := d.name
 
-	if dbc != nil {
-		dbc.Log(uid, operation, d.OID, "door", ID, name, field, before, after, format, fields...)
-	}
+	dbc.Log(uid, operation, d.OID, "door", ID, name, field, before, after, format, fields...)
 }

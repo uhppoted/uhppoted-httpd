@@ -342,7 +342,5 @@ func (u User) clone() *User {
 }
 
 func (u User) log(dbc db.DBC, uid, op string, field string, before, after any, format string, fields ...any) {
-	if dbc != nil {
-		dbc.Log(uid, op, u.OID, "user", u.uid, u.name, field, before, after, format, fields...)
-	}
+	dbc.Log(uid, op, u.OID, "user", u.uid, u.name, field, before, after, format, fields...)
 }

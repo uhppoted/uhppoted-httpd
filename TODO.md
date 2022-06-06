@@ -1,12 +1,11 @@
 ## v0.7.x
 
-- [x] `mode:synchronize`
-
-- (?) Maybe DBC should not be an interface ?
-      - have to check for nil everywhere :-(
-      - there's only one implementation anyway so the nil value is really for testing convenience
-      - BUT it's a shared value thing so should be passed as a pointer anyway (?)
-      - make it a struct with an internal implementation ?
+- [x] Maybe DBC should not be an interface ?
+- [ ] Setting both door mode and delay unsets the other one
+```
+2022/06/06 09:16:01 INFO  303986753  set door 1 mode:normally open   delay:7s
+2022/06/06 09:16:01 INFO  303986753  set door 1 mode:controlled      delay:1s
+```
 
 - [ ] Genericize combobox
 

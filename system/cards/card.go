@@ -293,12 +293,10 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	c.incorrect = false
 	c.unconfigured = false
 
-	if dbc != nil {
-		dbc.Updated(c.OID, "", c.CardID)
+	dbc.Updated(c.OID, "", c.CardID)
 
-		if original.CardID != c.CardID {
-			dbc.Updated(c.OID, "", original.CardID)
-		}
+	if original.CardID != c.CardID {
+		dbc.Updated(c.OID, "", original.CardID)
 	}
 
 	list = append(list, kv{CardStatus, c.Status()})
@@ -335,12 +333,10 @@ func (c *Card) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 
 		catalog.DeleteT(c.CatalogCard, c.OID)
 
-		if dbc != nil {
-			dbc.Updated(c.OID, "", c.CardID)
+		dbc.Updated(c.OID, "", c.CardID)
 
-			if original.CardID != c.CardID {
-				dbc.Updated(c.OID, "", original.CardID)
-			}
+		if original.CardID != c.CardID {
+			dbc.Updated(c.OID, "", original.CardID)
 		}
 	}
 
@@ -482,7 +478,5 @@ func (c *Card) clone() *Card {
 }
 
 func (c *Card) log(dbc db.DBC, uid, op string, field string, before, after any, format string, fields ...any) {
-	if dbc != nil {
-		dbc.Log(uid, op, c.OID, "card", types.Uint32(c.CardID), c.name, field, before, after, format, fields...)
-	}
+	dbc.Log(uid, op, c.OID, "card", types.Uint32(c.CardID), c.name, field, before, after, format, fields...)
 }

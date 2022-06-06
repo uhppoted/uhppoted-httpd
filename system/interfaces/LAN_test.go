@@ -12,6 +12,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -146,7 +147,7 @@ func TestLANSet(t *testing.T) {
 		Name: "Le LAN",
 	}
 
-	objects, err := l.set(nil, "0.1.3.1", "Ze LAN", nil)
+	objects, err := l.set(nil, "0.1.3.1", "Ze LAN", db.DBC{})
 	if err != nil {
 		t.Errorf("Unexpected error (%v)", err)
 	}
@@ -174,7 +175,7 @@ func TestLANSetWithDeleted(t *testing.T) {
 		schema.Object{OID: "0.1.3.0.2", Value: l.deleted},
 	}
 
-	objects, err := l.set(nil, "0.1.3.1", "Ze LAN", nil)
+	objects, err := l.set(nil, "0.1.3.1", "Ze LAN", db.DBC{})
 	if err == nil {
 		t.Errorf("Expected error, got (%v)", err)
 	}

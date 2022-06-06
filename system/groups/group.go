@@ -176,9 +176,7 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 		}
 	}
 
-	if dbc != nil {
-		dbc.Updated(g.OID, "", g.Doors)
-	}
+	dbc.Updated(g.OID, "", g.Doors)
 
 	list = append(list, kv{GroupStatus, g.Status()})
 
@@ -311,7 +309,5 @@ func (g Group) clone() Group {
 }
 
 func (g *Group) log(dbc db.DBC, uid, op string, field string, before, after any, format string, fields ...any) {
-	if dbc != nil {
-		dbc.Log(uid, op, g.OID, "group", "", g.Name, field, before, after, format, fields...)
-	}
+	dbc.Log(uid, op, g.OID, "group", "", g.Name, field, before, after, format, fields...)
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
+	"github.com/uhppoted/uhppoted-httpd/system/db"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -141,7 +142,7 @@ func TestCardSet(t *testing.T) {
 		name: "Le Carte",
 	}
 
-	objects, err := c.set(nil, "0.4.3.1", "Ze Kardt", nil)
+	objects, err := c.set(nil, "0.4.3.1", "Ze Kardt", db.DBC{})
 	if err != nil {
 		t.Errorf("Unexpected error (%v)", err)
 	}
@@ -169,7 +170,7 @@ func TestCardSetWithDeleted(t *testing.T) {
 		schema.Object{OID: "0.4.3.0.2", Value: c.deleted},
 	}
 
-	objects, err := c.set(nil, "0.4.3.1", "Ze Kardt", nil)
+	objects, err := c.set(nil, "0.4.3.1", "Ze Kardt", db.DBC{})
 	if err == nil {
 		t.Errorf("Expected error, got (%v)", err)
 	}

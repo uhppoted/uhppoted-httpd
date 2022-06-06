@@ -734,7 +734,5 @@ func (l *LAN) deserialize(bytes []byte) error {
 }
 
 func (l *LAN) log(dbc db.DBC, uid string, op string, OID schema.OID, field string, before, after any, format string, fields ...any) {
-	if dbc != nil {
-		dbc.Log(uid, op, OID, "interface", "LAN", l.Name, field, before, after, format, fields...)
-	}
+	dbc.Log(uid, op, OID, "interface", "LAN", l.Name, field, before, after, format, fields...)
 }
