@@ -3,7 +3,6 @@ package interfaces
 import (
 	"encoding/json"
 	"fmt"
-	"sort"
 	"strings"
 	"time"
 
@@ -378,6 +377,9 @@ func (l *LAN) getEvents(c types.IController, intervals []types.Interval) {
 }
 
 func (l *LAN) setTime(c types.IController, t time.Time) {
+	lock(c.ID())
+	defer unlock(c.ID())
+
 	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 	location := c.TimeZone()
@@ -401,6 +403,9 @@ func (l *LAN) setTime(c types.IController, t time.Time) {
 }
 
 func (l *LAN) setDoor(c types.IController, door uint8, mode lib.ControlState, delay uint8) error {
+	lock(c.ID())
+	defer unlock(c.ID())
+
 	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 
@@ -431,6 +436,9 @@ func (l *LAN) setDoor(c types.IController, door uint8, mode lib.ControlState, de
 }
 
 func (l *LAN) putCard(c types.IController, cardID uint32, from, to lib.Date, permissions map[uint8]uint8) {
+	lock(c.ID())
+	defer unlock(c.ID())
+
 	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 
@@ -456,6 +464,9 @@ func (l *LAN) putCard(c types.IController, cardID uint32, from, to lib.Date, per
 }
 
 func (l *LAN) deleteCard(c types.IController, card uint32) {
+	lock(c.ID())
+	defer unlock(c.ID())
+
 	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 
@@ -469,6 +480,9 @@ func (l *LAN) deleteCard(c types.IController, card uint32) {
 }
 
 func (l *LAN) synchTime(c types.IController) {
+	lock(c.ID())
+	defer unlock(c.ID())
+
 	api := l.api([]types.IController{c})
 	deviceID := uhppoted.DeviceID(c.ID())
 	location := c.TimeZone()
@@ -498,6 +512,9 @@ func (l *LAN) synchTime(c types.IController) {
 }
 
 func (l *LAN) synchDoors(c types.IController) {
+	lock(c.ID())
+	defer unlock(c.ID())
+
 	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 
@@ -554,6 +571,9 @@ func (l *LAN) synchDoors(c types.IController) {
 }
 
 func (l *LAN) synchEventListener(c types.IController) {
+	lock(c.ID())
+	defer unlock(c.ID())
+
 	api := l.api([]types.IController{c})
 	deviceID := c.ID()
 	addr := l.ListenAddress
@@ -622,27 +642,6 @@ func (l *LAN) compareACL(controllers []types.IController, permissions acl.ACL) (
 	}
 
 	return compare, nil
-}
-
-func (l *LAN) UpdateACL(controllers []types.IController, permissions acl.ACL) error {
-	log.Infof("%v", "Updating ACL")
-
-	api := l.api(controllers)
-	rpt, errors := acl.PutACL(api.UHPPOTE, permissions, false)
-	for _, err := range errors {
-		log.Warnf("%v", err)
-	}
-
-	keys := []uint32{}
-	for k, _ := range rpt {
-		keys = append(keys, k)
-	}
-
-	sort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })
-
-	log.Infof("%v", "ACL updated")
-
-	return nil
 }
 
 func (l *LAN) status() types.Status {

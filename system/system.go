@@ -410,9 +410,11 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 		for _, c := range controllers {
 			for _, i := range []uint8{1, 2, 3, 4} {
 				if d, ok := c.Door(i); ok && d == oid {
+					ddoor, _ := sys.doors.Door(oid)
 					controller := c
 					door := i
 					go func() {
+						fmt.Printf(">>>>>>>> SetDoorControl - value:%v  configured:%v\n", value.(core.ControlState), ddoor.Mode())
 						s.interfaces.SetDoorControl(controller, door, value.(core.ControlState))
 					}()
 					return
@@ -420,13 +422,16 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 			}
 		}
 
-	case oid.HasPrefix(schema.DoorsOID) && (field == schema.DoorControl || field == schema.DoorDelay):
+	case oid.HasPrefix(schema.DoorsOID) && field == schema.DoorDelay:
 		for _, c := range controllers {
 			controller := c
 			for _, i := range []uint8{1, 2, 3, 4} {
 				door := i
 				if d, ok := c.Door(i); ok && d == oid {
+					ddoor, _ := sys.doors.Door(oid)
+
 					go func() {
+						fmt.Printf(">>>>>>>> SetDoorDelay   - value:%v  configured:%v\n", value.(uint8), ddoor.Delay())
 						s.interfaces.SetDoorDelay(controller, door, value.(uint8))
 					}()
 					return

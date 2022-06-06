@@ -23,6 +23,7 @@ type Interfaces struct {
 	ch   chan types.EventsList
 }
 
+var guards = sync.Map{}
 var guard sync.RWMutex
 
 func NewInterfaces(ch chan types.EventsList) Interfaces {
@@ -377,4 +378,17 @@ func (ii *Interfaces) SynchEventListeners(controllers []types.IController) {
 
 func (ii *Interfaces) add(auth auth.OpAuth, l LAN) (*LAN, error) {
 	return nil, fmt.Errorf("NOT SUPPORTED")
+}
+
+func lock(id uint32) {
+	g := sync.Mutex{}
+	if guard, _ := guards.LoadOrStore(id, &g); guard != nil {
+		guard.(*sync.Mutex).Lock()
+	}
+}
+
+func unlock(id uint32) {
+	if guard, ok := guards.Load(id); ok && guard != nil {
+		guard.(*sync.Mutex).Unlock()
+	}
 }
