@@ -1,7 +1,8 @@
 import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
-import * as combobox from './datetime.js'
+import { Combobox } from './combobox.js'
+import { timezones } from './timezones.js'
 
 export function refreshed () {
   const list = [...DB.controllers.values()]
@@ -99,7 +100,7 @@ function add (oid, record) {
     })
 
     // .. initialise date/time picker
-    combobox.initialise(row.querySelector('td.combobox'))
+    combobox(row.querySelector('td.combobox'))
 
     return row
   }
@@ -171,4 +172,16 @@ function updateFromDB (oid, record) {
   datetime.dataset.original = record.datetime.configured
 
   return row
+}
+
+function combobox (div) {
+  const input = div.querySelector('input')
+  const list = div.querySelector('ul')
+  const now = new Date()
+  const options = new Set([...timezones.entries()].map(([tz, f]) => { return f(now, tz) }).sort())
+  const cb = new Combobox(input, list)
+
+  cb.initialise(options)
+
+  return cb
 }

@@ -1,6 +1,4 @@
-import { timezones } from './timezones.js'
-
-class Combobox {
+export class Combobox {
   constructor (input, list) {
     this.input = input
     this.list = list
@@ -14,7 +12,7 @@ class Combobox {
     this.first = null
     this.last = null
 
-    // ... setup input field
+    // // ... setup input field
     this.input.addEventListener('keydown', this.onInputKeyDown.bind(this))
     this.input.addEventListener('keyup', this.onInputKeyUp.bind(this))
     this.input.addEventListener('click', this.onInputClick.bind(this))
@@ -26,10 +24,7 @@ class Combobox {
     this.list.addEventListener('mouseout', this.onMouseOut.bind(this))
   }
 
-  initialise () {
-    const now = new Date()
-    const options = new Set([...timezones.entries()].map(([tz, f]) => { return f(now, tz) }).sort())
-
+  initialise (options) {
     for (const e of [...(this.list.children)]) {
       this.list.removeChild(e)
     }
@@ -69,7 +64,7 @@ class Combobox {
 
   setFocusCombobox () {
     this.list.classList.remove('focus')
-    this.input.parentNode.classList.add('focus') // set the focus class to the parent for easier styling
+    this.input.parentNode.classList.add('focus')
     this.inputHasFocus = true
     this.listHasFocus = false
   }
@@ -166,6 +161,7 @@ class Combobox {
       case 'Enter':
         if (this.listHasFocus) {
           this.setValue(this.option.textContent)
+          this.input.dispatchEvent(new Event('change', { bubbles: false, cancelable: true }))
         }
         this.close(true)
         this.setFocusCombobox()
@@ -213,8 +209,8 @@ class Combobox {
           this.close(true)
           this.setFocusCombobox()
         } else {
-          this.setValue('')
-          this.input.value = ''
+          // this.setValue('')
+          // this.input.value = ''
         }
         this.option = null
         flag = true
@@ -318,14 +314,4 @@ class Combobox {
     this.hasHover = false
     setTimeout(this.close.bind(this, false), 100)
   }
-}
-
-export function initialise (combobox) {
-  const input = combobox.querySelector('input')
-  const list = combobox.querySelector('ul')
-  const cb = new Combobox(input, list)
-
-  cb.initialise()
-
-  return cb
 }

@@ -1,6 +1,6 @@
 import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
-import * as combobox from './mode.js'
+import { Combobox } from './combobox.js'
 
 export function refreshed () {
   const doors = [...DB.doors.values()]
@@ -94,7 +94,7 @@ function add (oid) {
       }
     })
 
-    combobox.initialise(row.querySelector('td.combobox'))
+    combobox(row.querySelector('td.combobox'))
 
     return row
   }
@@ -192,4 +192,15 @@ function lookup (record) {
   }
 
   return object
+}
+
+function combobox (div) {
+  const input = div.querySelector('input')
+  const list = div.querySelector('ul')
+  const options = new Set(['controlled', 'normally open', 'normally closed'])
+  const cb = new Combobox(input, list)
+
+  cb.initialise(options)
+
+  return cb
 }

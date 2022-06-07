@@ -1,14 +1,12 @@
 ## v0.7.x
 
 - [x] Rework `create`
-
-- [ ] Genericize combobox
+- [x] Genericize combobox
+- [ ] Timezone: GMT+2 goes to local
 
 - [ ] System XXX.validate should not return HttpdError
       - (?) maybe return SysError that might contain HTTP error
 - [ ] Make vtable'able subsystem an interface
-  
-### IN PROGRESS
 
 - [ ] README
       - [ ] uhppoted.conf
@@ -16,6 +14,8 @@
       - [ ] grules
       - [ ] auth.json
       - [ ] /var/...
+  
+### IN PROGRESS
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -31,9 +31,7 @@
 
 #### Cards
   - [ ] Weirdness around card add/delete
-        - [x] Return error for edits to card without name or number (e.g.'new' card)
         - [ ] What happens if other edits happen before card name/number is updated (e.g. for delete/add)?
-
   - [ ] `refresh` is overwriting pending group edits
   - [ ] Replace dataset.original with value from DB
 
@@ -41,7 +39,6 @@
       - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name
       - validate Local::Device timezone on initialization
       - limit number of pending 'update' requests (e.g. if device is not responding)
-      - use uhppoted-lib::healthcheck
 
 ## TODO
 
