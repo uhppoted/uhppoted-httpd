@@ -1,18 +1,8 @@
 ## v0.7.x
 
-- [x] Maybe DBC should not be an interface ?
-- [x] Setting both door mode and delay unsets the other one
-
-- [ ] Fix initial startup error:
-```
-2022/06/06 18:24:22 ERROR open /var/uhppoted/httpd/system/history.json: no such file or directory
-```
+- [x] Rework `create`
 
 - [ ] Genericize combobox
-
-- [ ] Rework `create`
-      - [ ] Very fragile - uses 'new' status 
-      - [ ] Maybe invoke 'create' explicitly a la delete
 
 - [ ] System XXX.validate should not return HttpdError
       - (?) maybe return SysError that might contain HTTP error
@@ -25,6 +15,7 @@
       - [ ] HTML
       - [ ] grules
       - [ ] auth.json
+      - [ ] /var/...
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -43,15 +34,11 @@
         - [x] Return error for edits to card without name or number (e.g.'new' card)
         - [ ] What happens if other edits happen before card name/number is updated (e.g. for delete/add)?
 
-  - [x] Rethink CardHolder.Card (pointer implementation is unnecessarily messy)
   - [ ] `refresh` is overwriting pending group edits
   - [ ] Replace dataset.original with value from DB
-  - [x] Unit test for AsObjects
 
 #### System
       - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name
-      - [x] Add controller name to uhppote-core
-      - [x] Add timezone to uhppote-core
       - validate Local::Device timezone on initialization
       - limit number of pending 'update' requests (e.g. if device is not responding)
       - use uhppoted-lib::healthcheck

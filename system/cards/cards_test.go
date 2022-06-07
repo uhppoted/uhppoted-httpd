@@ -74,7 +74,7 @@ func TestCardAdd(t *testing.T) {
 
 	catalog.PutT(hagrid.CatalogCard)
 
-	r, err := cards.UpdateByOID(nil, "<new>", "", db.DBC{})
+	r, err := cards.Create(nil, "<new>", "", db.DBC{})
 	if err != nil {
 		t.Fatalf("Unexpected error adding new card (%v)", err)
 	}
@@ -98,7 +98,7 @@ func TestCardAddWithAuth(t *testing.T) {
 
 	catalog.PutT(hagrid.CatalogCard)
 
-	r, err := cards.UpdateByOID(&a, "<new>", "", db.DBC{})
+	r, err := cards.Create(&a, "<new>", "", db.DBC{})
 	if err == nil {
 		t.Errorf("Expected 'not authorised' error adding card, got:%v", err)
 	}
@@ -153,7 +153,7 @@ func TestCardAddWithAuditTrail(t *testing.T) {
 
 	catalog.PutT(hagrid.CatalogCard)
 
-	r, err := cards.UpdateByOID(nil, "<new>", "", db.DBCWithImpl(&trail))
+	r, err := cards.Create(nil, "<new>", "", db.DBCWithImpl(&trail))
 	if err != nil {
 		t.Fatalf("Unexpected error adding new card (%v)", err)
 	}
@@ -182,7 +182,7 @@ func TestCardUpdate(t *testing.T) {
 		{OID: "0.4.1.0.0", Value: types.StatusOk},
 	}
 
-	objects, err := cards.UpdateByOID(nil, hagrid.OID.Append(CardNumber), "1234567", db.DBC{})
+	objects, err := cards.Update(nil, hagrid.OID.Append(CardNumber), "1234567", db.DBC{})
 	if err != nil {
 		t.Errorf("Unexpected error updating card (%v)", err)
 	}
@@ -200,7 +200,7 @@ func TestCardUpdateWithInvalidOID(t *testing.T) {
 	final := makeCards(hagrid)
 	expected := []schema.Object{}
 
-	objects, err := cards.UpdateByOID(nil, "0.4.5.2", "1234567", db.DBC{})
+	objects, err := cards.Update(nil, "0.4.5.2", "1234567", db.DBC{})
 	if err != nil {
 		t.Errorf("Unexpected error updating card (%v)", err)
 	}
@@ -220,7 +220,7 @@ func TestCardUpdateWithAuth(t *testing.T) {
 		OpAuth: &stub{},
 	}
 
-	if _, err := cards.UpdateByOID(&auth, hagrid.OID.Append(CardNumber), "1234567", db.DBC{}); err == nil {
+	if _, err := cards.Update(&auth, hagrid.OID.Append(CardNumber), "1234567", db.DBC{}); err == nil {
 		t.Errorf("Expected 'not authorised' error updating card, got:%v", err)
 	}
 
@@ -261,7 +261,7 @@ func TestCardUpdateWithAuditTrail(t *testing.T) {
 		db: makeCards(makeCard(hagrid.OID, "Hagrid", 1234567)),
 	}
 
-	objects, err := cards.UpdateByOID(nil, hagrid.OID.Append(CardNumber), "1234567", db.DBCWithImpl(&trail))
+	objects, err := cards.Update(nil, hagrid.OID.Append(CardNumber), "1234567", db.DBCWithImpl(&trail))
 	if err != nil {
 		t.Errorf("Unexpected error updating card (%v)", err)
 	}
@@ -283,7 +283,7 @@ func TestCardUpdateWithAuditTrail(t *testing.T) {
 func TestDuplicateCardNumberUpdate(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 
-	_, err := cards.UpdateByOID(nil, "0.4.1.2", "1234567", db.DBC{})
+	_, err := cards.Update(nil, "0.4.1.2", "1234567", db.DBC{})
 	if err != nil {
 		t.Errorf("Unexpected error updating cards (%v)", err)
 	}
@@ -297,11 +297,11 @@ func TestCardNumberSwap(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 	final := makeCards(makeCard("0.4.1", "Hagrid", 1234567), makeCard("0.4.2", "Dobby", 6514231, "G05"))
 
-	if _, err := cards.UpdateByOID(nil, "0.4.1.2", "1234567", db.DBC{}); err != nil {
+	if _, err := cards.Update(nil, "0.4.1.2", "1234567", db.DBC{}); err != nil {
 		t.Fatalf("Unexpected error updating cards (%v)", err)
 	}
 
-	if _, err := cards.UpdateByOID(nil, "0.4.2.2", "6514231", db.DBC{}); err != nil {
+	if _, err := cards.Update(nil, "0.4.2.2", "6514231", db.DBC{}); err != nil {
 		t.Fatalf("Unexpected error updating cards (%v)", err)
 	}
 
@@ -330,7 +330,7 @@ func TestCardUpdateAddGroup(t *testing.T) {
 		{OID: "0.4.1.0.0", Value: types.StatusOk},
 	}
 
-	objects, err := cards.UpdateByOID(nil, schema.OID("0.4.1.5.10"), "true", db.DBC{})
+	objects, err := cards.Update(nil, schema.OID("0.4.1.5.10"), "true", db.DBC{})
 	if err != nil {
 		t.Errorf("Unexpected error updating card [%v]", err)
 	}
@@ -362,7 +362,7 @@ func TestCardUpdateRemoveGroup(t *testing.T) {
 		{OID: "0.4.1.0.0", Value: types.StatusOk},
 	}
 
-	objects, err := cards.UpdateByOID(nil, schema.OID("0.4.1.5.10"), "false", db.DBC{})
+	objects, err := cards.Update(nil, schema.OID("0.4.1.5.10"), "false", db.DBC{})
 	if err != nil {
 		t.Errorf("Unexpected error updating card (%v)", err)
 	}
@@ -379,7 +379,7 @@ func TestCardUpdateWithInvalidGroup(t *testing.T) {
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid)
 
-	objects, err := cards.UpdateByOID(nil, schema.OID("0.4.1.5.99"), "true", db.DBC{})
+	objects, err := cards.Update(nil, schema.OID("0.4.1.5.99"), "true", db.DBC{})
 	if err == nil {
 		t.Errorf("Expected error updating card, got:%v", err)
 	}
@@ -393,7 +393,7 @@ func TestCardDelete(t *testing.T) {
 
 	catalog.PutT(hagrid.CatalogCard)
 
-	if _, err := cards.DeleteByOID(nil, dobby.OID, db.DBC{}); err != nil {
+	if _, err := cards.Delete(nil, dobby.OID, db.DBC{}); err != nil {
 		t.Fatalf("Unexpected error deleting card (%v)", err)
 	}
 
@@ -416,7 +416,7 @@ func TestCardHolderDeleteWithAuth(t *testing.T) {
 		},
 	}
 
-	if _, err := cards.DeleteByOID(&auth, dobby.OID, db.DBC{}); err == nil {
+	if _, err := cards.Delete(&auth, dobby.OID, db.DBC{}); err == nil {
 		t.Fatalf("Expected 'not authorised' error deleting card, got:%v", err)
 	}
 }
@@ -455,7 +455,7 @@ func TestCardHolderDeleteWithAuditTrail(t *testing.T) {
 	catalog.PutT(hagrid.CatalogCard)
 	catalog.PutT(dobby.CatalogCard)
 
-	cards.DeleteByOID(nil, dobby.OID, db.DBCWithImpl(&trail))
+	cards.Delete(nil, dobby.OID, db.DBCWithImpl(&trail))
 
 	compareDB(cards, expected.db, t)
 

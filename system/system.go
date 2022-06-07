@@ -473,19 +473,20 @@ func subsystems() []struct {
 	}
 }
 
-func unpack(m map[string]interface{}) ([]object, []schema.OID, error) {
+func unpack(m map[string]interface{}) ([]object, []object, []schema.OID, error) {
 	f := func(err error) error {
 		return types.BadRequest(fmt.Errorf("Invalid request (%v)", err), fmt.Errorf("Error unpacking 'post' request (%w)", err))
 	}
 
 	o := struct {
-		Objects []object     `json:"objects"`
+		Created []object     `json:"created"`
+		Updated []object     `json:"updated"`
 		Deleted []schema.OID `json:"deleted"`
 	}{}
 
 	blob, err := json.Marshal(m)
 	if err != nil {
-		return nil, nil, f(err)
+		return nil, nil, nil, f(err)
 	}
 
 	if sys.debug {
@@ -493,10 +494,10 @@ func unpack(m map[string]interface{}) ([]object, []schema.OID, error) {
 	}
 
 	if err := json.Unmarshal(blob, &o); err != nil {
-		return nil, nil, f(err)
+		return nil, nil, nil, f(err)
 	}
 
-	return o.Objects, o.Deleted, nil
+	return o.Created, o.Updated, o.Deleted, nil
 }
 
 func load(tag Tag, v serializable) error {

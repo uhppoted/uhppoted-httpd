@@ -66,6 +66,63 @@ func (dd *Doors) AsObjects(a *auth.Authorizator) []schema.Object {
 	return objects
 }
 
+func (dd *Doors) Create(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+	objects := []schema.Object{}
+
+	if dd != nil {
+		if d, err := dd.add(a, Door{}); err != nil {
+			return nil, err
+		} else if d == nil {
+			return nil, fmt.Errorf("Failed to add 'new' door")
+		} else {
+			catalog.Join(&objects, catalog.NewObject(d.OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
+
+			d.log(dbc, auth.UID(a), "add", "door", "", "", "Added 'new' door")
+		}
+	}
+
+	return objects, nil
+}
+
+func (dd *Doors) Update(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+	objects := []schema.Object{}
+
+	if dd != nil {
+		for k, d := range dd.doors {
+			if d.OID.Contains(oid) {
+				objects, err := d.set(a, oid, value, dbc)
+				if err == nil {
+					dd.doors[k] = d
+				}
+
+				return objects, err
+			}
+		}
+	}
+
+	return objects, nil
+}
+
+func (dd *Doors) Delete(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+	objects := []schema.Object{}
+
+	if dd != nil {
+		for k, d := range dd.doors {
+			if d.OID == oid {
+				objects, err := d.delete(a, dbc)
+				if err == nil {
+					dd.doors[k] = d
+				}
+
+				return objects, err
+			}
+		}
+	}
+
+	return objects, nil
+}
+
 func (dd *Doors) Load(blob json.RawMessage) error {
 	rs := []json.RawMessage{}
 	if err := json.Unmarshal(blob, &rs); err != nil {
@@ -138,57 +195,6 @@ func (dd Doors) Print() {
 	if b, err := json.MarshalIndent(serializable, "", "  "); err == nil {
 		fmt.Printf("----------------- DOORS\n%s\n", string(b))
 	}
-}
-
-func (dd *Doors) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
-	objects := []schema.Object{}
-
-	if dd != nil {
-		for k, d := range dd.doors {
-			if d.OID.Contains(oid) {
-				objects, err := d.set(a, oid, value, dbc)
-				if err == nil {
-					dd.doors[k] = d
-				}
-
-				return objects, err
-			}
-		}
-
-		if oid == "<new>" {
-			if d, err := dd.add(a, Door{}); err != nil {
-				return nil, err
-			} else if d == nil {
-				return nil, fmt.Errorf("Failed to add 'new' door")
-			} else {
-				catalog.Join(&objects, catalog.NewObject(d.OID, "new"))
-				catalog.Join(&objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
-
-				d.log(dbc, auth.UID(a), "add", "door", "", "", "Added 'new' door")
-			}
-		}
-	}
-
-	return objects, nil
-}
-
-func (dd *Doors) DeleteByOID(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
-	objects := []schema.Object{}
-
-	if dd != nil {
-		for k, d := range dd.doors {
-			if d.OID == oid {
-				objects, err := d.delete(a, dbc)
-				if err == nil {
-					dd.doors[k] = d
-				}
-
-				return objects, err
-			}
-		}
-	}
-
-	return objects, nil
 }
 
 func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {

@@ -25,7 +25,7 @@ func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interfac
 
 	defer sys.Unlock()
 
-	updated, deleted, err := unpack(m)
+	created, updated, deleted, err := unpack(m)
 	if err != nil {
 		return nil, err
 	}
@@ -33,8 +33,16 @@ func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interfac
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.controllers.Clone()
 
+	for _, o := range created {
+		if objects, err := shadow.Create(a, o.OID, o.Value, dbc); err != nil {
+			return nil, err
+		} else {
+			dbc.Stash(objects)
+		}
+	}
+
 	for _, o := range updated {
-		if objects, err := shadow.UpdateByOID(a, o.OID, o.Value, dbc); err != nil {
+		if objects, err := shadow.Update(a, o.OID, o.Value, dbc); err != nil {
 			return nil, err
 		} else {
 			dbc.Stash(objects)
@@ -42,7 +50,7 @@ func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interfac
 	}
 
 	for _, oid := range deleted {
-		if objects, err := shadow.DeleteByOID(a, oid, dbc); err != nil {
+		if objects, err := shadow.Delete(a, oid, dbc); err != nil {
 			return nil, err
 		} else {
 			dbc.Stash(objects)

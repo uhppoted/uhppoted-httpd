@@ -56,7 +56,26 @@ func (cc *Cards) AsObjects(a *auth.Authorizator) []schema.Object {
 	return objects
 }
 
-func (cc *Cards) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (cc *Cards) Create(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+	objects := []schema.Object{}
+
+	if cc != nil {
+		if c, err := cc.add(a, Card{}); err != nil {
+			return nil, err
+		} else if c == nil {
+			return nil, fmt.Errorf("Failed to add 'new' card")
+		} else {
+			c.log(dbc, auth.UID(a), "add", "card", "", "", "Added 'new' card")
+
+			catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(c.OID, CardCreated, c.created))
+		}
+	}
+
+	return objects, nil
+}
+
+func (cc *Cards) Update(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if cc != nil {
@@ -70,25 +89,12 @@ func (cc *Cards) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string,
 				return objects, err
 			}
 		}
-
-		if oid == "<new>" {
-			if c, err := cc.add(a, Card{}); err != nil {
-				return nil, err
-			} else if c == nil {
-				return nil, fmt.Errorf("Failed to add 'new' card")
-			} else {
-				c.log(dbc, auth.UID(a), "add", "card", "", "", "Added 'new' card")
-
-				catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
-				catalog.Join(&objects, catalog.NewObject2(c.OID, CardCreated, c.created))
-			}
-		}
 	}
 
 	return objects, nil
 }
 
-func (cc *Cards) DeleteByOID(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+func (cc *Cards) Delete(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if cc != nil {

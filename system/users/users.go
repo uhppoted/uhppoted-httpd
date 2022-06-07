@@ -42,7 +42,26 @@ func (uu *Users) AsObjects(a *auth.Authorizator) []schema.Object {
 	return objects
 }
 
-func (uu *Users) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (uu *Users) Create(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+	objects := []schema.Object{}
+
+	if uu != nil {
+		if u, err := uu.add(a, User{}); err != nil {
+			return nil, err
+		} else if u == nil {
+			return nil, fmt.Errorf("Failed to add 'new' user")
+		} else {
+			u.log(dbc, auth.UID(a), "add", "user", "", "", "Added 'new' user")
+
+			catalog.Join(&objects, catalog.NewObject(u.OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(u.OID, UserCreated, u.created))
+		}
+	}
+
+	return objects, nil
+}
+
+func (uu *Users) Update(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if uu != nil {
@@ -56,25 +75,12 @@ func (uu *Users) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string,
 				return objects, err
 			}
 		}
-
-		if oid == "<new>" {
-			if u, err := uu.add(a, User{}); err != nil {
-				return nil, err
-			} else if u == nil {
-				return nil, fmt.Errorf("Failed to add 'new' user")
-			} else {
-				u.log(dbc, auth.UID(a), "add", "user", "", "", "Added 'new' user")
-
-				catalog.Join(&objects, catalog.NewObject(u.OID, "new"))
-				catalog.Join(&objects, catalog.NewObject2(u.OID, UserCreated, u.created))
-			}
-		}
 	}
 
 	return objects, nil
 }
 
-func (uu *Users) DeleteByOID(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+func (uu *Users) Delete(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if uu != nil {

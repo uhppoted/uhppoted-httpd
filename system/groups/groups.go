@@ -57,7 +57,26 @@ func (gg *Groups) AsObjects(a *auth.Authorizator) []schema.Object {
 	return objects
 }
 
-func (gg *Groups) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+func (gg *Groups) Create(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+	objects := []schema.Object{}
+
+	if gg != nil {
+		if g, err := gg.add(a, Group{}); err != nil {
+			return nil, err
+		} else if g == nil {
+			return nil, fmt.Errorf("Failed to add 'new' group")
+		} else {
+			g.log(dbc, auth.UID(a), "add", "group", "", "", "Added 'new' group")
+
+			catalog.Join(&objects, catalog.NewObject(g.OID, "new"))
+			catalog.Join(&objects, catalog.NewObject2(g.OID, GroupCreated, g.created))
+		}
+	}
+
+	return objects, nil
+}
+
+func (gg *Groups) Update(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if gg != nil {
@@ -71,25 +90,12 @@ func (gg *Groups) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string
 				return objects, err
 			}
 		}
-
-		if oid == "<new>" {
-			if g, err := gg.add(a, Group{}); err != nil {
-				return nil, err
-			} else if g == nil {
-				return nil, fmt.Errorf("Failed to add 'new' group")
-			} else {
-				g.log(dbc, auth.UID(a), "add", "group", "", "", "Added 'new' group")
-
-				catalog.Join(&objects, catalog.NewObject(g.OID, "new"))
-				catalog.Join(&objects, catalog.NewObject2(g.OID, GroupCreated, g.created))
-			}
-		}
 	}
 
 	return objects, nil
 }
 
-func (gg *Groups) DeleteByOID(auth *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+func (gg *Groups) Delete(auth *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	if gg != nil {
 		for k, g := range gg.groups {
 			if g.OID == oid {

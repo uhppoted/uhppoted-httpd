@@ -22,7 +22,7 @@ func UpdateCards(uid, role string, m map[string]interface{}) (interface{}, error
 
 	defer sys.Unlock()
 
-	updated, deleted, err := unpack(m)
+	created, updated, deleted, err := unpack(m)
 	if err != nil {
 		return nil, err
 	}
@@ -31,8 +31,16 @@ func UpdateCards(uid, role string, m map[string]interface{}) (interface{}, error
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.cards.Clone()
 
+	for _, o := range created {
+		if objects, err := shadow.Create(auth, o.OID, o.Value, dbc); err != nil {
+			return nil, err
+		} else {
+			dbc.Stash(objects)
+		}
+	}
+
 	for _, o := range updated {
-		if objects, err := shadow.UpdateByOID(auth, o.OID, o.Value, dbc); err != nil {
+		if objects, err := shadow.Update(auth, o.OID, o.Value, dbc); err != nil {
 			return nil, err
 		} else {
 			dbc.Stash(objects)
@@ -40,7 +48,7 @@ func UpdateCards(uid, role string, m map[string]interface{}) (interface{}, error
 	}
 
 	for _, oid := range deleted {
-		if objects, err := shadow.DeleteByOID(auth, oid, dbc); err != nil {
+		if objects, err := shadow.Delete(auth, oid, dbc); err != nil {
 			return nil, err
 		} else {
 			dbc.Stash(objects)

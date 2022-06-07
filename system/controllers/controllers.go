@@ -69,22 +69,12 @@ func (cc *Controllers) AsIControllers() []types.IController {
 	return list
 }
 
-func (cc *Controllers) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
-	if cc == nil {
-		return nil, nil
-	}
-
-	uid := auth.UID(a)
-
-	for _, c := range cc.controllers {
-		if c != nil && c.OID.Contains(oid) {
-			return c.set(a, oid, value, dbc)
-		}
-	}
-
+func (cc *Controllers) Create(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
-	if oid == "<new>" {
+	if cc != nil {
+		uid := auth.UID(a)
+
 		if c, err := cc.add(a, Controller{}); err != nil {
 			return nil, err
 		} else if c == nil {
@@ -101,7 +91,21 @@ func (cc *Controllers) UpdateByOID(a *auth.Authorizator, oid schema.OID, value s
 	return objects, nil
 }
 
-func (cc *Controllers) DeleteByOID(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+func (cc *Controllers) Update(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+	objects := []schema.Object{}
+
+	if cc != nil {
+		for _, c := range cc.controllers {
+			if c != nil && c.OID.Contains(oid) {
+				return c.set(a, oid, value, dbc)
+			}
+		}
+	}
+
+	return objects, nil
+}
+
+func (cc *Controllers) Delete(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
 
 	if cc != nil {

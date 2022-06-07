@@ -45,33 +45,27 @@ func (ii *Interfaces) AsObjects(a *auth.Authorizator) []schema.Object {
 	return objects
 }
 
-func (ii *Interfaces) UpdateByOID(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
-	if ii == nil {
-		return nil, nil
-	}
+func (ii *Interfaces) Create(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
+	return []schema.Object{}, nil
+}
 
-	for _, l := range ii.lans {
-		if l != nil && l.OID.Contains(oid) {
-			return l.set(a, oid, value, dbc)
-		}
-	}
-
+func (ii *Interfaces) Update(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	objects := []schema.Object{}
+	if ii != nil {
 
-	if oid == "<new>" {
-		if l, err := ii.add(a, LAN{}); err != nil {
-			return nil, err
-		} else if l == nil {
-			return nil, fmt.Errorf("Failed to add 'new' interface")
-		} else {
-			l.log(dbc, auth.UID(a), "add", l.OID, "interface", "", "", "Added 'new' interface")
-			catalog.Join(&objects, catalog.NewObject(l.OID, "new"))
-			catalog.Join(&objects, catalog.NewObject2(l.OID, LANStatus, "new"))
-			catalog.Join(&objects, catalog.NewObject2(l.OID, LANCreated, l.created))
+		for _, l := range ii.lans {
+			if l != nil && l.OID.Contains(oid) {
+				return l.set(a, oid, value, dbc)
+			}
 		}
+
 	}
 
 	return objects, nil
+}
+
+func (ii *Interfaces) Delete(a *auth.Authorizator, oid schema.OID, dbc db.DBC) ([]schema.Object, error) {
+	return []schema.Object{}, nil
 }
 
 func (ii *Interfaces) LAN() (LAN, bool) {

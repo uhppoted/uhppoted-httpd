@@ -624,18 +624,19 @@ function rollback (recordset, row, refreshed) {
 }
 
 function commit (page, recordset) {
-  const records = []
-  const updated = recordset.updated
+  const elements = recordset.updated
+  const created = []
+  const updated = []
   const deleted = recordset.deleted
 
-  updated.forEach(e => {
+  elements.forEach(e => {
     const oid = e.dataset.oid
     const value = e.dataset.value
-    records.push({ oid: oid, value: value })
+    updated.push({ oid: oid, value: value })
   })
 
   const reset = function () {
-    updated.forEach(e => {
+    elements.forEach(e => {
       const td = e.parentElement
       unmark('pending', e, td)
       mark('modified', e, td)
@@ -643,19 +644,19 @@ function commit (page, recordset) {
   }
 
   const cleanup = function () {
-    updated.forEach(e => {
+    elements.forEach(e => {
       const td = e.parentElement
       unmark('pending', e, td)
     })
   }
 
-  updated.forEach(e => {
+  elements.forEach(e => {
     const td = e.parentElement
     mark('pending', e, td)
     unmark('modified', e, td)
   })
 
-  post(page, records, deleted, reset, cleanup)
+  post(page, created, updated, deleted, reset, cleanup)
 }
 
 function changeset (page, ...rows) {
@@ -684,11 +685,11 @@ function changeset (page, ...rows) {
 }
 
 function create (page) {
-  const records = [{ oid: '<new>', value: '' }]
+  const created = [{ oid: '<new>', value: '' }]
   const reset = function () {}
   const cleanup = function () {}
 
-  post(page, records, null, reset, cleanup)
+  post(page, created, null, null, reset, cleanup)
 }
 
 function more (page) {
@@ -700,10 +701,10 @@ function more (page) {
   }
 }
 
-function post (page, updated, deleted, reset, cleanup) {
+function post (page, created, updated, deleted, reset, cleanup) {
   busy()
 
-  postAsJSON(page.post, { objects: updated, deleted: deleted })
+  postAsJSON(page.post, { created: created, updated: updated, deleted: deleted })
     .then(response => {
       if (response.redirected) {
         window.location = response.url
