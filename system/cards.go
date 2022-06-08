@@ -4,7 +4,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func Cards(uid, role string) []schema.Object {
@@ -56,7 +55,7 @@ func UpdateCards(uid, role string, m map[string]interface{}) (interface{}, error
 	}
 
 	if err := shadow.Validate(); err != nil {
-		return nil, types.BadRequest(err, err)
+		return nil, err
 	}
 
 	if err := save(TagCards, &shadow); err != nil {

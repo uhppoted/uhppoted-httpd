@@ -6,7 +6,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func Doors(uid, role string) []schema.Object {
@@ -58,7 +57,7 @@ func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error
 
 	// ... validate
 	if err := shadow.Validate(); err != nil {
-		return nil, types.BadRequest(err, err)
+		return nil, err
 	}
 
 	controllers := sys.controllers.List()
@@ -66,15 +65,15 @@ func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error
 		for k, v := range c.Doors() {
 			if v != "" {
 				if door, ok := shadow.Door(v); !ok {
-					return nil, types.BadRequest(fmt.Errorf("Door %v not defined for controller %v", k, c), fmt.Errorf("controller %v: invalid door (%v)", c, k))
+					return nil, fmt.Errorf("Door %v not defined for controller %v", k, c)
 
 				} else if door.IsDeleted() {
 					name := fmt.Sprintf("%v", door)
 
 					if name == "" {
-						return nil, types.BadRequest(fmt.Errorf("Deleting door in use by controller %v", c), fmt.Errorf("door %v: deleting door in use by controller %v", v, c))
+						return nil, fmt.Errorf("Deleting door in use by controller %v", c)
 					} else {
-						return nil, types.BadRequest(fmt.Errorf("Deleting door %v in use by controller %v", door, c), fmt.Errorf("door %v: deleting door in use by controller %v", v, c))
+						return nil, fmt.Errorf("Deleting door %v in use by controller %v", door, c)
 					}
 				}
 			}

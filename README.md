@@ -84,12 +84,11 @@ Without using `make`:
 ```
 git clone https://github.com/uhppoted/uhppoted-httpd.git
 cd uhppoted-httpd
-mkdir bin
 sass --no-source-map sass/themes/light:httpd/html/css/default
 sass --no-source-map sass/themes/light:httpd/html/css/light
 sass --no-source-map sass/themes/dark:httpd/html/css/dark
 cp httpd/html/images/light/* httpd/html/images/default
-go build -trimpath -o bin ./...
+go build -trimpath -o bin/ ./...
 ```
 
 The above commands build the `uhppoted-httpd` executable to the `bin` directory.

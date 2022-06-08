@@ -1,13 +1,11 @@
 ## v0.7.x
 
-- [x] Rework `create`
-- [x] Genericize combobox
-- [ ] Timezone: GMT+2 goes to local
-
 - [ ] System XXX.validate should not return HttpdError
-      - (?) maybe return SysError that might contain HTTP error
-- [ ] Make vtable'able subsystem an interface
+      - [ ] Assume HttpBadRequest
+      - [ ] Check for Unauthorized
 
+- [ ] Timezone: GMT+2 goes to local
+- [ ] Make vtable'able subsystem an interface
 - [ ] README
       - [ ] uhppoted.conf
       - [ ] HTML

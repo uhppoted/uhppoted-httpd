@@ -4,7 +4,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func Users(uid, role string) []schema.Object {
@@ -55,7 +54,7 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 	}
 
 	if err := shadow.Validate(); err != nil {
-		return nil, types.BadRequest(err, err)
+		return nil, err
 	}
 
 	if err := save(TagUsers, &shadow); err != nil {
@@ -87,7 +86,7 @@ func SetPassword(uid, pwd string) error {
 	}
 
 	if err := shadow.Validate(); err != nil {
-		return types.BadRequest(err, err)
+		return err
 	}
 
 	if err := save(TagUsers, &shadow); err != nil {

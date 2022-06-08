@@ -7,7 +7,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/controllers"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func Controllers(uid, role string) []schema.Object {
@@ -74,7 +73,7 @@ func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interfac
 
 func validate(cc *controllers.Controllers) error {
 	if err := cc.Validate(); err != nil {
-		return types.BadRequest(err, err)
+		return err
 	}
 
 	doors := map[schema.OID]string{}
@@ -84,17 +83,13 @@ func validate(cc *controllers.Controllers) error {
 		for _, v := range r.Doors() {
 			if v != "" {
 				if _, ok := sys.doors.Door(schema.OID(v)); !ok {
-					return types.BadRequest(
-						fmt.Errorf("Invalid door ID"),
-						fmt.Errorf("controller %v: invalid door ID (%v)", r.OID, v))
+					return fmt.Errorf("Invalid door ID")
 				}
 			}
 
-			if rid, ok := doors[v]; ok && v != "" {
+			if _, ok := doors[v]; ok && v != "" {
 				d, _ := sys.doors.Door(v)
-				return types.BadRequest(
-					fmt.Errorf("%v door assigned to more than one controller", d),
-					fmt.Errorf("door %v: assigned to controllers %v and %v", v, rid, r.OID))
+				return fmt.Errorf("%v door assigned to more than one controller", d)
 			}
 
 			doors[v] = string(r.OID)

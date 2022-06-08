@@ -175,12 +175,14 @@ func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[string]interface{}) (interface{}, error)) {
-	ch := make(chan error)
+	ch := make(chan struct{})
 	ctx, cancel := context.WithTimeout(d.context, d.timeout)
 
 	defer cancel()
 
 	go func() {
+		defer close(ch)
+
 		acceptsGzip := false
 		contentType := ""
 
@@ -205,11 +207,8 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 		switch contentType {
 		case "application/x-www-form-urlencoded":
 			if err := r.ParseForm(); err != nil {
-				ch <- &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Invalid reading request"),
-					Detail: err,
-				}
+				warn("POST", err)
+				http.Error(w, "Error reading request", http.StatusInternalServerError)
 				return
 			}
 
@@ -220,45 +219,33 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 		case "application/json":
 			blob, err := ioutil.ReadAll(r.Body)
 			if err != nil {
-				ch <- &types.HttpdError{
-					Status: http.StatusInternalServerError,
-					Err:    fmt.Errorf("Invalid reading request"),
-					Detail: err,
-				}
+				warn("POST", err)
+				http.Error(w, "Error reading request", http.StatusInternalServerError)
 				return
 			}
 
 			if err := json.Unmarshal(blob, &body); err != nil {
-				ch <- &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Invalid request body"),
-					Detail: fmt.Errorf("Error unmarshalling request (%s): %w", string(blob), err),
-				}
+				warn("POST", err)
+				http.Error(w, "Invalid request body", http.StatusBadRequest)
 				return
 			}
 
 		default:
-			ch <- &types.HttpdError{
-				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Invalid request"),
-				Detail: fmt.Errorf("Invalid request content-type (%v)", contentType),
-			}
+			http.Error(w, fmt.Sprintf("Invalid request content-type (%v)", contentType), http.StatusBadRequest)
 			return
 		}
 
 		response, err := f(body)
 		if err != nil {
-			ch <- err
+			warn("POST", err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		b, err := json.Marshal(response)
 		if err != nil {
-			ch <- &types.HttpdError{
-				Status: http.StatusInternalServerError,
-				Err:    fmt.Errorf("Internal error generating response"),
-				Detail: fmt.Errorf("Error marshalling response: %w", err),
-			}
+			warn("POST", err)
+			http.Error(w, "Internal error generating response", http.StatusInternalServerError)
 			return
 		}
 
@@ -273,8 +260,6 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 		} else {
 			w.Write(b)
 		}
-
-		ch <- nil
 	}()
 
 	select {
@@ -283,20 +268,7 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 		return
 
-	case err := <-ch:
-		if err != nil {
-			warn("", err)
-
-			switch e := err.(type) {
-			case *types.HttpdError:
-				http.Error(w, e.Error(), e.Status)
-
-			default:
-				http.Error(w, e.Error(), http.StatusInternalServerError)
-			}
-
-			return
-		}
+	case <-ch:
 	}
 }
 

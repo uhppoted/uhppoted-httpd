@@ -4,7 +4,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 func Interfaces(uid, role string) []schema.Object {
@@ -55,7 +54,7 @@ func UpdateInterfaces(uid, role string, m map[string]interface{}) (interface{}, 
 	}
 
 	if err := shadow.Validate(); err != nil {
-		return nil, types.BadRequest(err, err)
+		return nil, err
 	}
 
 	if err := save(TagInterfaces, &shadow); err != nil {
