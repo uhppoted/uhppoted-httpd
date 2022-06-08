@@ -334,6 +334,8 @@ footer {
 
 .warning {
   color: #dc322f;
+  font-family: Sans-Serif;
+  font-size: 0.9em;
 }
 
 .dismiss {

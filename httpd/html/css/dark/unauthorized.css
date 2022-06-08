@@ -342,6 +342,8 @@ footer {
 
 .warning {
   color: #839496;
+  font-family: Sans-Serif;
+  font-size: 0.9em;
 }
 
 .dismiss {

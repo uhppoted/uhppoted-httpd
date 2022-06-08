@@ -3,6 +3,7 @@ package auth
 import (
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -14,8 +15,6 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/builder"
 	"github.com/hyperjumptech/grule-rule-engine/engine"
 	"github.com/hyperjumptech/grule-rule-engine/pkg"
-
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 type authorizator struct {
@@ -55,6 +54,8 @@ var grules = struct {
 }{
 	ruleset: map[RuleSet]ruleset{},
 }
+
+var Unauthorised = errors.New("not authorised")
 
 //go:embed grules
 var GRULES embed.FS
@@ -109,9 +110,6 @@ func Init(rules map[RuleSet]string) error {
 }
 
 func (a *authorizator) CanView(operant Operant, field string, value interface{}, rulesets ...RuleSet) error {
-	msg := fmt.Errorf("Not authorized to view %v", operant)
-	err := fmt.Errorf("Not authorized to view %v field:%v value:%v", operant, field, value)
-
 	if a != nil && operant != nil {
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("view::%v", tag)
@@ -129,12 +127,12 @@ func (a *authorizator) CanView(operant Operant, field string, value interface{},
 
 		for _, r := range rulesets {
 			if err := a.eval(r, op, &rs, m); err != nil {
-				return types.Unauthorised(msg, err)
+				return Unauthorised
 			}
 		}
 
 		if !rs.Allow || rs.Refuse {
-			return types.Unauthorised(msg, err)
+			return Unauthorised
 		}
 	}
 
@@ -142,9 +140,6 @@ func (a *authorizator) CanView(operant Operant, field string, value interface{},
 }
 
 func (a *authorizator) CanAdd(operant Operant, rulesets ...RuleSet) error {
-	msg := fmt.Errorf("Not authorized to add %v", operant)
-	err := fmt.Errorf("Not authorized to add %v", operant)
-
 	if a != nil && operant != nil {
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("add::%v", tag)
@@ -161,7 +156,7 @@ func (a *authorizator) CanAdd(operant Operant, rulesets ...RuleSet) error {
 
 		for _, r := range rulesets {
 			if err := a.eval(r, op, &rs, m); err != nil {
-				return types.Unauthorised(msg, err)
+				return Unauthorised
 			}
 		}
 
@@ -170,13 +165,10 @@ func (a *authorizator) CanAdd(operant Operant, rulesets ...RuleSet) error {
 		}
 	}
 
-	return types.Unauthorised(msg, err)
+	return Unauthorised
 }
 
 func (a *authorizator) CanUpdate(operant Operant, field string, value interface{}, rulesets ...RuleSet) error {
-	msg := fmt.Errorf("Not authorized to update %v", operant)
-	err := fmt.Errorf("Not authorized to update %v field:%v value:%v", operant, field, value)
-
 	if a != nil && operant != nil {
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("update::%v", tag)
@@ -193,8 +185,8 @@ func (a *authorizator) CanUpdate(operant Operant, field string, value interface{
 		}
 
 		for _, r := range rulesets {
-			if err = a.eval(r, op, &rs, m); err != nil {
-				return types.Unauthorised(msg, err)
+			if err := a.eval(r, op, &rs, m); err != nil {
+				return Unauthorised
 			}
 		}
 
@@ -203,13 +195,10 @@ func (a *authorizator) CanUpdate(operant Operant, field string, value interface{
 		}
 	}
 
-	return types.Unauthorised(msg, err)
+	return Unauthorised
 }
 
 func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
-	msg := fmt.Errorf("Not authorized to delete %v", operant)
-	err := fmt.Errorf("Not authorized to delete %v", operant)
-
 	if a != nil && operant != nil {
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("delete::%v", tag)
@@ -226,7 +215,7 @@ func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
 
 		for _, r := range rulesets {
 			if err := a.eval(r, op, &rs, m); err != nil {
-				return types.Unauthorised(msg, err)
+				return Unauthorised
 			}
 		}
 
@@ -235,12 +224,10 @@ func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
 		}
 	}
 
-	return types.Unauthorised(msg, err)
+	return Unauthorised
 }
 
 func (a *authorizator) evaluate(ruleset RuleSet, op string, operant Operant, m map[string]interface{}, msg error) error {
-	err := fmt.Errorf("Not authorized for operation %s", op)
-
 	if a != nil && operant != nil {
 		rs := result{
 			Allow:  false,
@@ -248,17 +235,15 @@ func (a *authorizator) evaluate(ruleset RuleSet, op string, operant Operant, m m
 		}
 
 		if err := a.eval(ruleset, op, &rs, m); err != nil {
-			return types.Unauthorised(msg, err)
+			return Unauthorised
 		}
 
 		if rs.Allow && !rs.Refuse {
 			return nil
 		}
-
-		err = fmt.Errorf("Not authorized for %s", fmt.Sprintf("%v %v", op, toString(operant)))
 	}
 
-	return types.Unauthorised(msg, err)
+	return Unauthorised
 }
 
 func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]interface{}) error {

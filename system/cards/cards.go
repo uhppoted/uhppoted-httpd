@@ -3,7 +3,6 @@ package cards
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"sync"
 	"time"
 
@@ -305,11 +304,7 @@ func (cc Cards) Validate() error {
 
 		if c.CardID != 0 {
 			if id, ok := cards[c.CardID]; ok {
-				return &types.HttpdError{
-					Status: http.StatusBadRequest,
-					Err:    fmt.Errorf("Duplicate card number (%v)", c.CardID),
-					Detail: fmt.Errorf("card %v: duplicate entry in records %v and %v", c.CardID, id, c.OID),
-				}
+				return fmt.Errorf("Duplicate card number (%v)", id)
 			}
 
 			cards[c.CardID] = string(c.OID)

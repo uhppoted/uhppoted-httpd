@@ -1,8 +1,8 @@
 ## v0.7.x
 
-- [ ] System XXX.validate should not return HttpdError
-      - [ ] Assume HttpBadRequest
-      - [ ] Check for Unauthorized
+- [x] System XXX.validate should not return HttpdError
+      - [x] Assume HttpBadRequest
+      - [x] Check for Unauthorized
 
 - [ ] Timezone: GMT+2 goes to local
 - [ ] Make vtable'able subsystem an interface

@@ -720,6 +720,11 @@ function post (page, created, updated, deleted, reset, cleanup) {
             })
             break
 
+          case 401:
+            reset()
+            response.text().then(message => { warning(message.toUpperCase()) })
+            break
+
           default:
             reset()
             response.text().then(message => { warning(message) })

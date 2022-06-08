@@ -3,7 +3,6 @@ package users
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"strings"
 	"sync"
 	"time"
@@ -209,12 +208,8 @@ func (uu Users) Validate() error {
 			}
 		}
 
-		if oid, ok := users[u.uid]; ok {
-			return &types.HttpdError{
-				Status: http.StatusBadRequest,
-				Err:    fmt.Errorf("Duplicate UID (%v)", u.uid),
-				Detail: fmt.Errorf("UID %v: duplicate entry in records %v and %v", u.uid, oid, u.OID),
-			}
+		if _, ok := users[u.uid]; ok {
+			return fmt.Errorf("Duplicate UID (%v)", u.uid)
 		}
 
 		if u.uid != "" {

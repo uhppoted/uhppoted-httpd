@@ -4,11 +4,13 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
+	authorizator "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 	"github.com/uhppoted/uhppoted-httpd/system"
@@ -236,7 +238,11 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 		}
 
 		response, err := f(body)
-		if err != nil {
+		if err != nil && errors.Is(err, authorizator.Unauthorised) {
+			warn("POST", err)
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		} else if err != nil {
 			warn("POST", err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -281,14 +287,7 @@ func (d *dispatcher) synchronizeACL(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		if err := system.SynchronizeACL(); err != nil {
 			warn("", err)
-
-			switch e := err.(type) {
-			case *types.HttpdError:
-				http.Error(w, e.Error(), e.Status)
-
-			default:
-				http.Error(w, e.Error(), http.StatusInternalServerError)
-			}
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
 		close(ch)
@@ -312,14 +311,7 @@ func (d *dispatcher) synchronizeDateTime(w http.ResponseWriter, r *http.Request)
 	go func() {
 		if err := system.SynchronizeDateTime(); err != nil {
 			warn("", err)
-
-			switch e := err.(type) {
-			case *types.HttpdError:
-				http.Error(w, e.Error(), e.Status)
-
-			default:
-				http.Error(w, e.Error(), http.StatusInternalServerError)
-			}
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
 		close(ch)
@@ -343,14 +335,7 @@ func (d *dispatcher) synchronize(w http.ResponseWriter, r *http.Request, f func(
 	go func() {
 		if err := f(); err != nil {
 			warn("", err)
-
-			switch e := err.(type) {
-			case *types.HttpdError:
-				http.Error(w, e.Error(), e.Status)
-
-			default:
-				http.Error(w, e.Error(), http.StatusInternalServerError)
-			}
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
 		close(ch)

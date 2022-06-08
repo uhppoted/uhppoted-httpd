@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/uhppoted/uhppoted-httpd/system"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 const GZIP_MINIMUM = 16384
@@ -53,11 +52,5 @@ func Get(uid, role string, rq *http.Request) interface{} {
 }
 
 func warn(err error) {
-	switch v := err.(type) {
-	case *types.HttpdError:
-		log.Printf("%-5s %v", "WARN", v.Detail)
-
-	default:
-		log.Printf("%-5s %v", "WARN", v)
-	}
+	log.Printf("%-5s %v", "WARN", err)
 }
