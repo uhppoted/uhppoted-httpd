@@ -83,6 +83,21 @@ func TestTimezoneAfricaCairo(t *testing.T) {
 	}
 }
 
+func TestTimezoneGMT2(t *testing.T) {
+	expected := "GMT+2"
+
+	for _, s := range []string{"2022-06-08 20:38  GMT+2", "GMT+2"} {
+		tz, err := Timezone(s)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+
+		if tz.String() != expected {
+			t.Errorf("%s: incorrect timezone - expected:%v, got:%v", s, expected, tz)
+		}
+	}
+}
+
 func TestTimezonePSTPDT(t *testing.T) {
 	for _, s := range []string{"PST", "PDT"} {
 		tz, err := Timezone(s)

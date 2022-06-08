@@ -119,6 +119,19 @@ func Timezone(s string) (*time.Location, error) {
 		}
 	}
 
+	re = regexp.MustCompile("GMT([+-][0-9]{1,2})")
+	if match := re.FindStringSubmatch(strings.ToUpper(s)); match != nil {
+		if offset, err := strconv.Atoi(match[1]); err == nil {
+			if offset != 0 {
+				return time.FixedZone(fmt.Sprintf("GMT%+d", offset), offset*3600), nil
+			}
+
+			if tz, err := time.LoadLocation("GMT"); err == nil {
+				return tz, nil
+			}
+		}
+	}
+
 	// Hardcoded workaround for e.g. PDT/PST - there seems to be no reasonable way to reliably get
 	// the zone and offset. // Ref. https://github.com/golang/go/issues/12388)
 	for _, tz := range timezones {

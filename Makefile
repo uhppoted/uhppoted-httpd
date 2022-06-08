@@ -84,7 +84,7 @@ release: update-release build-all
 
 debug: format
 	go build -trimpath -o bin ./...
-	go test -run Test ./system/history
+	go test -tags "tests" -run TestTimezoneGMT2 ./types
 
 delve: format
 	go build -trimpath -o bin ./...

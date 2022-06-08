@@ -3,9 +3,9 @@
 - [x] System XXX.validate should not return HttpdError
       - [x] Assume HttpBadRequest
       - [x] Check for Unauthorized
+- [x] Timezone: GMT+2 goes to local
 
-- [ ] Timezone: GMT+2 goes to local
-- [ ] Make vtable'able subsystem an interface
+- (?) Make vtable'able subsystem an interface
 - [ ] README
       - [ ] uhppoted.conf
       - [ ] HTML
