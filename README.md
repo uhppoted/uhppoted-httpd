@@ -165,7 +165,7 @@ Command line:
 eventually be) documented in [uhppoted](https://github.com/uhppoted/uhppoted). The `daemonize` command will 
 create a `uhppoted.conf` file if one does not exist, or update the existing file with the default configuration.
 
-`uhppoted-httpd` requires the _HTTPD_ section to define the configuration for the HTTP server. See [uhppoted.conf::HTTPD](https://github.com/uhppoted/uhppoted-httpd/blob/master/documentation/uhppoted.conf.md)
+The configuration for `uhppoted-httpd` is defined in the [_HTTPD_](https://github.com/uhppoted/uhppoted-httpd/blob/master/documentation/uhppoted.conf.md) section.
 
 ### HTML files
 

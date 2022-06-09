@@ -1,17 +1,15 @@
 # `uhppoted.conf`
 
-`uhppoted.conf` is the shared configuration file for all the `uhppoted` and is variously located in:
+`uhppoted.conf` is the shared configuration file for all the `uhppoted` modules and is variously located in:
 
 - /etc/uhppoted/uhppoted.conf (Linux)
 - /usr/local/etc/com.github.uhppoted/uhppoted.conf (MacOS)
 - \Program Data\uhppoted\uhppoted.conf (Windows)
 
-The file contains optional configuration sections for all supported modules. For `uhppoted-http`, only 
+The file contains optional configuration sections for all supported modules. For `uhppoted-httpd`, only 
 the _HTTPD_ section is relevant.
 
 ## _HTTPD_
-
-The _DEVICES_ section configures controller specific attributes:
 
 | *Attribute*                            | *Description*                                      | *Default*                          |
 | -------------------------------------- | -------------------------------------------------- |----------------------------------- |
