@@ -1,13 +1,7 @@
 ## v0.7.x
 
-- [x] System XXX.validate should not return HttpdError
-      - [x] Assume HttpBadRequest
-      - [x] Check for Unauthorized
-- [x] Timezone: GMT+2 goes to local
-
-- (?) Make vtable'able subsystem an interface
 - [ ] README
-      - [ ] uhppoted.conf
+      - [x] uhppoted.conf
       - [ ] HTML
       - [ ] grules
       - [ ] auth.json
@@ -28,13 +22,10 @@
         - [ ] (?) Keep DB in local storage
 
 #### Cards
-  - [ ] Weirdness around card add/delete
-        - [ ] What happens if other edits happen before card name/number is updated (e.g. for delete/add)?
   - [ ] `refresh` is overwriting pending group edits
   - [ ] Replace dataset.original with value from DB
 
 #### System
-      - [ ] replace audit.module value with something more usefully loggable e.g. C:deviceID:name
       - validate Local::Device timezone on initialization
       - limit number of pending 'update' requests (e.g. if device is not responding)
 

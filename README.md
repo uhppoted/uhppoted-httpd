@@ -162,12 +162,10 @@ Command line:
 ### `uhppoted.conf`
 
 `uhppoted.conf` is the communal configuration file shared by all the `uhppoted` project modules and is (or will 
-eventually be) documented in [uhppoted](https://github.com/uhppoted/uhppoted). `uhppoted-httpd` requires:
-- the _HTTPD_ section to define the configuration for the HTTP server
-- the _devices_ section to resolve non-local controller IP addresses and door to controller door identities.
+eventually be) documented in [uhppoted](https://github.com/uhppoted/uhppoted). The `daemonize` command will 
+create a `uhppoted.conf` file if one does not exist, or update the existing file with the default configuration.
 
-The `daemonize` command will create a `uhppoted.conf` file if one does not exist, or update the existing file
-with the default configuration.
+`uhppoted-httpd` requires the _HTTPD_ section to define the configuration for the HTTP server. See [uhppoted.conf::HTTPD](https://github.com/uhppoted/uhppoted-httpd/blob/master/documentation/uhppoted.conf.md)
 
 ### HTML files
 
