@@ -656,7 +656,7 @@ function commit (page, recordset) {
     unmark('modified', e, td)
   })
 
-  post(page, created, updated, deleted, reset, cleanup)
+  post(page.post, created, updated, deleted, page.refreshed, reset, cleanup)
 }
 
 function changeset (page, ...rows) {
@@ -689,7 +689,7 @@ function create (page) {
   const reset = function () {}
   const cleanup = function () {}
 
-  post(page, created, null, null, reset, cleanup)
+  post(page.post, created, null, null, page.refreshed, reset, cleanup)
 }
 
 function more (page) {
@@ -701,10 +701,10 @@ function more (page) {
   }
 }
 
-function post (page, created, updated, deleted, reset, cleanup) {
+function post (url, created, updated, deleted, refreshed, reset, cleanup) {
   busy()
 
-  postAsJSON(page.post, { created: created, updated: updated, deleted: deleted })
+  postAsJSON(url, { created: created, updated: updated, deleted: deleted })
     .then(response => {
       if (response.redirected) {
         window.location = response.url
@@ -716,7 +716,7 @@ function post (page, created, updated, deleted, reset, cleanup) {
                 DB.updated(k, object[k])
               }
 
-              page.refreshed()
+              refreshed()
             })
             break
 
