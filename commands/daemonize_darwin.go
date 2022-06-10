@@ -320,14 +320,14 @@ func (cmd *Daemonize) firewall(i info) error {
 		out, err = command.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			return fmt.Errorf("Failed to add 'uhppoted-rest' to the application firewall (%v)", err)
+			return fmt.Errorf("Failed to add 'uhppoted-httpd' to the application firewall (%v)", err)
 		}
 
 		command = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--unblockapp", path)
 		out, err = command.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			return fmt.Errorf("Failed to unblock 'uhppoted-rest' on the application firewall (%v)", err)
+			return fmt.Errorf("Failed to unblock 'uhppoted-httpd' on the application firewall (%v)", err)
 		}
 
 		command = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--setglobalstate", "on")

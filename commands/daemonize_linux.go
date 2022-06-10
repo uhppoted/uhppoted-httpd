@@ -103,7 +103,7 @@ func (cmd *Daemonize) Usage() string {
 
 func (cmd *Daemonize) Help() {
 	fmt.Println()
-	fmt.Println("  Usage: uhppoted daemonize [--user <user:group>]")
+	fmt.Printf ("  Usage: %s daemonize [--user <user:group>]\n", SERVICE)
 	fmt.Println()
 	fmt.Printf("    Registers %s as a systemd service/daemon that runs on startup.\n", SERVICE)
 	fmt.Println("      Defaults to the user:group uhppoted:uhppoted unless otherwise specified")
@@ -246,7 +246,7 @@ func (cmd *Daemonize) execute() error {
 	fmt.Printf("   The installation can be verified by running the %v service in 'console' mode:\n", SERVICE)
 	fmt.Println()
 	fmt.Printf("     > sudo su %v\n", username)
-	fmt.Printf("     > ./uhppoted-httpd --debug --console\n")
+	fmt.Printf("     > ./%v --debug --console\n", SERVICE)
 	fmt.Println()
 	fmt.Println()
 
