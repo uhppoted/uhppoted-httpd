@@ -42,15 +42,15 @@ the _HTTPD_ section is relevant.
 | httpd.system.windows.uncertain         | 'uncertain' time window after last refresh         | 30s                                |
 | httpd.system.windows.systime           | Allowed time window for controller system time     | 5m0s                               |
 | httpd.system.windows.expires           | Cached controller attribute expiry time            | 2m0s                               |
-| httpd.db.rules.acl                     | Grules file for fine-grained access control        | _etc_/httpd/acl.grl                |
-| httpd.db.rules.interfaces              | Grules file for _interfaces_ admin authorisation   | _etc_/httpd/grules/interfaces.grl  |
-| httpd.db.rules.controllers             | Grules file for _controllers_ admin authorisation  | _etc_/httpd/grules/controllers.grl |
-| httpd.db.rules.cards                   | Grules file for _cards_ admin authorisation        | _etc_/httpd/grules/cards.grl       |
-| httpd.db.rules.doors                   | Grules file for _doors_ admin authorisation        | _etc_/httpd/grules/doors.grl       |
-| httpd.db.rules.groups                  | Grules file for _groups_ admin authorisation       | _etc_/httpd/grules/groups.grl      |
-| httpd.db.rules.events                  | Grules file for _events_ admin authorisation       | _etc_/httpd/grules/events.grl      |
-| httpd.db.rules.logs                    | Grules file for _logs_ admin authorisation         | _etc_/httpd/grules/logs.grl        |
-| httpd.db.rules.users                   | Grules file for _users_ admin authorisation        | _etc_/httpd/grules/users.grl       |
+| httpd.db.rules.acl                     | grules file for fine-grained access control        | _etc_/httpd/acl.grl                |
+| httpd.db.rules.interfaces              | grules file for _interfaces_ admin authorisation   | _etc_/httpd/grules/interfaces.grl  |
+| httpd.db.rules.controllers             | grules file for _controllers_ admin authorisation  | _etc_/httpd/grules/controllers.grl |
+| httpd.db.rules.cards                   | grules file for _cards_ admin authorisation        | _etc_/httpd/grules/cards.grl       |
+| httpd.db.rules.doors                   | grules file for _doors_ admin authorisation        | _etc_/httpd/grules/doors.grl       |
+| httpd.db.rules.groups                  | grules file for _groups_ admin authorisation       | _etc_/httpd/grules/groups.grl      |
+| httpd.db.rules.events                  | grules file for _events_ admin authorisation       | _etc_/httpd/grules/events.grl      |
+| httpd.db.rules.logs                    | grules file for _logs_ admin authorisation         | _etc_/httpd/grules/logs.grl        |
+| httpd.db.rules.users                   | grules file for _users_ admin authorisation        | _etc_/httpd/grules/users.grl       |
 | httpd.audit.file                       | Audit trail file                                   | _var_/httpd/audit/audit.log        |
 | httpd.retention                        | Retention time for deleted items                   | 5m0s                               |
 | httpd.timezones                        | File for custom timezones e.g. Afica/Cairo         | _etc_/timezones                    |
