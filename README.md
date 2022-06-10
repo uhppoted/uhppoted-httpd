@@ -21,8 +21,8 @@ _CAVEAT EMPTOR_
 
 Although `uhppoted-httpd` does provide a functional and usable user interface for managing a small'ish access
 control system, the out-of-the-box look and feel is (deliberately) workaday, low key and plain with the intention
-of being a base for your own customisation (with your own logos, themes, functionality, etc) rather than as a 
-finshed, shippable product.
+of being a base for your own customisation (with your own logos, themes, functionality, etc) rather than a 
+finished, shippable product.
 
 Also, please be aware that at this stage in its career, it is primarily a testbed for validating the design and
 implementation of the other `uhppoted` components when integrated into a working system. It is also intended to
