@@ -169,6 +169,11 @@ The configuration for `uhppoted-httpd` is defined in the [_HTTPD_](https://githu
 
 ### HTML files
 
+By default, the static files for the user interface are served from a file system embedded in the application
+executable. For customisation, the static files can be relocated to an external folder, as described here:
+
+- [HTML](https://github.com/uhppoted/uhppoted-httpd/blob/master/documentation/HTML.md)
+
 ### `auth.json`
 
 ### `ACL.grl`
