@@ -1,6 +1,6 @@
-# `acl.grule`
+# `acl.grl`
 
-The `acl.grule` adds rule-base access control to supplement the relatively simple 'grid-based' access control provided by
+The `acl.grl` adds rule-base access control to supplement the relatively simple 'grid-based' access control provided by
 the groups + doors combination of the user interface. It is useful for applications that require e.g.:
 
 - special access for selected cards
@@ -27,7 +27,13 @@ Access to a door will be granted to a card if:
 - one of the groups assigned to the card has permission for the door and the access is not _revoked_ in the `acl.grules` file
 - the card has access to the door _allowed_ by at least one rule and also not _revoked_ by any rule
 
-The `acl.grules` file is automatically reloaded when it has been modified i.e. it is not necessary to stop and restart `uhppoted-httpd`
+The `acl.grl` file is typically located in:
+
+- /etc/uhppoted/httpd/acl.grl (Linux)
+- /usr/local/etc/com.github.uhppoted/http/acl.grl (MacO)
+- \Program Data\uhppoted\httpd\acl.grl (Windows)
+
+and is automatically reloaded when it has been modified i.e. it is not necessary to stop and restart `uhppoted-httpd`
 for rule changes to take effect.
 
 ## Objects
@@ -82,7 +88,7 @@ e.g.:
 QUERY.HasGroup(CARD.Groups,"Student")
 ```
 
-## Sample `acl.grules` file
+## Sample `acl.grl` file
 
 ```
 rule HarryPotter "Harry Potter can sneak into Dungeon" {

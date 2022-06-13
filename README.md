@@ -176,7 +176,11 @@ executable. For customisation, the static files can be relocated to an external 
 
 ### `auth.json`
 
-### `ACL.grl`
+### `acl.grl`
+
+The `acl.grl` file implements rule based access for cards to supplement the relatively simple grid-based access
+control supported by the combination of card + groups + doors. The `acl.grl` file is documented in more detail 
+[here](https://github.com/uhppoted/uhppoted-httpd/blob/master/documentation/acl.grl.md).
 
 ### GRULES files
 
