@@ -3,10 +3,9 @@
 - [ ] README
       - [x] uhppoted.conf
       - [x] HTML
-            - [x] rework `post` to take URL + refreshed
+      - [x] auth.json
       - [x] acl.grules
       - [ ] XXX.grules
-      - [ ] auth.json
       - [ ] /var/...
   
 ### IN PROGRESS

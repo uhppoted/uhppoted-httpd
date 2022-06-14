@@ -176,6 +176,12 @@ executable. For customisation, the static files can be relocated to an external 
 
 ### `auth.json`
 
+Coarse-grained authorisation for HTTP request is set by the entries in the `auth.json` file, which maps URLs and
+user roles to GET/POST rights. Detailed description of the file can be found here:
+
+- [auth.json](https://github.com/uhppoted/uhppoted-httpd/blob/master/documentation/auth.json.md)
+
+
 ### `acl.grl`
 
 The `acl.grl` file implements rule based access for cards to supplement the relatively simple grid-based access
