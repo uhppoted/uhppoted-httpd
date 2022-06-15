@@ -1,12 +1,16 @@
 ## v0.7.x
 
+- [ ] Remove default password
+
 - [ ] README
       - [x] uhppoted.conf
       - [x] HTML
       - [x] auth.json
       - [x] acl.grules
-      - [ ] XXX.grules
+      - [x] XXX.grules
       - [ ] /var/...
+      - [ ] Installation
+            - [ ] starter kit
   
 ### IN PROGRESS
 

@@ -36,7 +36,7 @@ The `acl.grl` file is typically located in:
 and is automatically reloaded when it has been modified i.e. it is not necessary to stop and restart `uhppoted-httpd`
 for rule changes to take effect.
 
-## Objects
+## Entities
 
 The following _entities_ are maded available to the ACL _rules engine_:
 

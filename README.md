@@ -190,6 +190,9 @@ control supported by the combination of card + groups + doors. The `acl.grl` fil
 
 ### GRULES files
 
+The _grules_ files implement rule based fine-grained authorisation for view, create, update and delete operations
+on individual entities.. The _grules_ files are documented in more detail [here](https://github.com/uhppoted/uhppoted-httpd/blob/master/documentation/grules.md).
+
 ### JSON files
 
 
