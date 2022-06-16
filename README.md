@@ -195,5 +195,8 @@ on individual entities.. The _grules_ files are documented in more detail [here]
 
 ### JSON files
 
+The system data is (currently) stored as a set of JSON files, described (https://github.com/uhppoted/uhppoted-httpd/blob/master/documentation/db.md).
+
+
 
 

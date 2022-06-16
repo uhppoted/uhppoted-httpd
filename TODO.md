@@ -1,6 +1,7 @@
 ## v0.7.x
 
 - [ ] Remove default password
+- [ ] Add fonts folder to static routers
 
 - [ ] README
       - [x] uhppoted.conf
@@ -8,7 +9,7 @@
       - [x] auth.json
       - [x] acl.grules
       - [x] XXX.grules
-      - [ ] /var/...
+      - [x] /var/...
       - [ ] Installation
             - [ ] starter kit
   
@@ -80,7 +81,6 @@
       - https://math.stackexchange.com/questions/3742825/why-is-the-penrose-triangle-impossible
       - https://jn3008.tumblr.com/post/618100274778783744
 - [ ] Use 'modular' naming convention for colours, etc. e.g. tabular-row-colour
-- [ ] Fonts
 
 - [ ] Cards
       - unit tests for auth rules
@@ -104,7 +104,6 @@
       - unit tests for ACL rules
 
 - [ ] tabular
-      - New table row submitted with error cannot be discarded
       - Empty list: make first row a 'new' row (?)
       - filter columns
       - genericize JS:refresh
