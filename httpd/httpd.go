@@ -70,6 +70,7 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 
 	mux.Handle("/css/", http.FileServer(fs))
 	mux.Handle("/images/", http.FileServer(fs))
+	mux.Handle("/fonts/", http.FileServer(fs))
 	mux.Handle("/javascript/", http.FileServer(fs))
 	mux.Handle("/manifest.json", http.FileServer(fs))
 

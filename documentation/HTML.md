@@ -49,6 +49,7 @@ The default folder/file structure is as follows:
 | -------------- | ----------------------------------------------------------------------------------------- |
 | css            | Folder containg CSS generated from Sass source files                                      |
 | images         | PNGs, JPGs and SVGs                                                                       |
+| fonts          | Font files                                                                                |
 | javascript     | Javascript files                                                                          |
 | sys            | HTML for each page in the user interface                                                  |
 | templates      | Reusable snippets of common HTML                                                          |
