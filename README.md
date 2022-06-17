@@ -32,7 +32,7 @@ become a platform for exploring some alternative ideas around user interfaces an
 
 | *Version* | *Description*                                                                             |
 | --------- | ----------------------------------------------------------------------------------------- |
-|           |                                                                                           |
+| v0.8.0    | Initial release                                                                           |
 |           |                                                                                           |
 
 ## Installation
@@ -55,6 +55,8 @@ The `daemonize` command will create all the necessary files for `uhppoted-httpd`
 - access lists
 - GRULES files
 - HTML files
+
+A sample set of the files used by `uhppoted-httpd` is included in a [starter kit](https://github.com/uhppoted/uhppoted-httpd/tree/master/documentation/starter-kit).
 
 ### Building from source
 

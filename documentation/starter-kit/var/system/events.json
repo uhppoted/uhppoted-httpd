@@ -1,0 +1,74 @@
+{
+  "events": [
+    {
+      "OID": "0.6.1",
+      "device-id": 405419896,
+      "index": 1,
+      "timestamp": "2019-07-09 21:00:55 PDT",
+      "event-type": 2,
+      "door": 1,
+      "direction": 1,
+      "card": 8165530,
+      "granted": true,
+      "reason": 0,
+      "device-name": "BC",
+      "door-name": "Gryffindor"
+    },
+    {
+      "OID": "0.6.2",
+      "device-id": 405419896,
+      "index": 2,
+      "timestamp": "2019-07-09 21:00:57 PDT",
+      "event-type": 2,
+      "door": 1,
+      "direction": 1,
+      "card": 8165531,
+      "granted": true,
+      "reason": 0,
+      "device-name": "BC",
+      "door-name": "Gryffindor"
+    },
+    {
+      "OID": "0.6.3",
+      "device-id": 405419896,
+      "index": 3,
+      "timestamp": "2019-07-11 20:23:33 PDT",
+      "event-type": 2,
+      "door": 1,
+      "direction": 1,
+      "card": 8165532,
+      "granted": true,
+      "reason": 0,
+      "device-name": "BC",
+      "door-name": "Gryffindor"
+    },
+    {
+      "OID": "0.6.4",
+      "device-id": 405419896,
+      "index": 4,
+      "timestamp": "2019-07-12 18:17:25 PDT",
+      "event-type": 2,
+      "door": 1,
+      "direction": 1,
+      "card": 8165533,
+      "granted": true,
+      "reason": 0,
+      "device-name": "BC",
+      "door-name": "Gryffindor"
+    },
+    {
+      "OID": "0.6.5",
+      "device-id": 405419896,
+      "index": 5,
+      "timestamp": "2019-07-12 18:17:42 PDT",
+      "event-type": 2,
+      "door": 1,
+      "direction": 1,
+      "card": 8165534,
+      "granted": true,
+      "reason": 0,
+      "device-name": "BC",
+      "door-name": "Gryffindor"
+    },
+ ]
+}

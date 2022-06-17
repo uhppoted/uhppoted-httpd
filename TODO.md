@@ -1,17 +1,10 @@
 ## v0.7.x
 
-- [ ] Remove default password
-- [ ] Add fonts folder to static routers
-
-- [ ] README
-      - [x] uhppoted.conf
-      - [x] HTML
-      - [x] auth.json
-      - [x] acl.grules
-      - [x] XXX.grules
-      - [x] /var/...
-      - [ ] Installation
-            - [ ] starter kit
+- [x] Remove default user/password
+- [x] README
+      - [x] Installation
+      - [x] starter kit
+      - [x] Version info
   
 ### IN PROGRESS
 

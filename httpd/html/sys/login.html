@@ -28,10 +28,10 @@
               <legend>{{.Login.Legend}}</legend>
               <form action="/authenticate" method="POST" onsubmit="login(event)"> 
                 <div class="field">
-                  <input id="uid" name="uid" type="text" size="28" placeholder="{{.Login.UserID.Hint}}"  required value="admin" />
+                  <input id="uid" name="uid" type="text" size="28" placeholder="{{.Login.UserID.Hint}}"  required value="" />
                 </div>
                 <div class="field">
-                  <input id="pwd" name="pwd" type="password" size="28" placeholder="{{.Login.Password.Hint}}" required value="uhppoted" />
+                  <input id="pwd" name="pwd" type="password" size="28" placeholder="{{.Login.Password.Hint}}" required value="" />
                   <img src="/images/{{$.context.Theme}}/eye-solid.svg" 
                        onclick="onShowHidePassword(event, 'pwd')" 
                        data-hide='images/{{$.context.Theme}}/eye-slash-solid.svg'

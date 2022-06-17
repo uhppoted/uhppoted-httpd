@@ -1,0 +1,31 @@
+rule ViewController "(allowed)" {
+     when
+         OP == "view::controller"
+     then
+         RESULT.Allow = true;
+         Retract("ViewController");
+}
+
+rule AddController "(allowed)" {
+     when
+         OP == "add::controller"
+     then
+         RESULT.Allow = true;
+         Retract("AddController");
+}
+
+rule UpdateController "(allowed)" {
+     when
+         OP == "update::controller"
+     then
+         RESULT.Allow = true;
+         Retract("UpdateController");
+}
+
+rule DeleteController "(allowed)" {
+     when
+         OP == "delete::controller"
+     then
+         RESULT.Allow = true;
+         Retract("DeleteController");
+}

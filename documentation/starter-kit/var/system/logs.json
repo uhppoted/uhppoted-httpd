@@ -1,0 +1,54 @@
+{
+  "logs": [
+    {
+      "timestamp": "2022-05-24T11:47:07.186876-07:00",
+      "UID": "admin",
+      "OID": "0.7.100677",
+      "item": "card",
+      "id": "6000001",
+      "name": "Harry PotterX",
+      "field": "name",
+      "details": "Updated name from 'Harry PotterX' to 'Harry Potter'"
+    },
+    {
+      "timestamp": "2022-04-07T09:52:29.885614-07:00",
+      "UID": "admin",
+      "OID": "0.7.100318",
+      "item": "card",
+      "id": "",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from 'blank' to adsad"
+    },
+    {
+      "timestamp": "2021-11-26T12:05:48.648609-08:00",
+      "UID": "admin",
+      "OID": "0.7.223",
+      "item": "door",
+      "id": "0:0",
+      "name": "",
+      "field": "name",
+      "details": "Deleted door asdfas"
+    },
+    {
+      "timestamp": "2021-12-06T12:48:33.831078-08:00",
+      "UID": "admin",
+      "OID": "0.7.370",
+      "item": "door",
+      "id": "405419896/4",
+      "name": "SlytherinX",
+      "field": "name",
+      "details": "Updated name from SlytherinX to SlytherinZ"
+    },
+    {
+      "timestamp": "2022-05-13T10:35:30.373322-07:00",
+      "UID": "admin",
+      "OID": "0.7.100554",
+      "item": "card",
+      "id": "8165538",
+      "name": "Hermione GrangerX",
+      "field": "name",
+      "details": "Updated name from 'Hermione GrangerX' to 'Hermione Granger'"
+    },
+ ]
+}
