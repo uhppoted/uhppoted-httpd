@@ -118,13 +118,13 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 	if h.HTTPSEnabled {
 		ca, err := ioutil.ReadFile(h.CACertificate)
 		if err != nil {
-			log.Printf("%5s Error reading CA certificate file (%v)", "FATAL", err)
+			log.Printf("%5v Error reading CA certificate file (%v)", "FATAL", err)
 			return
 		}
 
 		certificates := x509.NewCertPool()
 		if !certificates.AppendCertsFromPEM(ca) {
-			log.Printf("%5s Error parsing CA certificate (%v)", "FATAL", err)
+			log.Printf("%5v Error parsing CA certificate", "FATAL")
 			return
 		}
 

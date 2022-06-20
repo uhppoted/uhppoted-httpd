@@ -1,11 +1,7 @@
 ## v0.7.x
 
-- [x] Remove default user/password
-- [x] README
-      - [x] Installation
-      - [x] starter kit
-      - [x] Version info
-  
+- [ ] Release
+
 ### IN PROGRESS
 
 #### Doors

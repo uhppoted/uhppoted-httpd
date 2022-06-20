@@ -56,7 +56,11 @@ The `daemonize` command will create all the necessary files for `uhppoted-httpd`
 - GRULES files
 - HTML files
 
-A sample set of the files used by `uhppoted-httpd` is included in a [starter kit](https://github.com/uhppoted/uhppoted-httpd/tree/master/documentation/starter-kit).
+A sample set of the files used by `uhppoted-httpd` is included in a [starter kit](https://github.com/uhppoted/uhppoted-httpd/tree/master/documentation/starter-kit). To use the starter kit, copy the executable for your platform into
+the starter kit folder and run `uhppoted-httpd` as a console application:
+```
+uhppoted-httpd --config ./uhpppoted.conf --debug --console
+```
 
 ### Building from source
 
