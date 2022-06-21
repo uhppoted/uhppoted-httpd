@@ -9,6 +9,7 @@ CMD     = ./bin/uhppoted-httpd
 .PHONY: reset
 .PHONY: update
 .PHONY: update-release
+.PHONY: quickstart
 
 all: test      \
 	 benchmark \
@@ -77,14 +78,23 @@ build-all: vet
 	env GOOS=windows GOARCH=amd64       go build -trimpath -o dist/$(DIST)/windows ./...
 	cp -r httpd/html dist/$(DIST)
 
-release: update-release build-all
+build-quickstart: 
+	cp -r httpd/html documentation/starter-kit/etc/httpd/html
+	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-darwin_$(VERSION).tar.gz  . -C ../../dist/$(DIST)/darwin  .
+	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-linux_$(VERSION).tar.gz   . -C ../../dist/$(DIST)/linux   .
+	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-windows_$(VERSION).tar.gz . -C ../../dist/$(DIST)/windows .
+	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-arm7_$(VERSION).tar.gz    . -C ../../dist/$(DIST)/arm7    .
+
+release: update-release build-all build-quickstart
 	find . -name ".DS_Store" -delete
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
-	cd dist;  zip --recurse-paths $(DIST).zip $(DIST)
 
 debug: format
 	go build -trimpath -o bin ./...
 	go test -tags "tests" -run TestTimezoneGMT2 ./types
+	# mkdir -p dist/test
+	# tar xvzf dist/quickstart-darwin.tar.gz --directory dist/test
+	# cd dist/test && ./uhppoted-httpd --debug --console --config uhppoted.conf
 
 delve: format
 	go build -trimpath -o bin ./...

@@ -1,0 +1,101 @@
+{{define "user"}}
+      <!-- USER -->
+      <div id="user" onmouseleave="onMenu(event, false)">
+        <div id="avatar" onclick="onMenu(event, true)">
+          <p>{{$.context.User}}</p>
+          <img src="/images/{{$.context.Theme}}/user-cog-solid.svg" />
+        </div>
+        <div class="menu">
+          <a href="#" onclick="onSignOut(event)">sign out</a>
+          <a href="/sys/password.html">password</a>
+          <a href="#" onclick="retheme('light')">light</a>
+          <a href="#" onclick="retheme('dark')">dark</a>
+          {{if not .readonly}}<a href="#" onclick="onSynchronizeACL(event)">synchronize ACL</a>{{end}}
+          {{if not .readonly}}<a href="#" onclick="onSynchronizeDateTime(event)">synchronize date/time</a>{{end}}
+          {{if not .readonly}}<a href="#" onclick="onSynchronizeDoors(event)">synchronize doors</a>{{end}}
+        </div>
+      </div>
+{{end}}
+
+{{define "header"}}
+      <!-- HEADER -->
+      <header>
+        <div style="display:flex; flex-direction:column;">
+          <img id="logo" src="/images/{{$.context.Theme}}/logo.png" />
+          <div id="disconnected">offline</div>
+        </div>
+        <div id="dashboard">
+          <span id="windmill"></span>
+        </div>
+      </header>
+{{end}}
+
+{{define "footer"}}
+      <!-- FOOTER -->
+      <footer>
+        <p id="version">v0.8.0</p>
+        <p id="timestamp"></p>
+      </footer>
+{{end}}
+
+{{define "nav"}}
+      <!-- NAV -->
+      <nav>
+        <ul>
+          {{if eq .Page "overview"}}<li class="selected">OVERVIEW</li>{{else}}<li><a href="/sys/overview.html">OVERVIEW</a></li>{{end}}
+          {{if .Authorised.System}}{{if eq .Page "system"}}<li class="selected">SYSTEM</li>{{else}}<li><a href="/sys/controllers.html">SYSTEM</a></li>{{end}}{{end}}
+          {{if .Authorised.Doors}}{{if eq .Page "doors" }}<li class="selected">DOORS</li> {{else}}<li><a href="/sys/doors.html">DOORS</a></li>{{end}}{{end}}
+          {{if .Authorised.Cards}}{{if eq .Page "cards" }}<li class="selected">CARDS</li> {{else}}<li><a href="/sys/cards.html">CARDS</a></li>{{end}}{{end}}
+          {{if .Authorised.Groups}}{{if eq .Page "groups"}}<li class="selected">GROUPS</li>{{else}}<li><a href="/sys/groups.html">GROUPS</a></li>{{end}}{{end}}
+          {{if .Authorised.Events}}{{if eq .Page "events"}}<li class="selected">EVENTS</li>{{else}}<li><a href="/sys/events.html">EVENTS</a></li>{{end}}{{end}}
+          {{if .Authorised.Logs}}{{if eq .Page "logs"  }}<li class="selected">LOGS</li>  {{else}}<li><a href="/sys/logs.html">LOGS</a></li>{{end}}{{end}}
+          {{if .Authorised.Users}}{{if eq .Page "users" }}<li class="selected">USERS</li> {{else}}<li><a href="/sys/users.html">USERS</a></li>{{end}}{{end}}
+        </ul>
+      </nav>
+{{end}}
+
+{{define "uhppoted.js"}}
+    import { retheme, 
+             dismiss, 
+             resetIdle, 
+             onMenu, 
+             onSignOut, 
+             onReload, 
+             setRefresh, 
+             onSynchronizeACL,
+             onSynchronizeDateTime,
+             onSynchronizeDoors } from "/javascript/uhppoted.js"
+{{end}}
+
+{{define "tabular.js"}}
+    import { onEdited, 
+             onEnter, 
+             onTick, 
+             onCommit, 
+             onCommitAll, 
+             onRollback, 
+             onRollbackAll, 
+             onNew, 
+             onRefresh } from "/javascript/tabular.js"
+{{end}}
+
+{{define "window.js"}}
+    window.retheme = retheme
+    window.dismiss = dismiss
+    window.onMenuX = onMenu
+    window.onSignOut = onSignOut
+    window.onReload = onReload
+
+    window.onEdited = onEdited
+    window.onEnter = onEnter
+    window.onTick = onTick
+    window.onCommit = onCommit
+    window.onCommitAll = onCommitAll
+    window.onRollback = onRollback
+    window.onRollbackAll = onRollbackAll
+    window.onNew = onNew
+    window.onRefresh = onRefresh
+    window.onSynchronizeACL = onSynchronizeACL
+    window.onSynchronizeDateTime = onSynchronizeDateTime
+    window.onSynchronizeDoors = onSynchronizeDoors
+{{end}}

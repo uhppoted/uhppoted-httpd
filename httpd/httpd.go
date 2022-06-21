@@ -302,6 +302,12 @@ func debug(msg string) {
 	log.Printf("%-5s %s", "DEBUG", msg)
 }
 
+func debugf(format string, args ...any) {
+	f := fmt.Sprintf("%-5v %v", "DEBUG", format)
+
+	log.Printf(f, args...)
+}
+
 func info(subsystem string, msg string) {
 	if subsystem == "" {
 		log.Printf("%-5s %s", "INFO", msg)

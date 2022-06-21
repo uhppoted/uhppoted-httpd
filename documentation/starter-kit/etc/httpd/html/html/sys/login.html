@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>uhppoted-httpd: Login</title>
+    <link rel="manifest"   href="/manifest.json">
+    <link rel="icon"       href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/login.css" type="text/css">
+    <meta charset="UTF-8">
+  </head>
+
+  <body> 
+    <div id="content">
+      
+      <!-- HEADER -->
+      <header>
+        <img id="logo" src="/images/{{$.context.Theme}}/logo.png"  />
+      </header>
+
+      <!-- NAV -->
+
+      <!-- MAIN -->
+      <main>
+        <div id="container">
+          <div></div>
+          <div id="form">
+            <fieldset id="login">
+              <legend>{{.Login.Legend}}</legend>
+              <form action="/authenticate" method="POST" onsubmit="login(event)"> 
+                <div class="field">
+                  <input id="uid" name="uid" type="text" size="28" placeholder="{{.Login.UserID.Hint}}"  required value="" />
+                </div>
+                <div class="field">
+                  <input id="pwd" name="pwd" type="password" size="28" placeholder="{{.Login.Password.Hint}}" required value="" />
+                  <img src="/images/{{$.context.Theme}}/eye-solid.svg" 
+                       onclick="onShowHidePassword(event, 'pwd')" 
+                       data-hide='images/{{$.context.Theme}}/eye-slash-solid.svg'
+                       data-show='images/{{$.context.Theme}}/eye-solid.svg' />
+                </div>
+                <button action="submit">{{.Login.Ok.Label}}</button>
+              </form>
+            </fieldset>
+            <div id="message" class="message">
+              <span class="warning" id="warning"></span>
+            </div>
+          </div>
+          <div></div>
+        </div>
+      </main>
+
+      <!-- SIDEBAR -->
+      <aside>
+      </aside>
+
+      {{template "footer" .}}
+
+    </div>
+  </body>
+
+  <!-- SCRIPTS -->
+ 
+  <script type="module">
+    import { onShowHidePassword } from "/javascript/uhppoted.js"
+    import { login              } from "/javascript/login.js"
+
+    window.onShowHidePassword = onShowHidePassword
+    window.login = login
+
+    document.addEventListener('keydown', event => {
+      if ((event.code === 'Enter') && !event.repeat) {
+        const uid = document.getElementById('uid').value
+        const pwd = document.getElementById('pwd').value
+
+        if ((uid !== '') && (pwd !== '')) {
+          login(event)
+        }
+      }
+    })
+  </script>
+
+  <!-- global information initialised by Go template -->
+  <script>
+    var constants = {
+      theme: {{$.context.Theme}},
+      mode: {{ $.context.Mode}},
+    }
+
+    var messages = {
+      unauthorized: '{{.Login.Unauthorized}}'
+    }
+  </script>
+</html>
+
+

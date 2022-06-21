@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>uhppoted-httpd: Doors</title>
+    <link rel="manifest"   href="/manifest.json">
+    <link rel="icon"       href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/doors.css" type="text/css">
+    <meta charset="UTF-8">
+  </head>
+
+  <body> 
+    <div id="content">
+
+      {{template "user"   .}}
+      {{template "header" .}}
+      {{template "nav"    (nav "doors")}}
+
+      <!-- MAIN -->
+      <main>
+        <div id="container">
+          <div id="controls" data-oid="{{ .schema.Doors.OID }}">
+            <img id="commitall" class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('doors', event, 'doors')" draggable="false" />
+            <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('doors', event)"  draggable="false"  />
+            <div id="message" class="message">
+              <div>
+                <span class="warning" id="warning"></span>
+                <button class="dismiss" onclick="dismiss()">&#9746;</button>
+              </div>
+            </div>
+            <img id="add"     class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('door')" />
+            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('doors', event)" />
+          </div>
+
+          <div id="doors" class="tabular">
+            <table>
+              <thead>
+                <tr>
+                  <th class="name topleft">Door</th>
+                  <th class="controller colheader">Controller</th>
+                  <th class="ID colheader">ID</th>
+                  <th class="door colheader">Door</th>
+                  <th class="mode colheader">Mode</th>
+                  <th class="delay colheader">Delay</th>
+                  <th class="padding colheader"></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+
+            <template id="door">
+                <td class="rowheader" style="display:flex; flex-direction:row;">
+                  <input class="field name" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         onchange="onEdited('door', event)" 
+                         data-record="" 
+                         data-original="" 
+                         data-value=""
+                         {{if .readonly}}readonly{{end}}  />
+                  <span class="control commit"   onclick="onCommit('door', event)"   data-record="">
+                    <img src="/images/{{$.context.Theme}}/check-solid.svg" />
+                  </span>
+                  <span class="control rollback" onclick="onRollback('door', event)" data-record="">
+                    <img src="/images/{{$.context.Theme}}/times-solid.svg" />
+                  </span>
+                </td>
+
+                <td>
+                  <input class="field controller"
+                         type="text" 
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('door', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
+                </td>
+                <td>
+                  <input class="field deviceID"
+                         type="number" 
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('door', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
+                </td>
+                <td>
+                  <input class="field doorID"
+                         type="number" 
+                         min="1"
+                         max="4"
+                         value=""
+                         placeholder="-"
+                         onchange="onEdited('door', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td class="combobox tooltip-wrap">
+                  <input class="field mode"
+                         type="text" 
+                         value=""
+                         placeholder="-"
+                         autocomplete="off" 
+                         onchange="onEdited('door', event)"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         data-status=""
+                         readonly 
+                         {{if .readonly}}disabled{{end}} />
+                  <ul style="position:fixed; left:0px; top:0px; z-index:2; width:fit-content; max-height:120px; overflow:auto;"></ul>
+                  <div class="tooltip-content">
+                    <p></p>
+                  </div> 
+                </td>
+                <td class="tooltip-wrap">
+                  <input class="field delay"
+                         type="number" 
+                         min="0"
+                         max="60"
+                         value=""
+                         placeholder="-"
+                         onkeydown="onEnter('door', event)" 
+                         onchange="onEdited('door', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         {{if .readonly}}readonly{{end}} />
+                  <div class="tooltip-content">
+                    <p></p>
+                  </div> 
+                </td>
+                <!-- 'padding' column (CSS: tr::last-child) -->
+                <td class="padding"></td>
+            </template>
+
+          </div>
+        </div>
+      </main>
+
+      {{template "footer" .}}
+    </div>
+  </body>
+
+  <!-- SCRIPTS -->
+  <script type="module">
+    {{template "uhppoted.js" .}}
+    {{template "tabular.js"  .}}
+    {{template "window.js"   .}}
+
+    const refresh = function() {
+      onRefresh('doors')      
+    }
+
+    resetIdle()
+    refresh()
+    setRefresh(refresh)
+  </script>
+
+  <!-- global information initialised by Go template -->
+  <script>
+    var constants = {
+      theme: {{$.context.Theme}},
+      mode: {{ $.context.Mode}},
+    }
+
+    function onMenu(event, state) {
+      if (window.onMenuX) {
+        window.onMenuX(event, state)
+      } else {
+        console.debug('onMenu is not defined')
+      }
+    }
+  </script>
+
+</html>

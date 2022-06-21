@@ -56,11 +56,23 @@ The `daemonize` command will create all the necessary files for `uhppoted-httpd`
 - GRULES files
 - HTML files
 
-A sample set of the files used by `uhppoted-httpd` is included in a [starter kit](https://github.com/uhppoted/uhppoted-httpd/tree/master/documentation/starter-kit). To use the starter kit, copy the executable for your platform into
-the starter kit folder and run `uhppoted-httpd` as a console application:
+### Quickstart
+
+A sample set of the files used by `uhppoted-httpd` is included in a [starter kit](https://github.com/uhppoted/uhppoted-httpd/tree/master/documentation/starter-kit) and a tar.gz file that includes the platform executable is included in 
+the release set as `quickstart-xxx.tar.gz`
+
+To use the _quickstart_, download and unpack the _tar.gz_ file for your platform and execute `uhppoted-httpd` as a console 
+application. e.g. for MacOS:
+
 ```
-uhppoted-httpd --config ./uhpppoted.conf --debug --console
+wget https://github.com/uhppoted/uhppoted-httpd/releases/download/v0.8.0/quickstart-darwin_v0.8.0.tar.gz
+mkdir -p uhppoted-httpd
+tar xvzf quickstart-darwin.tar.gz --directory uhppoted-httpd
+cd uhppoted-httpd
+./uhppoted-httpd --config uhpppoted.conf --debug --console
 ```
+
+The default user name and password for the quickstart are _admin_ and _uhppoted_ respectively.
 
 ### Building from source
 
