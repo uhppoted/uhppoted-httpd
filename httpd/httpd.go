@@ -22,9 +22,11 @@ import (
 
 type HTTPD struct {
 	HTML                     string
+	HttpEnabled              bool
+	HttpsEnabled             bool
+	HttpPort                 uint16
+	HttpsPort                uint16
 	AuthProvider             auth.IAuth
-	HTTPEnabled              bool
-	HTTPSEnabled             bool
 	CACertificate            string
 	TLSCertificate           string
 	TLSKey                   string
@@ -108,14 +110,14 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 	var srv *http.Server
 	var srvs *http.Server
 
-	if h.HTTPEnabled {
+	if h.HttpEnabled {
 		srv = &http.Server{
-			Addr:    ":8080",
+			Addr:    fmt.Sprintf(":%v", h.HttpPort),
 			Handler: mux,
 		}
 	}
 
-	if h.HTTPSEnabled {
+	if h.HttpsEnabled {
 		ca, err := ioutil.ReadFile(h.CACertificate)
 		if err != nil {
 			log.Printf("%5v Error reading CA certificate file (%v)", "FATAL", err)
@@ -149,7 +151,7 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 		tlsConfig.BuildNameToCertificate()
 
 		srvs = &http.Server{
-			Addr:      ":8443",
+			Addr:      fmt.Sprintf(":%v", h.HttpsPort),
 			TLSConfig: &tlsConfig,
 			Handler:   mux,
 		}

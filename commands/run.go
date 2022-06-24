@@ -144,9 +144,11 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 
 	h := httpd.HTTPD{
 		HTML:                     conf.HTTPD.HTML,
+		HttpEnabled:              conf.HTTPD.HttpEnabled,
+		HttpsEnabled:             conf.HTTPD.HttpsEnabled,
+		HttpPort:                 conf.HTTPD.HttpPort,
+		HttpsPort:                conf.HTTPD.HttpsPort,
 		AuthProvider:             authentication,
-		HTTPEnabled:              conf.HTTPD.HttpEnabled,
-		HTTPSEnabled:             conf.HTTPD.HttpsEnabled,
 		CACertificate:            conf.HTTPD.CACertificate,
 		TLSCertificate:           conf.HTTPD.TLSCertificate,
 		TLSKey:                   conf.HTTPD.TLSKey,

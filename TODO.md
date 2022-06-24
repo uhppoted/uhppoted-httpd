@@ -1,5 +1,6 @@
 ## v0.7.x
 
+- [x] Fix hardcoded http/https ports
 - [ ] Release
 
 ### IN PROGRESS
