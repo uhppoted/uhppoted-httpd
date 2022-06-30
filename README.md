@@ -33,7 +33,6 @@ become a platform for exploring some alternative ideas around user interfaces an
 | *Version* | *Description*                                                                             |
 | --------- | ----------------------------------------------------------------------------------------- |
 | v0.8.0    | Initial release                                                                           |
-|           |                                                                                           |
 
 ## Installation
 
