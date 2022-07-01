@@ -1,9 +1,8 @@
-## v0.7.x
-
-- [x] Fix hardcoded http/https ports
-- [ ] Release
+## v0.8.0
 
 ### IN PROGRESS
+
+- [x] Release
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
