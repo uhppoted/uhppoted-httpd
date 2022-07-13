@@ -147,7 +147,8 @@ func (cmd *Daemonize) execute() error {
 		return err
 	}
 
-	if err := cmd.users(i); err != nil {
+	admin, pwd, err := cmd.users(i)
+	if err != nil {
 		return err
 	}
 
@@ -161,10 +162,17 @@ func (cmd *Daemonize) execute() error {
 
 	fmt.Printf("   ... %s registered as a LaunchDaemon\n", i.Label)
 	fmt.Println()
-	fmt.Printf("   The daemon will start automatically on the next system restart - to start it manually, execute the following command:\n")
+	fmt.Printf("       The daemon will start automatically on the next system restart - to start it manually, execute the following command:\n")
 	fmt.Println()
-	fmt.Printf("   sudo launchctl load /Library/LaunchDaemons/com.github.uhppoted.%s.plist\n", SERVICE)
+	fmt.Printf("       > sudo launchctl load /Library/LaunchDaemons/com.github.uhppoted.%s.plist\n", SERVICE)
 	fmt.Println()
+
+	if admin != "" {
+		fmt.Println()
+		fmt.Printf("   *** THE DEFAULT '%v' USER PASSWORD IS '%v' ***\n", admin, pwd)
+		fmt.Println()
+	}
+
 	fmt.Println()
 
 	return nil

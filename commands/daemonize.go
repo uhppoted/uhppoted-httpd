@@ -362,12 +362,12 @@ func (cmd *Daemonize) grules(i info) (bool, error) {
 	return true, nil
 }
 
-func (cmd *Daemonize) users(i info) error {
+func (cmd *Daemonize) users(i info) (string, string, error) {
 	dir := filepath.Join(cmd.workdir, "system")
 
 	fmt.Printf("   ... creating folder '%v'\n", dir)
 	if err := os.MkdirAll(dir, 0744); err != nil {
-		return err
+		return "", "", err
 	}
 
 	file := filepath.Join(dir, "users.json")
@@ -378,21 +378,21 @@ func (cmd *Daemonize) users(i info) error {
 	info, err := os.Stat(file)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			return err
+			return "", "", err
 		}
 	} else if !info.IsDir() {
 		bytes, err := os.ReadFile(file)
 		if err != nil {
-			return err
+			return "", "", err
 		}
 
 		if err := json.Unmarshal(bytes, &users); err != nil {
-			return err
+			return "", "", err
 		}
 	}
 
 	if len(users.Users) > 0 {
-		return nil
+		return "", "", nil
 	}
 
 	// ... create initial 'admin' user?
@@ -404,7 +404,7 @@ func (cmd *Daemonize) users(i info) error {
 	text, err := stdin.ReadString('\n')
 	fmt.Println()
 	if err != nil || strings.ToLower(strings.TrimSpace(text)) != "yes" {
-		return nil
+		return "", "", nil
 	}
 
 	fmt.Println("   ... creating default 'admin' user")
@@ -445,15 +445,15 @@ func (cmd *Daemonize) users(i info) error {
 
 	// ... write default 'admin' user to users.json
 	if bytes, err := json.MarshalIndent(users, "  ", "  "); err != nil {
-		return err
+		return "", "", err
 	} else if err := toTextFile(string(bytes), file); err != nil {
-		return err
+		return "", "", err
 	}
 
 	fmt.Printf("   ... created default 'admin' user, password:%v\n", string(password))
 	fmt.Println()
 
-	return nil
+	return "admin", string(password), nil
 }
 
 func (cmd *Daemonize) sysinit(i info) error {

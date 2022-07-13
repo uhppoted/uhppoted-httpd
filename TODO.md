@@ -2,7 +2,8 @@
 
 ### IN PROGRESS
 
-- [x] Release
+- [ ] Look into [Temporal](https://blogs.igalia.com/compilers/2020/06/23/dates-and-times-in-javascript)
+      for date/time stuff
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
