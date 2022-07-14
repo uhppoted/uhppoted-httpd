@@ -5,5 +5,5 @@ import (
 )
 
 // Ref. https://go-review.googlesource.com/c/go/+/359413
-//go:embed css images javascript sys usr favicon.ico index.html manifest.json templates translations
+//go:embed css images fonts javascript sys usr favicon.ico index.html manifest.json templates translations
 var HTML embed.FS

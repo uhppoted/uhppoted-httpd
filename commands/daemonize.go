@@ -450,7 +450,7 @@ func (cmd *Daemonize) users(i info) (string, string, error) {
 		return "", "", err
 	}
 
-	fmt.Printf("   ... created default 'admin' user, password:%v\n", string(password))
+	fmt.Printf("   ... created default 'admin' user\n")
 	fmt.Println()
 
 	return "admin", string(password), nil
