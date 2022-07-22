@@ -7,6 +7,7 @@ const pagesize = 5
 export function refreshed () {
   const events = [...DB.events().values()]
     .filter(e => alive(e))
+    .filter(e => e.timestamp !== '')
     .sort((p, q) => q.timestamp.localeCompare(p.timestamp))
 
   realize(events)

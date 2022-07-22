@@ -326,10 +326,26 @@ func (l *LAN) getEvents(c types.IController, intervals []types.Interval) {
 		events := []uhppoted.Event{}
 
 		f := func(index uint32) {
-			if e, err := api.GetEvent(deviceID, index); err != nil {
+			if e, err := api.UHPPOTE.GetEvent(deviceID, index); err != nil {
 				log.Warnf("%v", err)
-			} else if e != nil {
-				events = append(events, *e)
+			} else if e == nil {
+				log.Warnf("%v: missing event %v", deviceID, index)
+				events = append(events, uhppoted.Event{
+					DeviceID: deviceID,
+					Index:    index,
+				})
+			} else {
+				events = append(events, uhppoted.Event{
+					DeviceID:   deviceID,
+					Index:      e.Index,
+					Type:       e.Type,
+					Granted:    e.Granted,
+					Door:       e.Door,
+					Direction:  e.Direction,
+					CardNumber: e.CardNumber,
+					Timestamp:  e.Timestamp,
+					Reason:     e.Reason,
+				})
 			}
 
 			count++
