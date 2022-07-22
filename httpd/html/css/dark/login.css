@@ -626,6 +626,15 @@ tr td select[data-status=error] {
   color: #839496;
 }
 
+.field > input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #fdf6e3 inset;
+}
+
+.field > input::placeholder {
+  font-style: italic;
+  color: #839496;
+}
+
 .field > img {
   display: inline-block;
   width: 16px;
@@ -633,11 +642,6 @@ tr td select[data-status=error] {
   padding-left: 8px;
   padding-right: 8px;
   vertical-align: middle;
-}
-
-.field > input::placeholder {
-  font-style: italic;
-  color: #839496;
 }
 
 form button {

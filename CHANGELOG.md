@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### Changed
+1. Stored 'missing events' to avoid stalling event retrieval.
+2. Fixed missing 'onMore' handler.
+3. Overrode Chrome's autofill setting for login UID field.
+
+### Changed
 1. Displayed the created admin user ID and password at the end of the 'daemonize' output.
 2. Added 'fonts' folder to embedded HTML file system.
 

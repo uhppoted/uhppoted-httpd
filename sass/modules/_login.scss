@@ -60,6 +60,15 @@
   color: $fieldset-text;
 }
 
+.field > input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px $field-input-background inset;
+}
+
+.field > input::placeholder {
+  font-style: italic;
+  color: $fieldset-text;
+}
+
 .field > img {
   display: inline-block;
   width: 16px;
@@ -67,11 +76,6 @@
   padding-left: 8px;
   padding-right: 8px;
   vertical-align: middle;
-}
-
-.field > input::placeholder {
-  font-style: italic;
-  color: $fieldset-text;
 }
 
 form button {
