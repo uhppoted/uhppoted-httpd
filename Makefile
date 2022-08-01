@@ -1,5 +1,4 @@
-VERSION = v0.8.x
-LDFLAGS = -ldflags "-X uhppote.VERSION=$(VERSION)" 
+RELEASE = v0.8.x
 DIST   ?= development
 DEBUG  ?= --debug
 CMD     = ./bin/uhppoted-httpd
@@ -80,10 +79,10 @@ build-all: vet
 
 build-quickstart: 
 	cp -r httpd/html documentation/starter-kit/etc/httpd/html
-	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-darwin_$(VERSION).tar.gz  . -C ../../dist/$(DIST)/darwin  .
-	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-linux_$(VERSION).tar.gz   . -C ../../dist/$(DIST)/linux   .
-	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-windows_$(VERSION).tar.gz . -C ../../dist/$(DIST)/windows .
-	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-arm7_$(VERSION).tar.gz    . -C ../../dist/$(DIST)/arm7    .
+	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-darwin_$(RELEASE).tar.gz  . -C ../../dist/$(DIST)/darwin  .
+	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-linux_$(RELEASE).tar.gz   . -C ../../dist/$(DIST)/linux   .
+	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-windows_$(RELEASE).tar.gz . -C ../../dist/$(DIST)/windows .
+	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-arm7_$(RELEASE).tar.gz    . -C ../../dist/$(DIST)/arm7    .
 
 release: update-release build-all build-quickstart
 	find . -name ".DS_Store" -delete
