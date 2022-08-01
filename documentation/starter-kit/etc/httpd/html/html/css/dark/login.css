@@ -357,6 +357,49 @@ footer {
   color: #227dbc;
 }
 
+.windmill {
+  height: fit-content;
+  display: none;
+}
+
+.windmill.visible {
+  display: block;
+}
+
+.windmill progress {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  animation: fill-bar 3s alternate infinite;
+}
+
+.windmill progress::-webkit-progress-bar {
+  background: #405e6d;
+  border-radius: 3px;
+}
+
+.windmill progress::-webkit-progress-value {
+  background: #405e6d;
+  border-radius: 3px;
+}
+
+.windmill progress::-moz-progress-bar {
+  background: #405e6d;
+  border-radius: 3px;
+}
+
+@keyframes fill-bar {
+  from {
+    margin-left: 75%;
+    width: 25%;
+  }
+  to {
+    margin-left: 0%;
+    width: 25%;
+  }
+}
 #controls {
   background: #05232b;
   padding: 4px 4px 4px 4px;
@@ -571,10 +614,24 @@ tr td select[data-status=error] {
 
 .field > input {
   font-size: 0.8em;
-  padding-left: 12px;
-  padding-right: 12px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: 8px;
+  margin-right: 8px;
   border: none;
+  border-radius: 4px;
   outline: none;
+  color: #839496;
+}
+
+.field > input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #fdf6e3 inset;
+}
+
+.field > input::placeholder {
+  font-style: italic;
   color: #839496;
 }
 
@@ -585,11 +642,6 @@ tr td select[data-status=error] {
   padding-left: 8px;
   padding-right: 8px;
   vertical-align: middle;
-}
-
-.field > input::placeholder {
-  font-style: italic;
-  color: #839496;
 }
 
 form button {

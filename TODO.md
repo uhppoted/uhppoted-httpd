@@ -1,9 +1,11 @@
-## v0.8.0
+# TODO
 
 ### IN PROGRESS
 
 - [ ] Look into [Temporal](https://blogs.igalia.com/compilers/2020/06/23/dates-and-times-in-javascript)
       for date/time stuff
+- [ ] https://tls-anvil.com/docs/Quick-Start/index
+- [ ] https://jakub-m.github.io/2022/07/17/laport-clocks-formal.html
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -26,6 +28,9 @@
       - limit number of pending 'update' requests (e.g. if device is not responding)
 
 ## TODO
+
+- (?) Multi-tenant
+      - https://stanislas.blog/2021/08/firecracker/
 
 - (?) Appliance
       - https://gokrazy.org
