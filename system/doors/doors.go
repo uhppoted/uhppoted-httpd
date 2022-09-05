@@ -219,7 +219,8 @@ func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
 }
 
 // NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
-//      the 'shadow' copy only
+//
+//	the 'shadow' copy only
 func (dd *Doors) Clone() Doors {
 	guard.RLock()
 	defer guard.RUnlock()

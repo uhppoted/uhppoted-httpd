@@ -266,7 +266,8 @@ func (cc *Cards) Save() (json.RawMessage, error) {
 }
 
 // NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
-//      the 'shadow' copy only
+//
+//	the 'shadow' copy only
 func (cc *Cards) Clone() Cards {
 	guard.RLock()
 	defer guard.RUnlock()

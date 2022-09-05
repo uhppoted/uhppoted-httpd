@@ -245,8 +245,9 @@ func (ee *Events) Validate() error {
 }
 
 // NTS: for 1000000 events (i.e. in the expected range), binary search improves only slightly
-//      on a sequential linear traverse but it's a cleaner algorithm and scales somewhat better.
-//      Copying from the map is the dominant cost.
+//
+//	on a sequential linear traverse but it's a cleaner algorithm and scales somewhat better.
+//	Copying from the map is the dominant cost.
 func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.Interval {
 	ee.RLock()
 	defer ee.RUnlock()

@@ -67,7 +67,8 @@ func (b *Basic) Preauthenticate() (*http.Cookie, error) {
 }
 
 // NTS: the uhppoted-httpd-login cookie is a single use expiring cookie
-//      intended to (eventually) support opaque login credentials
+//
+//	intended to (eventually) support opaque login credentials
 func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie, error) {
 	if cookie == nil {
 		return nil, fmt.Errorf("Invalid login cookie")
@@ -177,8 +178,9 @@ func (b *Basic) deserialize(r io.Reader) error {
 }
 
 // NOTE: interim file watcher implementation pending fsnotify in Go v?.?
-//       (https://github.com/fsnotify/fsnotify requires workarounds for
-//        files updated atomically by renaming)
+//
+//	(https://github.com/fsnotify/fsnotify requires workarounds for
+//	 files updated atomically by renaming)
 func (b *Basic) watch(filepath string) {
 	go func() {
 		finfo, err := os.Stat(filepath)

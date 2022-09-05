@@ -17,8 +17,9 @@ type History struct {
 }
 
 // NTS: external to History struct because there's only ever really one of them
-//      and you can't copy safely/pass as an argument with an embedded mutex
-//      except by address.
+//
+//	and you can't copy safely/pass as an argument with an embedded mutex
+//	except by address.
 var guard sync.RWMutex
 
 func NewHistory(entries ...Entry) History {

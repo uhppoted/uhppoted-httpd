@@ -117,7 +117,8 @@ func (t *events) List() []schema.OID {
 }
 
 // FIXME horrifically inefficient for large event lists but also never invoked
-//       in the current system
+//
+//	in the current system
 func (t *events) Has(v any, oid schema.OID) bool {
 	for _, v := range t.m {
 		if v.OID == oid && !v.deleted {

@@ -83,24 +83,28 @@ Required tools:
 - [eslint](https://eslint.org) (optional but recommended)
 - [eslint-config-standard](https://www.npmjs.com/package/eslint-config-standard) (optional but recommended)
 
-**NOTE:**
+**NOTES:**
 
-_`apt install` sass on Ubuntu installs `ruby-sass` which was marked [obsolete](https://sass-lang.com/ruby-sass)
+1. `apt install` sass on Ubuntu installs `ruby-sass` which was marked **[obsolete](https://sass-lang.com/ruby-sass)**
 in 2019. Please follow the installation instructions on the [Sass homepage](https://sass-lang.com) to install
 the current version._
 
+2. The _make_ build uses `eslint` and `eslint_config_standard`. `eslint_config_standard` is a **dev** dependency and
+should be installed locally in the project:
 
-To build using the included Makefile:
-
+    * Initial project setup:
 ```
 git clone https://github.com/uhppoted/uhppoted-httpd.git
 cd uhppoted-httpd
+npm install eslint-config-standard
+```
+   * To build using the included Makefile:
+```
+cd uhppoted-httpd
 make build
 ```
-
-Without using `make`:
+   * Without using `make`:
 ```
-git clone https://github.com/uhppoted/uhppoted-httpd.git
 cd uhppoted-httpd
 sass --no-source-map sass/themes/light:httpd/html/css/default
 sass --no-source-map sass/themes/light:httpd/html/css/light

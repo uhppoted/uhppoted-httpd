@@ -105,7 +105,8 @@ func (s *system) compareACL() {
 }
 
 // NTS: revoke all if card is nil because card number may have changed and the old
-//      card will no longer have access
+//
+//	card will no longer have access
 func (s *system) updateCardPermissions(controller types.IController, cardID uint32) {
 	if cardID == 0 {
 		return

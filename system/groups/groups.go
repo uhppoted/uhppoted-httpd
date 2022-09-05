@@ -178,9 +178,12 @@ func (gg Groups) Print() {
 }
 
 // NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
-//      the 'shadow' copy only
+//
+//	the 'shadow' copy only
+//
 // NTS: 'added' is specifically not cloned - it has a lifetime for the duration of
-//      the 'shadow' copy only
+//
+//	the 'shadow' copy only
 func (gg *Groups) Clone() Groups {
 	guard.RLock()
 	defer guard.RUnlock()

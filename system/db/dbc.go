@@ -68,7 +68,8 @@ func (d *DBC) Log(uid, operation string, OID schema.OID, component string, ID, n
 
 // Returns a deduplicated list of objects, retaining only the the last (i.e. latest) value.
 // NOTE: this implementation is horrifically inefficient but the list is expected to almost
-//       always be tiny since it is the result of a manual edit.
+//
+//	always be tiny since it is the result of a manual edit.
 func squoosh(objects []schema.Object) []schema.Object {
 	keys := map[schema.OID]struct{}{}
 	list := []schema.Object{}
