@@ -6,6 +6,9 @@
       for date/time stuff
 - [ ] https://tls-anvil.com/docs/Quick-Start/index
 - [ ] https://jakub-m.github.io/2022/07/17/laport-clocks-formal.html
+- (?) [UCAN](https://ucan.xyz/)
+
+- [ ] System font stack (https://llccing.github.io/30-seconds-of-css/)
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -28,6 +31,8 @@
       - limit number of pending 'update' requests (e.g. if device is not responding)
 
 ## TODO
+
+- https://www.youtube.com/watch?v=24GRiOCa1Vo
 
 - (?) Multi-tenant
       - https://stanislas.blog/2021/08/firecracker/

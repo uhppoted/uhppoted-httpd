@@ -5,10 +5,10 @@ go 1.19
 require (
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.3.0
-	github.com/hyperjumptech/grule-rule-engine v1.10.6
-	github.com/uhppoted/uhppote-core v0.8.1
-	github.com/uhppoted/uhppoted-lib v0.8.1
-	golang.org/x/sys v0.0.0-20220731174439-a90be440212d
+	github.com/hyperjumptech/grule-rule-engine v1.11.0
+	github.com/uhppoted/uhppote-core v0.8.2-0.20221012170946-d9f90fb812d0
+	github.com/uhppoted/uhppoted-lib v0.8.2-0.20221013163909-e934765e449f
+	golang.org/x/sys v0.0.0-20221010170243-090e33056c14
 )
 
 require (
@@ -22,6 +22,9 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/src-d/gcfg v1.4.0 // indirect
 	github.com/xanzy/ssh-agent v0.2.1 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/multierr v1.6.0 // indirect
+	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550 // indirect
 	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
