@@ -2,13 +2,23 @@
 
 ### IN PROGRESS
 
-- [ ] Look into [Temporal](https://blogs.igalia.com/compilers/2020/06/23/dates-and-times-in-javascript)
-      for date/time stuff
-- [ ] https://tls-anvil.com/docs/Quick-Start/index
-- [ ] https://jakub-m.github.io/2022/07/17/laport-clocks-formal.html
-- (?) [UCAN](https://ucan.xyz/)
-
-- [ ] System font stack (https://llccing.github.io/30-seconds-of-css/)
+- [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
+      - [ ] Add OTP to password page
+            - [ ] White background
+            - [ ] More padding
+            - [ ] Size (?)
+            - [ ] Show/hide OTP
+      
+      - [ ] GET /otp
+            - [x] Generate OTP
+            - [ ] Store OTP key in server session
+      - [ ] POST /opt
+            - [ ] Validate OTP
+            - [ ] Store OTP key in user credentials
+            
+      - [ ] Accept both password and OTP for login
+      - [ ] Reset OTP
+      - [ ] Placeholder OTP image
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -29,6 +39,15 @@
 #### System
       - validate Local::Device timezone on initialization
       - limit number of pending 'update' requests (e.g. if device is not responding)
+
+## FYI
+
+- [ ] Look into [Temporal](https://blogs.igalia.com/compilers/2020/06/23/dates-and-times-in-javascript)
+      for date/time stuff
+- [ ] https://tls-anvil.com/docs/Quick-Start/index
+- [ ] https://jakub-m.github.io/2022/07/17/laport-clocks-formal.html
+- (?) [UCAN](https://ucan.xyz/)
+- [ ] System font stack (https://llccing.github.io/30-seconds-of-css/)
 
 ## TODO
 

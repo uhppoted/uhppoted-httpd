@@ -6,6 +6,7 @@ require (
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.3.0
 	github.com/hyperjumptech/grule-rule-engine v1.11.0
+	github.com/pquerna/otp v1.3.0
 	github.com/uhppoted/uhppote-core v0.8.2
 	github.com/uhppoted/uhppoted-lib v0.8.2
 	golang.org/x/sys v0.0.0-20221013171732-95e765b1cc43
@@ -14,6 +15,7 @@ require (
 require (
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220527190237-ee62e23da966 // indirect
 	github.com/bmatcuk/doublestar v1.3.2 // indirect
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd // indirect

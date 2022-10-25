@@ -14,6 +14,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/uhppoted/uhppoted-httpd/httpd/otp"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -33,7 +34,8 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch path {
-	case "/interfaces",
+	case
+		"/interfaces",
 		"/controllers",
 		"/doors",
 		"/cards",
@@ -45,6 +47,10 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 			d.fetch(r, w, *handler)
 		}
 
+		return
+
+	case "/otp":
+		d.generateOTP(w, r)
 		return
 	}
 
@@ -311,6 +317,50 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 		gz.Close()
 	} else {
 		w.Write(b)
+	}
+}
+
+func (d *dispatcher) generateOTP(w http.ResponseWriter, r *http.Request) {
+	if strings.ToUpper(r.Method) != http.MethodGet {
+		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// ... normalize path
+	path, err := resolve(r.URL)
+	if err != nil {
+		http.Error(w, "invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	// ... authenticated and authorized?
+	uid, role, authenticated := d.authenticated(r, w)
+	if !authenticated {
+		d.unauthenticated(r, w)
+		return
+	}
+
+	if ok := d.authorised(uid, role, path); !ok {
+		d.unauthorised(r, w)
+		return
+	}
+
+	// ... generate  OTP
+	acceptsGzip := parseHeader(r)
+
+	if bytes, err := otp.Get(uid, role); err != nil {
+		warn("OTP", err)
+		http.Error(w, "Error generating OTP", http.StatusInternalServerError)
+	} else if acceptsGzip && len(bytes) > GZIP_MINIMUM {
+		w.Header().Set("Content-Encoding", "gzip")
+		w.Header().Set("Content-Type", "image/png")
+
+		gz := gzip.NewWriter(w)
+		gz.Write(bytes)
+		gz.Close()
+	} else {
+		w.Header().Set("Content-Type", "image/png")
+		w.Write(bytes)
 	}
 }
 

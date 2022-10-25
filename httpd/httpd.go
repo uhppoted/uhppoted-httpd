@@ -90,6 +90,7 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 	mux.HandleFunc("/authenticate", d.dispatch)
 	mux.HandleFunc("/logout", d.dispatch)
 	mux.HandleFunc("/password", d.dispatch)
+	mux.HandleFunc("/otp", d.dispatch)
 	mux.HandleFunc("/interfaces", d.dispatch)
 	mux.HandleFunc("/controllers", d.dispatch)
 	mux.HandleFunc("/doors", d.dispatch)
