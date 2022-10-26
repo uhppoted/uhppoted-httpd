@@ -13,8 +13,9 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/httpd/otp"
+	"github.com/uhppoted/uhppoted-httpd/auth/otp"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -346,12 +347,32 @@ func (d *dispatcher) generateOTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// ... generate  OTP
-	acceptsGzip := parseHeader(r)
 
-	if bytes, err := otp.Get(uid, role); err != nil {
+	key := ""
+	if cookie, err := r.Cookie(OTPCookie); err == nil {
+		key = cookie.Value
+	}
+
+	newkey, bytes, err := otp.Get(uid, role, key)
+	if err != nil {
 		warn("OTP", err)
 		http.Error(w, "Error generating OTP", http.StatusInternalServerError)
-	} else if acceptsGzip && len(bytes) > GZIP_MINIMUM {
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     OTPCookie,
+		Value:    newkey,
+		Path:     "/",
+		MaxAge:   int((5 * time.Minute).Seconds()),
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		//	Secure:   true,
+	})
+
+	// ... reply
+	acceptsGzip := parseHeader(r)
+	if acceptsGzip && len(bytes) > GZIP_MINIMUM {
 		w.Header().Set("Content-Encoding", "gzip")
 		w.Header().Set("Content-Type", "image/png")
 

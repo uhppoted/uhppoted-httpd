@@ -44,6 +44,7 @@ type dispatcher struct {
 
 const (
 	SettingsCookie = "uhppoted-settings"
+	OTPCookie      = "uhppoted-httpd-otp"
 )
 
 func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {

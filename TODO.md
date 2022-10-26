@@ -11,7 +11,11 @@
       
       - [ ] GET /otp
             - [x] Generate OTP
-            - [ ] Store OTP key in server session
+            - [x] Store OTP key in server session
+            - [x] Keep key server-side and put key ID in cookie
+            - [x] Expire OTP keys in server session
+            - [x] `Issuer` from _uhppoted.conf_
+
       - [ ] POST /opt
             - [ ] Validate OTP
             - [ ] Store OTP key in user credentials
