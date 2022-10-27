@@ -15,6 +15,9 @@
             - [x] Keep key server-side and put key ID in cookie
             - [x] Expire OTP keys in server session
             - [x] `Issuer` from _uhppoted.conf_
+            - [x] Clear OTP cookie on logout
+            - [ ] Clear OTP cookie on Ok/Cancel
+                  - https://stackoverflow.com/questions/2144386/how-to-delete-a-cookie
 
       - [ ] POST /opt
             - [ ] Validate OTP
@@ -23,6 +26,8 @@
       - [ ] Accept both password and OTP for login
       - [ ] Reset OTP
       - [ ] Placeholder OTP image
+
+- [ ] Set cookie.Secure to true for TLS requests
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -56,6 +61,8 @@
 ## TODO
 
 - https://www.youtube.com/watch?v=24GRiOCa1Vo
+- https://www.theregister.com/2022/06/20/redbean_2_a_singlefile_web
+- https://github.com/letoram/pipeworld
 
 - (?) Multi-tenant
       - https://stanislas.blog/2021/08/firecracker/

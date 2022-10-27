@@ -272,6 +272,7 @@ func (d *dispatcher) authorised(uid, role, path string) bool {
 
 func (d *dispatcher) unauthenticated(r *http.Request, w http.ResponseWriter) {
 	clear(auth.SessionCookie, w)
+	clear(OTPCookie, w)
 
 	http.Redirect(w, r, "/sys/login.html", http.StatusFound)
 }

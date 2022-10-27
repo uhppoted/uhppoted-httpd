@@ -172,6 +172,7 @@ func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	clear(auth.SessionCookie, w)
+	clear(OTPCookie, w)
 
 	http.Redirect(w, r, "/index.html", http.StatusFound)
 }

@@ -23,7 +23,7 @@ export function setRefresh (f) {
 }
 
 export function onIdle () {
-  // FIXME (disabled for OTP) onSignOut()
+  onSignOut()
 }
 
 export function onMenu (event, show) {
