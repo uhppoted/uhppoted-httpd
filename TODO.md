@@ -9,7 +9,7 @@
             - [ ] Size (?)
             - [ ] Show/hide OTP
       
-      - [ ] GET /otp
+      - [x] GET /otp
             - [x] Generate OTP
             - [x] Store OTP key in server session
             - [x] Keep key server-side and put key ID in cookie
@@ -18,7 +18,9 @@
             - [x] Clear OTP cookie on logout
             - [x] Clear OTP cookie on Ok/Cancel
 
-      - [ ] POST /opt
+      - [ ] POST /otp
+            - [ ] Display validate error
+            - [ ] Validate uid+password
             - [ ] Validate OTP
             - [ ] Store OTP key in user credentials
             

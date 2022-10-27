@@ -12,6 +12,7 @@ import (
 
 	authorizator "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/httpd/post"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -92,6 +93,9 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		} else {
 			d.synchronize(w, r, system.SynchronizeDoors)
 		}
+
+	case "/otp":
+		post.VerifyOTP(w, r)
 
 	default:
 		http.Error(w, "API not implemented", http.StatusNotImplemented)
@@ -350,3 +354,65 @@ func (d *dispatcher) synchronize(w http.ResponseWriter, r *http.Request, f func(
 	case <-ch:
 	}
 }
+
+// func (d *dispatcher) verifyOTP(w http.ResponseWriter, r *http.Request) {
+// 	contentType := ""
+// 	acceptsGzip := false
+
+// 	for k, h := range r.Header {
+// 		if strings.TrimSpace(strings.ToLower(k)) == "content-type" {
+// 			for _, v := range h {
+// 				contentType = strings.TrimSpace(strings.ToLower(v))
+// 			}
+// 		}
+
+// 		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
+// 			for _, v := range h {
+// 				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
+// 					acceptsGzip = true
+// 				}
+// 			}
+// 		}
+// 	}
+
+// 	body := map[string]interface{}{}
+
+// 	switch contentType {
+// 	case "application/x-www-form-urlencoded":
+// 		if err := r.ParseForm(); err != nil {
+// 			warn("POST", err)
+// 			http.Error(w, "Error reading request", http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		for k, v := range r.Form {
+// 			body[k] = v
+// 		}
+
+// 	case "application/json":
+// 		blob, err := ioutil.ReadAll(r.Body)
+// 		if err != nil {
+// 			warn("POST", err)
+// 			http.Error(w, "Error reading request", http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		if err := json.Unmarshal(blob, &body); err != nil {
+// 			warn("POST", err)
+// 			http.Error(w, "Invalid request body", http.StatusBadRequest)
+// 			return
+// 		}
+
+// 	default:
+// 		http.Error(w, fmt.Sprintf("Invalid request content-type (%v)", contentType), http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	fmt.Printf(">>> %v\n", body)
+
+// 	if acceptsGzip {
+
+// 	}
+
+// 	http.Error(w, "(work in progress)", http.StatusInternalServerError)
+// }
