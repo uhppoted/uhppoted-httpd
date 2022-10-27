@@ -16,8 +16,7 @@
             - [x] Expire OTP keys in server session
             - [x] `Issuer` from _uhppoted.conf_
             - [x] Clear OTP cookie on logout
-            - [ ] Clear OTP cookie on Ok/Cancel
-                  - https://stackoverflow.com/questions/2144386/how-to-delete-a-cookie
+            - [x] Clear OTP cookie on Ok/Cancel
 
       - [ ] POST /opt
             - [ ] Validate OTP
