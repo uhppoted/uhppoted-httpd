@@ -72,5 +72,5 @@ func Validate(uid string, otp string) error {
 }
 
 func warnf(format string, args ...any) {
-	log.Warnf(format, args)
+	log.Warnf(format, args...)
 }
