@@ -2,9 +2,11 @@ package post
 
 import (
 	"net/http"
+
+	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 )
 
-func VerifyOTP(w http.ResponseWriter, r *http.Request) {
+func VerifyOTP(w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
 	var uid string
 	var pwd string
 
@@ -24,13 +26,9 @@ func VerifyOTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if ok, err := validatePassword(uid, pwd); err != nil {
+	if err := auth.Verify(uid, pwd); err != nil {
 		warnf("OTP", "%v", err)
-		http.Error(w, "Error validating password", http.StatusBadRequest)
-		return
-	} else if !ok {
-		warnf("OTP", "invalid password")
-		http.Error(w, "Error validating password", http.StatusBadRequest)
+		http.Error(w, "Invalid user ID or password", http.StatusBadRequest)
 		return
 	}
 
@@ -39,16 +37,4 @@ func VerifyOTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Error(w, "(work in progress)", http.StatusInternalServerError)
-}
-
-func validatePassword(uid, pwd string) (bool, error) {
-	// if err := auth.Verify(uid, old); err != nil {
-	// 	return nil, fmt.Errorf("Invalid user ID or password")
-	// }
-
-	// if err := system.SetPassword(uid, pwd); err != nil {
-	// 	return nil, err
-	// }
-
-	return false, nil
 }

@@ -1,6 +1,6 @@
 /* global messages */
 
-import { dismiss, postAsForm } from './uhppoted.js'
+import { postAsForm, dismiss } from './uhppoted.js'
 
 export function onPassword (event) {
   event.preventDefault()
@@ -73,7 +73,7 @@ export function onOTP (event) {
   postAsForm('/otp', otp)
     .then(response => {
       console.log(response)
-      //     switch (response.status) {
+      switch (response.status) {
       //       case 200:
       //         if (response.redirected) {
       //           window.location = response.url
@@ -82,18 +82,21 @@ export function onOTP (event) {
       //         }
       //         return
 
-      //       case 401:
-      //         throw new Error(messages.unauthorized)
+        case 401:
+          throw new Error(messages.unauthorized)
 
-      //       default:
-      //         return response.text()
+        default:
+          return response
+            .text()
+            .then(err => { throw new Error(err) })
+      }
+    })
+    .then(v => {
+      console.log({ v })
+      //     if (msg) {
+      //       throw new Error(msg.trim())
       //     }
     })
-  //   .then(msg => {
-  //     if (msg) {
-  //       throw new Error(msg.trim())
-  //     }
-    // })
     .catch(function (err) {
       warning(`${err.message}`)
     })
@@ -105,7 +108,7 @@ function warning (msg) {
 
   if (text != null) {
     text.innerText = msg
-    message.style.visibility = 'visible'
+    message.classList.add('visible')
   } else {
     alert(msg)
   }

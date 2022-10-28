@@ -180,16 +180,14 @@ export function retheme (theme) {
 }
 
 export function warning (msg) {
-  if (msg) {
-    const message = document.getElementById('message')
-    const text = document.getElementById('warning')
+  const message = document.getElementById('message')
+  const text = document.getElementById('warning')
 
-    if (text != null) {
-      text.innerText = msg
-      message.style.visibility = 'visible'
-    } else {
-      alert(msg)
-    }
+  if (msg && message && text) {
+    message.classList.add('visible')
+    text.innerText = msg
+  } else {
+    alert(msg)
   }
 }
 
@@ -197,9 +195,12 @@ export function dismiss () {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 
-  if (text != null) {
-    text.innerText = 'msg'
-    message.style.visibility = 'hidden'
+  if (message) {
+    message.classList.remove('visible')
+  }
+
+  if (text) {
+    text.innerText = 'msg' // FIXME - think this was a hack for a layout issue - fix in CSS rather
   }
 }
 

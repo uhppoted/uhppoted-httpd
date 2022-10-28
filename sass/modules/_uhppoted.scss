@@ -226,12 +226,17 @@ footer {
   justify-content: flex-end;
   align-items: flex-end;
   margin-bottom:2px;
-}
 
-#controls #message {
-  flex-grow: 1;
-  margin-left: 0px;
-  margin-right: 6px;
+  #message {
+    flex-grow: 1;
+    margin-left: 0px;
+    margin-right: 6px;
+    visibility: hidden;
+  }
+
+  #message.visible {
+    visibility: visible;
+  }
 }
 
 #controls img.button {  

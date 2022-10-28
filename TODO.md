@@ -11,8 +11,8 @@
             - [ ] Seperate change password and OTP
       
       - [ ] POST /otp
-            - [ ] Display validate error
-            - [ ] Validate uid+password
+            - [x] Display validate error
+            - [x] Validate uid+password
             - [ ] Validate OTP
             - [ ] Store OTP key in user credentials
             
