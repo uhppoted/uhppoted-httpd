@@ -77,7 +77,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		if d.mode == types.Monitor {
 			http.Error(w, "Synchronize ACL disabled in 'monitor' mode", http.StatusBadRequest)
 		} else {
-			d.synchronize(w, r, system.SynchronizeACL)
+			post.SynchronizeACL(d.context, w, r, d.timeout)
 		}
 
 	case "/synchronize/datetime":
@@ -283,30 +283,6 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 	}
 }
 
-func (d *dispatcher) synchronizeACL(w http.ResponseWriter, r *http.Request) {
-	ch := make(chan struct{})
-	ctx, cancel := context.WithTimeout(d.context, d.timeout)
-
-	defer cancel()
-
-	go func() {
-		if err := system.SynchronizeACL(); err != nil {
-			warn("", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-
-		close(ch)
-	}()
-
-	select {
-	case <-ctx.Done():
-		warn("", ctx.Err())
-		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
-
-	case <-ch:
-	}
-}
-
 func (d *dispatcher) synchronizeDateTime(w http.ResponseWriter, r *http.Request) {
 	ch := make(chan struct{})
 	ctx, cancel := context.WithTimeout(d.context, d.timeout)
@@ -354,65 +330,3 @@ func (d *dispatcher) synchronize(w http.ResponseWriter, r *http.Request, f func(
 	case <-ch:
 	}
 }
-
-// func (d *dispatcher) verifyOTP(w http.ResponseWriter, r *http.Request) {
-// 	contentType := ""
-// 	acceptsGzip := false
-
-// 	for k, h := range r.Header {
-// 		if strings.TrimSpace(strings.ToLower(k)) == "content-type" {
-// 			for _, v := range h {
-// 				contentType = strings.TrimSpace(strings.ToLower(v))
-// 			}
-// 		}
-
-// 		if strings.TrimSpace(strings.ToLower(k)) == "accept-encoding" {
-// 			for _, v := range h {
-// 				if strings.Contains(strings.TrimSpace(strings.ToLower(v)), "gzip") {
-// 					acceptsGzip = true
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	body := map[string]interface{}{}
-
-// 	switch contentType {
-// 	case "application/x-www-form-urlencoded":
-// 		if err := r.ParseForm(); err != nil {
-// 			warn("POST", err)
-// 			http.Error(w, "Error reading request", http.StatusInternalServerError)
-// 			return
-// 		}
-
-// 		for k, v := range r.Form {
-// 			body[k] = v
-// 		}
-
-// 	case "application/json":
-// 		blob, err := ioutil.ReadAll(r.Body)
-// 		if err != nil {
-// 			warn("POST", err)
-// 			http.Error(w, "Error reading request", http.StatusInternalServerError)
-// 			return
-// 		}
-
-// 		if err := json.Unmarshal(blob, &body); err != nil {
-// 			warn("POST", err)
-// 			http.Error(w, "Invalid request body", http.StatusBadRequest)
-// 			return
-// 		}
-
-// 	default:
-// 		http.Error(w, fmt.Sprintf("Invalid request content-type (%v)", contentType), http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	fmt.Printf(">>> %v\n", body)
-
-// 	if acceptsGzip {
-
-// 	}
-
-// 	http.Error(w, "(work in progress)", http.StatusInternalServerError)
-// }

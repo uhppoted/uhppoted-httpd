@@ -8,16 +8,8 @@
             - [ ] More padding
             - [ ] Size (?)
             - [ ] Show/hide OTP
+            - [ ] Seperate change password and OTP
       
-      - [x] GET /otp
-            - [x] Generate OTP
-            - [x] Store OTP key in server session
-            - [x] Keep key server-side and put key ID in cookie
-            - [x] Expire OTP keys in server session
-            - [x] `Issuer` from _uhppoted.conf_
-            - [x] Clear OTP cookie on logout
-            - [x] Clear OTP cookie on Ok/Cancel
-
       - [ ] POST /otp
             - [ ] Display validate error
             - [ ] Validate uid+password
@@ -60,6 +52,10 @@
 - [ ] System font stack (https://llccing.github.io/30-seconds-of-css/)
 
 ## TODO
+
+- [ ] Use browser local storage for DB
+      - (?) ETags
+            - https://ieftimov.com/posts/conditional-http-get-fastest-requests-need-no-response-body/
 
 - https://www.youtube.com/watch?v=24GRiOCa1Vo
 - https://www.theregister.com/2022/06/20/redbean_2_a_singlefile_web

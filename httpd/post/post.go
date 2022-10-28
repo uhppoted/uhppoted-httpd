@@ -74,6 +74,20 @@ func get(body map[string]any, key string) (string, error) {
 	return "", fmt.Errorf("invalid '%v'", key)
 }
 
-func warnf(subsystem string, err error) {
-	log.Warnf("%-8v  %v", subsystem, err)
+func debugf(subsystem string, format string, args ...any) {
+	f := fmt.Sprintf("%-3v  %v", subsystem, format)
+
+	log.Debugf(f, args...)
+}
+
+func infof(subsystem string, format string, args ...any) {
+	f := fmt.Sprintf("%-3v  %v", subsystem, format)
+
+	log.Infof(f, args...)
+}
+
+func warnf(subsystem string, format string, args ...any) {
+	f := fmt.Sprintf("%-3v  %v", subsystem, format)
+
+	log.Warnf(f, args...)
 }

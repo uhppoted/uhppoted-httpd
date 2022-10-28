@@ -1,7 +1,6 @@
 package post
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -12,25 +11,25 @@ func VerifyOTP(w http.ResponseWriter, r *http.Request) {
 	contentType, acceptsGzip := parseHeader(r)
 
 	if body, err := parseRequest(r, contentType); err != nil {
-		warnf("OTP", err)
+		warnf("OTP", "%v", err)
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
 		return
 	} else if uid, err = get(body, "uid"); err != nil {
-		warnf("OTP", err)
+		warnf("OTP", "%v", err)
 		http.Error(w, "Error reading request", http.StatusBadRequest)
 		return
 	} else if pwd, err = get(body, "pwd"); err != nil {
-		warnf("OTP", err)
+		warnf("OTP", "%v", err)
 		http.Error(w, "Error reading request", http.StatusBadRequest)
 		return
 	}
 
 	if ok, err := validatePassword(uid, pwd); err != nil {
-		warnf("OTP", err)
+		warnf("OTP", "%v", err)
 		http.Error(w, "Error validating password", http.StatusBadRequest)
 		return
 	} else if !ok {
-		warnf("OTP", fmt.Errorf("invalid password"))
+		warnf("OTP", "invalid password")
 		http.Error(w, "Error validating password", http.StatusBadRequest)
 		return
 	}
