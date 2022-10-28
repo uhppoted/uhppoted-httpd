@@ -35,7 +35,8 @@ func parseHeader(r *http.Request) (contentType string, acceptsGzip bool) {
 	return
 }
 
-func parseRequest(r *http.Request, contentType string) (map[string]any, error) {
+func parseRequest(r *http.Request) (map[string]any, error) {
+	contentType, _ := parseHeader(r)
 	body := map[string]any{}
 
 	switch contentType {
@@ -62,17 +63,36 @@ func parseRequest(r *http.Request, contentType string) (map[string]any, error) {
 	return body, nil
 }
 
-func get(body map[string]any, key string) (string, error) {
-	if v, ok := body[key]; !ok {
-		return "", fmt.Errorf("missing '%v'", key)
-	} else if u, ok := v.([]string); ok && len(u) > 0 {
-		return u[0], nil
-	} else if u, ok := v.(string); ok {
-		return u, nil
-	}
+func get(r *http.Request, vars ...string) (map[string]string, error) {
+	if body, err := parseRequest(r); err != nil {
+		return nil, err
+	} else {
+		m := map[string]string{}
+		for _, k := range vars {
+			if v, ok := body[k]; !ok {
+				return nil, fmt.Errorf("missing '%v'", k)
+			} else if u, ok := v.([]string); ok && len(u) > 0 {
+				m[k] = u[0]
+			} else if u, ok := v.(string); ok {
+				m[k] = u
+			}
+		}
 
-	return "", fmt.Errorf("invalid '%v'", key)
+		return m, nil
+	}
 }
+
+// func get(body map[string]any, key string) (string, error) {
+// 	if v, ok := body[key]; !ok {
+// 		return "", fmt.Errorf("missing '%v'", key)
+// 	} else if u, ok := v.([]string); ok && len(u) > 0 {
+// 		return u[0], nil
+// 	} else if u, ok := v.(string); ok {
+// 		return u, nil
+// 	}
+//
+// 	return "", fmt.Errorf("invalid '%v'", key)
+// }
 
 func debugf(subsystem string, format string, args ...any) {
 	f := fmt.Sprintf("%-3v  %v", subsystem, format)

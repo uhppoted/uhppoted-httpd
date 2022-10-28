@@ -67,6 +67,10 @@ func Get(uid, role, keyid string) (string, []byte, error) {
 	}
 }
 
+func Validate(uid string, otp string) error {
+	return fmt.Errorf("--- not implemented yet ---")
+}
+
 func warnf(format string, args ...any) {
 	log.Warnf(format, args)
 }
