@@ -1,6 +1,8 @@
 package auth
 
-import ()
+import (
+	"reflect"
+)
 
 type TokenType int
 
@@ -51,6 +53,23 @@ type OpAuth interface {
 	CanAdd(o Operant, rulesets ...RuleSet) error
 	CanUpdate(o Operant, field string, value interface{}, rulesets ...RuleSet) error
 	CanDelete(o Operant, rulesets ...RuleSet) error
+}
+
+func IsNil(v any) bool {
+	if v == nil {
+		return true
+	}
+
+	switch reflect.TypeOf(v).Kind() {
+	case reflect.Ptr,
+		reflect.Map,
+		reflect.Array,
+		reflect.Chan,
+		reflect.Slice:
+		return reflect.ValueOf(v).IsNil()
+	}
+
+	return false
 }
 
 type Operant interface {

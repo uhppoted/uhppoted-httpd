@@ -12,6 +12,7 @@ import (
 	"github.com/pquerna/otp/totp"
 
 	"github.com/uhppoted/uhppoted-httpd/log"
+	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
 type otpkey struct {
@@ -67,17 +68,24 @@ func Get(uid, role, keyid string) (string, []byte, error) {
 	}
 }
 
-func Validate(keyid string, otps ...string) error {
+func Validate(uid string, keyid string, otps ...string) error {
 	var now = time.Now()
 
 	if len(otps) == 0 {
-	} else if secret, ok := secrets[keyid]; !ok || secret == nil || !secret.expires.After(now) {
+		return fmt.Errorf("Invalid OTP")
+	}
+
+	if secret, ok := secrets[keyid]; !ok || secret == nil || !secret.expires.After(now) {
 		return fmt.Errorf("Invalid OTP secret")
 	} else {
 		for _, otp := range otps {
 			if !totp.Validate(otp, secret.key.Secret()) {
 				return fmt.Errorf("Invalid OTP")
 			}
+		}
+
+		if err := system.SetOTP(uid, secret.key.Secret()); err != nil {
+			return err
 		}
 	}
 

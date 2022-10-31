@@ -45,7 +45,7 @@ func VerifyOTP(w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
 		return
 	}
 
-	if err := otp.Validate(keyid, otp1, otp2); err != nil {
+	if err := otp.Validate(uid, keyid, otp1, otp2); err != nil {
 		warnf("OTP", "%v", err)
 		http.Error(w, "Invalid OTP", http.StatusBadRequest)
 		return

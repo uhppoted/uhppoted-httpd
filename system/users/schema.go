@@ -12,6 +12,7 @@ const UserName = schema.UserName
 const UserUID = schema.UserUID
 const UserRole = schema.UserRole
 const UserPassword = schema.UserPassword
+const UserOTP = schema.UserOTP
 
 var lookup = map[schema.Suffix]string{
 	UserStatus:   "user.status",
@@ -22,4 +23,5 @@ var lookup = map[schema.Suffix]string{
 	UserUID:      "user.uid",
 	UserRole:     "user.role",
 	UserPassword: "user.password",
+	UserOTP:      "user.otp",
 }

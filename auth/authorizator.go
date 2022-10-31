@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"reflect"
 	"strings"
 	"sync"
 	"time"
@@ -199,25 +198,8 @@ func (a *authorizator) CanUpdate(operant Operant, field string, value interface{
 	return Unauthorised
 }
 
-func isNil(operant Operant) bool {
-	if operant == nil {
-		return true
-	}
-
-	switch reflect.TypeOf(operant).Kind() {
-	case reflect.Ptr,
-		reflect.Map,
-		reflect.Array,
-		reflect.Chan,
-		reflect.Slice:
-		return reflect.ValueOf(operant).IsNil()
-	}
-
-	return false
-}
-
 func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
-	if a != nil && !isNil(operant) {
+	if !IsNil(operant) {
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("delete::%v", tag)
 
