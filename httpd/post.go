@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	authorizator "github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
 	"github.com/uhppoted/uhppoted-httpd/httpd/post"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 	"github.com/uhppoted/uhppoted-httpd/system"
@@ -143,7 +143,7 @@ func (d *dispatcher) login(w http.ResponseWriter, r *http.Request) {
 		pwd = body.Password
 	}
 
-	loginCookie, err := r.Cookie(auth.LoginCookie)
+	loginCookie, err := r.Cookie(cookies.LoginCookie)
 	if err != nil {
 		warn("", err)
 		d.unauthenticated(r, w)
@@ -167,16 +167,16 @@ func (d *dispatcher) login(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, sessionCookie)
 	}
 
-	clear(auth.LoginCookie, w)
+	clear(cookies.LoginCookie, w)
 }
 
 func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
-	if cookie, err := r.Cookie(auth.SessionCookie); err == nil {
+	if cookie, err := r.Cookie(cookies.SessionCookie); err == nil {
 		d.auth.Logout(cookie)
 	}
 
-	clear(auth.SessionCookie, w)
-	clear(OTPCookie, w)
+	clear(cookies.SessionCookie, w)
+	clear(cookies.OTPCookie, w)
 
 	http.Redirect(w, r, "/index.html", http.StatusFound)
 }

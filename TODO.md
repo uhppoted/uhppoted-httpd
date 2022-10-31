@@ -4,7 +4,7 @@
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
       - [ ] Add OTP to password page
-            - [ ] Seperate change password and OTP
+            - [x] Seperate change password and OTP
             - [ ] White background
             - [ ] More padding
             - [ ] Size (?)
@@ -14,7 +14,7 @@
       - [ ] POST /otp
             - [x] Display validate error
             - [x] Validate uid+password
-            - [ ] Validate OTP
+            - [x] Validate OTP
             - [ ] Store OTP key in user credentials
             
       - [ ] Accept both password and OTP for login

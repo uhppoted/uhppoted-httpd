@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth/otp"
+	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -59,7 +60,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
-	clear(OTPCookie, w)
+	clear(cookies.OTPCookie, w)
 
 	if strings.ToUpper(r.Method) != http.MethodGet {
 		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
@@ -146,7 +147,7 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !strings.HasSuffix(path, "password.html") {
-		clear(OTPCookie, w)
+		clear(cookies.OTPCookie, w)
 	}
 
 	d.translate(path, context, authorised, w, acceptsGzip)
@@ -355,7 +356,7 @@ func (d *dispatcher) generateOTP(w http.ResponseWriter, r *http.Request) {
 	// ... generate  OTP
 
 	key := ""
-	if cookie, err := r.Cookie(OTPCookie); err == nil {
+	if cookie, err := r.Cookie(cookies.OTPCookie); err == nil {
 		key = cookie.Value
 	}
 
@@ -367,7 +368,7 @@ func (d *dispatcher) generateOTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     OTPCookie,
+		Name:     cookies.OTPCookie,
 		Value:    newkey,
 		Path:     "/",
 		MaxAge:   int((5 * time.Minute).Seconds()),
@@ -410,7 +411,7 @@ func parseHeader(r *http.Request) bool {
 func parseSettings(r *http.Request) string {
 	theme := "default"
 
-	if cookie, err := r.Cookie(SettingsCookie); err == nil {
+	if cookie, err := r.Cookie(cookies.SettingsCookie); err == nil {
 		re := regexp.MustCompile("(.*?):(.+)")
 		tokens := strings.Split(cookie.Value, ",")
 		for _, token := range tokens {

@@ -82,18 +82,6 @@ func get(r *http.Request, vars ...string) (map[string]string, error) {
 	}
 }
 
-// func get(body map[string]any, key string) (string, error) {
-// 	if v, ok := body[key]; !ok {
-// 		return "", fmt.Errorf("missing '%v'", key)
-// 	} else if u, ok := v.([]string); ok && len(u) > 0 {
-// 		return u[0], nil
-// 	} else if u, ok := v.(string); ok {
-// 		return u, nil
-// 	}
-//
-// 	return "", fmt.Errorf("invalid '%v'", key)
-// }
-
 func debugf(subsystem string, format string, args ...any) {
 	f := fmt.Sprintf("%-3v  %v", subsystem, format)
 

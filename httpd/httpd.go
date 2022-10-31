@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
 	"github.com/uhppoted/uhppoted-httpd/httpd/html"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -41,11 +42,6 @@ type dispatcher struct {
 	timeout time.Duration
 	mode    types.RunMode
 }
-
-const (
-	SettingsCookie = "uhppoted-settings"
-	OTPCookie      = "uhppoted-httpd-otp"
-)
 
 func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 	// ... initialisation
@@ -242,7 +238,7 @@ func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) authenticated(r *http.Request, w http.ResponseWriter) (string, string, bool) {
-	cookie, err := r.Cookie(auth.SessionCookie)
+	cookie, err := r.Cookie(cookies.SessionCookie)
 	if err != nil {
 		warn("", fmt.Errorf("No session cookie in request"))
 		return "", "", false
@@ -271,8 +267,8 @@ func (d *dispatcher) authorised(uid, role, path string) bool {
 }
 
 func (d *dispatcher) unauthenticated(r *http.Request, w http.ResponseWriter) {
-	clear(auth.SessionCookie, w)
-	clear(OTPCookie, w)
+	clear(cookies.SessionCookie, w)
+	clear(cookies.OTPCookie, w)
 
 	http.Redirect(w, r, "/sys/login.html", http.StatusFound)
 }

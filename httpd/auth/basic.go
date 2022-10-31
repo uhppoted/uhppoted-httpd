@@ -13,11 +13,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-)
-
-const (
-	LoginCookie   = "uhppoted-httpd-login"
-	SessionCookie = "uhppoted-httpd-session"
+	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
 )
 
 type Basic struct {
@@ -54,7 +50,7 @@ func (b *Basic) Preauthenticate() (*http.Cookie, error) {
 	}
 
 	cookie := http.Cookie{
-		Name:     LoginCookie,
+		Name:     cookies.LoginCookie,
 		Value:    token,
 		Path:     "/",
 		MaxAge:   int((5 * time.Minute).Seconds()),
@@ -84,7 +80,7 @@ func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie
 		return nil, err
 	} else {
 		cookie := http.Cookie{
-			Name:     SessionCookie,
+			Name:     cookies.SessionCookie,
 			Value:    token,
 			Path:     "/",
 			MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),
@@ -105,7 +101,7 @@ func (b *Basic) Authenticated(cookie *http.Cookie) (string, string, *http.Cookie
 
 	if token != "" {
 		cookie := http.Cookie{
-			Name:     SessionCookie,
+			Name:     cookies.SessionCookie,
 			Value:    token,
 			Path:     "/",
 			MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),

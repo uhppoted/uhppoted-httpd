@@ -20,7 +20,7 @@ type otpkey struct {
 }
 
 var issuer = "uhppoted-httpd"
-var keys = map[string]*otpkey{}
+var secrets = map[string]*otpkey{}
 
 func SetIssuer(u string) {
 	if v := strings.TrimSpace(u); v != "" {
@@ -38,7 +38,7 @@ func Get(uid, role, keyid string) (string, []byte, error) {
 	var secret *otpkey
 	var now = time.Now()
 
-	if k, ok := keys[keyid]; ok && k != nil && k.expires.After(now) {
+	if k, ok := secrets[keyid]; ok && k != nil && k.expires.After(now) {
 		secret = k
 	} else {
 		if key, err := totp.Generate(options); err != nil {
@@ -54,7 +54,7 @@ func Get(uid, role, keyid string) (string, []byte, error) {
 				expires: time.Now().Add(1 * time.Minute),
 			}
 
-			keys[keyid] = secret
+			secrets[keyid] = secret
 		}
 	}
 
@@ -67,8 +67,21 @@ func Get(uid, role, keyid string) (string, []byte, error) {
 	}
 }
 
-func Validate(uid string, otp string) error {
-	return fmt.Errorf("--- not implemented yet ---")
+func Validate(keyid string, otps ...string) error {
+	var now = time.Now()
+
+	if len(otps) == 0 {
+	} else if secret, ok := secrets[keyid]; !ok || secret == nil || !secret.expires.After(now) {
+		return fmt.Errorf("Invalid OTP secret")
+	} else {
+		for _, otp := range otps {
+			if !totp.Validate(otp, secret.key.Secret()) {
+				return fmt.Errorf("Invalid OTP")
+			}
+		}
+	}
+
+	return nil
 }
 
 func warnf(format string, args ...any) {
