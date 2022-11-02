@@ -111,6 +111,33 @@ func (u User) AsRuleEntity() (string, interface{}) {
 	return "user", &entity
 }
 
+func (u *User) get(a *auth.Authorizator, oid schema.OID) (string, error) {
+	if u == nil {
+		return "", nil
+	} else if u.IsDeleted() {
+		return "", fmt.Errorf("User has been deleted")
+	}
+
+	f := func(field string, value interface{}) error {
+		if a != nil {
+			return a.CanView(u, field, value, auth.Users)
+		}
+
+		return nil
+	}
+
+	switch {
+	case oid == u.OID.Append(UserOTP):
+		if err := f("otp", ""); err != nil {
+			return "", err
+		} else {
+			return u.otp, nil
+		}
+	}
+
+	return "", nil
+}
+
 func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if u == nil {
 		return []schema.Object{}, nil

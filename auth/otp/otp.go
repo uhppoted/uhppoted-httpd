@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"image/png"
+	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -29,18 +31,50 @@ func SetIssuer(u string) {
 	}
 }
 
-func Get(uid, role, keyid string) (string, []byte, error) {
-	var b bytes.Buffer
+func Get(uid, keyid string) (string, []byte, error) {
+	var secret *otpkey
+	var now = time.Now()
 	var options = totp.GenerateOpts{
 		Issuer:      issuer,
 		AccountName: uid,
+		Period:      30,
+		Algorithm:   lib.AlgorithmSHA1,
+		Digits:      lib.DigitsSix,
 	}
-
-	var secret *otpkey
-	var now = time.Now()
 
 	if k, ok := secrets[keyid]; ok && k != nil && k.expires.After(now) {
 		secret = k
+	} else if key, err := system.GetOTP(uid); err != nil {
+		return "", nil, err
+	} else if key != "" {
+		v := url.Values{}
+
+		v.Set("issuer", options.Issuer)
+		v.Set("period", strconv.FormatUint(uint64(options.Period), 10))
+		v.Set("algorithm", options.Algorithm.String())
+		v.Set("digits", options.Digits.String())
+		v.Set("secret", key)
+
+		u := url.URL{
+			Scheme:   "otpauth",
+			Host:     "totp",
+			Path:     "/" + options.Issuer + ":" + options.AccountName,
+			RawQuery: v.Encode(),
+		}
+
+		if k, err := lib.NewKeyFromURL(u.String()); err != nil {
+			return "", nil, err
+		} else if uuid, err := uuid.NewUUID(); err != nil {
+			return "", nil, err
+		} else {
+			keyid = fmt.Sprintf("%v", uuid)
+			secret = &otpkey{
+				key:     k,
+				expires: time.Now().Add(1 * time.Minute),
+			}
+
+			secrets[keyid] = secret
+		}
 	} else {
 		if key, err := totp.Generate(options); err != nil {
 			return "", nil, err
@@ -59,6 +93,8 @@ func Get(uid, role, keyid string) (string, []byte, error) {
 		}
 	}
 
+	var b bytes.Buffer
+
 	if img, err := secret.key.Image(256, 256); err != nil {
 		return "", nil, err
 	} else {
@@ -68,25 +104,15 @@ func Get(uid, role, keyid string) (string, []byte, error) {
 	}
 }
 
-func Validate(uid string, keyid string, otps ...string) error {
+func Validate(uid string, keyid string, otp string) error {
 	var now = time.Now()
-
-	if len(otps) == 0 {
-		return fmt.Errorf("Invalid OTP")
-	}
 
 	if secret, ok := secrets[keyid]; !ok || secret == nil || !secret.expires.After(now) {
 		return fmt.Errorf("Invalid OTP secret")
-	} else {
-		for _, otp := range otps {
-			if !totp.Validate(otp, secret.key.Secret()) {
-				return fmt.Errorf("Invalid OTP")
-			}
-		}
-
-		if err := system.SetOTP(uid, secret.key.Secret()); err != nil {
-			return err
-		}
+	} else if !totp.Validate(otp, secret.key.Secret()) {
+		return fmt.Errorf("Invalid OTP")
+	} else if err := system.SetOTP(uid, secret.key.Secret()); err != nil {
+		return err
 	}
 
 	return nil

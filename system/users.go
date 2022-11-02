@@ -100,6 +100,13 @@ func SetPassword(uid, pwd string) error {
 	return nil
 }
 
+func GetOTP(uid string) (string, error) {
+	sys.Lock()
+	defer sys.Unlock()
+
+	return sys.users.GetOTP(uid)
+}
+
 func SetOTP(uid, secret string) error {
 	sys.Lock()
 	defer sys.Unlock()

@@ -3,23 +3,27 @@
 ### IN PROGRESS
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
+      - [ ] Accept both password and OTP for login
+            - [ ] Add allow.otp to config
+
       - [ ] Add OTP to password page
+            - [ ] Require valid password to get/show QR code
             - [x] Seperate change password and OTP
-            - [ ] "Current password" prompt should be greyer
+            - [x] "Current password" prompt should be greyer
             - [ ] White background
             - [ ] More padding
             - [ ] Size (?)
             - [ ] Show/hide OTP
             - [ ] Placeholder OTP image
       
-      - [ ] POST /otp
+      - [x] POST /otp
             - [x] Display validate error
             - [x] Validate uid+password
             - [x] Validate OTP
             - [x] Store OTP key in user credentials
+            - [x] Only need one OTP to validate
+            - [x] Handle 200/OK
             
-      - [ ] Accept both password and OTP for login
-            - [ ] Add allow.otp to config
       - [ ] Reset OTP
 
 - [x] Crash on Ok with empty passwords

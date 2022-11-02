@@ -176,6 +176,20 @@ func (uu *Users) SetPassword(uid, pwd string, dbc db.DBC) ([]schema.Object, erro
 	return []schema.Object{}, nil
 }
 
+func (uu *Users) GetOTP(uid string) (string, error) {
+	if uu == nil {
+		return "", nil
+	}
+
+	for _, u := range uu.users {
+		if u.uid == uid {
+			return u.get(nil, u.OID.Append(UserOTP))
+		}
+	}
+
+	return "", fmt.Errorf("invalid UID (%v)", uid)
+}
+
 func (uu *Users) SetOTP(uid, secret string, dbc db.DBC) ([]schema.Object, error) {
 	if uu == nil {
 		return nil, nil

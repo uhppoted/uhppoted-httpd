@@ -360,7 +360,7 @@ func (d *dispatcher) generateOTP(w http.ResponseWriter, r *http.Request) {
 		key = cookie.Value
 	}
 
-	newkey, bytes, err := otp.Get(uid, role, key)
+	newkey, bytes, err := otp.Get(uid, key)
 	if err != nil {
 		warn("OTP", err)
 		http.Error(w, "Error generating OTP", http.StatusInternalServerError)

@@ -57,30 +57,24 @@ export function onOTP (event) {
 
   dismiss()
 
-  // const referrer = document.referrer
   const uid = document.getElementById('uid').value
   const pwd = document.getElementById('old').value
-  const otp1 = document.getElementById('otp1').value
-  const otp2 = document.getElementById('otp2').value
+  const otp = document.getElementById('otp').value
 
-  const otp = {
+  const body = {
     uid: uid,
     pwd: pwd,
-    otp1: otp1,
-    otp2: otp2
+    otp: otp
   }
 
-  postAsForm('/otp', otp)
+  postAsForm('/otp', body)
     .then(response => {
-      console.log(response)
       switch (response.status) {
-      //       case 200:
-      //         if (response.redirected) {
-      //           window.location = response.url
-      //         } else {
-      //           window.location = referrer
-      //         }
-      //         return
+        case 200:
+          if (response.redirected) {
+            window.location = response.url
+          }
+          return 'OK'
 
         case 401:
           throw new Error(messages.unauthorized)
@@ -91,11 +85,8 @@ export function onOTP (event) {
             .then(err => { throw new Error(err) })
       }
     })
-    .then(v => {
-      console.log({ v })
-      //     if (msg) {
-      //       throw new Error(msg.trim())
-      //     }
+    .then((v) => {
+      warning('OTP verified and enabled')
     })
     .catch(function (err) {
       warning(`${err.message}`)
