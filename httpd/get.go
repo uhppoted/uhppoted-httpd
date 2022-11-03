@@ -60,7 +60,7 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
-	clear(cookies.OTPCookie, w)
+	cookies.Clear(w, cookies.OTPCookie)
 
 	if strings.ToUpper(r.Method) != http.MethodGet {
 		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
@@ -147,7 +147,7 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !strings.HasSuffix(path, "password.html") {
-		clear(cookies.OTPCookie, w)
+		cookies.Clear(w, cookies.OTPCookie)
 	}
 
 	d.translate(path, context, authorised, w, acceptsGzip)

@@ -4,6 +4,8 @@
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
       - [ ] Accept both password and OTP for login
+            - [x] Verify password as OTP
+            - [ ] Only if _allow.otp_ configured
             - [ ] Add allow.otp to config
 
       - [ ] Add OTP to password page
@@ -16,14 +18,6 @@
             - [ ] Show/hide OTP
             - [ ] Placeholder OTP image
       
-      - [x] POST /otp
-            - [x] Display validate error
-            - [x] Validate uid+password
-            - [x] Validate OTP
-            - [x] Store OTP key in user credentials
-            - [x] Only need one OTP to validate
-            - [x] Handle 200/OK
-            
       - [ ] Reset OTP
 
 - [x] Crash on Ok with empty passwords

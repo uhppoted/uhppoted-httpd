@@ -267,27 +267,12 @@ func (d *dispatcher) authorised(uid, role, path string) bool {
 }
 
 func (d *dispatcher) unauthenticated(r *http.Request, w http.ResponseWriter) {
-	clear(cookies.SessionCookie, w)
-	clear(cookies.OTPCookie, w)
-
+	cookies.Clear(w, cookies.SessionCookie, cookies.OTPCookie)
 	http.Redirect(w, r, "/sys/login.html", http.StatusFound)
 }
 
 func (d *dispatcher) unauthorised(r *http.Request, w http.ResponseWriter) {
 	http.Redirect(w, r, "/sys/unauthorized.html", http.StatusFound)
-}
-
-// cf. https://stackoverflow.com/questions/27671061/how-to-delete-cookie
-func clear(cookie string, w http.ResponseWriter) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     cookie,
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-		//	Secure:   true,
-	})
 }
 
 func resolve(u *url.URL) (string, error) {

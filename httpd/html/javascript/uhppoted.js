@@ -48,7 +48,9 @@ export function onSignOut (event) {
       }
     })
     .then(msg => {
-      warning(msg)
+      if (msg) {
+        warning(msg)
+      }
     })
     .catch(function (err) {
       console.error(err)
@@ -183,10 +185,15 @@ export function warning (msg) {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 
-  if (msg && message && text) {
-    message.classList.add('visible')
-    text.innerText = msg
-  } else {
+  if (message && text) {
+    if (msg) {
+      message.classList.add('visible')
+    } else {
+      message.classList.remove('visible')
+    }
+
+    text.innerText = msg || ''
+  } else if (msg) {
     alert(msg)
   }
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/auth/otp"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
@@ -220,9 +221,9 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 	h := sha256.New()
 	h.Write(salt)
 	h.Write([]byte(pwd))
-
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
-	if hash != password {
+
+	if hash != password && !otp.Verify(uid, pwd) {
 		return "", fmt.Errorf("Invalid login credentials")
 	}
 

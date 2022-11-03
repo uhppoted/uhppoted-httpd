@@ -105,7 +105,7 @@ func Get(uid, keyid string) (string, []byte, error) {
 }
 
 func Validate(uid string, keyid string, otp string) error {
-	var now = time.Now()
+	now := time.Now()
 
 	if secret, ok := secrets[keyid]; !ok || secret == nil || !secret.expires.After(now) {
 		return fmt.Errorf("Invalid OTP secret")
@@ -116,6 +116,14 @@ func Validate(uid string, keyid string, otp string) error {
 	}
 
 	return nil
+}
+
+func Verify(uid string, otp string) bool {
+	if secret, err := system.GetOTP(uid); err == nil {
+		return totp.Validate(otp, secret)
+	}
+
+	return false
 }
 
 func warnf(format string, args ...any) {
