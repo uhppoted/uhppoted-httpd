@@ -43,6 +43,7 @@ type Local struct {
 	users         map[string]*user
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
+	allowOTPLogin bool
 
 	logins   sessions
 	sessions sessions
@@ -80,7 +81,7 @@ type session struct {
 	Role       string    `json:"session.role,omitempty"`
 }
 
-func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
+func NewAuthProvider(file string, loginExpiry, sessionExpiry string, allowOTPLogin bool) (*Local, error) {
 	provider := Local{
 		keys:  make([][]byte, constants.KEYS),
 		users: map[string]*user{},
@@ -95,6 +96,7 @@ func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, er
 
 		sessionExpiry: 60 * time.Minute,
 		loginExpiry:   1 * time.Minute,
+		allowOTPLogin: allowOTPLogin,
 	}
 
 	if f, err := os.Open(file); err != nil {
@@ -223,7 +225,7 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 	h.Write([]byte(pwd))
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
 
-	if hash != password && !otp.Verify(uid, pwd) {
+	if hash != password && (!p.allowOTPLogin || !otp.Verify(uid, pwd)) {
 		return "", fmt.Errorf("Invalid login credentials")
 	}
 

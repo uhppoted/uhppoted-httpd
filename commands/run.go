@@ -118,7 +118,11 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 		authentication = auth.NewNoneAuthenticator()
 
 	default:
-		p, err := local.NewAuthProvider(conf.HTTPD.Security.AuthDB, conf.HTTPD.Security.LoginExpiry, conf.HTTPD.Security.SessionExpiry)
+		p, err := local.NewAuthProvider(
+			conf.HTTPD.Security.AuthDB,
+			conf.HTTPD.Security.LoginExpiry,
+			conf.HTTPD.Security.SessionExpiry,
+			conf.HTTPD.Security.OTP.Login == "allow")
 		if err != nil {
 			panic(fmt.Sprintf("Error instantiating auth provider (%v)", err))
 		}

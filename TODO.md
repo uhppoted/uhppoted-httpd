@@ -3,22 +3,21 @@
 ### IN PROGRESS
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
-      - [ ] Accept both password and OTP for login
+      - [x] Accept both password and OTP for login
             - [x] Verify password as OTP
-            - [ ] Only if _allow.otp_ configured
-            - [ ] Add allow.otp to config
+            - [x] Add otp.login=allow to config
+            - [x] Only if _allow.otp_ configured
 
       - [ ] Add OTP to password page
+            - [ ] Show/hide OTP
             - [ ] Require valid password to get/show QR code
-            - [x] Seperate change password and OTP
-            - [x] "Current password" prompt should be greyer
             - [ ] White background
             - [ ] More padding
             - [ ] Size (?)
-            - [ ] Show/hide OTP
             - [ ] Placeholder OTP image
       
       - [ ] Reset OTP
+      - [ ] Check with Google Authenticator
 
 - [x] Crash on Ok with empty passwords
       - [ ] Check auth.IsNil for all xxx.ToObjects(auth)
