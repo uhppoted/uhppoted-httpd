@@ -34,5 +34,9 @@ func (n *None) Verify(uid, pwd string) error {
 	return nil
 }
 
+func (n *None) Options(uid string) options {
+	return options{}
+}
+
 func (n *None) Logout(cookie *http.Cookie) {
 }

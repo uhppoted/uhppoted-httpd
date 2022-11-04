@@ -35,6 +35,7 @@ type IAuthenticate interface {
 	Verify(tokenType TokenType, token string) error
 	Authenticated(token string) (string, string, string, error)
 	Invalidate(tokenType TokenType, token string) error
+	Options(uid string) Options
 }
 
 type IUser interface {
@@ -53,6 +54,13 @@ type OpAuth interface {
 	CanAdd(o Operant, rulesets ...RuleSet) error
 	CanUpdate(o Operant, field string, value interface{}, rulesets ...RuleSet) error
 	CanDelete(o Operant, rulesets ...RuleSet) error
+}
+
+type Options struct {
+	OTP struct {
+		Allowed bool
+		Enabled bool
+	}
 }
 
 func IsNil(v any) bool {

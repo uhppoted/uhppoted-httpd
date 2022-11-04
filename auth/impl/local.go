@@ -408,6 +408,18 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 	return claims.Session.LoggedInAs, claims.Session.Role, token2.String(), nil
 }
 
+func (p *Local) Options(uid string) auth.Options {
+	return auth.Options{
+		OTP: struct {
+			Allowed bool
+			Enabled bool
+		}{
+			Allowed: p.allowOTPLogin,
+			Enabled: otp.Enabled(uid),
+		},
+	}
+}
+
 func (p *Local) deserialize(r io.Reader) error {
 	bytes, err := io.ReadAll(r)
 	if err != nil {

@@ -18,6 +18,13 @@ type session struct {
 	touched time.Time
 }
 
+type options struct {
+	OTP struct {
+		Allowed bool
+		Enabled bool
+	}
+}
+
 type IAuth interface {
 	Preauthenticate() (*http.Cookie, error)
 	Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie, error)
@@ -26,6 +33,7 @@ type IAuth interface {
 	Logout(cookie *http.Cookie)
 
 	Verify(uid, pwd string) error
+	Options(uid string) options
 }
 
 func warn(err error) {

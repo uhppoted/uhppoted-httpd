@@ -9,12 +9,15 @@
             - [x] Only if _allow.otp_ configured
 
       - [ ] Add OTP to password page
+            - [x] Set/clear 'OTP enabled'
             - [ ] Show/hide OTP
             - [ ] Require valid password to get/show QR code
+            - [ ] Better checkbox
             - [ ] White background
             - [ ] More padding
             - [ ] Size (?)
             - [ ] Placeholder OTP image
+            - [ ] Hide OTP form if not allowed
       
       - [ ] Reset OTP
       - [ ] Check with Google Authenticator

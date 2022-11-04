@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image/png"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -121,6 +122,14 @@ func Validate(uid string, keyid string, otp string) error {
 func Verify(uid string, otp string) bool {
 	if secret, err := system.GetOTP(uid); err == nil {
 		return totp.Validate(otp, secret)
+	}
+
+	return false
+}
+
+func Enabled(uid string) bool {
+	if secret, err := system.GetOTP(uid); err == nil {
+		return regexp.MustCompile("[ABCDEFGHIJKLMNOPQRSTUVWXYZ234567]{16,}").MatchString(secret)
 	}
 
 	return false

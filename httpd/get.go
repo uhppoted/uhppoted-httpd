@@ -124,12 +124,15 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	options := d.auth.Options(uid)
+
 	// ... good to go
 	acceptsGzip := parseHeader(r)
-	context := map[string]interface{}{
-		"Theme": parseSettings(r),
-		"Mode":  d.mode,
-		"User":  uid,
+	context := map[string]any{
+		"Theme":   parseSettings(r),
+		"Mode":    d.mode,
+		"User":    uid,
+		"Options": options,
 	}
 
 	authorised := map[string]bool{

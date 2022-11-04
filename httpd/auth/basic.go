@@ -139,6 +139,20 @@ func (b *Basic) Authorised(uid, role, path string) error {
 	return fmt.Errorf("%v not authorized for %s", uid, path)
 }
 
+func (b *Basic) Options(uid string) options {
+	opts := b.auth.Options(uid)
+
+	return options{
+		OTP: struct {
+			Allowed bool
+			Enabled bool
+		}{
+			Allowed: opts.OTP.Allowed,
+			Enabled: opts.OTP.Enabled,
+		},
+	}
+}
+
 func (b *Basic) load(file string) error {
 	f, err := os.Open(file)
 	if err != nil {
