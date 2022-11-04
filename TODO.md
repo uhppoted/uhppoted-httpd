@@ -3,21 +3,24 @@
 ### IN PROGRESS
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
+      - [ ] Reinstate idle timeouts
+
       - [x] Accept both password and OTP for login
             - [x] Verify password as OTP
             - [x] Add otp.login=allow to config
             - [x] Only if _allow.otp_ configured
 
       - [ ] Add OTP to password page
-            - [x] Set/clear 'OTP enabled'
+            - [x] Initialise 'OTP enabled'
+            - [x] Placeholder OTP image
             - [ ] Show/hide OTP
             - [ ] Require valid password to get/show QR code
             - [ ] Better checkbox
             - [ ] White background
             - [ ] More padding
             - [ ] Size (?)
-            - [ ] Placeholder OTP image
             - [ ] Hide OTP form if not allowed
+            - [ ] CSS for dark theme
       
       - [ ] Reset OTP
       - [ ] Check with Google Authenticator
