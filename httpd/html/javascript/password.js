@@ -52,6 +52,58 @@ export function onPassword (event) {
     })
 }
 
+export function onShowOTP (event) {
+  const show = document.getElementById('show-otp')
+  const hide = document.getElementById('hide-otp')
+  const qr = document.getElementById('qrcode')
+
+  URL.revokeObjectURL(qr.src)
+
+  get('/otp')
+    .then(response => {
+      switch (response.status) {
+        case 200:
+          if (response.redirected) {
+            window.location = response.url
+            return ''
+          } else {
+            return response.blob()
+          }
+
+        case 401:
+          throw new Error(messages.unauthorized)
+
+        default:
+          return response
+            .text()
+            .then(err => { throw new Error(err) })
+      }
+    })
+    .then((v) => {
+      if (v instanceof Blob && qrcode) {
+        qrcode.src = URL.createObjectURL(v)
+        qrcode.classList.add('visible')
+        show.classList.remove('visible')
+        hide.classList.add('visible')
+      }
+    })
+    .catch(function (err) {
+      warning(`${err.message}`)
+    })
+}
+
+export function onHideOTP (event) {
+  const show = document.getElementById('show-otp')
+  const hide = document.getElementById('hide-otp')
+  const qr = document.getElementById('qrcode')
+  const url = qr.src
+
+  show.classList.add('visible')
+  hide.classList.remove('visible')
+  qr.classList.remove('visible')
+  URL.revokeObjectURL(url)
+}
+
 export function onOTP (event) {
   event.preventDefault()
 
@@ -90,6 +142,25 @@ export function onOTP (event) {
     })
     .catch(function (err) {
       warning(`${err.message}`)
+    })
+}
+
+async function get (url = '') {
+  const init = {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer'
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      return response
+    })
+    .catch(function (err) {
+      throw err
     })
 }
 

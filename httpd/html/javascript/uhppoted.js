@@ -211,6 +211,27 @@ export function dismiss () {
   }
 }
 
+export async function getAsJSON (url = '') {
+  const init = {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer'
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      connected(true)
+      return response
+    })
+    .catch(function (err) {
+      connected(false)
+      throw err
+    })
+}
+
 export async function postAsForm (url = '', data = {}) {
   dismiss()
 
@@ -228,27 +249,6 @@ export async function postAsForm (url = '', data = {}) {
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
     body: pairs.join('&').replace(/%20/g, '+')
-  }
-
-  return await fetch(url, init)
-    .then(response => {
-      connected(true)
-      return response
-    })
-    .catch(function (err) {
-      connected(false)
-      throw err
-    })
-}
-
-export async function getAsJSON (url = '') {
-  const init = {
-    method: 'GET',
-    mode: 'cors',
-    cache: 'no-cache',
-    credentials: 'same-origin',
-    redirect: 'follow',
-    referrerPolicy: 'no-referrer'
   }
 
   return await fetch(url, init)

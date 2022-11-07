@@ -13,8 +13,9 @@
       - [ ] Add OTP to password page
             - [x] Initialise 'OTP enabled'
             - [x] Placeholder OTP image
-            - [ ] Show/hide OTP
+            - [x] Show/hide OTP
             - [ ] Require valid password to get/show QR code
+            - [ ] Center QR code
             - [ ] Better checkbox
             - [ ] White background
             - [ ] More padding
