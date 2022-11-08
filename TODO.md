@@ -5,32 +5,31 @@
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
       - [ ] Reinstate idle timeouts
 
-      - [x] Accept both password and OTP for login
-            - [x] Verify password as OTP
-            - [x] Add otp.login=allow to config
-            - [x] Only if _allow.otp_ configured
-
       - [ ] Add OTP to password page
             - [x] Initialise 'OTP enabled'
             - [x] Placeholder OTP image
             - [x] Show/hide OTP
-            - [ ] Require valid password to get/show QR code
+            - [x] Require valid password to show QR code
+            - [ ] Require valid password to get QR code
+            - [ ] Use OPTIONS/HEAD request to get nonce etc for digest authorization
+            - [ ] Grey out OTP form if not allowed
             - [ ] Center QR code
             - [ ] Better checkbox
             - [ ] White background
             - [ ] More padding
             - [ ] Size (?)
-            - [ ] Hide OTP form if not allowed
             - [ ] CSS for dark theme
-      
-      - [ ] Reset OTP
-      - [ ] Check with Google Authenticator
+            - [ ] Check with Google Authenticator
+            - [ ] Leave message field permanently visible
+            - [ ] Ellipsize message field
+
+      - [ ] Reset OTP (on admin page)
 
 - [x] Crash on Ok with empty passwords
       - [ ] Check auth.IsNil for all xxx.ToObjects(auth)
 
 - [ ] Set cookie.Secure to true for TLS requests
-
+- [ ] Rework login to use Authorization header with Basic/Digest
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously

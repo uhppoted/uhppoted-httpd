@@ -13,10 +13,9 @@ import (
 	"path"
 	"regexp"
 	"strings"
-	"time"
 
-	"github.com/uhppoted/uhppoted-httpd/auth/otp"
 	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
+	"github.com/uhppoted/uhppoted-httpd/httpd/get"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -332,19 +331,12 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 }
 
 func (d *dispatcher) generateOTP(w http.ResponseWriter, r *http.Request) {
-	if strings.ToUpper(r.Method) != http.MethodGet {
-		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// ... normalize path
 	path, err := resolve(r.URL)
 	if err != nil {
 		http.Error(w, "invalid URL", http.StatusBadRequest)
 		return
 	}
 
-	// ... authenticated and authorized?
 	uid, role, authenticated := d.authenticated(r, w)
 	if !authenticated {
 		d.unauthenticated(r, w)
@@ -356,43 +348,7 @@ func (d *dispatcher) generateOTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ... generate  OTP
-
-	key := ""
-	if cookie, err := r.Cookie(cookies.OTPCookie); err == nil {
-		key = cookie.Value
-	}
-
-	newkey, bytes, err := otp.Get(uid, key)
-	if err != nil {
-		warn("OTP", err)
-		http.Error(w, "Error generating OTP", http.StatusInternalServerError)
-		return
-	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     cookies.OTPCookie,
-		Value:    newkey,
-		Path:     "/",
-		MaxAge:   int((5 * time.Minute).Seconds()),
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-		//	Secure:   true,
-	})
-
-	// ... reply
-	acceptsGzip := parseHeader(r)
-	if acceptsGzip && len(bytes) > GZIP_MINIMUM {
-		w.Header().Set("Content-Encoding", "gzip")
-		w.Header().Set("Content-Type", "image/png")
-
-		gz := gzip.NewWriter(w)
-		gz.Write(bytes)
-		gz.Close()
-	} else {
-		w.Header().Set("Content-Type", "image/png")
-		w.Write(bytes)
-	}
+	get.GenerateOTP(uid, w, r, d.auth)
 }
 
 func parseHeader(r *http.Request) bool {

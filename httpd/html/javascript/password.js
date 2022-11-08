@@ -53,13 +53,18 @@ export function onPassword (event) {
 }
 
 export function onShowOTP (event) {
+  const uid = document.getElementById('uid').value
+  const pwd = document.getElementById('old').value
   const show = document.getElementById('show-otp')
   const hide = document.getElementById('hide-otp')
   const qr = document.getElementById('qrcode')
+  const auth = btoa(`${uid}:${pwd}`)
 
   URL.revokeObjectURL(qr.src)
 
-  get('/otp')
+  dismiss()
+
+  get('/otp', `Basic ${auth}`)
     .then(response => {
       switch (response.status) {
         case 200:
@@ -80,9 +85,9 @@ export function onShowOTP (event) {
       }
     })
     .then((v) => {
-      if (v instanceof Blob && qrcode) {
-        qrcode.src = URL.createObjectURL(v)
-        qrcode.classList.add('visible')
+      if (v instanceof Blob && qr) {
+        qr.src = URL.createObjectURL(v)
+        qr.classList.add('visible')
         show.classList.remove('visible')
         hide.classList.add('visible')
       }
@@ -145,14 +150,15 @@ export function onOTP (event) {
     })
 }
 
-async function get (url = '') {
+async function get (url = '', authorization = '') {
   const init = {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'same-origin',
     redirect: 'follow',
-    referrerPolicy: 'no-referrer'
+    referrerPolicy: 'no-referrer',
+    headers: { Authorization: authorization }
   }
 
   return await fetch(url, init)

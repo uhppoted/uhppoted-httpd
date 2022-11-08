@@ -1,11 +1,13 @@
 package auth
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
+
+	"github.com/uhppoted/uhppoted-httpd/log"
 )
 
 type login struct {
@@ -33,9 +35,30 @@ type IAuth interface {
 	Logout(cookie *http.Cookie)
 
 	Verify(uid, pwd string) error
+	VerifyAuthHeader(authorization string) error
 	Options(uid string) options
 }
 
-func warn(err error) {
-	log.Printf("%-5s %v", "WARN", err)
+func debugf(subsystem string, format string, args ...any) {
+	if subsystem == "" {
+		log.Debugf("%v", args...)
+	} else {
+		log.Debugf(fmt.Sprintf("%-8v %v", subsystem, format), args...)
+	}
+}
+
+func infof(subsystem string, format string, args ...any) {
+	if subsystem == "" {
+		log.Infof("%v", args...)
+	} else {
+		log.Infof(fmt.Sprintf("%-8v %v", subsystem, format), args...)
+	}
+}
+
+func warnf(subsystem string, format string, args ...any) {
+	if subsystem == "" {
+		log.Warnf("%v", args...)
+	} else {
+		log.Warnf(fmt.Sprintf("%-8v %v", subsystem, format), args...)
+	}
 }

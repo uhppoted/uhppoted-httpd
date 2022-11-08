@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -120,9 +121,24 @@ func (b *Basic) Verify(uid, pwd string) error {
 	return b.auth.Validate(uid, pwd)
 }
 
+func (b *Basic) VerifyAuthHeader(authorization string) error {
+	if match := regexp.MustCompile(`Basic\s+(.*)`).FindStringSubmatch(authorization); match != nil && len(match) == 2 {
+		if auth, err := base64.StdEncoding.DecodeString(match[1]); err != nil {
+			warnf("verify", "%v", err)
+		} else if match := regexp.MustCompile(`(.*?):(.*)`).FindStringSubmatch(string(auth)); match != nil && len(match) == 3 {
+			uid := match[1]
+			pwd := match[2]
+
+			return b.Verify(uid, pwd)
+		}
+	}
+
+	return fmt.Errorf("Invalid Authorization header")
+}
+
 func (b *Basic) Logout(cookie *http.Cookie) {
 	if err := b.auth.Invalidate(auth.Session, cookie.Value); err != nil {
-		warn(err)
+		warnf("logout", "%v", err)
 	}
 }
 
