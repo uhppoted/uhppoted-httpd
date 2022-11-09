@@ -16,6 +16,8 @@
             - [ ] Change checkbox to readonly and use buttons to enable/disable
             - [ ] Fix _change password_
             - [x] Leave message field permanently visible
+            - [x] Ellipsize message field
+                  - [ ] Rework message field globally to use readonly input rather than span
             - [ ] Use OPTIONS/HEAD request to get nonce etc for digest authorization
             - [ ] Grey out OTP form if not allowed
             - [ ] Center QR code
@@ -25,7 +27,6 @@
             - [ ] Size (?)
             - [ ] CSS for dark theme
             - [ ] Check with Google Authenticator
-            - [ ] Ellipsize message field
 
       - [ ] Reset OTP (on admin page)
 

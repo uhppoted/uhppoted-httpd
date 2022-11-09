@@ -1,6 +1,6 @@
 /* global messages */
 
-import { postAsForm, dismiss } from './uhppoted.js'
+import { postAsForm } from './uhppoted.js'
 
 export function onPassword (event) {
   event.preventDefault()
@@ -228,7 +228,7 @@ async function getOTP (event) {
       }
     })
     .catch(function (err) {
-      warning(`${err.message}`)
+      warning(`${err.message}${err.message}${err.message}${err.message}${err.message}${err.message}${err.message}${err.message}${err.message}`)
       return false
     })
 }
@@ -323,9 +323,22 @@ function warning (msg) {
   const text = document.getElementById('warning')
 
   if (text != null) {
-    text.innerText = msg
+    text.value = msg
     message.classList.add('visible')
   } else {
     alert(msg)
+  }
+}
+
+function dismiss () {
+  const message = document.getElementById('message')
+  const text = document.getElementById('warning')
+
+  if (message) {
+    message.classList.remove('visible')
+  }
+
+  if (text) {
+    text.value = ''
   }
 }
