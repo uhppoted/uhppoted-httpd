@@ -62,10 +62,10 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		"/groups",
 		"/users":
 		if handler := d.vtable(path); handler == nil || handler.post == nil {
-			warn("", fmt.Errorf("No vtable entry for %v", path))
+			warnf("HTTPD", "No vtable entry for %v", path)
 			http.Error(w, "internal system error", http.StatusInternalServerError)
 		} else if d.mode == types.Monitor {
-			warn("", fmt.Errorf("POST request in 'monitor' mode"))
+			warnf("HTTPD", "POST request in 'monitor' mode")
 			http.Error(w, "Configuration changes are disabled in monitor-only mode", http.StatusBadRequest)
 		} else {
 			d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
@@ -144,7 +144,7 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 		switch contentType {
 		case "application/x-www-form-urlencoded":
 			if err := r.ParseForm(); err != nil {
-				warn("POST", err)
+				warnf("HTTPD", "%v", err)
 				http.Error(w, "Error reading request", http.StatusInternalServerError)
 				return
 			}
@@ -156,13 +156,13 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 		case "application/json":
 			blob, err := ioutil.ReadAll(r.Body)
 			if err != nil {
-				warn("POST", err)
+				warnf("HTTPD", "%v", err)
 				http.Error(w, "Error reading request", http.StatusInternalServerError)
 				return
 			}
 
 			if err := json.Unmarshal(blob, &body); err != nil {
-				warn("POST", err)
+				warnf("HTTPD", "%v", err)
 				http.Error(w, "Invalid request body", http.StatusBadRequest)
 				return
 			}
@@ -174,18 +174,18 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 
 		response, err := f(body)
 		if err != nil && errors.Is(err, authorizator.Unauthorised) {
-			warn("POST", err)
+			warnf("HTTPD", "%v", err)
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		} else if err != nil {
-			warn("POST", err)
+			warnf("HTTPD", "%v", err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		b, err := json.Marshal(response)
 		if err != nil {
-			warn("POST", err)
+			warnf("HTTPD", "%v", err)
 			http.Error(w, "Internal error generating response", http.StatusInternalServerError)
 			return
 		}
@@ -205,7 +205,7 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 
 	select {
 	case <-ctx.Done():
-		warn("", ctx.Err())
+		warnf("HTTPD", "%v", ctx.Err())
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 		return
 
@@ -221,7 +221,7 @@ func (d *dispatcher) synchronizeDateTime(w http.ResponseWriter, r *http.Request)
 
 	go func() {
 		if err := system.SynchronizeDateTime(); err != nil {
-			warn("", err)
+			warnf("HTTPD", "%v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
@@ -230,7 +230,7 @@ func (d *dispatcher) synchronizeDateTime(w http.ResponseWriter, r *http.Request)
 
 	select {
 	case <-ctx.Done():
-		warn("", ctx.Err())
+		warnf("HTTPD", "%v", ctx.Err())
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 
 	case <-ch:
@@ -245,7 +245,7 @@ func (d *dispatcher) synchronize(w http.ResponseWriter, r *http.Request, f func(
 
 	go func() {
 		if err := f(); err != nil {
-			warn("", err)
+			warnf("HTTPD", "%v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
@@ -254,7 +254,7 @@ func (d *dispatcher) synchronize(w http.ResponseWriter, r *http.Request, f func(
 
 	select {
 	case <-ctx.Done():
-		warn("", ctx.Err())
+		warnf("HTTPD", "%v", ctx.Err())
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 
 	case <-ch:

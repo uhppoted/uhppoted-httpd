@@ -183,17 +183,17 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 
 	if info, err := fs.Stat(d.fs, translation); err != nil {
 		if !os.IsNotExist(err) {
-			warn("", fmt.Errorf("Error locating translation '%s' (%w)", translation, err))
+			warnf("HTTPD", "Error locating translation '%s' (%w)", translation, err)
 			http.Error(w, "Sadly, Most Of The Wheels All Came Off", http.StatusInternalServerError)
 			return
 		}
 	} else if !info.IsDir() {
 		if replacements, err := fs.ReadFile(d.fs, translation); err != nil {
-			warn("", fmt.Errorf("Error reading translation '%s' (%w)", translation, err))
+			warnf("HTTPD", "Error reading translation '%s' (%w)", translation, err)
 			http.Error(w, "Page Not Found", http.StatusNotFound)
 			return
 		} else if err := json.Unmarshal(replacements, &page); err != nil {
-			warn("", fmt.Errorf("Error unmarshalling translation '%s' (%w)", translation, err))
+			warnf("HTTPD", "Error unmarshalling translation '%s' (%w)", translation, err)
 			http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
 			return
 		}
@@ -239,14 +239,14 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 
 	t, err := template.New(name).Funcs(functions).ParseFS(d.fs, "templates/snippets.html", filename)
 	if err != nil {
-		warn("", fmt.Errorf("Error parsing template '%s' (%w)", file, err))
+		warnf("HTTPD", "Error parsing template '%s' (%w)", file, err)
 		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)
 		return
 	}
 
 	var b bytes.Buffer
 	if err := t.Execute(&b, page); err != nil {
-		warn("", fmt.Errorf("Error formatting page '%s' (%w)", file, err))
+		warnf("HTTPD", "Error formatting page '%s' (%w)", file, err)
 		http.Error(w, "Error formatting page", http.StatusInternalServerError)
 		return
 	}
@@ -306,7 +306,7 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 	<-ctx.Done()
 
 	if err := ctx.Err(); err != context.Canceled {
-		warn("", err)
+		warnf("HTTPD", "%v", err)
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 		return
 	}

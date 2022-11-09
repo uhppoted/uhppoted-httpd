@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/fs"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -18,6 +17,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
 	"github.com/uhppoted/uhppoted-httpd/httpd/html"
+	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
@@ -118,13 +118,13 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 	if h.HttpsEnabled {
 		ca, err := ioutil.ReadFile(h.CACertificate)
 		if err != nil {
-			log.Printf("%5v Error reading CA certificate file (%v)", "FATAL", err)
+			errorf("HTTPD", "Error reading CA certificate file (%v)", err)
 			return
 		}
 
 		certificates := x509.NewCertPool()
 		if !certificates.AppendCertsFromPEM(ca) {
-			log.Printf("%5v Error parsing CA certificate", "FATAL")
+			errorf("HTTPD", "Error parsing CA certificate")
 			return
 		}
 
@@ -164,20 +164,20 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 
 		select {
 		case <-interrupt:
-			info("HTTPD", "terminated")
+			infof("HTTPD", "%v", "terminated")
 		}
 
 		cancel()
 
 		if srv != nil {
 			if err := srv.Shutdown(context.Background()); err != nil {
-				warn("HTTPD", fmt.Errorf("HTTP server shutdown error: %w", err))
+				warnf("HTTPD", "HTTP server shutdown error: %w", err)
 			}
 		}
 
 		if srvs != nil {
 			if err := srvs.Shutdown(context.Background()); err != nil {
-				warn("HTTPD", fmt.Errorf("HTTPS server shutdown error: %w", err))
+				warnf("HTTPD", "HTTPS server shutdown error: %w", err)
 			}
 		}
 
@@ -186,18 +186,18 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 
 	if srv != nil {
 		go func() {
-			info("HTTPD", fmt.Sprintf("HTTP  server starting on port %v", srv.Addr))
+			infof("HTTPD", "HTTP  server starting on port %v", srv.Addr)
 			if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-				log.Panicf("ERROR: %v", err)
+				fatalf("HTTPD", "%v", err)
 			}
 		}()
 	}
 
 	if srvs != nil {
 		go func() {
-			info("HTTPD", fmt.Sprintf("HTTPS server starting on port %v", srvs.Addr))
+			infof("HTTPD", "HTTPS server starting on port %v", srvs.Addr)
 			if err := srvs.ListenAndServeTLS(h.TLSCertificate, h.TLSKey); err != http.ErrServerClosed {
-				log.Panicf("ERROR: %v", err)
+				fatalf("HTTPD", "%v", err)
 			}
 		}()
 	}
@@ -220,9 +220,9 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 
 func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request) {
 	if url, err := url.QueryUnescape(fmt.Sprintf("%v", r.URL)); err == nil {
-		debug(fmt.Sprintf("%-4v %v", r.Method, url))
+		debugf("HTTPD", "%-4v %v", r.Method, url)
 	} else {
-		debug(fmt.Sprintf("%-4v %v", r.Method, r.URL))
+		debugf("HTTPD", "%-4v %v", r.Method, r.URL)
 	}
 
 	switch strings.ToUpper(r.Method) {
@@ -240,13 +240,13 @@ func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request) {
 func (d *dispatcher) authenticated(r *http.Request, w http.ResponseWriter) (string, string, bool) {
 	cookie, err := r.Cookie(cookies.SessionCookie)
 	if err != nil {
-		warn("", fmt.Errorf("No session cookie in request"))
+		warnf("HTTPD", "No session cookie in request")
 		return "", "", false
 	}
 
 	uid, role, cookie2, err := d.auth.Authenticated(cookie)
 	if err != nil {
-		warn("", err)
+		warnf("HTTPD", "%v", err)
 		return "", "", false
 	}
 
@@ -259,7 +259,7 @@ func (d *dispatcher) authenticated(r *http.Request, w http.ResponseWriter) (stri
 
 func (d *dispatcher) authorised(uid, role, path string) bool {
 	if err := d.auth.Authorised(uid, role, path); err != nil {
-		warn("", err)
+		warnf("HTTPD", "%v", err)
 		return false
 	}
 
@@ -284,28 +284,42 @@ func resolve(u *url.URL) (string, error) {
 	return base.ResolveReference(u).EscapedPath(), nil
 }
 
-func debug(msg string) {
-	log.Printf("%-5s %s", "DEBUG", msg)
-}
-
-func debugf(format string, args ...any) {
-	f := fmt.Sprintf("%-5v %v", "DEBUG", format)
-
-	log.Printf(f, args...)
-}
-
-func info(subsystem string, msg string) {
+func debugf(subsystem string, format string, args ...any) {
 	if subsystem == "" {
-		log.Printf("%-5s %s", "INFO", msg)
+		log.Debugf("%v", args...)
 	} else {
-		log.Printf("%-5s %-8v  %v", "INFO", subsystem, msg)
+		log.Debugf(fmt.Sprintf("%-8v %v", subsystem, format), args...)
 	}
 }
 
-func warn(subsystem string, err error) {
+func infof(subsystem string, format string, args ...any) {
 	if subsystem == "" {
-		log.Printf("%-5s %v", "WARN", err)
+		log.Infof("%v", args...)
 	} else {
-		log.Printf("%-5s %-8v  %v", "WARN", subsystem, err)
+		log.Infof(fmt.Sprintf("%-8v %v", subsystem, format), args...)
+	}
+}
+
+func warnf(subsystem string, format string, args ...any) {
+	if subsystem == "" {
+		log.Warnf("%v", args...)
+	} else {
+		log.Warnf(fmt.Sprintf("%-8v %v", subsystem, format), args...)
+	}
+}
+
+func errorf(subsystem string, format string, args ...any) {
+	if subsystem == "" {
+		log.Errorf("%v", args...)
+	} else {
+		log.Errorf(fmt.Sprintf("%-8v %v", subsystem, format), args...)
+	}
+}
+
+func fatalf(subsystem string, format string, args ...any) {
+	if subsystem == "" {
+		log.Fatalf("%v", args...)
+	} else {
+		log.Fatalf(fmt.Sprintf("%-8v %v", subsystem, format), args...)
 	}
 }

@@ -41,6 +41,12 @@ func Warnf(format string, args ...any) {
 	syslog.Printf("%-5v  %v", "WARN", s)
 }
 
+func Errorf(format string, args ...any) {
+	s := fmt.Sprintf(format, args...)
+
+	syslog.Printf("%-5v  %v", "ERROR", s)
+}
+
 func Fatalf(format string, args ...any) {
 	s := fmt.Sprintf(format, args...)
 
