@@ -18,6 +18,9 @@
             - [x] Leave message field permanently visible
             - [x] Ellipsize message field
                   - [ ] Rework message field globally to use readonly input rather than span
+                        - [x] login
+                        - misc
+                        - [ ] as snippet
             - [ ] Use OPTIONS/HEAD request to get nonce etc for digest authorization
             - [ ] Grey out OTP form if not allowed
             - [ ] Center QR code

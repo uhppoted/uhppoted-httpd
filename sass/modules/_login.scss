@@ -98,6 +98,16 @@ form button {
   background: $fieldset-message-background;
 }
 
+#message.visible { 
+  visibility: visible;
+}
 #message .warning { 
   color: $fieldset-warning-text;
+  text-align: center;
+  text-overflow: ellipsis;
+  padding-left: 8px;
+  padding-right: 8px;
+  border: none;
+  outline: none;
 }
+

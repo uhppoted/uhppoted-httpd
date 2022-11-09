@@ -659,6 +659,16 @@ form button {
   background: #eee8d5;
 }
 
+#message.visible {
+  visibility: visible;
+}
+
 #message .warning {
   color: #dc322f;
+  text-align: center;
+  text-overflow: ellipsis;
+  padding-left: 8px;
+  padding-right: 8px;
+  border: none;
+  outline: none;
 }

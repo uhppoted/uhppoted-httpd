@@ -228,7 +228,7 @@ async function getOTP (event) {
       }
     })
     .catch(function (err) {
-      warning(`${err.message}${err.message}${err.message}${err.message}${err.message}${err.message}${err.message}${err.message}${err.message}`)
+      warning(`${err.message}`)
       return false
     })
 }
