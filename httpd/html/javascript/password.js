@@ -52,6 +52,47 @@ export function onPassword (event) {
     })
 }
 
+export function onEnableOTP (event) {
+  const enable = document.getElementById('otp-enabled')
+  const show = document.getElementById('show-otp')
+  const hide = document.getElementById('hide-otp')
+  const qr = document.getElementById('qrcode')
+
+  switch (enable.checked) {
+    case true:
+      getOTP().then((ok) => {
+        if (ok) {
+          enable.checked = true
+          qr.classList.add('visible')
+          show.classList.remove('visible')
+          hide.classList.add('visible')
+        } else {
+          enable.checked = false
+          qr.classList.remove('visible')
+          show.classList.add('visible')
+          hide.classList.remove('visible')
+        }
+      })
+      break
+
+    case false:
+      revokeOTP().then((ok) => {
+        if (ok) {
+          // enable.checked = true
+          // qr.classList.add('visible')
+          // show.classList.remove('visible')
+          // hide.classList.add('visible')
+        } else {
+          // enable.checked = false
+          // qr.classList.remove('visible')
+          // show.classList.add('visible')
+          // hide.classList.remove('visible')
+        }
+      })
+      break
+  }
+}
+
 export function onShowOTP (event) {
   const uid = document.getElementById('uid').value
   const pwd = document.getElementById('old').value
@@ -64,7 +105,7 @@ export function onShowOTP (event) {
 
   dismiss()
 
-  get('/otp', `Basic ${auth}`)
+  GET('/otp', `Basic ${auth}`)
     .then(response => {
       switch (response.status) {
         case 200:
@@ -150,9 +191,116 @@ export function onOTP (event) {
     })
 }
 
-async function get (url = '', authorization = '') {
+async function getOTP (event) {
+  const uid = document.getElementById('uid').value
+  const pwd = document.getElementById('old').value
+  const qr = document.getElementById('qrcode')
+  const auth = btoa(`${uid}:${pwd}`)
+
+  URL.revokeObjectURL(qr.src)
+
+  dismiss()
+
+  return GET('/otp', `Basic ${auth}`)
+    .then(response => {
+      switch (response.status) {
+        case 200:
+          if (response.redirected) {
+            window.location = response.url
+            return ''
+          } else {
+            return response.blob()
+          }
+
+        case 401:
+          throw new Error(messages.unauthorized)
+
+        default:
+          return response
+            .text()
+            .then(err => { throw new Error(err) })
+      }
+    })
+    .then((v) => {
+      if (v instanceof Blob && qr) {
+        qr.src = URL.createObjectURL(v)
+        return true
+      }
+    })
+    .catch(function (err) {
+      warning(`${err.message}`)
+      return false
+    })
+}
+
+async function revokeOTP (event) {
+  const uid = document.getElementById('uid').value
+  const pwd = document.getElementById('old').value
+  // const qr = document.getElementById('qrcode')
+  const auth = btoa(`${uid}:${pwd}`)
+
+  // URL.revokeObjectURL(qr.src)
+
+  dismiss()
+
+  return DELETE('/otp', `Basic ${auth}`)
+    .then(response => {
+      switch (response.status) {
+        case 200:
+          console.log(response)
+          if (response.redirected) {
+            window.location = response.url
+            return ''
+          } else {
+            return response.blob()
+          }
+
+        case 401:
+          throw new Error(messages.unauthorized)
+
+        default:
+          return response
+            .text()
+            .then(err => { throw new Error(err) })
+      }
+    })
+    .then((v) => {
+      console.log(v)
+      return true
+      // if (v instanceof Blob && qr) {
+      //   qr.src = URL.createObjectURL(v)
+      //   return true
+      // }
+    })
+    .catch(function (err) {
+      warning(`${err.message}`)
+      return false
+    })
+}
+
+async function GET (url = '', authorization = '') {
   const init = {
     method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    headers: { Authorization: authorization }
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      return response
+    })
+    .catch(function (err) {
+      throw err
+    })
+}
+
+async function DELETE (url = '', authorization = '') {
+  const init = {
+    method: 'DELETE',
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'same-origin',

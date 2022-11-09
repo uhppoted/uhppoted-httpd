@@ -99,6 +99,7 @@ func Get(uid, keyid string) (string, []byte, error) {
 	if img, err := secret.key.Image(256, 256); err != nil {
 		return "", nil, err
 	} else {
+		// fmt.Printf(">>>> OTP: %v\n", secret.key.Secret()) // FIXME - remove!!!
 		png.Encode(&b, img)
 
 		return keyid, b.Bytes(), nil

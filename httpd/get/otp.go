@@ -35,7 +35,7 @@ func GenerateOTP(uid string, w http.ResponseWriter, r *http.Request, auth auth.I
 		key = cookie.Value
 	}
 
-	newkey, bytes, err := otp.Get(uid, key)
+	newkey, qr, err := otp.Get(uid, key)
 	if err != nil {
 		warnf("OTP", "%v", err)
 		http.Error(w, "Error generating OTP", http.StatusInternalServerError)
@@ -54,15 +54,15 @@ func GenerateOTP(uid string, w http.ResponseWriter, r *http.Request, auth auth.I
 
 	// ... reply
 	acceptsGzip := parseHeader(r)
-	if acceptsGzip && len(bytes) > GZIP_MINIMUM {
+	if acceptsGzip && len(qr) > GZIP_MINIMUM {
 		w.Header().Set("Content-Encoding", "gzip")
 		w.Header().Set("Content-Type", "image/png")
 
 		gz := gzip.NewWriter(w)
-		gz.Write(bytes)
+		gz.Write(qr)
 		gz.Close()
 	} else {
 		w.Header().Set("Content-Type", "image/png")
-		w.Write(bytes)
+		w.Write(qr)
 	}
 }
