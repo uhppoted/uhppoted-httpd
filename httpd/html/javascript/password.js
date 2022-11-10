@@ -53,23 +53,22 @@ export function onPassword (event) {
 }
 
 export function onEnableOTP (event) {
-  event.preventDefault()
-
+  const fieldset = document.getElementById('OTP')
   const enable = document.getElementById('otp-enabled')
-  const show = document.getElementById('show-otp')
   const hide = document.getElementById('hide-otp')
-  const qr = document.getElementById('qrcode')
+
+  if (!enable.checked) {
+      fieldset.dataset.enabled = "false"    
+      return
+  }
 
   getOTP().then((ok) => {
     if (ok) {
+      fieldset.dataset.enabled = "pending"
       enable.checked = true
-      qr.classList.add('visible')
-      show.classList.remove('visible')
       hide.classList.add('visible')
     } else {
       enable.checked = false
-      qr.classList.remove('visible')
-      show.classList.add('visible')
       hide.classList.remove('visible')
     }
   })
@@ -78,16 +77,18 @@ export function onEnableOTP (event) {
 export function onRevokeOTP (event) {
   event.preventDefault()
 
+  const fieldset = document.getElementById('OTP')
   const enable = document.getElementById('otp-enabled')
   const show = document.getElementById('show-otp')
   const hide = document.getElementById('hide-otp')
-  const qr = document.getElementById('qrcode')
+  // const qr = document.getElementById('qrcode')
 
   revokeOTP().then((ok) => {
     if (ok) {
+      fieldset.dataset.enabled = "false"
       enable.checked = false
       enable.disabled = false
-      qr.classList.remove('visible')
+      // qr.classList.remove('visible')
       show.classList.remove('visible')
       hide.classList.remove('visible')
       warning('OTP revoked')

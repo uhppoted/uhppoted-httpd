@@ -6,8 +6,7 @@
       - [ ] Reinstate idle timeouts
 
       - [ ] Add OTP to password page
-            - [ ] Revoke OTP
-                  - (?) with verify + OTP to confirm
+            - [x] Revoke OTP
             - [ ] Change checkbox to readonly and use buttons to enable/disable
             - [ ] Fix _change password_
             - [x] Ellipsize message field
