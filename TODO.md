@@ -6,21 +6,15 @@
       - [ ] Reinstate idle timeouts
 
       - [ ] Add OTP to password page
-            - [x] Initialise 'OTP enabled'
-            - [x] Placeholder OTP image
-            - [x] Show/hide OTP
-            - [x] Require valid password to show QR code
-            - [x] Require valid password to get QR code
             - [ ] Revoke OTP
                   - (?) with verify + OTP to confirm
             - [ ] Change checkbox to readonly and use buttons to enable/disable
             - [ ] Fix _change password_
-            - [x] Leave message field permanently visible
             - [x] Ellipsize message field
                   - [ ] Rework message field globally to use readonly input rather than span
                         - [x] login
-                        - misc
-                        - [ ] as snippet
+                        - [ ] other pages
+                        - [ ] snippet
             - [ ] Use OPTIONS/HEAD request to get nonce etc for digest authorization
             - [ ] Grey out OTP form if not allowed
             - [ ] Center QR code

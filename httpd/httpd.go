@@ -232,6 +232,8 @@ func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request) {
 		d.get(w, r)
 	case http.MethodPost:
 		d.post(w, r)
+	case http.MethodDelete:
+		d.delete(w, r)
 	default:
 		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
 	}

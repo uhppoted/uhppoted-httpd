@@ -209,6 +209,25 @@ func (uu *Users) SetOTP(uid, secret string, dbc db.DBC) ([]schema.Object, error)
 	return []schema.Object{}, nil
 }
 
+func (uu *Users) RevokeOTP(uid string, dbc db.DBC) ([]schema.Object, error) {
+	if uu == nil {
+		return nil, nil
+	}
+
+	for k, u := range uu.users {
+		if u.uid == uid {
+			objects, err := u.set(nil, u.OID.Append(UserOTP), "", dbc)
+			if err == nil {
+				uu.users[k] = u
+			}
+
+			return objects, err
+		}
+	}
+
+	return []schema.Object{}, nil
+}
+
 func (uu Users) User(uid string) (auth.IUser, bool) {
 	if strings.TrimSpace(uid) != "" {
 		for _, u := range uu.users {

@@ -35,7 +35,7 @@ type IAuth interface {
 	Logout(cookie *http.Cookie)
 
 	Verify(uid, pwd string) error
-	VerifyAuthHeader(authorization string) error
+	VerifyAuthHeader(uid string, header string) error
 	Options(uid string) options
 }
 

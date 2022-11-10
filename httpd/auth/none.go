@@ -34,7 +34,7 @@ func (n *None) Verify(uid, pwd string) error {
 	return nil
 }
 
-func (n *None) VerifyAuthHeader(authorization string) error {
+func (n *None) VerifyAuthHeader(uid string, header string) error {
 	return nil
 }
 

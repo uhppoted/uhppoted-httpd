@@ -119,6 +119,10 @@ func Validate(uid string, keyid string, otp string) error {
 	return nil
 }
 
+func Revoke(uid string) error {
+	return system.RevokeOTP(uid)
+}
+
 func Verify(uid string, otp string) bool {
 	if secret, err := system.GetOTP(uid); err == nil {
 		return totp.Validate(otp, secret)

@@ -53,44 +53,46 @@ export function onPassword (event) {
 }
 
 export function onEnableOTP (event) {
+  event.preventDefault()
+
   const enable = document.getElementById('otp-enabled')
   const show = document.getElementById('show-otp')
   const hide = document.getElementById('hide-otp')
   const qr = document.getElementById('qrcode')
 
-  switch (enable.checked) {
-    case true:
-      getOTP().then((ok) => {
-        if (ok) {
-          enable.checked = true
-          qr.classList.add('visible')
-          show.classList.remove('visible')
-          hide.classList.add('visible')
-        } else {
-          enable.checked = false
-          qr.classList.remove('visible')
-          show.classList.add('visible')
-          hide.classList.remove('visible')
-        }
-      })
-      break
+  getOTP().then((ok) => {
+    if (ok) {
+      enable.checked = true
+      qr.classList.add('visible')
+      show.classList.remove('visible')
+      hide.classList.add('visible')
+    } else {
+      enable.checked = false
+      qr.classList.remove('visible')
+      show.classList.add('visible')
+      hide.classList.remove('visible')
+    }
+  })
+}
 
-    case false:
-      revokeOTP().then((ok) => {
-        if (ok) {
-          // enable.checked = true
-          // qr.classList.add('visible')
-          // show.classList.remove('visible')
-          // hide.classList.add('visible')
-        } else {
-          // enable.checked = false
-          // qr.classList.remove('visible')
-          // show.classList.add('visible')
-          // hide.classList.remove('visible')
-        }
-      })
-      break
-  }
+export function onRevokeOTP (event) {
+  event.preventDefault()
+
+  const enable = document.getElementById('otp-enabled')
+  const show = document.getElementById('show-otp')
+  const hide = document.getElementById('hide-otp')
+  const qr = document.getElementById('qrcode')
+
+  revokeOTP().then((ok) => {
+    if (ok) {
+      enable.checked = false
+      enable.disabled = false
+      qr.classList.remove('visible')
+      show.classList.remove('visible')
+      hide.classList.remove('visible')
+      warning('OTP revoked')
+    }
+  })
 }
 
 export function onShowOTP (event) {
@@ -150,7 +152,7 @@ export function onHideOTP (event) {
   URL.revokeObjectURL(url)
 }
 
-export function onOTP (event) {
+export function onVerifyOTP (event) {
   event.preventDefault()
 
   dismiss()
@@ -233,13 +235,10 @@ async function getOTP (event) {
     })
 }
 
-async function revokeOTP (event) {
+async function revokeOTP () {
   const uid = document.getElementById('uid').value
   const pwd = document.getElementById('old').value
-  // const qr = document.getElementById('qrcode')
   const auth = btoa(`${uid}:${pwd}`)
-
-  // URL.revokeObjectURL(qr.src)
 
   dismiss()
 
@@ -250,9 +249,9 @@ async function revokeOTP (event) {
           console.log(response)
           if (response.redirected) {
             window.location = response.url
-            return ''
+            return false
           } else {
-            return response.blob()
+            return true
           }
 
         case 401:
@@ -263,14 +262,6 @@ async function revokeOTP (event) {
             .text()
             .then(err => { throw new Error(err) })
       }
-    })
-    .then((v) => {
-      console.log(v)
-      return true
-      // if (v instanceof Blob && qr) {
-      //   qr.src = URL.createObjectURL(v)
-      //   return true
-      // }
     })
     .catch(function (err) {
       warning(`${err.message}`)

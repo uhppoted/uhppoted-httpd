@@ -134,3 +134,31 @@ func SetOTP(uid, secret string) error {
 
 	return nil
 }
+
+func RevokeOTP(uid string) error {
+	sys.Lock()
+	defer sys.Unlock()
+
+	dbc := db.NewDBC(sys.trail)
+	shadow := sys.users.Clone()
+
+	if updated, err := shadow.RevokeOTP(uid, dbc); err != nil {
+		return err
+	} else {
+		dbc.Stash(updated)
+	}
+
+	if err := shadow.Validate(); err != nil {
+		return err
+	}
+
+	if err := save(TagUsers, &shadow); err != nil {
+		return err
+	}
+
+	dbc.Commit(&sys, func() {
+		sys.users = shadow
+	})
+
+	return nil
+}

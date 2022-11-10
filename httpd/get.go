@@ -15,7 +15,7 @@ import (
 	"strings"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
-	"github.com/uhppoted/uhppoted-httpd/httpd/get"
+	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -348,7 +348,7 @@ func (d *dispatcher) generateOTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	get.GenerateOTP(uid, w, r, d.auth)
+	users.GenerateOTP(uid, w, r, d.auth)
 }
 
 func parseHeader(r *http.Request) bool {

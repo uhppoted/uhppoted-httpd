@@ -121,19 +121,22 @@ func (b *Basic) Verify(uid, pwd string) error {
 	return b.auth.Validate(uid, pwd)
 }
 
-func (b *Basic) VerifyAuthHeader(authorization string) error {
-	if match := regexp.MustCompile(`Basic\s+(.*)`).FindStringSubmatch(authorization); match != nil && len(match) == 2 {
-		if auth, err := base64.StdEncoding.DecodeString(match[1]); err != nil {
-			warnf("verify", "%v", err)
-		} else if match := regexp.MustCompile(`(.*?):(.*)`).FindStringSubmatch(string(auth)); match != nil && len(match) == 3 {
-			uid := match[1]
-			pwd := match[2]
+func (b *Basic) VerifyAuthHeader(uid string, header string) error {
+	var pwd string
 
-			return b.Verify(uid, pwd)
-		}
+	if match := regexp.MustCompile(`Basic\s+(.*)`).FindStringSubmatch(header); match == nil || len(match) != 2 {
+		return fmt.Errorf("Invalid Authorization header")
+	} else if auth, err := base64.StdEncoding.DecodeString(match[1]); err != nil {
+		return fmt.Errorf("Invalid Authorization header")
+	} else if match := regexp.MustCompile(`(.*?):(.*)`).FindStringSubmatch(string(auth)); match == nil || len(match) != 3 {
+		return fmt.Errorf("Invalid Authorization header")
+	} else if match[1] != uid {
+		return fmt.Errorf("Invalid Authorization header")
+	} else {
+		pwd = match[2]
 	}
 
-	return fmt.Errorf("Invalid Authorization header")
+	return b.Verify(uid, pwd)
 }
 
 func (b *Basic) Logout(cookie *http.Cookie) {
