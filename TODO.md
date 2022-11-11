@@ -4,27 +4,27 @@
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
       - [ ] Reinstate idle timeouts
+      - [ ] Lock account for 30 min on too many failed attempts
+            - [ ] admin lock reset
 
       - [ ] Add OTP to password page
-            - [x] Revoke OTP
-            - [ ] Change checkbox to readonly and use buttons to enable/disable
+            - [x] Change checkbox to readonly and use buttons to enable/disable
+            - [ ] Better placeholder
             - [ ] Fix _change password_
-            - [x] Ellipsize message field
-                  - [ ] Rework message field globally to use readonly input rather than span
-                        - [x] login
-                        - [ ] other pages
-                        - [ ] snippet
             - [ ] Use OPTIONS/HEAD request to get nonce etc for digest authorization
             - [ ] Grey out OTP form if not allowed
             - [ ] Center QR code
-            - [ ] Better checkbox
             - [ ] White background
             - [ ] More padding
             - [ ] Size (?)
             - [ ] CSS for dark theme
             - [ ] Check with Google Authenticator
+            - [ ] Reset OTP (on admin page)
 
-      - [ ] Reset OTP (on admin page)
+- [ ] Rework message field globally to use readonly input rather than span
+      - [x] login
+      - [ ] other pages
+      - [ ] snippet
 
 - [x] Crash on Ok with empty passwords
       - [ ] Check auth.IsNil for all xxx.ToObjects(auth)

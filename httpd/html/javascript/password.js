@@ -55,21 +55,19 @@ export function onPassword (event) {
 export function onEnableOTP (event) {
   const fieldset = document.getElementById('OTP')
   const enable = document.getElementById('otp-enabled')
-  const hide = document.getElementById('hide-otp')
 
   if (!enable.checked) {
-      fieldset.dataset.enabled = "false"    
-      return
+    fieldset.dataset.enabled = 'false'
+    return
   }
 
   getOTP().then((ok) => {
     if (ok) {
-      fieldset.dataset.enabled = "pending"
-      enable.checked = true
-      hide.classList.add('visible')
+      fieldset.dataset.enabled = 'pending'
+      fieldset.dataset.otp = 'show'
     } else {
+      fieldset.dataset.enabled = 'false'
       enable.checked = false
-      hide.classList.remove('visible')
     }
   })
 }
@@ -81,14 +79,12 @@ export function onRevokeOTP (event) {
   const enable = document.getElementById('otp-enabled')
   const show = document.getElementById('show-otp')
   const hide = document.getElementById('hide-otp')
-  // const qr = document.getElementById('qrcode')
 
   revokeOTP().then((ok) => {
     if (ok) {
-      fieldset.dataset.enabled = "false"
+      fieldset.dataset.enabled = 'false'
       enable.checked = false
       enable.disabled = false
-      // qr.classList.remove('visible')
       show.classList.remove('visible')
       hide.classList.remove('visible')
       warning('OTP revoked')
@@ -96,11 +92,19 @@ export function onRevokeOTP (event) {
   })
 }
 
+export function onHideOTP (event) {
+  const fieldset = document.getElementById('OTP')
+  const qrcode = document.getElementById('qrcode')
+  const url = qrcode.src
+
+  fieldset.dataset.otp = 'hide'
+  URL.revokeObjectURL(url)
+}
+
 export function onShowOTP (event) {
+  const fieldset = document.getElementById('OTP')
   const uid = document.getElementById('uid').value
   const pwd = document.getElementById('old').value
-  const show = document.getElementById('show-otp')
-  const hide = document.getElementById('hide-otp')
   const qr = document.getElementById('qrcode')
   const auth = btoa(`${uid}:${pwd}`)
 
@@ -131,9 +135,7 @@ export function onShowOTP (event) {
     .then((v) => {
       if (v instanceof Blob && qr) {
         qr.src = URL.createObjectURL(v)
-        qr.classList.add('visible')
-        show.classList.remove('visible')
-        hide.classList.add('visible')
+        fieldset.dataset.otp = 'show'
       }
     })
     .catch(function (err) {
@@ -141,23 +143,13 @@ export function onShowOTP (event) {
     })
 }
 
-export function onHideOTP (event) {
-  const show = document.getElementById('show-otp')
-  const hide = document.getElementById('hide-otp')
-  const qr = document.getElementById('qrcode')
-  const url = qr.src
-
-  show.classList.add('visible')
-  hide.classList.remove('visible')
-  qr.classList.remove('visible')
-  URL.revokeObjectURL(url)
-}
-
 export function onVerifyOTP (event) {
   event.preventDefault()
 
   dismiss()
 
+  const fieldset = document.getElementById('OTP')
+  const checkbox = document.getElementById('otp-enabled')
   const uid = document.getElementById('uid').value
   const pwd = document.getElementById('old').value
   const otp = document.getElementById('otp').value
@@ -187,6 +179,8 @@ export function onVerifyOTP (event) {
       }
     })
     .then((v) => {
+      fieldset.dataset.enabled = 'true'
+      checkbox.disabled = true
       warning('OTP verified and enabled')
     })
     .catch(function (err) {
