@@ -9,7 +9,9 @@
 
       - [ ] Add OTP to password page
             - [x] Change checkbox to readonly and use buttons to enable/disable
-            - [ ] Better placeholder
+            - [x] Better placeholder
+            - (?) Make the placeholder the 'enable OTP' button and add X to 'cancel'
+            - (?) Put 'hide OTP' in the top right corner
             - [ ] Fix _change password_
             - [ ] Use OPTIONS/HEAD request to get nonce etc for digest authorization
             - [ ] Grey out OTP form if not allowed
