@@ -54,7 +54,7 @@ export function onPassword (event) {
 
 export function onEnableOTP (event) {
   const fieldset = document.getElementById('OTP')
-  const enable = document.getElementById('otp-enabled')
+  const enable = document.querySelector('#otp-enable input[type="checkbox"]')
 
   if (!enable.checked) {
     fieldset.dataset.enabled = 'false'
@@ -76,7 +76,7 @@ export function onRevokeOTP (event) {
   event.preventDefault()
 
   const fieldset = document.getElementById('OTP')
-  const enable = document.getElementById('otp-enabled')
+  const enable = document.querySelector('#otp-enable input[type="checkbox"]')
   const show = document.getElementById('show-otp')
   const hide = document.getElementById('hide-otp')
 
@@ -149,7 +149,7 @@ export function onVerifyOTP (event) {
   dismiss()
 
   const fieldset = document.getElementById('OTP')
-  const checkbox = document.getElementById('otp-enabled')
+  const checkbox = document.querySelector('#otp-enable input[type="checkbox"]')
   const uid = document.getElementById('uid').value
   const pwd = document.getElementById('old').value
   const otp = document.getElementById('otp').value

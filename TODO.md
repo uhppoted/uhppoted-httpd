@@ -4,16 +4,14 @@
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
       - [ ] Reinstate idle timeouts
-      - [ ] Lock account for 30 min on too many failed attempts
+      - [ ] Lock account on too many failed attempts
             - [ ] admin lock reset
 
       - [ ] Add OTP to password page
             - [x] Change checkbox to readonly and use buttons to enable/disable
             - [x] Better placeholder
-            - (?) Make the placeholder the 'enable OTP' button and add X to 'cancel'
-            - (?) Put 'hide OTP' in the top right corner
+            - [x] Figure out enable/enabled UX
             - [ ] Fix _change password_
-            - [ ] Use OPTIONS/HEAD request to get nonce etc for digest authorization
             - [ ] Grey out OTP form if not allowed
             - [ ] Center QR code
             - [ ] White background
@@ -22,6 +20,8 @@
             - [ ] CSS for dark theme
             - [ ] Check with Google Authenticator
             - [ ] Reset OTP (on admin page)
+            - [ ] Update README
+            - [ ] Update CHANGELOG
 
 - [ ] Rework message field globally to use readonly input rather than span
       - [x] login
