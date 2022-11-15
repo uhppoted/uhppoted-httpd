@@ -7,7 +7,6 @@ export function onPassword (event) {
 
   dismiss()
 
-  const referrer = document.referrer
   const uid = document.getElementById('uid').value
   const old = document.getElementById('old').value
   const pwd = document.getElementById('pwd').value
@@ -31,7 +30,7 @@ export function onPassword (event) {
           if (response.redirected) {
             window.location = response.url
           } else {
-            window.location = referrer
+            warning('Password changed')
           }
           return
 

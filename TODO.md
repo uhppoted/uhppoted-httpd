@@ -11,7 +11,7 @@
             - [x] Change checkbox to readonly and use buttons to enable/disable
             - [x] Better placeholder
             - [x] Figure out enable/enabled UX
-            - [ ] Fix _change password_
+            - [x] Fix _change password_
             - [ ] Grey out OTP form if not allowed
             - [ ] Center QR code
             - [ ] White background
@@ -22,6 +22,7 @@
             - [ ] Reset OTP (on admin page)
             - [ ] Update README
             - [ ] Update CHANGELOG
+            - [ ] Log is not showing UID for updated OTP
 
 - [ ] Rework message field globally to use readonly input rather than span
       - [x] login
