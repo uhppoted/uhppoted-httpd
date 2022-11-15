@@ -12,17 +12,20 @@
             - [x] Better placeholder
             - [x] Figure out enable/enabled UX
             - [x] Fix _change password_
+            - [x] Center QR code
+            - [x] White background
+            - [x] More padding
+            - [x] Size
             - [ ] Grey out OTP form if not allowed
-            - [ ] Center QR code
-            - [ ] White background
-            - [ ] More padding
-            - [ ] Size (?)
+                  - use overlay interceptor
+                  - https://css-tricks.com/stripes-css/
+
             - [ ] CSS for dark theme
-            - [ ] Check with Google Authenticator
+            - [ ] Log is not showing UID for updated OTP
             - [ ] Reset OTP (on admin page)
+            - [ ] Check with Google Authenticator
             - [ ] Update README
             - [ ] Update CHANGELOG
-            - [ ] Log is not showing UID for updated OTP
 
 - [ ] Rework message field globally to use readonly input rather than span
       - [x] login
@@ -33,7 +36,7 @@
       - [ ] Check auth.IsNil for all xxx.ToObjects(auth)
 
 - [ ] Set cookie.Secure to true for TLS requests
-- [ ] Rework login to use Authorization header with Basic/Digest
+- [ ] Top border radius on overview events and log panels
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -66,6 +69,7 @@
 
 ## TODO
 
+- [ ] Rework login to use Authorization header with Basic/Digest
 - [ ] Use browser local storage for DB
       - (?) ETags
             - https://ieftimov.com/posts/conditional-http-get-fastest-requests-need-no-response-body/
