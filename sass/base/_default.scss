@@ -6,6 +6,7 @@ $content-controls-border: $solarize-blue     !default;
 
 $warning-colour: $solarize-red            !default;
 $warning-dismiss-colour: $solarize-base03 !default;
+$enabled-colour: $solarize-yellow         !default;
 
 $user-avatar-background: $solarize-base2              !default;
 $user-avatar-text: $solarize-base01                   !default;
@@ -88,4 +89,9 @@ $dashboard-windmill: $solarize-blue;
 $link-colour: $solarize-blue;
 $offline-border: $solarize-red;
 $offline-colour: $solarize-base0;
+
+$shaded-background: repeating-linear-gradient(-55deg, #808080ff, #22222220 1px, #22222220 20px);
+
+
+
 

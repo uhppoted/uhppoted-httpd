@@ -17,7 +17,11 @@
             - [x] More padding
             - [x] Size
             - [x] Grey out OTP form if not allowed
-            - [ ] CSS for dark theme
+            - [x] CSS for dark theme
+            - [ ] Touch up layout
+                  - [ ] _hide_ button
+                  - [ ] _revoke_ button
+                  _ [ ] _change password_ button
             - [ ] Log is not showing UID for updated OTP
             - [ ] Reset OTP (on admin page)
             - [ ] Check with Google Authenticator
