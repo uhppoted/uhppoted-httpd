@@ -167,7 +167,7 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 		Users    bool
 	}
 
-	page := map[string]interface{}{}
+	page := map[string]any{}
 
 	page["context"] = context
 	page["schema"] = schema.GetSchema()

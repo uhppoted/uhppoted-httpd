@@ -16,10 +16,7 @@
             - [x] White background
             - [x] More padding
             - [x] Size
-            - [ ] Grey out OTP form if not allowed
-                  - use overlay interceptor
-                  - https://css-tricks.com/stripes-css/
-
+            - [x] Grey out OTP form if not allowed
             - [ ] CSS for dark theme
             - [ ] Log is not showing UID for updated OTP
             - [ ] Reset OTP (on admin page)
