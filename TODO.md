@@ -6,6 +6,7 @@
       - [ ] Reinstate idle timeouts
       - [ ] Lock account on too many failed attempts
             - [ ] admin lock reset
+      - [ ] Rework change password to use Authentication header
 
       - [ ] Add OTP to password page
             - [x] Change checkbox to readonly and use buttons to enable/disable
@@ -18,13 +19,12 @@
             - [x] Size
             - [x] Grey out OTP form if not allowed
             - [x] CSS for dark theme
-            - [ ] Touch up layout
-                  - [ ] _hide_ button
-                  - [ ] _revoke_ button
-                  _ [ ] _change password_ button
+            - [x] Touch up layout
+                  - [x] _hide_ button
+                  - [x] _revoke_ button
             - [ ] Log is not showing UID for updated OTP
-            - [ ] Reset OTP (on admin page)
             - [ ] Check with Google Authenticator
+            - [ ] Reset OTP (on admin page)
             - [ ] Update README
             - [ ] Update CHANGELOG
 
