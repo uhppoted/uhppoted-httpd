@@ -20,10 +20,10 @@
             - [x] Grey out OTP form if not allowed
             - [x] CSS for dark theme
             - [x] Touch up layout
-                  - [x] _hide_ button
-                  - [x] _revoke_ button
-            - [ ] Log is not showing UID for updated OTP
+            - [x] Log is not showing UID for updated OTP
+            - [x] Log revoked OTP
             - [ ] Check with Google Authenticator
+                  - [ ] Hide expired QR code
             - [ ] Reset OTP (on admin page)
             - [ ] Update README
             - [ ] Update CHANGELOG

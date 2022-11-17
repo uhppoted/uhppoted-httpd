@@ -67,8 +67,7 @@ func GenerateOTP(uid string, w http.ResponseWriter, r *http.Request, auth auth.I
 	}
 }
 
-func VerifyOTP(w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
-	var uid string
+func VerifyOTP(uid string, role string, w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
 	var pwd string
 	var OTP string
 
@@ -77,12 +76,11 @@ func VerifyOTP(w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
 		keyid = cookie.Value
 	}
 
-	if vars, err := getvars(r, "uid", "pwd", "otp"); err != nil {
+	if vars, err := getvars(r, "pwd", "otp"); err != nil {
 		warnf("OTP", "%v", err)
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
 		return
 	} else {
-		uid = vars["uid"]
 		pwd = vars["pwd"]
 		OTP = vars["otp"]
 	}
@@ -93,14 +91,14 @@ func VerifyOTP(w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
 		return
 	}
 
-	if err := otp.Validate(uid, keyid, OTP); err != nil {
+	if err := otp.Validate(uid, role, keyid, OTP); err != nil {
 		warnf("OTP", "%v", err)
 		http.Error(w, "Invalid OTP", http.StatusBadRequest)
 		return
 	}
 }
 
-func RevokeOTP(uid string, w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
+func RevokeOTP(uid string, role string, w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
 	// ... verify Authorization header
 	authorization := ""
 	for k, h := range r.Header {
@@ -119,7 +117,7 @@ func RevokeOTP(uid string, w http.ResponseWriter, r *http.Request, auth auth.IAu
 	}
 
 	// ... revoke OTP
-	if err := otp.Revoke(uid); err != nil {
+	if err := otp.Revoke(uid, role); err != nil {
 		warnf("OTP", "%v", err)
 		http.Error(w, "Invalid OTP", http.StatusBadRequest)
 		return

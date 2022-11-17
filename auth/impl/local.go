@@ -225,7 +225,7 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 	h.Write([]byte(pwd))
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
 
-	if hash != password && (!p.allowOTPLogin || !otp.Verify(uid, pwd)) {
+	if hash != password && (!p.allowOTPLogin || !otp.Verify(uid, role, pwd)) {
 		return "", fmt.Errorf("Invalid login credentials")
 	}
 

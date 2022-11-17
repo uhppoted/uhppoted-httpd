@@ -219,12 +219,18 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		if err := f("otp", value); err != nil {
 			return nil, err
 		} else {
+			if value == "" {
+				u.log(dbc, uid, "update", "otp", "", "", "Revoked OTP")
+			} else if u.otp == "" {
+				u.log(dbc, uid, "update", "otp", "", "", "Enabled OTP")
+			} else {
+				u.log(dbc, uid, "update", "otp", "", "", "Updated OTP")
+			}
+
 			u.otp = value
 			u.modified = types.TimestampNow()
 
 			list = append(list, kv{UserOTP, ""})
-
-			u.log(dbc, uid, "update", "otp", "", "", "Updated otp")
 		}
 	}
 

@@ -27,7 +27,7 @@ func (d *dispatcher) delete(w http.ResponseWriter, r *http.Request) {
 
 	switch path {
 	case "/otp":
-		users.RevokeOTP(uid, w, r, d.auth)
+		users.RevokeOTP(uid, role, w, r, d.auth)
 
 	default:
 		http.Error(w, "API not implemented", http.StatusNotImplemented)

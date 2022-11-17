@@ -72,14 +72,15 @@ func User(uid string) (auth.IUser, bool) {
 	return sys.users.User(uid)
 }
 
-func SetPassword(uid, pwd string) error {
+func SetPassword(uid, role, pwd string) error {
 	sys.Lock()
 	defer sys.Unlock()
 
+	auth := auth.NewAuthorizator(uid, role)
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.users.Clone()
 
-	if updated, err := shadow.SetPassword(uid, pwd, dbc); err != nil {
+	if updated, err := shadow.SetPassword(auth, uid, pwd, dbc); err != nil {
 		return err
 	} else {
 		dbc.Stash(updated)
@@ -104,17 +105,18 @@ func GetOTP(uid string) (string, error) {
 	sys.Lock()
 	defer sys.Unlock()
 
-	return sys.users.GetOTP(uid)
+	return sys.users.GetOTP(nil, uid)
 }
 
-func SetOTP(uid, secret string) error {
+func SetOTP(uid, role, secret string) error {
 	sys.Lock()
 	defer sys.Unlock()
 
+	auth := auth.NewAuthorizator(uid, role)
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.users.Clone()
 
-	if updated, err := shadow.SetOTP(uid, secret, dbc); err != nil {
+	if updated, err := shadow.SetOTP(auth, uid, secret, dbc); err != nil {
 		return err
 	} else {
 		dbc.Stash(updated)
@@ -135,14 +137,15 @@ func SetOTP(uid, secret string) error {
 	return nil
 }
 
-func RevokeOTP(uid string) error {
+func RevokeOTP(uid, role string) error {
 	sys.Lock()
 	defer sys.Unlock()
 
+	auth := auth.NewAuthorizator(uid, role)
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.users.Clone()
 
-	if updated, err := shadow.RevokeOTP(uid, dbc); err != nil {
+	if updated, err := shadow.RevokeOTP(auth, uid, dbc); err != nil {
 		return err
 	} else {
 		dbc.Stash(updated)

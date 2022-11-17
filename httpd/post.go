@@ -95,7 +95,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case "/otp":
-		users.VerifyOTP(w, r, d.auth)
+		users.VerifyOTP(uid, role, w, r, d.auth)
 
 	default:
 		http.Error(w, "API not implemented", http.StatusNotImplemented)
