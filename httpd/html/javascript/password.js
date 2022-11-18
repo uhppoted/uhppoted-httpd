@@ -2,6 +2,8 @@
 
 import { postAsForm } from './uhppoted.js'
 
+let expired = -1
+
 export function onPassword (event) {
   event.preventDefault()
 
@@ -54,6 +56,7 @@ export function onPassword (event) {
 export function onEnableOTP (event) {
   const fieldset = document.querySelector('#OTP fieldset')
   const enable = document.querySelector('#otp-enable')
+  const qrcode = document.getElementById('qrcode')
 
   if (!enable.checked) {
     fieldset.dataset.enabled = 'false'
@@ -64,6 +67,8 @@ export function onEnableOTP (event) {
     if (ok) {
       fieldset.dataset.enabled = 'pending'
       fieldset.dataset.otp = 'show'
+      qrcode.classList.remove('fadeOut')
+      qrcode.classList.add('fadeIn')
     } else {
       fieldset.dataset.enabled = 'false'
       enable.checked = false
@@ -98,48 +103,24 @@ export function onHideOTP (event) {
 
   fieldset.dataset.otp = 'hide'
   URL.revokeObjectURL(url)
+
+  clearTimeout(expired)
 }
 
 export function onShowOTP (event) {
   const fieldset = document.querySelector('#OTP fieldset')
-  const uid = document.getElementById('uid').value
-  const pwd = document.getElementById('old').value
-  const qr = document.getElementById('qrcode')
-  const auth = btoa(`${uid}:${pwd}`)
+  const qrcode = document.getElementById('qrcode')
 
-  URL.revokeObjectURL(qr.src)
+  URL.revokeObjectURL(qrcode.src)
 
   dismiss()
 
-  GET('/otp', `Basic ${auth}`)
-    .then(response => {
-      switch (response.status) {
-        case 200:
-          if (response.redirected) {
-            window.location = response.url
-            return ''
-          } else {
-            return response.blob()
-          }
-
-        case 401:
-          throw new Error(messages.unauthorized)
-
-        default:
-          return response
-            .text()
-            .then(err => { throw new Error(err) })
-      }
-    })
-    .then((v) => {
-      if (v instanceof Blob && qr) {
-        qr.src = URL.createObjectURL(v)
-        fieldset.dataset.otp = 'show'
-      }
-    })
-    .catch(function (err) {
-      warning(`${err.message}`)
-    })
+  getOTP().then((ok) => {
+    if (ok) {
+      qrcode.classList.remove('fadeOut')
+      fieldset.dataset.otp = 'show'
+    }
+  })
 }
 
 export function onVerifyOTP (event) {
@@ -205,6 +186,16 @@ async function getOTP (event) {
             window.location = response.url
             return ''
           } else {
+            let expires = 60000
+            for (const [k, v] of response.headers.entries()) {
+              if (k.toLowerCase() === 'x-uhppoted-httpd-otp-expires') {
+                expires = Number(v) * 1000
+              }
+            }
+
+            clearTimeout(expired)
+            expired = setTimeout(otpExpired, expires)
+
             return response.blob()
           }
 
@@ -217,9 +208,9 @@ async function getOTP (event) {
             .then(err => { throw new Error(err) })
       }
     })
-    .then((v) => {
-      if (v instanceof Blob && qr) {
-        qr.src = URL.createObjectURL(v)
+    .then((blob) => {
+      if (blob instanceof Blob && qr) {
+        qr.src = URL.createObjectURL(blob)
         return true
       }
     })
@@ -301,6 +292,17 @@ async function DELETE (url = '', authorization = '') {
     .catch(function (err) {
       throw err
     })
+}
+
+function otpExpired () {
+  const fieldset = document.querySelector('#OTP fieldset')
+  const qrcode = document.getElementById('qrcode')
+
+  if (fieldset.dataset.enabled === 'pending') {
+    qrcode.classList.add('fadeOut')
+    fieldset.dataset.otp = 'hide'
+    URL.revokeObjectURL(qrcode.src)
+  }
 }
 
 function warning (msg) {

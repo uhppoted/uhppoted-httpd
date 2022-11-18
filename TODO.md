@@ -22,8 +22,8 @@
             - [x] Touch up layout
             - [x] Log is not showing UID for updated OTP
             - [x] Log revoked OTP
-            - [ ] Check with Google Authenticator
-                  - [ ] Hide expired QR code
+            - [x] Check with Google Authenticator
+            - [x] Hide expired QR code
             - [ ] Reset OTP (on admin page)
             - [ ] Update README
             - [ ] Update CHANGELOG

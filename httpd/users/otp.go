@@ -2,6 +2,7 @@ package users
 
 import (
 	"compress/gzip"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -35,7 +36,7 @@ func GenerateOTP(uid string, w http.ResponseWriter, r *http.Request, auth auth.I
 		key = cookie.Value
 	}
 
-	newkey, qr, err := otp.Get(uid, key)
+	newkey, expires, qr, err := otp.Get(uid, key)
 	if err != nil {
 		warnf("OTP", "%v", err)
 		http.Error(w, "Error generating OTP", http.StatusInternalServerError)
@@ -53,16 +54,18 @@ func GenerateOTP(uid string, w http.ResponseWriter, r *http.Request, auth auth.I
 	})
 
 	// ... reply
+
+	w.Header().Set("Content-Type", "image/png")
+	w.Header().Set("X-Uhppoted-Httpd-OTP-Expires", fmt.Sprintf("%v", expires.Round(5*time.Second).Seconds()))
+
 	_, acceptsGzip := parseHeader(r)
 	if acceptsGzip && len(qr) > GZIP_MINIMUM {
 		w.Header().Set("Content-Encoding", "gzip")
-		w.Header().Set("Content-Type", "image/png")
 
 		gz := gzip.NewWriter(w)
 		gz.Write(qr)
 		gz.Close()
 	} else {
-		w.Header().Set("Content-Type", "image/png")
 		w.Write(qr)
 	}
 }

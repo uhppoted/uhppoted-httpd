@@ -32,7 +32,7 @@ func SetIssuer(u string) {
 	}
 }
 
-func Get(uid, keyid string) (string, []byte, error) {
+func Get(uid, keyid string) (string, time.Duration, []byte, error) {
 	var secret *otpkey
 	var now = time.Now()
 	var options = totp.GenerateOpts{
@@ -46,7 +46,7 @@ func Get(uid, keyid string) (string, []byte, error) {
 	if k, ok := secrets[keyid]; ok && k != nil && k.expires.After(now) {
 		secret = k
 	} else if key, err := system.GetOTP(uid); err != nil {
-		return "", nil, err
+		return "", 0, nil, err
 	} else if key != "" {
 		v := url.Values{}
 
@@ -64,25 +64,25 @@ func Get(uid, keyid string) (string, []byte, error) {
 		}
 
 		if k, err := lib.NewKeyFromURL(u.String()); err != nil {
-			return "", nil, err
+			return "", 0, nil, err
 		} else if uuid, err := uuid.NewUUID(); err != nil {
-			return "", nil, err
+			return "", 0, nil, err
 		} else {
 			keyid = fmt.Sprintf("%v", uuid)
 			secret = &otpkey{
 				key:     k,
-				expires: time.Now().Add(1 * time.Minute),
+				expires: time.Now().Add(5 * time.Minute),
 			}
 
 			secrets[keyid] = secret
 		}
 	} else {
 		if key, err := totp.Generate(options); err != nil {
-			return "", nil, err
+			return "", 0, nil, err
 		} else if key == nil {
-			return "", nil, fmt.Errorf("invalid OTP key")
+			return "", 0, nil, fmt.Errorf("invalid OTP key")
 		} else if uuid, err := uuid.NewUUID(); err != nil {
-			return "", nil, err
+			return "", 0, nil, err
 		} else {
 			keyid = fmt.Sprintf("%v", uuid)
 			secret = &otpkey{
@@ -97,11 +97,13 @@ func Get(uid, keyid string) (string, []byte, error) {
 	var b bytes.Buffer
 
 	if img, err := secret.key.Image(256, 256); err != nil {
-		return "", nil, err
+		return "", 0, nil, err
 	} else {
+		secrets[keyid].expires = time.Now().Add(5 * time.Minute)
+
 		png.Encode(&b, img)
 
-		return keyid, b.Bytes(), nil
+		return keyid, 2 * time.Minute, b.Bytes(), nil
 	}
 }
 
