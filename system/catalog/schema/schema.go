@@ -145,6 +145,7 @@ type Users struct {
 	Role     Suffix `json:"role"`
 	Password Suffix `json:"password"`
 	OTP      Suffix `json:"otp"`
+	OTPKey   Suffix `json:"otpkey"`
 }
 
 func GetSchema() Schema {
@@ -442,3 +443,4 @@ const UserUID Suffix = ".2"
 const UserRole Suffix = ".3"
 const UserPassword Suffix = ".4"
 const UserOTP Suffix = ".5"
+const UserOTPKey Suffix = ".5.1"

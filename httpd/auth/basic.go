@@ -158,8 +158,8 @@ func (b *Basic) Authorised(uid, role, path string) error {
 	return fmt.Errorf("%v not authorized for %s", uid, path)
 }
 
-func (b *Basic) Options(uid string) options {
-	opts := b.auth.Options(uid)
+func (b *Basic) Options(uid, role string) options {
+	opts := b.auth.Options(uid, role)
 
 	return options{
 		OTP: struct {

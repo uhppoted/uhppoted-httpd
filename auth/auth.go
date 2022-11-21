@@ -35,7 +35,7 @@ type IAuthenticate interface {
 	Verify(tokenType TokenType, token string) error
 	Authenticated(token string) (string, string, string, error)
 	Invalidate(tokenType TokenType, token string) error
-	Options(uid string) Options
+	Options(uid, role string) Options
 }
 
 type IUser interface {

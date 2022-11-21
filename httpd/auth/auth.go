@@ -36,7 +36,7 @@ type IAuth interface {
 
 	Verify(uid, pwd string) error
 	VerifyAuthHeader(uid string, header string) error
-	Options(uid string) options
+	Options(uid, role string) options
 }
 
 func debugf(subsystem string, format string, args ...any) {

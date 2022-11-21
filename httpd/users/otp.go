@@ -12,7 +12,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
 )
 
-func GenerateOTP(uid string, w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
+func GenerateOTP(uid, role string, w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
 	// ... verify Authorization header
 	authorization := ""
 	for k, h := range r.Header {
@@ -36,7 +36,7 @@ func GenerateOTP(uid string, w http.ResponseWriter, r *http.Request, auth auth.I
 		key = cookie.Value
 	}
 
-	newkey, expires, qr, err := otp.Get(uid, key)
+	newkey, expires, qr, err := otp.Get(uid, role, key)
 	if err != nil {
 		warnf("OTP", "%v", err)
 		http.Error(w, "Error generating OTP", http.StatusInternalServerError)

@@ -92,6 +92,7 @@ func (u User) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{UserUID, u.uid})
 		list = append(list, kv{UserRole, u.role})
 		list = append(list, kv{UserPassword, ""})
+		list = append(list, kv{UserOTP, u.otp != ""})
 	}
 
 	return u.toObjects(list, a)
@@ -128,6 +129,13 @@ func (u *User) get(a *auth.Authorizator, oid schema.OID) (string, error) {
 
 	switch {
 	case oid == u.OID.Append(UserOTP):
+		if err := f("otp", ""); err != nil {
+			return "", err
+		} else {
+			return fmt.Sprintf("%v", u.otp != ""), nil
+		}
+
+	case oid == u.OID.Append(UserOTPKey):
 		if err := f("otp", ""); err != nil {
 			return "", err
 		} else {
@@ -215,7 +223,19 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			u.log(dbc, uid, "update", "password", "", "", "Updated password")
 		}
 
+	// ... 'revoke only' from UI
 	case oid == u.OID.Append(UserOTP):
+		if err := f("otp", value); err != nil {
+			return nil, err
+		} else if value == "false" {
+			u.otp = ""
+			u.modified = types.TimestampNow()
+			u.log(dbc, uid, "update", "otp", "", "", "Revoked OTP")
+		}
+
+		list = append(list, kv{UserOTP, u.otp != ""})
+
+	case oid == u.OID.Append(UserOTPKey):
 		if err := f("otp", value); err != nil {
 			return nil, err
 		} else {
@@ -230,7 +250,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			u.otp = value
 			u.modified = types.TimestampNow()
 
-			list = append(list, kv{UserOTP, ""})
+			list = append(list, kv{UserOTP, u.otp != ""})
 		}
 	}
 

@@ -13,6 +13,7 @@ const UserUID = schema.UserUID
 const UserRole = schema.UserRole
 const UserPassword = schema.UserPassword
 const UserOTP = schema.UserOTP
+const UserOTPKey = schema.UserOTPKey
 
 var lookup = map[schema.Suffix]string{
 	UserStatus:   "user.status",

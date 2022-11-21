@@ -123,7 +123,7 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	options := d.auth.Options(uid)
+	options := d.auth.Options(uid, role)
 
 	// ... good to go
 	acceptsGzip := parseHeader(r)
@@ -348,7 +348,7 @@ func (d *dispatcher) generateOTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users.GenerateOTP(uid, w, r, d.auth)
+	users.GenerateOTP(uid, role, w, r, d.auth)
 }
 
 func parseHeader(r *http.Request) bool {

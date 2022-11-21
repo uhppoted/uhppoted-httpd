@@ -38,7 +38,7 @@ func (n *None) VerifyAuthHeader(uid string, header string) error {
 	return nil
 }
 
-func (n *None) Options(uid string) options {
+func (n *None) Options(uid, role string) options {
 	return options{}
 }
 

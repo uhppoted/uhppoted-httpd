@@ -101,11 +101,13 @@ func SetPassword(uid, role, pwd string) error {
 	return nil
 }
 
-func GetOTP(uid string) (string, error) {
+func GetOTP(uid, role string) (string, error) {
 	sys.Lock()
 	defer sys.Unlock()
 
-	return sys.users.GetOTP(nil, uid)
+	auth := auth.NewAuthorizator(uid, role)
+
+	return sys.users.GetOTP(auth, uid)
 }
 
 func SetOTP(uid, role, secret string) error {

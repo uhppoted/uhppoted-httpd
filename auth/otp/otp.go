@@ -32,7 +32,7 @@ func SetIssuer(u string) {
 	}
 }
 
-func Get(uid, keyid string) (string, time.Duration, []byte, error) {
+func Get(uid, role, keyid string) (string, time.Duration, []byte, error) {
 	var secret *otpkey
 	var now = time.Now()
 	var options = totp.GenerateOpts{
@@ -45,7 +45,7 @@ func Get(uid, keyid string) (string, time.Duration, []byte, error) {
 
 	if k, ok := secrets[keyid]; ok && k != nil && k.expires.After(now) {
 		secret = k
-	} else if key, err := system.GetOTP(uid); err != nil {
+	} else if key, err := system.GetOTP(uid, role); err != nil {
 		return "", 0, nil, err
 	} else if key != "" {
 		v := url.Values{}
@@ -126,15 +126,15 @@ func Revoke(uid, role string) error {
 }
 
 func Verify(uid string, role string, otp string) bool {
-	if secret, err := system.GetOTP(uid); err == nil {
+	if secret, err := system.GetOTP(uid, role); err == nil {
 		return totp.Validate(otp, secret)
 	}
 
 	return false
 }
 
-func Enabled(uid string) bool {
-	if secret, err := system.GetOTP(uid); err == nil {
+func Enabled(uid, role string) bool {
+	if secret, err := system.GetOTP(uid, role); err == nil {
 		return regexp.MustCompile("[ABCDEFGHIJKLMNOPQRSTUVWXYZ234567]{16,}").MatchString(secret)
 	}
 

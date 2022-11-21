@@ -183,7 +183,7 @@ func (uu *Users) GetOTP(a *auth.Authorizator, uid string) (string, error) {
 
 	for _, u := range uu.users {
 		if u.uid == uid {
-			return u.get(a, u.OID.Append(UserOTP))
+			return u.get(a, u.OID.Append(UserOTPKey))
 		}
 	}
 
@@ -197,7 +197,7 @@ func (uu *Users) SetOTP(a *auth.Authorizator, uid, secret string, dbc db.DBC) ([
 
 	for k, u := range uu.users {
 		if u.uid == uid {
-			objects, err := u.set(a, u.OID.Append(UserOTP), secret, dbc)
+			objects, err := u.set(a, u.OID.Append(UserOTPKey), secret, dbc)
 			if err == nil {
 				uu.users[k] = u
 			}
@@ -216,7 +216,7 @@ func (uu *Users) RevokeOTP(a *auth.Authorizator, uid string, dbc db.DBC) ([]sche
 
 	for k, u := range uu.users {
 		if u.uid == uid {
-			objects, err := u.set(a, u.OID.Append(UserOTP), "", dbc)
+			objects, err := u.set(a, u.OID.Append(UserOTPKey), "", dbc)
 			if err == nil {
 				uu.users[k] = u
 			}

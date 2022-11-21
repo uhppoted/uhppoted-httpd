@@ -408,14 +408,14 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 	return claims.Session.LoggedInAs, claims.Session.Role, token2.String(), nil
 }
 
-func (p *Local) Options(uid string) auth.Options {
+func (p *Local) Options(uid, role string) auth.Options {
 	return auth.Options{
 		OTP: struct {
 			Allowed bool
 			Enabled bool
 		}{
 			Allowed: p.allowOTPLogin,
-			Enabled: otp.Enabled(uid),
+			Enabled: otp.Enabled(uid, role),
 		},
 	}
 }

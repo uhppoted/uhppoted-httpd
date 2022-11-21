@@ -24,7 +24,8 @@
             - [x] Check with Google Authenticator
             - [x] Hide expired QR code
             - [x] Reinstate idle timeouts
-            - [ ] Reset OTP (on admin page)
+            - [x] Reset OTP on admin page
+            - [ ] daemonize - add * to otp get/post list
             - [ ] Update README
             - [ ] Update CHANGELOG
 
