@@ -3,7 +3,6 @@
 ### IN PROGRESS
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
-      - [ ] Reinstate idle timeouts
       - [ ] Lock account on too many failed attempts
             - [ ] admin lock reset
       - [ ] Rework change password to use Authentication header
@@ -24,6 +23,7 @@
             - [x] Log revoked OTP
             - [x] Check with Google Authenticator
             - [x] Hide expired QR code
+            - [x] Reinstate idle timeouts
             - [ ] Reset OTP (on admin page)
             - [ ] Update README
             - [ ] Update CHANGELOG
@@ -36,6 +36,7 @@
 - [x] Crash on Ok with empty passwords
       - [ ] Check auth.IsNil for all xxx.ToObjects(auth)
 
+- [ ] [OKSolar](https://meat.io/oksolar)
 - [ ] Set cookie.Secure to true for TLS requests
 - [ ] Top border radius on overview events and log panels
 

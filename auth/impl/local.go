@@ -34,7 +34,7 @@ var constants = struct {
 	KEY_LENGTH:  256 / 8,          // 256 bits
 	SALT_LENGTH: 256 / 8,          // 256 bits
 	REGENERATE:  15 * time.Minute, // Regenerate secret keys at 15 minute intervals
-	IDLETIME:    30 * time.Minute, // FIXME (disabled for OTP)  Mark untouched sessions and logins as idle after 10 minutes
+	IDLETIME:    10 * time.Minute, // Mark untouched sessions and logins as idle after 10 minutes
 	SWEEP:       60 * time.Second, // Sweep session and login caches every minute
 }
 

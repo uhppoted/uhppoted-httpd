@@ -112,9 +112,8 @@ func Validate(uid string, role string, keyid string, otp string) error {
 
 	if secret, ok := secrets[keyid]; !ok || secret == nil || !secret.expires.After(now) {
 		return fmt.Errorf("Invalid OTP secret")
-		// FIXME
-		// } else if !totp.Validate(otp, secret.key.Secret()) {
-		// 	return fmt.Errorf("Invalid OTP")
+	} else if !totp.Validate(otp, secret.key.Secret()) {
+		return fmt.Errorf("Invalid OTP")
 	} else if err := system.SetOTP(uid, role, secret.key.Secret()); err != nil {
 		return err
 	}

@@ -292,7 +292,7 @@ export function resetIdle () {
     clearTimeout(idleTimer)
   }
 
-  idleTimer = setTimeout(onIdle, 15 * 60 * 1000)
+  idleTimer = setTimeout(onIdle, 5 * 60 * 1000)
 }
 
 export function busy () {
