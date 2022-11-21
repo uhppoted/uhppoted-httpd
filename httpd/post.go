@@ -11,7 +11,8 @@ import (
 	"strings"
 
 	authorizator "github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
+	"github.com/uhppoted/uhppoted-httpd/httpd/post"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/types"
@@ -26,7 +27,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 
 	// ... allow unauthenticated access to /authenticate and /logout
 	if path == "/authenticate" {
-		d.login(w, r)
+		post.Login(w, r, d.auth)
 		return
 	}
 
@@ -61,10 +62,10 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		"/groups",
 		"/users":
 		if handler := d.vtable(path); handler == nil || handler.post == nil {
-			warn("", fmt.Errorf("No vtable entry for %v", path))
+			warnf("HTTPD", "No vtable entry for %v", path)
 			http.Error(w, "internal system error", http.StatusInternalServerError)
 		} else if d.mode == types.Monitor {
-			warn("", fmt.Errorf("POST request in 'monitor' mode"))
+			warnf("HTTPD", "POST request in 'monitor' mode")
 			http.Error(w, "Configuration changes are disabled in monitor-only mode", http.StatusBadRequest)
 		} else {
 			d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
@@ -76,7 +77,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		if d.mode == types.Monitor {
 			http.Error(w, "Synchronize ACL disabled in 'monitor' mode", http.StatusBadRequest)
 		} else {
-			d.synchronize(w, r, system.SynchronizeACL)
+			post.SynchronizeACL(d.context, w, r, d.timeout)
 		}
 
 	case "/synchronize/datetime":
@@ -93,86 +94,20 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 			d.synchronize(w, r, system.SynchronizeDoors)
 		}
 
+	case "/otp":
+		users.VerifyOTP(uid, role, w, r, d.auth)
+
 	default:
 		http.Error(w, "API not implemented", http.StatusNotImplemented)
 	}
 }
 
-func (d *dispatcher) login(w http.ResponseWriter, r *http.Request) {
-	var contentType string
-	var uid string
-	var pwd string
-
-	for k, h := range r.Header {
-		if strings.TrimSpace(strings.ToLower(k)) == "content-type" {
-			for _, v := range h {
-				contentType = strings.TrimSpace(strings.ToLower(v))
-			}
-		}
-	}
-
-	switch contentType {
-	case "application/x-www-form-urlencoded":
-		uid = r.FormValue("uid")
-		pwd = r.FormValue("pwd")
-
-	case "application/json":
-		blob, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			warn("", err)
-			http.Error(w, "Error reading request", http.StatusInternalServerError)
-			return
-		}
-
-		body := struct {
-			UserId   string `json:"uid"`
-			Password string `json:"pwd"`
-		}{}
-
-		if err := json.Unmarshal(blob, &body); err != nil {
-			warn("", err)
-			http.Error(w, "Invalid request body", http.StatusBadRequest)
-			return
-		}
-
-		uid = body.UserId
-		pwd = body.Password
-	}
-
-	loginCookie, err := r.Cookie(auth.LoginCookie)
-	if err != nil {
-		warn("", err)
-		d.unauthenticated(r, w)
-		return
-	}
-
-	if loginCookie == nil {
-		warn("", fmt.Errorf("Missing login cookie"))
-		http.Error(w, "Missing login cookie", http.StatusBadRequest)
-		return
-	}
-
-	sessionCookie, err := d.auth.Authenticate(uid, pwd, loginCookie)
-	if err != nil {
-		warn("", err)
-		http.Error(w, "Invalid login credentials", http.StatusUnauthorized)
-		return
-	}
-
-	if sessionCookie != nil {
-		http.SetCookie(w, sessionCookie)
-	}
-
-	clear(auth.LoginCookie, w)
-}
-
 func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
-	if cookie, err := r.Cookie(auth.SessionCookie); err == nil {
+	if cookie, err := r.Cookie(cookies.SessionCookie); err == nil {
 		d.auth.Logout(cookie)
 	}
 
-	clear(auth.SessionCookie, w)
-
+	cookies.Clear(w, cookies.SessionCookie, cookies.OTPCookie)
 	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
@@ -209,7 +144,7 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 		switch contentType {
 		case "application/x-www-form-urlencoded":
 			if err := r.ParseForm(); err != nil {
-				warn("POST", err)
+				warnf("HTTPD", "%v", err)
 				http.Error(w, "Error reading request", http.StatusInternalServerError)
 				return
 			}
@@ -221,13 +156,13 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 		case "application/json":
 			blob, err := ioutil.ReadAll(r.Body)
 			if err != nil {
-				warn("POST", err)
+				warnf("HTTPD", "%v", err)
 				http.Error(w, "Error reading request", http.StatusInternalServerError)
 				return
 			}
 
 			if err := json.Unmarshal(blob, &body); err != nil {
-				warn("POST", err)
+				warnf("HTTPD", "%v", err)
 				http.Error(w, "Invalid request body", http.StatusBadRequest)
 				return
 			}
@@ -239,18 +174,18 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 
 		response, err := f(body)
 		if err != nil && errors.Is(err, authorizator.Unauthorised) {
-			warn("POST", err)
+			warnf("HTTPD", "%v", err)
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
 		} else if err != nil {
-			warn("POST", err)
+			warnf("HTTPD", "%v", err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		b, err := json.Marshal(response)
 		if err != nil {
-			warn("POST", err)
+			warnf("HTTPD", "%v", err)
 			http.Error(w, "Internal error generating response", http.StatusInternalServerError)
 			return
 		}
@@ -270,33 +205,9 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 
 	select {
 	case <-ctx.Done():
-		warn("", ctx.Err())
+		warnf("HTTPD", "%v", ctx.Err())
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 		return
-
-	case <-ch:
-	}
-}
-
-func (d *dispatcher) synchronizeACL(w http.ResponseWriter, r *http.Request) {
-	ch := make(chan struct{})
-	ctx, cancel := context.WithTimeout(d.context, d.timeout)
-
-	defer cancel()
-
-	go func() {
-		if err := system.SynchronizeACL(); err != nil {
-			warn("", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-
-		close(ch)
-	}()
-
-	select {
-	case <-ctx.Done():
-		warn("", ctx.Err())
-		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 
 	case <-ch:
 	}
@@ -310,7 +221,7 @@ func (d *dispatcher) synchronizeDateTime(w http.ResponseWriter, r *http.Request)
 
 	go func() {
 		if err := system.SynchronizeDateTime(); err != nil {
-			warn("", err)
+			warnf("HTTPD", "%v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
@@ -319,7 +230,7 @@ func (d *dispatcher) synchronizeDateTime(w http.ResponseWriter, r *http.Request)
 
 	select {
 	case <-ctx.Done():
-		warn("", ctx.Err())
+		warnf("HTTPD", "%v", ctx.Err())
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 
 	case <-ch:
@@ -334,7 +245,7 @@ func (d *dispatcher) synchronize(w http.ResponseWriter, r *http.Request, f func(
 
 	go func() {
 		if err := f(); err != nil {
-			warn("", err)
+			warnf("HTTPD", "%v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 
@@ -343,7 +254,7 @@ func (d *dispatcher) synchronize(w http.ResponseWriter, r *http.Request, f func(
 
 	select {
 	case <-ctx.Done():
-		warn("", ctx.Err())
+		warnf("HTTPD", "%v", ctx.Err())
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 
 	case <-ch:

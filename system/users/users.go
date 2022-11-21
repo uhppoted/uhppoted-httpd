@@ -157,14 +157,66 @@ func (uu Users) Clone() Users {
 	return shadow
 }
 
-func (uu *Users) SetPassword(uid, pwd string, dbc db.DBC) ([]schema.Object, error) {
+func (uu *Users) SetPassword(a *auth.Authorizator, uid, pwd string, dbc db.DBC) ([]schema.Object, error) {
 	if uu == nil {
 		return nil, nil
 	}
 
 	for k, u := range uu.users {
 		if u.uid == uid {
-			objects, err := u.set(nil, u.OID.Append(UserPassword), pwd, dbc)
+			objects, err := u.set(a, u.OID.Append(UserPassword), pwd, dbc)
+			if err == nil {
+				uu.users[k] = u
+			}
+
+			return objects, err
+		}
+	}
+
+	return []schema.Object{}, nil
+}
+
+func (uu *Users) GetOTP(a *auth.Authorizator, uid string) (string, error) {
+	if uu == nil {
+		return "", nil
+	}
+
+	for _, u := range uu.users {
+		if u.uid == uid {
+			return u.get(a, u.OID.Append(UserOTP))
+		}
+	}
+
+	return "", fmt.Errorf("invalid UID (%v)", uid)
+}
+
+func (uu *Users) SetOTP(a *auth.Authorizator, uid, secret string, dbc db.DBC) ([]schema.Object, error) {
+	if uu == nil {
+		return nil, nil
+	}
+
+	for k, u := range uu.users {
+		if u.uid == uid {
+			objects, err := u.set(a, u.OID.Append(UserOTP), secret, dbc)
+			if err == nil {
+				uu.users[k] = u
+			}
+
+			return objects, err
+		}
+	}
+
+	return []schema.Object{}, nil
+}
+
+func (uu *Users) RevokeOTP(a *auth.Authorizator, uid string, dbc db.DBC) ([]schema.Object, error) {
+	if uu == nil {
+		return nil, nil
+	}
+
+	for k, u := range uu.users {
+		if u.uid == uid {
+			objects, err := u.set(a, u.OID.Append(UserOTP), "", dbc)
 			if err == nil {
 				uu.users[k] = u
 			}

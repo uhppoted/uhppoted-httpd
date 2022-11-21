@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,11 +14,7 @@ import (
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-)
-
-const (
-	LoginCookie   = "uhppoted-httpd-login"
-	SessionCookie = "uhppoted-httpd-session"
+	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
 )
 
 type Basic struct {
@@ -54,10 +51,10 @@ func (b *Basic) Preauthenticate() (*http.Cookie, error) {
 	}
 
 	cookie := http.Cookie{
-		Name:     LoginCookie,
+		Name:     cookies.LoginCookie,
 		Value:    token,
 		Path:     "/",
-		MaxAge:   300 * int(time.Hour.Seconds()), // 5 minutes
+		MaxAge:   int((5 * time.Minute).Seconds()),
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 		//	Secure:   true,
@@ -84,7 +81,7 @@ func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie
 		return nil, err
 	} else {
 		cookie := http.Cookie{
-			Name:     SessionCookie,
+			Name:     cookies.SessionCookie,
 			Value:    token,
 			Path:     "/",
 			MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),
@@ -105,7 +102,7 @@ func (b *Basic) Authenticated(cookie *http.Cookie) (string, string, *http.Cookie
 
 	if token != "" {
 		cookie := http.Cookie{
-			Name:     SessionCookie,
+			Name:     cookies.SessionCookie,
 			Value:    token,
 			Path:     "/",
 			MaxAge:   b.cookieMaxAge * int(time.Hour.Seconds()),
@@ -124,9 +121,27 @@ func (b *Basic) Verify(uid, pwd string) error {
 	return b.auth.Validate(uid, pwd)
 }
 
+func (b *Basic) VerifyAuthHeader(uid string, header string) error {
+	var pwd string
+
+	if match := regexp.MustCompile(`Basic\s+(.*)`).FindStringSubmatch(header); match == nil || len(match) != 2 {
+		return fmt.Errorf("Invalid Authorization header")
+	} else if auth, err := base64.StdEncoding.DecodeString(match[1]); err != nil {
+		return fmt.Errorf("Invalid Authorization header")
+	} else if match := regexp.MustCompile(`(.*?):(.*)`).FindStringSubmatch(string(auth)); match == nil || len(match) != 3 {
+		return fmt.Errorf("Invalid Authorization header")
+	} else if match[1] != uid {
+		return fmt.Errorf("Invalid Authorization header")
+	} else {
+		pwd = match[2]
+	}
+
+	return b.Verify(uid, pwd)
+}
+
 func (b *Basic) Logout(cookie *http.Cookie) {
 	if err := b.auth.Invalidate(auth.Session, cookie.Value); err != nil {
-		warn(err)
+		warnf("logout", "%v", err)
 	}
 }
 
@@ -141,6 +156,20 @@ func (b *Basic) Authorised(uid, role, path string) error {
 	}
 
 	return fmt.Errorf("%v not authorized for %s", uid, path)
+}
+
+func (b *Basic) Options(uid string) options {
+	opts := b.auth.Options(uid)
+
+	return options{
+		OTP: struct {
+			Allowed bool
+			Enabled bool
+		}{
+			Allowed: opts.OTP.Allowed,
+			Enabled: opts.OTP.Enabled,
+		},
+	}
 }
 
 func (b *Basic) load(file string) error {

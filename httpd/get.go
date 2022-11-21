@@ -14,6 +14,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
+	"github.com/uhppoted/uhppoted-httpd/httpd/users"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -33,7 +35,8 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch path {
-	case "/interfaces",
+	case
+		"/interfaces",
 		"/controllers",
 		"/doors",
 		"/cards",
@@ -46,12 +49,18 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		}
 
 		return
+
+	case "/otp":
+		d.generateOTP(w, r)
+		return
 	}
 
 	d.getWithAuth(w, r)
 }
 
 func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
+	cookies.Clear(w, cookies.OTPCookie)
+
 	if strings.ToUpper(r.Method) != http.MethodGet {
 		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
 		return
@@ -114,12 +123,15 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	options := d.auth.Options(uid)
+
 	// ... good to go
 	acceptsGzip := parseHeader(r)
-	context := map[string]interface{}{
-		"Theme": parseSettings(r),
-		"Mode":  d.mode,
-		"User":  uid,
+	context := map[string]any{
+		"Theme":   parseSettings(r),
+		"Mode":    d.mode,
+		"User":    uid,
+		"Options": options,
 	}
 
 	authorised := map[string]bool{
@@ -134,6 +146,10 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 
 	for path, _ := range authorised {
 		authorised[path] = d.authorised(uid, role, path)
+	}
+
+	if !strings.HasSuffix(path, "password.html") {
+		cookies.Clear(w, cookies.OTPCookie)
 	}
 
 	d.translate(path, context, authorised, w, acceptsGzip)
@@ -151,7 +167,7 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 		Users    bool
 	}
 
-	page := map[string]interface{}{}
+	page := map[string]any{}
 
 	page["context"] = context
 	page["schema"] = schema.GetSchema()
@@ -167,17 +183,17 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 
 	if info, err := fs.Stat(d.fs, translation); err != nil {
 		if !os.IsNotExist(err) {
-			warn("", fmt.Errorf("Error locating translation '%s' (%w)", translation, err))
+			warnf("HTTPD", "Error locating translation '%s' (%w)", translation, err)
 			http.Error(w, "Sadly, Most Of The Wheels All Came Off", http.StatusInternalServerError)
 			return
 		}
 	} else if !info.IsDir() {
 		if replacements, err := fs.ReadFile(d.fs, translation); err != nil {
-			warn("", fmt.Errorf("Error reading translation '%s' (%w)", translation, err))
+			warnf("HTTPD", "Error reading translation '%s' (%w)", translation, err)
 			http.Error(w, "Page Not Found", http.StatusNotFound)
 			return
 		} else if err := json.Unmarshal(replacements, &page); err != nil {
-			warn("", fmt.Errorf("Error unmarshalling translation '%s' (%w)", translation, err))
+			warnf("HTTPD", "Error unmarshalling translation '%s' (%w)", translation, err)
 			http.Error(w, "Sadly, Some Of The Wheels All Came Off", http.StatusInternalServerError)
 			return
 		}
@@ -223,14 +239,14 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 
 	t, err := template.New(name).Funcs(functions).ParseFS(d.fs, "templates/snippets.html", filename)
 	if err != nil {
-		warn("", fmt.Errorf("Error parsing template '%s' (%w)", file, err))
+		warnf("HTTPD", "Error parsing template '%s' (%w)", file, err)
 		http.Error(w, "Sadly, All The Wheels All Came Off", http.StatusInternalServerError)
 		return
 	}
 
 	var b bytes.Buffer
 	if err := t.Execute(&b, page); err != nil {
-		warn("", fmt.Errorf("Error formatting page '%s' (%w)", file, err))
+		warnf("HTTPD", "Error formatting page '%s' (%w)", file, err)
 		http.Error(w, "Error formatting page", http.StatusInternalServerError)
 		return
 	}
@@ -290,7 +306,7 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 	<-ctx.Done()
 
 	if err := ctx.Err(); err != context.Canceled {
-		warn("", err)
+		warnf("HTTPD", "%v", err)
 		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
 		return
 	}
@@ -314,6 +330,27 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 	}
 }
 
+func (d *dispatcher) generateOTP(w http.ResponseWriter, r *http.Request) {
+	path, err := resolve(r.URL)
+	if err != nil {
+		http.Error(w, "invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	uid, role, authenticated := d.authenticated(r, w)
+	if !authenticated {
+		d.unauthenticated(r, w)
+		return
+	}
+
+	if ok := d.authorised(uid, role, path); !ok {
+		d.unauthorised(r, w)
+		return
+	}
+
+	users.GenerateOTP(uid, w, r, d.auth)
+}
+
 func parseHeader(r *http.Request) bool {
 	acceptsGzip := false
 
@@ -333,7 +370,7 @@ func parseHeader(r *http.Request) bool {
 func parseSettings(r *http.Request) string {
 	theme := "default"
 
-	if cookie, err := r.Cookie(SettingsCookie); err == nil {
+	if cookie, err := r.Cookie(cookies.SettingsCookie); err == nil {
 		re := regexp.MustCompile("(.*?):(.+)")
 		tokens := strings.Split(cookie.Value, ",")
 		for _, token := range tokens {

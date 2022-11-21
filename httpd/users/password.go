@@ -47,7 +47,7 @@ func Password(body map[string]interface{}, role string, auth auth.IAuth) (interf
 		return nil, fmt.Errorf("Invalid user ID or password")
 	}
 
-	if err := system.SetPassword(uid, pwd); err != nil {
+	if err := system.SetPassword(uid, role, pwd); err != nil {
 		return nil, err
 	}
 

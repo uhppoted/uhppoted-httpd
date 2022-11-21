@@ -94,16 +94,6 @@ func (t *events) Put(oid schema.OID, v any) {
 	}
 }
 
-// Horrifically inefficient for large event lists but also never invoked
-// in the current system
-func (t *events) Delete(oid schema.OID) {
-	for _, v := range t.m {
-		if v.OID == oid {
-			v.deleted = true
-		}
-	}
-}
-
 func (t *events) List() []schema.OID {
 	list := []schema.OID{}
 
@@ -114,6 +104,17 @@ func (t *events) List() []schema.OID {
 	}
 
 	return list
+}
+
+// FIXME Horrifically inefficient for large event lists but also never invoked
+//
+//	in the current system
+func (t *events) Delete(oid schema.OID) {
+	for _, v := range t.m {
+		if v.OID == oid {
+			v.deleted = true
+		}
+	}
 }
 
 // FIXME horrifically inefficient for large event lists but also never invoked

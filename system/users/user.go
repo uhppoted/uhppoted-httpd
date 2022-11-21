@@ -24,6 +24,7 @@ type User struct {
 	role     string
 	salt     []byte
 	password string
+	otp      string
 
 	created  types.Timestamp
 	deleted  types.Timestamp
@@ -110,6 +111,33 @@ func (u User) AsRuleEntity() (string, interface{}) {
 	return "user", &entity
 }
 
+func (u *User) get(a *auth.Authorizator, oid schema.OID) (string, error) {
+	if u == nil {
+		return "", nil
+	} else if u.IsDeleted() {
+		return "", fmt.Errorf("User has been deleted")
+	}
+
+	f := func(field string, value interface{}) error {
+		if a != nil {
+			return a.CanView(u, field, value, auth.Users)
+		}
+
+		return nil
+	}
+
+	switch {
+	case oid == u.OID.Append(UserOTP):
+		if err := f("otp", ""); err != nil {
+			return "", err
+		} else {
+			return u.otp, nil
+		}
+	}
+
+	return "", nil
+}
+
 func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if u == nil {
 		return []schema.Object{}, nil
@@ -186,6 +214,24 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 			u.log(dbc, uid, "update", "password", "", "", "Updated password")
 		}
+
+	case oid == u.OID.Append(UserOTP):
+		if err := f("otp", value); err != nil {
+			return nil, err
+		} else {
+			if value == "" {
+				u.log(dbc, uid, "update", "otp", "", "", "Revoked OTP")
+			} else if u.otp == "" {
+				u.log(dbc, uid, "update", "otp", "", "", "Enabled OTP")
+			} else {
+				u.log(dbc, uid, "update", "otp", "", "", "Updated OTP")
+			}
+
+			u.otp = value
+			u.modified = types.TimestampNow()
+
+			list = append(list, kv{UserOTP, ""})
+		}
 	}
 
 	list = append(list, kv{UserStatus, u.Status()})
@@ -226,7 +272,7 @@ func (u *User) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 
 func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	f := func(u User, field string, value interface{}) bool {
-		if a != nil {
+		if !auth.IsNil(a) {
 			if err := a.CanView(u, field, value, auth.Cards); err != nil {
 				return false
 			}
@@ -267,6 +313,7 @@ func (u User) serialize() ([]byte, error) {
 		Role     string          `json:"role,omitempty"`
 		Salt     string          `json:"salt"`
 		Password string          `json:"password"`
+		OTP      string          `json:"otp,omitempty"`
 		Created  types.Timestamp `json:"created,omitempty"`
 		Modified types.Timestamp `json:"modified,omitempty"`
 	}{
@@ -276,6 +323,7 @@ func (u User) serialize() ([]byte, error) {
 		Role:     strings.TrimSpace(u.role),
 		Salt:     hex.EncodeToString(u.salt[:]),
 		Password: u.password,
+		OTP:      u.otp,
 		Created:  u.created.UTC(),
 		Modified: u.modified.UTC(),
 	}
@@ -293,6 +341,7 @@ func (u *User) deserialize(bytes []byte) error {
 		Role     string          `json:"role,omitempty"`
 		Salt     string          `json:"salt"`
 		Password string          `json:"password"`
+		OTP      string          `json:"otp,omitempty"`
 		Created  types.Timestamp `json:"created,omitempty"`
 		Modified types.Timestamp `json:"modified,omitempty"`
 	}{
@@ -315,6 +364,7 @@ func (u *User) deserialize(bytes []byte) error {
 	u.role = strings.TrimSpace(record.Role)
 	u.salt = salt
 	u.password = record.Password
+	u.otp = record.OTP
 	u.created = record.Created
 	u.modified = record.Modified
 
@@ -331,6 +381,7 @@ func (u User) clone() *User {
 		role:     u.role,
 		salt:     make([]byte, len(u.salt)),
 		password: u.password,
+		otp:      u.otp,
 
 		created: u.created,
 		deleted: u.deleted,

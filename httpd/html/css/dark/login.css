@@ -233,11 +233,14 @@ footer {
   align-items: flex-end;
   margin-bottom: 2px;
 }
-
 #controls #message {
   flex-grow: 1;
   margin-left: 0px;
   margin-right: 6px;
+  visibility: hidden;
+}
+#controls #message.visible {
+  visibility: visible;
 }
 
 #controls img.button {
@@ -664,6 +667,16 @@ form button {
   background: #586e75;
 }
 
+#message.visible {
+  visibility: visible;
+}
+
 #message .warning {
   color: #002b36;
+  text-align: center;
+  text-overflow: ellipsis;
+  padding-left: 8px;
+  padding-right: 8px;
+  border: none;
+  outline: none;
 }

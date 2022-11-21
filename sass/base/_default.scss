@@ -6,6 +6,7 @@ $content-controls-border: $solarize-blue     !default;
 
 $warning-colour: $solarize-red            !default;
 $warning-dismiss-colour: $solarize-base03 !default;
+$enabled-colour: $solarize-yellow         !default;
 
 $user-avatar-background: $solarize-base2              !default;
 $user-avatar-text: $solarize-base01                   !default;
@@ -23,8 +24,10 @@ $footer-background: $solarize-base2 !default;
 $footer-text: $solarize-base03 !default;
 
 $fieldset-text: $solarize-base03 !default;
+$fieldset-hint: $solarize-base1  !default;
 $fieldset-border: 1px solid silver !default;
 $fieldset-button-border: 2px solid $solarize-red !default;
+$fieldset-button-border-plain: 2px solid $solarize-base1 !default;
 $fieldset-button-border-cancel: 2px solid $solarize-base1 !default;
 $fieldset-message-background: $solarize-base2 !default;
 $fieldset-warning-text: $solarize-red !default;
@@ -87,3 +90,4 @@ $link-colour: $solarize-blue;
 $offline-border: $solarize-red;
 $offline-colour: $solarize-base0;
 
+$shaded-background: repeating-linear-gradient(-55deg, #808080ff, #22222220 1px, #22222220 20px);

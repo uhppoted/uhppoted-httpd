@@ -34,5 +34,13 @@ func (n *None) Verify(uid, pwd string) error {
 	return nil
 }
 
+func (n *None) VerifyAuthHeader(uid string, header string) error {
+	return nil
+}
+
+func (n *None) Options(uid string) options {
+	return options{}
+}
+
 func (n *None) Logout(cookie *http.Cookie) {
 }

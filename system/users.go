@@ -72,14 +72,80 @@ func User(uid string) (auth.IUser, bool) {
 	return sys.users.User(uid)
 }
 
-func SetPassword(uid, pwd string) error {
+func SetPassword(uid, role, pwd string) error {
 	sys.Lock()
 	defer sys.Unlock()
 
+	auth := auth.NewAuthorizator(uid, role)
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.users.Clone()
 
-	if updated, err := shadow.SetPassword(uid, pwd, dbc); err != nil {
+	if updated, err := shadow.SetPassword(auth, uid, pwd, dbc); err != nil {
+		return err
+	} else {
+		dbc.Stash(updated)
+	}
+
+	if err := shadow.Validate(); err != nil {
+		return err
+	}
+
+	if err := save(TagUsers, &shadow); err != nil {
+		return err
+	}
+
+	dbc.Commit(&sys, func() {
+		sys.users = shadow
+	})
+
+	return nil
+}
+
+func GetOTP(uid string) (string, error) {
+	sys.Lock()
+	defer sys.Unlock()
+
+	return sys.users.GetOTP(nil, uid)
+}
+
+func SetOTP(uid, role, secret string) error {
+	sys.Lock()
+	defer sys.Unlock()
+
+	auth := auth.NewAuthorizator(uid, role)
+	dbc := db.NewDBC(sys.trail)
+	shadow := sys.users.Clone()
+
+	if updated, err := shadow.SetOTP(auth, uid, secret, dbc); err != nil {
+		return err
+	} else {
+		dbc.Stash(updated)
+	}
+
+	if err := shadow.Validate(); err != nil {
+		return err
+	}
+
+	if err := save(TagUsers, &shadow); err != nil {
+		return err
+	}
+
+	dbc.Commit(&sys, func() {
+		sys.users = shadow
+	})
+
+	return nil
+}
+
+func RevokeOTP(uid, role string) error {
+	sys.Lock()
+	defer sys.Unlock()
+
+	auth := auth.NewAuthorizator(uid, role)
+	dbc := db.NewDBC(sys.trail)
+	shadow := sys.users.Clone()
+
+	if updated, err := shadow.RevokeOTP(auth, uid, dbc); err != nil {
 		return err
 	} else {
 		dbc.Stash(updated)

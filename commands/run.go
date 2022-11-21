@@ -12,6 +12,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	provider "github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/auth/impl"
+	"github.com/uhppoted/uhppoted-httpd/auth/otp"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system"
@@ -109,6 +110,7 @@ func (cmd *Run) execute(f func(c config.Config)) error {
 }
 
 func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
+	// ... initialise auth providers
 	var authentication auth.IAuth
 
 	switch conf.HTTPD.Security.Auth {
@@ -116,7 +118,11 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 		authentication = auth.NewNoneAuthenticator()
 
 	default:
-		p, err := local.NewAuthProvider(conf.HTTPD.Security.AuthDB, conf.HTTPD.Security.LoginExpiry, conf.HTTPD.Security.SessionExpiry)
+		p, err := local.NewAuthProvider(
+			conf.HTTPD.Security.AuthDB,
+			conf.HTTPD.Security.LoginExpiry,
+			conf.HTTPD.Security.SessionExpiry,
+			conf.HTTPD.Security.OTP.Login == "allow")
 		if err != nil {
 			panic(fmt.Sprintf("Error instantiating auth provider (%v)", err))
 		}
@@ -142,6 +148,11 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 		provider.Users:       conf.HTTPD.DB.Rules.Users,
 	})
 
+	// ... initialise OTP
+
+	otp.SetIssuer(conf.Security.OTP.Issuer)
+
+	// ... run
 	h := httpd.HTTPD{
 		HTML:                     conf.HTTPD.HTML,
 		HttpEnabled:              conf.HTTPD.HttpEnabled,

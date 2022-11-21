@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/auth/otp"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
@@ -33,7 +34,7 @@ var constants = struct {
 	KEY_LENGTH:  256 / 8,          // 256 bits
 	SALT_LENGTH: 256 / 8,          // 256 bits
 	REGENERATE:  15 * time.Minute, // Regenerate secret keys at 15 minute intervals
-	IDLETIME:    1 * time.Minute,  // Mark untouched sessions and logins as idle after 10 minutes
+	IDLETIME:    10 * time.Minute, // Mark untouched sessions and logins as idle after 10 minutes
 	SWEEP:       60 * time.Second, // Sweep session and login caches every minute
 }
 
@@ -42,6 +43,7 @@ type Local struct {
 	users         map[string]*user
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
+	allowOTPLogin bool
 
 	logins   sessions
 	sessions sessions
@@ -79,7 +81,7 @@ type session struct {
 	Role       string    `json:"session.role,omitempty"`
 }
 
-func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, error) {
+func NewAuthProvider(file string, loginExpiry, sessionExpiry string, allowOTPLogin bool) (*Local, error) {
 	provider := Local{
 		keys:  make([][]byte, constants.KEYS),
 		users: map[string]*user{},
@@ -94,6 +96,7 @@ func NewAuthProvider(file string, loginExpiry, sessionExpiry string) (*Local, er
 
 		sessionExpiry: 60 * time.Minute,
 		loginExpiry:   1 * time.Minute,
+		allowOTPLogin: allowOTPLogin,
 	}
 
 	if f, err := os.Open(file); err != nil {
@@ -220,9 +223,9 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 	h := sha256.New()
 	h.Write(salt)
 	h.Write([]byte(pwd))
-
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
-	if hash != password {
+
+	if hash != password && (!p.allowOTPLogin || !otp.Verify(uid, role, pwd)) {
 		return "", fmt.Errorf("Invalid login credentials")
 	}
 
@@ -403,6 +406,18 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 	}
 
 	return claims.Session.LoggedInAs, claims.Session.Role, token2.String(), nil
+}
+
+func (p *Local) Options(uid string) auth.Options {
+	return auth.Options{
+		OTP: struct {
+			Allowed bool
+			Enabled bool
+		}{
+			Allowed: p.allowOTPLogin,
+			Enabled: otp.Enabled(uid),
+		},
+	}
 }
 
 func (p *Local) deserialize(r io.Reader) error {

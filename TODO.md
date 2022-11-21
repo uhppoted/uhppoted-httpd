@@ -2,13 +2,43 @@
 
 ### IN PROGRESS
 
-- [ ] Look into [Temporal](https://blogs.igalia.com/compilers/2020/06/23/dates-and-times-in-javascript)
-      for date/time stuff
-- [ ] https://tls-anvil.com/docs/Quick-Start/index
-- [ ] https://jakub-m.github.io/2022/07/17/laport-clocks-formal.html
-- (?) [UCAN](https://ucan.xyz/)
+- [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
+      - [ ] Lock account on too many failed attempts
+            - [ ] admin lock reset
+      - [ ] Rework change password to use Authentication header
 
-- [ ] System font stack (https://llccing.github.io/30-seconds-of-css/)
+      - [ ] Add OTP to password page
+            - [x] Change checkbox to readonly and use buttons to enable/disable
+            - [x] Better placeholder
+            - [x] Figure out enable/enabled UX
+            - [x] Fix _change password_
+            - [x] Center QR code
+            - [x] White background
+            - [x] More padding
+            - [x] Size
+            - [x] Grey out OTP form if not allowed
+            - [x] CSS for dark theme
+            - [x] Touch up layout
+            - [x] Log is not showing UID for updated OTP
+            - [x] Log revoked OTP
+            - [x] Check with Google Authenticator
+            - [x] Hide expired QR code
+            - [x] Reinstate idle timeouts
+            - [ ] Reset OTP (on admin page)
+            - [ ] Update README
+            - [ ] Update CHANGELOG
+
+- [ ] Rework message field globally to use readonly input rather than span
+      - [x] login
+      - [ ] other pages
+      - [ ] snippet
+
+- [x] Crash on Ok with empty passwords
+      - [ ] Check auth.IsNil for all xxx.ToObjects(auth)
+
+- [ ] [OKSolar](https://meat.io/oksolar)
+- [ ] Set cookie.Secure to true for TLS requests
+- [ ] Top border radius on overview events and log panels
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -30,9 +60,25 @@
       - validate Local::Device timezone on initialization
       - limit number of pending 'update' requests (e.g. if device is not responding)
 
+## FYI
+
+- [ ] Look into [Temporal](https://blogs.igalia.com/compilers/2020/06/23/dates-and-times-in-javascript)
+      for date/time stuff
+- [ ] https://tls-anvil.com/docs/Quick-Start/index
+- [ ] https://jakub-m.github.io/2022/07/17/laport-clocks-formal.html
+- (?) [UCAN](https://ucan.xyz/)
+- [ ] System font stack (https://llccing.github.io/30-seconds-of-css/)
+
 ## TODO
 
+- [ ] Rework login to use Authorization header with Basic/Digest
+- [ ] Use browser local storage for DB
+      - (?) ETags
+            - https://ieftimov.com/posts/conditional-http-get-fastest-requests-need-no-response-body/
+
 - https://www.youtube.com/watch?v=24GRiOCa1Vo
+- https://www.theregister.com/2022/06/20/redbean_2_a_singlefile_web
+- https://github.com/letoram/pipeworld
 
 - (?) Multi-tenant
       - https://stanislas.blog/2021/08/firecracker/

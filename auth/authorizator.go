@@ -199,7 +199,7 @@ func (a *authorizator) CanUpdate(operant Operant, field string, value interface{
 }
 
 func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
-	if a != nil && operant != nil {
+	if !IsNil(operant) {
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("delete::%v", tag)
 

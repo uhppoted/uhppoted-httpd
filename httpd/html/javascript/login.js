@@ -1,6 +1,6 @@
 /* global messages */
 
-import { dismiss, postAsForm } from './uhppoted.js'
+import { postAsForm } from './uhppoted.js'
 
 export function login (event) {
   dismiss()
@@ -81,10 +81,26 @@ function warning (msg) {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 
+  console.log(msg)
+  console.log(text)
+
   if (text != null) {
-    text.innerText = msg
-    message.style.visibility = 'visible'
+    text.value = `${msg}`
+    message.classList.add('visible')
   } else {
     alert(msg)
+  }
+}
+
+function dismiss () {
+  const message = document.getElementById('message')
+  const text = document.getElementById('warning')
+
+  if (message) {
+    message.classList.remove('visible')
+  }
+
+  if (text) {
+    text.value = ''
   }
 }
