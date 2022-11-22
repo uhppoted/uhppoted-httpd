@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 1. Added support for OTP as a password alternative on login. Please see security 
-   note in [README](https://github.com/uhppoted/uhppoted-httpd#notes)
+   note in [README](https://github.com/uhppoted/uhppoted-httpd#notes).
 
 ## [0.8.2](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.2) - 2022-10-14
 
