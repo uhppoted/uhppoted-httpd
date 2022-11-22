@@ -26,7 +26,7 @@
             - [x] Reinstate idle timeouts
             - [x] Reset OTP on admin page
             - [x] daemonize - add * to otp get/post list
-            - [ ] Better checkbox
+            - [x] Better checkbox
             - [ ] Update README
             - [ ] Update CHANGELOG
 
