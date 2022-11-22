@@ -73,4 +73,5 @@ The default list of resources comprises:
 | /synchronize/ACL          | POST     | Synchronize access control list across all controllers           |
 | /synchronize/datetime     | POST     | Synchronize date/time across all controllers                     |
 | /synchronize/doors        | POST     | Synchronize door configuration across all controllers            |
+| /otp                      | POST     | Create and revoke user OTPs                                      |
 

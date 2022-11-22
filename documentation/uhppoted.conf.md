@@ -27,6 +27,8 @@ the _HTTPD_ section is relevant.
 | httpd.security.cookie.max-age          | Security cookie expiry (hours)                     | 24                                 |
 | httpd.security.login.expiry            | Login cookie expiry e.g. 5m                        | 1m                                 |
 | httpd.security.session.expiry          | Session cookie expiry e.g. 300s                    | 5m                                 |
+| httpd.security.otp.issuer              | Issuer name for OTP QR code                        | uhppoted-httpd                     |
+| httpd.security.otp.login               | `allow` enables login using OTP                    | `no`                               |
 | httpd.request.timeout                  | Time limit for fulfilling an HTTP request          | 15s                                |
 | httpd.system.interfaces                | System file for data                               | _var_/system/interfaces.json       |
 | httpd.system.controllers               | System file for data                               | _var_/system/controllers.json      |

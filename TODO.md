@@ -7,7 +7,7 @@
             - [ ] admin lock reset
       - [ ] Rework change password to use Authentication header
 
-      - [ ] Add OTP to password page
+      - [x] Add OTP to password page
             - [x] Change checkbox to readonly and use buttons to enable/disable
             - [x] Better placeholder
             - [x] Figure out enable/enabled UX
@@ -27,8 +27,10 @@
             - [x] Reset OTP on admin page
             - [x] daemonize - add * to otp get/post list
             - [x] Better checkbox
-            - [ ] Update README
-            - [ ] Update CHANGELOG
+            - [x] Update README
+            - [x] Update CHANGELOG
+            - [x] uhppoted.conf.md
+            - [x] Update quickstarts
 
 - [ ] Rework message field globally to use readonly input rather than span
       - [x] login

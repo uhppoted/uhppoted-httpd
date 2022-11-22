@@ -220,6 +220,16 @@ on individual entities.. The _grules_ files are documented in more detail [here]
 
 The system data is (currently) stored as a set of JSON files, described (https://github.com/uhppoted/uhppoted-httpd/blob/master/documentation/db.md).
 
+## Notes
+
+1. `uhppoted-http` supports using OTP as an **alternative** to password based login. On that grounds that the 
+   most asked question so far has been _"I've forgotten the password, how do I ..."_ it seems that once the system
+   is setup and configured most users access it sufficiently infrequently for a secure password to be onerous. Allowing
+   OTP as an alternative allows the access using something like e.g. Google Authenticator. Please note that is is
+   less secure than using password-only access (there is simply no way to securely store the OTP secret keys on the
+   server without making it needlessly complex) so OTP should only be enabled if the server is secured.
+
+
 
 
 
