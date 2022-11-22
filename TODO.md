@@ -25,7 +25,8 @@
             - [x] Hide expired QR code
             - [x] Reinstate idle timeouts
             - [x] Reset OTP on admin page
-            - [ ] daemonize - add * to otp get/post list
+            - [x] daemonize - add * to otp get/post list
+            - [ ] Better checkbox
             - [ ] Update README
             - [ ] Update CHANGELOG
 

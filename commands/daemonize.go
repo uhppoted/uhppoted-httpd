@@ -155,6 +155,10 @@ const default_auth = `
     {
       "path": "^/synchronize/doors$",
       "authorised": "^(admin)$"
+    },
+    {
+      "path": "^/otp$",
+      "authorised": ".*"
     }
   ]
 }
