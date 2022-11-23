@@ -4,7 +4,6 @@ import (
 	"compress/gzip"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/uhppoted/uhppoted-httpd/auth/otp"
@@ -14,17 +13,7 @@ import (
 
 func GenerateOTP(uid, role string, w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
 	// ... verify Authorization header
-	authorization := ""
-	for k, h := range r.Header {
-		if strings.TrimSpace(strings.ToLower(k)) == "authorization" {
-			for _, v := range h {
-				authorization = v
-				break
-			}
-		}
-	}
-
-	if err := auth.VerifyAuthHeader(uid, authorization); err != nil {
+	if err := verifyAuthHeader(uid, r, auth); err != nil {
 		warnf("OTP", "%v", err)
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
@@ -70,7 +59,7 @@ func GenerateOTP(uid, role string, w http.ResponseWriter, r *http.Request, auth 
 	}
 }
 
-func VerifyOTP(uid string, role string, w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
+func VerifyOTP(uid string, role string, w http.ResponseWriter, r *http.Request, auth auth.IAuth) (any, error) {
 	var pwd string
 	var OTP string
 
@@ -80,40 +69,29 @@ func VerifyOTP(uid string, role string, w http.ResponseWriter, r *http.Request, 
 	}
 
 	if vars, err := getvars(r, "pwd", "otp"); err != nil {
-		warnf("OTP", "%v", err)
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
-		return
+		return nil, err
 	} else {
 		pwd = vars["pwd"]
 		OTP = vars["otp"]
 	}
 
 	if err := auth.Verify(uid, pwd); err != nil {
-		warnf("OTP", "%v", err)
 		http.Error(w, "Invalid user ID or password", http.StatusBadRequest)
-		return
+		return nil, err
 	}
 
 	if err := otp.Validate(uid, role, keyid, OTP); err != nil {
-		warnf("OTP", "%v", err)
 		http.Error(w, "Invalid OTP", http.StatusBadRequest)
-		return
+		return nil, err
 	}
+
+	return struct{}{}, nil
 }
 
 func RevokeOTP(uid string, role string, w http.ResponseWriter, r *http.Request, auth auth.IAuth) {
 	// ... verify Authorization header
-	authorization := ""
-	for k, h := range r.Header {
-		if strings.TrimSpace(strings.ToLower(k)) == "authorization" {
-			for _, v := range h {
-				authorization = v
-				break
-			}
-		}
-	}
-
-	if err := auth.VerifyAuthHeader(uid, authorization); err != nil {
+	if err := verifyAuthHeader(uid, r, auth); err != nil {
 		warnf("OTP", "%v", err)
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return

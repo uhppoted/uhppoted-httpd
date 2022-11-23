@@ -50,8 +50,9 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 
 	switch path {
 	case "/password":
-		d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
-			return users.Password(m, role, d.auth)
+		d.exec2(w, r, func() (any, error) {
+			return users.Password(uid, role, w, r, d.auth)
+			// return users.Password(m, role, d.auth)
 		})
 
 	case
@@ -95,7 +96,9 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case "/otp":
-		users.VerifyOTP(uid, role, w, r, d.auth)
+		d.exec2(w, r, func() (any, error) {
+			return users.VerifyOTP(uid, role, w, r, d.auth)
+		})
 
 	default:
 		http.Error(w, "API not implemented", http.StatusNotImplemented)
@@ -200,6 +203,46 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 			gz.Close()
 		} else {
 			w.Write(b)
+		}
+	}()
+
+	select {
+	case <-ctx.Done():
+		warnf("HTTPD", "%v", ctx.Err())
+		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
+		return
+
+	case <-ch:
+	}
+}
+
+func (d *dispatcher) exec2(w http.ResponseWriter, r *http.Request, f func() (any, error)) {
+	acceptsGzip := parseHeader(r)
+	ch := make(chan struct{})
+	ctx, cancel := context.WithTimeout(d.context, d.timeout)
+
+	defer cancel()
+
+	go func() {
+		defer close(ch)
+
+		if response, err := f(); err != nil {
+			warnf("HTTPD", "%v", err)
+		} else if b, err := json.Marshal(response); err != nil {
+			warnf("HTTPD", "%v", err)
+			http.Error(w, "Internal error generating response", http.StatusInternalServerError)
+		} else {
+			w.Header().Set("Content-Type", "application/json")
+
+			if acceptsGzip && len(b) > GZIP_MINIMUM {
+				w.Header().Set("Content-Encoding", "gzip")
+
+				gz := gzip.NewWriter(w)
+				gz.Write(b)
+				gz.Close()
+			} else {
+				w.Write(b)
+			}
 		}
 	}()
 

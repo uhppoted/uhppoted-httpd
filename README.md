@@ -226,7 +226,7 @@ The system data is (currently) stored as a set of JSON files, described (https:/
    most asked question so far has been _"I've forgotten the admin password, how do I ..."_ it seems that once the system
    is setup and configured most users access it sufficiently infrequently for a secure password to be onerous. Login with
    OTP is a convenient alternative using something like e.g. Google Authenticator. Please note that is is less secure than
-   using password-only access (of necessity, OTP secret keys are stored in plaintext on the server)so OTP should only be
+   using password-only access (of necessity, OTP secret keys are stored in plaintext on the server) so OTP should only be
    enabled if the server is secured.
 
 

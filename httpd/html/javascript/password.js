@@ -10,22 +10,21 @@ export function onPassword (event) {
   dismiss()
 
   const uid = document.getElementById('uid').value
-  const old = document.getElementById('old').value
   const pwd = document.getElementById('pwd').value
+  const pwd1 = document.getElementById('pwd1').value
   const pwd2 = document.getElementById('pwd2').value
+  const auth = btoa(`${uid}:${pwd}`)
 
-  if (pwd !== pwd2) {
+  if (pwd1 !== pwd2) {
     warning('Passwords do not match')
     return
   }
 
   const credentials = {
-    uid: uid,
-    old: old,
-    pwd: pwd
+    password: pwd1
   }
 
-  postAsForm('/password', credentials)
+  POST('/password', `Basic ${auth}`, credentials)
     .then(response => {
       switch (response.status) {
         case 200:
@@ -131,7 +130,7 @@ export function onVerifyOTP (event) {
   const fieldset = document.querySelector('#OTP fieldset')
   const checkbox = document.querySelector('#otp-enable')
   const uid = document.getElementById('uid').value
-  const pwd = document.getElementById('old').value
+  const pwd = document.getElementById('pwd').value
   const otp = document.getElementById('otp').value
 
   const body = {
@@ -170,7 +169,7 @@ export function onVerifyOTP (event) {
 
 async function getOTP (event) {
   const uid = document.getElementById('uid').value
-  const pwd = document.getElementById('old').value
+  const pwd = document.getElementById('pwd').value
   const qr = document.getElementById('qrcode')
   const auth = btoa(`${uid}:${pwd}`)
 
@@ -222,7 +221,7 @@ async function getOTP (event) {
 
 async function revokeOTP () {
   const uid = document.getElementById('uid').value
-  const pwd = document.getElementById('old').value
+  const pwd = document.getElementById('pwd').value
   const auth = btoa(`${uid}:${pwd}`)
 
   dismiss()
@@ -263,6 +262,37 @@ async function GET (url = '', authorization = '') {
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
     headers: { Authorization: authorization }
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      return response
+    })
+    .catch(function (err) {
+      throw err
+    })
+}
+
+async function POST (url = '', authorization = '', data = {}) {
+  dismiss()
+
+  const body = Object.entries(data)
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&')
+    .replace(/%20/g, '+')
+
+  const init = {
+    method: 'POST',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      Authorization: authorization,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    body: body
   }
 
   return await fetch(url, init)

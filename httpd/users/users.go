@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
@@ -85,6 +86,20 @@ func parseRequest(r *http.Request) (map[string]any, error) {
 	}
 
 	return body, nil
+}
+
+func verifyAuthHeader(uid string, r *http.Request, auth auth.IAuth) error {
+	authorization := ""
+	for k, h := range r.Header {
+		if strings.TrimSpace(strings.ToLower(k)) == "authorization" {
+			for _, v := range h {
+				authorization = v
+				break
+			}
+		}
+	}
+
+	return auth.VerifyAuthHeader(uid, authorization)
 }
 
 func getvars(r *http.Request, vars ...string) (map[string]string, error) {

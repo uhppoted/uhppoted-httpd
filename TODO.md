@@ -5,7 +5,8 @@
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
       - [ ] Lock account on too many failed attempts
             - [ ] admin lock reset
-      - [ ] Rework change password to use Authentication header
+      - [x] Rework change password to use Authentication header
+      - [ ] Rework OTP verify to use Authentication header
 
       - [x] Add OTP to password page
             - [x] Change checkbox to readonly and use buttons to enable/disable
@@ -43,6 +44,7 @@
 - [ ] [OKSolar](https://meat.io/oksolar)
 - [ ] Set cookie.Secure to true for TLS requests
 - [ ] Top border radius on overview events and log panels
+- [ ] Figure out some way to secure users.json against manual rewriting
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
