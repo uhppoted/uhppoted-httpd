@@ -20,12 +20,7 @@
       <main>
         <div id="container">
           <div id="controls" data-oid="{{ .schema.Controllers.OID }}">
-            <div id="message" class="message">
-              <div>
-                <span class="warning" id="warning"></span>
-                <button class="dismiss" onclick="dismiss()">&#9746;</button>
-              </div>
-            </div>
+            {{template "message"   .}}
             <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('controllers', event)" />
           </div>
 

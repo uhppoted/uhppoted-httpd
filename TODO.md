@@ -34,8 +34,9 @@
 
 - [ ] Rework message field globally to use readonly input rather than span
       - [x] login
-      - [ ] other pages
-      - [ ] snippet
+      - [x] other pages
+      - [x] snippet
+      - [ ] commonalise CSS
 
 - [x] Crash on Ok with empty passwords
       - [ ] Check auth.IsNil for all xxx.ToObjects(auth)

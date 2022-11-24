@@ -337,32 +337,31 @@ footer {
 }
 
 .message {
-  background-color: #073642;
-  display: block;
-  height: 23px;
-  padding: 0px 4px 4px 0px;
-  text-align: center;
+  background: #073642;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 4px;
   font-size: 0.9em;
-  font-weight: normal;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
   border-radius: 4px;
   visibility: hidden;
 }
-
-.message div {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+.message .visible {
+  visibility: visible;
 }
-
 .message .warning {
-  flex: auto;
-}
-
-.warning {
   color: #839496;
-  font-family: Sans-Serif;
-  font-size: 0.9em;
+  text-align: center;
+  text-overflow: ellipsis;
+  padding-left: 8px;
+  padding-right: 8px;
+  font-family: sans-serif;
+  border: none;
+  outline: none;
 }
 
 .dismiss {

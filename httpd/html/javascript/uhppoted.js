@@ -188,11 +188,11 @@ export function warning (msg) {
   if (message && text) {
     if (msg) {
       message.classList.add('visible')
+      text.value = msg
     } else {
       message.classList.remove('visible')
+      text.value = ''
     }
-
-    text.innerText = msg || ''
   } else if (msg) {
     alert(msg)
   }

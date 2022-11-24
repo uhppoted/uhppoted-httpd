@@ -54,6 +54,13 @@
       </nav>
 {{end}}
 
+{{define "message"}}
+            <div id="message" class="message">
+              <input id="warning" class="warning" readonly />
+              <button class="dismiss" onclick="dismiss()">&#9746;</button>
+            </div>
+{{end}}
+
 {{define "uhppoted.js"}}
     import { retheme, 
              dismiss, 
