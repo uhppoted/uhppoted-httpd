@@ -211,6 +211,79 @@ export function dismiss () {
   }
 }
 
+export async function GET (url = '', authorization = '') {
+  const init = {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    headers: { Authorization: authorization }
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      connected(true)
+      return response
+    })
+    .catch(function (err) {
+      connected(false)
+      throw err
+    })
+}
+
+export async function POST (url = '', authorization = '', data = {}) {
+  dismiss()
+
+  const body = Object.entries(data)
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&')
+    .replace(/%20/g, '+')
+
+  const init = {
+    method: 'POST',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      Authorization: authorization,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    body: body
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      return response
+    })
+    .catch(function (err) {
+      throw err
+    })
+}
+
+export async function DELETE (url = '', authorization = '') {
+  const init = {
+    method: 'DELETE',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    headers: { Authorization: authorization }
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      return response
+    })
+    .catch(function (err) {
+      throw err
+    })
+}
+
 export async function getAsJSON (url = '') {
   const init = {
     method: 'GET',

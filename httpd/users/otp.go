@@ -60,7 +60,12 @@ func GenerateOTP(uid, role string, w http.ResponseWriter, r *http.Request, auth 
 }
 
 func VerifyOTP(uid string, role string, w http.ResponseWriter, r *http.Request, auth auth.IAuth) (any, error) {
-	var pwd string
+	// ... verify Authorization header
+	if err := verifyAuthHeader(uid, r, auth); err != nil {
+		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		return nil, err
+	}
+
 	var OTP string
 
 	keyid := ""
@@ -68,17 +73,11 @@ func VerifyOTP(uid string, role string, w http.ResponseWriter, r *http.Request, 
 		keyid = cookie.Value
 	}
 
-	if vars, err := getvars(r, "pwd", "otp"); err != nil {
+	if vars, err := getvars(r, "otp"); err != nil {
 		http.Error(w, "Error reading request", http.StatusInternalServerError)
 		return nil, err
 	} else {
-		pwd = vars["pwd"]
 		OTP = vars["otp"]
-	}
-
-	if err := auth.Verify(uid, pwd); err != nil {
-		http.Error(w, "Invalid user ID or password", http.StatusBadRequest)
-		return nil, err
 	}
 
 	if err := otp.Validate(uid, role, keyid, OTP); err != nil {

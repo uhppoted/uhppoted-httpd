@@ -6,8 +6,7 @@
       - [ ] Lock account on too many failed attempts
             - [ ] admin lock reset
       - [x] Rework change password to use Authentication header
-      - [ ] Rework OTP verify to use Authentication header
-
+      - [x] Rework OTP verify to use Authentication header
       - [x] Add OTP to password page
             - [x] Change checkbox to readonly and use buttons to enable/disable
             - [x] Better placeholder
@@ -77,7 +76,7 @@
 
 ## TODO
 
-- [ ] Rework login to use Authorization header with Basic/Digest
+- (?)s Rework login to use Authorization header with Basic/Digest
 - [ ] Use browser local storage for DB
       - (?) ETags
             - https://ieftimov.com/posts/conditional-http-get-fastest-requests-need-no-response-body/
