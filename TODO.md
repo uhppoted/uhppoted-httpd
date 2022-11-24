@@ -32,11 +32,11 @@
             - [x] uhppoted.conf.md
             - [x] Update quickstarts
 
-- [ ] Rework message field globally to use readonly input rather than span
+- [x] Rework message field globally to use readonly input rather than span
       - [x] login
       - [x] other pages
       - [x] snippet
-      - [ ] commonalise CSS
+      - [x] commonalise CSS
 
 - [x] Crash on Ok with empty passwords
       - [ ] Check auth.IsNil for all xxx.ToObjects(auth)

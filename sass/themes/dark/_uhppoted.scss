@@ -3,7 +3,7 @@
 @import '../../base/_solarize';
 
 $content-background: $solarize-base03;
-$content-message-background: $solarize-base02;
+$message-background: $solarize-base02;
 
 $warning-colour: $solarize-base0;
 $warning-dismiss-colour: darken($solarize-blue, 5%);
@@ -26,8 +26,6 @@ $user-menu-item-highlight-background: $solarize-base1;
 $fieldset-text: $solarize-base0;
 $fieldset-border: 1px solid $solarize-base01;
 $fieldset-button-border: 2px solid $solarize-blue;
-$fieldset-message-background: $solarize-base01;
-$fieldset-message-background: $solarize-base01;
 $fieldset-warning-text: $solarize-base03;
 
 $content-controls-border: darken($solarize-blue, 25%);
@@ -50,6 +48,8 @@ $content-table-rollback: darken($solarize-red, 10%);
 
 $content-svg-filter-commit:   none;
 $content-svg-filter-rollback: none;
+
+$password-credentials-background: $solarize-base01;
 
 input::selection {
   background: $solarize-base2;
