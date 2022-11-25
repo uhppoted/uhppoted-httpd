@@ -38,6 +38,8 @@ var constants = struct {
 	SWEEP:       60 * time.Second, // Sweep session and login caches every minute
 }
 
+const MaxFailed uint32 = 5
+
 type Local struct {
 	keys          [][]byte
 	users         map[string]*user
@@ -80,6 +82,8 @@ type session struct {
 	SessionId  uuid.UUID `json:"session.id,omitempty"`
 	Role       string    `json:"session.role,omitempty"`
 }
+
+var failed = map[string]uint32{}
 
 func NewAuthProvider(file string, loginExpiry, sessionExpiry string, allowOTPLogin bool) (*Local, error) {
 	provider := Local{
@@ -196,10 +200,24 @@ func (p *Local) Preauthenticate() (string, error) {
 	return token.String(), nil
 }
 
-func (p *Local) Authenticate(uid, pwd string) (string, error) {
+func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	p.RLock()
 	defer p.RUnlock()
 
+	// ... too many failed logins?
+	if failed[uid] > MaxFailed {
+		return "", fmt.Errorf("Too many failed logins [%v]", failed[uid])
+	}
+
+	defer func() {
+		if err != nil {
+			failed[uid] = failed[uid] + 1
+		} else {
+			failed[uid] = 0
+		}
+	}()
+
+	// .. verify uid + pwd
 	secret := p.keys[0]
 	expiry := p.sessionExpiry
 
@@ -210,14 +228,13 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 	if u, ok := system.User(uid); ok && u != nil {
 		salt, password = u.Password()
 		role = u.Role()
+	} else if u, ok := p.users[uid]; !ok {
+		err = fmt.Errorf("Invalid login credentials")
+		return
 	} else {
-		if u, ok := p.users[uid]; !ok {
-			return "", fmt.Errorf("Invalid login credentials")
-		} else {
-			salt = u.Salt
-			password = u.Password
-			role = u.Role
-		}
+		salt = u.Salt
+		password = u.Password
+		role = u.Role
 	}
 
 	h := sha256.New()
@@ -226,22 +243,25 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
 
 	if hash != password && (!p.allowOTPLogin || !otp.Verify(uid, role, pwd)) {
-		return "", fmt.Errorf("Invalid login credentials")
+		err = fmt.Errorf("Invalid login credentials")
+		return
 	}
 
-	signer, err := jwt.NewSignerHS(jwt.HS256, secret)
-	if err != nil {
-		return "", err
+	var signer jwt.Signer
+	var UUID uuid.UUID
+	var sessionId uuid.UUID
+	var t *jwt.Token
+
+	if signer, err = jwt.NewSignerHS(jwt.HS256, secret); err != nil {
+		return
 	}
 
-	UUID, err := uuid.NewUUID()
-	if err != nil {
-		return "", err
+	if UUID, err = uuid.NewUUID(); err != nil {
+		return
 	}
 
-	sessionId, err := uuid.NewUUID()
-	if err != nil {
-		return "", err
+	if sessionId, err = uuid.NewUUID(); err != nil {
+		return
 	}
 
 	claims := &claims{
@@ -257,14 +277,15 @@ func (p *Local) Authenticate(uid, pwd string) (string, error) {
 		},
 	}
 
-	token, err := jwt.NewBuilder(signer).Build(claims)
-	if err != nil {
-		return "", err
+	if t, err = jwt.NewBuilder(signer).Build(claims); err != nil {
+		return
+	} else {
+		token = t.String()
 	}
 
-	p.touched(auth.Session, sessionId)
+		p.touched(auth.Session, sessionId)
 
-	return token.String(), nil
+	return
 }
 
 func (p *Local) Validate(uid, pwd string) error {

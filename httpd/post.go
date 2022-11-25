@@ -42,24 +42,24 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch path {
-	// case
-	// "/interfaces",
-	// "/controllers",
-	// "/doors",
-	// "/cards",
-	// "/groups",
-	// "/users":
-	// if handler := d.vtable(path); handler == nil || handler.post == nil {
-	// 	warnf("HTTPD", "No vtable entry for %v", path)
-	// 	http.Error(w, "internal system error", http.StatusInternalServerError)
-	// } else if d.mode == types.Monitor {
-	// 	warnf("HTTPD", "POST request in 'monitor' mode")
-	// 	http.Error(w, "Configuration changes are disabled in monitor-only mode", http.StatusBadRequest)
-	// } else {
-	// 	d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
-	// 		return handler.post(uid, role, m)
-	// 	})
-	// }
+	case
+		"/interfaces",
+		"/controllers",
+		"/doors",
+		"/cards",
+		"/groups",
+		"/users":
+		if handler := d.vtable(path); handler == nil || handler.post == nil {
+			warnf("HTTPD", "No vtable entry for %v", path)
+			http.Error(w, "internal system error", http.StatusInternalServerError)
+		} else if d.mode == types.Monitor {
+			warnf("HTTPD", "POST request in 'monitor' mode")
+			http.Error(w, "Configuration changes are disabled in monitor-only mode", http.StatusBadRequest)
+		} else {
+			d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
+				return handler.post(uid, role, m)
+			})
+		}
 
 	case "/synchronize/ACL":
 		if d.mode == types.Monitor {

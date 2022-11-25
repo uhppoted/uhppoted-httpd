@@ -83,19 +83,19 @@ func get(r *http.Request, vars ...string) (map[string]string, error) {
 }
 
 func debugf(subsystem string, format string, args ...any) {
-	f := fmt.Sprintf("%-3v  %v", subsystem, format)
+	f := fmt.Sprintf("%-8v %v", subsystem, format)
 
 	log.Debugf(f, args...)
 }
 
 func infof(subsystem string, format string, args ...any) {
-	f := fmt.Sprintf("%-3v  %v", subsystem, format)
+	f := fmt.Sprintf("%-8v %v", subsystem, format)
 
 	log.Infof(f, args...)
 }
 
 func warnf(subsystem string, format string, args ...any) {
-	f := fmt.Sprintf("%-3v  %v", subsystem, format)
+	f := fmt.Sprintf("%-8v %v", subsystem, format)
 
 	log.Warnf(f, args...)
 }

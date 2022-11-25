@@ -3,8 +3,8 @@
 ### IN PROGRESS
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
-      - [ ] Lock account on too many failed attempts
-            - [ ] admin lock reset
+      - [x] Lock account on too many failed attempts
+      - [ ] admin lock reset
       - [x] Rework change password to use Authentication header
       - [x] Rework OTP verify to use Authentication header
       - [x] Add OTP to password page
