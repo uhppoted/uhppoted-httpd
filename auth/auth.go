@@ -41,6 +41,7 @@ type IAuthenticate interface {
 type IUser interface {
 	Password() ([]byte, string)
 	Role() string
+	Locked() bool
 }
 
 type Authorizator struct {

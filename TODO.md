@@ -4,7 +4,12 @@
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
       - [x] Lock account on too many failed attempts
-      - [ ] admin lock reset
+      - [ ] _admin_ unlock user
+            - [ ] Refresh not working after unlock
+            - [ ] Need to reset failed login count after unlock
+            - [ ] (maybe) move all the locking stuff to system.User ????
+            
+      - [ ] Make User.OTPKey the same as User.Password i.e. not _gettable_
       - [x] Rework change password to use Authentication header
       - [x] Rework OTP verify to use Authentication header
       - [x] Add OTP to password page

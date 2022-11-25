@@ -146,6 +146,7 @@ type Users struct {
 	Password Suffix `json:"password"`
 	OTP      Suffix `json:"otp"`
 	OTPKey   Suffix `json:"otpkey"`
+	Locked   Suffix `json:"locked"`
 }
 
 func GetSchema() Schema {
@@ -341,7 +342,13 @@ var schema = Schema{
 			Modified: Modified,
 			Type:     Type,
 		},
-		Name: UserName,
+		Name:     UserName,
+		UID:      UserUID,
+		Role:     UserRole,
+		Password: UserPassword,
+		OTP:      UserOTP,
+		OTPKey:   UserOTPKey,
+		Locked:   UserLocked,
 	},
 }
 
@@ -444,3 +451,4 @@ const UserRole Suffix = ".3"
 const UserPassword Suffix = ".4"
 const UserOTP Suffix = ".5"
 const UserOTPKey Suffix = ".5.1"
+const UserLocked Suffix = ".6"

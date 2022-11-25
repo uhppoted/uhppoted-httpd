@@ -25,6 +25,7 @@ type User struct {
 	salt     []byte
 	password string
 	otp      string
+	locked   bool
 
 	created  types.Timestamp
 	deleted  types.Timestamp
@@ -65,6 +66,10 @@ func (u User) Role() string {
 	return u.role
 }
 
+func (u User) Locked() bool {
+	return u.locked
+}
+
 func (u User) String() string {
 	name := strings.TrimSpace(u.name)
 	if name != "" {
@@ -93,6 +98,7 @@ func (u User) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{UserRole, u.role})
 		list = append(list, kv{UserPassword, ""})
 		list = append(list, kv{UserOTP, u.otp != ""})
+		list = append(list, kv{UserLocked, u.locked})
 	}
 
 	return u.toObjects(list, a)
@@ -230,7 +236,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		} else if value == "false" {
 			u.otp = ""
 			u.modified = types.TimestampNow()
-			u.log(dbc, uid, "update", "otp", "", "", "Revoked OTP")
+			u.log(dbc, uid, "update", "otp", u.uid, "", "Revoked OTP")
 		}
 
 		list = append(list, kv{UserOTP, u.otp != ""})
@@ -240,7 +246,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			return nil, err
 		} else {
 			if value == "" {
-				u.log(dbc, uid, "update", "otp", "", "", "Revoked OTP")
+				u.log(dbc, uid, "update", "otp", "", "", "Revoked OTP for %v (%v)", u.uid, u.name)
 			} else if u.otp == "" {
 				u.log(dbc, uid, "update", "otp", "", "", "Enabled OTP")
 			} else {
@@ -252,6 +258,18 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 			list = append(list, kv{UserOTP, u.otp != ""})
 		}
+
+	// ... 'unlock only' from UI
+	case oid == u.OID.Append(UserLocked):
+		if err := f("locked", value); err != nil {
+			return nil, err
+		} else if value == "false" {
+			u.locked = false
+			u.modified = types.TimestampNow()
+			u.log(dbc, uid, "update", "locked", "unlocked", "Unlocked account for %v (%v)", u.uid, u.name)
+		}
+
+		list = append(list, kv{UserOTP, u.otp != ""})
 	}
 
 	list = append(list, kv{UserStatus, u.Status()})
@@ -288,6 +306,21 @@ func (u *User) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 	}
 
 	return u.toObjects(list, a), nil
+}
+
+func (u *User) lock(a *auth.Authorizator, dbc db.DBC) {
+	if u == nil {
+		return
+	}
+
+	uid := u.uid
+	if a != nil {
+		uid = auth.UID(a)
+	}
+
+	u.locked = true
+	u.modified = types.TimestampNow()
+	u.log(dbc, uid, "update", "user", u.name, "locked", "Too many failed logins")
 }
 
 func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {
@@ -402,6 +435,7 @@ func (u User) clone() *User {
 		salt:     make([]byte, len(u.salt)),
 		password: u.password,
 		otp:      u.otp,
+		locked:   u.locked,
 
 		created: u.created,
 		deleted: u.deleted,

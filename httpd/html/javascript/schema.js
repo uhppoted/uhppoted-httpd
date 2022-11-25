@@ -155,6 +155,7 @@ export const schema = {
     role: '.3',
     password: '.4',
     otp: '.5',
+    locked: '.6',
 
     regex: /^(0\.8\.[1-9][0-9]*).*$/
   }

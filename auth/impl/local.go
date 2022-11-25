@@ -205,13 +205,12 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	defer p.RUnlock()
 
 	// ... too many failed logins?
-	if failed[uid] > MaxFailed {
-		return "", fmt.Errorf("Too many failed logins [%v]", failed[uid])
-	}
-
 	defer func() {
 		if err != nil {
 			failed[uid] = failed[uid] + 1
+			if failed[uid] >= MaxFailed {
+				system.LockUser(uid, "")
+			}
 		} else {
 			failed[uid] = 0
 		}
@@ -224,10 +223,12 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	var salt []byte
 	var password string
 	var role string
+	var locked bool
 
 	if u, ok := system.User(uid); ok && u != nil {
 		salt, password = u.Password()
 		role = u.Role()
+		locked = u.Locked()
 	} else if u, ok := p.users[uid]; !ok {
 		err = fmt.Errorf("Invalid login credentials")
 		return
@@ -235,6 +236,11 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 		salt = u.Salt
 		password = u.Password
 		role = u.Role
+	}
+
+	if locked {
+		err = fmt.Errorf("%v account locked", uid)
+		return
 	}
 
 	h := sha256.New()
@@ -283,7 +289,7 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 		token = t.String()
 	}
 
-		p.touched(auth.Session, sessionId)
+	p.touched(auth.Session, sessionId)
 
 	return
 }

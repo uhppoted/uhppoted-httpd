@@ -157,7 +157,8 @@
 |    |      |- 0.8.1.3: <role>                                               #       Role
 |    |      |- 0.8.1.4: <password>                                           #       Password
 |    |      |- 0.8.1.5: <otp>                                                #       OTP (enabled)
-|    |               |- 0.8.1.5.1: <otpKey>                                  #       OTP secret key
+|    |      |        |- 0.8.1.5.1: <otpKey>                                  #       OTP secret key
+|    |      |- 0.8.1.6: <locked>                                             #       locked flag
 |    |- ...
 |
 

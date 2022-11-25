@@ -36,6 +36,7 @@
                   <th class="role    colheader">Role</th>
                   <th class="pwd     colheader">Password</th>
                   <th class="otp     colheader">OTP</th>
+                  <th class="locked  colheader">Locked</th>
                   <th class="padding colheader"></th>
                 </tr>
               </thead>
@@ -102,6 +103,20 @@
 
                 <td>
                   <label class="otp">
+                    <input class="field"
+                           type="checkbox" 
+                           onclick="onTick('user', event)"
+                           data-record="" 
+                           data-original="" 
+                           data-value=""
+                           {{if .readonly}}disabled{{end}} />
+                    <img class="no"  src="/images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
+                    <img class="yes" src="/images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
+                  </label>
+                </td>
+
+                <td>
+                  <label class="locked">
                     <input class="field"
                            type="checkbox" 
                            onclick="onTick('user', event)"

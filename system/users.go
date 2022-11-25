@@ -167,3 +167,32 @@ func RevokeOTP(uid, role string) error {
 
 	return nil
 }
+
+func LockUser(uid, role string) error {
+	sys.Lock()
+	defer sys.Unlock()
+
+	auth := auth.NewAuthorizator(uid, role)
+	dbc := db.NewDBC(sys.trail)
+	shadow := sys.users.Clone()
+
+	if updated, err := shadow.LockUser(auth, uid, dbc); err != nil {
+		return err
+	} else {
+		dbc.Stash(updated)
+	}
+
+	if err := shadow.Validate(); err != nil {
+		return err
+	}
+
+	if err := save(TagUsers, &shadow); err != nil {
+		return err
+	}
+
+	dbc.Commit(&sys, func() {
+		sys.users = shadow
+	})
+
+	return nil
+}
