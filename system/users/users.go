@@ -176,14 +176,12 @@ func (uu *Users) SetPassword(a *auth.Authorizator, uid, pwd string, dbc db.DBC) 
 	return []schema.Object{}, nil
 }
 
-func (uu *Users) GetOTP(a *auth.Authorizator, uid string) (string, error) {
-	if uu == nil {
-		return "", nil
-	}
-
-	for _, u := range uu.users {
-		if u.uid == uid {
-			return u.get(a, u.OID.Append(UserOTPKey))
+func (uu *Users) GetOTPKey(uid string) (string, error) {
+	if uu != nil {
+		for _, u := range uu.users {
+			if u.uid == uid {
+				return u.otpKey(), nil
+			}
 		}
 	}
 

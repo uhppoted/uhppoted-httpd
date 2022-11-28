@@ -45,7 +45,7 @@ func Get(uid, role, keyid string) (string, time.Duration, []byte, error) {
 
 	if k, ok := secrets[keyid]; ok && k != nil && k.expires.After(now) {
 		secret = k
-	} else if key, err := system.GetOTP(uid, role); err != nil {
+	} else if key, err := system.GetOTPKey(uid); err != nil {
 		return "", 0, nil, err
 	} else if key != "" {
 		v := url.Values{}
@@ -126,7 +126,7 @@ func Revoke(uid, role string) error {
 }
 
 func Verify(uid string, role string, otp string) bool {
-	if secret, err := system.GetOTP(uid, role); err == nil {
+	if secret, err := system.GetOTPKey(uid); err == nil {
 		return totp.Validate(otp, secret)
 	}
 
@@ -134,7 +134,7 @@ func Verify(uid string, role string, otp string) bool {
 }
 
 func Enabled(uid, role string) bool {
-	if secret, err := system.GetOTP(uid, role); err == nil {
+	if secret, err := system.GetOTPKey(uid); err == nil {
 		return regexp.MustCompile("[ABCDEFGHIJKLMNOPQRSTUVWXYZ234567]{16,}").MatchString(secret)
 	}
 

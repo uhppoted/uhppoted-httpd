@@ -65,6 +65,10 @@ func (u User) Password() ([]byte, string) {
 	return salt, u.password
 }
 
+func (u User) otpKey() string {
+	return u.otp
+}
+
 func (u User) Role() string {
 	return u.role
 }
@@ -142,13 +146,6 @@ func (u *User) get(a *auth.Authorizator, oid schema.OID) (string, error) {
 			return "", err
 		} else {
 			return fmt.Sprintf("%v", u.otp != ""), nil
-		}
-
-	case oid == u.OID.Append(UserOTPKey):
-		if err := f("otp", ""); err != nil {
-			return "", err
-		} else {
-			return u.otp, nil
 		}
 	}
 

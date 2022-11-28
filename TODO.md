@@ -9,7 +9,7 @@
             - [x] (maybe) move all the locking stuff to system.User ???
             - [x] unlock log message: `user33%!(EXTRA string=Mike Mouz)`
       - [x] Remove Local.users (not used)
-      - [ ] Make User.OTPKey the same as User.Password i.e. not _gettable_
+      - [x] Make User.OTPKey the same as User.Password i.e. not _gettable_
       - [ ] Check Google Authenticator with multiple accounts
 
 - [x] Crash on Ok with empty passwords
