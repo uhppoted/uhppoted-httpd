@@ -270,7 +270,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			u.failed = 0
 			u.locked = false
 			u.modified = types.TimestampNow()
-			u.log(dbc, uid, "update", "locked", "unlocked", "Unlocked account for %v (%v)", u.uid, u.name)
+			u.log(dbc, uid, "update", "locked", "locked", "unlocked", "Unlocked account for %v (%v)", u.uid, u.name)
 		}
 
 		list = append(list, kv{UserOTP, u.otp != ""})

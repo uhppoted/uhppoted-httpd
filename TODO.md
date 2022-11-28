@@ -8,7 +8,7 @@
                   - (probably not after reset OTP either)
             - [x] Need to reset failed login count after unlock
             - [x] (maybe) move all the locking stuff to system.User ???
-            - [ ] unlock log message: `user33%!(EXTRA string=Mike Mouz)`
+            - [x] unlock log message: `user33%!(EXTRA string=Mike Mouz)`
             - [ ] What about the Local users map???
       - [ ] Make User.OTPKey the same as User.Password i.e. not _gettable_
 
