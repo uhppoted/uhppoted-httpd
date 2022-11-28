@@ -65,7 +65,7 @@ func (u User) Password() ([]byte, string) {
 	return salt, u.password
 }
 
-func (u User) otpKey() string {
+func (u User) OTPKey() string {
 	return u.otp
 }
 

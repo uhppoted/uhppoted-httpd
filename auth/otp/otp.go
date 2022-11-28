@@ -45,9 +45,9 @@ func Get(uid, role, keyid string) (string, time.Duration, []byte, error) {
 
 	if k, ok := secrets[keyid]; ok && k != nil && k.expires.After(now) {
 		secret = k
-	} else if key, err := system.GetOTPKey(uid); err != nil {
-		return "", 0, nil, err
-	} else if key != "" {
+	} else if u, ok := system.GetUser(uid); !ok || u == nil {
+		return "", 0, nil, fmt.Errorf("Invalid login credentials")
+	} else if key := u.OTPKey(); key != "" {
 		v := url.Values{}
 
 		v.Set("issuer", options.Issuer)
@@ -126,19 +126,23 @@ func Revoke(uid, role string) error {
 }
 
 func Verify(uid string, role string, otp string) bool {
-	if secret, err := system.GetOTPKey(uid); err == nil {
+	if u, ok := system.GetUser(uid); !ok || u == nil {
+		return false
+	} else if secret := u.OTPKey(); secret == "" {
+		return false
+	} else {
 		return totp.Validate(otp, secret)
 	}
-
-	return false
 }
 
 func Enabled(uid, role string) bool {
-	if secret, err := system.GetOTPKey(uid); err == nil {
+	if u, ok := system.GetUser(uid); !ok || u == nil {
+		return false
+	} else if secret := u.OTPKey(); secret == "" {
+		return false
+	} else {
 		return regexp.MustCompile("[ABCDEFGHIJKLMNOPQRSTUVWXYZ234567]{16,}").MatchString(secret)
 	}
-
-	return false
 }
 
 func warnf(format string, args ...any) {

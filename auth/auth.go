@@ -40,6 +40,7 @@ type IAuthenticate interface {
 
 type IUser interface {
 	Password() ([]byte, string)
+	OTPKey() string
 	Role() string
 	Locked() bool
 }
