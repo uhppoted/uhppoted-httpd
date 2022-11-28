@@ -273,7 +273,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			u.log(dbc, uid, "update", "locked", "locked", "unlocked", "Unlocked account for %v (%v)", u.uid, u.name)
 		}
 
-		list = append(list, kv{UserOTP, u.otp != ""})
+		list = append(list, kv{UserLocked, u.locked})
 	}
 
 	list = append(list, kv{UserStatus, u.Status()})

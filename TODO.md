@@ -4,13 +4,13 @@
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
       - [ ] _admin_ unlock user
-            - [ ] Refresh not working after unlock
-                  - (probably not after reset OTP either)
+            - [x] Refresh not working after unlock
             - [x] Need to reset failed login count after unlock
             - [x] (maybe) move all the locking stuff to system.User ???
             - [x] unlock log message: `user33%!(EXTRA string=Mike Mouz)`
             - [ ] What about the Local users map???
       - [ ] Make User.OTPKey the same as User.Password i.e. not _gettable_
+      - [ ] Check Google Authenticator with multiple accounts
 
 - [x] Crash on Ok with empty passwords
       - [ ] Check auth.IsNil for all xxx.ToObjects(auth)
