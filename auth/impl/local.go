@@ -75,6 +75,8 @@ type user struct {
 	Salt     salt   `json:"salt"`
 	Password string `json:"password"`
 	Role     string `json:"role"`
+	locked   bool
+	failed   uint32
 }
 
 type session struct {
@@ -82,8 +84,6 @@ type session struct {
 	SessionId  uuid.UUID `json:"session.id,omitempty"`
 	Role       string    `json:"session.role,omitempty"`
 }
-
-var failed = map[string]uint32{}
 
 func NewAuthProvider(file string, loginExpiry, sessionExpiry string, allowOTPLogin bool) (*Local, error) {
 	provider := Local{
@@ -204,18 +204,6 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	p.RLock()
 	defer p.RUnlock()
 
-	// ... too many failed logins?
-	defer func() {
-		if err != nil {
-			failed[uid] = failed[uid] + 1
-			if failed[uid] >= MaxFailed {
-				system.LockUser(uid, "")
-			}
-		} else {
-			failed[uid] = 0
-		}
-	}()
-
 	// .. verify uid + pwd
 	secret := p.keys[0]
 	expiry := p.sessionExpiry
@@ -225,10 +213,14 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	var role string
 	var locked bool
 
-	if u, ok := system.User(uid); ok && u != nil {
+	if u, ok := system.GetUser(uid); ok && u != nil {
 		salt, password = u.Password()
 		role = u.Role()
 		locked = u.Locked()
+
+		defer func() {
+			u.Login(err)
+		}()
 	} else if u, ok := p.users[uid]; !ok {
 		err = fmt.Errorf("Invalid login credentials")
 		return
@@ -236,6 +228,19 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 		salt = u.Salt
 		password = u.Password
 		role = u.Role
+		locked = u.locked
+
+		defer func() {
+			if err != nil {
+				u.failed = u.failed + 1
+				if u.failed > MaxFailed {
+					u.locked = true
+				}
+
+			} else {
+				u.failed = 0
+			}
+		}()
 	}
 
 	if locked {
@@ -298,7 +303,7 @@ func (p *Local) Validate(uid, pwd string) error {
 	var salt []byte
 	var password string
 
-	if u, ok := system.User(uid); ok && u != nil {
+	if u, ok := system.GetUser(uid); ok && u != nil {
 		salt, password = u.Password()
 	} else {
 		if u, ok := p.users[uid]; !ok {

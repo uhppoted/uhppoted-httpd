@@ -5,6 +5,11 @@
 1. Added support for OTP as a password alternative on login. Please see security 
    note in [README](https://github.com/uhppoted/uhppoted-httpd#notes).
 
+### Changed
+1. Reworked 'change password' to use Authorization header
+2. Locked user login after too many failed attempts
+
+
 ## [0.8.2](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.2) - 2022-10-14
 
 ### Changed

@@ -68,7 +68,7 @@ func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error
 	return dbc.Objects(), nil
 }
 
-func User(uid string) (auth.IUser, bool) {
+func GetUser(uid string) (auth.IUser, bool) {
 	return sys.users.User(uid)
 }
 
@@ -148,35 +148,6 @@ func RevokeOTP(uid, role string) error {
 	shadow := sys.users.Clone()
 
 	if updated, err := shadow.RevokeOTP(auth, uid, dbc); err != nil {
-		return err
-	} else {
-		dbc.Stash(updated)
-	}
-
-	if err := shadow.Validate(); err != nil {
-		return err
-	}
-
-	if err := save(TagUsers, &shadow); err != nil {
-		return err
-	}
-
-	dbc.Commit(&sys, func() {
-		sys.users = shadow
-	})
-
-	return nil
-}
-
-func LockUser(uid, role string) error {
-	sys.Lock()
-	defer sys.Unlock()
-
-	auth := auth.NewAuthorizator(uid, role)
-	dbc := db.NewDBC(sys.trail)
-	shadow := sys.users.Clone()
-
-	if updated, err := shadow.LockUser(auth, uid, dbc); err != nil {
 		return err
 	} else {
 		dbc.Stash(updated)

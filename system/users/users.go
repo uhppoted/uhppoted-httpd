@@ -228,21 +228,6 @@ func (uu *Users) RevokeOTP(a *auth.Authorizator, uid string, dbc db.DBC) ([]sche
 	return []schema.Object{}, nil
 }
 
-func (uu *Users) LockUser(a *auth.Authorizator, uid string, dbc db.DBC) ([]schema.Object, error) {
-	if uu == nil {
-		return nil, nil
-	}
-
-	for k, u := range uu.users {
-		if u.uid == uid {
-			u.lock(a, dbc)
-			uu.users[k] = u
-		}
-	}
-
-	return []schema.Object{}, nil
-}
-
 func (uu Users) User(uid string) (auth.IUser, bool) {
 	if strings.TrimSpace(uid) != "" {
 		for _, u := range uu.users {

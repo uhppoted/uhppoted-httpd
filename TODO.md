@@ -3,45 +3,12 @@
 ### IN PROGRESS
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
-      - [x] Lock account on too many failed attempts
       - [ ] _admin_ unlock user
             - [ ] Refresh not working after unlock
-            - [ ] Need to reset failed login count after unlock
-            - [ ] (maybe) move all the locking stuff to system.User ????
-            
+                  - (probably not after reset OTP either)
+            - [x] Need to reset failed login count after unlock
+            - [x] (maybe) move all the locking stuff to system.User ???
       - [ ] Make User.OTPKey the same as User.Password i.e. not _gettable_
-      - [x] Rework change password to use Authentication header
-      - [x] Rework OTP verify to use Authentication header
-      - [x] Add OTP to password page
-            - [x] Change checkbox to readonly and use buttons to enable/disable
-            - [x] Better placeholder
-            - [x] Figure out enable/enabled UX
-            - [x] Fix _change password_
-            - [x] Center QR code
-            - [x] White background
-            - [x] More padding
-            - [x] Size
-            - [x] Grey out OTP form if not allowed
-            - [x] CSS for dark theme
-            - [x] Touch up layout
-            - [x] Log is not showing UID for updated OTP
-            - [x] Log revoked OTP
-            - [x] Check with Google Authenticator
-            - [x] Hide expired QR code
-            - [x] Reinstate idle timeouts
-            - [x] Reset OTP on admin page
-            - [x] daemonize - add * to otp get/post list
-            - [x] Better checkbox
-            - [x] Update README
-            - [x] Update CHANGELOG
-            - [x] uhppoted.conf.md
-            - [x] Update quickstarts
-
-- [x] Rework message field globally to use readonly input rather than span
-      - [x] login
-      - [x] other pages
-      - [x] snippet
-      - [x] commonalise CSS
 
 - [x] Crash on Ok with empty passwords
       - [ ] Check auth.IsNil for all xxx.ToObjects(auth)

@@ -17,6 +17,8 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
+const MaxFailed uint32 = 5
+
 type User struct {
 	catalog.CatalogUser
 	name     string
@@ -26,6 +28,7 @@ type User struct {
 	password string
 	otp      string
 	locked   bool
+	failed   uint32
 
 	created  types.Timestamp
 	deleted  types.Timestamp
@@ -68,6 +71,19 @@ func (u User) Role() string {
 
 func (u User) Locked() bool {
 	return u.locked
+}
+
+func (u *User) Login(err error) {
+	if err != nil {
+		u.failed++
+
+		if u.failed >= MaxFailed && !u.locked {
+			u.locked = true
+			// u.log(dbc, uid, "update", "user", u.name, "locked", "Too many failed logins")
+		}
+	} else {
+		u.failed = 0
+	}
 }
 
 func (u User) String() string {
@@ -264,6 +280,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		if err := f("locked", value); err != nil {
 			return nil, err
 		} else if value == "false" {
+			u.failed = 0
 			u.locked = false
 			u.modified = types.TimestampNow()
 			u.log(dbc, uid, "update", "locked", "unlocked", "Unlocked account for %v (%v)", u.uid, u.name)
@@ -306,21 +323,6 @@ func (u *User) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 	}
 
 	return u.toObjects(list, a), nil
-}
-
-func (u *User) lock(a *auth.Authorizator, dbc db.DBC) {
-	if u == nil {
-		return
-	}
-
-	uid := u.uid
-	if a != nil {
-		uid = auth.UID(a)
-	}
-
-	u.locked = true
-	u.modified = types.TimestampNow()
-	u.log(dbc, uid, "update", "user", u.name, "locked", "Too many failed logins")
 }
 
 func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {
@@ -436,6 +438,7 @@ func (u User) clone() *User {
 		password: u.password,
 		otp:      u.otp,
 		locked:   u.locked,
+		failed:   u.failed,
 
 		created: u.created,
 		deleted: u.deleted,
