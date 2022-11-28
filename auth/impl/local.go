@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
 	"regexp"
 	"sync"
 	"time"
@@ -41,8 +40,7 @@ var constants = struct {
 const MaxFailed uint32 = 5
 
 type Local struct {
-	keys [][]byte
-	//	users         map[string]*user
+	keys          [][]byte
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
 	allowOTPLogin bool
@@ -71,14 +69,6 @@ type login struct {
 	Salt    []byte    `json:"login.salt,omitempty"`
 }
 
-// type user struct {
-// 	Salt     salt   `json:"salt"`
-// 	Password string `json:"password"`
-// 	Role     string `json:"role"`
-// 	locked   bool
-// 	failed   uint32
-// }
-
 type session struct {
 	LoggedInAs string    `json:"uid,omitempty"`
 	SessionId  uuid.UUID `json:"session.id,omitempty"`
@@ -88,12 +78,9 @@ type session struct {
 func NewAuthProvider(file string, loginExpiry, sessionExpiry string, allowOTPLogin bool) (*Local, error) {
 	provider := Local{
 		keys: make([][]byte, constants.KEYS),
-		//		users: map[string]*user{},
-
 		logins: sessions{
 			list: map[uuid.UUID]time.Time{},
 		},
-
 		sessions: sessions{
 			list: map[uuid.UUID]time.Time{},
 		},
@@ -101,15 +88,6 @@ func NewAuthProvider(file string, loginExpiry, sessionExpiry string, allowOTPLog
 		sessionExpiry: 60 * time.Minute,
 		loginExpiry:   1 * time.Minute,
 		allowOTPLogin: allowOTPLogin,
-	}
-
-	if f, err := os.Open(file); err != nil {
-		return nil, err
-	} else {
-		defer f.Close()
-		if err := provider.deserialize(f); err != nil {
-			return nil, err
-		}
 	}
 
 	if t, err := time.ParseDuration(loginExpiry); err != nil {
@@ -213,7 +191,10 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	var role string
 	var locked bool
 
-	if u, ok := system.GetUser(uid); ok && u != nil {
+	if u, ok := system.GetUser(uid); !ok || u == nil {
+		err = fmt.Errorf("Invalid login credentials")
+		return
+	} else {
 		salt, password = u.Password()
 		role = u.Role()
 		locked = u.Locked()
@@ -221,31 +202,7 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 		defer func() {
 			system.UserLogin(uid, role, err)
 		}()
-	} else {
-		err = fmt.Errorf("Invalid login credentials")
-		return
 	}
-	//	} else if u, ok := p.users[uid]; !ok {
-	//		err = fmt.Errorf("Invalid login credentials")
-	//		return
-	//	} else {
-	//		salt = u.Salt
-	//		password = u.Password
-	//		role = u.Role
-	//		locked = u.locked
-	//
-	//		defer func() {
-	//			if err != nil {
-	//				u.failed = u.failed + 1
-	//				if u.failed > MaxFailed {
-	//					u.locked = true
-	//				}
-	//
-	//			} else {
-	//				u.failed = 0
-	//			}
-	//		}()
-	//	}
 
 	if locked {
 		err = fmt.Errorf("%v account locked", uid)
@@ -307,18 +264,11 @@ func (p *Local) Validate(uid, pwd string) error {
 	var salt []byte
 	var password string
 
-	if u, ok := system.GetUser(uid); ok && u != nil {
-		salt, password = u.Password()
-	} else {
+	if u, ok := system.GetUser(uid); !ok || u == nil {
 		return fmt.Errorf("invalid user ID or password")
+	} else {
+		salt, password = u.Password()
 	}
-	//		if u, ok := p.users[uid]; !ok {
-	//			return fmt.Errorf("invalid user ID or password")
-	//		} else {
-	//			salt = u.Salt
-	//			password = u.Password
-	//		}
-	//	}
 
 	h := sha256.New()
 	h.Write(salt)
@@ -456,29 +406,6 @@ func (p *Local) Options(uid, role string) auth.Options {
 			Enabled: otp.Enabled(uid, role),
 		},
 	}
-}
-
-func (p *Local) deserialize(r io.Reader) error {
-	// bytes, err := io.ReadAll(r)
-	//
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	serializable := struct {
-	//		Users map[string]*user `json:"users"`
-	//	}{
-	//
-	//		Users: map[string]*user{},
-	//	}
-	//
-	//	if err := json.Unmarshal(bytes, &serializable); err != nil {
-	//		return err
-	//	}
-	//
-	// p.users = serializable.Users
-
-	return nil
 }
 
 func (p *Local) getToken(cookie string) (*jwt.Token, int, error) {

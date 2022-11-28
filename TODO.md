@@ -3,12 +3,12 @@
 ### IN PROGRESS
 
 - [ ] https://github.com/uhppoted/uhppoted-httpd/issues/13
-      - [ ] _admin_ unlock user
+      - [x] _admin_ unlock user
             - [x] Refresh not working after unlock
             - [x] Need to reset failed login count after unlock
             - [x] (maybe) move all the locking stuff to system.User ???
             - [x] unlock log message: `user33%!(EXTRA string=Mike Mouz)`
-      - [ ] Remove Local.users (not used)
+      - [x] Remove Local.users (not used)
       - [ ] Make User.OTPKey the same as User.Password i.e. not _gettable_
       - [ ] Check Google Authenticator with multiple accounts
 
