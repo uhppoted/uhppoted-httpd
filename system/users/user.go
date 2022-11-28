@@ -73,19 +73,6 @@ func (u User) Locked() bool {
 	return u.locked
 }
 
-func (u *User) Login(err error) {
-	if err != nil {
-		u.failed++
-
-		if u.failed >= MaxFailed && !u.locked {
-			u.locked = true
-			// u.log(dbc, uid, "update", "user", u.name, "locked", "Too many failed logins")
-		}
-	} else {
-		u.failed = 0
-	}
-}
-
 func (u User) String() string {
 	name := strings.TrimSpace(u.name)
 	if name != "" {
@@ -358,6 +345,19 @@ func (u User) Status() types.Status {
 	}
 
 	return types.StatusOk
+}
+
+func (u *User) login(err error, dbc db.DBC) {
+	if err != nil {
+		u.failed++
+
+		if u.failed >= MaxFailed && !u.locked {
+			u.locked = true
+			u.log(dbc, u.uid, "update", "user", u.name, "locked", "Too many failed logins")
+		}
+	} else {
+		u.failed = 0
+	}
 }
 
 func (u User) serialize() ([]byte, error) {

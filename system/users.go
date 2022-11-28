@@ -167,3 +167,18 @@ func RevokeOTP(uid, role string) error {
 
 	return nil
 }
+
+func UserLogin(uid, role string, err error) {
+	sys.Lock()
+	defer sys.Unlock()
+
+	auth := auth.NewAuthorizator(uid, role)
+	dbc := db.NewDBC(sys.trail)
+	shadow := sys.users.Clone()
+
+	shadow.UserLogin(auth, uid, err, dbc)
+
+	dbc.Commit(&sys, func() {
+		sys.users = shadow
+	})
+}

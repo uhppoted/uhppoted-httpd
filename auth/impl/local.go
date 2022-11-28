@@ -219,7 +219,7 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 		locked = u.Locked()
 
 		defer func() {
-			u.Login(err)
+			system.UserLogin(uid, role, err)
 		}()
 	} else if u, ok := p.users[uid]; !ok {
 		err = fmt.Errorf("Invalid login credentials")

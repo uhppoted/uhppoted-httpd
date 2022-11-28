@@ -42,7 +42,6 @@ type IUser interface {
 	Password() ([]byte, string)
 	Role() string
 	Locked() bool
-	Login(err error)
 }
 
 type Authorizator struct {
