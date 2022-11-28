@@ -8,7 +8,7 @@
 ### Changed
 1. Reworked 'change password' to use Authorization header
 2. Locked user login after too many failed attempts
-
+3. Removed legacy support for users in auth.json
 
 ## [0.8.2](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.2) - 2022-10-14
 
