@@ -176,7 +176,7 @@ func (e *Event) AsObjects(a auth.OpAuth) []schema.Object {
 	list = append(list, E{EventCardName, e.CardName})
 
 	f := func(e *Event, field string, value interface{}) bool {
-		if a != nil {
+		if !auth.IsNil(a) {
 			if err := a.CanView(e, field, value, auth.Events); err != nil {
 				return false
 			}

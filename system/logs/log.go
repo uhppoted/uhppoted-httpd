@@ -62,7 +62,7 @@ func (l *LogEntry) AsObjects(a auth.OpAuth) []schema.Object {
 	list = append(list, E{LogDetails, l.Details})
 
 	f := func(l *LogEntry, field string, value interface{}) bool {
-		if a != nil {
+		if !auth.IsNil(a) {
 			if err := a.CanView(l, field, value, auth.Logs); err != nil {
 				return false
 			}

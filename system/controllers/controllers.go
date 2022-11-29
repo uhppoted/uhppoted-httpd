@@ -282,7 +282,7 @@ func (cc *Controllers) add(a auth.OpAuth, c Controller) (*Controller, error) {
 	controller.OID = schema.OID(catalog.NewT(c.CatalogController))
 	controller.created = types.TimestampNow()
 
-	if a != nil {
+	if !auth.IsNil(a) {
 		if err := a.CanAdd(controller, auth.Controllers); err != nil {
 			return nil, err
 		}

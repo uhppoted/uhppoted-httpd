@@ -303,7 +303,7 @@ func (uu *Users) add(a auth.OpAuth, u User) (*User, error) {
 	user.OID = oid
 	user.created = types.TimestampNow()
 
-	if a != nil {
+	if !auth.IsNil(a) {
 		if err := a.CanAdd(user, auth.Users); err != nil {
 			return nil, err
 		}
