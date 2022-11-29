@@ -140,7 +140,7 @@ func (c *Card) AsObjects(a *auth.Authorizator) []schema.Object {
 	return c.toObjects(list, a)
 }
 
-func (c *Card) AsRuleEntity() (string, interface{}) {
+func (c Card) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		Name   string
 		Number uint32
@@ -149,18 +149,16 @@ func (c *Card) AsRuleEntity() (string, interface{}) {
 		Groups []string
 	}{}
 
-	if c != nil {
-		entity.Name = c.name
-		entity.Number = c.CardID
-		entity.From = fmt.Sprintf("%v", c.from)
-		entity.To = fmt.Sprintf("%v", c.to)
-		entity.Groups = []string{}
+	entity.Name = c.name
+	entity.Number = c.CardID
+	entity.From = fmt.Sprintf("%v", c.from)
+	entity.To = fmt.Sprintf("%v", c.to)
+	entity.Groups = []string{}
 
-		for k, v := range c.groups {
-			if v {
-				if g := catalog.GetV(k, GroupName); g != nil {
-					entity.Groups = append(entity.Groups, fmt.Sprintf("%v", g))
-				}
+	for k, v := range c.groups {
+		if v {
+			if g := catalog.GetV(k, GroupName); g != nil {
+				entity.Groups = append(entity.Groups, fmt.Sprintf("%v", g))
 			}
 		}
 	}
@@ -343,26 +341,18 @@ func (c *Card) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 	return c.toObjects(list, a), nil
 }
 
-func (c *Card) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
-	f := func(c *Card, field string, value interface{}) bool {
-		if a != nil {
-			if err := a.CanView(c, field, value, auth.Cards); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
+func (c Card) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	objects := []schema.Object{}
 
-	if !c.IsDeleted() && f(c, "OID", c.OID) {
-		catalog.Join(&objects, catalog.NewObject(c.OID, ""))
+	if !c.IsDeleted() {
+		if err := CanView(a, c, "OID", c.OID); err == nil {
+			catalog.Join(&objects, catalog.NewObject(c.OID, ""))
+		}
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
-		if f(c, field, v.value) {
+		if err := CanView(a, c, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(c.OID, v.field, v.value))
 		}
 	}

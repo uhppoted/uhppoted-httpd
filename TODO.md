@@ -4,7 +4,14 @@
 
 - [x] Crash on Ok with empty passwords
       - [x] Check auth.IsNil for all xxx.ToObjects(auth)
-      - [ ] Rework f(auth) as generic function
+      - [ ] Extract f(auth) function (pursuant to genericization)
+            - [ ] interfaces
+            - [ ] controllers
+            - [x] cards
+            - [ ] groups
+            - [x] users
+            - [ ] logs
+            - [ ] events
 
 - [ ] [OKSolar](https://meat.io/oksolar)
 - [ ] Set cookie.Secure to true for TLS requests

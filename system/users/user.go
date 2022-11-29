@@ -125,24 +125,14 @@ func (u User) AsRuleEntity() (string, interface{}) {
 	return "user", &entity
 }
 
-func (u *User) get(a *auth.Authorizator, oid schema.OID) (string, error) {
-	if u == nil {
-		return "", nil
-	} else if u.IsDeleted() {
+func (u User) get(a *auth.Authorizator, oid schema.OID) (string, error) {
+	if u.IsDeleted() {
 		return "", fmt.Errorf("User has been deleted")
-	}
-
-	f := func(field string, value interface{}) error {
-		if a != nil {
-			return a.CanView(u, field, value, auth.Users)
-		}
-
-		return nil
 	}
 
 	switch {
 	case oid == u.OID.Append(UserOTP):
-		if err := f("otp", ""); err != nil {
+		if err := CanView(a, u, "otp", ""); err != nil {
 			return "", err
 		} else {
 			return fmt.Sprintf("%v", u.otp != ""), nil
@@ -310,25 +300,17 @@ func (u *User) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 }
 
 func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {
-	f := func(u User, field string, value interface{}) bool {
-		if !auth.IsNil(a) {
-			if err := a.CanView(u, field, value, auth.Cards); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
 	objects := []schema.Object{}
 
-	if !u.IsDeleted() && f(u, "OID", u.OID) {
-		catalog.Join(&objects, catalog.NewObject(u.OID, ""))
+	if !u.IsDeleted() {
+		if err := CanView(a, u, "OID", u.OID); err == nil {
+			catalog.Join(&objects, catalog.NewObject(u.OID, ""))
+		}
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
-		if f(u, field, v.value) {
+		if err := CanView(a, u, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(u.OID, v.field, v.value))
 		}
 	}

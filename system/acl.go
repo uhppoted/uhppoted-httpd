@@ -144,7 +144,7 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 		if sys.rules != nil {
 			allowed, forbidden, err := sys.rules.Eval(*card, sys.doors)
 			if err != nil {
-				warn(err)
+				warnf("%v", err)
 				return
 			}
 

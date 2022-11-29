@@ -3,7 +3,6 @@ package system
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -18,6 +17,7 @@ import (
 	"github.com/uhppoted/uhppoted-lib/config"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
+	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system/cards"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/impl"
@@ -103,11 +103,11 @@ func (t trail) Write(records ...audit.AuditRecord) {
 	sys.history.Received(records...)
 
 	if err := save(TagLogs, &sys.logs); err != nil {
-		warn(err)
+		warnf("%v", err)
 	}
 
 	if err := save(TagHistory, &sys.history); err != nil {
-		warn(err)
+		warnf("%v", err)
 	}
 }
 
@@ -142,19 +142,19 @@ func Init(cfg config.Config, conf string, mode types.RunMode, debug bool) error 
 	list := subsystems()
 	for _, v := range list {
 		if err := load(v.tag, v.serializable); err != nil {
-			log.Printf("%5s Unable to load %v from %v (%v)", "ERROR", v.tag, sys.files[v.tag], err)
+			log.Errorf("Unable to load %v from %v (%v)", v.tag, sys.files[v.tag], err)
 			return err
 		}
 	}
 
 	kb := ast.NewKnowledgeLibrary()
 	if err := builder.NewRuleBuilder(kb).BuildRuleFromResource("acl", "0.0.0", pkg.NewFileResource(cfg.HTTPD.DB.Rules.ACL)); err != nil {
-		log.Panicf("Error loading ACL ruleset (%v)", err)
+		log.Fatalf("Error loading ACL ruleset (%v)", err)
 	}
 
 	rules, err := grule.NewGrule(kb)
 	if err != nil {
-		log.Panicf("Error initialising ACL ruleset (%v)", err)
+		log.Fatalf("Error initialising ACL ruleset (%v)", err)
 	}
 
 	sys.debug = debug
@@ -444,7 +444,7 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 func (s *system) sweep() {
 	cutoff := time.Now().Add(-s.retention)
 
-	log.Printf("INFO  Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
+	infof("Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
 
 	s.controllers.Sweep(s.retention)
 	s.doors.Sweep(s.retention)
@@ -482,16 +482,16 @@ func unpack(m map[string]interface{}) ([]object, []object, []schema.OID, error) 
 
 	blob, err := json.Marshal(m)
 	if err != nil {
-		warn(err)
+		warnf("%v", err)
 		return nil, nil, nil, fmt.Errorf("Invalid request (%v)", err)
 	}
 
 	if sys.debug {
-		log.Printf("DEBUG %v", fmt.Sprintf("UNPACK %s\n", string(blob)))
+		log.Debugf("UNPACK %s\n", string(blob))
 	}
 
 	if err := json.Unmarshal(blob, &o); err != nil {
-		warn(err)
+		warnf("%v", err)
 		return nil, nil, nil, fmt.Errorf("Invalid request (%v)", err)
 	}
 
@@ -508,7 +508,7 @@ func load(tag Tag, v serializable) error {
 				return err
 			}
 
-			warn(err)
+			warnf("%v", err)
 			return nil
 		}
 
@@ -569,18 +569,10 @@ func clean(s string) string {
 	return strings.ReplaceAll(strings.ToLower(s), " ", "")
 }
 
-func info(msg string) {
-	log.Printf("INFO  %v", msg)
-}
-
-func warn(err error) {
-	log.Printf("ERROR %v", err)
-}
-
 func infof(format string, args ...any) {
-	log.Printf("%-5v %v", "INFO", fmt.Sprintf(format, args...))
+	log.Infof(format, args...)
 }
 
 func warnf(format string, args ...any) {
-	log.Printf("%-5v %v", "WARN", fmt.Sprintf(format, args...))
+	log.Warnf(format, args...)
 }
