@@ -18,6 +18,14 @@ func CanView[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
 	return nil
 }
 
+func CanAdd[T TAuthable](a auth.OpAuth, u T) error {
+	if !auth.IsNil(a) {
+		return a.CanAdd(u, auth.Controllers)
+	}
+
+	return nil
+}
+
 func CanUpdate[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
 	if !auth.IsNil(a) {
 		return a.CanUpdate(u, field, value, auth.Controllers)

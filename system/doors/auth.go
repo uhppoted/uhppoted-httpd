@@ -1,18 +1,18 @@
-package interfaces
+package doors
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 )
 
 type TAuthable interface {
-	LAN | *LAN
+	Door | *Door
 
 	AsRuleEntity() (string, any)
 }
 
 func CanView[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
 	if !auth.IsNil(a) {
-		return a.CanView(u, field, value, auth.Interfaces)
+		return a.CanView(u, field, value, auth.Doors)
 	}
 
 	return nil
@@ -20,7 +20,7 @@ func CanView[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
 
 func CanAdd[T TAuthable](a auth.OpAuth, u T) error {
 	if !auth.IsNil(a) {
-		return a.CanAdd(u, auth.Interfaces)
+		return a.CanAdd(u, auth.Doors)
 	}
 
 	return nil
@@ -28,7 +28,7 @@ func CanAdd[T TAuthable](a auth.OpAuth, u T) error {
 
 func CanUpdate[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
 	if !auth.IsNil(a) {
-		return a.CanUpdate(u, field, value, auth.Interfaces)
+		return a.CanUpdate(u, field, value, auth.Doors)
 	}
 
 	return nil
@@ -36,7 +36,7 @@ func CanUpdate[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
 
 func CanDelete[T TAuthable](a auth.OpAuth, u T) error {
 	if !auth.IsNil(a) {
-		return a.CanDelete(u, auth.Interfaces)
+		return a.CanDelete(u, auth.Doors)
 	}
 
 	return nil

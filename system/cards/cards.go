@@ -351,10 +351,8 @@ func (cc *Cards) add(a *auth.Authorizator, c Card) (*Card, error) {
 	card.OID = oid
 	card.created = types.TimestampNow()
 
-	if a != nil {
-		if err := a.CanAdd(card, auth.Cards); err != nil {
-			return nil, err
-		}
+	if err := CanAdd(a, card); err != nil {
+		return nil, err
 	}
 
 	cc.cards[card.OID] = card

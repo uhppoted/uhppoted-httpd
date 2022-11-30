@@ -198,14 +198,6 @@ func (d Door) AsRuleEntity() (string, interface{}) {
 }
 
 func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
-	f := func(field string, value interface{}) error {
-		if a == nil {
-			return nil
-		}
-
-		return a.CanUpdate(d, field, value, auth.Doors)
-	}
-
 	if d == nil {
 		return []schema.Object{}, nil
 	} else if d.IsDeleted() {
@@ -217,7 +209,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 	switch oid {
 	case d.OID.Append(DoorName):
-		if err := f("name", value); err != nil {
+		if err := CanUpdate(a, d, "name", value); err != nil {
 			return nil, err
 		} else {
 			d.log(dbc, uid, "update", "name", d.name, value, "Updated name from %v to %v", d.name, value)
@@ -231,7 +223,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	case d.OID.Append(DoorDelay):
 		delay := d.delay
 
-		if err := f("delay", value); err != nil {
+		if err := CanUpdate(a, d, "delay", value); err != nil {
 			return nil, err
 		} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
 			return nil, err
@@ -250,7 +242,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		}
 
 	case d.OID.Append(DoorControl):
-		if err := f("mode", value); err != nil {
+		if err := CanUpdate(a, d, "mode", value); err != nil {
 			return nil, err
 		} else {
 			mode := d.mode
@@ -287,10 +279,8 @@ func (d *Door) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 	list := []kv{}
 
 	if d != nil {
-		if a != nil {
-			if err := a.CanDelete(d, auth.Doors); err != nil {
-				return nil, err
-			}
+		if err := CanDelete(a, d); err != nil {
+			return nil, err
 		}
 
 		if door := catalog.GetDoorDeviceDoor(d.OID); door != 0 {
@@ -310,26 +300,16 @@ func (d *Door) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 	return d.toObjects(list, a), nil
 }
 
-func (d *Door) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
-	f := func(d *Door, field string, value interface{}) bool {
-		if a != nil {
-			if err := a.CanView(d, field, value, auth.Doors); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
+func (d Door) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	objects := []schema.Object{}
 
-	if !d.IsDeleted() && f(d, "OID", d.OID) {
+	if err := CanView(a, d, "OID", d.OID); err == nil && !d.IsDeleted() {
 		objects = append(objects, catalog.NewObject(d.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
-		if f(d, field, v.value) {
+		if err := CanView(a, d, field, v.value); err == nil {
 			objects = append(objects, catalog.NewObject2(d.OID, v.field, v.value))
 		}
 	}

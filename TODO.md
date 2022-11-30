@@ -5,13 +5,14 @@
 - [x] Crash on Ok with empty passwords
       - [x] Check auth.IsNil for all xxx.ToObjects(auth)
       - [x] Extract f(auth) function (pursuant to genericization)
-            - [x][x][x] interfaces
-            - [x][x][x] controllers
-            - [x][x][x] cards
-            - [x][x][x] groups
-            - [x][x][x] users
-            - [x][x][x] logs
-            - [x][x][x] events
+            - [x][x][x][x] interfaces
+            - [x][x][x][x] controllers
+            - [x][x][x][x] cards
+            - [x][x][x][x] groups
+            - [x][x][x][x] users
+            - [x][x][x][x] logs
+            - [x][x][x][x] events
+            - [x][x][x][x] doors
 
 - [ ] Remove set .. OTPkey from User
 
