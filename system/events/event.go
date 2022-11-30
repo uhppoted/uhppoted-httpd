@@ -154,7 +154,7 @@ func (e Event) IsDeleted() bool {
 	return false
 }
 
-func (e *Event) AsObjects(a auth.OpAuth) []schema.Object {
+func (e Event) AsObjects(a auth.OpAuth) []schema.Object {
 	type E = struct {
 		field schema.Suffix
 		value interface{}
@@ -175,25 +175,15 @@ func (e *Event) AsObjects(a auth.OpAuth) []schema.Object {
 	list = append(list, E{EventDoorName, e.DoorName})
 	list = append(list, E{EventCardName, e.CardName})
 
-	f := func(e *Event, field string, value interface{}) bool {
-		if !auth.IsNil(a) {
-			if err := a.CanView(e, field, value, auth.Events); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
 	objects := []schema.Object{}
 
-	if f(e, "OID", e.OID) {
+	if err := CanView(a, e, "OID", e.OID); err == nil {
 		catalog.Join(&objects, catalog.NewObject(e.OID, types.StatusOk))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
-		if f(e, field, v.value) {
+		if err := CanView(a, e, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(e.OID, v.field, v.value))
 		}
 	}
@@ -201,16 +191,14 @@ func (e *Event) AsObjects(a auth.OpAuth) []schema.Object {
 	return objects
 }
 
-func (e *Event) AsRuleEntity() (string, interface{}) {
+func (e Event) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		DeviceID uint32
 		Index    uint32
 	}{}
 
-	if e != nil {
-		entity.DeviceID = e.DeviceID
-		entity.Index = e.Index
-	}
+	entity.DeviceID = e.DeviceID
+	entity.Index = e.Index
 
 	return "event", &entity
 }

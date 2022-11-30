@@ -151,21 +151,13 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		return u.toObjects([]kv{{UserDeleted, u.deleted}}, a), fmt.Errorf("User has been deleted")
 	}
 
-	f := func(field string, value interface{}) error {
-		if a != nil {
-			return a.CanUpdate(u, field, value, auth.Users)
-		}
-
-		return nil
-	}
-
 	uid := auth.UID(a)
 	list := []kv{}
 	clone := u.clone()
 
 	switch {
 	case oid == u.OID.Append(UserName):
-		if err := f("name", value); err != nil {
+		if err := CanUpdate(a, u, "name", value); err != nil {
 			return nil, err
 		} else {
 			u.name = strings.TrimSpace(value)
@@ -176,7 +168,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		}
 
 	case oid == u.OID.Append(UserUID):
-		if err := f("uid", value); err != nil {
+		if err := CanUpdate(a, u, "uid", value); err != nil {
 			return nil, err
 		} else {
 			u.uid = strings.TrimSpace(value)
@@ -187,7 +179,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		}
 
 	case oid == u.OID.Append(UserRole):
-		if err := f("role", value); err != nil {
+		if err := CanUpdate(a, u, "role", value); err != nil {
 			return nil, err
 		} else {
 			u.role = strings.TrimSpace(value)
@@ -198,7 +190,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		}
 
 	case oid == u.OID.Append(UserPassword):
-		if err := f("password", value); err != nil {
+		if err := CanUpdate(a, u, "password", value); err != nil {
 			return nil, err
 		} else {
 			salt := make([]byte, 16)
@@ -221,7 +213,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 	// ... 'revoke only' from UI
 	case oid == u.OID.Append(UserOTP):
-		if err := f("otp", value); err != nil {
+		if err := CanUpdate(a, u, "otp", value); err != nil {
 			return nil, err
 		} else if value == "false" {
 			u.otp = ""
@@ -232,7 +224,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		list = append(list, kv{UserOTP, u.otp != ""})
 
 	case oid == u.OID.Append(UserOTPKey):
-		if err := f("otp", value); err != nil {
+		if err := CanUpdate(a, u, "otp", value); err != nil {
 			return nil, err
 		} else {
 			if value == "" {
@@ -251,7 +243,7 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 	// ... 'unlock only' from UI
 	case oid == u.OID.Append(UserLocked):
-		if err := f("locked", value); err != nil {
+		if err := CanUpdate(a, u, "locked", value); err != nil {
 			return nil, err
 		} else if value == "false" {
 			u.failed = 0
@@ -272,10 +264,8 @@ func (u *User) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 	list := []kv{}
 
 	if u != nil {
-		if a != nil {
-			if err := a.CanDelete(u, auth.Users); err != nil {
-				return nil, err
-			}
+		if err := CanDelete(a, u); err != nil {
+			return nil, err
 		}
 
 		uid := auth.UID(a)
@@ -302,10 +292,8 @@ func (u *User) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	objects := []schema.Object{}
 
-	if !u.IsDeleted() {
-		if err := CanView(a, u, "OID", u.OID); err == nil {
-			catalog.Join(&objects, catalog.NewObject(u.OID, ""))
-		}
+	if err := CanView(a, u, "OID", u.OID); err == nil && !u.IsDeleted() {
+		catalog.Join(&objects, catalog.NewObject(u.OID, ""))
 	}
 
 	for _, v := range list {

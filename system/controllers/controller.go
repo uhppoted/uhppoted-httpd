@@ -232,16 +232,14 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 	return c.toObjects(list, a)
 }
 
-func (c *Controller) AsRuleEntity() (string, interface{}) {
+func (c Controller) AsRuleEntity() (string, interface{}) {
 	v := struct {
 		Name     string
 		DeviceID uint32
 	}{}
 
-	if c != nil {
-		v.Name = c.name
-		v.DeviceID = c.DeviceID
-	}
+	v.Name = c.name
+	v.DeviceID = c.DeviceID
 
 	return "controller", &v
 }
@@ -410,21 +408,13 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		return c.toObjects([]kv{{ControllerDeleted, c.deleted}}, a), fmt.Errorf("Controller has been deleted")
 	}
 
-	f := func(field string, value interface{}) error {
-		if a != nil {
-			return a.CanUpdate(c, field, value, auth.Controllers)
-		}
-
-		return nil
-	}
-
 	uid := auth.UID(a)
 	clone := c.clone()
 	list := []kv{}
 
 	switch oid {
 	case c.OID.Append(ControllerName):
-		if err := f("name", value); err != nil {
+		if err := CanUpdate(a, c, "name", value); err != nil {
 			return nil, err
 		} else {
 			c.name = strings.TrimSpace(value)
@@ -436,7 +426,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		}
 
 	case c.OID.Append(ControllerDeviceID):
-		if err := f("deviceID", value); err != nil {
+		if err := CanUpdate(a, c, "deviceID", value); err != nil {
 			return nil, err
 		} else if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 			if id, err := strconv.ParseUint(value, 10, 32); err == nil {
@@ -464,7 +454,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 	case c.OID.Append(ControllerEndpointAddress):
 		if addr, err := core.ResolveAddr(value); err != nil {
 			return nil, err
-		} else if err := f("address", addr); err != nil {
+		} else if err := CanUpdate(a, c, "address", addr); err != nil {
 			return nil, err
 		} else {
 			c.IP = addr
@@ -480,7 +470,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 	case c.OID.Append(ControllerDateTimeCurrent):
 		if tz, err := types.Timezone(value); err != nil {
 			return nil, err
-		} else if err := f("timezone", tz); err != nil {
+		} else if err := CanUpdate(a, c, "timezone", tz); err != nil {
 			return nil, err
 		} else {
 			c.timezone = tz.String()
@@ -515,7 +505,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		}
 
 	case c.OID.Append(ControllerDoor1):
-		if err := f("door[1]", value); err != nil {
+		if err := CanUpdate(a, c, "door[1]", value); err != nil {
 			return nil, err
 		} else {
 			c.doors[1] = schema.OID(value)
@@ -527,7 +517,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		}
 
 	case c.OID.Append(ControllerDoor2):
-		if err := f("door[2]", value); err != nil {
+		if err := CanUpdate(a, c, "door[2]", value); err != nil {
 			return nil, err
 		} else {
 			c.doors[2] = schema.OID(value)
@@ -539,7 +529,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		}
 
 	case c.OID.Append(ControllerDoor3):
-		if err := f("door[3]", value); err != nil {
+		if err := CanUpdate(a, c, "door[3]", value); err != nil {
 			return nil, err
 		} else {
 			c.doors[3] = schema.OID(value)
@@ -551,7 +541,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		}
 
 	case c.OID.Append(ControllerDoor4):
-		if err := f("door[4]", value); err != nil {
+		if err := CanUpdate(a, c, "door[4]", value); err != nil {
 			return nil, err
 		} else {
 			c.doors[4] = schema.OID(value)
@@ -574,10 +564,8 @@ func (c *Controller) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, 
 	if c != nil {
 		uid := auth.UID(a)
 
-		if a != nil {
-			if err := a.CanDelete(c, auth.Controllers); err != nil {
-				return nil, err
-			}
+		if err := CanDelete(a, c); err != nil {
+			return nil, err
 		}
 
 		if c.name != "" {
@@ -600,27 +588,17 @@ func (c *Controller) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, 
 	return c.toObjects(list, a), nil
 }
 
-func (c *Controller) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
-	f := func(c *Controller, field string, value interface{}) bool {
-		if a != nil {
-			if err := a.CanView(c, field, value, auth.Controllers); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
+func (c Controller) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	OID := c.OID
 	objects := []schema.Object{}
 
-	if !c.IsDeleted() && f(c, "OID", OID) {
+	if err := CanView(a, c, "OID", OID); err == nil && !c.IsDeleted() {
 		catalog.Join(&objects, catalog.NewObject(OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
-		if f(c, field, v.value) {
+		if err := CanView(a, c, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(OID, v.field, v.value))
 		}
 	}

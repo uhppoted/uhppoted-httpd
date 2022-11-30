@@ -84,16 +84,14 @@ func (l *LAN) AsObjects(a *auth.Authorizator) []schema.Object {
 	return l.toObjects(list, a)
 }
 
-func (l *LAN) AsRuleEntity() (string, interface{}) {
+func (l LAN) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		Type string
 		Name string
 	}{}
 
-	if l != nil {
-		entity.Type = "LAN"
-		entity.Name = fmt.Sprintf("%v", l.Name)
-	}
+	entity.Type = "LAN"
+	entity.Name = fmt.Sprintf("%v", l.Name)
 
 	return "lan", &entity
 }
@@ -107,20 +105,12 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		return l.toObjects([]kv{{LANDeleted, l.deleted}}, a), fmt.Errorf("LAN has been deleted")
 	}
 
-	f := func(field string, value interface{}) error {
-		if a != nil {
-			return a.CanUpdate(l, field, value, auth.Interfaces)
-		}
-
-		return nil
-	}
-
 	uid := auth.UID(a)
 	list := []kv{}
 
 	switch oid {
 	case l.OID.Append(LANName):
-		if err := f("name", value); err != nil {
+		if err := CanUpdate(a, l, "name", value); err != nil {
 			return nil, err
 		} else {
 			l.log(dbc, uid, "update", l.OID, "name", l.Name, value, "Updated name from %v to %v", l.Name, value)
@@ -134,7 +124,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 	case l.OID.Append(LANBindAddress):
 		if addr, err := lib.ResolveBindAddr(value); err != nil {
 			return nil, err
-		} else if err := f("bind", addr); err != nil {
+		} else if err := CanUpdate(a, l, "bind", addr); err != nil {
 			return nil, err
 		} else {
 			l.log(dbc, uid, "update", l.OID, "bind", l.BindAddress, value, "Updated bind address from %v to %v", l.BindAddress, value)
@@ -148,7 +138,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 	case l.OID.Append(LANBroadcastAddress):
 		if addr, err := lib.ResolveBroadcastAddr(value); err != nil {
 			return nil, err
-		} else if err := f("broadcast", addr); err != nil {
+		} else if err := CanUpdate(a, l, "broadcast", addr); err != nil {
 			return nil, err
 		} else {
 			l.log(dbc, uid, "update", l.OID, "broadcast", l.BroadcastAddress, value, "Updated broadcast address from %v to %v", l.BroadcastAddress, value)
@@ -162,7 +152,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 	case l.OID.Append(LANListenAddress):
 		if addr, err := lib.ResolveListenAddr(value); err != nil {
 			return nil, err
-		} else if err = f("listen", addr); err != nil {
+		} else if err = CanUpdate(a, l, "listen", addr); err != nil {
 			return nil, err
 		} else {
 			l.log(dbc, uid, "update", l.OID, "listen", l.ListenAddress, value, "Updated listen address from %v to %v", l.ListenAddress, value)
@@ -179,26 +169,16 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 	return l.toObjects(list, a), nil
 }
 
-func (l *LAN) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
-	f := func(l *LAN, field string, value interface{}) bool {
-		if a != nil {
-			if err := a.CanView(l, field, value, auth.Interfaces); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
+func (l LAN) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	objects := []schema.Object{}
 
-	if !l.IsDeleted() && f(l, "OID", l.OID) {
+	if err := CanView(a, l, "OID", l.OID); err == nil && !l.IsDeleted() {
 		objects = append(objects, catalog.NewObject(l.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
-		if f(l, field, v.value) {
+		if err := CanView(a, l, field, v.value); err == nil {
 			objects = append(objects, catalog.NewObject2(l.OID, v.field, v.value))
 		}
 	}

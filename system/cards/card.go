@@ -175,21 +175,13 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		return c.toObjects([]kv{{CardDeleted, c.deleted}}, a), fmt.Errorf("Card has been deleted")
 	}
 
-	f := func(field string, value interface{}) error {
-		if a != nil {
-			return a.CanUpdate(c, field, value, auth.Cards)
-		}
-
-		return nil
-	}
-
 	uid := auth.UID(a)
 	original := c.clone()
 	list := []kv{}
 
 	switch {
 	case oid == c.OID.Append(CardName):
-		if err := f("name", value); err != nil {
+		if err := CanUpdate(a, c, "name", value); err != nil {
 			return nil, err
 		} else {
 			c.log(dbc, uid, "update", "name", c.name, value, "Updated name from '%v' to '%v'", c.name, value)
@@ -204,7 +196,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
 			if number, err := strconv.ParseUint(value, 10, 32); err != nil {
 				return nil, err
-			} else if err := f("number", number); err != nil {
+			} else if err := CanUpdate(a, c, "number", number); err != nil {
 				return nil, err
 			} else {
 				c.log(dbc, uid, "update", "card", c.CardID, number, "Updated card number from %v to %v", c.CardID, value)
@@ -215,7 +207,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 				list = append(list, kv{CardNumber, c.CardID})
 			}
 		} else if value == "" {
-			if err := f("number", 0); err != nil {
+			if err := CanUpdate(a, c, "number", 0); err != nil {
 				return nil, err
 			} else {
 				if c.name != "" {
@@ -232,7 +224,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		}
 
 	case oid == c.OID.Append(CardFrom):
-		if err := f("from", value); err != nil {
+		if err := CanUpdate(a, c, "from", value); err != nil {
 			return nil, err
 		} else if from, err := lib.DateFromString(value); err != nil {
 			return nil, err
@@ -248,7 +240,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		}
 
 	case oid == c.OID.Append(CardTo):
-		if err := f("to", value); err != nil {
+		if err := CanUpdate(a, c, "to", value); err != nil {
 			return nil, err
 		} else if to, err := lib.DateFromString(value); err != nil {
 			return nil, err
@@ -267,7 +259,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			gid := m[1]
 			k := schema.GroupsOID.AppendS(gid)
 
-			if err := f("group", value); err != nil {
+			if err := CanUpdate(a, c, "group", value); err != nil {
 				return nil, err
 			} else if !catalog.HasGroup(schema.OID(k)) {
 				return nil, fmt.Errorf("invalid group OID (%v)", k)
@@ -306,10 +298,8 @@ func (c *Card) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 	list := []kv{}
 
 	if c != nil {
-		if a != nil {
-			if err := a.CanDelete(c, auth.Cards); err != nil {
-				return nil, err
-			}
+		if err := CanDelete(a, c); err != nil {
+			return nil, err
 		}
 
 		uid := auth.UID(a)
@@ -344,10 +334,8 @@ func (c *Card) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 func (c Card) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	objects := []schema.Object{}
 
-	if !c.IsDeleted() {
-		if err := CanView(a, c, "OID", c.OID); err == nil {
-			catalog.Join(&objects, catalog.NewObject(c.OID, ""))
-		}
+	if err := CanView(a, c, "OID", c.OID); err == nil && !c.IsDeleted() {
+		catalog.Join(&objects, catalog.NewObject(c.OID, ""))
 	}
 
 	for _, v := range list {

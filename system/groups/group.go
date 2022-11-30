@@ -85,7 +85,7 @@ func (g *Group) AsObjects(a *auth.Authorizator) []schema.Object {
 	return g.toObjects(list, a)
 }
 
-func (g *Group) AsRuleEntity() (string, interface{}) {
+func (g Group) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		Name  string
 		Doors map[string]bool
@@ -94,17 +94,15 @@ func (g *Group) AsRuleEntity() (string, interface{}) {
 		Doors: map[string]bool{},
 	}
 
-	if g != nil {
-		entity.Name = fmt.Sprintf("%v", g.Name)
+	entity.Name = fmt.Sprintf("%v", g.Name)
 
-		doors := catalog.GetDoors()
-		for _, d := range doors {
-			allowed := g.Doors[d]
-			door := catalog.GetV(d, DoorName)
+	doors := catalog.GetDoors()
+	for _, d := range doors {
+		allowed := g.Doors[d]
+		door := catalog.GetV(d, DoorName)
 
-			if v := fmt.Sprintf("%v", door); v != "" {
-				entity.Doors[v] = allowed
-			}
+		if v := fmt.Sprintf("%v", door); v != "" {
+			entity.Doors[v] = allowed
 		}
 	}
 
@@ -128,21 +126,13 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 		return g.toObjects([]kv{{GroupDeleted, g.deleted}}, a), fmt.Errorf("Group has been deleted")
 	}
 
-	f := func(field string, value interface{}) error {
-		if a != nil {
-			return a.CanUpdate(g, field, value, auth.Groups)
-		}
-
-		return nil
-	}
-
 	uid := auth.UID(a)
 	original := g.clone()
 	list := []kv{}
 
 	switch {
 	case oid == g.OID.Append(GroupName):
-		if err := f("name", value); err != nil {
+		if err := CanUpdate(a, g, "name", value); err != nil {
 			return nil, err
 		} else {
 			g.Name = value
@@ -159,7 +149,7 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 			k := schema.DoorsOID.AppendS(did)
 			door := catalog.GetV(k, DoorName)
 
-			if err := f(door.(string), value); err != nil {
+			if err := CanUpdate(a, g, door.(string), value); err != nil {
 				return nil, err
 			} else {
 				if value == "true" {
@@ -187,10 +177,8 @@ func (g *Group) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error
 	list := []kv{}
 
 	if g != nil {
-		if a != nil {
-			if err := a.CanDelete(g, auth.Groups); err != nil {
-				return nil, err
-			}
+		if err := CanDelete(a, g); err != nil {
+			return nil, err
 		}
 
 		g.log(dbc, auth.UID(a), "delete", "group", g.Name, "", "Deleted group %v", g.Name)
@@ -206,26 +194,16 @@ func (g *Group) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error
 	return g.toObjects(list, a), nil
 }
 
-func (g *Group) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
-	f := func(g *Group, field string, value interface{}) bool {
-		if a != nil {
-			if err := a.CanView(g, field, value, auth.Groups); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
+func (g Group) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	objects := []schema.Object{}
 
-	if !g.IsDeleted() && f(g, "OID", g.OID) {
+	if err := CanView(a, g, "OID", g.OID); err == nil && !g.IsDeleted() {
 		catalog.Join(&objects, catalog.NewObject(g.OID, ""))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
-		if f(g, field, v.value) {
+		if err := CanView(a, g, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(g.OID, v.field, v.value))
 		}
 	}

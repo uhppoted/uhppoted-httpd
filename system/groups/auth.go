@@ -1,18 +1,18 @@
-package cards
+package groups
 
 import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 )
 
 type TAuthable interface {
-	Card | *Card
+	Group | *Group
 
 	AsRuleEntity() (string, any)
 }
 
 func CanView[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
 	if !auth.IsNil(a) {
-		return a.CanView(u, field, value, auth.Cards)
+		return a.CanView(u, field, value, auth.Groups)
 	}
 
 	return nil
@@ -20,7 +20,7 @@ func CanView[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
 
 func CanUpdate[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
 	if !auth.IsNil(a) {
-		return a.CanUpdate(u, field, value, auth.Cards)
+		return a.CanUpdate(u, field, value, auth.Groups)
 	}
 
 	return nil
@@ -28,7 +28,7 @@ func CanUpdate[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
 
 func CanDelete[T TAuthable](a auth.OpAuth, u T) error {
 	if !auth.IsNil(a) {
-		return a.CanDelete(u, auth.Cards)
+		return a.CanDelete(u, auth.Groups)
 	}
 
 	return nil

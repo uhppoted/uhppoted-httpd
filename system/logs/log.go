@@ -45,7 +45,7 @@ func (l LogEntry) IsDeleted() bool {
 	return false
 }
 
-func (l *LogEntry) AsObjects(a auth.OpAuth) []schema.Object {
+func (l LogEntry) AsObjects(a auth.OpAuth) []schema.Object {
 	type E = struct {
 		field schema.Suffix
 		value interface{}
@@ -61,25 +61,15 @@ func (l *LogEntry) AsObjects(a auth.OpAuth) []schema.Object {
 	list = append(list, E{LogField, l.Field})
 	list = append(list, E{LogDetails, l.Details})
 
-	f := func(l *LogEntry, field string, value interface{}) bool {
-		if !auth.IsNil(a) {
-			if err := a.CanView(l, field, value, auth.Logs); err != nil {
-				return false
-			}
-		}
-
-		return true
-	}
-
 	objects := []schema.Object{}
 
-	if f(l, "OID", l.OID) {
+	if err := CanView(a, l, "OID", l.OID); err == nil {
 		catalog.Join(&objects, catalog.NewObject(l.OID, types.StatusOk))
 	}
 
 	for _, v := range list {
 		field, _ := lookup[v.field]
-		if f(l, field, v.value) {
+		if err := CanView(a, l, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(l.OID, v.field, v.value))
 		}
 	}
@@ -87,14 +77,12 @@ func (l *LogEntry) AsObjects(a auth.OpAuth) []schema.Object {
 	return objects
 }
 
-func (l *LogEntry) AsRuleEntity() (string, interface{}) {
+func (l LogEntry) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		Timestamp string
 	}{}
 
-	if l != nil {
-		entity.Timestamp = l.Timestamp.Format("2006-01-02 15:04:05 MST")
-	}
+	entity.Timestamp = l.Timestamp.Format("2006-01-02 15:04:05 MST")
 
 	return "log", &entity
 }

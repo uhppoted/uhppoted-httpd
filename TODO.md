@@ -4,14 +4,16 @@
 
 - [x] Crash on Ok with empty passwords
       - [x] Check auth.IsNil for all xxx.ToObjects(auth)
-      - [ ] Extract f(auth) function (pursuant to genericization)
-            - [ ] interfaces
-            - [ ] controllers
-            - [x] cards
-            - [ ] groups
-            - [x] users
-            - [ ] logs
-            - [ ] events
+      - [x] Extract f(auth) function (pursuant to genericization)
+            - [x][x][x] interfaces
+            - [x][x][x] controllers
+            - [x][x][x] cards
+            - [x][x][x] groups
+            - [x][x][x] users
+            - [x][x][x] logs
+            - [x][x][x] events
+
+- [ ] Remove set .. OTPkey from User
 
 - [ ] [OKSolar](https://meat.io/oksolar)
 - [ ] Set cookie.Secure to true for TLS requests
