@@ -236,10 +236,10 @@ func (c Controller) AsRuleEntity() (string, interface{}) {
 	v := struct {
 		Name     string
 		DeviceID uint32
-	}{}
-
-	v.Name = c.name
-	v.DeviceID = c.DeviceID
+	}{
+		Name:     c.name,
+		DeviceID: c.DeviceID,
+	}
 
 	return "controller", &v
 }

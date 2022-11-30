@@ -187,13 +187,11 @@ func (d *Door) AsObjects(a *auth.Authorizator) []schema.Object {
 	return d.toObjects(list, a)
 }
 
-func (d *Door) AsRuleEntity() (string, interface{}) {
+func (d Door) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		Name string
-	}{}
-
-	if d != nil {
-		entity.Name = d.name
+	}{
+		Name: d.name,
 	}
 
 	return "door", &entity

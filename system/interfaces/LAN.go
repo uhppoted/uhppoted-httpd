@@ -88,10 +88,10 @@ func (l LAN) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		Type string
 		Name string
-	}{}
-
-	entity.Type = "LAN"
-	entity.Name = fmt.Sprintf("%v", l.Name)
+	}{
+		Type: "LAN",
+		Name: fmt.Sprintf("%v", l.Name),
+	}
 
 	return "lan", &entity
 }

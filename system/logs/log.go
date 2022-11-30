@@ -80,9 +80,9 @@ func (l LogEntry) AsObjects(a auth.OpAuth) []schema.Object {
 func (l LogEntry) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		Timestamp string
-	}{}
-
-	entity.Timestamp = l.Timestamp.Format("2006-01-02 15:04:05 MST")
+	}{
+		Timestamp: l.Timestamp.Format("2006-01-02 15:04:05 MST"),
+	}
 
 	return "log", &entity
 }

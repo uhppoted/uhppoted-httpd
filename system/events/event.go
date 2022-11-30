@@ -195,10 +195,10 @@ func (e Event) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		DeviceID uint32
 		Index    uint32
-	}{}
-
-	entity.DeviceID = e.DeviceID
-	entity.Index = e.Index
+	}{
+		DeviceID: e.DeviceID,
+		Index:    e.Index,
+	}
 
 	return "event", &entity
 }

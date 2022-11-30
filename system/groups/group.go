@@ -90,11 +90,9 @@ func (g Group) AsRuleEntity() (string, interface{}) {
 		Name  string
 		Doors map[string]bool
 	}{
-		Name:  "",
+		Name:  fmt.Sprintf("%v", g.Name),
 		Doors: map[string]bool{},
 	}
-
-	entity.Name = fmt.Sprintf("%v", g.Name)
 
 	doors := catalog.GetDoors()
 	for _, d := range doors {

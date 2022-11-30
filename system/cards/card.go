@@ -147,13 +147,13 @@ func (c Card) AsRuleEntity() (string, interface{}) {
 		From   string
 		To     string
 		Groups []string
-	}{}
-
-	entity.Name = c.name
-	entity.Number = c.CardID
-	entity.From = fmt.Sprintf("%v", c.from)
-	entity.To = fmt.Sprintf("%v", c.to)
-	entity.Groups = []string{}
+	}{
+		Name:   c.name,
+		Number: c.CardID,
+		From:   fmt.Sprintf("%v", c.from),
+		To:     fmt.Sprintf("%v", c.to),
+		Groups: []string{},
+	}
 
 	for k, v := range c.groups {
 		if v {
