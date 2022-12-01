@@ -10,34 +10,20 @@ type TAuthable interface {
 	AsRuleEntity() (string, any)
 }
 
-func CanView[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
-	if !auth.IsNil(a) {
-		return a.CanView(u, field, value, auth.Cards)
-	}
+var rulesets = []auth.RuleSet{auth.Cards}
 
-	return nil
+func CanView[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
+	return auth.CanView(a, u, field, value, rulesets...)
 }
 
 func CanAdd[T TAuthable](a auth.OpAuth, u T) error {
-	if !auth.IsNil(a) {
-		return a.CanAdd(u, auth.Cards)
-	}
-
-	return nil
+	return auth.CanAdd(a, u, rulesets...)
 }
 
 func CanUpdate[T TAuthable](a auth.OpAuth, u T, field string, value any) error {
-	if !auth.IsNil(a) {
-		return a.CanUpdate(u, field, value, auth.Cards)
-	}
-
-	return nil
+	return auth.CanUpdate(a, u, field, value, rulesets...)
 }
 
 func CanDelete[T TAuthable](a auth.OpAuth, u T) error {
-	if !auth.IsNil(a) {
-		return a.CanDelete(u, auth.Cards)
-	}
-
-	return nil
+	return auth.CanDelete(a, u, rulesets...)
 }

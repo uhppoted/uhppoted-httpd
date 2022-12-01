@@ -1,8 +1,6 @@
 package auth
 
-import (
-	"reflect"
-)
+import ()
 
 type TokenType int
 
@@ -63,23 +61,6 @@ type Options struct {
 		Allowed bool
 		Enabled bool
 	}
-}
-
-func IsNil(v any) bool {
-	if v == nil {
-		return true
-	}
-
-	switch reflect.TypeOf(v).Kind() {
-	case reflect.Ptr,
-		reflect.Map,
-		reflect.Array,
-		reflect.Chan,
-		reflect.Slice:
-		return reflect.ValueOf(v).IsNil()
-	}
-
-	return false
 }
 
 type Operant interface {

@@ -13,7 +13,7 @@
             - [x][x][x][x] logs
             - [x][x][x][x] events
             - [x][x][x][x] doors
-            - [ ] Move CanXXX to auth package
+            - [x] Move CanXXX to auth package
             - [ ] Explore invoking CanXXX from object lists
 
 - [x] Replace set..OTPkey<value> from User

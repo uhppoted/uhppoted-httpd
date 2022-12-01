@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"strings"
 	"sync"
 	"time"
@@ -16,6 +17,10 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/engine"
 	"github.com/hyperjumptech/grule-rule-engine/pkg"
 )
+
+type TAuthable interface {
+	AsRuleEntity() (string, any)
+}
 
 type authorizator struct {
 	Authorizator
@@ -109,6 +114,55 @@ func Init(rules map[RuleSet]string) error {
 	return nil
 }
 
+func CanView[T TAuthable](a OpAuth, u T, field string, value any, rulesets ...RuleSet) error {
+	if !isNil(a) {
+		return a.CanView(u, field, value, rulesets...)
+	}
+
+	return nil
+}
+
+func CanAdd[T TAuthable](a OpAuth, u T, rulesets ...RuleSet) error {
+	if !isNil(a) {
+		return a.CanAdd(u, rulesets...)
+	}
+
+	return nil
+}
+
+func CanUpdate[T TAuthable](a OpAuth, u T, field string, value any, rulesets ...RuleSet) error {
+	if !isNil(a) {
+		return a.CanUpdate(u, field, value, rulesets...)
+	}
+
+	return nil
+}
+
+func CanDelete[T TAuthable](a OpAuth, u T, rulesets ...RuleSet) error {
+	if !isNil(a) {
+		return a.CanDelete(u, rulesets...)
+	}
+
+	return nil
+}
+
+func isNil(v any) bool {
+	if v == nil {
+		return true
+	}
+
+	switch reflect.TypeOf(v).Kind() {
+	case reflect.Ptr,
+		reflect.Map,
+		reflect.Array,
+		reflect.Chan,
+		reflect.Slice:
+		return reflect.ValueOf(v).IsNil()
+	}
+
+	return false
+}
+
 func (a *authorizator) CanView(operant Operant, field string, value interface{}, rulesets ...RuleSet) error {
 	if a != nil && operant != nil {
 		tag, object := operant.AsRuleEntity()
@@ -199,7 +253,7 @@ func (a *authorizator) CanUpdate(operant Operant, field string, value interface{
 }
 
 func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
-	if !IsNil(operant) {
+	if !isNil(operant) {
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("delete::%v", tag)
 

@@ -207,10 +207,8 @@ func (dd *Doors) add(a auth.OpAuth, d Door) (*Door, error) {
 	door.OID = oid
 	door.created = types.TimestampNow()
 
-	if !auth.IsNil(a) {
-		if err := a.CanAdd(&door, auth.Doors); err != nil {
-			return nil, err
-		}
+	if err := CanAdd(a, &door); err != nil {
+		return nil, err
 	}
 
 	dd.doors[door.OID] = door

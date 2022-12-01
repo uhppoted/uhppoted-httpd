@@ -251,10 +251,8 @@ func (gg *Groups) add(a auth.OpAuth, g Group) (*Group, error) {
 	group.OID = oid
 	group.created = types.TimestampNow()
 
-	if !auth.IsNil(a) {
-		if err := a.CanAdd(&group, auth.Groups); err != nil {
-			return nil, err
-		}
+	if err := CanAdd(a, &group); err != nil {
+		return nil, err
 	}
 
 	gg.groups[group.OID] = group
