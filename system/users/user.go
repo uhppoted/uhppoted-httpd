@@ -226,16 +226,9 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	case oid == u.OID.Append(UserOTPKey):
 		if err := CanUpdate(a, u, "otp", value); err != nil {
 			return nil, err
-		} else {
-			if value == "" {
-				u.log(dbc, uid, "update", "otp", "", "", "Revoked OTP for %v (%v)", u.uid, u.name)
-			} else if u.otp == "" {
-				u.log(dbc, uid, "update", "otp", "", "", "Enabled OTP")
-			} else {
-				u.log(dbc, uid, "update", "otp", "", "", "Updated OTP")
-			}
-
-			u.otp = value
+		} else if value == "" {
+			u.log(dbc, uid, "update", "otp", "", "", "Revoked OTP for %v (%v)", u.uid, u.name)
+			u.otp = ""
 			u.modified = types.TimestampNow()
 
 			list = append(list, kv{UserOTP, u.otp != ""})
@@ -325,6 +318,30 @@ func (u *User) login(err error, dbc db.DBC) {
 	} else {
 		u.failed = 0
 	}
+}
+
+func (u *User) setOTP(a *auth.Authorizator, key string, dbc db.DBC) ([]schema.Object, error) {
+	uid := auth.UID(a)
+	list := []kv{}
+
+	if err := CanUpdate(a, u, "otp", "****"); err != nil {
+		return nil, err
+	} else {
+		if key == "" {
+			u.log(dbc, uid, "update", "otp", "", "", "Revoked OTP for %v (%v)", u.uid, u.name)
+		} else if u.otp == "" {
+			u.log(dbc, uid, "update", "otp", "", "", "Enabled OTP")
+		} else {
+			u.log(dbc, uid, "update", "otp", "", "", "Updated OTP")
+		}
+
+		u.otp = key
+		u.modified = types.TimestampNow()
+
+		list = append(list, kv{UserOTP, u.otp != ""})
+	}
+
+	return u.toObjects(list, a), nil
 }
 
 func (u User) serialize() ([]byte, error) {

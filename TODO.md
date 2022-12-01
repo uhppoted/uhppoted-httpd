@@ -13,8 +13,10 @@
             - [x][x][x][x] logs
             - [x][x][x][x] events
             - [x][x][x][x] doors
+            - [ ] Move CanXXX to auth package
+            - [ ] Explore invoking CanXXX from object lists
 
-- [ ] Remove set .. OTPkey from User
+- [x] Replace set..OTPkey<value> from User
 
 - [ ] [OKSolar](https://meat.io/oksolar)
 - [ ] Set cookie.Secure to true for TLS requests

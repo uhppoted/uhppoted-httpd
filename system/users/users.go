@@ -183,7 +183,7 @@ func (uu *Users) SetOTP(a *auth.Authorizator, uid, secret string, dbc db.DBC) ([
 
 	for k, u := range uu.users {
 		if u.uid == uid {
-			objects, err := u.set(a, u.OID.Append(UserOTPKey), secret, dbc)
+			objects, err := u.setOTP(a, secret, dbc)
 			if err == nil {
 				uu.users[k] = u
 			}
