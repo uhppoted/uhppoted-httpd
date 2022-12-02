@@ -1,68 +1,68 @@
 @charset "UTF-8";
 
-@import '_solarize';
+@import '_palette';
 
-$content-background: $solarize-base3         !default;
-$content-controls-border: $solarize-blue     !default;
+$content-background: $palette-base3         !default;
+$content-controls-border: $palette-blue     !default;
 
-$message-background: $solarize-base2 !default;
+$message-background: $palette-base2 !default;
 
-$warning-colour: $solarize-red            !default;
-$warning-dismiss-colour: $solarize-base03 !default;
-$enabled-colour: $solarize-yellow         !default;
+$warning-colour: $palette-red            !default;
+$warning-dismiss-colour: $palette-base03 !default;
+$enabled-colour: $palette-yellow         !default;
 
-$user-avatar-background: $solarize-base2              !default;
-$user-avatar-text: $solarize-base01                   !default;
+$user-avatar-background: $palette-base2              !default;
+$user-avatar-text: $palette-base01                   !default;
 $user-avatar-shadow: 3px 3px 3px #d8d8d8              !default;
-$user-menu-background: $solarize-base2                !default;
+$user-menu-background: $palette-base2                !default;
 $user-menu-shadow: 3px 3px 3px #d8d8d8                !default;
-$user-menu-item: $solarize-base01                     !default;
-$user-menu-item-highlight: $solarize-base2            !default;
-$user-menu-item-highlight-background: $solarize-base1 !default;
+$user-menu-item: $palette-base01                     !default;
+$user-menu-item-highlight: $palette-base2            !default;
+$user-menu-item-highlight-background: $palette-base1 !default;
 
-$nav-background: darken($solarize-base2, 5%) !default;
-$nav-text-colour: $solarize-blue;
+$nav-background: darken($palette-base2, 5%) !default;
+$nav-text-colour: $palette-blue;
 
-$footer-background: $solarize-base2 !default;
-$footer-text: $solarize-base03 !default;
+$footer-background: $palette-base2 !default;
+$footer-text: $palette-base03 !default;
 
-$fieldset-text: $solarize-base03 !default;
-$fieldset-hint: $solarize-base1  !default;
+$fieldset-text: $palette-base03 !default;
+$fieldset-hint: $palette-base1  !default;
 $fieldset-border: 1px solid silver !default;
-$fieldset-button-border: 2px solid $solarize-red !default;
-$fieldset-button-border-plain: 2px solid $solarize-base1  !default;
-$fieldset-button-border-cancel: 2px solid $solarize-base1 !default;
-$fieldset-warning-text: $solarize-red !default;
+$fieldset-button-border: 2px solid $palette-red !default;
+$fieldset-button-border-plain: 2px solid $palette-base1  !default;
+$fieldset-button-border-cancel: 2px solid $palette-base1 !default;
+$fieldset-warning-text: $palette-red !default;
 
-$field-border: 1px solid $solarize-base00;
-$field-border-readonly: 1px solid lighten($solarize-base1,10%);
-$field-input-background: $solarize-base3 !default;
+$field-border: 1px solid $palette-base00;
+$field-border-readonly: 1px solid lighten($palette-base1,10%);
+$field-input-background: $palette-base3 !default;
 
 
-$content-table-background:          $solarize-base2                !default;
-$content-table-background-header:   darken($solarize-base2, 5%)    !default;
-$content-table-background-odd:      $solarize-base3                !default;
-$content-table-background-even:     $solarize-base2                !default;
-$content-table-row-error:           lighten($solarize-red, 20%)    !default;
-$content-table-row-modified:        lighten($solarize-yellow, 50%) !default;
-$content-table-row-new:             lighten($solarize-blue, 30%)   !default;
-$content-table-row-unconfigured:    $solarize-yellow               !default;
-$content-table-row-uncertain:       $solarize-violet               !default;
-$content-table-background-pending:  transparentize($solarize-violet, 0.5);
-$content-table-item-conflict:       transparentize($solarize-orange, 0.75);
-$content-table-border:              $solarize-blue !default;
-$content-table-yes:                 $solarize-base02;
-$content-table-no:                  $solarize-base0;
-$content-table-changed:             $solarize-red;
-$content-table-commit:              $solarize-green  !default;
-$content-table-rollback:            $solarize-red    !default;
-$content-table-text:                $solarize-base03 !default;
-$content-table-item-normal:         $solarize-base03 !default;
-$content-table-item-unknown:        $solarize-base1  !default;
-$content-table-item-unconfigured:   $solarize-yellow !default;
-$content-table-item-uncertain:      $solarize-violet !default;
-$content-table-item-incomplete:     lighten($solarize-orange,15%) !default;
-$content-table-item-error:          $solarize-red    !default;
+$content-table-background:          $palette-base2                !default;
+$content-table-background-header:   darken($palette-base2, 5%)    !default;
+$content-table-background-odd:      $palette-base3                !default;
+$content-table-background-even:     $palette-base2                !default;
+$content-table-row-error:           lighten($palette-red, 20%)    !default;
+$content-table-row-modified:        lighten($palette-yellow, 50%) !default;
+$content-table-row-new:             lighten($palette-blue, 30%)   !default;
+$content-table-row-unconfigured:    $palette-yellow               !default;
+$content-table-row-uncertain:       $palette-violet               !default;
+$content-table-background-pending:  transparentize($palette-violet, 0.5);
+$content-table-item-conflict:       transparentize($palette-orange, 0.75);
+$content-table-border:              $palette-blue !default;
+$content-table-yes:                 $palette-base02;
+$content-table-no:                  $palette-base0;
+$content-table-changed:             $palette-red;
+$content-table-commit:              $palette-green  !default;
+$content-table-rollback:            $palette-red    !default;
+$content-table-text:                $palette-base03 !default;
+$content-table-item-normal:         $palette-base03 !default;
+$content-table-item-unknown:        $palette-base1  !default;
+$content-table-item-unconfigured:   $palette-yellow !default;
+$content-table-item-uncertain:      $palette-violet !default;
+$content-table-item-incomplete:     lighten($palette-orange,15%) !default;
+$content-table-item-error:          $palette-red    !default;
 $content-table-scrollbar-color:     auto             !default;
 $content-table-flag:                url('/images/default/corner.svg');  
 $content-table-flag-modified:       invert(61%) sepia(14%) saturate(250%)  hue-rotate(138deg) brightness(92%) contrast(92%);
@@ -72,25 +72,25 @@ $content-table-flag-pending:        invert(38%) sepia(78%) saturate(999%) hue-ro
 $content-svg-filter-commit:   invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%) !default;
 $content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%) !default;
 
-$controls-background: $solarize-base2;
+$controls-background: $palette-base2;
 
-$tab-background: $solarize-base2;
-$tab-background-selected: $solarize-base1;
+$tab-background: $palette-base2;
+$tab-background-selected: $palette-base1;
 
-$button-border: 2px solid $solarize-red;
+$button-border: 2px solid $palette-red;
 
-$combobox-background: $solarize-base2;
+$combobox-background: $palette-base2;
 $combobox-border: 1px solid #93a1a1;
 $combobox-li-colour: #666666;
 $combobox-li-selected: #def;
 
-$combobox-mode-background: lighten($solarize-base3,10%);
+$combobox-mode-background: lighten($palette-base3,10%);
 
-$eye-colour: $solarize-green;
-$dashboard-windmill: $solarize-blue;
-$link-colour: $solarize-blue;
-$offline-border: $solarize-red;
-$offline-colour: $solarize-base0;
+$eye-colour: $palette-green;
+$dashboard-windmill: $palette-blue;
+$link-colour: $palette-blue;
+$offline-border: $palette-red;
+$offline-colour: $palette-base0;
 
 $shaded-background: repeating-linear-gradient(-55deg, #808080ff, #22222220 1px, #22222220 20px);
 $password-credentials-background: $message-background;

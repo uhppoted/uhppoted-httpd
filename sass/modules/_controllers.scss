@@ -7,7 +7,7 @@
 
 table.interface {
   background: $content-table-background-header;
-  color: $solarize-base01;
+  color: $palette-base01;
   width: min-content;
   margin-bottom: 4px;
   padding-top: 0px;
@@ -71,7 +71,7 @@ table.interface td input {
   border-radius: 3px;
   outline: none;
   margin-left: 2px;
-  color: $solarize-base01;
+  color: $palette-base01;
   font: 400 0.9em Arial;
 }
 

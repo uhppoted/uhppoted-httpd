@@ -9,15 +9,15 @@
 @import '../../stylesheets/doors';
 
 tr.door input.mode + ul {
-  background: lighten($solarize-base01,10%);
+  background: lighten($palette-base01,10%);
 }
 
 tr.door input.mode + ul li {
-  color: $solarize-base02;
+  color: $palette-base02;
 }
 
 .tooltip-wrap .tooltip-content {
   color: #800000ff;
-  background-color: lighten($solarize-base01,10%);
+  background-color: lighten($palette-base01,10%);
 }
 

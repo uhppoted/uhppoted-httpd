@@ -6,17 +6,17 @@ div.tabular {
 
 div.tabular::-webkit-scrollbar {
   background: transparent;
-  border-left: 2px solid $solarize-base2;
+  border-left: 2px solid $palette-base2;
 }
 
 div.tabular::-webkit-scrollbar-track {
   background: transparent;
-  border-left: 2px solid $solarize-base2;
+  border-left: 2px solid $palette-base2;
 }
 
 div.tabular::-webkit-scrollbar-thumb {
-  background: darken($solarize-base2, 10%);
-  border: 2px solid $solarize-base3;
+  background: darken($palette-base2, 10%);
+  border: 2px solid $palette-base3;
   border-radius: 10px;
 }
 

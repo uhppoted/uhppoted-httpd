@@ -2,15 +2,18 @@
 
 ### IN PROGRESS
 
+- [ ] Top border radius on overview events and log panels
 - [ ] Rationalise SASS styles
       - [x] [OKSolar](https://meat.io/oksolar)
-      - [ ] Define a set of base colours in _default
+      - [ ] Define a set of base colours in _palette
       - [ ] Everything everywhere should import _uhppoted first
 
 - (?) Maybe invoke CanXXX from object lists
 - (?) Set cookie.Secure to true for TLS requests
-- [ ] Top border radius on overview events and log panels
 - [ ] Figure out some way to secure users.json against manual rewriting
+- [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
+      - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
+      - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -140,10 +143,6 @@
 - [ ] [TOML](https://toml.io) files
 - [ ] Hamburger menu (?)
 - [ ] Use shadow DOM for datetime combobox
-- [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
-      - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
-      - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
-
 - [ ] Server events in addition to/rather-than refresh
       - https://jvns.ca/blog/2021/01/12/day-36--server-sent-events-are-cool--and-a-fun-bug/
 - [ ] Lighthouse test (Chrome dev tools)
