@@ -823,7 +823,7 @@ tr.door td input.delay {
 }
 
 tr.door input.mode + ul {
-  background: white;
+  background: #6e8992;
 }
 
 tr.door input.mode + ul li {
@@ -834,7 +834,7 @@ tr.door input.mode + ul li {
 
 .combobox ul {
   display: none;
-  background: #eee8d5;
+  background: #93a1a1;
   width: fit-content;
   max-height: 32em;
   margin-top: 4px;

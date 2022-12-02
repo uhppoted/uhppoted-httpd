@@ -2,24 +2,13 @@
 
 ### IN PROGRESS
 
-- [x] Crash on Ok with empty passwords
-      - [x] Check auth.IsNil for all xxx.ToObjects(auth)
-      - [x] Extract f(auth) function (pursuant to genericization)
-            - [x][x][x][x] interfaces
-            - [x][x][x][x] controllers
-            - [x][x][x][x] cards
-            - [x][x][x][x] groups
-            - [x][x][x][x] users
-            - [x][x][x][x] logs
-            - [x][x][x][x] events
-            - [x][x][x][x] doors
-            - [x] Move CanXXX to auth package
-            - [ ] Explore invoking CanXXX from object lists
+- [ ] Rationalise SASS styles
+      - [x] [OKSolar](https://meat.io/oksolar)
+      - [ ] Define a set of base colours in _default
+      - [ ] Everything everywhere should import _uhppoted first
 
-- [x] Replace set..OTPkey<value> from User
-
-- [ ] [OKSolar](https://meat.io/oksolar)
-- [ ] Set cookie.Secure to true for TLS requests
+- (?) Maybe invoke CanXXX from object lists
+- (?) Set cookie.Secure to true for TLS requests
 - [ ] Top border radius on overview events and log panels
 - [ ] Figure out some way to secure users.json against manual rewriting
 

@@ -4,6 +4,7 @@
 
 1. Added support for OTP as a password alternative on login. Please see security 
    note in [README](https://github.com/uhppoted/uhppoted-httpd#notes).
+2. Added optonal [OKSolar](https://meat.io/oksolar) palette.
 
 ### Changed
 1. Reworked 'change password' to use Authorization header
