@@ -5,6 +5,8 @@ import (
 	"os/exec"
 
 	syslog "log"
+
+	"github.com/uhppoted/uhppoted-lib/log"
 )
 
 var queue = make(chan string, 8)
@@ -17,6 +19,10 @@ func Default() *syslog.Logger {
 	return syslog.Default()
 }
 
+func SetFatalHook(f func()) {
+	log.AddFatalHook(f)
+}
+
 func Sayf(format string, args ...any) {
 	s := fmt.Sprintf(format, args...)
 
@@ -24,34 +30,23 @@ func Sayf(format string, args ...any) {
 }
 
 func Debugf(format string, args ...any) {
-	s := fmt.Sprintf(format, args...)
-
-	syslog.Printf("%-5v  %v", "DEBUG", s)
+	log.Debugf(format, args...)
 }
 
 func Infof(format string, args ...any) {
-	s := fmt.Sprintf(format, args...)
-
-	syslog.Printf("%-5v  %v", "INFO", s)
+	log.Infof(format, args...)
 }
 
 func Warnf(format string, args ...any) {
-	s := fmt.Sprintf(format, args...)
-
-	syslog.Printf("%-5v  %v", "WARN", s)
+	log.Warnf(format, args...)
 }
 
 func Errorf(format string, args ...any) {
-	s := fmt.Sprintf(format, args...)
-
-	syslog.Printf("%-5v  %v", "ERROR", s)
+	log.Errorf(format, args...)
 }
 
 func Fatalf(format string, args ...any) {
-	s := fmt.Sprintf(format, args...)
-
-	syslog.Printf("%-5v  %v", "FATAL", s)
-	panic(s)
+	log.Fatalf(format, args...)
 }
 
 func say() {

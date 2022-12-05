@@ -5,6 +5,7 @@
 - [x] Bottom border radius on overview controller and events panels
 - [x] Implement `config` command (https://github.com/uhppoted/uhppoted-httpd/issues/11)
 - [x] Update systemd unit file to wait on `network-online.target` (cf. https://github.com/uhppoted/uhppoted/issues/19)
+- [x] Rework lockfile to use flock syscall (cf. https://github.com/uhppoted/uhppoted-tunnel/issues/7)
 
 - [ ] Rationalise SASS styles
       - [x] [OKSolar](https://meat.io/oksolar)

@@ -156,6 +156,8 @@ Command line:
 ```
   --config      Sets the uhppoted.conf file to use for controller configurations. 
                 Defaults to the communal uhppoted.conf file shared by all the uhppoted modules.
+  --lockfile    (optional) Lockfile used to prevent running multiple copies of the _uhppoted-httpd_ service. 
+                Defaults to _uhppoted-httpd.pid" (in the system _temp_ folder) if not provided.
   --console     Runs the HTTP server endpoint as a console application, logging events to the console.
   --debug       Displays verbose debugging information, in particular the communications with the 
                 UHPPOTE controllers

@@ -3,11 +3,11 @@ package commands
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/uhppoted/uhppoted-lib/config"
+	"github.com/uhppoted/uhppoted-lib/lockfile"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	provider "github.com/uhppoted/uhppoted-httpd/auth"
@@ -15,6 +15,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth/otp"
 	"github.com/uhppoted/uhppoted-httpd/httpd"
 	"github.com/uhppoted/uhppoted-httpd/httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -25,16 +26,19 @@ type Run struct {
 	configuration string
 	debug         bool
 	workdir       string
+	lockfile      string
 	logFile       string
 	logFileSize   int
 }
 
 func (r *Run) FlagSet() *flag.FlagSet {
 	flagset := flag.NewFlagSet("", flag.ExitOnError)
+	lockfile := filepath.Join(os.TempDir(), fmt.Sprintf("%s.pid", SERVICE))
 
 	flagset.BoolVar(&r.console, "console", false, "Runs as a console application rather than a service")
 	flagset.StringVar(&r.mode, "mode", "update", "Sets the run mode (normal/monitor/synchronize). Defaults to 'normal'")
 	flagset.StringVar(&r.configuration, "config", r.configuration, "Sets the configuration file path")
+	flagset.StringVar(&r.lockfile, "lockfile", r.lockfile, fmt.Sprintf("(optional) lockfile used to prevent running multiple copies of the service. Defaults to %v", lockfile))
 	flagset.BoolVar(&r.debug, "debug", false, "Enables detailed debugging logs")
 
 	return flagset
@@ -68,7 +72,7 @@ func (cmd *Run) execute(f func(c config.Config)) error {
 	// ... load configuration
 	conf := config.NewConfig()
 	if err := conf.Load(cmd.configuration); err != nil {
-		log.Printf("%5s Could not load configuration (%v)", "WARN", err)
+		log.Warnf("Could not load configuration (%v)", err)
 	}
 
 	// ... initialise timezones
@@ -77,32 +81,36 @@ func (cmd *Run) execute(f func(c config.Config)) error {
 		types.LoadTimezones(conf.HTTPD.Timezones)
 	}
 
-	// ... create lockfile
-	if err := os.MkdirAll(cmd.workdir, os.ModeDir|os.ModePerm); err != nil {
-		return fmt.Errorf("Unable to create working directory '%v': %v", cmd.workdir, err)
-	}
-
-	pid := fmt.Sprintf("%d\n", os.Getpid())
-	lockfile := filepath.Join(cmd.workdir, fmt.Sprintf("%s.pid", SERVICE))
-
-	if _, err := os.Stat(lockfile); err == nil {
-		return fmt.Errorf("PID lockfile '%v' already in use", lockfile)
-	} else if !os.IsNotExist(err) {
-		return fmt.Errorf("Error checking PID lockfile '%v' (%v)", lockfile, err)
-	}
-
-	if err := os.WriteFile(lockfile, []byte(pid), 0644); err != nil {
-		return fmt.Errorf("Unable to create PID lockfile: %v", err)
-	}
+	// ... panic handler
 
 	defer func() {
 		if err := recover(); err != nil {
-			log.Printf("%-5s %v\n", "FATAL", err)
+			log.Errorf("%v\n", err)
 			os.Exit(-1)
 		}
 	}()
 
-	defer os.Remove(lockfile)
+	// ... create lockfile
+	lockFile := config.Lockfile{
+		File:   cmd.lockfile,
+		Remove: conf.LockfileRemove,
+	}
+
+	if lockFile.File == "" {
+		lockFile.File = filepath.Join(os.TempDir(), fmt.Sprintf("%s.pid", SERVICE))
+	}
+
+	if lock, err := lockfile.MakeLockFile(lockFile); err != nil {
+		return err
+	} else {
+		defer func() {
+			lock.Release()
+		}()
+
+		log.SetFatalHook(func() {
+			lock.Release()
+		})
+	}
 
 	f(*conf)
 
