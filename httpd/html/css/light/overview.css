@@ -765,6 +765,9 @@ tr td select[data-status=error] {
   height: 100%;
 }
 
+div#controllers {
+  border-bottom-right-radius: 0px;
+}
 div#controllers th.name {
   min-width: 90px;
   border-bottom: 1px;
@@ -813,6 +816,7 @@ div#controllers tr.controller td input.door1, div#controllers .door2, div#contro
 
 div#events {
   margin-top: 16px;
+  border-bottom-right-radius: 0px;
 }
 div#events th.timestamp {
   border-bottom: 1px;

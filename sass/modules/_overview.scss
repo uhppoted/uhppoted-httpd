@@ -6,6 +6,8 @@
 }
 
 div#controllers {
+  border-bottom-right-radius: 0px;
+
   th.name {
     min-width: 90px;
     border-bottom: 1px;
@@ -71,6 +73,7 @@ div#controllers {
 
 div#events {
   margin-top: 16px;
+  border-bottom-right-radius: 0px;
 
   th.timestamp {
     border-bottom: 1px;

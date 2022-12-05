@@ -2,10 +2,10 @@
 
 ### IN PROGRESS
 
-- [ ] Top border radius on overview events and log panels
+- [x] Bottom border radius on overview controller and events panels
 - [ ] Rationalise SASS styles
       - [x] [OKSolar](https://meat.io/oksolar)
-      - [ ] Define a set of base colours in _palette
+      - [x] Define a set of base colours in _palette
       - [ ] Everything everywhere should import _uhppoted first
 
 - (?) Maybe invoke CanXXX from object lists
