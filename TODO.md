@@ -4,6 +4,7 @@
 
 - [x] Bottom border radius on overview controller and events panels
 - [x] Implement `config` command (https://github.com/uhppoted/uhppoted-httpd/issues/11)
+- [x] Update systemd unit file to wait on `network-online.target` (cf. https://github.com/uhppoted/uhppoted/issues/19)
 
 - [ ] Rationalise SASS styles
       - [x] [OKSolar](https://meat.io/oksolar)

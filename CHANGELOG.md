@@ -11,6 +11,7 @@
 1. Reworked 'change password' to use Authorization header
 2. Locked user login after too many failed attempts
 3. Removed legacy support for users in auth.json
+4. Updated _systemd_ unit file to wait for `network-online.target`
 
 ## [0.8.2](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.2) - 2022-10-14
 
