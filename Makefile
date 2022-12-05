@@ -131,3 +131,6 @@ daemonize: build
 undaemonize: build
 	sudo $(CMD) undaemonize
 
+config: build
+	$(CMD) config
+

@@ -136,11 +136,10 @@ Supported commands:
 
 - `help`
 - `version`
-- `config`
 - `run`
-- `console`
 - `daemonize`
 - `undaemonize`
+- `config`
 
 Defaults to `run` if the command it not provided i.e. ```uhppoted-httpd <options>``` is equivalent to 
 ```uhppoted-httpd run <options>```.
@@ -178,7 +177,17 @@ Unregisters `uhppoted-httpd` as a system service, but does not delete any create
 
 Command line:
 
-`uhppoted-httpd undaemonize `
+`uhppoted-httpd undaemonize`
+
+### `config`
+
+Displays the current system configuration. Primarily intended as a convenience for scripts but can also be used to
+create a _uhppoted.conf_ file by directing the output to a file (e.g. `uhppoted-http config > /etc/uhppoted/uhppoted.conf`)
+
+Command line:
+
+`uhppoted-httpd config`
+
 
 ## Supporting files
 

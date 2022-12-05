@@ -3,6 +3,8 @@
 ### IN PROGRESS
 
 - [x] Bottom border radius on overview controller and events panels
+- [x] Implement `config` command (https://github.com/uhppoted/uhppoted-httpd/issues/11)
+
 - [ ] Rationalise SASS styles
       - [x] [OKSolar](https://meat.io/oksolar)
       - [x] Define a set of base colours in _palette

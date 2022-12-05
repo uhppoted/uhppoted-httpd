@@ -7,6 +7,7 @@ import (
 	"github.com/uhppoted/uhppote-core/uhppote"
 	"github.com/uhppoted/uhppoted-httpd/commands"
 	"github.com/uhppoted/uhppoted-lib/command"
+	"github.com/uhppoted/uhppoted-lib/config"
 )
 
 var cli = []uhppoted.Command{
@@ -15,6 +16,10 @@ var cli = []uhppoted.Command{
 	&uhppoted.Version{
 		Application: commands.SERVICE,
 		Version:     uhppote.VERSION,
+	},
+	&uhppoted.Config{
+		Application: commands.SERVICE,
+		Config:      config.DefaultConfig,
 	},
 }
 
