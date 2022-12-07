@@ -2,10 +2,12 @@
 
 ## [Unreleased]
 
+### Added
 1. Added support for OTP as a password alternative on login. Please see security 
    note in [README](https://github.com/uhppoted/uhppoted-httpd#notes).
 2. Added optonal [OKSolar](https://meat.io/oksolar) palette.
 3. Implemented `config` command to display system configuration.
+4. Added ARM64 to release build artifacts
 
 ### Changed
 1. Reworked 'change password' to use Authorization header
@@ -14,6 +16,7 @@
 4. Updated _systemd_ unit file to wait for `network-online.target`
 5. Reworked lockfile to use `flock` _syscall_.
 6. Moved default lockfile to system _temp_ folder.
+
 
 ## [0.8.2](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.2) - 2022-10-14
 
