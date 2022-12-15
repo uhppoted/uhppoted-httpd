@@ -11,6 +11,7 @@
 - [ ] SCRAM authentication https://tools.ietf.org/html/rfc5802)
       - [SubtleCrypto](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto)
       - [PAKE](https://en.wikipedia.org/wiki/Password-authenticated_key_agreement) (?)
+      - https://en.wikipedia.org/wiki/WebAuthn
 
 #### Doors
   - [ ] Custom 'mode' dropdown to handle option click so that list can be updated asynchronously
@@ -208,6 +209,7 @@
   - https://en.wikipedia.org/wiki/Salted_Challenge_Response_Authentication_Mechanism
 - https://maori.geek.nz/golang-desktop-app-webview-vs-lorca-vs-electron-a5e6b2869391
 - https://github.com/wailsapp/wails
+- https://blog.chromium.org/2022/12/introducing-passkeys-in-chrome.html
 
 # REFERENCES
 

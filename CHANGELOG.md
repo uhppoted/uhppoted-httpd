@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [Unreleased]
+## [0.8.3](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.3) - 2022-11-16
 
 ### Added
 1. Added support for OTP as a password alternative on login. Please see security 

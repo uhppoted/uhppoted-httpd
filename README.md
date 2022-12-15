@@ -7,8 +7,6 @@ on UHPPOTE TCP/IP controllers. It is intended to supplement the existing command
 
 ## Status
 
-_In development_
-
 Supported operating systems:
 - Linux
 - MacOS
@@ -32,6 +30,7 @@ become a platform for exploring some alternative ideas around user interfaces an
 
 | *Version* | *Description*                                                                             |
 | --------- | ----------------------------------------------------------------------------------------- |
+| v0.8.3    | Adds OTP as an alternative login credential                                               |
 | v0.8.2    | Maintenance release for compatibility with _uhppote-core_ v0.8.2                          |
 | v0.8.1    | Fixes event retrieval for firmware bug around retrieving `system restart` event           |
 | v0.8.0    | Initial release                                                                           |
@@ -78,7 +77,7 @@ The default user name and password for the quickstart are _admin_ and _uhppoted_
 ### Building from source
 
 Required tools:
-- [Go 1.18+](https://go.dev)
+- [Go 1.19+](https://go.dev)
 - [sass](https://sass-lang.com)
 - make (optional but recommended)
 - [eslint](https://eslint.org) (optional but recommended)
@@ -86,7 +85,7 @@ Required tools:
 
 **NOTES:**
 
-1. `apt install` sass on Ubuntu installs `ruby-sass` which was marked **[obsolete](https://sass-lang.com/ruby-sass)**
+1. `apt install sass` on Ubuntu installs `ruby-sass` which was marked **[obsolete](https://sass-lang.com/ruby-sass)**
 in 2019. Please follow the installation instructions on the [Sass homepage](https://sass-lang.com) to install
 the current version._
 
