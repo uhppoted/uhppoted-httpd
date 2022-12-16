@@ -22,12 +22,7 @@
           <div id="controls" data-oid="{{ .schema.Groups.OID }}">
             <img id="commitall" class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('groups', event, 'groups')" draggable="false" />
             <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('groups', event)"  draggable="false"  />
-            <div id="message" class="message">
-              <div>
-                <span class="warning" id="warning"></span>
-                <button class="dismiss" onclick="dismiss()">&#9746;</button>
-              </div>
-            </div>
+            {{template "message"   .}}
             <img id="add"     class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('group')" />
             <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('groups', event)" />
           </div>

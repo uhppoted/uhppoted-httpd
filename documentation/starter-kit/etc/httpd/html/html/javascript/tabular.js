@@ -209,6 +209,10 @@ export function onTick (tag, event) {
     case 'group':
       set(event.target, event.target.checked ? 'true' : 'false')
       break
+
+    case 'user':
+      set(event.target, event.target.checked ? 'true' : 'false')
+      break
   }
 }
 

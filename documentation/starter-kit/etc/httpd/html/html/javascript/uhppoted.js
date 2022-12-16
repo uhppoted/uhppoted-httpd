@@ -48,7 +48,9 @@ export function onSignOut (event) {
       }
     })
     .then(msg => {
-      warning(msg)
+      if (msg) {
+        warning(msg)
+      }
     })
     .catch(function (err) {
       console.error(err)
@@ -180,16 +182,19 @@ export function retheme (theme) {
 }
 
 export function warning (msg) {
-  if (msg) {
-    const message = document.getElementById('message')
-    const text = document.getElementById('warning')
+  const message = document.getElementById('message')
+  const text = document.getElementById('warning')
 
-    if (text != null) {
-      text.innerText = msg
-      message.style.visibility = 'visible'
+  if (message && text) {
+    if (msg) {
+      message.classList.add('visible')
+      text.value = msg
     } else {
-      alert(msg)
+      message.classList.remove('visible')
+      text.value = ''
     }
+  } else if (msg) {
+    alert(msg)
   }
 }
 
@@ -197,10 +202,107 @@ export function dismiss () {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 
-  if (text != null) {
-    text.innerText = 'msg'
-    message.style.visibility = 'hidden'
+  if (message) {
+    message.classList.remove('visible')
   }
+
+  if (text) {
+    text.innerText = 'msg' // FIXME - think this was a hack for a layout issue - fix in CSS rather
+  }
+}
+
+export async function GET (url = '', authorization = '') {
+  const init = {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    headers: { Authorization: authorization }
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      connected(true)
+      return response
+    })
+    .catch(function (err) {
+      connected(false)
+      throw err
+    })
+}
+
+export async function POST (url = '', authorization = '', data = {}) {
+  dismiss()
+
+  const body = Object.entries(data)
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&')
+    .replace(/%20/g, '+')
+
+  const init = {
+    method: 'POST',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      Authorization: authorization,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    body: body
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      return response
+    })
+    .catch(function (err) {
+      throw err
+    })
+}
+
+export async function DELETE (url = '', authorization = '') {
+  const init = {
+    method: 'DELETE',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+    headers: { Authorization: authorization }
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      return response
+    })
+    .catch(function (err) {
+      throw err
+    })
+}
+
+export async function getAsJSON (url = '') {
+  const init = {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer'
+  }
+
+  return await fetch(url, init)
+    .then(response => {
+      connected(true)
+      return response
+    })
+    .catch(function (err) {
+      connected(false)
+      throw err
+    })
 }
 
 export async function postAsForm (url = '', data = {}) {
@@ -220,27 +322,6 @@ export async function postAsForm (url = '', data = {}) {
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
     body: pairs.join('&').replace(/%20/g, '+')
-  }
-
-  return await fetch(url, init)
-    .then(response => {
-      connected(true)
-      return response
-    })
-    .catch(function (err) {
-      connected(false)
-      throw err
-    })
-}
-
-export async function getAsJSON (url = '') {
-  const init = {
-    method: 'GET',
-    mode: 'cors',
-    cache: 'no-cache',
-    credentials: 'same-origin',
-    redirect: 'follow',
-    referrerPolicy: 'no-referrer'
   }
 
   return await fetch(url, init)
@@ -284,7 +365,7 @@ export function resetIdle () {
     clearTimeout(idleTimer)
   }
 
-  idleTimer = setTimeout(onIdle, 15 * 60 * 1000)
+  idleTimer = setTimeout(onIdle, 5 * 60 * 1000)
 }
 
 export function busy () {

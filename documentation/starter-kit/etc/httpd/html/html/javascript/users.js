@@ -121,7 +121,9 @@ function add (oid, record) {
       { suffix: 'name', oid: `${oid}${schema.users.name}`, selector: 'td input.name' },
       { suffix: 'uid', oid: `${oid}${schema.users.uid}`, selector: 'td input.uid' },
       { suffix: 'role', oid: `${oid}${schema.users.role}`, selector: 'td input.role' },
-      { suffix: 'password', oid: `${oid}${schema.users.password}`, selector: 'td input.password' }
+      { suffix: 'password', oid: `${oid}${schema.users.password}`, selector: 'td input.password' },
+      { suffix: 'otp', oid: `${oid}${schema.users.otp}`, selector: 'td label.otp input' },
+      { suffix: 'locked', oid: `${oid}${schema.users.locked}`, selector: 'td label.locked input' }
     ]
 
     fields.forEach(f => {
@@ -149,6 +151,8 @@ function updateFromDB (oid, record) {
   const uid = row.querySelector(`[data-oid="${oid}${schema.users.uid}"]`)
   const role = row.querySelector(`[data-oid="${oid}${schema.users.role}"]`)
   const password = row.querySelector(`[data-oid="${oid}${schema.users.password}"]`)
+  const otp = row.querySelector(`[data-oid="${oid}${schema.users.otp}"]`)
+  const locked = row.querySelector(`[data-oid="${oid}${schema.users.locked}"]`)
 
   row.dataset.status = record.status
 
@@ -156,6 +160,24 @@ function updateFromDB (oid, record) {
   update(uid, record.uid)
   update(role, record.role)
   update(password, record.password)
+  update(otp, record.otp)
+  update(locked, record.locked)
+
+  if (record.otp === 'true') {
+    otp.disabled = false
+    otp.parentElement.classList.add('visible')
+  } else {
+    otp.disabled = true
+    otp.parentElement.classList.remove('visible')
+  }
+
+  if (record.locked === 'true') {
+    locked.disabled = false
+    locked.parentElement.classList.add('visible')
+  } else {
+    locked.disabled = true
+    locked.parentElement.classList.remove('visible')
+  }
 
   return row
 }

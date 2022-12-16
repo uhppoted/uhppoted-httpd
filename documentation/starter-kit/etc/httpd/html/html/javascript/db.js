@@ -727,6 +727,8 @@ function users (o) {
       uid: '',
       role: '',
       password: '',
+      otp: '',
+      locked: '',
       details: '',
       created: '',
       deleted: '',
@@ -766,6 +768,14 @@ function users (o) {
 
     case `${base}${schema.users.password}`:
       v.password = o.value
+      break
+
+    case `${base}${schema.users.otp}`:
+      v.otp = o.value
+      break
+
+    case `${base}${schema.users.locked}`:
+      v.locked = o.value
       break
   }
 }

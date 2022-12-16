@@ -225,11 +225,14 @@ footer {
   align-items: flex-end;
   margin-bottom: 2px;
 }
-
 #controls #message {
   flex-grow: 1;
   margin-left: 0px;
   margin-right: 6px;
+  visibility: hidden;
+}
+#controls #message.visible {
+  visibility: visible;
 }
 
 #controls img.button {
@@ -310,32 +313,31 @@ footer {
 }
 
 .message {
-  background-color: #eee8d5;
-  display: block;
-  height: 23px;
-  padding: 0px 4px 4px 0px;
-  text-align: center;
+  background: #eee8d5;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 4px;
   font-size: 0.9em;
-  font-weight: normal;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
   border-radius: 4px;
   visibility: hidden;
 }
-
-.message div {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+.message .visible {
+  visibility: visible;
 }
-
 .message .warning {
-  flex: auto;
-}
-
-.warning {
   color: #dc322f;
-  font-family: Sans-Serif;
-  font-size: 0.9em;
+  text-align: center;
+  text-overflow: ellipsis;
+  padding-left: 8px;
+  padding-right: 8px;
+  font-family: sans-serif;
+  border: none;
+  outline: none;
 }
 
 .dismiss {
@@ -648,14 +650,13 @@ form button {
 }
 
 #message {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 4px 0px 4px 0px;
+  grid-template-columns: 1fr;
   font-size: 0.85em;
-  background: #eee8d5;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-radius: 4px;
 }
 
-#message .warning {
-  color: #dc322f;
+#message.visible {
+  visibility: visible;
 }

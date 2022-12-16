@@ -249,11 +249,14 @@ footer {
   align-items: flex-end;
   margin-bottom: 2px;
 }
-
 #controls #message {
   flex-grow: 1;
   margin-left: 0px;
   margin-right: 6px;
+  visibility: hidden;
+}
+#controls #message.visible {
+  visibility: visible;
 }
 
 #controls img.button {
@@ -334,32 +337,31 @@ footer {
 }
 
 .message {
-  background-color: #073642;
-  display: block;
-  height: 23px;
-  padding: 0px 4px 4px 0px;
-  text-align: center;
+  background: #073642;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 4px;
   font-size: 0.9em;
-  font-weight: normal;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
   border-radius: 4px;
   visibility: hidden;
 }
-
-.message div {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+.message .visible {
+  visibility: visible;
 }
-
 .message .warning {
-  flex: auto;
-}
-
-.warning {
   color: #839496;
-  font-family: Sans-Serif;
-  font-size: 0.9em;
+  text-align: center;
+  text-overflow: ellipsis;
+  padding-left: 8px;
+  padding-right: 8px;
+  font-family: sans-serif;
+  border: none;
+  outline: none;
 }
 
 .dismiss {
@@ -792,43 +794,82 @@ th.name {
   border-bottom: 1px;
 }
 
-th.group {
-  white-space: nowrap;
-}
-
 tr.user td input.name {
   width: 90px;
 }
 
-td label.group {
+td label.otp {
   cursor: pointer;
+  visibility: hidden;
 }
 
-td label.group input[type=checkbox] {
+td label.otp.visible {
+  visibility: visible;
+}
+
+td label.otp input[type=checkbox] {
   display: none;
 }
 
-td label.group img {
+td label.otp img {
   width: 14px;
   height: 14px;
   padding: 2px;
   margin: auto;
 }
 
-td label.group img.yes {
+td label.otp img.yes {
   display: none;
   filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
 }
 
-td label.group img.no {
+td label.otp img.no {
   display: block;
   filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
 }
 
-td label.group input[type=checkbox]:checked ~ img.yes {
+td label.otp input[type=checkbox]:checked ~ img.yes {
   display: block;
 }
 
-td label.group input[type=checkbox]:checked ~ img.no {
+td label.otp input[type=checkbox]:checked ~ img.no {
+  display: none;
+}
+
+td label.locked {
+  cursor: pointer;
+  visibility: hidden;
+}
+
+td label.locked.visible {
+  visibility: visible;
+}
+
+td label.locked input[type=checkbox] {
+  display: none;
+}
+
+td label.locked img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  margin: auto;
+}
+
+td label.locked img.yes {
+  display: none;
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
+}
+
+td label.locked img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+
+td label.locked input[type=checkbox]:checked ~ img.yes {
+  display: block;
+}
+
+td label.locked input[type=checkbox]:checked ~ img.no {
   display: none;
 }
