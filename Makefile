@@ -90,6 +90,11 @@ release: update-release build-all build-quickstart
 	find . -name ".DS_Store" -delete
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 
+publish: release
+	echo "Releasing version $(VERSION)"
+	rm -f dist/development.tar.gz
+	gh release create "$(VERSION)" ./dist/*.tar.gz --draft --prerelease --title "$(VERSION)-beta" --notes-file release-notes.md
+
 debug: format
 	go build -trimpath -o bin ./...
 	go test -tags "tests" -run TestTimezoneGMT2 ./types
