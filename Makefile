@@ -114,6 +114,9 @@ delve: format
 sass:
 	find sass -name "*.scss" | entr sass --no-source-map sass/themes/light:httpd/html/css/light sass/themes/dark:httpd/html/css/dark
 
+godoc:
+	godoc -http=:80	-index_interval=60s
+
 version: build
 	$(CMD) version
 

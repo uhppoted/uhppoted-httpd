@@ -35,6 +35,7 @@
 
 ## FYI
 
+- [Authzed](https://authzed.com)
 - [ ] Look into [Temporal](https://blogs.igalia.com/compilers/2020/06/23/dates-and-times-in-javascript)
       for date/time stuff
 - [ ] https://tls-anvil.com/docs/Quick-Start/index
