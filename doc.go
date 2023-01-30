@@ -5,7 +5,7 @@
 /*
 Package uhppoted-httpd implements a basic browser GUI for managing UHPPOTE TCP/IP Wiegand-26 access controllers.
 
-The HTTPD server includes support for both HTTP and HTTPS as well as authentication and authorisation. The user 
+The HTTPD server includes support for both HTTP and HTTPS as well as authentication and authorisation. The user
 interface includes the ability to view and manage:
 
   - interface configuration
@@ -13,6 +13,5 @@ interface includes the ability to view and manage:
   - card access
   - events
   - logs
-
 */
 package httpd
