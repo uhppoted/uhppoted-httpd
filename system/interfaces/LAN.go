@@ -560,7 +560,6 @@ func (l *LAN) api(controllers []types.IController) *uhppoted.UHPPOTED {
 	u := uhppote.NewUHPPOTE(l.BindAddress, l.BroadcastAddress, l.ListenAddress, 1*time.Second, devices, l.Debug)
 	api := uhppoted.UHPPOTED{
 		UHPPOTE: u,
-		Log:     log.Default(),
 	}
 
 	return &api
