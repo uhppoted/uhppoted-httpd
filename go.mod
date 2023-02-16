@@ -1,14 +1,14 @@
 module github.com/uhppoted/uhppoted-httpd
 
-go 1.19
+go 1.20
 
 require (
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.3.0
 	github.com/hyperjumptech/grule-rule-engine v1.13.0
 	github.com/pquerna/otp v1.3.0
-	github.com/uhppoted/uhppote-core v0.8.4-0.20230207194159-0cb427701144
-	github.com/uhppoted/uhppoted-lib v0.8.4-0.20230207194809-a552055e8f82
+	github.com/uhppoted/uhppote-core v0.8.4-0.20230213182106-93ae073370a0
+	github.com/uhppoted/uhppoted-lib v0.8.4-0.20230214181359-7f5b2f8c0fab
 	golang.org/x/sys v0.5.0
 )
 
@@ -27,8 +27,8 @@ require (
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
-	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550 // indirect
-	golang.org/x/net v0.0.0-20210805182204-aaa1db679c0d // indirect
+	golang.org/x/crypto v0.6.0 // indirect
+	golang.org/x/net v0.6.0 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
