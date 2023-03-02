@@ -10,6 +10,7 @@ const CardDeleted = schema.Deleted
 const CardModified = schema.Modified
 const CardName = schema.CardName
 const CardNumber = schema.CardNumber
+const CardPIN = schema.CardPIN
 const CardFrom = schema.CardFrom
 const CardTo = schema.CardTo
 const CardGroups = schema.CardGroups
@@ -22,6 +23,7 @@ var lookup = map[schema.Suffix]string{
 	CardModified: "card.modified",
 	CardName:     "card.name",
 	CardNumber:   "card.number",
+	CardPIN:      "card.PIN",
 	CardFrom:     "card.from",
 	CardTo:       "card.to",
 	CardGroups:   "card.groups",

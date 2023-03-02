@@ -31,6 +31,7 @@ func TestCardAsObjects(t *testing.T) {
 			CardID: 8165537,
 		},
 		name:    "Le Card",
+		pin:     7531,
 		from:    from,
 		to:      to,
 		created: created,
@@ -45,6 +46,7 @@ func TestCardAsObjects(t *testing.T) {
 		{OID: "0.4.3.2", Value: uint32(8165537)},
 		{OID: "0.4.3.3", Value: from},
 		{OID: "0.4.3.4", Value: to},
+		{OID: "0.4.3.6", Value: uint32(7531)},
 	}
 
 	objects := c.AsObjects(nil)
@@ -94,6 +96,7 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 			CardID: 8165537,
 		},
 		name:    "Le Card",
+		pin:     7531,
 		from:    from,
 		to:      to,
 		created: created,
@@ -107,6 +110,7 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.4.3.1", Value: "Le Card"},
 		{OID: "0.4.3.3", Value: from},
 		{OID: "0.4.3.4", Value: to},
+		{OID: "0.4.3.6", Value: uint32(7531)},
 	}
 
 	a := auth.Authorizator{

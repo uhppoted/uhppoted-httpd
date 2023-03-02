@@ -1,7 +1,13 @@
 # TODO
 
-- [ ] PIN field
-      - https://github.com/uhppoted/uhppoted/issues/23
+- [ ] PIN field (https://github.com/uhppoted/uhppoted/issues/23)
+      - [x] Display PIN
+      - [x] Update PIN
+      - [x] Save/restore PIN
+      - [x] ACL
+      - [x] grules
+      - [ ] Make PIN system optional
+      - [ ] Shrink table width to fit-content
 
 ### To Be Done Sometime
 

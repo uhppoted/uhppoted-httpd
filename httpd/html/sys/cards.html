@@ -33,6 +33,7 @@
                 <tr>
                   <th class="name    topleft">Name</th>
                   <th class="number  colheader">Card Number</th>
+                  <th class="pin     colheader">PIN</th>
                   <th class="from    colheader">From</th>
                   <th class="to      colheader">To</th>
                   <th class="padding colheader"></th>
@@ -64,6 +65,19 @@
                 <input class="field number"
                        type="number" 
                        min="0"
+                       placeholder="-"
+                       onkeydown="onEnter('card', event)" 
+                       onchange="onEdited('card', event)" 
+                       data-record=""
+                       data-original=""
+                       data-value=""
+                       {{if .readonly}}readonly{{end}} />
+              </td>
+              <td>
+                <input class="field PIN"
+                       type="number" 
+                       min="0"
+                       max="999999"
                        placeholder="-"
                        onkeydown="onEnter('card', event)" 
                        onchange="onEdited('card', event)" 

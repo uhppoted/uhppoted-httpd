@@ -431,7 +431,7 @@ func (l *LAN) setDoor(c types.IController, door uint8, mode lib.ControlState, de
 	}
 }
 
-func (l *LAN) putCard(c types.IController, cardID uint32, from, to lib.Date, permissions map[uint8]uint8) {
+func (l *LAN) putCard(c types.IController, cardID uint32, PIN uint32, from, to lib.Date, permissions map[uint8]uint8) {
 	lock(c.ID())
 	defer unlock(c.ID())
 
@@ -440,6 +440,7 @@ func (l *LAN) putCard(c types.IController, cardID uint32, from, to lib.Date, per
 
 	card := lib.Card{
 		CardNumber: cardID,
+		PIN:        lib.PIN(PIN),
 		From:       &from,
 		To:         &to,
 		Doors: map[uint8]uint8{
@@ -490,7 +491,7 @@ func (l *LAN) compareACL(controllers []types.IController, permissions acl.ACL) (
 		log.Warnf("%v", err)
 	}
 
-	compare, err := acl.Compare(permissions, current)
+	compare, err := acl.CompareWithPIN(permissions, current)
 	if err != nil {
 		return nil, err
 	} else if compare == nil {

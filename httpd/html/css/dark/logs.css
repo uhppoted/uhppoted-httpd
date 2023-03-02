@@ -43,7 +43,7 @@ body {
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: 120px 1fr 120px;
+  grid-template-columns: 120px 1fr 60px;
   grid-template-rows: auto 1fr auto;
   grid-template-areas: "header header header" "left  content right" "footer footer footer";
 }

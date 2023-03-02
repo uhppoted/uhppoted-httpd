@@ -89,6 +89,7 @@ type Cards struct {
 	Metadata
 	Name   Suffix `json:"name"`
 	Card   Suffix `json:"card"`
+	PIN    Suffix `json:"PIN"`
 	From   Suffix `json:"from"`
 	To     Suffix `json:"to"`
 	Groups Suffix `json:"groups"`
@@ -281,6 +282,7 @@ var schema = Schema{
 		},
 		Name:   CardName,
 		Card:   CardNumber,
+		PIN:    CardPIN,
 		From:   CardFrom,
 		To:     CardTo,
 		Groups: CardGroups,
@@ -413,6 +415,7 @@ const CardNumber Suffix = ".2"
 const CardFrom Suffix = ".3"
 const CardTo Suffix = ".4"
 const CardGroups Suffix = ".5"
+const CardPIN Suffix = ".6"
 
 const GroupName Suffix = ".1"
 const GroupDoors Suffix = ".2"

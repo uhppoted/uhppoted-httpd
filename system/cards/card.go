@@ -20,6 +20,7 @@ import (
 type Card struct {
 	catalog.CatalogCard
 	name   string
+	pin    uint32
 	from   lib.Date
 	to     lib.Date
 	groups map[schema.OID]bool
@@ -59,12 +60,21 @@ func (c Card) AsAclCard() (lib.Card, bool) {
 
 	card := lib.Card{
 		CardNumber: c.CardID,
+		PIN:        lib.PIN(c.pin),
 		From:       &from,
 		To:         &to,
 		Doors:      map[uint8]uint8{1: 0, 2: 0, 3: 0, 4: 0},
 	}
 
 	return card, c.CardID != 0 && !c.unconfigured
+}
+
+func (c Card) PIN() uint32 {
+	if c.pin < 1000000 {
+		return c.pin
+	} else {
+		return 0
+	}
 }
 
 func (c Card) From() lib.Date {
@@ -120,6 +130,7 @@ func (c *Card) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{CardNumber, c.CardID})
 		list = append(list, kv{CardFrom, from})
 		list = append(list, kv{CardTo, to})
+		list = append(list, kv{CardPIN, c.pin})
 
 		groups := catalog.GetGroups()
 		re := regexp.MustCompile(`^(.*?)(\.[0-9]+)$`)
@@ -144,12 +155,14 @@ func (c Card) AsRuleEntity() (string, interface{}) {
 	entity := struct {
 		Name   string
 		Number uint32
+		PIN    uint32
 		From   string
 		To     string
 		Groups []string
 	}{
 		Name:   c.name,
 		Number: c.CardID,
+		PIN:    c.pin,
 		From:   fmt.Sprintf("%v", c.from),
 		To:     fmt.Sprintf("%v", c.to),
 		Groups: []string{},
@@ -220,6 +233,35 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 				c.modified = types.TimestampNow()
 
 				list = append(list, kv{CardNumber, ""})
+			}
+		}
+
+	case oid == c.OID.Append(CardPIN):
+		if ok, err := regexp.MatchString("[0-9]+", value); err == nil && ok {
+			if pin, err := strconv.ParseUint(value, 10, 32); err != nil {
+				return nil, err
+			} else if pin > 999999 {
+				return nil, fmt.Errorf("invalid PIN - valid range is [0..999999]")
+			} else if err := CanUpdate(a, c, "PIN", pin); err != nil {
+				return nil, err
+			} else {
+				c.log(dbc, uid, "update", "pin", c.CardID, "----", "Updated card PIN")
+
+				c.pin = uint32(pin)
+				c.modified = types.TimestampNow()
+
+				list = append(list, kv{CardPIN, c.pin})
+			}
+		} else if value == "" {
+			if err := CanUpdate(a, c, "PIN", 0); err != nil {
+				return nil, err
+			} else {
+				c.log(dbc, uid, "update", "card", c.CardID, "----", "Cleared card PIN")
+
+				c.pin = 0
+				c.modified = types.TimestampNow()
+
+				list = append(list, kv{CardPIN, ""})
 			}
 		}
 
@@ -363,6 +405,7 @@ func (c Card) serialize() ([]byte, error) {
 		OID      schema.OID      `json:"OID"`
 		Name     string          `json:"name,omitempty"`
 		Card     types.Uint32    `json:"card,omitempty"`
+		PIN      types.Uint32    `json:"PIN,omitempty"`
 		From     lib.Date        `json:"from,omitempty"`
 		To       lib.Date        `json:"to,omitempty"`
 		Groups   []schema.OID    `json:"groups"`
@@ -372,6 +415,7 @@ func (c Card) serialize() ([]byte, error) {
 		OID:      c.OID,
 		Name:     strings.TrimSpace(c.name),
 		Card:     types.Uint32(c.CardID),
+		PIN:      types.Uint32(c.pin),
 		From:     c.from,
 		To:       c.to,
 		Groups:   []schema.OID{},
@@ -397,6 +441,7 @@ func (c *Card) deserialize(bytes []byte) error {
 		OID      schema.OID      `json:"OID"`
 		Name     string          `json:"name,omitempty"`
 		Card     types.Uint32    `json:"card,omitempty"`
+		PIN      types.Uint32    `json:"PIN,omitempty"`
 		From     lib.Date        `json:"from,omitempty"`
 		To       lib.Date        `json:"to,omitempty"`
 		Groups   []schema.OID    `json:"groups"`
@@ -414,6 +459,7 @@ func (c *Card) deserialize(bytes []byte) error {
 	c.OID = record.OID
 	c.name = strings.TrimSpace(record.Name)
 	c.CardID = uint32(record.Card)
+	c.pin = uint32(record.PIN)
 	c.from = record.From
 	c.to = record.To
 	c.groups = map[schema.OID]bool{}
@@ -440,6 +486,7 @@ func (c *Card) clone() *Card {
 			CardID: c.CardID,
 		},
 		name:   c.name,
+		pin:    c.pin,
 		from:   c.from,
 		to:     c.to,
 		groups: groups,

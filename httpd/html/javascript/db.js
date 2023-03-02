@@ -409,6 +409,7 @@ function cards (o) {
       deleted: '',
       name: '',
       number: '',
+      PIN: '',
       from: '',
       to: '',
       groups: new Map(),
@@ -440,6 +441,10 @@ function cards (o) {
 
     case `${base}${schema.cards.card}`:
       v.number = o.value
+      break
+
+    case `${base}${schema.cards.PIN}`:
+      v.PIN = o.value
       break
 
     case `${base}${schema.cards.from}`:

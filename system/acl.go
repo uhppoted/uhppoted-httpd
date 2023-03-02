@@ -119,11 +119,13 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 		4: 0,
 	}
 
+	PIN := uint32(0)
 	from := lib.Date{}
 	to := lib.Date{}
 	card, unconfigured := s.cards.Lookup(cardID)
 
 	if card != nil {
+		PIN = card.PIN()
 		from = card.From()
 		to = card.To()
 
@@ -171,7 +173,7 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 	if card == nil || card.IsDeleted() || unconfigured {
 		s.interfaces.DeleteCard(controller, cardID)
 	} else {
-		s.interfaces.PutCard(controller, cardID, from, to, acl)
+		s.interfaces.PutCard(controller, cardID, PIN, from, to, acl)
 	}
 }
 

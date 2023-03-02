@@ -183,6 +183,7 @@ function add (oid, record) {
     const fields = [
       { suffix: 'name', oid: `${oid}${schema.cards.name}`, selector: 'td input.name' },
       { suffix: 'number', oid: `${oid}${schema.cards.card}`, selector: 'td input.number' },
+      { suffix: 'PIN', oid: `${oid}${schema.cards.PIN}`, selector: 'td input.PIN' },
       { suffix: 'from', oid: `${oid}${schema.cards.from}`, selector: 'td input.from' },
       { suffix: 'to', oid: `${oid}${schema.cards.to}`, selector: 'td input.to' }
     ]
@@ -211,6 +212,7 @@ function updateFromDB (oid, record) {
 
   const name = row.querySelector(`[data-oid="${oid}${schema.cards.name}"]`)
   const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
+  const PIN = row.querySelector(`[data-oid="${oid}${schema.cards.PIN}"]`)
   const from = row.querySelector(`[data-oid="${oid}${schema.cards.from}"]`)
   const to = row.querySelector(`[data-oid="${oid}${schema.cards.to}"]`)
   const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && alive(g))
@@ -219,6 +221,7 @@ function updateFromDB (oid, record) {
 
   update(name, record.name)
   update(number, parseInt(record.number, 10) === 0 ? '' : record.number)
+  update(PIN, parseInt(record.PIN, 10) === 0 ? '' : record.PIN)
   update(from, record.from)
   update(to, record.to)
 
