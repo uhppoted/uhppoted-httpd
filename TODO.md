@@ -1,10 +1,15 @@
 # TODO
 
-### IN PROGRESS
+- [ ] PIN field
+      - https://github.com/uhppoted/uhppoted/issues/23
+
+### To Be Done Sometime
 
 - [ ] Rationalise SASS styles
       - [ ] Everything everywhere should import _uhppoted first
 
+- (?) https://www.gnu.org/software/recutils/
+      -  https://git.sr.ht/~timetoplatypus/recfile
 - (?) Maybe invoke CanXXX from object lists
 - (?) Set cookie.Secure to true for TLS requests
 - [ ] Figure out some way to secure users.json against manual rewriting
