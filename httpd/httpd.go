@@ -41,9 +41,10 @@ type dispatcher struct {
 	context context.Context
 	timeout time.Duration
 	mode    types.RunMode
+	withPIN bool
 }
 
-func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
+func (h *HTTPD) Run(mode types.RunMode, withPIN bool, interrupt chan os.Signal) {
 	// ... initialisation
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -54,6 +55,7 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 		context: ctx,
 		timeout: h.RequestTimeout,
 		mode:    mode,
+		withPIN: withPIN,
 	}
 
 	if h.HTML != "" {
@@ -70,7 +72,6 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 	mux.Handle("/css/", http.FileServer(fs))
 	mux.Handle("/images/", http.FileServer(fs))
 	mux.Handle("/fonts/", http.FileServer(fs))
-	mux.Handle("/javascript/", http.FileServer(fs))
 	mux.Handle("/manifest.json", http.FileServer(fs))
 
 	mux.HandleFunc("/sys/login.html", d.getNoAuth)
@@ -83,6 +84,8 @@ func (h *HTTPD) Run(mode types.RunMode, interrupt chan os.Signal) {
 	mux.HandleFunc("/sys/groups.html", d.getWithAuth)
 	mux.HandleFunc("/sys/events.html", d.getWithAuth)
 	mux.HandleFunc("/sys/logs.html", d.getWithAuth)
+
+	mux.HandleFunc("/javascript/", d.getJS)
 
 	mux.HandleFunc("/authenticate", d.dispatch)
 	mux.HandleFunc("/logout", d.dispatch)

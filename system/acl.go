@@ -15,7 +15,7 @@ func (s *system) synchronizeACL() error {
 
 	if acl, err := s.permissions(controllers); err != nil {
 		warnf("%v", err)
-	} else if diff, err := s.interfaces.CompareACL(controllers, acl); err != nil {
+	} else if diff, err := s.interfaces.CompareACL(controllers, acl, s.withPIN); err != nil {
 		warnf("%v", err)
 	} else if diff == nil {
 		warnf("Invalid ACL diff (%v)", diff)
@@ -62,7 +62,7 @@ func (s *system) compareACL() {
 
 	if acl, err := s.permissions(controllers); err != nil {
 		warnf("%v", err)
-	} else if diff, err := s.interfaces.CompareACL(controllers, acl); err != nil {
+	} else if diff, err := s.interfaces.CompareACL(controllers, acl, s.withPIN); err != nil {
 		warnf("%v", err)
 	} else if diff == nil {
 		warnf("Invalid ACL diff (%v)", diff)
@@ -125,9 +125,12 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 	card, unconfigured := s.cards.Lookup(cardID)
 
 	if card != nil {
-		PIN = card.PIN()
 		from = card.From()
 		to = card.To()
+
+		if s.withPIN {
+			PIN = card.PIN()
+		}
 
 		// ... get base permissions from groups
 		groups := card.Groups()

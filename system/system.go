@@ -66,6 +66,7 @@ var sys = system{
 	history:     history.NewHistory(),
 
 	mode:      types.Normal,
+	withPIN:   false,
 	taskQ:     NewTaskQ(),
 	retention: 6 * time.Hour,
 }
@@ -90,6 +91,7 @@ type system struct {
 	retention time.Duration // time after which 'deleted' items are permanently removed
 	trail     trail
 	mode      types.RunMode
+	withPIN   bool
 	debug     bool
 }
 
@@ -126,6 +128,7 @@ func Init(cfg config.Config, conf string, mode types.RunMode, debug bool) error 
 	catalog.Init(memdb.NewCatalog())
 
 	sys.mode = mode
+	sys.withPIN = cfg.HTTPD.WithPIN
 
 	sys.files = map[Tag]string{
 		TagInterfaces:  cfg.HTTPD.System.Interfaces,
@@ -278,7 +281,7 @@ func (s *system) synchronize() {
 
 	if acl, err := s.permissions(controllers); err != nil {
 		warnf("%v", err)
-	} else if diff, err := s.interfaces.CompareACL(controllers, acl); err != nil {
+	} else if diff, err := s.interfaces.CompareACL(controllers, acl, s.withPIN); err != nil {
 		warnf("%v", err)
 	} else if diff == nil {
 		warnf("Invalid ACL diff (%v)", diff)

@@ -476,8 +476,8 @@ func (l *LAN) deleteCard(c types.IController, card uint32) {
 	}
 }
 
-func (l *LAN) compareACL(controllers []types.IController, permissions acl.ACL) (map[uint32]acl.Diff, error) {
-	log.Debugf("%v", "Comparing ACL")
+func (l *LAN) compareACL(controllers []types.IController, permissions acl.ACL, withPIN bool) (map[uint32]acl.Diff, error) {
+	log.Debugf("Comparing ACL (with-pin:%v)", withPIN)
 
 	devices := []uhppote.Device{}
 	api := l.api(controllers)
@@ -491,7 +491,15 @@ func (l *LAN) compareACL(controllers []types.IController, permissions acl.ACL) (
 		log.Warnf("%v", err)
 	}
 
-	compare, err := acl.CompareWithPIN(permissions, current)
+	f := func(permissions, current acl.ACL) (map[uint32]acl.Diff, error) {
+		if withPIN {
+			return acl.CompareWithPIN(permissions, current)
+		} else {
+			return acl.Compare(permissions, current)
+		}
+	}
+
+	compare, err := f(permissions, current)
 	if err != nil {
 		return nil, err
 	} else if compare == nil {

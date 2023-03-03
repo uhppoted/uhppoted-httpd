@@ -305,9 +305,9 @@ func (ii *Interfaces) DeleteCard(controller types.IController, card uint32) {
 	}
 }
 
-func (ii *Interfaces) CompareACL(controllers []types.IController, permissions acl.ACL) (map[uint32]acl.Diff, error) {
+func (ii *Interfaces) CompareACL(controllers []types.IController, permissions acl.ACL, withPIN bool) (map[uint32]acl.Diff, error) {
 	if lan, ok := ii.LAN(); ok {
-		return lan.compareACL(controllers, permissions)
+		return lan.compareACL(controllers, permissions, withPIN)
 	}
 
 	return nil, nil

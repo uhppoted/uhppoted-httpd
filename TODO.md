@@ -6,7 +6,7 @@
       - [x] Save/restore PIN
       - [x] ACL
       - [x] grules
-      - [ ] Make PIN system optional
+      - [x] Make PIN system optional
       - [ ] Shrink table width to fit-content
 
 ### To Be Done Sometime

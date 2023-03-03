@@ -13,6 +13,7 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	text "text/template"
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
@@ -69,8 +70,9 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 	// ... parse headers, etc
 	acceptsGzip := parseHeader(r)
 	context := map[string]interface{}{
-		"Theme": parseSettings(r),
-		"Mode":  d.mode,
+		"Theme":   parseSettings(r),
+		"Mode":    d.mode,
+		"WithPIN": d.withPIN,
 	}
 
 	// ... normalise path
@@ -83,6 +85,61 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 	authorised := map[string]bool{}
 
 	d.translate(path, context, authorised, w, acceptsGzip)
+}
+
+func (d *dispatcher) getJS(w http.ResponseWriter, r *http.Request) {
+	if strings.ToUpper(r.Method) != http.MethodGet {
+		http.Error(w, "Invalid request", http.StatusMethodNotAllowed)
+		return
+	}
+
+	acceptsGzip := parseHeader(r)
+
+	// ... normalise path
+	file, err := resolve(r.URL)
+	if err != nil {
+		http.Error(w, "invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	// For a FS, use path.Join rather than filepath.Join (ref. https://pkg.go.dev/io/fs#ValidPath)
+	filepath := path.Join("javascript", path.Base(file))
+	if _, err := fs.Stat(d.fs, filepath); err != nil {
+		warnf("HTTPD", "Missing JS file '%s' (%w)", filepath, err)
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+
+	name := path.Base(file)
+	functions := template.FuncMap{}
+	context := map[string]any{
+		"WithPIN": d.withPIN,
+	}
+
+	t, err := text.New(name).Funcs(functions).ParseFS(d.fs, filepath)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var b bytes.Buffer
+	if err := t.Execute(&b, context); err != nil {
+		warnf("HTTPD", "Error translating JS file '%s' (%w)", file, err)
+		http.Error(w, "Error translating JS file", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/javascript")
+
+	if acceptsGzip && b.Len() > GZIP_MINIMUM {
+		w.Header().Set("Content-Encoding", "gzip")
+
+		gz := gzip.NewWriter(w)
+		gz.Write(b.Bytes())
+		gz.Close()
+	} else {
+		w.Write(b.Bytes())
+	}
 }
 
 func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
@@ -132,6 +189,7 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 		"Mode":    d.mode,
 		"User":    uid,
 		"Options": options,
+		"WithPIN": d.withPIN,
 	}
 
 	authorised := map[string]bool{
@@ -155,7 +213,7 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 	d.translate(path, context, authorised, w, acceptsGzip)
 }
 
-func (d *dispatcher) translate(file string, context map[string]interface{}, authorised map[string]bool, w http.ResponseWriter, acceptsGzip bool) {
+func (d *dispatcher) translate(file string, context map[string]any, authorised map[string]bool, w http.ResponseWriter, acceptsGzip bool) {
 	type nav struct {
 		Overview bool
 		System   bool
@@ -174,6 +232,7 @@ func (d *dispatcher) translate(file string, context map[string]interface{}, auth
 	page["mode"] = ""
 	page["readonly"] = false
 
+	fmt.Printf(">>>>>>>>> CONTEXT %v\n", context)
 	if d.mode == types.Monitor {
 		page["readonly"] = true
 	}

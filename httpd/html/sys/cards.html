@@ -33,7 +33,9 @@
                 <tr>
                   <th class="name    topleft">Name</th>
                   <th class="number  colheader">Card Number</th>
+                  {{if .context.WithPIN}}
                   <th class="pin     colheader">PIN</th>
+                  {{end}}
                   <th class="from    colheader">From</th>
                   <th class="to      colheader">To</th>
                   <th class="padding colheader"></th>
@@ -73,6 +75,7 @@
                        data-value=""
                        {{if .readonly}}readonly{{end}} />
               </td>
+              {{if .context.WithPIN}}
               <td>
                 <input class="field PIN"
                        type="number" 
@@ -86,6 +89,7 @@
                        data-value=""
                        {{if .readonly}}readonly{{end}} />
               </td>
+              {{end}}
               <td>
                 <input class="field from"
                        type="date" 

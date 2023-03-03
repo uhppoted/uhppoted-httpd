@@ -82,7 +82,6 @@ func (cmd *Run) execute(f func(c config.Config)) error {
 	}
 
 	// ... panic handler
-
 	defer func() {
 		if err := recover(); err != nil {
 			log.Errorf("%v\n", err)
@@ -181,5 +180,5 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 		panic(fmt.Errorf("Could not load system configuration (%v)", err))
 	}
 
-	h.Run(runMode, interrupt)
+	h.Run(runMode, conf.HTTPD.WithPIN, interrupt)
 }
