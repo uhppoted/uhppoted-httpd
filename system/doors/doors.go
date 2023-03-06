@@ -21,8 +21,6 @@ type Doors struct {
 	file  string
 }
 
-type object schema.Object
-
 var guard sync.RWMutex
 
 func NewDoors() Doors {
@@ -73,7 +71,7 @@ func (dd *Doors) Create(a *auth.Authorizator, oid schema.OID, value string, dbc 
 		if d, err := dd.add(a, Door{}); err != nil {
 			return nil, err
 		} else if d == nil {
-			return nil, fmt.Errorf("Failed to add 'new' door")
+			return nil, fmt.Errorf("failed to add 'new' door")
 		} else {
 			catalog.Join(&objects, catalog.NewObject(d.OID, "new"))
 			catalog.Join(&objects, catalog.NewObject2(d.OID, DoorCreated, d.created))
@@ -244,9 +242,9 @@ func (dd Doors) Validate() error {
 		}
 
 		if d.OID == "" {
-			return fmt.Errorf("Invalid door OID (%v)", d.OID)
+			return fmt.Errorf("invalid door OID (%v)", d.OID)
 		} else if k != d.OID {
-			return fmt.Errorf("Door %s: mismatched door OID %v (expected %v)", d.name, d.OID, k)
+			return fmt.Errorf("door %s: mismatched door OID %v (expected %v)", d.name, d.OID, k)
 		}
 
 		if err := d.validate(); err != nil {

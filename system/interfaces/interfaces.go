@@ -160,7 +160,7 @@ func (ii Interfaces) Validate() error {
 		}
 
 		if l.OID == "" {
-			return fmt.Errorf("Invalid LAN OID (%v)", l.OID)
+			return fmt.Errorf("invalid LAN OID (%v)", l.OID)
 		}
 
 		if k != l.OID {
@@ -211,7 +211,7 @@ func (ii *Interfaces) Search(controllers []types.IController) []uint32 {
 	wg.Wait()
 
 	list := []uint32{}
-	for k, _ := range found {
+	for k := range found {
 		list = append(list, k)
 	}
 
@@ -311,10 +311,6 @@ func (ii *Interfaces) CompareACL(controllers []types.IController, permissions ac
 	}
 
 	return nil, nil
-}
-
-func (ii *Interfaces) add(auth auth.OpAuth, l LAN) (*LAN, error) {
-	return nil, fmt.Errorf("NOT SUPPORTED")
 }
 
 func lock(id uint32) {

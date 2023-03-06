@@ -125,23 +125,6 @@ func (u User) AsRuleEntity() (string, interface{}) {
 	return "user", &entity
 }
 
-func (u User) get(a *auth.Authorizator, oid schema.OID) (string, error) {
-	if u.IsDeleted() {
-		return "", fmt.Errorf("User has been deleted")
-	}
-
-	switch {
-	case oid == u.OID.Append(UserOTP):
-		if err := CanView(a, u, "otp", ""); err != nil {
-			return "", err
-		} else {
-			return fmt.Sprintf("%v", u.otp != ""), nil
-		}
-	}
-
-	return "", nil
-}
-
 func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if u == nil {
 		return []schema.Object{}, nil
@@ -290,7 +273,7 @@ func (u User) toObjects(list []kv, a auth.OpAuth) []schema.Object {
 	}
 
 	for _, v := range list {
-		field, _ := lookup[v.field]
+		field := lookup[v.field]
 		if err := CanView(a, u, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(u.OID, v.field, v.value))
 		}

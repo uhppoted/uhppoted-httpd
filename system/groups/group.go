@@ -72,7 +72,7 @@ func (g *Group) AsObjects(a *auth.Authorizator) []schema.Object {
 		for _, door := range doors {
 			d := fmt.Sprintf("%v", door)
 
-			if m := re.FindStringSubmatch(d); m != nil && len(m) > 2 {
+			if m := re.FindStringSubmatch(d); len(m) > 2 {
 				did := m[2]
 				allowed := g.Doors[door]
 
@@ -142,7 +142,7 @@ func (g *Group) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.D
 		}
 
 	case schema.OID(g.OID.Append(GroupDoors)).Contains(oid):
-		if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
+		if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); len(m) > 1 {
 			did := m[1]
 			k := schema.DoorsOID.AppendS(did)
 			door := catalog.GetV(k, DoorName)
@@ -200,7 +200,7 @@ func (g Group) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	}
 
 	for _, v := range list {
-		field, _ := lookup[v.field]
+		field := lookup[v.field]
 		if err := CanView(a, g, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(g.OID, v.field, v.value))
 		}

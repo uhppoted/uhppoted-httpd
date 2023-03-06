@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -56,7 +56,7 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 			}
 
 		case "application/json":
-			blob, err := ioutil.ReadAll(r.Body)
+			blob, err := io.ReadAll(r.Body)
 			if err != nil {
 				warnf("HTTPD", "%v", err)
 				http.Error(w, "Error reading request", http.StatusInternalServerError)
@@ -75,7 +75,7 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 		}
 
 		response, err := f(body)
-		if err != nil && errors.Is(err, auth.Unauthorised) {
+		if err != nil && errors.Is(err, auth.ErrUnauthorised) {
 			warnf("HTTPD", "%v", err)
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return

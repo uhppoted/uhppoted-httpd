@@ -64,7 +64,7 @@ func (gg *Groups) Create(a *auth.Authorizator, oid schema.OID, value string, dbc
 		if g, err := gg.add(a, Group{}); err != nil {
 			return nil, err
 		} else if g == nil {
-			return nil, fmt.Errorf("Failed to add 'new' group")
+			return nil, fmt.Errorf("failed to add 'new' group")
 		} else {
 			g.log(dbc, auth.UID(a), "add", "group", "", "", "Added 'new' group")
 
@@ -208,9 +208,9 @@ func (gg Groups) Validate() error {
 		}
 
 		if g.OID == "" {
-			return fmt.Errorf("Invalid group OID (%v)", g.OID)
+			return fmt.Errorf("invalid group OID (%v)", g.OID)
 		} else if k != g.OID {
-			return fmt.Errorf("Group %s: mismatched group OID %v (expected %v)", g.Name, g.OID, k)
+			return fmt.Errorf("group %s: mismatched group OID %v (expected %v)", g.Name, g.OID, k)
 		}
 
 		if err := g.validate(); err != nil {

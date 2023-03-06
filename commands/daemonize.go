@@ -545,7 +545,7 @@ func (cmd *Daemonize) genTLSkeys(i info) (bool, error) {
 	if err != nil {
 		return false, err
 	} else if keys == nil {
-		return false, fmt.Errorf("Invalid TLS key set (%v)", keys)
+		return false, fmt.Errorf("invalid TLS key set (%v)", keys)
 	}
 
 	list := []struct {

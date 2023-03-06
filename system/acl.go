@@ -45,7 +45,7 @@ func (s *system) synchronizeACL() error {
 			go func(v types.IController) {
 				defer wg.Done()
 
-				for card, _ := range list {
+				for card := range list {
 					s.updateCardPermissions(controller, card)
 				}
 			}(controller)
@@ -92,7 +92,7 @@ func (s *system) compareACL() {
 
 		remap := func(cards map[uint32]struct{}) []uint32 {
 			list := []uint32{}
-			for k, _ := range cards {
+			for k := range cards {
 				list = append(list, k)
 			}
 

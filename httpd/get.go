@@ -202,7 +202,7 @@ func (d *dispatcher) getWithAuth(w http.ResponseWriter, r *http.Request) {
 		"/sys/users.html":       false,
 	}
 
-	for path, _ := range authorised {
+	for path := range authorised {
 		authorised[path] = d.authorised(uid, role, path)
 	}
 
@@ -288,12 +288,8 @@ func (d *dispatcher) translate(file string, context map[string]any, authorised m
 	}
 
 	// Ref. https://stackoverflow.com/questions/49043292/error-template-is-an-incomplete-or-empty-template
-	var name = path.Base(file)
-	var filename = file
-
-	if strings.HasPrefix(filename, "/") {
-		filename = filename[1:]
-	}
+	name := path.Base(file)
+	filename := strings.TrimPrefix(file, "/")
 
 	t, err := template.New(name).Funcs(functions).ParseFS(d.fs, "templates/snippets.html", filename)
 	if err != nil {

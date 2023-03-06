@@ -14,7 +14,6 @@ import (
 	lib "github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 
-	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
@@ -46,7 +45,7 @@ func Get(uid, role, keyid string) (string, time.Duration, []byte, error) {
 	if k, ok := secrets[keyid]; ok && k != nil && k.expires.After(now) {
 		secret = k
 	} else if u, ok := system.GetUser(uid); !ok || u == nil {
-		return "", 0, nil, fmt.Errorf("Invalid login credentials")
+		return "", 0, nil, fmt.Errorf("invalid login credentials")
 	} else if key := u.OTPKey(); key != "" {
 		v := url.Values{}
 
@@ -111,9 +110,9 @@ func Validate(uid string, role string, keyid string, otp string) error {
 	now := time.Now()
 
 	if secret, ok := secrets[keyid]; !ok || secret == nil || !secret.expires.After(now) {
-		return fmt.Errorf("Invalid OTP secret")
+		return fmt.Errorf("invalid OTP secret")
 	} else if !totp.Validate(otp, secret.key.Secret()) {
-		return fmt.Errorf("Invalid OTP")
+		return fmt.Errorf("invalid OTP")
 	} else if err := system.SetOTP(uid, role, secret.key.Secret()); err != nil {
 		return err
 	}
@@ -143,8 +142,4 @@ func Enabled(uid, role string) bool {
 	} else {
 		return regexp.MustCompile("[ABCDEFGHIJKLMNOPQRSTUVWXYZ234567]{16,}").MatchString(secret)
 	}
-}
-
-func warnf(format string, args ...any) {
-	log.Warnf(format, args...)
 }

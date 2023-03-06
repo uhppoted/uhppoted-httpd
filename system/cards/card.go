@@ -103,7 +103,7 @@ func (c Card) IsValid() bool {
 
 func (c Card) validate() error {
 	if strings.TrimSpace(c.name) == "" && c.CardID == 0 {
-		return fmt.Errorf("At least one of card name and number must be defined")
+		return fmt.Errorf("at least one of card name and number must be defined")
 	}
 
 	return nil
@@ -138,7 +138,7 @@ func (c *Card) AsObjects(a *auth.Authorizator) []schema.Object {
 		for _, group := range groups {
 			g := group
 
-			if m := re.FindStringSubmatch(string(g)); m != nil && len(m) > 2 {
+			if m := re.FindStringSubmatch(string(g)); len(m) > 2 {
 				gid := m[2]
 				member := c.groups[g]
 
@@ -297,7 +297,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 		}
 
 	case schema.OID(c.OID.Append(CardGroups)).Contains(oid):
-		if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); m != nil && len(m) > 1 {
+		if m := regexp.MustCompile(`^(?:.*?)\.([0-9]+)$`).FindStringSubmatch(string(oid)); len(m) > 1 {
 			gid := m[1]
 			k := schema.GroupsOID.AppendS(gid)
 
@@ -381,7 +381,7 @@ func (c Card) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	}
 
 	for _, v := range list {
-		field, _ := lookup[v.field]
+		field := lookup[v.field]
 		if err := CanView(a, c, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(c.OID, v.field, v.value))
 		}

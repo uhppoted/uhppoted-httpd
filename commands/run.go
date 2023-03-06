@@ -177,7 +177,7 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 	runMode := types.ParseRunMode(cmd.mode)
 
 	if err := system.Init(conf, cmd.configuration, runMode, cmd.debug); err != nil {
-		panic(fmt.Errorf("Could not load system configuration (%v)", err))
+		panic(fmt.Errorf("could not load system configuration (%v)", err))
 	}
 
 	h.Run(runMode, conf.HTTPD.PIN.Enabled, interrupt)

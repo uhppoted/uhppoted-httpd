@@ -3,22 +3,9 @@ package auth
 import (
 	"fmt"
 	"net/http"
-	"time"
-
-	"github.com/google/uuid"
 
 	"github.com/uhppoted/uhppoted-httpd/log"
 )
-
-type login struct {
-	id      uuid.UUID
-	touched time.Time
-}
-
-type session struct {
-	id      uuid.UUID
-	touched time.Time
-}
 
 type options struct {
 	OTP struct {
@@ -37,22 +24,6 @@ type IAuth interface {
 	Verify(uid, pwd string) error
 	VerifyAuthHeader(uid string, header string) error
 	Options(uid, role string) options
-}
-
-func debugf(subsystem string, format string, args ...any) {
-	if subsystem == "" {
-		log.Debugf("%v", args...)
-	} else {
-		log.Debugf(fmt.Sprintf("%-8v %v", subsystem, format), args...)
-	}
-}
-
-func infof(subsystem string, format string, args ...any) {
-	if subsystem == "" {
-		log.Infof("%v", args...)
-	} else {
-		log.Infof(fmt.Sprintf("%-8v %v", subsystem, format), args...)
-	}
 }
 
 func warnf(subsystem string, format string, args ...any) {

@@ -34,7 +34,7 @@ loop:
 	for {
 		suffix += 1
 		oid := schema.OID(fmt.Sprintf("%v.%d", t.base, suffix))
-		for v, _ := range t.m {
+		for v := range t.m {
 			if v == oid {
 				continue loop
 			}

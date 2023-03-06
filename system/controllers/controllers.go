@@ -78,7 +78,7 @@ func (cc *Controllers) Create(a *auth.Authorizator, oid schema.OID, value string
 		if c, err := cc.add(a, Controller{}); err != nil {
 			return nil, err
 		} else if c == nil {
-			return nil, fmt.Errorf("Failed to add 'new' controller")
+			return nil, fmt.Errorf("failed to add 'new' controller")
 		} else {
 			catalog.Join(&objects, catalog.NewObject(c.OID, "new"))
 			catalog.Join(&objects, catalog.NewObject2(c.OID, ControllerStatus, "new"))
@@ -252,7 +252,7 @@ func (cc Controllers) Validate() error {
 	for _, c := range cc.controllers {
 		OID := c.OID
 		if OID == "" {
-			return fmt.Errorf("Invalid controller OID (%v)", OID)
+			return fmt.Errorf("invalid controller OID (%v)", OID)
 		}
 
 		if c.IsDeleted() {
@@ -267,7 +267,7 @@ func (cc Controllers) Validate() error {
 
 		if c.DeviceID != 0 {
 			if _, ok := devices[c.DeviceID]; ok {
-				return fmt.Errorf("Duplicate controller ID (%v)", c.DeviceID)
+				return fmt.Errorf("duplicate controller ID (%v)", c.DeviceID)
 			}
 
 			devices[c.DeviceID] = string(OID)

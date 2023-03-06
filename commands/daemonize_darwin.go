@@ -313,7 +313,7 @@ func (cmd *Daemonize) firewall(i info) error {
 	out, err := command.CombinedOutput()
 	fmt.Printf("   > %s", out)
 	if err != nil {
-		return fmt.Errorf("Failed to retrieve application firewall global state (%v)", err)
+		return fmt.Errorf("failed to retrieve application firewall global state (%v)", err)
 	}
 
 	if strings.Contains(string(out), "State = 1") {
@@ -321,28 +321,28 @@ func (cmd *Daemonize) firewall(i info) error {
 		out, err = command.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			return fmt.Errorf("Failed to disable the application firewall (%v)", err)
+			return fmt.Errorf("failed to disable the application firewall (%v)", err)
 		}
 
 		command = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--add", path)
 		out, err = command.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			return fmt.Errorf("Failed to add 'uhppoted-httpd' to the application firewall (%v)", err)
+			return fmt.Errorf("failed to add 'uhppoted-httpd' to the application firewall (%v)", err)
 		}
 
 		command = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--unblockapp", path)
 		out, err = command.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			return fmt.Errorf("Failed to unblock 'uhppoted-httpd' on the application firewall (%v)", err)
+			return fmt.Errorf("failed to unblock 'uhppoted-httpd' on the application firewall (%v)", err)
 		}
 
 		command = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--setglobalstate", "on")
 		out, err = command.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			return fmt.Errorf("Failed to re-enable the application firewall (%v)", err)
+			return fmt.Errorf("failed to re-enable the application firewall (%v)", err)
 		}
 
 		fmt.Println()

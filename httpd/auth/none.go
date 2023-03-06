@@ -2,12 +2,9 @@ package auth
 
 import (
 	"net/http"
-	"time"
 )
 
 type None struct {
-	cookieMaxAge int
-	stale        time.Duration
 }
 
 func NewNoneAuthenticator() *None {

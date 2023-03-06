@@ -30,11 +30,8 @@ func (q taskQ) Add(task Task) {
 
 func (q taskQ) run() {
 	go func() {
-		for {
-			select {
-			case task := <-q.queue:
-				task.f()
-			}
+		for task := range q.queue {
+			task.f()
 		}
 	}()
 }

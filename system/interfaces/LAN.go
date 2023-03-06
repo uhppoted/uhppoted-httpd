@@ -177,7 +177,7 @@ func (l LAN) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	}
 
 	for _, v := range list {
-		field, _ := lookup[v.field]
+		field := lookup[v.field]
 		if err := CanView(a, l, field, v.value); err == nil {
 			objects = append(objects, catalog.NewObject2(l.OID, v.field, v.value))
 		}
@@ -211,9 +211,9 @@ func (l *LAN) search(controllers []types.IController) ([]uint32, error) {
 	if devices, err := api.GetDevices(uhppoted.GetDevicesRequest{}); err != nil {
 		return list, err
 	} else if devices == nil {
-		return list, fmt.Errorf("Got %v response to get-devices request", devices)
+		return list, fmt.Errorf("got %v response to get-devices request", devices)
 	} else {
-		for k, _ := range devices.Devices {
+		for k := range devices.Devices {
 			list = append(list, k)
 		}
 	}
@@ -408,7 +408,7 @@ func (l *LAN) setDoor(c types.IController, door uint8, mode lib.ControlState, de
 	if state, err := api.UHPPOTE.GetDoorControlState(deviceID, door); err != nil {
 		return err
 	} else if state == nil {
-		return fmt.Errorf("Got %v response to get-door request for %v", state, deviceID)
+		return fmt.Errorf("got %v response to get-door request for %v", state, deviceID)
 	} else {
 		m := mode
 		d := delay
@@ -503,7 +503,7 @@ func (l *LAN) compareACL(controllers []types.IController, permissions acl.ACL, w
 	if err != nil {
 		return nil, err
 	} else if compare == nil {
-		return nil, fmt.Errorf("Invalid ACL compare report: %v", compare)
+		return nil, fmt.Errorf("invalid ACL compare report: %v", compare)
 	}
 
 	for k, v := range compare {
@@ -513,7 +513,7 @@ func (l *LAN) compareACL(controllers []types.IController, permissions acl.ACL, w
 	diff := acl.SystemDiff(compare)
 	report := diff.Consolidate()
 	if report == nil {
-		return nil, fmt.Errorf("Invalid consolidated ACL compare report: %v", report)
+		return nil, fmt.Errorf("invalid consolidated ACL compare report: %v", report)
 	}
 
 	unchanged := len(report.Unchanged)

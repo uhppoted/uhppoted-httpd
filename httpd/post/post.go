@@ -3,7 +3,7 @@ package post
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -50,14 +50,14 @@ func parseRequest(r *http.Request) (map[string]any, error) {
 		}
 
 	case "application/json":
-		if blob, err := ioutil.ReadAll(r.Body); err != nil {
+		if blob, err := io.ReadAll(r.Body); err != nil {
 			return nil, err
 		} else if err := json.Unmarshal(blob, &body); err != nil {
 			return nil, err
 		}
 
 	default:
-		return nil, fmt.Errorf("Invalid request content-type (%v)", contentType)
+		return nil, fmt.Errorf("invalid request content-type (%v)", contentType)
 	}
 
 	return body, nil

@@ -83,7 +83,7 @@ func validate(cc *controllers.Controllers) error {
 		for _, v := range r.Doors() {
 			if v != "" {
 				if _, ok := sys.doors.Door(schema.OID(v)); !ok {
-					return fmt.Errorf("Invalid door ID")
+					return fmt.Errorf("invalid door ID")
 				}
 			}
 

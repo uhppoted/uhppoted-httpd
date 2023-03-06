@@ -54,7 +54,7 @@ func (cc *db) PutV(oid schema.OID, suffix schema.Suffix, v interface{}) {
 }
 
 func PutL(objects []schema.Object) {
-	if objects != nil && len(objects) > 0 {
+	if len(objects) > 0 {
 		cache.Lock()
 		defer cache.Unlock()
 

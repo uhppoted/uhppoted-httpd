@@ -89,13 +89,11 @@ func Timezone(s string) (*time.Location, error) {
 		}
 	}
 
-	t, err = time.Parse("2006-01-02 15:04:05", s)
-	if err == nil {
+	if _, err = time.Parse("2006-01-02 15:04:05", s); err == nil {
 		return time.Local, nil
 	}
 
-	t, err = time.Parse("2006-01-02 15:04", s)
-	if err == nil {
+	if _, err = time.Parse("2006-01-02 15:04", s); err == nil {
 		return time.Local, nil
 	}
 
@@ -140,5 +138,5 @@ func Timezone(s string) (*time.Location, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("Invalid timezone (%v)", s)
+	return nil, fmt.Errorf("invalid timezone (%v)", s)
 }

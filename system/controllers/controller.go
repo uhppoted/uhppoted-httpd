@@ -13,7 +13,6 @@ import (
 	core "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
-	"github.com/uhppoted/uhppoted-httpd/log"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -72,7 +71,7 @@ func (c Controller) IsValid() bool {
 
 func (c Controller) validate() error {
 	if strings.TrimSpace(c.name) == "" && c.DeviceID == 0 {
-		return fmt.Errorf("At least one of controller name and device ID must be valid")
+		return fmt.Errorf("at least one of controller name and device ID must be valid")
 	}
 
 	return nil
@@ -312,7 +311,7 @@ func (c Controller) Status() types.Status {
 
 	if c.DeviceID != 0 {
 		if cached := c.get(); cached != nil {
-			dt := time.Now().Sub(cached.touched)
+			dt := time.Since(cached.touched)
 			switch {
 			case dt < windows.deviceOk:
 				return types.StatusOk
@@ -597,51 +596,13 @@ func (c Controller) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	}
 
 	for _, v := range list {
-		field, _ := lookup[v.field]
+		field := lookup[v.field]
 		if err := CanView(a, c, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(OID, v.field, v.value))
 		}
 	}
 
 	return objects
-}
-
-func (c *Controller) refreshed() {
-	expired := time.Now().Add(-windows.cacheExpiry)
-
-	touched := time.Time(c.created)
-
-	if v := catalog.GetV(c.OID, ControllerTouched); v != nil {
-		if t, ok := v.(time.Time); ok {
-			touched = t
-		}
-	}
-
-	if touched.Before(expired) {
-		catalog.PutV(c.OID, ControllerEndpointAddress, nil)
-		catalog.PutV(c.OID, ControllerDateTimeCurrent, nil)
-		catalog.PutV(c.OID, ControllerCardsCount, nil)
-		catalog.PutV(c.OID, ControllerCardsStatus, types.StatusUnknown)
-		catalog.PutV(c.OID, ControllerEventsStatus, types.StatusUnknown)
-		catalog.PutV(c.OID, ControllerEventsFirst, 0)
-		catalog.PutV(c.OID, ControllerEventsLast, 0)
-		catalog.PutV(c.OID, ControllerEventsCurrent, 0)
-
-		for _, d := range []uint8{1, 2, 3, 4} {
-			if door, ok := c.doors[d]; ok {
-				catalog.PutV(door, DoorDelay, nil)
-				catalog.PutV(door, DoorControl, nil)
-			}
-		}
-
-		log.Infof("Controller %v cached values expired", c)
-
-		if c.modified.IsZero() {
-			c.deleted = types.TimestampNow()
-			catalog.DeleteT(c.CatalogController, c.OID)
-			log.Infof("'unconfigured' controller %v removed", c)
-		}
-	}
 }
 
 func (c Controller) serialize() ([]byte, error) {

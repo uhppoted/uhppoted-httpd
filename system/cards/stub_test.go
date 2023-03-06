@@ -12,7 +12,6 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
-	"github.com/uhppoted/uhppoted-httpd/types"
 )
 
 var hagrid = makeCard("0.4.1", "Hagrid", 6514231)
@@ -75,12 +74,12 @@ func makeCards(list ...Card) *Cards {
 	return &p
 }
 
-func group(id string) types.Group {
-	return types.Group{
-		OID:  id,
-		Name: "",
-	}
-}
+//func group(id string) types.Group {
+//	return types.Group{
+//		OID:  id,
+//		Name: "",
+//	}
+//}
 
 func makeCard(oid schema.OID, name string, card uint32, groups ...string) Card {
 	cardholder := Card{

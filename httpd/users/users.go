@@ -3,7 +3,7 @@ package users
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -75,14 +75,14 @@ func parseRequest(r *http.Request) (map[string]any, error) {
 		}
 
 	case "application/json":
-		if blob, err := ioutil.ReadAll(r.Body); err != nil {
+		if blob, err := io.ReadAll(r.Body); err != nil {
 			return nil, err
 		} else if err := json.Unmarshal(blob, &body); err != nil {
 			return nil, err
 		}
 
 	default:
-		return nil, fmt.Errorf("Invalid request content-type (%v)", contentType)
+		return nil, fmt.Errorf("invalid request content-type (%v)", contentType)
 	}
 
 	return body, nil
@@ -118,22 +118,6 @@ func getvars(r *http.Request, vars ...string) (map[string]string, error) {
 		}
 
 		return m, nil
-	}
-}
-
-func debugf(subsystem string, format string, args ...any) {
-	if subsystem == "" {
-		log.Debugf("%v", args...)
-	} else {
-		log.Debugf(fmt.Sprintf("%-8v %v", subsystem, format), args...)
-	}
-}
-
-func infof(subsystem string, format string, args ...any) {
-	if subsystem == "" {
-		log.Infof("%v", args...)
-	} else {
-		log.Infof(fmt.Sprintf("%-8v %v", subsystem, format), args...)
 	}
 }
 

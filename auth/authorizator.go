@@ -2,7 +2,6 @@ package auth
 
 import (
 	"embed"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -26,26 +25,26 @@ type authorizator struct {
 	Authorizator
 }
 
-type card struct {
-	Name   string
-	Card   uint32
-	Groups []string
-}
+// type card struct {
+// 	Name   string
+// 	Card   uint32
+// 	Groups []string
+// }
 
 type result struct {
 	Allow  bool
 	Refuse bool
 }
 
-func (op *card) HasGroup(g string) bool {
-	for _, p := range op.Groups {
-		if p == g {
-			return true
-		}
-	}
-
-	return false
-}
+// func (op *card) HasGroup(g string) bool {
+// 	for _, p := range op.Groups {
+// 		if p == g {
+// 			return true
+// 		}
+// 	}
+//
+// 	return false
+// }
 
 type ruleset struct {
 	kb      *ast.KnowledgeLibrary
@@ -60,7 +59,7 @@ var grules = struct {
 	ruleset: map[RuleSet]ruleset{},
 }
 
-var Unauthorised = errors.New("not authorised")
+var ErrUnauthorised = errors.New("not authorised")
 
 //go:embed grules
 var GRULES embed.FS
@@ -90,7 +89,7 @@ func Init(rules map[RuleSet]string) error {
 		kb := ast.NewKnowledgeLibrary()
 		resource := pkg.NewEmbeddedResource(GRULES, v.file)
 		if err := builder.NewRuleBuilder(kb).BuildRuleFromResource(v.tag, "0.0.0", resource); err != nil {
-			return fmt.Errorf("Error loading %v auth ruleset (%v)\n", "interfaces", err)
+			return fmt.Errorf("error loading %v auth ruleset (%v)", "interfaces", err)
 		} else {
 			grules.ruleset[k] = ruleset{
 				kb:      kb,
@@ -181,12 +180,12 @@ func (a *authorizator) CanView(operant Operant, field string, value interface{},
 
 		for _, r := range rulesets {
 			if err := a.eval(r, op, &rs, m); err != nil {
-				return Unauthorised
+				return ErrUnauthorised
 			}
 		}
 
 		if !rs.Allow || rs.Refuse {
-			return Unauthorised
+			return ErrUnauthorised
 		}
 	}
 
@@ -210,7 +209,7 @@ func (a *authorizator) CanAdd(operant Operant, rulesets ...RuleSet) error {
 
 		for _, r := range rulesets {
 			if err := a.eval(r, op, &rs, m); err != nil {
-				return Unauthorised
+				return ErrUnauthorised
 			}
 		}
 
@@ -219,7 +218,7 @@ func (a *authorizator) CanAdd(operant Operant, rulesets ...RuleSet) error {
 		}
 	}
 
-	return Unauthorised
+	return ErrUnauthorised
 }
 
 func (a *authorizator) CanUpdate(operant Operant, field string, value interface{}, rulesets ...RuleSet) error {
@@ -240,7 +239,7 @@ func (a *authorizator) CanUpdate(operant Operant, field string, value interface{
 
 		for _, r := range rulesets {
 			if err := a.eval(r, op, &rs, m); err != nil {
-				return Unauthorised
+				return ErrUnauthorised
 			}
 		}
 
@@ -249,7 +248,7 @@ func (a *authorizator) CanUpdate(operant Operant, field string, value interface{
 		}
 	}
 
-	return Unauthorised
+	return ErrUnauthorised
 }
 
 func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
@@ -269,7 +268,7 @@ func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
 
 		for _, r := range rulesets {
 			if err := a.eval(r, op, &rs, m); err != nil {
-				return Unauthorised
+				return ErrUnauthorised
 			}
 		}
 
@@ -278,26 +277,7 @@ func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
 		}
 	}
 
-	return Unauthorised
-}
-
-func (a *authorizator) evaluate(ruleset RuleSet, op string, operant Operant, m map[string]interface{}, msg error) error {
-	if a != nil && operant != nil {
-		rs := result{
-			Allow:  false,
-			Refuse: false,
-		}
-
-		if err := a.eval(ruleset, op, &rs, m); err != nil {
-			return Unauthorised
-		}
-
-		if rs.Allow && !rs.Refuse {
-			return nil
-		}
-	}
-
-	return Unauthorised
+	return ErrUnauthorised
 }
 
 func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]interface{}) error {
@@ -345,7 +325,7 @@ func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
 	grules.RUnlock()
 
 	if !ok || (v.kb == nil && v.file == "") {
-		return nil, fmt.Errorf("No rules knowledgebase for ruleset '%v'", r)
+		return nil, fmt.Errorf("no rules knowledgebase for ruleset '%v'", r)
 	}
 
 	if v.file == "" {
@@ -356,7 +336,7 @@ func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
 	var tag = fmt.Sprintf("%v", r)
 
 	if info, err := os.Stat(v.file); err != nil {
-		return nil, fmt.Errorf("Error loading %v auth ruleset (%v)", tag, err)
+		return nil, fmt.Errorf("error loading %v auth ruleset (%v)", tag, err)
 	} else {
 		touched = info.ModTime()
 	}
@@ -367,7 +347,7 @@ func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
 
 	kb := ast.NewKnowledgeLibrary()
 	if err := builder.NewRuleBuilder(kb).BuildRuleFromResource(tag, "0.0.0", pkg.NewFileResource(v.file)); err != nil {
-		return nil, fmt.Errorf("Error loading %v auth ruleset (%v)", tag, err)
+		return nil, fmt.Errorf("error loading %v auth ruleset (%v)", tag, err)
 	}
 
 	grules.Lock()
@@ -382,12 +362,4 @@ func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
 	log.Printf("INFO  loaded '%v' grule file from %v", tag, v.file)
 
 	return kb, nil
-}
-
-func toString(entity interface{}) string {
-	if b, err := json.Marshal(entity); err == nil {
-		return string(b)
-	}
-
-	return fmt.Sprintf("%+v", entity)
 }

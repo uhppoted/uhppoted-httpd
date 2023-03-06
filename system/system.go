@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
@@ -182,7 +181,7 @@ func Init(cfg config.Config, conf string, mode types.RunMode, debug bool) error 
 		sys.refresh()
 
 		c := time.Tick(cfg.HTTPD.System.Refresh)
-		for _ = range c {
+		for range c {
 			sys.refresh()
 		}
 	}()
@@ -432,10 +431,7 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 			for _, i := range []uint8{1, 2, 3, 4} {
 				door := i
 				if d, ok := c.Door(i); ok && d == oid {
-					ddoor, _ := sys.doors.Door(oid)
-
 					go func() {
-						fmt.Printf(">>>>>>>> SetDoorDelay   - value:%v  configured:%v\n", value.(uint8), ddoor.Delay())
 						s.interfaces.SetDoorDelay(controller, door, value.(uint8))
 					}()
 					return
@@ -487,7 +483,7 @@ func unpack(m map[string]interface{}) ([]object, []object, []schema.OID, error) 
 	blob, err := json.Marshal(m)
 	if err != nil {
 		warnf("%v", err)
-		return nil, nil, nil, fmt.Errorf("Invalid request (%v)", err)
+		return nil, nil, nil, fmt.Errorf("invalid request (%v)", err)
 	}
 
 	if sys.debug {
@@ -496,7 +492,7 @@ func unpack(m map[string]interface{}) ([]object, []object, []schema.OID, error) 
 
 	if err := json.Unmarshal(blob, &o); err != nil {
 		warnf("%v", err)
-		return nil, nil, nil, fmt.Errorf("Invalid request (%v)", err)
+		return nil, nil, nil, fmt.Errorf("invalid request (%v)", err)
 	}
 
 	return o.Created, o.Updated, o.Deleted, nil
@@ -567,10 +563,6 @@ func save(tag Tag, v serializable) error {
 	}
 
 	return os.Rename(tmp.Name(), file)
-}
-
-func clean(s string) string {
-	return strings.ReplaceAll(strings.ToLower(s), " ", "")
 }
 
 func infof(format string, args ...any) {

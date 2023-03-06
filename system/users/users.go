@@ -48,7 +48,7 @@ func (uu *Users) Create(a *auth.Authorizator, oid schema.OID, value string, dbc 
 		if u, err := uu.add(a, User{}); err != nil {
 			return nil, err
 		} else if u == nil {
-			return nil, fmt.Errorf("Failed to add 'new' user")
+			return nil, fmt.Errorf("failed to add 'new' user")
 		} else {
 			u.log(dbc, auth.UID(a), "add", "user", "", "", "Added 'new' user")
 
@@ -246,9 +246,9 @@ func (uu Users) Validate() error {
 		}
 
 		if u.OID == "" {
-			return fmt.Errorf("Invalid user OID (%v)", u.OID)
+			return fmt.Errorf("invalid user OID (%v)", u.OID)
 		} else if u.OID != k {
-			return fmt.Errorf("User %s: mismatched user OID %v (expected %v)", u.name, u.OID, k)
+			return fmt.Errorf("user %s: mismatched user OID %v (expected %v)", u.name, u.OID, k)
 		}
 
 		if err := u.validate(); err != nil {
@@ -258,7 +258,7 @@ func (uu Users) Validate() error {
 		}
 
 		if _, ok := users[u.uid]; ok {
-			return fmt.Errorf("Duplicate UID (%v)", u.uid)
+			return fmt.Errorf("duplicate UID (%v)", u.uid)
 		}
 
 		if u.uid != "" {

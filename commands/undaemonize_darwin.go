@@ -88,24 +88,6 @@ func (cmd *Undaemonize) Execute(args ...interface{}) error {
 	return nil
 }
 
-func (cmd *Undaemonize) parse(path string) (*info, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-
-	defer f.Close()
-
-	i := info{}
-	decoder := xpath.NewDecoder(f)
-	err = decoder.Decode(&i)
-	if err != nil {
-		return nil, err
-	}
-
-	return &i, nil
-}
-
 func (cmd *Undaemonize) launchd() (string, error) {
 	label := fmt.Sprintf("com.github.uhppoted.%s", SERVICE)
 
@@ -128,7 +110,7 @@ func (cmd *Undaemonize) launchd() (string, error) {
 	fmt.Printf("   > %s", out)
 	fmt.Println()
 	if err != nil {
-		return "", fmt.Errorf("Failed to unload '%s' (%v)\n", label, err)
+		return "", fmt.Errorf("failed to unload '%s' (%v)", label, err)
 	}
 
 	// get launchd executable from plist
@@ -240,7 +222,7 @@ func (cmd *Undaemonize) firewall(executable string) error {
 	out, err := command.CombinedOutput()
 	fmt.Printf("   > %s", out)
 	if err != nil {
-		return fmt.Errorf("Failed to retrieve application firewall global state (%v)\n", err)
+		return fmt.Errorf("failed to retrieve application firewall global state (%v)", err)
 	}
 
 	if strings.Contains(string(out), "State = 1") {
@@ -248,21 +230,21 @@ func (cmd *Undaemonize) firewall(executable string) error {
 		out, err = command.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			return fmt.Errorf("Failed to disable the application firewall (%v)\n", err)
+			return fmt.Errorf("failed to disable the application firewall (%v)", err)
 		}
 
 		command = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--remove", path)
 		out, err = command.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			return fmt.Errorf("Failed to remove 'uhppoted-rest' from the application firewall (%v)\n", err)
+			return fmt.Errorf("failed to remove 'uhppoted-rest' from the application firewall (%v)", err)
 		}
 
 		command = exec.Command("/usr/libexec/ApplicationFirewall/socketfilterfw", "--setglobalstate", "on")
 		out, err = command.CombinedOutput()
 		fmt.Printf("   > %s", out)
 		if err != nil {
-			return fmt.Errorf("Failed to re-enable the application firewall (%v)\n", err)
+			return fmt.Errorf("failed to re-enable the application firewall (%v)", err)
 		}
 
 		fmt.Println()

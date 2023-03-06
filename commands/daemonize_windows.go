@@ -186,7 +186,7 @@ func (cmd *Daemonize) register(i *info) error {
 	s, err := m.OpenService(cmd.name)
 	if err == nil {
 		s.Close()
-		return fmt.Errorf("service %s already exists", cmd.Name)
+		return fmt.Errorf("service %v already exists", cmd.Name)
 	}
 
 	s, err = m.CreateService(cmd.name, i.Executable, config, "is", "auto-started")

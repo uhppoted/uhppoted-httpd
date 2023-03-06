@@ -3,12 +3,10 @@ package local
 import (
 	"crypto/rand"
 	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log"
-	"regexp"
 	"sync"
 	"time"
 
@@ -55,8 +53,6 @@ type sessions struct {
 	list map[uuid.UUID]time.Time
 	sync.Mutex
 }
-
-type salt []byte
 
 type claims struct {
 	jwt.StandardClaims
@@ -108,17 +104,17 @@ func NewAuthProvider(file string, loginExpiry, sessionExpiry string, allowOTPLog
 		provider.keys[0] = key
 	}
 
-	regen := time.Tick(constants.REGENERATE)
-	sweep := time.Tick(constants.SWEEP)
+	regen := time.NewTicker(constants.REGENERATE)
+	sweep := time.NewTicker(constants.SWEEP)
 	go func() {
 		for {
 			select {
-			case <-regen:
+			case <-regen.C:
 				go func() {
 					provider.regenerate()
 				}()
 
-			case <-sweep:
+			case <-sweep.C:
 				go func() {
 					provider.sweep()
 				}()
@@ -192,7 +188,7 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	var locked bool
 
 	if u, ok := system.GetUser(uid); !ok || u == nil {
-		err = fmt.Errorf("Invalid login credentials")
+		err = fmt.Errorf("invalid login credentials")
 		return
 	} else {
 		salt, password = u.Password()
@@ -215,7 +211,7 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	hash := fmt.Sprintf("%0x", h.Sum(nil))
 
 	if hash != password && (!p.allowOTPLogin || !otp.Verify(uid, role, pwd)) {
-		err = fmt.Errorf("Invalid login credentials")
+		err = fmt.Errorf("invalid login credentials")
 		return
 	}
 
@@ -322,9 +318,9 @@ func (p *Local) Verify(tokenType auth.TokenType, cookie string) error {
 	switch tokenType {
 	case auth.Login:
 		if !claims.IsForAudience("login") {
-			return fmt.Errorf("Invalid audience in JWT claims")
+			return fmt.Errorf("invalid audience in JWT claims")
 		} else if claims.Login == nil {
-			return fmt.Errorf("Invalid login token")
+			return fmt.Errorf("invalid login token")
 		} else if err := p.extant(auth.Login, claims.Login.LoginId); err != nil {
 			return err
 		} else {
@@ -333,9 +329,9 @@ func (p *Local) Verify(tokenType auth.TokenType, cookie string) error {
 
 	case auth.Session:
 		if !claims.IsForAudience("admin") {
-			return fmt.Errorf("Invalid audience in JWT claims")
+			return fmt.Errorf("invalid audience in JWT claims")
 		} else if claims.Session == nil {
-			return fmt.Errorf("Invalid session token")
+			return fmt.Errorf("invalid session token")
 		} else if err := p.extant(auth.Session, claims.Session.SessionId); err != nil {
 			return err
 		} else {
@@ -358,7 +354,7 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 	}
 
 	if !claims.IsForAudience("admin") {
-		return "", "", "", fmt.Errorf("Invalid audience in JWT claims")
+		return "", "", "", fmt.Errorf("invalid audience in JWT claims")
 	}
 
 	if !claims.IsValidAt(time.Now()) {
@@ -366,7 +362,7 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 	}
 
 	if claims.Session == nil {
-		return "", "", "", fmt.Errorf("Invalid session token")
+		return "", "", "", fmt.Errorf("invalid session token")
 	}
 
 	if err := p.extant(auth.Session, claims.Session.SessionId); err != nil {
@@ -536,9 +532,9 @@ func (ss *sessions) extant(uuid uuid.UUID) error {
 	defer ss.Unlock()
 
 	if touched, ok := ss.list[uuid]; !ok {
-		return fmt.Errorf("No extant session for ID '%v'", uuid)
+		return fmt.Errorf("no extant session for ID '%v'", uuid)
 	} else if touched.Before(cutoff) {
-		return fmt.Errorf("Session '%v' expired", uuid)
+		return fmt.Errorf("session '%v' expired", uuid)
 	}
 
 	return nil
@@ -549,22 +545,4 @@ func (ss *sessions) delete(uuid uuid.UUID) {
 	defer ss.Unlock()
 
 	delete(ss.list, uuid)
-}
-
-func (s *salt) UnmarshalJSON(bytes []byte) error {
-	re := regexp.MustCompile(`^"([0-9a-fA-F]*)"$`)
-	match := re.FindSubmatch(bytes)
-
-	if len(match) < 2 {
-		return fmt.Errorf("Invalid salt '%s'", string(bytes))
-	}
-
-	b, err := hex.DecodeString(string(match[1]))
-	if err != nil {
-		return err
-	}
-
-	*s = b
-
-	return nil
 }

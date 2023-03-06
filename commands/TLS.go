@@ -84,7 +84,7 @@ func genkeys() (*certificates, error) {
 	if err != nil {
 		return nil, err
 	} else if CA == nil {
-		return nil, fmt.Errorf("Invalid CA (%v)", CA)
+		return nil, fmt.Errorf("invalid CA (%v)", CA)
 	}
 
 	// ... create server key and certificate
@@ -92,7 +92,7 @@ func genkeys() (*certificates, error) {
 	if err != nil {
 		return nil, err
 	} else if httpd == nil {
-		return nil, fmt.Errorf("Invalid TLS server key and certificate (%v)", httpd)
+		return nil, fmt.Errorf("invalid TLS server key and certificate (%v)", httpd)
 	}
 
 	// ... create client key and certificate
@@ -100,7 +100,7 @@ func genkeys() (*certificates, error) {
 	if err != nil {
 		return nil, err
 	} else if httpd == nil {
-		return nil, fmt.Errorf("Invalid TLS client key and certificate (%v)", httpd)
+		return nil, fmt.Errorf("invalid TLS client key and certificate (%v)", httpd)
 	}
 
 	return &certificates{

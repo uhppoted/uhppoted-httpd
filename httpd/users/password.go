@@ -19,7 +19,7 @@ func Password(uid, role string, w http.ResponseWriter, r *http.Request, auth aut
 		return nil, err
 	} else if pwd, ok := vars["password"]; !ok {
 		http.Error(w, "Error in request", http.StatusBadRequest)
-		return nil, fmt.Errorf("Missing password field")
+		return nil, fmt.Errorf("missing password field")
 	} else if err := system.SetPassword(uid, role, pwd); err != nil {
 		return nil, err
 	}

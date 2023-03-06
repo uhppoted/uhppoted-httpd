@@ -7,6 +7,8 @@
 2. Added PIN support for card keypad PIN
 
 ### Updated
+1. Fixed initial round of _staticcheck_ lint errors and added _staticcheck_ to
+   CI build.
 
 
 ## [0.8.3](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.3) - 2022-11-16

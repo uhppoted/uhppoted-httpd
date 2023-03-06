@@ -62,7 +62,7 @@ func (cc *Cards) Create(a *auth.Authorizator, oid schema.OID, value string, dbc 
 		if c, err := cc.add(a, Card{}); err != nil {
 			return nil, err
 		} else if c == nil {
-			return nil, fmt.Errorf("Failed to add 'new' card")
+			return nil, fmt.Errorf("failed to add 'new' card")
 		} else {
 			c.log(dbc, auth.UID(a), "add", "card", "", "", "Added 'new' card")
 
@@ -292,9 +292,9 @@ func (cc Cards) Validate() error {
 		}
 
 		if c.OID == "" {
-			return fmt.Errorf("Invalid card OID (%v)", c.OID)
+			return fmt.Errorf("invalid card OID (%v)", c.OID)
 		} else if k != c.OID {
-			return fmt.Errorf("Card %s: mismatched OID %v (expected %v)", c.name, c.OID, k)
+			return fmt.Errorf("card %s: mismatched OID %v (expected %v)", c.name, c.OID, k)
 		}
 
 		if err := c.validate(); err != nil {
@@ -305,7 +305,7 @@ func (cc Cards) Validate() error {
 
 		if c.CardID != 0 {
 			if id, ok := cards[c.CardID]; ok {
-				return fmt.Errorf("Duplicate card number (%v)", id)
+				return fmt.Errorf("duplicate card number (%v)", id)
 			}
 
 			cards[c.CardID] = string(c.OID)

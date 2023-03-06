@@ -1,7 +1,6 @@
 package events
 
 import (
-	"log"
 	"math"
 	"net/http"
 	"regexp"
@@ -20,7 +19,7 @@ func Get(uid, role string, rq *http.Request) interface{} {
 	if get := rq.FormValue("range"); get != "" {
 		re := regexp.MustCompile(`([0-9]+)(?:,(\*|[0-9]+|\+[0-9]+))?`)
 
-		if match := re.FindStringSubmatch(get); match != nil && len(match) > 1 {
+		if match := re.FindStringSubmatch(get); len(match) > 1 {
 			if v, err := strconv.ParseUint(match[1], 10, 32); err == nil {
 				start = int(v)
 			}
@@ -49,8 +48,4 @@ func Get(uid, role string, rq *http.Request) interface{} {
 	}{
 		Events: system.Events(uid, role, start, count),
 	}
-}
-
-func warn(err error) {
-	log.Printf("%-5s %v", "WARN", err)
 }

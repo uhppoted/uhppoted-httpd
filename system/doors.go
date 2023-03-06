@@ -65,15 +65,15 @@ func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error
 		for k, v := range c.Doors() {
 			if v != "" {
 				if door, ok := shadow.Door(v); !ok {
-					return nil, fmt.Errorf("Door %v not defined for controller %v", k, c)
+					return nil, fmt.Errorf("door %v not defined for controller %v", k, c)
 
 				} else if door.IsDeleted() {
 					name := fmt.Sprintf("%v", door)
 
 					if name == "" {
-						return nil, fmt.Errorf("Deleting door in use by controller %v", c)
+						return nil, fmt.Errorf("deleting door in use by controller %v", c)
 					} else {
-						return nil, fmt.Errorf("Deleting door %v in use by controller %v", door, c)
+						return nil, fmt.Errorf("deleting door %v in use by controller %v", door, c)
 					}
 				}
 			}

@@ -6,7 +6,6 @@ import (
 	"crypto/x509"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -119,7 +118,7 @@ func (h *HTTPD) Run(mode types.RunMode, withPIN bool, interrupt chan os.Signal) 
 	}
 
 	if h.HttpsEnabled {
-		ca, err := ioutil.ReadFile(h.CACertificate)
+		ca, err := os.ReadFile(h.CACertificate)
 		if err != nil {
 			errorf("HTTPD", "Error reading CA certificate file (%v)", err)
 			return
@@ -165,10 +164,8 @@ func (h *HTTPD) Run(mode types.RunMode, withPIN bool, interrupt chan os.Signal) 
 		sigint := make(chan os.Signal, 1)
 		signal.Notify(sigint, os.Interrupt)
 
-		select {
-		case <-interrupt:
-			infof("HTTPD", "%v", "terminated")
-		}
+		<-interrupt
+		infof("HTTPD", "%v", "terminated")
 
 		cancel()
 
@@ -205,20 +202,7 @@ func (h *HTTPD) Run(mode types.RunMode, withPIN bool, interrupt chan os.Signal) 
 		}()
 	}
 
-	done := make(chan struct{})
-
-	go func() {
-		for {
-			select {
-			case <-done:
-				return
-			}
-		}
-	}()
-
 	<-shutdown
-
-	close(done)
 }
 
 func (d *dispatcher) dispatch(w http.ResponseWriter, r *http.Request) {

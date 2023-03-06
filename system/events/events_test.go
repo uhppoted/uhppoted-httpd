@@ -449,7 +449,7 @@ func BenchmarkMissingEvents(b *testing.B) {
 		events.Missing(-1, 405419896)
 	}
 
-	dt := time.Now().Sub(start).Milliseconds() / int64(b.N)
+	dt := time.Since(start).Milliseconds() / int64(b.N)
 	if dt > 50 {
 		b.Errorf("too slow (%vms measured over %v iterations)", dt, b.N)
 	}
@@ -493,7 +493,7 @@ func BenchmarkMissingEventsWithCache(b *testing.B) {
 		events.Missing(-1, 405419896)
 	}
 
-	dt := time.Now().Sub(start).Milliseconds() / int64(b.N)
+	dt := time.Since(start).Milliseconds() / int64(b.N)
 	if dt > 5 {
 		b.Errorf("too slow (%vms measured over %v iterations)", dt, b.N)
 	}
@@ -540,7 +540,7 @@ func BenchmarkEventsAsObjectsWithoutCaching(b *testing.B) {
 		events.AsObjects(25423, 15, nil)
 	}
 
-	dt := time.Now().Sub(start).Milliseconds() / int64(b.N)
+	dt := time.Since(start).Milliseconds() / int64(b.N)
 	if dt > 200 {
 		b.Errorf("too slow (%vms measured over %v iterations)", dt, b.N)
 	}
@@ -588,7 +588,7 @@ func BenchmarkEventsAsObjectsWithCaching(b *testing.B) {
 		events.AsObjects(25423, 15, nil)
 	}
 
-	dt := time.Now().Sub(start).Milliseconds() / int64(b.N)
+	dt := time.Since(start).Milliseconds() / int64(b.N)
 	if dt > 5 {
 		b.Errorf("too slow (%vms measured over %v iterations)", dt, b.N)
 	}

@@ -3,7 +3,6 @@ package events
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"math"
 	"sort"
 	"sync"
@@ -309,7 +308,7 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 
 func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func(uhppoted.Event) (string, string, string)) {
 	ee.Lock()
-	ee.Unlock()
+	defer ee.Unlock()
 
 	for _, e := range recent {
 		k := eventKey{
@@ -336,8 +335,4 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 
 	cache.events.dirty = true
 	cache.objects.dirty = true
-}
-
-func warn(err error) {
-	log.Printf("ERROR %v", err)
 }

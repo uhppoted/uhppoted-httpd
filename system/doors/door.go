@@ -284,7 +284,7 @@ func (d *Door) delete(a *auth.Authorizator, dbc db.DBC) ([]schema.Object, error)
 		}
 
 		if door := catalog.GetDoorDeviceDoor(d.OID); door != 0 {
-			return nil, fmt.Errorf("Cannot delete door %v - assigned to controller", d.name)
+			return nil, fmt.Errorf("cannot delete door %v - assigned to controller", d.name)
 		}
 
 		d.log(dbc, auth.UID(a), "delete", "name", d.name, "", "Deleted door %v", d.name)
@@ -308,7 +308,7 @@ func (d Door) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	}
 
 	for _, v := range list {
-		field, _ := lookup[v.field]
+		field := lookup[v.field]
 		if err := CanView(a, d, field, v.value); err == nil {
 			objects = append(objects, catalog.NewObject2(d.OID, v.field, v.value))
 		}

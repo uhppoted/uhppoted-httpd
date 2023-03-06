@@ -106,30 +106,6 @@ func (d *dispatcher) logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/index.html", http.StatusFound)
 }
 
-func (d *dispatcher) synchronizeDateTime(w http.ResponseWriter, r *http.Request) {
-	ch := make(chan struct{})
-	ctx, cancel := context.WithTimeout(d.context, d.timeout)
-
-	defer cancel()
-
-	go func() {
-		if err := system.SynchronizeDateTime(); err != nil {
-			warnf("HTTPD", "%v", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-
-		close(ch)
-	}()
-
-	select {
-	case <-ctx.Done():
-		warnf("HTTPD", "%v", ctx.Err())
-		http.Error(w, "Timeout waiting for response from system", http.StatusInternalServerError)
-
-	case <-ch:
-	}
-}
-
 func (d *dispatcher) synchronize(w http.ResponseWriter, r *http.Request, f func() error) {
 	ch := make(chan struct{})
 	ctx, cancel := context.WithTimeout(d.context, d.timeout)

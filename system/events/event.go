@@ -182,7 +182,7 @@ func (e Event) AsObjects(a auth.OpAuth) []schema.Object {
 	}
 
 	for _, v := range list {
-		field, _ := lookup[v.field]
+		field := lookup[v.field]
 		if err := CanView(a, e, field, v.value); err == nil {
 			catalog.Join(&objects, catalog.NewObject2(e.OID, v.field, v.value))
 		}

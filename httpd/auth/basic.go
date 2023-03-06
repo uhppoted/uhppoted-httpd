@@ -68,7 +68,7 @@ func (b *Basic) Preauthenticate() (*http.Cookie, error) {
 //	intended to (eventually) support opaque login credentials
 func (b *Basic) Authenticate(uid, pwd string, cookie *http.Cookie) (*http.Cookie, error) {
 	if cookie == nil {
-		return nil, fmt.Errorf("Invalid login cookie")
+		return nil, fmt.Errorf("invalid login cookie")
 	}
 
 	if err := b.auth.Verify(auth.Login, cookie.Value); err != nil {
@@ -125,13 +125,13 @@ func (b *Basic) VerifyAuthHeader(uid string, header string) error {
 	var pwd string
 
 	if match := regexp.MustCompile(`Basic\s+(.*)`).FindStringSubmatch(header); match == nil || len(match) != 2 {
-		return fmt.Errorf("Invalid Authorization header")
+		return fmt.Errorf("invalid Authorization header")
 	} else if auth, err := base64.StdEncoding.DecodeString(match[1]); err != nil {
-		return fmt.Errorf("Invalid Authorization header")
+		return fmt.Errorf("invalid Authorization header")
 	} else if match := regexp.MustCompile(`(.*?):(.*)`).FindStringSubmatch(string(auth)); match == nil || len(match) != 3 {
-		return fmt.Errorf("Invalid Authorization header")
+		return fmt.Errorf("invalid Authorization header")
 	} else if match[1] != uid {
-		return fmt.Errorf("Invalid Authorization header")
+		return fmt.Errorf("invalid Authorization header")
 	} else {
 		pwd = match[2]
 	}
