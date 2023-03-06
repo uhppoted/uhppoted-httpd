@@ -9,6 +9,12 @@
       - [x] Make PIN system optional
       - [ ] Shrink table width to fit-content
 
+- [ ] ZIP files for Windows release
+- [ ] Remove quotes around password on daemonize
+- [ ] Ditch the quickstarts - no use to man or beast
+- [ ] static check
+
+
 ### To Be Done Sometime
 
 - [ ] Rationalise SASS styles

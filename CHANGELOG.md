@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+1. `doc.go` package overview documentation.
+2. Added PIN support for card keypad PIN
+
+### Updated
+
 
 ## [0.8.3](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.3) - 2022-11-16
 

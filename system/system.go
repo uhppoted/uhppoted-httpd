@@ -128,7 +128,7 @@ func Init(cfg config.Config, conf string, mode types.RunMode, debug bool) error 
 	catalog.Init(memdb.NewCatalog())
 
 	sys.mode = mode
-	sys.withPIN = cfg.HTTPD.WithPIN
+	sys.withPIN = cfg.HTTPD.PIN.Enabled
 
 	sys.files = map[Tag]string{
 		TagInterfaces:  cfg.HTTPD.System.Interfaces,

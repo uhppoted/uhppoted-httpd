@@ -56,6 +56,7 @@ the _HTTPD_ section is relevant.
 | httpd.audit.file                       | Audit trail file                                   | _var_/httpd/audit/audit.log        |
 | httpd.retention                        | Retention time for deleted items                   | 5m0s                               |
 | httpd.timezones                        | File for custom timezones e.g. Afica/Cairo         | _etc_/timezones                    |
+| httpd.PIN.enabled                      | Enables card keypad PIN codes                      | false                              |
 
 
 Sample HTTPD section:
@@ -101,4 +102,5 @@ httpd.db.rules.users = /usr/local/etc/com.github.uhppoted/httpd/grules/users.grl
 ; httpd.audit.file = /usr/local/var/com.github.uhppoted/httpd/audit/audit.log
 httpd.retention = 5m0s
 ; httpd.timezones = /usr/local/etc/com.github.uhppoted/timezones
+; http.PIN.enabled = false
 ```

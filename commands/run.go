@@ -180,5 +180,5 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 		panic(fmt.Errorf("Could not load system configuration (%v)", err))
 	}
 
-	h.Run(runMode, conf.HTTPD.WithPIN, interrupt)
+	h.Run(runMode, conf.HTTPD.PIN.Enabled, interrupt)
 }
