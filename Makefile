@@ -86,7 +86,7 @@ build-quickstart:
 	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-windows_$(RELEASE).tar.gz . -C ../../dist/$(DIST)/windows .
 	tar --directory=documentation/starter-kit --exclude=".DS_Store" -cvzf ./dist/quickstart-arm7_$(RELEASE).tar.gz    . -C ../../dist/$(DIST)/arm7    .
 
-release: update-release build-all build-quickstart
+release: update-release build-all
 	find . -name ".DS_Store" -delete
 	tar --directory=dist --exclude=".DS_Store" -cvzf dist/$(DIST).tar.gz $(DIST)
 

@@ -13,8 +13,8 @@
 
 - [x] Remove quotes around password on daemonize
 - [ ] ZIP files for Windows release
-- [ ] Ditch the quickstarts - no use to man or beast
-- [ ] static check
+- [x] Ditch the quickstarts - no use to man or beast
+- [ ] static-check
 
 
 ### To Be Done Sometime
