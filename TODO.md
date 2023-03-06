@@ -1,13 +1,13 @@
 # TODO
 
-- [ ] PIN field (https://github.com/uhppoted/uhppoted/issues/23)
+- [x] PIN field (https://github.com/uhppoted/uhppoted/issues/23)
       - [x] Display PIN
       - [x] Update PIN
       - [x] Save/restore PIN
       - [x] ACL
       - [x] grules
       - [x] Make PIN system optional
-      - [ ] Shrink table width to fit-content
+      - [x] Shrink table width to fit-content
 
 - [ ] ZIP files for Windows release
 - [ ] Remove quotes around password on daemonize

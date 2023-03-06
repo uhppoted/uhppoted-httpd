@@ -232,7 +232,6 @@ func (d *dispatcher) translate(file string, context map[string]any, authorised m
 	page["mode"] = ""
 	page["readonly"] = false
 
-	fmt.Printf(">>>>>>>>> CONTEXT %v\n", context)
 	if d.mode == types.Monitor {
 		page["readonly"] = true
 	}
