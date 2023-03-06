@@ -169,7 +169,7 @@ func (cmd *Daemonize) execute() error {
 
 	if admin != "" {
 		fmt.Println()
-		fmt.Printf("   *** THE '%v' USER PASSWORD IS '%v' ***\n", admin, pwd)
+		fmt.Printf("   *** THE %v USER PASSWORD IS %v ***\n", admin, pwd)
 		fmt.Println()
 	}
 

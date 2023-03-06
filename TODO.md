@@ -8,9 +8,11 @@
       - [x] grules
       - [x] Make PIN system optional
       - [x] Shrink table width to fit-content
+      - [x] CHANGELOG
+      - [x] README
 
+- [x] Remove quotes around password on daemonize
 - [ ] ZIP files for Windows release
-- [ ] Remove quotes around password on daemonize
 - [ ] Ditch the quickstarts - no use to man or beast
 - [ ] static check
 

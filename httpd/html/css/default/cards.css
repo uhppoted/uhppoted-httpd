@@ -67,7 +67,7 @@ nav ul li.selected {
 main {
   display: flex;
   grid-area: content;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: hidden;
   margin: 8px 0px 8px 0px;
 }
@@ -759,7 +759,6 @@ tr td select[data-status=error] {
 }
 
 #container {
-  background: green;
   display: flex;
   flex-direction: column;
   width: fit-content;
