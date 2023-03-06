@@ -12,7 +12,7 @@
       - [x] README
 
 - [x] Remove quotes around password on daemonize
-- [ ] ZIP files for Windows release
+- [x] ZIP files for Windows release
 - [x] Ditch the quickstarts - no use to man or beast
 - [ ] static-check
 
