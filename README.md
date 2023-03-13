@@ -30,6 +30,7 @@ become a platform for exploring some alternative ideas around user interfaces an
 
 | *Version* | *Description*                                                                             |
 | --------- | ----------------------------------------------------------------------------------------- |
+| v0.8.4    | Adds support for card keypad PINs                                                         |
 | v0.8.3    | Adds OTP as an alternative login credential                                               |
 | v0.8.2    | Maintenance release for compatibility with _uhppote-core_ v0.8.2                          |
 | v0.8.1    | Fixes event retrieval for firmware bug around retrieving `system restart` event           |
