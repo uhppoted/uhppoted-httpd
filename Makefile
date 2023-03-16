@@ -96,7 +96,7 @@ release: update-release build-all
 publish: release
 	echo "Releasing version $(VERSION)"
 	rm -f dist/development.tar.gz
-	gh release create "$(VERSION)" ./dist/*.tar.gz --draft --prerelease --title "$(VERSION)-beta" --notes-file release-notes.md
+	gh release create "$(VERSION)" "./dist/uhppoted-http_$(VERSION).tar.gz" "./dist/uhppoted-http_$(VERSION).zip" --draft --prerelease --title "$(VERSION)-beta" --notes-file release-notes.md
 
 debug: format
 	go build -trimpath -o bin ./...
