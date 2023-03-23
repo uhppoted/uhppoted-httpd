@@ -441,8 +441,8 @@ func (l *LAN) putCard(c types.IController, cardID uint32, PIN uint32, from, to l
 	card := lib.Card{
 		CardNumber: cardID,
 		PIN:        lib.PIN(PIN),
-		From:       &from,
-		To:         &to,
+		From:       from,
+		To:         to,
 		Doors: map[uint8]uint8{
 			1: permissions[1],
 			2: permissions[2],

@@ -61,8 +61,8 @@ func (c Card) AsAclCard() (lib.Card, bool) {
 	card := lib.Card{
 		CardNumber: c.CardID,
 		PIN:        lib.PIN(c.pin),
-		From:       &from,
-		To:         &to,
+		From:       from,
+		To:         to,
 		Doors:      map[uint8]uint8{1: 0, 2: 0, 3: 0, 4: 0},
 	}
 
@@ -270,7 +270,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			return nil, err
 		} else if from, err := lib.DateFromString(value); err != nil {
 			return nil, err
-		} else if !from.IsValid() {
+		} else if from.IsZero() {
 			return nil, fmt.Errorf("invalid 'from' date (%v)", value)
 		} else {
 			c.log(dbc, uid, "update", "from", c.from, value, "Updated VALID FROM date from %v to %v", c.from, value)
@@ -286,7 +286,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			return nil, err
 		} else if to, err := lib.DateFromString(value); err != nil {
 			return nil, err
-		} else if !to.IsValid() {
+		} else if to.IsZero() {
 			return nil, fmt.Errorf("invalid 'to' date (%v)", value)
 		} else {
 			c.log(dbc, uid, "update", "to", c.to, value, "Updated VALID UNTIL date from %v to %v", c.to, value)

@@ -3,6 +3,7 @@ DIST   ?= development
 DEBUG  ?= --debug
 CMD     = ./bin/uhppoted-httpd
 
+.DEFAULT_GOAL := test
 .PHONY: sass
 .PHONY: debug
 .PHONY: reset
