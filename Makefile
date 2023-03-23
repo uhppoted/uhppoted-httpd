@@ -8,6 +8,9 @@ CMD     = ./bin/uhppoted-httpd
 .PHONY: debug
 .PHONY: reset
 .PHONY: update
+.PHONY: vet
+.PHONY: lint
+.PHONY: vuln
 .PHONY: update-release
 .PHONY: quickstart
 
@@ -52,14 +55,17 @@ build: format
 test: build
 	go test -tags "tests" ./...
 
-vet: test
+vet: 
 	go vet ./...
 
-lint: vet
+lint: 
 	env GOOS=darwin  GOARCH=amd64 staticcheck ./...
 	env GOOS=linux   GOARCH=amd64 staticcheck ./...
 	env GOOS=windows GOARCH=amd64 staticcheck ./...
 	npx eslint httpd/html/javascript/*.js
+
+vuln:
+	govulncheck ./...
 
 benchmark: 
 	go build -trimpath -o bin ./...
