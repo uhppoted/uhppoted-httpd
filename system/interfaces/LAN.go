@@ -431,6 +431,22 @@ func (l *LAN) setDoor(c types.IController, door uint8, mode lib.ControlState, de
 	}
 }
 
+func (l *LAN) setInterlock(c types.IController, interlock lib.Interlock) error {
+	lock(c.ID())
+	defer unlock(c.ID())
+
+	api := l.api([]types.IController{c})
+	deviceID := c.ID()
+
+	if ok, err := api.UHPPOTE.SetInterlock(deviceID, interlock); err != nil {
+		return err
+	} else if !ok {
+		return fmt.Errorf("%v  failed to set door interlock mode (%v)", deviceID, interlock)
+	} else {
+		return nil
+	}
+}
+
 func (l *LAN) putCard(c types.IController, cardID uint32, PIN uint32, from, to lib.Date, permissions map[uint8]uint8) {
 	lock(c.ID())
 	defer unlock(c.ID())

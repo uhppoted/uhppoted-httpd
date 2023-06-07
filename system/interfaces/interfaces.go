@@ -293,6 +293,16 @@ func (ii *Interfaces) SetDoorDelay(controller types.IController, door uint8, del
 	}
 }
 
+func (ii *Interfaces) SetInterlock(controller types.IController, interlock lib.Interlock) {
+	if lan, ok := ii.LAN(); ok {
+		if err := lan.setInterlock(controller, interlock); err != nil {
+			log.Warnf("%v", err)
+		} else {
+			log.Infof("%v  set interlock %v", controller.ID(), interlock)
+		}
+	}
+}
+
 func (ii *Interfaces) PutCard(controller types.IController, card uint32, PIN uint32, from, to lib.Date, permissions map[uint8]uint8) {
 	if lan, ok := ii.LAN(); ok {
 		lan.putCard(controller, card, PIN, from, to, permissions)

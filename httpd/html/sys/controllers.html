@@ -66,14 +66,15 @@
             <table>
               <thead>
                 <tr>
-                  <th class="name     topleft">Controller</th>
-                  <th class="ID       colheader">ID</th>
-                  <th class="IP       colheader">Endpoint</th>
-                  <th class="datetime colheader">Date/Time</th>
-                  <th class="cards    colheader">Cards</th>
-                  <th class="events   colheader">Events</th>
-                  <th class="doors    colheader" colspan="4">Doors</th>
-                  <th class="padding  colheader" ></th>
+                  <th class="name      topleft">Controller</th>
+                  <th class="ID        colheader">ID</th>
+                  <th class="IP        colheader">Endpoint</th>
+                  <th class="datetime  colheader">Date/Time</th>
+                  <th class="interlock colheader">Interlock</th>
+                  <th class="cards     colheader">Cards</th>
+                  <th class="events    colheader">Events</th>
+                  <th class="doors     colheader" colspan="4">Doors</th>
+                  <th class="padding   colheader" ></th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -141,6 +142,25 @@
                          {{if .readonly}}disabled{{end}}  
                          {{if .readonly}}readonly{{end}} />
                   <ul style="position:fixed; left:0px; top:0px; z-index:2; width:fit-content; max-height:120px; overflow:auto;"></ul>
+                </td>
+
+                <td>
+                  <select class="field interlock"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited('controller', event)" 
+                          data-record=""
+                          data-original=""
+                          data-value=""
+                          {{if .readonly}}disabled{{end}} >
+                    <option value="0">-</option>
+                    <option value="1">1&amp;2</option>
+                    <option value="2">3&amp;4</option>
+                    <option value="3">1&amp;2,3&amp;4</option>
+                    <option value="4">1&amp;2&amp;3</option>
+                    <option value="8">1&amp;2&amp;3&amp;4</option>
+                  </select>
                 </td>
 
                 <td>

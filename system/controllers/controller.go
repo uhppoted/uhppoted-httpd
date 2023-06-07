@@ -21,10 +21,11 @@ import (
 
 type Controller struct {
 	catalog.CatalogController
-	name     string
-	IP       *core.Address
-	doors    map[uint8]schema.OID
-	timezone string
+	name      string
+	IP        *core.Address
+	doors     map[uint8]schema.OID
+	interlock core.Interlock
+	timezone  string
 
 	created  types.Timestamp
 	modified types.Timestamp
@@ -38,6 +39,7 @@ type icontroller struct {
 	endpoint     *net.UDPAddr
 	timezone     *time.Location
 	doors        map[uint8]schema.OID
+	interlock    core.Interlock
 	synchronized types.Status
 }
 
@@ -121,8 +123,8 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		datetime := tinfo{}
 		cards := cinfo{}
 		events := einfo{}
-
 		doors := map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
+		interlock := ""
 
 		if c.DeviceID != 0 {
 			deviceID = fmt.Sprintf("%v", c.DeviceID)
@@ -205,6 +207,10 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 			}
 		}
 
+		if c.DeviceID != 0 {
+			interlock = fmt.Sprintf("%v", uint8(c.interlock))
+		}
+
 		list = append(list, kv{ControllerStatus, c.Status()})
 		list = append(list, kv{ControllerCreated, c.created})
 		list = append(list, kv{ControllerDeleted, c.deleted})
@@ -226,6 +232,7 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{ControllerDoor2, doors[2]})
 		list = append(list, kv{ControllerDoor3, doors[3]})
 		list = append(list, kv{ControllerDoor4, doors[4]})
+		list = append(list, kv{ControllerInterlock, interlock})
 	}
 
 	return c.toObjects(list, a)
@@ -288,6 +295,7 @@ func (c *Controller) AsIController() types.IController {
 		endpoint:     endpoint,
 		timezone:     location,
 		doors:        doors,
+		interlock:    c.interlock,
 		synchronized: synchronized,
 	}
 }
@@ -550,6 +558,23 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 
 			c.updated(dbc, uid, "door:4", clone.doors[4], c.doors[4])
 		}
+
+	case c.OID.Append(ControllerInterlock):
+		if err := CanUpdate(a, c, "interlock", value); err != nil {
+			return nil, err
+		} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
+			return nil, err
+		} else if v != 0 && v != 1 && v != 2 && v != 3 && v != 4 && v != 8 {
+			return nil, fmt.Errorf("invalid interlock mode (%v)", v)
+		} else {
+			c.interlock = core.Interlock(v)
+			c.modified = types.TimestampNow()
+
+			list = append(list, kv{ControllerInterlock, uint8(c.interlock)})
+
+			dbc.Updated(c.OID, ControllerInterlock, c.interlock)
+			c.updated(dbc, uid, "interlock", clone.interlock, c.interlock)
+		}
 	}
 
 	list = append(list, kv{ControllerStatus, c.Status()})
@@ -611,23 +636,25 @@ func (c Controller) serialize() ([]byte, error) {
 	}
 
 	record := struct {
-		OID      schema.OID           `json:"OID,omitempty"`
-		Name     string               `json:"name,omitempty"`
-		DeviceID uint32               `json:"device-id,omitempty"`
-		Address  *core.Address        `json:"address,omitempty"`
-		Doors    map[uint8]schema.OID `json:"doors"`
-		TimeZone string               `json:"timezone,omitempty"`
-		Created  types.Timestamp      `json:"created,omitempty"`
-		Modified types.Timestamp      `json:"modified,omitempty"`
+		OID       schema.OID           `json:"OID,omitempty"`
+		Name      string               `json:"name,omitempty"`
+		DeviceID  uint32               `json:"device-id,omitempty"`
+		Address   *core.Address        `json:"address,omitempty"`
+		Doors     map[uint8]schema.OID `json:"doors"`
+		Interlock core.Interlock       `json:"interlock"`
+		TimeZone  string               `json:"timezone,omitempty"`
+		Created   types.Timestamp      `json:"created,omitempty"`
+		Modified  types.Timestamp      `json:"modified,omitempty"`
 	}{
-		OID:      c.OID,
-		Name:     c.name,
-		DeviceID: c.DeviceID,
-		Address:  c.IP,
-		Doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
-		TimeZone: c.timezone,
-		Created:  c.created.UTC(),
-		Modified: c.modified.UTC(),
+		OID:       c.OID,
+		Name:      c.name,
+		DeviceID:  c.DeviceID,
+		Address:   c.IP,
+		Doors:     map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
+		Interlock: c.interlock,
+		TimeZone:  c.timezone,
+		Created:   c.created.UTC(),
+		Modified:  c.modified.UTC(),
 	}
 
 	for k, v := range c.doors {
@@ -641,14 +668,15 @@ func (c *Controller) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID      schema.OID       `json:"OID"`
-		Name     string           `json:"name,omitempty"`
-		DeviceID uint32           `json:"device-id,omitempty"`
-		Address  *core.Address    `json:"address,omitempty"`
-		Doors    map[uint8]string `json:"doors"`
-		TimeZone string           `json:"timezone,omitempty"`
-		Created  types.Timestamp  `json:"created,omitempty"`
-		Modified types.Timestamp  `json:"modified,omitempty"`
+		OID       schema.OID       `json:"OID"`
+		Name      string           `json:"name,omitempty"`
+		DeviceID  uint32           `json:"device-id,omitempty"`
+		Address   *core.Address    `json:"address,omitempty"`
+		Doors     map[uint8]string `json:"doors"`
+		Interlock core.Interlock   `json:"interlock"`
+		TimeZone  string           `json:"timezone,omitempty"`
+		Created   types.Timestamp  `json:"created,omitempty"`
+		Modified  types.Timestamp  `json:"modified,omitempty"`
 	}{
 		Created: created,
 	}
@@ -662,6 +690,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.DeviceID = record.DeviceID
 	c.IP = record.Address
 	c.doors = map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
+	c.interlock = record.Interlock
 	c.timezone = record.TimeZone
 	c.created = record.Created
 	c.modified = record.Modified
@@ -680,10 +709,11 @@ func (c *Controller) clone() *Controller {
 				OID:      c.OID,
 				DeviceID: c.DeviceID,
 			},
-			name:     c.name,
-			IP:       c.IP,
-			timezone: c.timezone,
-			doors:    map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
+			name:      c.name,
+			IP:        c.IP,
+			timezone:  c.timezone,
+			doors:     map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
+			interlock: c.interlock,
 
 			created:  c.created,
 			modified: c.modified,

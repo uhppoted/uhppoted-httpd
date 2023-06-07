@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+1. Added controller interlock mode to system page and updatable controller record.
+
 
 ## [0.8.4](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.4) - 2023-03-17
 

@@ -1,20 +1,11 @@
 # TODO
 
-- [x] PIN field (https://github.com/uhppoted/uhppoted/issues/23)
-      - [x] Display PIN
-      - [x] Update PIN
-      - [x] Save/restore PIN
-      - [x] ACL
-      - [x] grules
-      - [x] Make PIN system optional
-      - [x] Shrink table width to fit-content
+- [x] `set-interlock` (cf. https://github.com/uhppoted/uhppote-core/issues/14)
+      - [x] Add option to controllers page
+      - [x] Add interlock to controllers record
+      - [x] Update controller interlock
       - [x] CHANGELOG
       - [x] README
-
-- [x] Remove quotes around password on daemonize
-- [x] ZIP files for Windows release
-- [x] Ditch the quickstarts - no use to man or beast
-- [x] static-check
 
 
 ### To Be Done Sometime
@@ -64,6 +55,7 @@
 
 ## TODO
 
+- (?) https://en.wikipedia.org/wiki/SQRL
 - https://github.com/antonmedv/expr
 - (?)s Rework login to use Authorization header with Basic/Digest
 - [ ] Use browser local storage for DB

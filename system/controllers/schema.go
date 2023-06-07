@@ -40,6 +40,7 @@ const ControllerDoor1 = schema.ControllerDoor1
 const ControllerDoor2 = schema.ControllerDoor2
 const ControllerDoor3 = schema.ControllerDoor3
 const ControllerDoor4 = schema.ControllerDoor4
+const ControllerInterlock = schema.ControllerInterlock
 
 var lookup = map[schema.Suffix]string{
 	ControllerStatus:             "controller.status",
@@ -66,4 +67,5 @@ var lookup = map[schema.Suffix]string{
 	ControllerDoor2:              "controller.door.2",
 	ControllerDoor3:              "controller.door.3",
 	ControllerDoor4:              "controller.door.4",
+	ControllerInterlock:          "controller.interlock",
 }

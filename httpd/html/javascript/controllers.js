@@ -79,6 +79,7 @@ function add (oid, record) {
       { suffix: 'ID', oid: `${oid}${schema.controllers.deviceID}`, selector: 'td input.ID' },
       { suffix: 'IP', oid: `${oid}${schema.controllers.endpoint.address}`, selector: 'td input.IP' },
       { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime.current}`, selector: 'td input.datetime' },
+      { suffix: 'interlock', oid: `${oid}${schema.controllers.interlock}`, selector: 'td select.interlock' },
       { suffix: 'cards', oid: `${oid}${schema.controllers.cards.count}`, selector: 'td input.cards' },
       { suffix: 'events', oid: `${oid}${schema.controllers.events.last}`, selector: 'td input.events' },
       { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td select.door1' },
@@ -113,6 +114,7 @@ function updateFromDB (oid, record) {
   const deviceID = row.querySelector(`[data-oid="${oid}${schema.controllers.deviceID}"]`)
   const address = row.querySelector(`[data-oid="${oid}${schema.controllers.endpoint.address}"]`)
   const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime.current}"]`)
+  const interlock = row.querySelector(`[data-oid="${oid}${schema.controllers.interlock}"]`)
   const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards.count}"]`)
   const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.last}"]`)
   const door1 = row.querySelector(`[data-oid="${oid}${schema.controllers.door1}"]`)
@@ -161,6 +163,7 @@ function updateFromDB (oid, record) {
   update(deviceID, record.deviceID)
   update(address, record.address.address, record.address.status)
   update(datetime, dt, record.datetime.status)
+  update(interlock, record.interlock)
   update(cards, record.cards.cards, record.cards.status)
   update(events, record.events.last, record.events.status)
   update(door1, record.doors[1])

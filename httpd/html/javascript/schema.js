@@ -51,6 +51,7 @@ export const schema = {
     door2: '.7.2',
     door3: '.7.3',
     door4: '.7.4',
+    interlock: '.8',
 
     regex: /^(0\.2\.[1-9][0-9]*).*$/
   },

@@ -215,6 +215,7 @@ function controllers (o) {
       deviceID: '',
       address: { address: '', configured: '', status: 'unknown' },
       datetime: { datetime: '', configured: '', status: 'unknown' },
+      interlock: '',
       cards: { cards: '', status: 'unknown' },
       events: { events: '', status: 'unknown' },
       doors: { 1: '', 2: '', 3: '', 4: '' },
@@ -270,6 +271,10 @@ function controllers (o) {
 
     case `${base}${schema.controllers.datetime.configured}`:
       v.datetime.configured = o.value
+      break
+
+    case `${base}${schema.controllers.interlock}`:
+      v.interlock = o.value
       break
 
     case `${base}${schema.controllers.cards.status}`:

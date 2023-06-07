@@ -172,10 +172,6 @@ func Init(cfg config.Config, conf string, mode types.RunMode, debug bool) error 
 		cfg.HTTPD.System.Windows.Systime,
 		cfg.HTTPD.System.Windows.CacheExpiry)
 
-	// for _, v := range list {
-	// 	v.Print()
-	// }
-
 	go func() {
 		time.Sleep(2500 * time.Millisecond)
 		sys.refresh()
@@ -409,15 +405,24 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 			}
 		}
 
+	case oid.HasPrefix(schema.ControllersOID) && field == schema.ControllerInterlock:
+		for _, c := range controllers {
+			if c.OID() == oid {
+				controller := c
+				go func() {
+					s.interfaces.SetInterlock(controller, value.(core.Interlock))
+				}()
+				return
+			}
+		}
+
 	case oid.HasPrefix(schema.DoorsOID) && field == schema.DoorControl:
 		for _, c := range controllers {
 			for _, i := range []uint8{1, 2, 3, 4} {
 				if d, ok := c.Door(i); ok && d == oid {
-					ddoor, _ := sys.doors.Door(oid)
 					controller := c
 					door := i
 					go func() {
-						fmt.Printf(">>>>>>>> SetDoorControl - value:%v  configured:%v\n", value.(core.ControlState), ddoor.Mode())
 						s.interfaces.SetDoorControl(controller, door, value.(core.ControlState))
 					}()
 					return

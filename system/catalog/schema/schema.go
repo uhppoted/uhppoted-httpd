@@ -62,6 +62,7 @@ type Controllers struct {
 		Door3 Suffix `json:"3"`
 		Door4 Suffix `json:"4"`
 	} `json:"doors"`
+	Interlock Suffix `json:"interlock"`
 }
 
 type Doors struct {
@@ -231,6 +232,7 @@ var schema = Schema{
 			Door3: ControllerDoor3,
 			Door4: ControllerDoor4,
 		},
+		Interlock: ControllerInterlock,
 	},
 
 	Doors: Doors{
@@ -397,6 +399,7 @@ const ControllerDoor1 Suffix = ".7.1"
 const ControllerDoor2 Suffix = ".7.2"
 const ControllerDoor3 Suffix = ".7.3"
 const ControllerDoor4 Suffix = ".7.4"
+const ControllerInterlock Suffix = ".8"
 
 const DoorName Suffix = ".1"
 const DoorDelay Suffix = ".2"
