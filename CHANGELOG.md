@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [0.8.5](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.5) - 2023-06-14
+## [0.8.5](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.5) - 2023-06-13
 
 ### Added
 1. Added controller interlock mode to system page and updatable controller record.
