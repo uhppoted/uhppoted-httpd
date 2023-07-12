@@ -37,6 +37,7 @@
                   <th class="door colheader">Door</th>
                   <th class="mode colheader">Mode</th>
                   <th class="delay colheader">Delay</th>
+                  <th class="keypad colheader">Keypad</th>
                   <th class="padding colheader"></th>
                 </tr>
               </thead>
@@ -118,6 +119,7 @@
                     <p></p>
                   </div> 
                 </td>
+
                 <td class="tooltip-wrap">
                   <input class="field delay"
                          type="number" 
@@ -135,6 +137,21 @@
                     <p></p>
                   </div> 
                 </td>
+
+                <td>
+                  <label class="keypad">
+                    <input class="field"
+                           type="checkbox" 
+                           onclick="onTick('door', event)"
+                           data-record="" 
+                           data-original="" 
+                           data-value=""
+                           {{if .readonly}}disabled{{end}} />
+                    <img class="no"  src="/images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
+                    <img class="yes" src="/images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
+                  </label>
+                </td>
+
                 <!-- 'padding' column (CSS: tr::last-child) -->
                 <td class="padding"></td>
             </template>

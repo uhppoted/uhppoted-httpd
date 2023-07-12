@@ -447,6 +447,22 @@ func (l *LAN) setInterlock(c types.IController, interlock lib.Interlock) error {
 	}
 }
 
+func (l *LAN) activateKeypads(c types.IController, keypads map[uint8]bool) error {
+	lock(c.ID())
+	defer unlock(c.ID())
+
+	api := l.api([]types.IController{c})
+	deviceID := c.ID()
+
+	if ok, err := api.UHPPOTE.ActivateKeypads(deviceID, keypads); err != nil {
+		return err
+	} else if !ok {
+		return fmt.Errorf("%v  failed to activate/deactivate keypads (%v)", deviceID, keypads)
+	} else {
+		return nil
+	}
+}
+
 func (l *LAN) putCard(c types.IController, cardID uint32, PIN uint32, from, to lib.Date, permissions map[uint8]uint8) {
 	lock(c.ID())
 	defer unlock(c.ID())

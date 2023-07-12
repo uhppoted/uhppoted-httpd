@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+1. Implemented door keypad activation/deactivation to _doors_ page and updatable doors record.
+
 
 ## [0.8.5](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.5) - 2023-06-13
 

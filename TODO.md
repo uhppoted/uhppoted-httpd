@@ -1,9 +1,9 @@
 # TODO
 
-- [x] `set-interlock` (cf. https://github.com/uhppoted/uhppote-core/issues/14)
-      - [x] Add option to controllers page
-      - [x] Add interlock to controllers record
-      - [x] Update controller interlock
+- [x] `activate-keypads` (cf. https://github.com/uhppoted/uhppoted/issues/35)
+      - [x] Add _keypad_ checkbox to doors page
+      - [x] Add _keypad_ to doors record
+      - [x] Update controller keypads
       - [x] CHANGELOG
       - [x] README
 

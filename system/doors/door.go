@@ -20,8 +20,9 @@ type Door struct {
 	catalog.CatalogDoor
 	name string
 
-	delay uint8
-	mode  core.ControlState
+	delay  uint8
+	mode   core.ControlState
+	keypad bool
 
 	created  types.Timestamp
 	modified types.Timestamp
@@ -94,6 +95,10 @@ func (d *Door) Delay() uint8 {
 	}
 
 	return 0
+}
+
+func (d Door) Keypad() bool {
+	return d.keypad
 }
 
 func (d Door) String() string {
@@ -182,6 +187,7 @@ func (d *Door) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{DoorControlStatus, control.status})
 		list = append(list, kv{DoorControlConfigured, control.configured})
 		list = append(list, kv{DoorControlError, control.err})
+		list = append(list, kv{DoorKeypad, d.keypad})
 	}
 
 	return d.toObjects(list, a)
@@ -268,6 +274,26 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 			d.log(dbc, uid, "update", "mode", mode, value, "Updated mode from %v to %v", mode, value)
 		}
+
+	case d.OID.Append(DoorKeypad):
+		if err := CanUpdate(a, d, "keypad", value); err != nil {
+			return nil, err
+		} else {
+			d.log(dbc, uid, "update", "keypad", d.keypad, value, "Updated keypad from %v to %v", d.keypad, value)
+
+			if value == "true" {
+				d.log(dbc, uid, "update", "door", "", "", "Activate keypad for %v", d.name)
+			} else {
+				d.log(dbc, uid, "update", "door", "", "", "Deactivated keypad for %v", d.name)
+			}
+
+			d.keypad = value == "true"
+			d.modified = types.TimestampNow()
+
+			dbc.Updated(d.OID, DoorKeypad, d.keypad)
+
+			list = append(list, kv{DoorKeypad, d.keypad})
+		}
 	}
 
 	list = append(list, kv{DoorStatus, d.Status()})
@@ -331,6 +357,7 @@ func (d Door) serialize() ([]byte, error) {
 		Name     string            `json:"name,omitempty"`
 		Delay    uint8             `json:"delay,omitempty"`
 		Mode     core.ControlState `json:"mode,omitempty"`
+		Keypad   bool              `json:"keypad,omitempty"`
 		Created  types.Timestamp   `json:"created,omitempty"`
 		Modified types.Timestamp   `json:"modified,omitempty"`
 	}{
@@ -338,6 +365,7 @@ func (d Door) serialize() ([]byte, error) {
 		Name:     d.name,
 		Delay:    d.delay,
 		Mode:     d.mode,
+		Keypad:   d.keypad,
 		Created:  d.created.UTC(),
 		Modified: d.modified.UTC(),
 	}
@@ -353,11 +381,13 @@ func (d *Door) deserialize(bytes []byte) error {
 		Name     string            `json:"name,omitempty"`
 		Delay    uint8             `json:"delay,omitempty"`
 		Mode     core.ControlState `json:"mode,omitempty"`
+		Keypad   bool              `json:"keypad,omitempty"`
 		Created  types.Timestamp   `json:"created,omitempty"`
 		Modified types.Timestamp   `json:"modified,omitempty"`
 	}{
 		Delay:   5,
 		Mode:    core.Controlled,
+		Keypad:  false,
 		Created: created,
 	}
 
@@ -369,6 +399,7 @@ func (d *Door) deserialize(bytes []byte) error {
 	d.name = record.Name
 	d.delay = record.Delay
 	d.mode = record.Mode
+	d.keypad = record.Keypad
 	d.created = record.Created
 	d.modified = record.Modified
 
@@ -383,6 +414,7 @@ func (d *Door) clone() Door {
 		name:     d.name,
 		delay:    d.delay,
 		mode:     d.mode,
+		keypad:   d.keypad,
 		created:  d.created,
 		modified: d.modified,
 		deleted:  d.deleted,

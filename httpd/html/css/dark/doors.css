@@ -815,6 +815,7 @@ tr.door td input.doorID {
 }
 
 tr.door td input.mode {
+  width: 140px;
   text-align: left;
   font-size: 1.1em;
   font-family: sans-serif;
@@ -833,6 +834,33 @@ tr.door input.mode + ul li {
   font-family: sans-serif;
   font-variant: small-caps;
   font-caps-variant: all-small-caps;
+}
+
+td label.keypad {
+  cursor: pointer;
+}
+td label.keypad input[type=checkbox] {
+  display: none;
+}
+td label.keypad img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  margin: auto;
+}
+td label.keypad img.yes {
+  display: none;
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
+}
+td label.keypad img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+td label.keypad input[type=checkbox]:checked ~ img.yes {
+  display: block;
+}
+td label.keypad input[type=checkbox]:checked ~ img.no {
+  display: none;
 }
 
 .combobox ul {

@@ -303,6 +303,21 @@ func (ii *Interfaces) SetInterlock(controller types.IController, interlock lib.I
 	}
 }
 
+func (ii *Interfaces) ActivateKeypads(controller types.IController, keypads map[uint8]bool) {
+	if lan, ok := ii.LAN(); ok {
+		if err := lan.activateKeypads(controller, keypads); err != nil {
+			log.Warnf("%v", err)
+		} else {
+			log.Infof("%v  activate/deactivated keypads 1:%v, 2:%v, 3:%v, 4:%v",
+				controller.ID(),
+				keypads[1],
+				keypads[2],
+				keypads[3],
+				keypads[4])
+		}
+	}
+}
+
 func (ii *Interfaces) PutCard(controller types.IController, card uint32, PIN uint32, from, to lib.Date, permissions map[uint8]uint8) {
 	if lan, ok := ii.LAN(); ok {
 		lan.putCard(controller, card, PIN, from, to, permissions)

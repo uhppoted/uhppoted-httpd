@@ -29,6 +29,7 @@ func TestDoorAsObjects(t *testing.T) {
 		name:    "Le Door",
 		delay:   7,
 		mode:    core.NormallyOpen,
+		keypad:  true,
 		created: created,
 	}
 
@@ -46,6 +47,7 @@ func TestDoorAsObjects(t *testing.T) {
 		{OID: "0.3.3.3.1", Value: types.StatusUnknown},
 		{OID: "0.3.3.3.2", Value: core.NormallyOpen},
 		{OID: "0.3.3.3.3", Value: ""},
+		{OID: "0.3.3.4", Value: true},
 	}
 
 	objects := d.AsObjects(nil)
@@ -91,6 +93,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		name:    "Le Door",
 		delay:   7,
 		mode:    core.NormallyOpen,
+		keypad:  true,
 		created: created,
 	}
 
@@ -104,6 +107,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.3.3.3.1", Value: types.StatusUnknown},
 		{OID: "0.3.3.3.2", Value: core.NormallyOpen},
 		{OID: "0.3.3.3.3", Value: ""},
+		{OID: "0.3.3.4", Value: true},
 	}
 
 	a := auth.Authorizator{

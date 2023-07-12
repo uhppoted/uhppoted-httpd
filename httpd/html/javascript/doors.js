@@ -77,11 +77,13 @@ function add (oid) {
       { suffix: 'deviceID', oid: `${oid}.0.4.3`, selector: 'td input.deviceID' },
       { suffix: 'doorID', oid: `${oid}.0.4.4`, selector: 'td input.doorID' },
       { suffix: 'delay', oid: `${oid}.2`, selector: 'td input.delay' },
-      { suffix: 'mode', oid: `${oid}.3`, selector: 'td input.mode' }
+      { suffix: 'mode', oid: `${oid}.3`, selector: 'td input.mode' },
+      { suffix: 'keypad', oid: `${oid}.4`, selector: 'td label.keypad input' }
     ]
 
     fields.forEach(f => {
       const field = row.querySelector(f.selector)
+
       if (field) {
         field.id = uuid + '-' + f.suffix
         field.value = ''
@@ -109,6 +111,7 @@ function updateFromDB (oid, record) {
   const door = row.querySelector(`[data-oid="${oid}.0.4.4"]`)
   const delay = row.querySelector(`[data-oid="${oid}.2"]`)
   const mode = row.querySelector(`[data-oid="${oid}.3"]`)
+  const keypad = row.querySelector(`[data-oid="${oid}.4"]`)
 
   row.dataset.status = record.status
 
@@ -122,6 +125,7 @@ function updateFromDB (oid, record) {
   update(door, c.door)
   update(delay, d, record.delay.status)
   update(mode, m, record.mode.status)
+  update(keypad, record.keypad)
 
   // ... set tooltips for error'd values
   { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)

@@ -202,6 +202,10 @@ export function onMore (tag, event) {
 
 export function onTick (tag, event) {
   switch (tag) {
+    case 'door':
+      set(event.target, event.target.checked ? 'true' : 'false')
+      break
+
     case 'card':
       set(event.target, event.target.checked ? 'true' : 'false')
       break

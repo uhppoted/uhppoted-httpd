@@ -443,6 +443,38 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 				}
 			}
 		}
+
+	case oid.HasPrefix(schema.DoorsOID) && field == schema.DoorKeypad:
+		for _, c := range controllers {
+			for _, i := range []uint8{1, 2, 3, 4} {
+				if d, ok := c.Door(i); ok && d == oid {
+					controller := c
+					keypads := map[uint8]bool{
+						1: false,
+						2: false,
+						3: false,
+						4: false,
+					}
+
+					for _, d := range []uint8{1, 2, 3, 4} {
+						if oid, ok := controller.Door(d); !ok {
+							continue
+						} else if door, ok := s.doors.Door(oid); !ok {
+							continue
+						} else {
+							keypads[d] = door.Keypad()
+						}
+					}
+
+					go func() {
+						s.interfaces.ActivateKeypads(controller, keypads)
+					}()
+
+					return
+				}
+			}
+		}
+
 	}
 }
 
