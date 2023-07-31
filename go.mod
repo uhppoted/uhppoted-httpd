@@ -7,8 +7,8 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/hyperjumptech/grule-rule-engine v1.13.0
 	github.com/pquerna/otp v1.3.0
-	github.com/uhppoted/uhppote-core v0.8.6-0.20230704172216-7b1de80f03b5
-	github.com/uhppoted/uhppoted-lib v0.8.6-0.20230705170904-7837b1a58426
+	github.com/uhppoted/uhppote-core v0.8.6-0.20230714164141-912d472ef6df
+	github.com/uhppoted/uhppoted-lib v0.8.6-0.20230731171907-9e3fc2aab819
 	golang.org/x/sys v0.10.0
 )
 

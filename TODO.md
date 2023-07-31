@@ -7,6 +7,8 @@
       - [x] CHANGELOG
       - [x] README
 
+- [ ] Implement robust Rename (cf. https://github.com/uhppoted/uhppoted-httpd/issues/20)
+
 
 ### To Be Done Sometime
 

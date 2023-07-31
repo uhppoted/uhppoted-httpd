@@ -14,6 +14,7 @@ import (
 
 	core "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-lib/config"
+	lib "github.com/uhppoted/uhppoted-lib/os"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/log"
@@ -591,6 +592,10 @@ func save(tag Tag, v serializable) error {
 		return err
 	}
 
+	if err := tmp.Sync(); err != nil {
+		return err
+	}
+
 	if err := tmp.Close(); err != nil {
 		return err
 	}
@@ -599,7 +604,7 @@ func save(tag Tag, v serializable) error {
 		return err
 	}
 
-	return os.Rename(tmp.Name(), file)
+	return lib.Rename(tmp.Name(), file)
 }
 
 func infof(format string, args ...any) {
