@@ -2,6 +2,7 @@
 bin
 dist
 runtime
+tmp
 html/css
 node_modules
 archive

@@ -7,6 +7,7 @@
 
 ### Updated
 1. Renamed _master_ branch to _main_ in line with current development practice.
+2. Replaced os.Rename with robust implementation for moving files between file systems.
 
 
 ## [0.8.5](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.5) - 2023-06-13
