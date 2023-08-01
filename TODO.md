@@ -10,7 +10,7 @@
 - [x] Implement robust Rename (cf. https://github.com/uhppoted/uhppoted-httpd/issues/20)
       - [x] Use lib.Rename for system file updates
       - [x] CHANGELOG
-      - [ ] Cleanup temporary files on startup
+      - [x] Cleanup temporary files on startup
 
 
 ### To Be Done Sometime

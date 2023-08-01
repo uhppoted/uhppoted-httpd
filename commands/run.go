@@ -111,6 +111,11 @@ func (cmd *Run) execute(f func(c config.Config)) error {
 		})
 	}
 
+	// ... cleanup dangling temporary files
+
+	cleanup(*conf)
+
+	// 'k, good to go
 	f(*conf)
 
 	return nil
@@ -181,4 +186,41 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 	}
 
 	h.Run(runMode, conf.HTTPD.PIN.Enabled, interrupt)
+}
+
+func cleanup(cfg config.Config) {
+	folders := map[string]struct{}{}
+	files := []string{
+		cfg.HTTPD.System.Interfaces,
+		cfg.HTTPD.System.Controllers,
+		cfg.HTTPD.System.Doors,
+		cfg.HTTPD.System.Cards,
+		cfg.HTTPD.System.Groups,
+		cfg.HTTPD.System.Events,
+		cfg.HTTPD.System.Logs,
+		cfg.HTTPD.System.Users,
+		cfg.HTTPD.System.History,
+	}
+
+	for _, file := range files {
+		dir := filepath.Dir(file)
+		folders[dir] = struct{}{}
+	}
+
+	for dir := range folders {
+		glob := filepath.Join(dir, "*.tmp")
+
+		if tempfiles, err := filepath.Glob(glob); err != nil {
+			log.Warnf("%v", err)
+		} else {
+			for _, file := range tempfiles {
+				if err := os.Remove(file); err != nil {
+					log.Warnf("Error deleting leftover temporary file  %v (%v)", file, err)
+				} else {
+					log.Infof("Deleting leftover temporary file  %v", file)
+				}
+			}
+		}
+	}
+
 }
