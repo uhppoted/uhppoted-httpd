@@ -30,6 +30,7 @@ become a platform for exploring some alternative ideas around user interfaces an
 
 | *Version* | *Description*                                                                             |
 | --------- | ----------------------------------------------------------------------------------------- |
+| v0.8.6    | Adds support for enabling/disabling reader keypads                                        |
 | v0.8.5    | Adds support for setting controller door interlock mode                                   |
 | v0.8.4    | Adds support for card keypad PINs                                                         |
 | v0.8.3    | Adds OTP as an alternative login credential                                               |
