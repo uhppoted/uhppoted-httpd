@@ -28,10 +28,15 @@ update:
 	go get -u github.com/cristalhq/jwt/v3
 	go get -u github.com/google/uuid
 	go get -u golang.org/x/sys
-	go get -u github.com/hyperjumptech/grule-rule-engine
+	# go get -u github.com/hyperjumptech/grule-rule-engine
 	go mod tidy
 
 update-release:
+	go get -u github.com/uhppoted/uhppote-core
+	go get -u github.com/uhppoted/uhppoted-lib
+	go mod tidy
+
+update-all:
 	go get -u github.com/uhppoted/uhppote-core
 	go get -u github.com/uhppoted/uhppoted-lib
 	go get -u github.com/cristalhq/jwt/v3
@@ -39,6 +44,7 @@ update-release:
 	go get -u golang.org/x/sys
 	go get -u github.com/hyperjumptech/grule-rule-engine
 	go mod tidy
+
 
 format: 
 	go fmt ./...
