@@ -75,7 +75,11 @@ func (r *rules) Eval(c cards.Card, dd doors.Doors) ([]doors.Door, []doors.Door, 
 			return nil, nil, err
 		}
 
-		kb := r.grule.NewKnowledgeBaseInstance("acl", "0.0.0")
+		kb, err := r.grule.NewKnowledgeBaseInstance("acl", "0.0.0")
+		if err != nil {
+			return nil, nil, err
+		}
+
 		enjin := engine.NewGruleEngine()
 		if err := enjin.Execute(context, kb); err != nil {
 			return nil, nil, err

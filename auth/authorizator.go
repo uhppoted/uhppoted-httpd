@@ -282,6 +282,7 @@ func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
 
 func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]interface{}) error {
 	context := ast.NewDataContext()
+	tag := fmt.Sprintf("%v", ruleset)
 
 	if err := context.Add("UID", a.uid); err != nil {
 		return err
@@ -307,9 +308,9 @@ func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]
 
 	if kb, err := getKB(ruleset); err != nil {
 		return err
+	} else if kbi, err := kb.NewKnowledgeBaseInstance(tag, "0.0.0"); err != nil {
+		return err
 	} else {
-		tag := fmt.Sprintf("%v", ruleset)
-		kbi := kb.NewKnowledgeBaseInstance(tag, "0.0.0")
 		enjin := engine.NewGruleEngine()
 		if err := enjin.Execute(context, kbi); err != nil {
 			return err

@@ -28,7 +28,7 @@ update:
 	go get -u github.com/cristalhq/jwt/v3
 	go get -u github.com/google/uuid
 	go get -u golang.org/x/sys
-	# go get -u github.com/hyperjumptech/grule-rule-engine
+	go get -u github.com/hyperjumptech/grule-rule-engine
 	go mod tidy
 
 update-release:
