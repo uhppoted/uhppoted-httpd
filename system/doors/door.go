@@ -135,9 +135,9 @@ func (d *Door) AsObjects(a *auth.Authorizator) []schema.Object {
 			status:     types.StatusUnknown,
 		}
 
-		passcodes := []string{}
-		for _, p := range d.passcodes {
-			passcodes = append(passcodes, fmt.Sprintf("%v", p))
+		passcodes := ""
+		if len(d.passcodes) > 0 {
+			passcodes = "******"
 		}
 
 		if v, ok := catalog.GetUint8(d.OID, DoorDelay); ok {
@@ -195,7 +195,7 @@ func (d *Door) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{DoorControlConfigured, control.configured})
 		list = append(list, kv{DoorControlError, control.err})
 		list = append(list, kv{DoorKeypad, d.keypad})
-		list = append(list, kv{DoorPasscodes, strings.Join(passcodes, ",")})
+		list = append(list, kv{DoorPasscodes, passcodes})
 	}
 
 	return d.toObjects(list, a)
@@ -310,16 +310,19 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			d.log(dbc, uid, "update", "passcodes", "****", "****", "Updated passcodes")
 
 			passcodes := []uint32{}
-			passcodes_ := []string{}
 			tokens := regexp.MustCompile(",|;").Split(value, -1)
 
 			for _, token := range tokens {
 				if v, err := strconv.ParseUint(strings.TrimSpace(token), 10, 32); err == nil {
 					if v > 0 && v < 1000000 && len(passcodes) < 4 {
 						passcodes = append(passcodes, uint32(v))
-						passcodes_ = append(passcodes_, fmt.Sprintf("%v", uint32(v)))
 					}
 				}
+			}
+
+			passcodes_ := ""
+			if len(passcodes) > 0 {
+				passcodes_ = "******"
 			}
 
 			d.passcodes = passcodes
@@ -327,7 +330,7 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 
 			dbc.Updated(d.OID, DoorPasscodes, d.passcodes)
 
-			list = append(list, kv{DoorPasscodes, strings.Join(passcodes_, ",")})
+			list = append(list, kv{DoorPasscodes, passcodes_})
 		}
 	}
 
@@ -388,23 +391,21 @@ func (d Door) Status() types.Status {
 
 func (d Door) serialize() ([]byte, error) {
 	record := struct {
-		OID       schema.OID        `json:"OID"`
-		Name      string            `json:"name,omitempty"`
-		Delay     uint8             `json:"delay,omitempty"`
-		Mode      core.ControlState `json:"mode,omitempty"`
-		Keypad    bool              `json:"keypad,omitempty"`
-		Passcodes []uint32          `json:"passcodes,omitempty"`
-		Created   types.Timestamp   `json:"created,omitempty"`
-		Modified  types.Timestamp   `json:"modified,omitempty"`
+		OID      schema.OID        `json:"OID"`
+		Name     string            `json:"name,omitempty"`
+		Delay    uint8             `json:"delay,omitempty"`
+		Mode     core.ControlState `json:"mode,omitempty"`
+		Keypad   bool              `json:"keypad,omitempty"`
+		Created  types.Timestamp   `json:"created,omitempty"`
+		Modified types.Timestamp   `json:"modified,omitempty"`
 	}{
-		OID:       d.OID,
-		Name:      d.name,
-		Delay:     d.delay,
-		Mode:      d.mode,
-		Keypad:    d.keypad,
-		Passcodes: d.passcodes,
-		Created:   d.created.UTC(),
-		Modified:  d.modified.UTC(),
+		OID:      d.OID,
+		Name:     d.name,
+		Delay:    d.delay,
+		Mode:     d.mode,
+		Keypad:   d.keypad,
+		Created:  d.created.UTC(),
+		Modified: d.modified.UTC(),
 	}
 
 	return json.Marshal(record)
@@ -414,31 +415,22 @@ func (d *Door) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID       schema.OID        `json:"OID"`
-		Name      string            `json:"name,omitempty"`
-		Delay     uint8             `json:"delay,omitempty"`
-		Mode      core.ControlState `json:"mode,omitempty"`
-		Keypad    bool              `json:"keypad,omitempty"`
-		Passcodes []uint32          `json:"passcodes,omitempty"`
-		Created   types.Timestamp   `json:"created,omitempty"`
-		Modified  types.Timestamp   `json:"modified,omitempty"`
+		OID      schema.OID        `json:"OID"`
+		Name     string            `json:"name,omitempty"`
+		Delay    uint8             `json:"delay,omitempty"`
+		Mode     core.ControlState `json:"mode,omitempty"`
+		Keypad   bool              `json:"keypad,omitempty"`
+		Created  types.Timestamp   `json:"created,omitempty"`
+		Modified types.Timestamp   `json:"modified,omitempty"`
 	}{
-		Delay:     5,
-		Mode:      core.Controlled,
-		Keypad:    false,
-		Passcodes: []uint32{},
-		Created:   created,
+		Delay:   5,
+		Mode:    core.Controlled,
+		Keypad:  false,
+		Created: created,
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
 		return err
-	}
-
-	passcodes := []uint32{}
-	for _, v := range record.Passcodes {
-		if v > 0 && v < 1000000 && len(passcodes) < 4 {
-			passcodes = append(passcodes, v)
-		}
 	}
 
 	d.OID = record.OID
@@ -446,7 +438,7 @@ func (d *Door) deserialize(bytes []byte) error {
 	d.delay = record.Delay
 	d.mode = record.Mode
 	d.keypad = record.Keypad
-	d.passcodes = passcodes
+	d.passcodes = []uint32{}
 	d.created = record.Created
 	d.modified = record.Modified
 

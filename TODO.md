@@ -1,13 +1,12 @@
 # TODO
 
-- [ ] `set-door-passcodes` (cf. https://github.com/uhppoted/uhppoted/issues/40)
+- [x] `set-door-passcodes` (cf. https://github.com/uhppoted/uhppoted/issues/40)
       - [x] Add _passcodes_ field to _doors_ page
       - [x] Add _passcodes_ to doors record
       - [x] Update controller passcodes
       - [x] CHANGELOG
       - [x] README
-      - [ ] Make update only (display as "*****")
-      - (?) Make opt-in
+      - [x] Make update only (display as "*****")
 
 ### To Be Done Sometime
 

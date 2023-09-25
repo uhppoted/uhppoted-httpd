@@ -49,7 +49,7 @@ func TestDoorAsObjects(t *testing.T) {
 		{OID: "0.3.3.3.2", Value: core.NormallyOpen},
 		{OID: "0.3.3.3.3", Value: ""},
 		{OID: "0.3.3.4", Value: true},
-		{OID: "0.3.3.5", Value: "12345,999999,54321"},
+		{OID: "0.3.3.5", Value: "******"},
 	}
 
 	objects := d.AsObjects(nil)
@@ -113,7 +113,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.3.3.3.2", Value: core.NormallyOpen},
 		{OID: "0.3.3.3.3", Value: ""},
 		{OID: "0.3.3.4", Value: true},
-		{OID: "0.3.3.5", Value: "12345,999999,54321"},
+		{OID: "0.3.3.5", Value: "******"},
 	}
 
 	a := auth.Authorizator{
