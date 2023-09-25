@@ -463,6 +463,22 @@ func (l *LAN) activateKeypads(c types.IController, keypads map[uint8]bool) error
 	}
 }
 
+func (l *LAN) setDoorPasscodes(c types.IController, door uint8, passcodes ...uint32) error {
+	lock(c.ID())
+	defer unlock(c.ID())
+
+	api := l.api([]types.IController{c})
+	deviceID := c.ID()
+
+	if ok, err := api.UHPPOTE.SetDoorPasscodes(deviceID, door, passcodes...); err != nil {
+		return err
+	} else if !ok {
+		return fmt.Errorf("%v  failed to set door %v passcodes", deviceID, door)
+	} else {
+		return nil
+	}
+}
+
 func (l *LAN) putCard(c types.IController, cardID uint32, PIN uint32, from, to lib.Date, permissions map[uint8]uint8) {
 	lock(c.ID())
 	defer unlock(c.ID())

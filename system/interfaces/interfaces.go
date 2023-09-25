@@ -318,6 +318,16 @@ func (ii *Interfaces) ActivateKeypads(controller types.IController, keypads map[
 	}
 }
 
+func (ii *Interfaces) SetDoorPasscodes(controller types.IController, door uint8, passcodes ...uint32) {
+	if lan, ok := ii.LAN(); ok {
+		if err := lan.setDoorPasscodes(controller, door, passcodes...); err != nil {
+			log.Warnf("%v", err)
+		} else {
+			log.Infof("%v  set door %v passcodes", controller.ID(), door)
+		}
+	}
+}
+
 func (ii *Interfaces) PutCard(controller types.IController, card uint32, PIN uint32, from, to lib.Date, permissions map[uint8]uint8) {
 	if lan, ok := ii.LAN(); ok {
 		lan.putCard(controller, card, PIN, from, to, permissions)

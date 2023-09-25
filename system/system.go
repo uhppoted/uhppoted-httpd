@@ -475,6 +475,19 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 			}
 		}
 
+	case oid.HasPrefix(schema.DoorsOID) && field == schema.DoorPasscodes:
+		for _, c := range controllers {
+			controller := c
+			for _, i := range []uint8{1, 2, 3, 4} {
+				door := i
+				if d, ok := c.Door(i); ok && d == oid {
+					go func() {
+						s.interfaces.SetDoorPasscodes(controller, door, value.([]uint32)...)
+					}()
+					return
+				}
+			}
+		}
 	}
 }
 
