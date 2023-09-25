@@ -3,6 +3,7 @@ package doors
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -20,9 +21,10 @@ type Door struct {
 	catalog.CatalogDoor
 	name string
 
-	delay  uint8
-	mode   core.ControlState
-	keypad bool
+	delay     uint8
+	mode      core.ControlState
+	keypad    bool
+	passcodes []uint32
 
 	created  types.Timestamp
 	modified types.Timestamp
@@ -133,6 +135,11 @@ func (d *Door) AsObjects(a *auth.Authorizator) []schema.Object {
 			status:     types.StatusUnknown,
 		}
 
+		passcodes := ""
+		if len(d.passcodes) > 0 {
+			passcodes = "******"
+		}
+
 		if v, ok := catalog.GetUint8(d.OID, DoorDelay); ok {
 			delay.delay = v
 			modified := false
@@ -188,6 +195,7 @@ func (d *Door) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{DoorControlConfigured, control.configured})
 		list = append(list, kv{DoorControlError, control.err})
 		list = append(list, kv{DoorKeypad, d.keypad})
+		list = append(list, kv{DoorPasscodes, passcodes})
 	}
 
 	return d.toObjects(list, a)
@@ -293,6 +301,36 @@ func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 			dbc.Updated(d.OID, DoorKeypad, d.keypad)
 
 			list = append(list, kv{DoorKeypad, d.keypad})
+		}
+
+	case d.OID.Append(DoorPasscodes):
+		if err := CanUpdate(a, d, "passcodes", value); err != nil {
+			return nil, err
+		} else {
+			d.log(dbc, uid, "update", "passcodes", "****", "****", "Updated passcodes")
+
+			passcodes := []uint32{}
+			tokens := regexp.MustCompile(",|;").Split(value, -1)
+
+			for _, token := range tokens {
+				if v, err := strconv.ParseUint(strings.TrimSpace(token), 10, 32); err == nil {
+					if v > 0 && v < 1000000 && len(passcodes) < 4 {
+						passcodes = append(passcodes, uint32(v))
+					}
+				}
+			}
+
+			passcodes_ := ""
+			if len(passcodes) > 0 {
+				passcodes_ = "******"
+			}
+
+			d.passcodes = passcodes
+			d.modified = types.TimestampNow()
+
+			dbc.Updated(d.OID, DoorPasscodes, d.passcodes)
+
+			list = append(list, kv{DoorPasscodes, passcodes_})
 		}
 	}
 
@@ -400,6 +438,7 @@ func (d *Door) deserialize(bytes []byte) error {
 	d.delay = record.Delay
 	d.mode = record.Mode
 	d.keypad = record.Keypad
+	d.passcodes = []uint32{}
 	d.created = record.Created
 	d.modified = record.Modified
 
@@ -411,13 +450,14 @@ func (d *Door) clone() Door {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: d.OID,
 		},
-		name:     d.name,
-		delay:    d.delay,
-		mode:     d.mode,
-		keypad:   d.keypad,
-		created:  d.created,
-		modified: d.modified,
-		deleted:  d.deleted,
+		name:      d.name,
+		delay:     d.delay,
+		mode:      d.mode,
+		keypad:    d.keypad,
+		passcodes: d.passcodes,
+		created:   d.created,
+		modified:  d.modified,
+		deleted:   d.deleted,
 	}
 }
 

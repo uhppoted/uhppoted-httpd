@@ -45,6 +45,7 @@ update-all:
 	go get -u github.com/hyperjumptech/grule-rule-engine
 	go mod tidy
 
+
 format: 
 	go fmt ./...
 

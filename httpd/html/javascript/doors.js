@@ -78,7 +78,8 @@ function add (oid) {
       { suffix: 'doorID', oid: `${oid}.0.4.4`, selector: 'td input.doorID' },
       { suffix: 'delay', oid: `${oid}.2`, selector: 'td input.delay' },
       { suffix: 'mode', oid: `${oid}.3`, selector: 'td input.mode' },
-      { suffix: 'keypad', oid: `${oid}.4`, selector: 'td label.keypad input' }
+      { suffix: 'keypad', oid: `${oid}.4`, selector: 'td label.keypad input' },
+      { suffix: 'passcodes', oid: `${oid}.5`, selector: 'td input.passcodes' }
     ]
 
     fields.forEach(f => {
@@ -112,6 +113,7 @@ function updateFromDB (oid, record) {
   const delay = row.querySelector(`[data-oid="${oid}.2"]`)
   const mode = row.querySelector(`[data-oid="${oid}.3"]`)
   const keypad = row.querySelector(`[data-oid="${oid}.4"]`)
+  const passcodes = row.querySelector(`[data-oid="${oid}.5"]`)
 
   row.dataset.status = record.status
 
@@ -126,6 +128,7 @@ function updateFromDB (oid, record) {
   update(delay, d, record.delay.status)
   update(mode, m, record.mode.status)
   update(keypad, record.keypad)
+  update(passcodes, record.passcodes)
 
   // ... set tooltips for error'd values
   { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)

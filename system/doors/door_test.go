@@ -26,11 +26,12 @@ func TestDoorAsObjects(t *testing.T) {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: "0.3.3",
 		},
-		name:    "Le Door",
-		delay:   7,
-		mode:    core.NormallyOpen,
-		keypad:  true,
-		created: created,
+		name:      "Le Door",
+		delay:     7,
+		mode:      core.NormallyOpen,
+		keypad:    true,
+		passcodes: []uint32{12345, 999999, 54321},
+		created:   created,
 	}
 
 	expected := []schema.Object{
@@ -48,6 +49,7 @@ func TestDoorAsObjects(t *testing.T) {
 		{OID: "0.3.3.3.2", Value: core.NormallyOpen},
 		{OID: "0.3.3.3.3", Value: ""},
 		{OID: "0.3.3.4", Value: true},
+		{OID: "0.3.3.5", Value: "******"},
 	}
 
 	objects := d.AsObjects(nil)
@@ -65,11 +67,13 @@ func TestDoorAsObjectsWithDeleted(t *testing.T) {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: "0.3.3",
 		},
-		name:    "Le Door",
-		delay:   7,
-		mode:    core.NormallyOpen,
-		created: created,
-		deleted: deleted,
+		name:      "Le Door",
+		delay:     7,
+		mode:      core.NormallyOpen,
+		keypad:    true,
+		passcodes: []uint32{12345, 999999, 54321},
+		created:   created,
+		deleted:   deleted,
 	}
 
 	expected := []schema.Object{
@@ -90,11 +94,12 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		CatalogDoor: catalog.CatalogDoor{
 			OID: "0.3.3",
 		},
-		name:    "Le Door",
-		delay:   7,
-		mode:    core.NormallyOpen,
-		keypad:  true,
-		created: created,
+		name:      "Le Door",
+		delay:     7,
+		mode:      core.NormallyOpen,
+		keypad:    true,
+		passcodes: []uint32{12345, 999999, 54321},
+		created:   created,
 	}
 
 	expected := []schema.Object{
@@ -108,6 +113,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.3.3.3.2", Value: core.NormallyOpen},
 		{OID: "0.3.3.3.3", Value: ""},
 		{OID: "0.3.3.4", Value: true},
+		{OID: "0.3.3.5", Value: "******"},
 	}
 
 	a := auth.Authorizator{

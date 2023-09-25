@@ -38,6 +38,7 @@
                   <th class="mode colheader">Mode</th>
                   <th class="delay colheader">Delay</th>
                   <th class="keypad colheader">Keypad</th>
+                  <th class="passcodes colheader">Passcodes</th>
                   <th class="padding colheader"></th>
                 </tr>
               </thead>
@@ -150,6 +151,21 @@
                     <img class="no"  src="/images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
                     <img class="yes" src="/images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
                   </label>
+                </td>
+
+                <td>
+                  <input class="field passcodes"
+                         type="text" 
+                         value=""
+                         placeholder=""
+                         title="Up to four numeric passcodes, seperated by commas"
+                         autocomplete="new-password"
+                         onkeydown="onEnter('door', event)" 
+                         onchange="onEdited('door', event)" 
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         {{if .readonly}}readonly{{end}} />
                 </td>
 
                 <!-- 'padding' column (CSS: tr::last-child) -->

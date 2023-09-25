@@ -1,12 +1,12 @@
 # TODO
 
-- [x] `activate-keypads` (cf. https://github.com/uhppoted/uhppoted/issues/35)
-      - [x] Add _keypad_ checkbox to doors page
-      - [x] Add _keypad_ to doors record
-      - [x] Update controller keypads
+- [x] `set-door-passcodes` (cf. https://github.com/uhppoted/uhppoted/issues/40)
+      - [x] Add _passcodes_ field to _doors_ page
+      - [x] Add _passcodes_ to doors record
+      - [x] Update controller passcodes
       - [x] CHANGELOG
       - [x] README
-
+      - [x] Make update only (display as "*****")
 - [x] Implement robust Rename (cf. https://github.com/uhppoted/uhppoted-httpd/issues/20)
       - [x] Use lib.Rename for system file updates
       - [x] CHANGELOG
