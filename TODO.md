@@ -1,12 +1,11 @@
 # TODO
 
-- [x] `activate-keypads` (cf. https://github.com/uhppoted/uhppoted/issues/35)
-      - [x] Add _keypad_ checkbox to doors page
-      - [x] Add _keypad_ to doors record
-      - [x] Update controller keypads
-      - [x] CHANGELOG
-      - [x] README
-
+- [ ] `set-door-passcodes` (cf. https://github.com/uhppoted/uhppoted/issues/40)
+      - [ ] Passcodes page
+      - [ ] Add _passcodes_ to doors record
+      - [ ] Update controller passcodes
+      - [ ] CHANGELOG
+      - [ ] README
 
 ### To Be Done Sometime
 
