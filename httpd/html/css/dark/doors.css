@@ -863,6 +863,10 @@ td label.keypad input[type=checkbox]:checked ~ img.no {
   display: none;
 }
 
+tr.door td input.passcodes {
+  width: 224px;
+}
+
 .combobox ul {
   display: none;
   background: #93a1a1;

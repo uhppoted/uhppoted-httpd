@@ -83,7 +83,8 @@ type Doors struct {
 		Error      Suffix `json:"error"`
 		Modified   Suffix `json:"modified"`
 	} `json:"control"`
-	Keypad Suffix `json:"keypad"`
+	Keypad    Suffix `json:"keypad"`
+	Passcodes Suffix `json:"passcodes"`
 }
 
 type Cards struct {
@@ -272,7 +273,8 @@ var schema = Schema{
 			Error:      DoorControlError,
 			Modified:   DoorControlModified,
 		},
-		Keypad: DoorKeypad,
+		Keypad:    DoorKeypad,
+		Passcodes: DoorPasscodes,
 	},
 
 	Cards: Cards{
@@ -415,6 +417,7 @@ const DoorControlConfigured Suffix = ".3.2"
 const DoorControlError Suffix = ".3.3"
 const DoorControlModified Suffix = ".3.4"
 const DoorKeypad Suffix = ".4"
+const DoorPasscodes Suffix = ".5"
 
 const CardName Suffix = ".1"
 const CardNumber Suffix = ".2"

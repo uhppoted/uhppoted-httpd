@@ -1,9 +1,10 @@
 # TODO
 
 - [ ] `set-door-passcodes` (cf. https://github.com/uhppoted/uhppoted/issues/40)
-      - [ ] Passcodes page
-      - [ ] Add _passcodes_ to doors record
+      - [x] Add _passcodes_ field to _doors_ page
+      - [x] Add _passcodes_ to doors record
       - [ ] Update controller passcodes
+      - [ ] Make opt-in
       - [ ] CHANGELOG
       - [ ] README
 

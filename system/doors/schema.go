@@ -20,6 +20,7 @@ const DoorControlConfigured = schema.DoorControlConfigured
 const DoorControlError = schema.DoorControlError
 const DoorControlModified = schema.DoorControlModified
 const DoorKeypad = schema.DoorKeypad
+const DoorPasscodes = schema.DoorPasscodes
 
 var lookup = map[schema.Suffix]string{
 	DoorStatus:            "door.status",
@@ -37,4 +38,5 @@ var lookup = map[schema.Suffix]string{
 	DoorControlError:      "door.control.error",
 	DoorControlModified:   "door.control.modified",
 	DoorKeypad:            "door.keypad",
+	DoorPasscodes:         "door.passcodes",
 }

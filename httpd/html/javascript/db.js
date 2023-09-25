@@ -338,6 +338,7 @@ function doors (o) {
       delay: { delay: '', configured: '', status: 'unknown', err: '' },
       mode: { mode: '', configured: '', status: 'unknown', err: '' },
       keypad: false,
+      passcodes: '',
       status: o.value,
       touched: new Date()
     })
@@ -398,6 +399,10 @@ function doors (o) {
 
     case `${base}.4`:
       v.keypad = o.value === 'true'
+      break
+
+    case `${base}.5`:
+      v.passcodes = o.value
       break
   }
 }
