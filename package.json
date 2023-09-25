@@ -1,10 +1,9 @@
 {
   "name": "uhppoted-httpd",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "Management system for an access control system based on the UHPPOTE Wiegand access controllers",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
