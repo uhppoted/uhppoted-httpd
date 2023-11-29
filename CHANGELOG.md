@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [0.8.6](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.6) - 2023-08-30
+## [0.8.7](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.7) - 2023-12-01
 
 ### Added
 1. Added _passcodes_ field to _doors_ page to set override passcodes.

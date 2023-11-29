@@ -26,17 +26,14 @@ Also, please be aware that at this stage in its career, it is primarily a testbe
 implementation of the other `uhppoted` components when integrated into a working system. It is also intended to
 become a platform for exploring some alternative ideas around user interfaces and system architectures.
 
-## Releases
+## Release Notes
 
-| *Version* | *Description*                                                                             |
-| --------- | ----------------------------------------------------------------------------------------- |
-| v0.8.6    | Adds support for enabling/disabling reader keypads                                        |
-| v0.8.5    | Adds support for setting controller door interlock mode                                   |
-| v0.8.4    | Adds support for card keypad PINs                                                         |
-| v0.8.3    | Adds OTP as an alternative login credential                                               |
-| v0.8.2    | Maintenance release for compatibility with _uhppote-core_ v0.8.2                          |
-| v0.8.1    | Fixes event retrieval for firmware bug around retrieving `system restart` event           |
-| v0.8.0    | Initial release                                                                           |
+### Current Release
+
+**[v0.8.7](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.7) - 2023-12-01**
+
+1. Added _passcodes_ field to _doors_ page to set override passcodes.
+
 
 ## Installation
 
