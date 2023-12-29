@@ -59,7 +59,7 @@ The `daemonize` command will create all the necessary files for `uhppoted-httpd`
 ### Building from source
 
 Required tools:
-- [Go 1.19+](https://go.dev)
+- [Go 1.21+](https://go.dev)
 - [sass](https://sass-lang.com)
 - make (optional but recommended)
 - [eslint](https://eslint.org) (optional but recommended)
