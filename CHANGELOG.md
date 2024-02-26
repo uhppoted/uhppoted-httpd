@@ -8,6 +8,9 @@
 ### Added
 1. Added _passcodes_ field to _doors_ page to set override passcodes.
 
+### Updated
+1. Added NodeJS v18.19.1 and v20.11.1 to the CI build matrix
+
 
 ## [0.8.6](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.6) - 2023-08-30
 

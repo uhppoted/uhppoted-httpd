@@ -39,6 +39,7 @@
               - https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
         - [ ] Render/realize only if updated
         - [ ] (?) Keep DB in local storage
+  - https://vladimir.varank.in/notes/2022/05/a-real-life-use-case-for-generics-in-go-api-for-client-side-pagination/
 
 #### Cards
   - [ ] `refresh` is overwriting pending group edits
