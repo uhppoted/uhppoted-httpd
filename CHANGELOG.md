@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Added
+1. Added public Docker image to ghcr.io.
+
+### Updated
+1. Bumped Go version to 1.22.
+
 
 ## [0.8.7](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.7) - 2023-12-01
 

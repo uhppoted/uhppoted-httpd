@@ -5,7 +5,7 @@
        - [x] docker-ghcr
        - [ ] compose.yml
        - [ ] README
-       - [ ] CHANGELOG
+       - [x] CHANGELOG
 
 
 ### To Be Done Sometime
