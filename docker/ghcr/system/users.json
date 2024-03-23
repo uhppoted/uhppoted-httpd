@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "OID": "0.8.1",
+      "name": "Administrator",
+      "uid": "admin",
+      "role": "admin",
+      "salt": "4a3d95eec4b94c236824f75ef8305c90",
+      "password": "91b228c1595768ff35f8bce555ac089e8e64348e15110fc8ef3653fd4cf7ff67",
+      "created": "2022-02-10 18:41:48 UTC",
+      "modified": ""
+    }
+  ]
+}

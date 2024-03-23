@@ -2,7 +2,7 @@
 
 - [ ] [Prebuilt Docker containers](https://github.com/uhppoted/uhppoted/issues/47)
        - [x] docker-dev
-       - [ ] docker-ghcr
+       - [x] docker-ghcr
        - [ ] compose.yml
        - [ ] README
        - [ ] CHANGELOG

@@ -1,0 +1,13 @@
+{
+  "interfaces": [
+    {
+      "OID": "0.1.1",
+      "name": "LAN",
+      "bind-address": "0.0.0.0",
+      "broadcast-address": "255.255.255.255",
+      "listen-address": "0.0.0.0:60001",
+      "created": "2024-01-01 00:00:00 UTC",
+      "modified": "2024-01-01 00:00:00 UTC"
+    }
+  ]
+}

@@ -171,13 +171,33 @@ docker-dev: build
 	cp docker/dev/uhppoted.conf dist/docker/dev
 	cp docker/dev/auth.json     dist/docker/dev
 	cp docker/dev/acl.grl       dist/docker/dev
-	cp docker/dev/grules/*      dist/docker/dev/grules
-	cp docker/dev/system/*      dist/docker/dev/system
+	cp -r docker/dev/grules     dist/docker/dev
+	cp -r docker/dev/system     dist/docker/dev
 	cd dist/docker/dev && docker build --no-cache -f Dockerfile -t uhppoted/uhppoted-httpd-dev .
 
+docker-ghcr: build
+	rm -rf dist/docker/ghcr/*
+	mkdir -p dist/docker/ghcr
+	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o dist/docker/ghcr ./...
+	cp docker/ghcr/Dockerfile    dist/docker/ghcr
+	cp docker/ghcr/uhppoted.conf dist/docker/ghcr
+	cp docker/ghcr/auth.json     dist/docker/ghcr
+	cp docker/ghcr/acl.grl       dist/docker/ghcr
+	cp -r docker/ghcr/grules     dist/docker/ghcr
+	cp -r docker/ghcr/system     dist/docker/ghcr
+	rsync -av --exclude='**/html.go' httpd/html dist/docker/ghcr
+	cd dist/docker/ghcr && docker build --no-cache -f Dockerfile -t $(DOCKER) .
+
 docker-run-dev:
-	docker run --publish 8888:8888 --name httpd --rm uhppoted/uhppoted-httpd-dev
+	docker run --publish 8888:8080 --name httpd --rm uhppoted/uhppoted-httpd-dev
 	sleep 1
+
+docker-run-ghcr:
+	docker run --publish 8888:8080 --publish 8443:8443 --name httpd --mount source=httpd,target=/usr/local/etc/uhppoted --rm ghcr.io/uhppoted/httpd
+	sleep 1
+
+docker-compose:
+	cd docker/compose && docker compose up
 
 docker-clean:
 	docker image     prune -f
