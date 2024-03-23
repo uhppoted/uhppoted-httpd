@@ -2,6 +2,7 @@ RELEASE = v0.8.x
 DIST   ?= development
 DEBUG  ?= --debug
 CMD     = ./bin/uhppoted-httpd
+DOCKER  ?= ghcr.io/uhppoted/httpd:latest
 
 .DEFAULT_GOAL := test
 .PHONY: sass
@@ -159,4 +160,30 @@ undaemonize: build
 
 config: build
 	$(CMD) config
+
+docker-dev: build
+	rm -rf dist/docker/dev/*
+	mkdir -p dist/docker/dev
+	mkdir -p dist/docker/dev/system
+	mkdir -p dist/docker/dev/grules
+	env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o dist/docker/dev ./...
+	cp docker/dev/Dockerfile    dist/docker/dev
+	cp docker/dev/uhppoted.conf dist/docker/dev
+	cp docker/dev/auth.json     dist/docker/dev
+	cp docker/dev/acl.grl       dist/docker/dev
+	cp docker/dev/grules/*      dist/docker/dev/grules
+	cp docker/dev/system/*      dist/docker/dev/system
+	cd dist/docker/dev && docker build --no-cache -f Dockerfile -t uhppoted/uhppoted-httpd-dev .
+
+docker-run-dev:
+	docker run --publish 8888:8888 --name httpd --rm uhppoted/uhppoted-httpd-dev
+	sleep 1
+
+docker-clean:
+	docker image     prune -f
+	docker container prune -f
+
+docker-shell:
+	docker exec -it httpd /bin/sh
+
 

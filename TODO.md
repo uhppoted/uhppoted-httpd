@@ -1,16 +1,11 @@
 # TODO
 
-- [x] `set-door-passcodes` (cf. https://github.com/uhppoted/uhppoted/issues/40)
-      - [x] Add _passcodes_ field to _doors_ page
-      - [x] Add _passcodes_ to doors record
-      - [x] Update controller passcodes
-      - [x] CHANGELOG
-      - [x] README
-      - [x] Make update only (display as "*****")
-- [x] Implement robust Rename (cf. https://github.com/uhppoted/uhppoted-httpd/issues/20)
-      - [x] Use lib.Rename for system file updates
-      - [x] CHANGELOG
-      - [x] Cleanup temporary files on startup
+- [ ] [Prebuilt Docker containers](https://github.com/uhppoted/uhppoted/issues/47)
+       - [x] docker-dev
+       - [ ] docker-ghcr
+       - [ ] compose.yml
+       - [ ] README
+       - [ ] CHANGELOG
 
 
 ### To Be Done Sometime
