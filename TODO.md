@@ -15,6 +15,7 @@
 
 ### To Be Done Sometime
 
+- (?) https://www.pgrs.net/2024/03/21/duckdb-as-the-new-jq/
 - [ ] Rationalise SASS styles
       - [ ] Everything everywhere should import _uhppoted first
 
