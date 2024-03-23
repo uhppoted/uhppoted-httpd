@@ -193,7 +193,7 @@ docker-run-dev:
 	sleep 1
 
 docker-run-ghcr:
-	docker run --publish 8888:8080 --publish 8443:8443 --name httpd --mount source=httpd,target=/usr/local/etc/uhppoted --rm ghcr.io/uhppoted/httpd
+	docker run --publish 8888:8080 --publish 8443:8443 --name httpd --mount source=uhppoted-httpd,target=/usr/local/etc/uhppoted --rm ghcr.io/uhppoted/httpd
 	sleep 1
 
 docker-compose:
