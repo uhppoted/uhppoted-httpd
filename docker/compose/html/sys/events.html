@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>uhppoted-httpd: Events</title>
+    <link rel="manifest"   href="/manifest.json">
+    <link rel="icon"       href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/events.css" type="text/css">
+    <meta charset="UTF-8">
+  </head>
+
+  <body> 
+    <div id="content">
+
+      {{template "user"   .}}
+      {{template "header" .}}
+      {{template "nav"    (nav "events")}}
+
+      <!-- MAIN -->
+      <main>
+        <div id="container">
+          <div id="controls" data-oid="{{ .schema.Events.OID }}">
+            {{template "message"   .}}
+            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('events', event)" />
+          </div>
+
+          <div id="events" class="tabular">
+            <table>
+              <thead>
+                <tr>
+                  <th class="colheader rowheader timestamp">Timestamp</th>
+                  <th class="colheader deviceID" colspan="2">Device</th>
+                  <th class="colheader eventType">Event</th>
+                  <th class="colheader door" colspan="3">Door</th>
+                  <th class="colheader card" colspan="2">Card</th>
+                  <th class="colheader access">Access</th>
+                  <th class="colheader reason">Reason</th>
+                  <th class="colheader padding"></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot>
+                <tr>
+                  <td class="ellipsis" colspan="11">
+                    <img id="more" class='button' src="/images/{{$.context.Theme}}/ellipsis-h-solid.svg" onclick="onMore('events', event)" />
+                  </td>
+                  <td class="padding"></td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <template id="event">
+                <td class="rowheader" style="display:flex; flex-direction:row;">
+                  <input class="field timestamp" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field deviceID" 
+                         type="number" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field device" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field eventType" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field direction" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field doorid" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field door" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field cardno" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field card" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field access" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field reason" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <!-- 'padding' column (CSS: tr::last-child) -->
+                <td class="padding"></td>
+            </template>
+
+          </div>
+        </div>
+      </main>
+
+      {{template "footer" .}}
+
+    </div>
+  </body>
+
+  <!-- SCRIPTS -->
+
+  <script type="module">
+    {{template "uhppoted.js" .}}
+    {{template "tabular.js"  .}}
+    {{template "window.js"   .}}
+
+    const refresh = function() {
+      onRefresh('events')      
+    }
+
+    resetIdle()
+    refresh()
+    setRefresh(refresh)
+  </script>
+
+  <!-- global information initialised by Go template -->
+  <script>
+    var constants = {
+      theme: {{$.context.Theme}},
+      mode: {{ $.context.Mode}},
+    }
+
+    function onMenu(event, state) {
+      if (window.onMenuX) {
+        window.onMenuX(event, state)
+      } else {
+        console.debug('onMenu is not defined')
+      }
+    }
+  </script>
+
+</html>

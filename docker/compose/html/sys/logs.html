@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>uhppoted-httpd: Logs</title>
+    <link rel="manifest"   href="/manifest.json">
+    <link rel="icon"       href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/logs.css" type="text/css">
+    <meta charset="UTF-8">
+  </head>
+
+  <body> 
+    <div id="content">
+
+      {{template "user"   .}}
+      {{template "header" .}}
+      {{template "nav"    (nav "logs")}}
+
+      <!-- MAIN -->
+      <main>
+        <div id="container">
+          <div id="controls" data-oid="{{ .schema.Logs.OID }}">
+            {{template "message"   .}}
+            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('logs', event)" />
+          </div>
+
+          <div id="logs" class="tabular">
+            <table>
+              <thead>
+                <tr>
+                  <th class="colheader rowheader timestamp">Timestamp</th>
+                  <th class="colheader uid">User ID</th>
+                  <th class="colheader module" colspan="4">Item</th>
+                  <th class="colheader details">Details</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot>
+                <tr>
+                  <td class="ellipsis" colspan="11">
+                    <img id="more" class='button' src="/images/{{$.context.Theme}}/ellipsis-h-solid.svg" onclick="onMore('logs', event)" />
+                  </td>
+                  <td class="padding"></td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <template id="entry">
+                <td class="rowheader">
+                  <input class="field timestamp" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field uid" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field item" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field item-id" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field item-name" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field item-field" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field details" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+            </template>
+
+          </div>
+        </div>
+      </main>
+
+      {{template "footer" .}}
+
+    </div>
+  </body>
+
+  <!-- SCRIPTS -->
+
+  <script type="module">
+    {{template "uhppoted.js" .}}
+    {{template "tabular.js"  .}}
+    {{template "window.js"   .}}
+
+    const refresh = function() {
+      onRefresh('logs')      
+    }
+
+    resetIdle()
+    refresh()
+    setRefresh(refresh)
+  </script>
+
+  <!-- global information initialised by Go template -->
+  <script>
+    var constants = {
+      theme: {{$.context.Theme}},
+      mode: {{ $.context.Mode}},
+    }
+
+    function onMenu(event, state) {
+      if (window.onMenuX) {
+        window.onMenuX(event, state)
+      } else {
+        console.debug('onMenu is not defined')
+      }
+    }
+  </script>
+
+</html>

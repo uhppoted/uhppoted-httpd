@@ -1,0 +1,17 @@
+version: "0.0"
+
+services:
+  uhppoted-rest:
+    container_name: uhppoted-httpd
+    restart: unless-stopped
+    image: ghcr.io/uhppoted/httpd:latest
+    volumes:
+      - uhppoted:/usr/local/etc/uhppoted
+    network_mode: "bridge"
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+
+volumes:
+  uhppoted:
+    name: uhppoted

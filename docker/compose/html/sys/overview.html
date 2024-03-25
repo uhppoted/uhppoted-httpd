@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>uhppoted-httpd: Overview</title>
+    <link rel="manifest"   href="/manifest.json">
+    <link rel="icon"       href="/images/favicon.svg">
+    <link rel="stylesheet" href="/css/{{$.context.Theme}}/overview.css" type="text/css">
+    <meta charset="UTF-8">
+  </head>
+
+  <body>
+    <div id="content">
+
+      {{template "user"   .}}
+      {{template "header" .}}
+      {{template "nav"    (nav "overview")}}
+
+      <!-- MAIN -->
+      <main>
+        <div id="container">
+          <div id="controls" data-oid="{{ .schema.Controllers.OID }}">
+            {{template "message"   .}}
+            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('controllers', event)" />
+          </div>
+
+          <div id="controllers" class="tabular">
+            <table>
+              <thead>
+                <tr>
+                  <th class="name     topleft">Controller</th>
+                  <th class="ID       colheader">ID</th>
+                  <th class="datetime colheader">Date/Time</th>
+                  <th class="cards    colheader">Cards</th>
+                  <th class="events   colheader">Events</th>
+                  <th class="doors    colheader" colspan="4">Doors</th>
+                  <th class="padding  colheader" ></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+
+            <template id="controller">
+                <td class="rowheader" style="display:flex; flex-direction:row;">
+                  <input class="field name"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td class="ID">
+                  <input class="field ID"
+                         type="text"
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field datetime"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         data-status="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field cards"
+                         type="number"
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         data-status=""
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field events"
+                         type="number"
+                         min="0"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field door1"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field door2"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                        readonly />
+                </td>
+
+                <td>
+                  <input class="field door3"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                         data-value=""
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field door4"
+                         type="text"
+                         value=""
+                         placeholder="-"
+                         data-record=""
+                         data-original=""
+                        data-value=""
+                        readonly />
+                </td>
+
+                <!-- 'padding' column (CSS: tr::last-child) -->
+                <td class="padding"></td>
+            </template>
+
+          </div>
+
+          <!-- EVENTS -->
+
+          <div id="events" class="tabular">
+            <table>
+              <thead>
+                <tr>
+                  <th class="colheader rowheader timestamp">Timestamp</th>
+                  <th class="colheader deviceID" >Controller</th>
+                  <th class="colheader eventType">Event</th>
+                  <th class="colheader door">Door</th>
+                  <th class="colheader card" colspan="2">Card</th>
+                  <th class="colheader access">Access</th>
+                  <th class="colheader reason">Reason</th>
+                  <th class="colheader padding"></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+
+            <template id="event">
+              <td class="rowheader" style="display:flex; flex-direction:row;">
+                <input class="field timestamp" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field device" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field eventType" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field door" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field cardno" 
+                      type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field card" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field access" 
+                      type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <td>
+                <input class="field reason" 
+                       type="text" 
+                       value="" 
+                       placeholder="-" 
+                       data-record="" 
+                       data-original="" 
+                       data-value="" 
+                       readonly />
+              </td>
+
+              <!-- 'padding' column (CSS: tr::last-child) -->
+              <td class="padding"></td>
+            </template>
+
+          </div>
+
+          <!-- LOGS -->
+
+          <div id="logs" class="tabular">
+            <table>
+              <thead>
+                <tr>
+                  <th class="colheader rowheader timestamp">Timestamp</th>
+                  <th class="colheader uid">User</th>
+                  <th class="colheader details">Details</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+              <tfoot></tfoot>
+            </table>
+            
+            <template id="entry">
+                <td class="rowheader">
+                  <input class="field timestamp" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field uid" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+
+                <td>
+                  <input class="field details" 
+                         type="text" 
+                         value="" 
+                         placeholder="-" 
+                         data-record="" 
+                         data-original="" 
+                         data-value="" 
+                         readonly />
+                </td>
+            </template>
+
+          </div>
+
+        </div>
+      </main>
+
+      {{template "footer" .}}
+
+    </div>
+  </body>
+
+  <!-- SCRIPTS -->
+
+  <script type="module">
+    {{template "uhppoted.js" .}}
+    {{template "tabular.js"  .}}
+    {{template "window.js"   .}}
+
+    const refresh = function() {
+      onRefresh('overview')
+    }
+
+    resetIdle()
+    refresh()
+    setRefresh(refresh)
+  </script>
+
+  <!-- global information initialised by Go template -->
+  <script>
+    var constants = {
+      theme: {{$.context.Theme}},
+      mode: {{ $.context.Mode}},
+    }
+
+    function onMenu(event, state) {
+      if (window.onMenuX) {
+        window.onMenuX(event, state)
+      } else {
+        console.debug('onMenu is not defined')
+      }
+    }
+  </script>
+
+</html>

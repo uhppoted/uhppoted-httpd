@@ -57,6 +57,69 @@ The `daemonize` command will create all the necessary files for `uhppoted-httpd`
 - GRULES files
 - HTML files
 
+
+### Docker
+
+A public _Docker_ image is published to [ghcr.io](https://github.com/uhppoted?tab=packages&repo_name=uhppoted-httpd). 
+
+The image is configured to use the `/usr/local/etc/uhppoted/uhppoted.conf` file for configuration information.
+
+#### `docker compose`
+
+A sample Docker `compose` configuration is provided in the [`scripts/docker/compose`](scripts/docker/compose) folder. 
+
+To run the example, download and extract the [zipped](script/docker/compose.zip) scripts and supporting files into folder
+of your choice and then:
+```
+cd <compose folder>
+docker compose up
+```
+
+And open URL http://localhost:8080 in your browser of choice.
+
+The default image is configured for HTTP only. The supplied compose.yml file uses _bind_ mounts to the local folder to
+override the default configuration and HTML.
+
+Alternatively, copy the uhppoted.conf file, TLS keys and certificates and HTML to a Docker volume and remove the bind mounts
+from _compose.yml_. The expected folder structure is:
+```
+/
+  usr
+    local
+      etc
+        uhppoted
+          - uhppoted.conf
+          rest
+            - ca.cert
+            - uhppoted.key
+            - uhppoted.cert
+            grules
+              - ...
+            system
+              - ...
+            html
+              - ...
+```
+
+#### `docker run`
+
+To start a REST server using Docker `run`:
+```
+docker pull ghcr.io/uhppoted/httpd:latest
+docker run --publish 8080:8080 --publish 8443:8443 --name httpd --mount source=uhppoted,target=/var/uhppoted --rm ghcr.io/uhppoted/httpd
+```
+
+And open URL http://localhost:8080 in your browser of choice.
+
+
+#### `docker build`
+
+For inclusion in a Dockerfile:
+```
+FROM ghcr.io/uhppoted/httpd:latest
+```
+
+
 ### Building from source
 
 Required tools:
