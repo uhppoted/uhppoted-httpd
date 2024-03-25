@@ -18,7 +18,7 @@ services:
       - ./grules:/usr/local/etc/uhppoted/httpd/grules
     network_mode: "bridge"
     ports:
-      - "8888:8080"
+      - "8080:8080"
       - "8443:8443"
 
 volumes:

@@ -67,9 +67,9 @@ The image is configured to use the `/usr/local/etc/uhppoted/uhppoted.conf` file 
 
 #### `docker compose`
 
-A sample Docker `compose` configuration is provided in the [`scripts/docker/compose`](scripts/docker/compose) folder. 
+A sample Docker `compose` configuration is provided in the [`docker/compose`](docker/compose) folder. 
 
-To run the example, download and extract the [zipped](script/docker/compose.zip) scripts and supporting files into folder
+To run the example, download and extract the [zipped](docker/compose.zip) scripts and supporting files into folder
 of your choice and then:
 ```
 cd <compose folder>
@@ -78,8 +78,8 @@ docker compose up
 
 And open URL http://localhost:8080 in your browser of choice.
 
-The default image is configured for HTTP only. The supplied compose.yml file uses _bind_ mounts to the local folder to
-override the default configuration and HTML.
+The default image is configured for HTTP only but the example compose.yml file uses _bind_ mounts to map the local folder to
+override the default configuration, HTML and system files to enable TLS and use the local filesystem for e.g. develoment.
 
 Alternatively, copy the uhppoted.conf file, TLS keys and certificates and HTML to a Docker volume and remove the bind mounts
 from _compose.yml_. The expected folder structure is:
@@ -90,10 +90,12 @@ from _compose.yml_. The expected folder structure is:
       etc
         uhppoted
           - uhppoted.conf
-          rest
+          httpd
             - ca.cert
             - uhppoted.key
             - uhppoted.cert
+            - acl.grl
+            - auth.json
             grules
               - ...
             system

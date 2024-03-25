@@ -1,10 +1,10 @@
 # TODO
 
-- [ ] [Prebuilt Docker containers](https://github.com/uhppoted/uhppoted/issues/47)
+- [x] [Prebuilt Docker containers](https://github.com/uhppoted/uhppoted/issues/47)
        - [x] docker-dev
        - [x] docker-ghcr
        - [x] compose.yml
-       - [ ] README
+       - [x] README
        - [x] CHANGELOG
 
 
