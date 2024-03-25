@@ -1,0 +1,40 @@
+rule ViewCard "(allowed)" {
+     when
+         OP == "view::card"
+     then
+         RESULT.Allow = true;
+         Retract("ViewCard");
+}
+
+rule AddCard "(allowed)" {
+     when
+         OP == "add::card"
+     then
+         RESULT.Allow = true;
+         Retract("AddCard");
+}
+
+rule UpdateCard "(allowed)" {
+     when
+         OP == "update::card"
+     then
+         RESULT.Allow = true;
+         Retract("UpdateCard");
+}
+
+rule UpdatePIN "(no 666)" {
+     when
+         OP == "update::card" && FIELD == "PIN" && VALUE == 666
+     then
+         RESULT.Refuse = true;
+         Retract("UpdatePIN");
+}
+
+rule DeleteCard "(allowed)" {
+     when
+         OP == "delete::card"
+     then
+         RESULT.Allow = true;
+         Retract("DeleteCard");
+}
+

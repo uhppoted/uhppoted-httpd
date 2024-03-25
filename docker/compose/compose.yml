@@ -7,11 +7,21 @@ services:
     image: ghcr.io/uhppoted/httpd:latest
     volumes:
       - uhppoted:/usr/local/etc/uhppoted
+      - ./uhppoted.conf:/usr/local/etc/uhppoted/uhppoted.conf
+      - ./ca.cert:/usr/local/etc/uhppoted/httpd/ca.cert
+      - ./uhppoted.key:/usr/local/etc/uhppoted/httpd/uhppoted.key
+      - ./uhppoted.cert:/usr/local/etc/uhppoted/httpd/uhppoted.cert
+      - ./auth.json:/usr/local/etc/uhppoted/httpd/auth.json
+      - ./acl.grl:/usr/local/etc/uhppoted/httpd/acl.grl
+      - ./html:/usr/local/etc/uhppoted/httpd/html
+      - ./system:/usr/local/etc/uhppoted/httpd/system
+      - ./grules:/usr/local/etc/uhppoted/httpd/grules
     network_mode: "bridge"
     ports:
-      - "8080:8080"
+      - "8888:8080"
       - "8443:8443"
 
 volumes:
   uhppoted:
     name: uhppoted
+    external: true

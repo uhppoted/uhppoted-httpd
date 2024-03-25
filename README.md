@@ -31,9 +31,10 @@ become a platform for exploring some alternative ideas around user interfaces an
 
 ### Current Release
 
-**[v0.8.7](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.7) - 2023-12-01**
+**[v0.8.8](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.8) - 2024-03-28**
 
-1. Added _passcodes_ field to _doors_ page to set override passcodes.
+1. Added public Docker image to ghcr.io.
+2. Bumped Go version to 1.22.
 
 
 ## Installation

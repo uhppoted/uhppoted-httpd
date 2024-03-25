@@ -1,0 +1,31 @@
+rule ViewLog "(allowed)" {
+     when
+         OP == "view::log"
+     then
+         RESULT.Allow = true;
+         Retract("ViewLog");
+}
+
+rule AddLog "(allowed)" {
+     when
+         OP == "add::log"
+     then
+         RESULT.Allow = true;
+         Retract("AddLog");
+}
+
+rule UpdateLog "(allowed)" {
+     when
+         OP == "update::log"
+     then
+         RESULT.Allow = true;
+         Retract("UpdateLog");
+}
+
+rule DeleteLog "(allowed)" {
+     when
+         OP == "delete::log"
+     then
+         RESULT.Allow = true;
+         Retract("DeleteLog");
+}

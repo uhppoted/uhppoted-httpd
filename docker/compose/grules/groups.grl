@@ -1,0 +1,31 @@
+rule ViewGroup "(allowed)" {
+     when
+         OP == "view::group"
+     then
+         RESULT.Allow = true;
+         Retract("ViewGroup");
+}
+
+rule AddGroup "(allowed)" {
+     when
+         OP == "add::group"
+     then
+         RESULT.Allow = true;
+         Retract("AddGroup");
+}
+
+rule UpdateGroup "(allowed)" {
+     when
+         OP == "update::group"
+     then
+         RESULT.Allow = true;
+         Retract("UpdateGroup");
+}
+
+rule DeleteGroup "(allowed)" {
+     when
+         OP == "delete::group"
+     then
+         RESULT.Allow = true;
+         Retract("DeleteGroup");
+}
