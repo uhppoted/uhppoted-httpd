@@ -24,4 +24,3 @@ services:
 volumes:
   uhppoted:
     name: uhppoted
-    external: true
