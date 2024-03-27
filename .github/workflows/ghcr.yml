@@ -49,7 +49,7 @@ jobs:
         docker push ghcr.io/uhppoted/httpd:latest
 
     - name: Push versioned Docker image to ghcr.io
-      # if: github.event_name == 'release' && github.event.action == 'published'
+      if: github.event_name == 'release' && github.event.action == 'published'
       run: |
         echo ">>>>>> build Docker image version ${{ github.event.release.tag_name }}"
         make docker-ghcr DOCKER=ghcr.io/uhppoted/httpd:0.8.8
