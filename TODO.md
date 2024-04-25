@@ -1,11 +1,6 @@
 # TODO
 
-- [x] [Prebuilt Docker containers](https://github.com/uhppoted/uhppoted/issues/47)
-       - [x] docker-dev
-       - [x] docker-ghcr
-       - [x] compose.yml
-       - [x] README
-       - [x] CHANGELOG
+- [ ] `EndPoint() *net.UDPAddr  // FIXME convert to netip.AddrPort and use zero value rather than pointer`
 
 
 ### To Be Done Sometime
