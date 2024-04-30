@@ -6,6 +6,7 @@ tmp
 html/css
 node_modules
 archive
+go.xxx
 go.work
 go.work.sum
 documentation/starter-kit/uhppoted-httpd
