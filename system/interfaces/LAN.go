@@ -236,8 +236,10 @@ func (l *LAN) refresh(c types.IController) {
 	} else if info == nil {
 		log.Warnf("Got %v response to get-device request for %v", info, deviceID)
 	} else {
+		addr := netip.AddrPortFrom(info.Address, 60000)
+		udpaddr := net.UDPAddrFromAddrPort(addr)
 		catalog.PutV(c.OID(), ControllerTouched, time.Now())
-		catalog.PutV(c.OID(), ControllerEndpointAddress, lib.Address(info.Address))
+		catalog.PutV(c.OID(), ControllerEndpointAddress, lib.Address(*udpaddr))
 	}
 
 	if status, err := api.UHPPOTE.GetStatus(deviceIDu); err != nil {
@@ -600,19 +602,15 @@ func (l *LAN) api(controllers []types.IController) *uhppoted.UHPPOTED {
 	for _, v := range controllers {
 		name := v.Name()
 		id := v.ID()
-		addr := v.EndPoint()
+		addr := v.EndPoint().AddrPort()
 		tz := v.TimeZone()
 
-		// NTS: allow 'found' controllers
-		// if id > 0 && addr != nil {
+		// NTS: 'found' controllers will have a zero value address (only configured controllers have an address)
 		if id > 0 {
-			devices = append(devices, uhppote.Device{
-				Name:     name,
-				DeviceID: id,
-				Address:  addrport(addr),
-				Doors:    []string{},
-				TimeZone: tz,
-			})
+			device := uhppote.NewDevice(name, id, &addr, "udp", []string{})
+			device.TimeZone = tz // FIXME add timezone to NewDevice
+
+			devices = append(devices, *device)
 		}
 	}
 

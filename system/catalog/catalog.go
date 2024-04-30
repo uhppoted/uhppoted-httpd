@@ -101,11 +101,11 @@ func Put(oid schema.OID, v any) {
 	catalog.Put(oid, v)
 }
 
-func PutV(oid schema.OID, suffix schema.Suffix, v interface{}) {
+func PutV(oid schema.OID, suffix schema.Suffix, v any) {
 	catalog.PutV(oid, suffix, v)
 }
 
-func Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool) {
+func Find(prefix schema.OID, suffix schema.Suffix, value any) (schema.OID, bool) {
 	return catalog.Find(prefix, suffix, value)
 }
 

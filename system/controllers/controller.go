@@ -45,7 +45,7 @@ type icontroller struct {
 
 type kv = struct {
 	field schema.Suffix
-	value interface{}
+	value any
 }
 
 type cached struct {

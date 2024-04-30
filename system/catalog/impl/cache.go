@@ -46,7 +46,7 @@ func (cc *db) Put(oid schema.OID, v interface{}) {
 	cache.cache[oid] = v
 }
 
-func (cc *db) PutV(oid schema.OID, suffix schema.Suffix, v interface{}) {
+func (cc *db) PutV(oid schema.OID, suffix schema.Suffix, v any) {
 	cache.Lock()
 	defer cache.Unlock()
 

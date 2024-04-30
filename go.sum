@@ -62,10 +62,10 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
-github.com/uhppoted/uhppote-core v0.8.9-0.20240425174939-4517b8fa2dea h1:3abPpXYVjMd1Naj8dzNPGATEmOfgzOPuez8d21bdo/A=
-github.com/uhppoted/uhppote-core v0.8.9-0.20240425174939-4517b8fa2dea/go.mod h1:Q+DHtT8s74efLs2b0eF20DRBUL9yBkySwaTQ+0lsEVM=
-github.com/uhppoted/uhppoted-lib v0.8.9-0.20240425181745-4d8513b936f7 h1:dFPVj13QS/rXJTe6670gUFFtuBgVGJANS1AchDHbw9k=
-github.com/uhppoted/uhppoted-lib v0.8.9-0.20240425181745-4d8513b936f7/go.mod h1:1LLDFGvFoDOu8pk7vhSTwzKrE4sGBt31pUTCxzOWLaw=
+github.com/uhppoted/uhppote-core v0.8.9-0.20240430161826-c5a2e2c0967e h1:u+kDx3iLrHv0Yz7DobR+GZZ/aNfoHPqlrAuccVZZX5A=
+github.com/uhppoted/uhppote-core v0.8.9-0.20240430161826-c5a2e2c0967e/go.mod h1:Q+DHtT8s74efLs2b0eF20DRBUL9yBkySwaTQ+0lsEVM=
+github.com/uhppoted/uhppoted-lib v0.8.9-0.20240430162333-bc18402affc4 h1:Zn2IaBltViEs+aw1vP526jSBmn6HIrlH6p8a08+3bkE=
+github.com/uhppoted/uhppoted-lib v0.8.9-0.20240430162333-bc18402affc4/go.mod h1:OY0tZEXhK4rl8gad35zg4gebOZtZzILfrkivgwDF2UM=
 github.com/xanzy/ssh-agent v0.2.1 h1:TCbipTQL2JiiCprBWx9frJ2eJlCYT00NmctrHxVAr70=
 github.com/xanzy/ssh-agent v0.2.1/go.mod h1:mLlQY/MoOhWBj+gOGMQkOeiEvkx+8pJSI+0Bx9h2kr4=
 go.uber.org/goleak v1.2.0 h1:xqgm/S+aQvhWFTtR0XK3Jvg7z8kGV8P4X14IzwN3Eqk=
