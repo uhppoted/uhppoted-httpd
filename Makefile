@@ -25,7 +25,7 @@ clean:
 
 update:
 	go get -u github.com/uhppoted/uhppote-core@master
-	go get -u github.com/uhppoted/uhppoted-lib@master
+	go get -u github.com/uhppoted/uhppoted-lib@main
 	go get -u github.com/cristalhq/jwt/v3
 	go get -u github.com/google/uuid
 	go get -u golang.org/x/sys
