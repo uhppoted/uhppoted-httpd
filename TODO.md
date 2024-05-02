@@ -1,7 +1,10 @@
 # TODO
 
 - [ ] `EndPoint() *net.UDPAddr  // FIXME convert to netip.AddrPort and use zero value rather than pointer`
-
+- [ ] Weird error message
+```
+2024/05/02 09:25:12 WARN   internal server error: error getting device info for <nil> (read udp 192.168.1.100:49648: i/o timeout)
+```
 
 ### To Be Done Sometime
 
