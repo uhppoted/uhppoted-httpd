@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io/fs"
+	"net/netip"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -243,12 +244,12 @@ func (cmd *Daemonize) execute() error {
 	fmt.Println()
 	fmt.Println("   The firewall may need additional rules to allow UDP broadcast e.g. for UFW:")
 	fmt.Println()
-	fmt.Printf("     > sudo ufw allow from %s to any port 60000 proto udp\n", bind.IP)
+	fmt.Printf("     > sudo ufw allow from %s to any port 60000 proto udp\n", netip.AddrPort(bind).Addr()) // FIXME BindAddr.Addr()
 	fmt.Println()
 	fmt.Println("   The firewall may also need additional rules to allow external access to the HTTP server e.g. for UFW:")
 	fmt.Println()
-	fmt.Printf("     > sudo ufw allow from %s to any port 8080 proto tcp\n", bind.IP)
-	fmt.Printf("     > sudo ufw allow from %s to any port 8443 proto tcp\n", bind.IP)
+	fmt.Printf("     > sudo ufw allow from %s to any port 8080 proto tcp\n", netip.AddrPort(bind).Addr()) // FIXME BindAddr.Addr()
+	fmt.Printf("     > sudo ufw allow from %s to any port 8443 proto tcp\n", netip.AddrPort(bind).Addr()) // FIXME BindAddr.Addr()
 	fmt.Println()
 	fmt.Printf("   The installation can be verified by running the %v service in 'console' mode:\n", SERVICE)
 	fmt.Println()

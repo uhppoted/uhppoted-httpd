@@ -27,7 +27,7 @@ func TestLANAsObjects(t *testing.T) {
 			OID: "0.1.3",
 		},
 		Name:             "Le LAN",
-		BindAddress:      *bind,
+		BindAddress:      bind,
 		BroadcastAddress: *broadcast,
 		ListenAddress:    *listen,
 
@@ -41,7 +41,7 @@ func TestLANAsObjects(t *testing.T) {
 		{OID: "0.1.3.0.2", Value: types.Timestamp{}},
 		{OID: "0.1.3.0.4", Value: "LAN"},
 		{OID: "0.1.3.1", Value: "Le LAN"},
-		{OID: "0.1.3.3.1", Value: *bind},
+		{OID: "0.1.3.3.1", Value: bind},
 		{OID: "0.1.3.3.2", Value: *broadcast},
 		{OID: "0.1.3.3.3", Value: *listen},
 	}
@@ -65,7 +65,7 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 			OID: "0.1.3",
 		},
 		Name:             "Le LAN",
-		BindAddress:      *bind,
+		BindAddress:      bind,
 		BroadcastAddress: *broadcast,
 		ListenAddress:    *listen,
 
@@ -95,7 +95,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 			OID: "0.1.3",
 		},
 		Name:             "Le LAN",
-		BindAddress:      *bind,
+		BindAddress:      bind,
 		BroadcastAddress: *broadcast,
 		ListenAddress:    *listen,
 
@@ -109,7 +109,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 		schema.Object{OID: "0.1.3.0.2", Value: types.Timestamp{}},
 		schema.Object{OID: "0.1.3.0.4", Value: "LAN"},
 		schema.Object{OID: "0.1.3.1", Value: "Le LAN"},
-		schema.Object{OID: "0.1.3.3.1", Value: *bind},
+		schema.Object{OID: "0.1.3.3.1", Value: bind},
 		schema.Object{OID: "0.1.3.3.2", Value: *broadcast},
 		//		schema.Object{OID: "0.1.3.3.3", Value: *listen},
 	}

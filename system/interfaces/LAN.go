@@ -131,7 +131,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		} else {
 			l.log(dbc, uid, "update", l.OID, "bind", l.BindAddress, value, "Updated bind address from %v to %v", l.BindAddress, value)
 
-			l.BindAddress = *addr
+			l.BindAddress = addr
 			l.modified = types.TimestampNow()
 
 			list = append(list, kv{LANBindAddress, l.BindAddress})
