@@ -126,6 +126,8 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 	case l.OID.Append(LANBindAddress):
 		if addr, err := lib.ResolveBindAddr(value); err != nil {
 			return nil, err
+		} else if !addr.IsValid() {
+			return nil, fmt.Errorf("invalid bind address (%v)", value)
 		} else if err := CanUpdate(a, l, "bind", addr); err != nil {
 			return nil, err
 		} else {
@@ -140,12 +142,14 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 	case l.OID.Append(LANBroadcastAddress):
 		if addr, err := lib.ResolveBroadcastAddr(value); err != nil {
 			return nil, err
+		} else if !addr.IsValid() {
+			return nil, fmt.Errorf("invalid broadcast address (%v)", value)
 		} else if err := CanUpdate(a, l, "broadcast", addr); err != nil {
 			return nil, err
 		} else {
 			l.log(dbc, uid, "update", l.OID, "broadcast", l.BroadcastAddress, value, "Updated broadcast address from %v to %v", l.BroadcastAddress, value)
 
-			l.BroadcastAddress = *addr
+			l.BroadcastAddress = addr
 			l.modified = types.TimestampNow()
 
 			list = append(list, kv{LANBroadcastAddress, l.BroadcastAddress})

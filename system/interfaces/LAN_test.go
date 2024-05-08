@@ -18,8 +18,8 @@ import (
 
 func TestLANAsObjects(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	bind, _ := core.ResolveBindAddr("192.168.1.101")
-	broadcast, _ := core.ResolveBroadcastAddr("192.168.1.102")
+	bind := core.MustParseBindAddr("192.168.1.101:0")
+	broadcast := core.MustParseBroadcastAddr("192.168.1.102:60000")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
 	l := LAN{
@@ -28,7 +28,7 @@ func TestLANAsObjects(t *testing.T) {
 		},
 		Name:             "Le LAN",
 		BindAddress:      bind,
-		BroadcastAddress: *broadcast,
+		BroadcastAddress: broadcast,
 		ListenAddress:    *listen,
 
 		created: created,
@@ -42,7 +42,7 @@ func TestLANAsObjects(t *testing.T) {
 		{OID: "0.1.3.0.4", Value: "LAN"},
 		{OID: "0.1.3.1", Value: "Le LAN"},
 		{OID: "0.1.3.3.1", Value: bind},
-		{OID: "0.1.3.3.2", Value: *broadcast},
+		{OID: "0.1.3.3.2", Value: broadcast},
 		{OID: "0.1.3.3.3", Value: *listen},
 	}
 
@@ -56,8 +56,8 @@ func TestLANAsObjects(t *testing.T) {
 func TestLANAsObjectsWithDeleted(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	deleted := types.TimestampNow()
-	bind, _ := core.ResolveBindAddr("192.168.1.101")
-	broadcast, _ := core.ResolveBroadcastAddr("192.168.1.102")
+	bind := core.MustParseBindAddr("192.168.1.101:0")
+	broadcast := core.MustParseBroadcastAddr("192.168.1.102:6000")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
 	l := LAN{
@@ -66,7 +66,7 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 		},
 		Name:             "Le LAN",
 		BindAddress:      bind,
-		BroadcastAddress: *broadcast,
+		BroadcastAddress: broadcast,
 		ListenAddress:    *listen,
 
 		created: created,
@@ -86,8 +86,8 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 
 func TestLANAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	bind, _ := core.ResolveBindAddr("192.168.1.101")
-	broadcast, _ := core.ResolveBroadcastAddr("192.168.1.102")
+	bind := core.MustParseBindAddr("192.168.1.101:0")
+	broadcast := core.MustParseBroadcastAddr("192.168.1.102:60000")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
 	l := LAN{
@@ -96,7 +96,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 		},
 		Name:             "Le LAN",
 		BindAddress:      bind,
-		BroadcastAddress: *broadcast,
+		BroadcastAddress: broadcast,
 		ListenAddress:    *listen,
 
 		created: created,
@@ -110,7 +110,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 		schema.Object{OID: "0.1.3.0.4", Value: "LAN"},
 		schema.Object{OID: "0.1.3.1", Value: "Le LAN"},
 		schema.Object{OID: "0.1.3.3.1", Value: bind},
-		schema.Object{OID: "0.1.3.3.2", Value: *broadcast},
+		schema.Object{OID: "0.1.3.3.2", Value: broadcast},
 		//		schema.Object{OID: "0.1.3.3.3", Value: *listen},
 	}
 
