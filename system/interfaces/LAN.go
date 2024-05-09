@@ -124,7 +124,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		}
 
 	case l.OID.Append(LANBindAddress):
-		if addr, err := lib.ResolveBindAddr(value); err != nil {
+		if addr, err := lib.ParseBindAddr(value); err != nil {
 			return nil, err
 		} else if !addr.IsValid() {
 			return nil, fmt.Errorf("invalid bind address (%v)", value)
@@ -140,7 +140,7 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		}
 
 	case l.OID.Append(LANBroadcastAddress):
-		if addr, err := lib.ResolveBroadcastAddr(value); err != nil {
+		if addr, err := lib.ParseBroadcastAddr(value); err != nil {
 			return nil, err
 		} else if !addr.IsValid() {
 			return nil, fmt.Errorf("invalid broadcast address (%v)", value)

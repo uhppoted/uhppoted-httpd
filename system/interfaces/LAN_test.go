@@ -18,7 +18,7 @@ import (
 
 func TestLANAsObjects(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	bind := core.MustParseBindAddr("192.168.1.101:0")
+	bind := core.MustParseBindAddr("192.168.1.101")
 	broadcast := core.MustParseBroadcastAddr("192.168.1.102:60000")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
@@ -56,7 +56,7 @@ func TestLANAsObjects(t *testing.T) {
 func TestLANAsObjectsWithDeleted(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	deleted := types.TimestampNow()
-	bind := core.MustParseBindAddr("192.168.1.101:0")
+	bind := core.MustParseBindAddr("192.168.1.101")
 	broadcast := core.MustParseBroadcastAddr("192.168.1.102:6000")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
@@ -86,7 +86,7 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 
 func TestLANAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	bind := core.MustParseBindAddr("192.168.1.101:0")
+	bind := core.MustParseBindAddr("192.168.1.101")
 	broadcast := core.MustParseBroadcastAddr("192.168.1.102:60000")
 	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
 
