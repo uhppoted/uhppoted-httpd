@@ -20,7 +20,7 @@ func TestLANAsObjects(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	bind := core.MustParseBindAddr("192.168.1.101")
 	broadcast := core.MustParseBroadcastAddr("192.168.1.102:60000")
-	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
+	listen := core.MustParseListenAddr("192.168.1.103:54321")
 
 	l := LAN{
 		CatalogInterface: catalog.CatalogInterface{
@@ -29,7 +29,7 @@ func TestLANAsObjects(t *testing.T) {
 		Name:             "Le LAN",
 		BindAddress:      bind,
 		BroadcastAddress: broadcast,
-		ListenAddress:    *listen,
+		ListenAddress:    listen,
 
 		created: created,
 	}
@@ -43,7 +43,7 @@ func TestLANAsObjects(t *testing.T) {
 		{OID: "0.1.3.1", Value: "Le LAN"},
 		{OID: "0.1.3.3.1", Value: bind},
 		{OID: "0.1.3.3.2", Value: broadcast},
-		{OID: "0.1.3.3.3", Value: *listen},
+		{OID: "0.1.3.3.3", Value: listen},
 	}
 
 	objects := l.AsObjects(nil)
@@ -58,7 +58,7 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 	deleted := types.TimestampNow()
 	bind := core.MustParseBindAddr("192.168.1.101")
 	broadcast := core.MustParseBroadcastAddr("192.168.1.102:6000")
-	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
+	listen := core.MustParseListenAddr("192.168.1.103:54321")
 
 	l := LAN{
 		CatalogInterface: catalog.CatalogInterface{
@@ -67,7 +67,7 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 		Name:             "Le LAN",
 		BindAddress:      bind,
 		BroadcastAddress: broadcast,
-		ListenAddress:    *listen,
+		ListenAddress:    listen,
 
 		created: created,
 		deleted: deleted,
@@ -88,7 +88,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	bind := core.MustParseBindAddr("192.168.1.101")
 	broadcast := core.MustParseBroadcastAddr("192.168.1.102:60000")
-	listen, _ := core.ResolveListenAddr("192.168.1.103:54321")
+	listen := core.MustParseListenAddr("192.168.1.103:54321")
 
 	l := LAN{
 		CatalogInterface: catalog.CatalogInterface{
@@ -97,7 +97,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 		Name:             "Le LAN",
 		BindAddress:      bind,
 		BroadcastAddress: broadcast,
-		ListenAddress:    *listen,
+		ListenAddress:    listen,
 
 		created: created,
 	}

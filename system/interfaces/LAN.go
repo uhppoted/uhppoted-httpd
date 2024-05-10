@@ -156,14 +156,14 @@ func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC
 		}
 
 	case l.OID.Append(LANListenAddress):
-		if addr, err := lib.ResolveListenAddr(value); err != nil {
+		if addr, err := lib.ParseListenAddr(value); err != nil {
 			return nil, err
 		} else if err = CanUpdate(a, l, "listen", addr); err != nil {
 			return nil, err
 		} else {
 			l.log(dbc, uid, "update", l.OID, "listen", l.ListenAddress, value, "Updated listen address from %v to %v", l.ListenAddress, value)
 
-			l.ListenAddress = *addr
+			l.ListenAddress = addr
 			l.modified = types.TimestampNow()
 
 			list = append(list, kv{LANListenAddress, l.ListenAddress})
