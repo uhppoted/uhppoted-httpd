@@ -3,8 +3,6 @@ package interfaces
 import (
 	"encoding/json"
 	"fmt"
-	"net"
-	"net/netip"
 	"strings"
 	"time"
 
@@ -240,10 +238,8 @@ func (l *LAN) refresh(c types.IController) {
 	} else if info == nil {
 		log.Warnf("Got %v response to get-device request for %v", info, deviceID)
 	} else {
-		addr := netip.AddrPortFrom(info.Address, 60000)
-		udpaddr := net.UDPAddrFromAddrPort(addr)
 		catalog.PutV(c.OID(), ControllerTouched, time.Now())
-		catalog.PutV(c.OID(), ControllerEndpointAddress, lib.Address(*udpaddr))
+		catalog.PutV(c.OID(), ControllerEndpointAddress, lib.ControllerAddrFrom(info.Address, 60000))
 	}
 
 	if status, err := api.UHPPOTE.GetStatus(deviceIDu); err != nil {

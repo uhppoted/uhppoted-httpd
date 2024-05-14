@@ -24,7 +24,7 @@ func TestControllerAsObjects(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	name := "Le Thing"
 	deviceID := uint32(12345678)
-	address, _ := core.ResolveAddr("192.168.1.101")
+	address := core.MustParseControllerAddr("192.168.1.101")
 
 	c := Controller{
 		CatalogController: catalog.CatalogController{
@@ -32,7 +32,7 @@ func TestControllerAsObjects(t *testing.T) {
 			DeviceID: deviceID,
 		},
 		name: name,
-		IP:   address,
+		IP:   &address,
 		doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
@@ -81,7 +81,7 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 	deleted := types.TimestampNow()
 	name := "Le Thing"
 	deviceID := uint32(12345678)
-	address, _ := core.ResolveAddr("192.168.1.101")
+	address := core.MustParseControllerAddr("192.168.1.101")
 
 	c := Controller{
 		CatalogController: catalog.CatalogController{
@@ -89,7 +89,7 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 			DeviceID: deviceID,
 		},
 		name: name,
-		IP:   address,
+		IP:   &address,
 		doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
@@ -115,7 +115,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	name := "Le Thing"
 	deviceID := uint32(12345678)
-	address, _ := core.ResolveAddr("192.168.1.101")
+	address := core.MustParseControllerAddr("192.168.1.101")
 
 	c := Controller{
 		CatalogController: catalog.CatalogController{
@@ -123,7 +123,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 			DeviceID: deviceID,
 		},
 		name: name,
-		IP:   address,
+		IP:   &address,
 		doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",

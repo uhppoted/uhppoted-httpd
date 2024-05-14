@@ -22,7 +22,7 @@ import (
 type Controller struct {
 	catalog.CatalogController
 	name      string
-	IP        *core.Address
+	IP        *core.ControllerAddr
 	doors     map[uint8]schema.OID
 	interlock core.Interlock
 	timezone  string
@@ -50,7 +50,7 @@ type kv = struct {
 
 type cached struct {
 	touched  time.Time
-	address  *core.Address
+	address  *core.ControllerAddr
 	datetime struct {
 		datetime core.DateTime
 		modified bool
@@ -256,7 +256,7 @@ func (c *Controller) AsIController() types.IController {
 	var doors = map[uint8]schema.OID{}
 
 	if c.IP != nil {
-		endpoint = (*net.UDPAddr)(c.IP)
+		endpoint = net.UDPAddrFromAddrPort(c.IP.AddrPort)
 	}
 
 	if tz, err := types.Timezone(c.timezone); err == nil && tz != nil {
@@ -350,7 +350,7 @@ func (c *Controller) get() *cached {
 	}
 
 	if v := catalog.GetV(c.OID, ControllerEndpointAddress); v != nil {
-		if address, ok := v.(core.Address); ok {
+		if address, ok := v.(core.ControllerAddr); ok {
 			e.address = &address
 		}
 	}
@@ -459,12 +459,12 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		}
 
 	case c.OID.Append(ControllerEndpointAddress):
-		if addr, err := core.ResolveAddr(value); err != nil {
+		if addr, err := core.ParseControllerAddr(value); err != nil {
 			return nil, err
 		} else if err := CanUpdate(a, c, "address", addr); err != nil {
 			return nil, err
 		} else {
-			c.IP = addr
+			c.IP = &addr
 			c.modified = types.TimestampNow()
 
 			list = append(list, kv{ControllerEndpointAddress, addr})
@@ -639,7 +639,7 @@ func (c Controller) serialize() ([]byte, error) {
 		OID       schema.OID           `json:"OID,omitempty"`
 		Name      string               `json:"name,omitempty"`
 		DeviceID  uint32               `json:"device-id,omitempty"`
-		Address   *core.Address        `json:"address,omitempty"`
+		Address   *core.ControllerAddr `json:"address,omitempty"`
 		Doors     map[uint8]schema.OID `json:"doors"`
 		Interlock core.Interlock       `json:"interlock"`
 		TimeZone  string               `json:"timezone,omitempty"`
@@ -668,15 +668,15 @@ func (c *Controller) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID       schema.OID       `json:"OID"`
-		Name      string           `json:"name,omitempty"`
-		DeviceID  uint32           `json:"device-id,omitempty"`
-		Address   *core.Address    `json:"address,omitempty"`
-		Doors     map[uint8]string `json:"doors"`
-		Interlock core.Interlock   `json:"interlock"`
-		TimeZone  string           `json:"timezone,omitempty"`
-		Created   types.Timestamp  `json:"created,omitempty"`
-		Modified  types.Timestamp  `json:"modified,omitempty"`
+		OID       schema.OID           `json:"OID"`
+		Name      string               `json:"name,omitempty"`
+		DeviceID  uint32               `json:"device-id,omitempty"`
+		Address   *core.ControllerAddr `json:"address,omitempty"`
+		Doors     map[uint8]string     `json:"doors"`
+		Interlock core.Interlock       `json:"interlock"`
+		TimeZone  string               `json:"timezone,omitempty"`
+		Created   types.Timestamp      `json:"created,omitempty"`
+		Modified  types.Timestamp      `json:"modified,omitempty"`
 	}{
 		Created: created,
 	}
