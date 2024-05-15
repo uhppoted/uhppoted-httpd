@@ -22,7 +22,7 @@ import (
 type Controller struct {
 	catalog.CatalogController
 	name      string
-	IP        *core.ControllerAddr
+	IP        core.ControllerAddr
 	doors     map[uint8]schema.OID
 	interlock core.Interlock
 	timezone  string
@@ -50,7 +50,7 @@ type kv = struct {
 
 type cached struct {
 	touched  time.Time
-	address  *core.ControllerAddr
+	address  core.ControllerAddr
 	datetime struct {
 		datetime core.DateTime
 		modified bool
@@ -130,7 +130,7 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 			deviceID = fmt.Sprintf("%v", c.DeviceID)
 		}
 
-		if c.IP != nil {
+		if c.IP.IsValid() {
 			address.address = fmt.Sprintf("%v", c.IP)
 			address.configured = fmt.Sprintf("%v", c.IP)
 		}
@@ -144,13 +144,13 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		if c.DeviceID != 0 {
 			if cached := c.get(); cached != nil {
 				// ... get IP address field from cached value
-				if cached.address != nil {
+				if cached.address.IsValid() {
 					address.address = fmt.Sprintf("%v", cached.address)
 					switch {
-					case c.IP == nil || (c.IP != nil && cached.address.Equal(c.IP)):
+					case !c.IP.IsValid() || (c.IP.IsValid() && cached.address.Equal(c.IP)):
 						address.status = types.StatusOk
 
-					case c.IP != nil && !cached.address.Equal(c.IP):
+					case c.IP.IsValid() && !cached.address.Equal(c.IP):
 						address.status = types.StatusError
 
 					default:
@@ -255,7 +255,7 @@ func (c *Controller) AsIController() types.IController {
 	var location *time.Location = time.Local
 	var doors = map[uint8]schema.OID{}
 
-	if c.IP != nil {
+	if c.IP.IsValid() {
 		endpoint = net.UDPAddrFromAddrPort(c.IP.AddrPort)
 	}
 
@@ -351,7 +351,7 @@ func (c *Controller) get() *cached {
 
 	if v := catalog.GetV(c.OID, ControllerEndpointAddress); v != nil {
 		if address, ok := v.(core.ControllerAddr); ok {
-			e.address = &address
+			e.address = address
 		}
 	}
 
@@ -464,7 +464,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		} else if err := CanUpdate(a, c, "address", addr); err != nil {
 			return nil, err
 		} else {
-			c.IP = &addr
+			c.IP = addr
 			c.modified = types.TimestampNow()
 
 			list = append(list, kv{ControllerEndpointAddress, addr})
@@ -639,7 +639,7 @@ func (c Controller) serialize() ([]byte, error) {
 		OID       schema.OID           `json:"OID,omitempty"`
 		Name      string               `json:"name,omitempty"`
 		DeviceID  uint32               `json:"device-id,omitempty"`
-		Address   *core.ControllerAddr `json:"address,omitempty"`
+		Address   core.ControllerAddr  `json:"address,omitempty"`
 		Doors     map[uint8]schema.OID `json:"doors"`
 		Interlock core.Interlock       `json:"interlock"`
 		TimeZone  string               `json:"timezone,omitempty"`
@@ -668,15 +668,15 @@ func (c *Controller) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID       schema.OID           `json:"OID"`
-		Name      string               `json:"name,omitempty"`
-		DeviceID  uint32               `json:"device-id,omitempty"`
-		Address   *core.ControllerAddr `json:"address,omitempty"`
-		Doors     map[uint8]string     `json:"doors"`
-		Interlock core.Interlock       `json:"interlock"`
-		TimeZone  string               `json:"timezone,omitempty"`
-		Created   types.Timestamp      `json:"created,omitempty"`
-		Modified  types.Timestamp      `json:"modified,omitempty"`
+		OID       schema.OID          `json:"OID"`
+		Name      string              `json:"name,omitempty"`
+		DeviceID  uint32              `json:"device-id,omitempty"`
+		Address   core.ControllerAddr `json:"address,omitempty"`
+		Doors     map[uint8]string    `json:"doors"`
+		Interlock core.Interlock      `json:"interlock"`
+		TimeZone  string              `json:"timezone,omitempty"`
+		Created   types.Timestamp     `json:"created,omitempty"`
+		Modified  types.Timestamp     `json:"modified,omitempty"`
 	}{
 		Created: created,
 	}
