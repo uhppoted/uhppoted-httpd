@@ -607,7 +607,7 @@ func (l *LAN) api(controllers []types.IController) *uhppoted.UHPPOTED {
 
 		// NTS: 'found' controllers will have a zero value address (only configured controllers have an address)
 		if id > 0 {
-			device := uhppote.NewDevice(name, id, &addr, "udp", []string{})
+			device := uhppote.NewDevice(name, id, addr, "udp", []string{})
 			device.TimeZone = tz // FIXME add timezone to NewDevice
 
 			devices = append(devices, *device)
