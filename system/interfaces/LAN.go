@@ -602,7 +602,7 @@ func (l *LAN) api(controllers []types.IController) *uhppoted.UHPPOTED {
 	for _, v := range controllers {
 		name := v.Name()
 		id := v.ID()
-		addr := v.EndPoint().AddrPort()
+		addr := v.EndPoint()
 		tz := v.TimeZone()
 
 		// NTS: 'found' controllers will have a zero value address (only configured controllers have an address)

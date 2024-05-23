@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
-	"net"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
+	lib "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -22,9 +21,9 @@ import (
 type Controller struct {
 	catalog.CatalogController
 	name      string
-	IP        core.ControllerAddr
+	IP        lib.ControllerAddr
 	doors     map[uint8]schema.OID
-	interlock core.Interlock
+	interlock lib.Interlock
 	timezone  string
 
 	created  types.Timestamp
@@ -36,10 +35,10 @@ type icontroller struct {
 	oid          schema.OID
 	name         string
 	id           uint32
-	endpoint     *net.UDPAddr
+	endpoint     lib.ControllerAddr
 	timezone     *time.Location
 	doors        map[uint8]schema.OID
-	interlock    core.Interlock
+	interlock    lib.Interlock
 	synchronized types.Status
 }
 
@@ -50,9 +49,9 @@ type kv = struct {
 
 type cached struct {
 	touched  time.Time
-	address  core.ControllerAddr
+	address  lib.ControllerAddr
 	datetime struct {
-		datetime core.DateTime
+		datetime lib.DateTime
 		modified bool
 	}
 	cards  *uint32
@@ -251,12 +250,12 @@ func (c Controller) AsRuleEntity() (string, interface{}) {
 }
 
 func (c *Controller) AsIController() types.IController {
-	var endpoint *net.UDPAddr
+	var endpoint lib.ControllerAddr
 	var location *time.Location = time.Local
 	var doors = map[uint8]schema.OID{}
 
 	if c.IP.IsValid() {
-		endpoint = net.UDPAddrFromAddrPort(c.IP.AddrPort)
+		endpoint = c.IP
 	}
 
 	if tz, err := types.Timezone(c.timezone); err == nil && tz != nil {
@@ -350,13 +349,13 @@ func (c *Controller) get() *cached {
 	}
 
 	if v := catalog.GetV(c.OID, ControllerEndpointAddress); v != nil {
-		if address, ok := v.(core.ControllerAddr); ok {
+		if address, ok := v.(lib.ControllerAddr); ok {
 			e.address = address
 		}
 	}
 
 	if v := catalog.GetV(c.OID, ControllerDateTimeCurrent); v != nil {
-		if datetime, ok := v.(core.DateTime); ok {
+		if datetime, ok := v.(lib.DateTime); ok {
 			e.datetime.datetime = datetime
 		}
 	}
@@ -459,7 +458,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		}
 
 	case c.OID.Append(ControllerEndpointAddress):
-		if addr, err := core.ParseControllerAddr(value); err != nil {
+		if addr, err := lib.ParseControllerAddr(value); err != nil {
 			return nil, err
 		} else if err := CanUpdate(a, c, "address", addr); err != nil {
 			return nil, err
@@ -567,7 +566,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		} else if v != 0 && v != 1 && v != 2 && v != 3 && v != 4 && v != 8 {
 			return nil, fmt.Errorf("invalid interlock mode (%v)", v)
 		} else {
-			c.interlock = core.Interlock(v)
+			c.interlock = lib.Interlock(v)
 			c.modified = types.TimestampNow()
 
 			list = append(list, kv{ControllerInterlock, uint8(c.interlock)})
@@ -639,9 +638,9 @@ func (c Controller) serialize() ([]byte, error) {
 		OID       schema.OID           `json:"OID,omitempty"`
 		Name      string               `json:"name,omitempty"`
 		DeviceID  uint32               `json:"device-id,omitempty"`
-		Address   core.ControllerAddr  `json:"address,omitempty"`
+		Address   lib.ControllerAddr   `json:"address,omitempty"`
 		Doors     map[uint8]schema.OID `json:"doors"`
-		Interlock core.Interlock       `json:"interlock"`
+		Interlock lib.Interlock        `json:"interlock"`
 		TimeZone  string               `json:"timezone,omitempty"`
 		Created   types.Timestamp      `json:"created,omitempty"`
 		Modified  types.Timestamp      `json:"modified,omitempty"`
@@ -668,15 +667,15 @@ func (c *Controller) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID       schema.OID          `json:"OID"`
-		Name      string              `json:"name,omitempty"`
-		DeviceID  uint32              `json:"device-id,omitempty"`
-		Address   core.ControllerAddr `json:"address,omitempty"`
-		Doors     map[uint8]string    `json:"doors"`
-		Interlock core.Interlock      `json:"interlock"`
-		TimeZone  string              `json:"timezone,omitempty"`
-		Created   types.Timestamp     `json:"created,omitempty"`
-		Modified  types.Timestamp     `json:"modified,omitempty"`
+		OID       schema.OID         `json:"OID"`
+		Name      string             `json:"name,omitempty"`
+		DeviceID  uint32             `json:"device-id,omitempty"`
+		Address   lib.ControllerAddr `json:"address,omitempty"`
+		Doors     map[uint8]string   `json:"doors"`
+		Interlock lib.Interlock      `json:"interlock"`
+		TimeZone  string             `json:"timezone,omitempty"`
+		Created   types.Timestamp    `json:"created,omitempty"`
+		Modified  types.Timestamp    `json:"modified,omitempty"`
 	}{
 		Created: created,
 	}
@@ -750,7 +749,7 @@ func (c icontroller) ID() uint32 {
 	return c.id
 }
 
-func (c icontroller) EndPoint() *net.UDPAddr {
+func (c icontroller) EndPoint() lib.ControllerAddr {
 	return c.endpoint
 }
 
