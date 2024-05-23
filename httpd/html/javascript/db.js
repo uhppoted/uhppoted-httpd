@@ -8,10 +8,6 @@ class DBC {
     this.cards = new Map()
     this.groups = new Map()
 
-    this.init = function () {
-      setInterval(this.sweep, 15000)
-    }
-
     this.tables = {
       events: {
         status: 'unknown',
@@ -31,90 +27,94 @@ class DBC {
       }
     }
 
-    this.get = function (oid) {
-      return [null, false]
-    }
-
-    this.updated = function (tag, recordset) {
-      if (recordset) {
-        switch (tag) {
-          case 'interfaces':
-          case 'controllers':
-          case 'doors':
-          case 'cards':
-          case 'groups':
-          case 'events':
-          case 'logs':
-          case 'users':
-            recordset.forEach(o => object(o))
-            break
-        }
-      }
-    }
-
-    this.delete = function (tag, oid) {
-      if (oid) {
-        switch (tag) {
-          case 'interfaces':
-            this.interfaces.delete(oid)
-            break
-
-          case 'controllers':
-            this.controllers.delete(oid)
-            break
-
-          case 'doors':
-            this.doors.delete(oid)
-            break
-
-          case 'cards':
-            this.cards.delete(oid)
-            break
-
-          case 'groups':
-            this.groups.delete(oid)
-            break
-
-          case 'users':
-            this.tables.users.users.delete(oid)
-            break
-        }
-      }
-    }
-
-    this.events = function () {
-      return this.tables.events.events
-    }
-
-    this.firstEvent = function () {
-      return this.tables.events.first
-    }
-
-    this.lastEvent = function () {
-      return this.tables.events.last
-    }
-
-    this.logs = function () {
-      return this.tables.logs.logs
-    }
-
-    this.firstLog = function () {
-      return this.tables.logs.first
-    }
-
-    this.lastLog = function () {
-      return this.tables.logs.last
-    }
-
-    this.users = function () {
-      return this.tables.users.users
-    }
-
-    this.sweep = function () {
-      sweep()
-    }
-
     this.init()
+  }
+
+  init () {
+      setInterval(this.sweep, 15000)
+  }
+
+  updated (tag, recordset) {
+    if (recordset) {
+      switch (tag) {
+        case 'interfaces':
+        case 'controllers':
+        case 'doors':
+        case 'cards':
+        case 'groups':
+        case 'events':
+        case 'logs':
+        case 'users':
+          recordset.forEach(o => object(o))
+          break
+      }
+    }
+  }
+
+  get (oid) {
+    return [null, false]
+  }
+
+  delete (tag, oid) {
+    if (tag != null && oid != null) {
+      switch (tag) {
+        case 'interfaces':
+          this.interfaces.delete(oid)
+          break
+
+        case 'controllers':
+          this.controllers.delete(oid)
+          break
+
+        case 'doors':
+          this.doors.delete(oid)
+          break
+
+        case 'cards':
+          this.cards.delete(oid)
+          break
+
+        case 'groups':
+          this.groups.delete(oid)
+          break
+
+        case 'users':
+          this.tables.users.users.delete(oid)
+          break
+      }
+    }
+  }
+
+  events () {
+    return this.tables.events.events
+  }
+
+  firstEvent () {
+    return this.tables.events.first
+  }
+
+  lastEvent () {
+    return this.tables.events.last
+  }
+
+  logs () {
+    return this.tables.logs.logs
+  }
+
+  firstLog () {
+    return this.tables.logs.first
+  }
+
+  lastLog () {
+    return this.tables.logs.last
+  }
+
+  users () {
+    return this.tables.users.users
+  }
+
+  sweep () {
+    sweep()
   }
 }
 

@@ -1,7 +1,8 @@
 # TODO
 
 - [x] `EndPoint() *net.UDPAddr  // FIXME convert to netip.AddrPort and use zero value rather than pointer`
-- [ ] Initialisation: _./db.js does not provide an export named DB_
+- [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
+      - Browser load issue maybe? (fixes itself with a page reload)
 
 ### To Be Done Sometime
 
