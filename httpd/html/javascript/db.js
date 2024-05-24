@@ -31,7 +31,7 @@ class DBC {
   }
 
   init () {
-      setInterval(this.sweep, 15000)
+    setInterval(this.sweep, 15000)
   }
 
   updated (tag, recordset) {
