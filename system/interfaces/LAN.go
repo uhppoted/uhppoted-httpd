@@ -602,12 +602,12 @@ func (l *LAN) api(controllers []types.IController) *uhppoted.UHPPOTED {
 	for _, v := range controllers {
 		name := v.Name()
 		id := v.ID()
-		addr := v.EndPoint()
+		addr := lib.ControllerAddrFrom(v.EndPoint().Addr(), v.EndPoint().Port())
+		doors := []string{}
 		tz := v.TimeZone()
 
 		// NTS: 'found' controllers will have a zero value address (only configured controllers have an address)
-		if device := uhppote.NewDevice(name, id, lib.ControllerAddrFrom(addr.Addr(), addr.Port()), "udp", []string{}); device.IsValid() {
-			device.TimeZone = tz // FIXME add timezone to NewDevice
+		if device := uhppote.NewDevice(name, id, addr, "udp", doors, tz); device.IsValid() {
 			devices = append(devices, device)
 		}
 	}
