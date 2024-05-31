@@ -268,7 +268,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	case oid == c.OID.Append(CardFrom):
 		if err := CanUpdate(a, c, "from", value); err != nil {
 			return nil, err
-		} else if from, err := lib.DateFromString(value); err != nil {
+		} else if from, err := lib.ParseDate(value); err != nil {
 			return nil, err
 		} else if from.IsZero() {
 			return nil, fmt.Errorf("invalid 'from' date (%v)", value)
@@ -284,7 +284,7 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	case oid == c.OID.Append(CardTo):
 		if err := CanUpdate(a, c, "to", value); err != nil {
 			return nil, err
-		} else if to, err := lib.DateFromString(value); err != nil {
+		} else if to, err := lib.ParseDate(value); err != nil {
 			return nil, err
 		} else if to.IsZero() {
 			return nil, fmt.Errorf("invalid 'to' date (%v)", value)
