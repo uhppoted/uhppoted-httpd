@@ -69,6 +69,7 @@
                   <th class="name      topleft">Controller</th>
                   <th class="ID        colheader">ID</th>
                   <th class="IP        colheader">Endpoint</th>
+                  <th class="protocol  colheader">TCP</th>
                   <th class="datetime  colheader">Date/Time</th>
                   <th class="interlock colheader">Interlock</th>
                   <th class="cards     colheader">Cards</th>
@@ -125,6 +126,20 @@
                          data-value=""  
                          data-status="" 
                          {{if .readonly}}readonly{{end}} />
+                </td>
+
+                <td>
+                  <label class="protocol">
+                    <input class="field"
+                           type="checkbox" 
+                           onclick="onTick('controller', event)"
+                           data-record="" 
+                           data-original="" 
+                           data-value=""
+                           {{if .readonly}}disabled{{end}} />
+                    <img class="no"  src="/images/{{$.context.Theme}}/times-solid.svg" draggable="false" />
+                    <img class="yes" src="/images/{{$.context.Theme}}/check-solid.svg" draggable="false" />
+                  </label>
                 </td>
 
                 <td class="combobox">

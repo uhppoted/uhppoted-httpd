@@ -202,6 +202,10 @@ export function onMore (tag, event) {
 
 export function onTick (tag, event) {
   switch (tag) {
+    case 'controller':
+      set(event.target, event.target.checked ? 'tcp' : 'udp')
+      break
+
     case 'door':
       set(event.target, event.target.checked ? 'true' : 'false')
       break

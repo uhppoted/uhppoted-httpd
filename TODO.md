@@ -1,15 +1,13 @@
 # TODO
 
 - [x] `EndPoint() *net.UDPAddr  // FIXME convert to netip.AddrPort and use zero value rather than pointer`
-- [ ] FIX controller addresses
-```
-::ffff:192.168.1.100
-```
+- [x] FIX controller addresses
 - [ ] TCP transport (cf. https://github.com/uhppoted/uhppote-core/issues/17)
-      - [ ] Add protocol field to `Controller` struct
-      - [ ] Add protocol to schema
-      - [ ] TCP checkbox 
-      - [ ] Update MakeUHPPOTE
+      - [x] Add protocol field to `Controller` struct
+      - [x] Add protocol to schema
+      - [x] TCP checkbox 
+      - [ ] Verify
+      - [ ] Controller configuration scrubbed ?????
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

@@ -24,6 +24,7 @@ const ControllerDeviceID = schema.ControllerDeviceID
 const ControllerEndpoint = schema.ControllerEndpoint
 const ControllerEndpointStatus = schema.ControllerEndpointStatus
 const ControllerEndpointAddress = schema.ControllerEndpointAddress
+const ControllerEndpointProtocol = schema.ControllerEndpointProtocol
 const ControllerEndpointConfigured = schema.ControllerEndpointConfigured
 const ControllerDateTime = schema.ControllerDateTime
 const ControllerDateTimeStatus = schema.ControllerDateTimeStatus

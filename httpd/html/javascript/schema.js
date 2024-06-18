@@ -30,7 +30,8 @@ export const schema = {
     endpoint: {
       status: '.3.0',
       address: '.3.1',
-      configured: '.3.2'
+      configured: '.3.2',
+      protocol: '.3.3'
     },
     datetime: {
       status: '.4.0',

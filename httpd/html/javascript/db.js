@@ -214,6 +214,7 @@ function controllers (o) {
       name: '',
       deviceID: '',
       address: { address: '', configured: '', status: 'unknown' },
+      protocol: '',
       datetime: { datetime: '', configured: '', status: 'unknown' },
       interlock: '',
       cards: { cards: '', status: 'unknown' },
@@ -255,6 +256,10 @@ function controllers (o) {
 
     case `${base}${schema.controllers.endpoint.address}`:
       v.address.address = o.value
+      break
+
+    case `${base}${schema.controllers.endpoint.protocol}`:
+      v.protocol = o.value
       break
 
     case `${base}${schema.controllers.endpoint.configured}`:

@@ -38,6 +38,7 @@ type Controllers struct {
 	Endpoint struct {
 		Status     Suffix `json:"status"`
 		Address    Suffix `json:"address"`
+		Protocol   Suffix `json:"protocol"`
 		Configured Suffix `json:"configured"`
 	} `json:"endpoint"`
 	DateTime struct {
@@ -188,10 +189,12 @@ var schema = Schema{
 		Endpoint: struct {
 			Status     Suffix `json:"status"`
 			Address    Suffix `json:"address"`
+			Protocol   Suffix `json:"protocol"`
 			Configured Suffix `json:"configured"`
 		}{
 			Status:     ControllerEndpointStatus,
 			Address:    ControllerEndpointAddress,
+			Protocol:   ControllerEndpointProtocol,
 			Configured: ControllerEndpointConfigured,
 		},
 		DateTime: struct {
@@ -388,7 +391,8 @@ const ControllerEndpoint Suffix = ".3"
 const ControllerEndpointStatus Suffix = ".3.0"
 const ControllerEndpointAddress Suffix = ".3.1"
 const ControllerEndpointConfigured Suffix = ".3.2"
-const ControllerDateTime Suffix = ".4" //TODO Fix when rationalizing the whole date/time/timezone mess
+const ControllerEndpointProtocol Suffix = ".3.3"
+const ControllerDateTime Suffix = ".4" // FIXME Fix when rationalizing the whole date/time/timezone mess
 const ControllerDateTimeStatus Suffix = ".4.0"
 const ControllerDateTimeCurrent Suffix = ".4.1"
 const ControllerDateTimeConfigured Suffix = ".4.2"

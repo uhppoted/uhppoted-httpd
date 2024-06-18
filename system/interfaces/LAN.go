@@ -605,9 +605,10 @@ func (l *LAN) api(controllers []types.IController) *uhppoted.UHPPOTED {
 		addr := lib.ControllerAddrFrom(v.EndPoint().Addr(), v.EndPoint().Port())
 		doors := []string{}
 		tz := v.TimeZone()
+		protocol := v.Protocol()
 
 		// NTS: 'found' controllers will have a zero value address (only configured controllers have an address)
-		if device := uhppote.NewDevice(name, id, addr, "udp", doors, tz); device.IsValid() {
+		if device := uhppote.NewDevice(name, id, addr, protocol, doors, tz); device.IsValid() {
 			devices = append(devices, device)
 		}
 	}

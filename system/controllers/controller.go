@@ -25,6 +25,7 @@ type Controller struct {
 	doors     map[uint8]schema.OID
 	interlock lib.Interlock
 	timezone  string
+	protocol  string
 
 	created  types.Timestamp
 	modified types.Timestamp
@@ -37,6 +38,7 @@ type icontroller struct {
 	id           uint32
 	endpoint     lib.ControllerAddr
 	timezone     *time.Location
+	protocol     string
 	doors        map[uint8]schema.OID
 	interlock    lib.Interlock
 	synchronized types.Status
@@ -50,6 +52,7 @@ type kv = struct {
 type cached struct {
 	touched  time.Time
 	address  lib.ControllerAddr
+	protocol string
 	datetime struct {
 		datetime lib.DateTime
 		modified bool
@@ -217,6 +220,7 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{ControllerDeviceID, deviceID})
 		list = append(list, kv{ControllerEndpointStatus, address.status})
 		list = append(list, kv{ControllerEndpointAddress, address.address})
+		list = append(list, kv{ControllerEndpointProtocol, c.protocol})
 		list = append(list, kv{ControllerEndpointConfigured, address.configured})
 		list = append(list, kv{ControllerDateTimeStatus, datetime.status})
 		list = append(list, kv{ControllerDateTimeCurrent, datetime.datetime})
@@ -293,6 +297,7 @@ func (c *Controller) AsIController() types.IController {
 		id:           c.DeviceID,
 		endpoint:     endpoint,
 		timezone:     location,
+		protocol:     c.protocol,
 		doors:        doors,
 		interlock:    c.interlock,
 		synchronized: synchronized,
@@ -351,6 +356,12 @@ func (c *Controller) get() *cached {
 	if v := catalog.GetV(c.OID, ControllerEndpointAddress); v != nil {
 		if address, ok := v.(lib.ControllerAddr); ok {
 			e.address = address
+		}
+	}
+
+	if v := catalog.GetV(c.OID, ControllerEndpointProtocol); v != nil {
+		if protocol, ok := v.(string); ok {
+			e.protocol = protocol
 		}
 	}
 
@@ -471,6 +482,18 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 			list = append(list, kv{ControllerEndpointStatus, types.StatusUncertain})
 
 			c.updated(dbc, uid, "address", clone.IP, c.IP)
+		}
+
+	case c.OID.Append(ControllerEndpointProtocol):
+		if err := CanUpdate(a, c, "protocol", value); err != nil {
+			return nil, err
+		} else {
+			c.protocol = value
+			c.modified = types.TimestampNow()
+
+			list = append(list, kv{ControllerEndpointProtocol, value})
+
+			c.updated(dbc, uid, "protocol", clone.protocol, c.protocol)
 		}
 
 	case c.OID.Append(ControllerDateTimeCurrent):
@@ -642,6 +665,7 @@ func (c Controller) serialize() ([]byte, error) {
 		Doors     map[uint8]schema.OID `json:"doors"`
 		Interlock lib.Interlock        `json:"interlock"`
 		TimeZone  string               `json:"timezone,omitempty"`
+		Protocol  string               `json:"protocol,omitempty"`
 		Created   types.Timestamp      `json:"created,omitempty"`
 		Modified  types.Timestamp      `json:"modified,omitempty"`
 	}{
@@ -652,6 +676,7 @@ func (c Controller) serialize() ([]byte, error) {
 		Doors:     map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
 		Interlock: c.interlock,
 		TimeZone:  c.timezone,
+		Protocol:  c.protocol,
 		Created:   c.created.UTC(),
 		Modified:  c.modified.UTC(),
 	}
@@ -674,10 +699,12 @@ func (c *Controller) deserialize(bytes []byte) error {
 		Doors     map[uint8]string   `json:"doors"`
 		Interlock lib.Interlock      `json:"interlock"`
 		TimeZone  string             `json:"timezone,omitempty"`
+		Protocol  string             `json:"protocol,omitempty"`
 		Created   types.Timestamp    `json:"created,omitempty"`
 		Modified  types.Timestamp    `json:"modified,omitempty"`
 	}{
-		Created: created,
+		Created:  created,
+		Protocol: "udp",
 	}
 
 	if err := json.Unmarshal(bytes, &record); err != nil {
@@ -691,6 +718,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.doors = map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
 	c.interlock = record.Interlock
 	c.timezone = record.TimeZone
+	c.protocol = record.Protocol
 	c.created = record.Created
 	c.modified = record.Modified
 
@@ -711,6 +739,7 @@ func (c *Controller) clone() *Controller {
 			name:      c.name,
 			IP:        c.IP,
 			timezone:  c.timezone,
+			protocol:  c.protocol,
 			doors:     map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
 			interlock: c.interlock,
 
@@ -755,6 +784,14 @@ func (c icontroller) EndPoint() lib.ControllerAddr {
 
 func (c icontroller) TimeZone() *time.Location {
 	return c.timezone
+}
+
+func (c icontroller) Protocol() string {
+	if c.protocol == "tcp" {
+		return "tcp"
+	}
+
+	return "udp"
 }
 
 func (c icontroller) Door(d uint8) (schema.OID, bool) {
