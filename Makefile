@@ -112,13 +112,8 @@ publish: release
 	rm -f dist/development.tar.gz
 	gh release create "$(VERSION)" "./dist/uhppoted-httpd_$(VERSION).tar.gz" "./dist/uhppoted-httpd_$(VERSION).zip" --draft --prerelease --title "$(VERSION)-beta" --notes-file release-notes.md
 
-debug: format
-	# go build -trimpath -o bin ./...
-	# go test -tags "tests" -run TestTimezoneGMT2 ./types
-	# mkdir -p dist/test
-	# tar xvzf dist/quickstart-darwin.tar.gz --directory dist/test
-	# cd dist/test && ./uhppoted-httpd --debug --console --config uhppoted.conf
-	cd docker && find . -name .DS_Store -delete && rm -f compose.zip && zip --recurse-paths compose.zip compose
+debug: build
+	$(CMD) --debug --console
 
 delve: format
 	go build -trimpath -o bin ./...
