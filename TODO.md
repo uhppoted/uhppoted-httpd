@@ -6,12 +6,10 @@
       - [x] Add protocol field to `Controller` struct
       - [x] Add protocol to schema
       - [x] TCP checkbox 
+      - [ ] Docker
+            - [ ] simulator still reporting UDP for TCP controllers
       - [x] Verify
-```
-2024/06/19 08:47:03 WARN   internal server error: error retrieving number of cards from 201020304 (dial tcp4 192.168.1.100:0->192.168.1.101:60000: i/o timeout)
-2024/06/19 08:47:04 WARN   internal server error: error getting door 1 delay for 201020304 (dial tcp4 192.168.1.100:0->192.168.1.101:60000: i/o timeout)
-2024/06/19 08:47:04 WARN   internal server error: error getting door 2 delay for 201020304 (dial tcp4 192.168.1.100:0->192.168.1.101:60000: connect: host is down)
-```
+      - [ ] 'X' not disappearing on reverting TCP
 
 - [ ] Controller configuration scrubbed ?????
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
