@@ -111,7 +111,8 @@ export function onEdited (tag, event) {
     case 'door':
       set(event.target, event.target.value, status)
 
-      if (status === 'error') { // Allow 'forced' controller update for an error'd door
+      // Allow 'forced' controller update for an error'd door
+      if (status === 'error') {
         const element = event.target
         const tr = row(event.target)
         const td = cell(element)
@@ -432,7 +433,7 @@ export function revert (row) {
   row.classList.remove('modified')
 }
 
-export function update (element, value, status) {
+export function update (element, value, status, checked) {
   if (element && value !== undefined) {
     const v = value.toString()
     const oid = element.dataset.oid
@@ -471,7 +472,11 @@ export function update (element, value, status) {
     if (element !== document.activeElement) {
       switch (element.getAttribute('type').toLowerCase()) {
         case 'checkbox':
-          element.checked = (v === 'true')
+          if (checked != null) {
+            element.checked = checked(v)
+          } else {
+            element.checked = (v === 'true')
+          }
           break
 
         default:

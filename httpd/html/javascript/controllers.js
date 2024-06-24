@@ -163,7 +163,7 @@ function updateFromDB (oid, record) {
   update(name, record.name)
   update(deviceID, record.deviceID)
   update(address, record.address.address, record.address.status)
-  update(protocol, record.protocol === 'tcp')
+  update(protocol, record.protocol === 'tcp' ? 'tcp' : 'udp', null, (v) => { return v === 'tcp' })
   update(datetime, dt, record.datetime.status)
   update(interlock, record.interlock)
   update(cards, record.cards.cards, record.cards.status)

@@ -6,10 +6,9 @@
       - [x] Add protocol field to `Controller` struct
       - [x] Add protocol to schema
       - [x] TCP checkbox 
-      - [ ] Docker
-            - [ ] simulator still reporting UDP for TCP controllers
+      - [x] Docker
       - [x] Verify
-      - [ ] 'X' not disappearing on reverting TCP
+      - [x] 'X' not disappearing on reverting TCP
 
 - [ ] Controller configuration scrubbed ?????
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
