@@ -128,7 +128,7 @@ FROM ghcr.io/uhppoted/httpd:latest
 Required tools:
 - [Go 1.21+](https://go.dev)
 - [sass](https://sass-lang.com)
-- make (optional but recommended)
+- _make_ (optional but recommended)
 - [eslint](https://eslint.org) (optional but recommended)
 - [eslint-config-standard](https://www.npmjs.com/package/eslint-config-standard) (optional but recommended)
 
@@ -165,16 +165,13 @@ go build -trimpath -o bin/ ./...
 The above commands build the `uhppoted-httpd` executable to the `bin` directory.
 
 
-#### Dependencies
+#### External dependencies
 
 | *Dependency*                                                            | *Description*                        |
 | ----------------------------------------------------------------------- | -------------------------------------|
-| [uhppote-core](https://github.com/uhppoted/uhppote-core)                | Device level API implementation      |
-| [uhppoted-lib](https://github.com/uhppoted/uhppoted-lib)                | common API for external applications |
 | [jwt/v3](https://github.com/cristalhq/jwt/v3)                           | JWT implementation                   |
 | [grule-rule-engine](https://github.com/hyperjumptech/grule-rule-engine) | Rules engine                         |
 | github.com/google/uuid                                                  | UUID type implementation             |
-| golang.org/x/sys                                                        | (for Windows service integration)    |
 
 ## uhppoted-httpd
 

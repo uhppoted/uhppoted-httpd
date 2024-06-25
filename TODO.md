@@ -9,8 +9,10 @@
       - [x] Docker
       - [x] Verify
       - [x] 'X' not disappearing on reverting TCP
+      - [x] CHANGELOG
+      - [x] README
+      - [x] Documentation
 
-- [ ] Controller configuration scrubbed ?????
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)
 

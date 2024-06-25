@@ -49,6 +49,7 @@ in the _var_ folder:
       "name": "Beta",
       "device-id": 303986753,
       "address": "192.168.1.100",
+      "protocol": "udp",
       "doors": {
         "1": "0.3.1",
         "2": "0.3.2",

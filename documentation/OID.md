@@ -32,14 +32,15 @@
 |    |      |- 0.2.1.1: <name>                                               #    name
 |    |      |- 0.2.1.2: <ID>                                                 #    serial number
 |    |      |- 0.2.1.3: <address>                                            #    controller endpoint
-|    |      |        |- 0.2.1.4.0: <status>                                  #       address status
-|    |      |        |- 0.2.1.4.1: <endpoint>                                #       controller address:port
-|    |      |        |- 0.2.1.4.2: <configured>                              #       configured address:port
+|    |      |        |- 0.2.1.3.0: <status>                                  #       address status
+|    |      |        |- 0.2.1.3.1: <endpoint>                                #       controller address:port
+|    |      |        |- 0.2.1.3.2: <configured>                              #       configured address:port
+|    |      |        |- 0.2.1.3.3: <protocol>                                #       transport (TCP or UDP)
 |    |      |- 0.2.1.4:  <datetime>                                          #    controller date/time
-|    |      |        |- 0.2.1.5.0: <status>                                  #       status
-|    |      |        |- 0.2.1.5.1: <current>                                 #       controller date/time
+|    |      |        |- 0.2.1.4.0: <status>                                  #       status
+|    |      |        |- 0.2.1.4.1: <current>                                 #       controller date/time
 |    |      |        |- 0.2.1.5.2: <system>                                  #       system date/time
-|    |      |        |- 0.2.1.5.3: <modified>                                #       modified
+|    |      |        |- 0.2.1.6.3: <modified>                                #       modified
 |    |      |- 0.2.1.5:  <cards>                                             #    controller cards
 |    |      |        |- 0.2.1.5.0: <status>                                  #       cards status
 |    |      |        |- 0.2.1.5.1: <count>                                   #       number of card
