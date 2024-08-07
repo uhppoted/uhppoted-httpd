@@ -73,6 +73,7 @@ func (h *HTTPD) Run(mode types.RunMode, withPIN bool, interrupt chan os.Signal) 
 	mux.Handle("/fonts/", http.FileServer(fs))
 	mux.Handle("/manifest.json", http.FileServer(fs))
 
+	mux.HandleFunc("/sys/setup.html", d.getNoAuth)
 	mux.HandleFunc("/sys/login.html", d.getNoAuth)
 	mux.HandleFunc("/sys/unauthorized.html", d.getNoAuth)
 	mux.HandleFunc("/sys/overview.html", d.getWithAuth)

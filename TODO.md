@@ -3,15 +3,14 @@
 - [x] `EndPoint() *net.UDPAddr
 - [x] FIX controller addresses
 - [x] TCP transport (cf. https://github.com/uhppoted/uhppote-core/issues/17)
-      - [x] Add protocol field to `Controller` struct
-      - [x] Add protocol to schema
-      - [x] TCP checkbox 
-      - [x] Docker
-      - [x] Verify
-      - [x] 'X' not disappearing on reverting TCP
-      - [x] CHANGELOG
-      - [x] README
-      - [x] Documentation
+- [ ] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
+      - [x] user setup page
+      - [ ] create admin user iff does not exist
+      - [ ] unauthorised if an admin user exists
+      - [ ] check for admin user on startup
+      - [ ] Remove admin user logic in daemonize
+      - [ ] CHANGELOG
+      - [ ] README
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

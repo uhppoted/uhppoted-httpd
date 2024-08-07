@@ -1,0 +1,15 @@
+{
+    "Setup": {
+        "Legend": "Please create an 'admin' user",
+        "UserID": {
+            "Hint": "User ID"
+        },
+        "Password": {
+            "Hint": "Password"
+        },
+        "Ok": {
+            "Label": "Ok"
+        },
+        "Unauthorized": "Invalid user ID or password"
+    }
+}
