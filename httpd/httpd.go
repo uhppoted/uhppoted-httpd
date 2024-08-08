@@ -87,6 +87,7 @@ func (h *HTTPD) Run(mode types.RunMode, withPIN bool, interrupt chan os.Signal) 
 
 	mux.HandleFunc("/javascript/", d.getJS)
 
+	mux.HandleFunc("/setup", d.dispatch)
 	mux.HandleFunc("/authenticate", d.dispatch)
 	mux.HandleFunc("/logout", d.dispatch)
 	mux.HandleFunc("/password", d.dispatch)

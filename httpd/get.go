@@ -36,6 +36,9 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch path {
+	case "/otp":
+		d.generateOTP(w, r)
+		return
 	case
 		"/interfaces",
 		"/controllers",
@@ -48,11 +51,6 @@ func (d *dispatcher) get(w http.ResponseWriter, r *http.Request) {
 		if handler := d.vtable(path); handler != nil && handler.get != nil {
 			d.fetch(r, w, *handler)
 		}
-
-		return
-
-	case "/otp":
-		d.generateOTP(w, r)
 		return
 	}
 

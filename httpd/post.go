@@ -18,7 +18,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ... allow unauthenticated access to /authenticate and /logout
+	// ... allow unauthenticated access to /authenticate, /logout and /setup
 	if path == "/authenticate" {
 		post.Login(w, r, d.auth)
 		return
@@ -26,6 +26,11 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 
 	if path == "/logout" {
 		d.logout(w, r)
+		return
+	}
+
+	if path == "/setup" {
+		d.setup(w, r)
 		return
 	}
 
@@ -128,4 +133,21 @@ func (d *dispatcher) synchronize(w http.ResponseWriter, r *http.Request, f func(
 
 	case <-ch:
 	}
+}
+
+func (d *dispatcher) setup(w http.ResponseWriter, r *http.Request) {
+	_, err := resolve(r.URL)
+	if err != nil {
+		http.Error(w, "invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	// ... disallow logged in users
+	uid, role, authenticated := d.authenticated(r, w)
+	if uid != "" || role != "" || authenticated {
+		http.Error(w, "Not allowed for logged in user", http.StatusForbidden)
+		return
+	}
+
+	users.Setup(w, r)
 }

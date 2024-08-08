@@ -5,8 +5,11 @@
 - [x] TCP transport (cf. https://github.com/uhppoted/uhppote-core/issues/17)
 - [ ] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
       - [x] user setup page
-      - [ ] create admin user iff does not exist
-      - [ ] unauthorised if an admin user exists
+      - [ ] setup endpoint
+            - [x] not allowed if already authenticated
+            - [x] not allowed if an admin user exists
+            - [x] not allowed if an user exists
+            - [ ] create admin user
       - [ ] check for admin user on startup
       - [ ] Remove admin user logic in daemonize
       - [ ] CHANGELOG

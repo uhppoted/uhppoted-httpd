@@ -26,6 +26,20 @@ func NewUsers() Users {
 	}
 }
 
+func (uu *Users) MakeAdminUser(uid string, pwd string) error {
+	for _, v := range uu.users {
+		if strings.EqualFold(strings.TrimSpace(v.uid), strings.TrimSpace(uid)) {
+			return fmt.Errorf("invalid user")
+		}
+
+		if strings.EqualFold(strings.TrimSpace(v.role), "admin") {
+			return fmt.Errorf("invalid user")
+		}
+	}
+
+	return fmt.Errorf("don't wanna")
+}
+
 func (uu *Users) AsObjects(a *auth.Authorizator) []schema.Object {
 	objects := []schema.Object{}
 	guard.RLock()

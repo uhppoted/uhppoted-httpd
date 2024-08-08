@@ -159,6 +159,13 @@ func RevokeOTP(uid, role string) error {
 	return nil
 }
 
+func MakeAdminUser(uid, pwd string) error {
+	sys.Lock()
+	defer sys.Unlock()
+
+	return sys.users.MakeAdminUser(uid, pwd)
+}
+
 func UserLogin(uid, role string, err error) {
 	sys.Lock()
 	defer sys.Unlock()
