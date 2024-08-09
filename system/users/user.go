@@ -175,18 +175,11 @@ func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	case oid == u.OID.Append(UserPassword):
 		if err := CanUpdate(a, u, "password", value); err != nil {
 			return nil, err
+		} else if salt, hash, err := password(value); err != nil {
+			return nil, err
 		} else {
-			salt := make([]byte, 16)
-			if _, err := io.ReadFull(rand.Reader, salt); err != nil {
-				return nil, err
-			}
-
-			h := sha256.New()
-			h.Write(salt)
-			h.Write([]byte(value))
-
 			u.salt = salt
-			u.password = fmt.Sprintf("%0x", h.Sum(nil))
+			u.password = hash
 			u.modified = types.TimestampNow()
 
 			list = append(list, kv{UserPassword, ""})
@@ -418,4 +411,20 @@ func (u User) clone() *User {
 
 func (u User) log(dbc db.DBC, uid, op string, field string, before, after any, format string, fields ...any) {
 	dbc.Log(uid, op, u.OID, "user", u.uid, u.name, field, before, after, format, fields...)
+}
+
+func password(pwd string) ([]byte, string, error) {
+	salt := make([]byte, 16)
+
+	if _, err := io.ReadFull(rand.Reader, salt); err != nil {
+		return nil, "", err
+	}
+
+	h := sha256.New()
+	h.Write(salt)
+	h.Write([]byte(pwd))
+
+	hash := fmt.Sprintf("%0x", h.Sum(nil))
+
+	return salt, hash, nil
 }

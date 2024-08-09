@@ -26,18 +26,49 @@ func NewUsers() Users {
 	}
 }
 
-func (uu *Users) MakeAdminUser(uid string, pwd string) error {
-	for _, v := range uu.users {
-		if strings.EqualFold(strings.TrimSpace(v.uid), strings.TrimSpace(uid)) {
-			return fmt.Errorf("invalid user")
+func (uu *Users) MakeAdminUser(name string, uid string, pwd string, dbc db.DBC) error {
+	if uu != nil {
+		// ... existing user ?
+		for _, v := range uu.users {
+			if strings.EqualFold(strings.TrimSpace(v.uid), strings.TrimSpace(uid)) {
+				return fmt.Errorf("invalid user")
+			}
 		}
 
-		if strings.EqualFold(strings.TrimSpace(v.role), "admin") {
-			return fmt.Errorf("invalid user")
+		// ... existing 'admin' user ?
+		for _, v := range uu.users {
+			if strings.EqualFold(strings.TrimSpace(v.role), "admin") {
+				return fmt.Errorf("invalid user")
+			}
+		}
+
+		// ... create new 'admin' user
+		if salt, password, err := password(pwd); err != nil {
+			return err
+		} else {
+			user := User{}
+
+			oid := catalog.NewT(user.CatalogUser)
+			if _, ok := uu.users[oid]; ok {
+				return fmt.Errorf("catalog returned duplicate OID (%v)", oid)
+			}
+
+			user.OID = oid
+			user.name = strings.TrimSpace(name)
+			user.uid = strings.TrimSpace(uid)
+			user.role = "admin"
+			user.salt = salt
+			user.password = password
+			user.created = types.TimestampNow()
+
+			uu.users[user.OID] = &user
+			user.log(dbc, "", "setup", "user", "", "", "Added 'admin' user")
+
+			return nil
 		}
 	}
 
-	return fmt.Errorf("don't wanna")
+	return fmt.Errorf("internal error")
 }
 
 func (uu *Users) AsObjects(a *auth.Authorizator) []schema.Object {

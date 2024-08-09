@@ -1,6 +1,8 @@
 package system
 
 import (
+	"fmt"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -159,11 +161,32 @@ func RevokeOTP(uid, role string) error {
 	return nil
 }
 
-func MakeAdminUser(uid, pwd string) error {
+func MakeAdminUser(name, uid, pwd string) error {
 	sys.Lock()
 	defer sys.Unlock()
 
-	return sys.users.MakeAdminUser(uid, pwd)
+	dbc := db.NewDBC(sys.trail)
+	shadow := sys.users.Clone()
+
+	if err := shadow.MakeAdminUser(name, uid, pwd, dbc); err != nil {
+		return err
+	}
+
+	fmt.Printf(">>>>>>>>>>>> UPDATED (probably): %v\n", shadow)
+
+	if err := save(TagUsers, &shadow); err != nil {
+		return err
+	}
+
+	fmt.Printf(">>>>>>>>>>>> SAVED (probably)\n")
+
+	dbc.Commit(&sys, func() {
+		sys.users = shadow
+	})
+
+	fmt.Printf(">>>>>>>>>>>> COMMITED (probably): %v\n", sys.users)
+
+	return nil
 }
 
 func UserLogin(uid, role string, err error) {

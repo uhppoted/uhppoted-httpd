@@ -5,12 +5,13 @@ export function setup (event) {
 
   event.preventDefault()
 
-  const credentials = {
+  const info = {
+    name: document.getElementById('username').value,
     uid: document.getElementById('uid').value,
     pwd: document.getElementById('pwd').value
   }
 
-  postAsForm('/setup', credentials)
+  postAsForm('/setup', info)
     .then(response => {
       console.log('>>', response)
       switch (response.status) {

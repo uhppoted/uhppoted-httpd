@@ -1,6 +1,9 @@
 {
     "Setup": {
         "Legend": "Please create an 'admin' user",
+        "UserName": {
+            "Hint": "User name"
+        },
         "UserID": {
             "Hint": "User ID"
         },
