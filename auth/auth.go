@@ -69,9 +69,12 @@ type Operant interface {
 
 func NewAuthorizator(uid, role string) *Authorizator {
 	return &Authorizator{
-		uid:    uid,
-		role:   role,
-		OpAuth: &authorizator{},
+		uid:  uid,
+		role: role,
+		OpAuth: &authorizator{
+			uid:  uid,
+			role: role,
+		},
 	}
 }
 

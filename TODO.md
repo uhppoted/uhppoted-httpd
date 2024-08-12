@@ -11,7 +11,10 @@
             - [x] not allowed if an user exists
             - [x] create admin user
             - [x] redirect to index.html on ok
-            - [ ] delete user - 'not authorised' ??
+            - [x] delete user - 'not authorised' ??
+            - [ ] **deleted user can log back in***
+                  - clear cookie if uid == self ?
+      - [ ] Rethink default user grules
       - [ ] check for admin user on startup
       - [ ] Remove admin user logic in daemonize
       - [ ] CHANGELOG

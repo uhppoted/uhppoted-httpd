@@ -22,29 +22,14 @@ type TAuthable interface {
 }
 
 type authorizator struct {
-	Authorizator
+	uid  string
+	role string
 }
-
-// type card struct {
-// 	Name   string
-// 	Card   uint32
-// 	Groups []string
-// }
 
 type result struct {
 	Allow  bool
 	Refuse bool
 }
-
-// func (op *card) HasGroup(g string) bool {
-// 	for _, p := range op.Groups {
-// 		if p == g {
-// 			return true
-// 		}
-// 	}
-//
-// 	return false
-// }
 
 type ruleset struct {
 	kb      *ast.KnowledgeLibrary

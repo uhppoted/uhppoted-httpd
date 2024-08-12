@@ -1,31 +1,31 @@
-// rule ViewUser "(allowed)" {
-//      when
-//          OP == "view::user"
-//      then
-//          RESULT.Allow = true;
-//          Retract("ViewUser");
-// }
-// 
-// rule AddUser "(allowed)" {
-//      when
-//          OP == "add::user"
-//      then
-//          RESULT.Allow = true;
-//          Retract("AddUser");
-// }
-// 
-// rule UpdateUser "(allowed)" {
-//      when
-//          OP == "update::user"
-//      then
-//          RESULT.Allow = true;
-//          Retract("UpdateUser");
-// }
-// 
-// rule DeleteUser "(allowed)" {
-//      when
-//          OP == "delete::user"
-//      then
-//          RESULT.Allow = true;
-//          Retract("DeleteUser");
-// }
+rule ViewUser "(allowed)" {
+     when
+         OP == "view::user" && ROLE == "admin"
+     then
+         RESULT.Allow = true;
+         Retract("ViewUser");
+}
+
+rule AddUser "(allowed)" {
+     when
+         OP == "add::user" && ROLE == "admin"
+     then
+         RESULT.Allow = true;
+         Retract("AddUser");
+}
+
+rule UpdateUser "(allowed)" {
+     when
+         OP == "update::user" && ROLE == "admin"
+     then
+         RESULT.Allow = true;
+         Retract("UpdateUser");
+}
+
+rule DeleteUser "(allowed)" {
+     when
+         OP == "delete::user" && ROLE == "admin"
+     then
+         RESULT.Allow = true;
+         Retract("DeleteUser");
+}
