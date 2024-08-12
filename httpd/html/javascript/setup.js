@@ -13,15 +13,14 @@ export function setup (event) {
 
   postAsForm('/setup', info)
     .then(response => {
-      console.log('>>', response)
       switch (response.status) {
-      //   case 200:
-      //     if (response.redirected) {
-      //       window.location = response.url
-      //     } else {
-      //       window.location = '/index.html'
-      //     }
-      //     return
+        case 200:
+          if (response.redirected) {
+            window.location = response.url
+          } else {
+            window.location = '/index.html'
+          }
+          return
 
         default:
           return response.text()

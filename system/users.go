@@ -1,8 +1,6 @@
 package system
 
 import (
-	"fmt"
-
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
@@ -172,19 +170,13 @@ func MakeAdminUser(name, uid, pwd string) error {
 		return err
 	}
 
-	fmt.Printf(">>>>>>>>>>>> UPDATED (probably): %v\n", shadow)
-
 	if err := save(TagUsers, &shadow); err != nil {
 		return err
 	}
 
-	fmt.Printf(">>>>>>>>>>>> SAVED (probably)\n")
-
 	dbc.Commit(&sys, func() {
 		sys.users = shadow
 	})
-
-	fmt.Printf(">>>>>>>>>>>> COMMITED (probably): %v\n", sys.users)
 
 	return nil
 }

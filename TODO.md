@@ -10,7 +10,7 @@
             - [x] not allowed if an admin user exists
             - [x] not allowed if an user exists
             - [x] create admin user
-            - [ ] redirect to index.html on ok
+            - [x] redirect to index.html on ok
             - [ ] delete user - 'not authorised' ??
       - [ ] check for admin user on startup
       - [ ] Remove admin user logic in daemonize
