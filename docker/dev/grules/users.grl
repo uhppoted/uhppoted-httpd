@@ -1,6 +1,6 @@
 rule ViewUser "(allowed)" {
      when
-         OP == "view::user"
+         OP == "view::user" && ROLE == "admin"
      then
          RESULT.Allow = true;
          Retract("ViewUser");
@@ -8,7 +8,7 @@ rule ViewUser "(allowed)" {
 
 rule AddUser "(allowed)" {
      when
-         OP == "add::user"
+         OP == "add::user" && ROLE == "admin"
      then
          RESULT.Allow = true;
          Retract("AddUser");
@@ -16,7 +16,7 @@ rule AddUser "(allowed)" {
 
 rule UpdateUser "(allowed)" {
      when
-         OP == "update::user"
+         OP == "update::user" && ROLE == "admin"
      then
          RESULT.Allow = true;
          Retract("UpdateUser");
@@ -24,7 +24,7 @@ rule UpdateUser "(allowed)" {
 
 rule DeleteUser "(allowed)" {
      when
-         OP == "delete::user"
+         OP == "delete::user" && ROLE == "admin"
      then
          RESULT.Allow = true;
          Retract("DeleteUser");

@@ -105,7 +105,7 @@ func (h *HTTPD) Run(mode types.RunMode, withPIN bool, interrupt chan os.Signal) 
 	mux.HandleFunc("/synchronize/doors", d.dispatch)
 
 	mux.HandleFunc("/", d.getWithAuth)
-	mux.HandleFunc("/usr/", d.getNoAuth)
+	mux.HandleFunc("/usr/", d.getNoAuth) // NTS: for custom user pages
 	mux.HandleFunc("/index.html", d.getNoAuth)
 
 	// ... instantiate servers

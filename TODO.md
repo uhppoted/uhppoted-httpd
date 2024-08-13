@@ -5,18 +5,20 @@
 - [x] TCP transport (cf. https://github.com/uhppoted/uhppote-core/issues/17)
 - [ ] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
       - [x] user setup page
-      - [ ] setup endpoint
+      - [x] setup endpoint
             - [x] not allowed if already authenticated
             - [x] not allowed if an admin user exists
             - [x] not allowed if an user exists
             - [x] create admin user
             - [x] redirect to index.html on ok
             - [x] delete user - 'not authorised' ??
-            - [ ] **deleted user can log back in***
-                  - clear cookie if uid == self ?
-      - [ ] Rethink default user grules
+            - [x] remove name from HTML
+      - [x] Rethink default user grules
       - [ ] check for admin user on startup
+      - [ ] --no-setup (or --setup ??)
       - [ ] Remove admin user logic in daemonize
+      - [ ] **deleted user can log back in***
+            - clear cookie if uid == self ?
       - [ ] CHANGELOG
       - [ ] README
 

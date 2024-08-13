@@ -6,7 +6,7 @@ export function setup (event) {
   event.preventDefault()
 
   const info = {
-    name: document.getElementById('username').value,
+    name: '',
     uid: document.getElementById('uid').value,
     pwd: document.getElementById('pwd').value
   }
