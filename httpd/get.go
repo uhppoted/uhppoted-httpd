@@ -17,6 +17,7 @@ import (
 
 	"github.com/uhppoted/uhppoted-httpd/httpd/cookies"
 	"github.com/uhppoted/uhppoted-httpd/httpd/users"
+	"github.com/uhppoted/uhppoted-httpd/system"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/types"
 )
@@ -77,6 +78,11 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 	path, err := resolve(r.URL)
 	if err != nil {
 		http.Error(w, "invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	if !system.HasAdmin() && path != "/sys/setup.html" {
+		http.Redirect(w, r, "/sys/setup.html", http.StatusFound)
 		return
 	}
 

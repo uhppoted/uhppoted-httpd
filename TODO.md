@@ -13,14 +13,21 @@
             - [x] redirect to index.html on ok
             - [x] delete user - 'not authorised' ??
             - [x] remove name from HTML
-      - [x] Rethink default user grules
-      - [ ] check for admin user on startup
+      - [x] rethink default user grules
+      - [x] check for admin user on GET
+            - (?) configurable 'admin' role\
+      - [ ] docker: add setup.html, etc
+      - [ ] docker: update default rules to check for 'admin' role
       - [ ] --no-setup (or --setup ??)
       - [ ] Remove admin user logic in daemonize
       - [ ] **deleted user can log back in***
+            - check cookie uid still exists
             - clear cookie if uid == self ?
+            - what happens if simultaneously logged in on different browser?
+            - should probably logout
       - [ ] CHANGELOG
       - [ ] README
+            - [ ] disclaimer: for administering a system i.e. not for use by external users
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

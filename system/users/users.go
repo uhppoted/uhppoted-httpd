@@ -26,6 +26,16 @@ func NewUsers() Users {
 	}
 }
 
+func (uu Users) HasAdmin() bool {
+	for _, v := range uu.users {
+		if strings.EqualFold(strings.TrimSpace(v.role), "admin") {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (uu *Users) MakeAdminUser(name string, uid string, pwd string, dbc db.DBC) error {
 	if uu != nil {
 		// ... existing user ?
