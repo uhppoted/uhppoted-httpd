@@ -8,12 +8,15 @@
       - [x] setup endpoint
       - [x] rethink default user grules
       - [x] check for admin user on GET
-            - (?) configurable 'admin' role
+            - [ ] configurable 'admin' role
+            - [ ] Users::HasAdmin        // FIXME use auth.AdminRole
+            - [ ] httpd::users::setup.go // FIXME use configured admin role
       - [ ] docker: add setup.html, etc
             - [x] dev
             - [x] ghcr
             - [ ] compose
       - [ ] docker: update default rules to check for 'admin' role
+            - [ ] grules: isAdmin(ROLE)
       - [ ] --no-setup (or --setup ??)
       - [ ] Remove admin user logic in daemonize
       - [ ] **deleted user can log back in***

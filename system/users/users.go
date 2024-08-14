@@ -28,7 +28,7 @@ func NewUsers() Users {
 
 func (uu Users) HasAdmin() bool {
 	for _, v := range uu.users {
-		if strings.EqualFold(strings.TrimSpace(v.role), "admin") {
+		if strings.EqualFold(strings.TrimSpace(v.role), "admin") { // FIXME use auth.AdminRole
 			return true
 		}
 	}
@@ -36,8 +36,13 @@ func (uu Users) HasAdmin() bool {
 	return false
 }
 
-func (uu *Users) MakeAdminUser(name string, uid string, pwd string, dbc db.DBC) error {
+func (uu *Users) MakeAdminUser(name string, uid string, pwd string, role string, dbc db.DBC) error {
 	if uu != nil {
+		// ... valid role?
+		if strings.TrimSpace(role) == "" {
+			return fmt.Errorf("invalid role")
+		}
+
 		// ... existing user ?
 		for _, v := range uu.users {
 			if strings.EqualFold(strings.TrimSpace(v.uid), strings.TrimSpace(uid)) {
@@ -47,7 +52,7 @@ func (uu *Users) MakeAdminUser(name string, uid string, pwd string, dbc db.DBC) 
 
 		// ... existing 'admin' user ?
 		for _, v := range uu.users {
-			if strings.EqualFold(strings.TrimSpace(v.role), "admin") {
+			if strings.EqualFold(strings.TrimSpace(v.role), role) {
 				return fmt.Errorf("invalid user")
 			}
 		}
@@ -66,7 +71,7 @@ func (uu *Users) MakeAdminUser(name string, uid string, pwd string, dbc db.DBC) 
 			user.OID = oid
 			user.name = strings.TrimSpace(name)
 			user.uid = strings.TrimSpace(uid)
-			user.role = "admin"
+			user.role = role
 			user.salt = salt
 			user.password = password
 			user.created = types.TimestampNow()

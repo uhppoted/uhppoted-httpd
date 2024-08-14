@@ -163,14 +163,14 @@ func HasAdmin() bool {
 	return sys.users.HasAdmin()
 }
 
-func MakeAdminUser(name, uid, pwd string) error {
+func MakeAdminUser(name, uid, pwd, role string) error {
 	sys.Lock()
 	defer sys.Unlock()
 
 	dbc := db.NewDBC(sys.trail)
 	shadow := sys.users.Clone()
 
-	if err := shadow.MakeAdminUser(name, uid, pwd, dbc); err != nil {
+	if err := shadow.MakeAdminUser(name, uid, pwd, role, dbc); err != nil {
 		return err
 	}
 

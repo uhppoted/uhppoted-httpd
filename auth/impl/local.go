@@ -42,6 +42,7 @@ type Local struct {
 	loginExpiry   time.Duration
 	sessionExpiry time.Duration
 	allowOTPLogin bool
+	adminRole     string
 
 	logins   sessions
 	sessions sessions
@@ -71,7 +72,7 @@ type session struct {
 	Role       string    `json:"session.role,omitempty"`
 }
 
-func NewAuthProvider(file string, loginExpiry, sessionExpiry string, allowOTPLogin bool) (*Local, error) {
+func NewAuthProvider(file string, loginExpiry, sessionExpiry string, allowOTPLogin bool, adminRole string) (*Local, error) {
 	provider := Local{
 		keys: make([][]byte, constants.KEYS),
 		logins: sessions{
@@ -84,6 +85,7 @@ func NewAuthProvider(file string, loginExpiry, sessionExpiry string, allowOTPLog
 		sessionExpiry: 60 * time.Minute,
 		loginExpiry:   1 * time.Minute,
 		allowOTPLogin: allowOTPLogin,
+		adminRole:     adminRole,
 	}
 
 	if t, err := time.ParseDuration(loginExpiry); err != nil {

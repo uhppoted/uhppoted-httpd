@@ -134,7 +134,8 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 			conf.HTTPD.Security.AuthDB,
 			conf.HTTPD.Security.LoginExpiry,
 			conf.HTTPD.Security.SessionExpiry,
-			conf.HTTPD.Security.OTP.Login == "allow")
+			conf.HTTPD.Security.OTP.Login == "allow",
+			conf.HTTPD.Security.AdminRole)
 		if err != nil {
 			panic(fmt.Sprintf("Error instantiating auth provider (%v)", err))
 		}

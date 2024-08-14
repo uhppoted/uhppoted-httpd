@@ -20,7 +20,9 @@ func Setup(w http.ResponseWriter, r *http.Request) {
 			name = strings.TrimSpace(v)
 		}
 
-		if err := system.MakeAdminUser(name, uid, pwd); err != nil {
+		role := "admin" // FIXME use configured admin role
+
+		if err := system.MakeAdminUser(name, uid, pwd, role); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
 			http.Error(w, "Ok", http.StatusOK)
