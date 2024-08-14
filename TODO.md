@@ -6,17 +6,13 @@
 - [ ] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
       - [x] user setup page
       - [x] setup endpoint
-            - [x] not allowed if already authenticated
-            - [x] not allowed if an admin user exists
-            - [x] not allowed if an user exists
-            - [x] create admin user
-            - [x] redirect to index.html on ok
-            - [x] delete user - 'not authorised' ??
-            - [x] remove name from HTML
       - [x] rethink default user grules
       - [x] check for admin user on GET
-            - (?) configurable 'admin' role\
+            - (?) configurable 'admin' role
       - [ ] docker: add setup.html, etc
+            - [x] dev
+            - [x] ghcr
+            - [ ] compose
       - [ ] docker: update default rules to check for 'admin' role
       - [ ] --no-setup (or --setup ??)
       - [ ] Remove admin user logic in daemonize
@@ -27,7 +23,7 @@
             - should probably logout
       - [ ] CHANGELOG
       - [ ] README
-            - [ ] disclaimer: for administering a system i.e. not for use by external users
+            - [x] disclaimer: for administering a system i.e. not for use by external users
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

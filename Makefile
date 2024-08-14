@@ -187,6 +187,9 @@ docker-ghcr: build
 	rsync -av --exclude='**/html.go' httpd/html dist/docker/ghcr
 	cd dist/docker/ghcr && docker build --no-cache -f Dockerfile -t $(DOCKER) .
 
+docker-compose: 
+	cd docker && find . -name .DS_Store -delete && rm -f compose.zip && zip --recurse-paths compose.zip compose
+
 docker-run-dev:
 	docker run --publish 8888:8080 --name httpd --rm uhppoted/uhppoted-httpd-dev
 	sleep 1
@@ -195,7 +198,7 @@ docker-run-ghcr:
 	docker run --publish 8888:8080 --publish 8443:8443 --name httpd --mount source=uhppoted-httpd,target=/usr/local/etc/uhppoted --rm ghcr.io/uhppoted/httpd
 	sleep 1
 
-docker-compose:
+docker-run-compose:
 	cd docker/compose && docker compose up
 
 docker-clean:

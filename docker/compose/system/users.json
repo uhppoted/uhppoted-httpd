@@ -1,24 +1,4 @@
 {
   "users": [
-    {
-      "OID": "0.8.1",
-      "name": "David Duque",
-      "uid": "admin",
-      "role": "admin",
-      "salt": "4a3d95eec4b94c236824f75ef8305c90",
-      "password": "91b228c1595768ff35f8bce555ac089e8e64348e15110fc8ef3653fd4cf7ff67",
-      "created": "2022-02-10 18:41:48 UTC",
-      "modified": ""
-    },
-    {
-      "OID": "0.8.2",
-      "name": "Michael Mouz",
-      "uid": "user33",
-      "role": "user",
-      "salt": "abd1e9940fddb1b760843a8c7c58c5b1",
-      "password": "eedefb905d9bd8aedff997f4e229be9d0728e4e5a6b034d31c6b53becd5a74c4",
-      "created": "2022-02-10 18:42:48 UTC",
-      "modified": ""
-    }
   ]
 }

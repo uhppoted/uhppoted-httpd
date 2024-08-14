@@ -3,8 +3,9 @@
 
 # uhppoted-httpd
 
-`uhppoted-httpd` implements an HTTP server that provides a browser based user interface for an access control system based
-on UHPPOTE TCP/IP controllers. It is intended to supplement the existing command line tools and application integrations.
+`uhppoted-httpd` implements an HTTP server that provides a browser based user interface for managing an access control
+system based on UHPPOTE TCP/IP controllers. It is intended to supplement the existing command line tools and application
+integrations.
 
 ## Status
 
@@ -18,14 +19,18 @@ Supported operating systems:
 
 _CAVEAT EMPTOR_
 
-Although `uhppoted-httpd` does provide a functional and usable user interface for managing a small'ish access
+1. Although `uhppoted-httpd` does provide a functional and usable user interface for managing a small'ish access
 control system, the out-of-the-box look and feel is (deliberately) workaday, low key and plain with the intention
 of being a base for your own customisation (with your own logos, themes, functionality, etc) rather than a 
 finished, shippable product.
 
-Also, please be aware that at this stage in its career, it is primarily a testbed for validating the design and
+2. Also, please be aware that at this stage in its career, it is primarily a testbed for validating the design and
 implementation of the other `uhppoted` components when integrated into a working system. It is also intended to
 become a platform for exploring some alternative ideas around user interfaces and system architectures.
+
+3. It is intended as an adminstrative tool for use by system administrators (i.e. not card users) - it exposes far
+more functionality than is comfortable (or even safe) for untrusted users. Systems intended for use by not completely 
+trusted users should rather build on the REST and MQTT services.
 
 ## Release Notes
 
