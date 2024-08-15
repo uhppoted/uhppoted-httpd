@@ -158,7 +158,8 @@ func (b *Basic) Authorised(uid, role, path string) error {
 	return fmt.Errorf("%v not authorized for %s", uid, path)
 }
 
-func (b Basic) Options(uid, role string) options {
+// NTS: pointer required for embedded lock
+func (b *Basic) Options(uid, role string) options {
 	opts := b.auth.Options(uid, role)
 
 	return options{
@@ -172,7 +173,8 @@ func (b Basic) Options(uid, role string) options {
 	}
 }
 
-func (b Basic) AdminRole() string {
+// NTS: pointer required for embedded lock
+func (b *Basic) AdminRole() string {
 	return b.auth.AdminRole()
 }
 
