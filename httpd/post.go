@@ -149,5 +149,5 @@ func (d *dispatcher) setup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users.Setup(w, r)
+	users.Setup(w, r, d.auth)
 }

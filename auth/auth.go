@@ -34,6 +34,7 @@ type IAuthenticate interface {
 	Authenticated(token string) (string, string, string, error)
 	Invalidate(tokenType TokenType, token string) error
 	Options(uid, role string) Options
+	AdminRole() string
 }
 
 type IUser interface {

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 	"sync"
 	"time"
 
@@ -403,6 +404,14 @@ func (p *Local) Options(uid, role string) auth.Options {
 			Allowed: p.allowOTPLogin,
 			Enabled: otp.Enabled(uid, role),
 		},
+	}
+}
+
+func (p *Local) AdminRole() string {
+	if role := strings.TrimSpace(p.adminRole); role == "" {
+		return "admin"
+	} else {
+		return role
 	}
 }
 

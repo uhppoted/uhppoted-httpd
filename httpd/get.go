@@ -81,7 +81,8 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !system.HasAdmin() && path != "/sys/setup.html" {
+	role := d.auth.AdminRole()
+	if !system.HasAdmin(role) && path != "/sys/setup.html" {
 		http.Redirect(w, r, "/sys/setup.html", http.StatusFound)
 		return
 	}

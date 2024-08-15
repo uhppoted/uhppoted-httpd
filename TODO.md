@@ -8,9 +8,9 @@
       - [x] setup endpoint
       - [x] rethink default user grules
       - [x] check for admin user on GET
-            - [ ] configurable 'admin' role
-            - [ ] Users::HasAdmin        // FIXME use auth.AdminRole
-            - [ ] httpd::users::setup.go // FIXME use configured admin role
+            - [x] configurable 'admin' role
+            - [x] httpd::users::setup.go // FIXME use configured admin role
+            - [x] Users::HasAdmin        // FIXME use auth.AdminRole
       - [ ] docker: add setup.html, etc
             - [x] dev
             - [x] ghcr

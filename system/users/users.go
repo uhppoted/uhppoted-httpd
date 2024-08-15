@@ -26,9 +26,9 @@ func NewUsers() Users {
 	}
 }
 
-func (uu Users) HasAdmin() bool {
+func (uu Users) HasAdmin(role string) bool {
 	for _, v := range uu.users {
-		if strings.EqualFold(strings.TrimSpace(v.role), "admin") { // FIXME use auth.AdminRole
+		if strings.EqualFold(strings.TrimSpace(v.role), role) {
 			return true
 		}
 	}

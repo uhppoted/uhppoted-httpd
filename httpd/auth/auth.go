@@ -24,6 +24,8 @@ type IAuth interface {
 	Verify(uid, pwd string) error
 	VerifyAuthHeader(uid string, header string) error
 	Options(uid, role string) options
+
+	AdminRole() string
 }
 
 func warnf(subsystem string, format string, args ...any) {

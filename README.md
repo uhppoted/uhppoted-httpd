@@ -29,8 +29,8 @@ implementation of the other `uhppoted` components when integrated into a working
 become a platform for exploring some alternative ideas around user interfaces and system architectures.
 
 3. It is intended as an adminstrative tool for use by system administrators (i.e. not card users) - it exposes far
-more functionality than is comfortable (or even safe) for untrusted users. Systems intended for use by not completely 
-trusted users should rather build on the REST and MQTT services.
+more functionality than is comfortable (or even safe) for untrusted users. Systems intended for use by not-completely-trusted
+users should rather build on the REST and MQTT services.
 
 ## Release Notes
 

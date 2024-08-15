@@ -158,7 +158,7 @@ func (b *Basic) Authorised(uid, role, path string) error {
 	return fmt.Errorf("%v not authorized for %s", uid, path)
 }
 
-func (b *Basic) Options(uid, role string) options {
+func (b Basic) Options(uid, role string) options {
 	opts := b.auth.Options(uid, role)
 
 	return options{
@@ -170,6 +170,10 @@ func (b *Basic) Options(uid, role string) options {
 			Enabled: opts.OTP.Enabled,
 		},
 	}
+}
+
+func (b Basic) AdminRole() string {
+	return b.auth.AdminRole()
 }
 
 func (b *Basic) load(file string) error {
