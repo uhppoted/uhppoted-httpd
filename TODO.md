@@ -11,13 +11,13 @@
             - [x] configurable 'admin' role
             - [x] httpd::users::setup.go // FIXME use configured admin role
             - [x] Users::HasAdmin        // FIXME use auth.AdminRole
+      - [x] conf::httpd.security.no-setup
       - [ ] docker: add setup.html, etc
             - [x] dev
             - [x] ghcr
             - [ ] compose
       - [ ] docker: update default rules to check for 'admin' role
             - [ ] grules: isAdmin(ROLE)
-      - [ ] --no-setup (or --setup ??)
       - [ ] Remove admin user logic in daemonize
       - [ ] **deleted user can log back in***
             - check cookie uid still exists

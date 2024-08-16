@@ -41,9 +41,10 @@ type dispatcher struct {
 	timeout time.Duration
 	mode    types.RunMode
 	withPIN bool
+	noSetup bool
 }
 
-func (h *HTTPD) Run(mode types.RunMode, withPIN bool, interrupt chan os.Signal) {
+func (h *HTTPD) Run(mode types.RunMode, withPIN bool, noSetup bool, interrupt chan os.Signal) {
 	// ... initialisation
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -55,6 +56,7 @@ func (h *HTTPD) Run(mode types.RunMode, withPIN bool, interrupt chan os.Signal) 
 		timeout: h.RequestTimeout,
 		mode:    mode,
 		withPIN: withPIN,
+		noSetup: noSetup,
 	}
 
 	if h.HTML != "" {

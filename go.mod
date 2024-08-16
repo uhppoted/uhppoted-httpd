@@ -8,7 +8,7 @@ require (
 	github.com/hyperjumptech/grule-rule-engine v1.15.0
 	github.com/pquerna/otp v1.3.0
 	github.com/uhppoted/uhppote-core v0.8.9-0.20240716175228-f9eb59015579
-	github.com/uhppoted/uhppoted-lib v0.8.9-0.20240814183232-228a330a26e2
+	github.com/uhppoted/uhppoted-lib v0.8.9-0.20240816182334-96b503b2196f
 	golang.org/x/sys v0.24.0
 )
 

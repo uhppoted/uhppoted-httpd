@@ -29,7 +29,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if path == "/setup" {
+	if path == "/setup" && !d.noSetup {
 		d.setup(w, r)
 		return
 	}

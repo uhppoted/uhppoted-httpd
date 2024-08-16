@@ -81,11 +81,19 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ... setup?
 	role := d.auth.AdminRole()
-	if !system.HasAdmin(role) && path != "/sys/setup.html" {
+	if !d.noSetup && !system.HasAdmin(role) && path != "/sys/setup.html" {
 		http.Redirect(w, r, "/sys/setup.html", http.StatusFound)
 		return
 	}
+
+	if d.noSetup && path == "/sys/setup.html" {
+		http.Redirect(w, r, "/index.html", http.StatusFound)
+		return
+	}
+
+	// ... good to go apparently!
 
 	authorised := map[string]bool{}
 

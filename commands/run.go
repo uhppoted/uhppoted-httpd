@@ -186,7 +186,7 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 		panic(fmt.Errorf("could not load system configuration (%v)", err))
 	}
 
-	h.Run(runMode, conf.HTTPD.PIN.Enabled, interrupt)
+	h.Run(runMode, conf.HTTPD.PIN.Enabled, conf.HTTPD.Security.NoSetup, interrupt)
 }
 
 func cleanup(cfg config.Config) {
