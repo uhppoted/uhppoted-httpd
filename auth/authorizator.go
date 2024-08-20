@@ -39,9 +39,19 @@ type ruleset struct {
 
 var grules = struct {
 	ruleset map[RuleSet]ruleset
+	roles   struct {
+		admin string
+	}
+
 	sync.RWMutex
 }{
 	ruleset: map[RuleSet]ruleset{},
+
+	roles: struct {
+		admin string
+	}{
+		admin: "admin",
+	},
 }
 
 var ErrUnauthorised = errors.New("not authorised")
@@ -49,7 +59,7 @@ var ErrUnauthorised = errors.New("not authorised")
 //go:embed grules
 var GRULES embed.FS
 
-func Init(rules map[RuleSet]string) error {
+func Init(rules map[RuleSet]string, adminRole string) error {
 	grules.Lock()
 	defer grules.Unlock()
 
@@ -94,6 +104,8 @@ func Init(rules map[RuleSet]string) error {
 			}
 		}
 	}
+
+	grules.roles.admin = adminRole
 
 	return nil
 }
@@ -278,6 +290,10 @@ func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]
 	}
 
 	if err := context.Add("OP", op); err != nil {
+		return err
+	}
+
+	if err := context.Add("ADMIN", grules.roles.admin); err != nil {
 		return err
 	}
 

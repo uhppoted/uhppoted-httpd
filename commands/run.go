@@ -150,7 +150,7 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 		panic(err)
 	}
 
-	provider.Init(map[provider.RuleSet]string{
+	ruleset := map[provider.RuleSet]string{
 		provider.Interfaces:  conf.HTTPD.DB.Rules.Interfaces,
 		provider.Controllers: conf.HTTPD.DB.Rules.Controllers,
 		provider.Doors:       conf.HTTPD.DB.Rules.Doors,
@@ -159,7 +159,9 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 		provider.Events:      conf.HTTPD.DB.Rules.Events,
 		provider.Logs:        conf.HTTPD.DB.Rules.Logs,
 		provider.Users:       conf.HTTPD.DB.Rules.Users,
-	})
+	}
+
+	provider.Init(ruleset, conf.HTTPD.Security.AdminRole)
 
 	// ... initialise OTP
 
