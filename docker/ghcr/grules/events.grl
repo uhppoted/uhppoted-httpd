@@ -8,7 +8,7 @@ rule ViewEvent "(allowed)" {
 
 rule AddEvent "(allowed)" {
      when
-         OP == "add::event"
+         OP == "add::event" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("AddEvent");
@@ -16,7 +16,7 @@ rule AddEvent "(allowed)" {
 
 rule UpdateEvent "(allowed)" {
      when
-         OP == "update::event"
+         OP == "update::event" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("UpdateEvent");
@@ -24,7 +24,7 @@ rule UpdateEvent "(allowed)" {
 
 rule DeleteEvent "(allowed)" {
      when
-         OP == "delete::event"
+         OP == "delete::event" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("DeleteEvent");

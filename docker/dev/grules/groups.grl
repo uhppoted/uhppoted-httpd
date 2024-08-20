@@ -8,7 +8,7 @@ rule ViewGroup "(allowed)" {
 
 rule AddGroup "(allowed)" {
      when
-         OP == "add::group"
+         OP == "add::group" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("AddGroup");
@@ -16,7 +16,7 @@ rule AddGroup "(allowed)" {
 
 rule UpdateGroup "(allowed)" {
      when
-         OP == "update::group"
+         OP == "update::group" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("UpdateGroup");
@@ -24,7 +24,7 @@ rule UpdateGroup "(allowed)" {
 
 rule DeleteGroup "(allowed)" {
      when
-         OP == "delete::group"
+         OP == "delete::group" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("DeleteGroup");

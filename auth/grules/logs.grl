@@ -8,7 +8,7 @@ rule ViewLog "(allowed)" {
 
 rule AddLog "(allowed)" {
      when
-         OP == "add::log"
+         OP == "add::log" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("AddLog");
@@ -16,7 +16,7 @@ rule AddLog "(allowed)" {
 
 rule UpdateLog "(allowed)" {
      when
-         OP == "update::log"
+         OP == "update::log" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("UpdateLog");
@@ -24,7 +24,7 @@ rule UpdateLog "(allowed)" {
 
 rule DeleteLog "(allowed)" {
      when
-         OP == "delete::log"
+         OP == "delete::log" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("DeleteLog");

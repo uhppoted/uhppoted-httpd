@@ -8,7 +8,7 @@ rule ViewInterface "(allowed)" {
 
 rule AddInterface "(allowed)" {
      when
-         OP == "add::interface"
+         OP == "add::interface" && ROLE == ADMIN
      then
          RESULT.Revoke = true;
          Retract("AddInterface");
@@ -16,7 +16,7 @@ rule AddInterface "(allowed)" {
 
 rule UpdateLAN "(allowed)" {
      when
-         OP == "update::lan"
+         OP == "update::lan" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("UpdateLAN");
@@ -24,7 +24,7 @@ rule UpdateLAN "(allowed)" {
 
 rule DeleteInterface "(allowed)" {
      when
-         OP == "delete::interface"
+         OP == "delete::interface" && ROLE == ADMIN
      then
          RESULT.Revoke = true;
          Retract("DeleteInterface");

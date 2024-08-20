@@ -8,7 +8,7 @@ rule ViewController "(allowed)" {
 
 rule AddController "(allowed)" {
      when
-         OP == "add::controller"
+         OP == "add::controller" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("AddController");
@@ -16,7 +16,7 @@ rule AddController "(allowed)" {
 
 rule UpdateController "(allowed)" {
      when
-         OP == "update::controller"
+         OP == "update::controller" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("UpdateController");
@@ -24,7 +24,7 @@ rule UpdateController "(allowed)" {
 
 rule DeleteController "(allowed)" {
      when
-         OP == "delete::controller"
+         OP == "delete::controller" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("DeleteController");

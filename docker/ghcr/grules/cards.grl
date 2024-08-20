@@ -8,7 +8,7 @@ rule ViewCard "(allowed)" {
 
 rule AddCard "(allowed)" {
      when
-         OP == "add::card"
+         OP == "add::card" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("AddCard");
@@ -16,7 +16,7 @@ rule AddCard "(allowed)" {
 
 rule UpdateCard "(allowed)" {
      when
-         OP == "update::card"
+         OP == "update::card" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("UpdateCard");
@@ -24,7 +24,7 @@ rule UpdateCard "(allowed)" {
 
 rule DeleteCard "(allowed)" {
      when
-         OP == "delete::card"
+         OP == "delete::card" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("DeleteCard");

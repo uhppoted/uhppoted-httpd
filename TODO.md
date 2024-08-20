@@ -10,7 +10,7 @@
       - [x] check for admin user on GET
       - [x] conf::httpd.security.no-setup
       - [x] grules: isAdmin(ROLE)
-      - [ ] docker: update default rules to check for 'admin' role
+      - [x] docker: update default rules to check for 'admin' role
       - [ ] docker: add setup.html, etc
             - [x] dev
             - [x] ghcr
@@ -24,6 +24,7 @@
       - [ ] CHANGELOG
       - [ ] README
             - [x] disclaimer: for administering a system i.e. not for use by external users
+            - [ ] Note on changing admin user - update auth.json
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

@@ -8,7 +8,7 @@ rule ViewDoor "(allowed)" {
 
 rule AddDoor "(allowed)" {
      when
-         OP == "add::door"
+         OP == "add::door" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("AddDoor");
@@ -16,7 +16,7 @@ rule AddDoor "(allowed)" {
 
 rule UpdateDoor "(allowed)" {
      when
-         OP == "update::door"
+         OP == "update::door" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("UpdateDoor");
@@ -24,7 +24,7 @@ rule UpdateDoor "(allowed)" {
 
 rule DeleteDoor "(allowed)" {
      when
-         OP == "delete::door"
+         OP == "delete::door" && ROLE == ADMIN
      then
          RESULT.Allow = true;
          Retract("DeleteDoor");
