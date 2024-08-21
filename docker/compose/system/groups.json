@@ -1,98 +1,40 @@
 {
   "groups": [
     {
-      "OID": "0.5.7",
-      "name": "Slytherin",
-      "doors": [
-        "0.3.8"
-      ],
-      "created": "2021-09-06 19:01:27 UTC",
-      "modified": "2022-05-20 15:54:52 UTC"
-    },
-    {
-      "OID": "0.5.6",
-      "name": "Ravenclaw",
-      "doors": [
-        "0.3.7"
-      ],
-      "created": "2021-09-06 19:00:27 UTC",
-      "modified": "2022-05-20 15:54:52 UTC"
-    },
-    {
-      "OID": "0.5.10",
-      "name": "Pet",
-      "doors": [
-        "0.3.1",
-        "0.3.2"
-      ],
-      "created": "2021-09-06 18:55:27 UTC",
-      "modified": ""
-    },
-    {
-      "OID": "0.5.9",
-      "name": "Muggle",
-      "doors": [
-        "0.3.4"
-      ],
-      "created": "2021-09-06 19:03:27 UTC",
-      "modified": "2022-06-07 16:49:03 UTC"
-    },
-    {
       "OID": "0.5.1",
-      "name": "Teacher",
-      "doors": [
-        "0.3.4",
-        "0.3.1"
-      ],
-      "created": "2021-09-06 18:54:27 UTC",
-      "modified": ""
-    },
-    {
-      "OID": "0.5.8",
-      "name": "Mage",
-      "doors": [
-        "0.3.3"
-      ],
-      "created": "2021-09-06 19:02:27 UTC",
-      "modified": "2022-05-20 15:54:52 UTC"
-    },
-    {
-      "OID": "0.5.4",
       "name": "Gryffindor",
       "doors": [
-        "0.3.5"
+        "0.3.1"
       ],
       "created": "2021-09-06 18:58:27 UTC",
       "modified": ""
     },
     {
       "OID": "0.5.2",
-      "name": "Staff",
+      "name": "Ravenclaw",
       "doors": [
-        "0.3.2",
-        "0.3.4",
-        "0.3.1"
+        "0.3.2"
       ],
-      "created": "2021-09-06 18:56:27 UTC",
-      "modified": ""
+      "created": "2021-09-06 19:00:27 UTC",
+      "modified": "2022-05-20 15:54:52 UTC"
     },
     {
-      "OID": "0.5.5",
+      "OID": "0.5.3",
       "name": "Hufflepuff",
       "doors": [
-        "0.3.6"
+        "0.3.3"
       ],
       "created": "2021-09-06 18:59:27 UTC",
       "modified": "2022-05-19 18:21:29 UTC"
     },
     {
-      "OID": "0.5.3",
-      "name": "Student",
+      "OID": "0.5.4",
+      "name": "Slytherin",
       "doors": [
-        "0.3.1"
+        "0.3.4"
       ],
-      "created": "2021-09-06 18:57:27 UTC",
-      "modified": ""
+      "created": "2021-09-06 19:01:27 UTC",
+      "modified": "2022-05-20 15:54:52 UTC"
     }
   ]
 }

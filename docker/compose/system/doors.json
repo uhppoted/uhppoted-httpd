@@ -1,39 +1,7 @@
 {
   "doors": [
     {
-      "OID": "0.3.2",
-      "name": "Kitchen",
-      "delay": 5,
-      "mode": "controlled",
-      "created": "2023-03-02 17:53:37 UTC",
-      "modified": "2023-09-25 18:34:41 UTC"
-    },
-    {
-      "OID": "0.3.7",
-      "name": "Slytherin",
-      "delay": 5,
-      "mode": "controlled",
-      "created": "2023-03-02 17:54:51 UTC",
-      "modified": "2023-07-12 18:23:33 UTC"
-    },
-    {
-      "OID": "0.3.3",
-      "name": "Dungeon",
-      "delay": 5,
-      "mode": "controlled",
-      "created": "2023-03-02 17:53:42 UTC",
-      "modified": "2023-09-25 18:18:35 UTC"
-    },
-    {
-      "OID": "0.3.6",
-      "name": "Ravensclaw",
-      "delay": 5,
-      "mode": "controlled",
-      "created": "2023-03-02 17:54:44 UTC",
-      "modified": "2023-03-02 17:54:49 UTC"
-    },
-    {
-      "OID": "0.3.4",
+      "OID": "0.3.1",
       "name": "Gryffindor ",
       "delay": 5,
       "mode": "controlled",
@@ -42,7 +10,15 @@
       "modified": "2023-07-12 18:25:27 UTC"
     },
     {
-      "OID": "0.3.5",
+      "OID": "0.3.2",
+      "name": "Ravensclaw",
+      "delay": 5,
+      "mode": "controlled",
+      "created": "2023-03-02 17:54:44 UTC",
+      "modified": "2023-03-02 17:54:49 UTC"
+    },
+    {
+      "OID": "0.3.3",
       "name": "Hufflepuff",
       "delay": 5,
       "mode": "controlled",
@@ -50,21 +26,12 @@
       "modified": "2023-03-02 17:54:42 UTC"
     },
     {
-      "OID": "0.3.8",
-      "name": "Hogsmeade",
+      "OID": "0.3.4",
+      "name": "Slytherin",
       "delay": 5,
       "mode": "controlled",
-      "keypad": true,
-      "created": "2023-03-02 17:54:58 UTC",
-      "modified": "2023-07-12 18:25:39 UTC"
-    },
-    {
-      "OID": "0.3.1",
-      "name": "Great Hall",
-      "delay": 5,
-      "mode": "controlled",
-      "created": "2023-03-02 17:53:00 UTC",
-      "modified": "2023-09-25 18:49:54 UTC"
+      "created": "2023-03-02 17:54:51 UTC",
+      "modified": "2023-07-12 18:23:33 UTC"
     }
   ]
 }
