@@ -4,7 +4,7 @@
 
 ### Added
 1. Implemented TCP/IP transport support.
-2. On startup, defers to 'setup' page to create an admin user if none exists.
+2. On startup, redirects to 'setup' page to create an admin user if none exists.
 
 ### Updated
 1. Removed creation of admin user in _daemonize_.

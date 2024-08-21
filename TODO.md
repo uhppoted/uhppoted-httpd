@@ -18,9 +18,9 @@
             - [ ] rebuild compose with latest ghcr
       - [x] Remove admin user logic in daemonize
       - [x] CHANGELOG
-      - [ ] README
-            - [x] disclaimer: for administering a system i.e. not for use by external users
-            - [ ] Note on changing admin user - update auth.json
+      - [x] README
+            - [x] Disclaimer: for administering a system i.e. not for use by external users
+            - [x] Note on changing admin user - update auth.json
 
 - [ ] Deleting current user - remains logged in and can log back in (cf. https://github.com/uhppoted/uhppoted-httpd/issues/42)
       - should probably logout

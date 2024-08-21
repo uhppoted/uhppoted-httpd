@@ -19,18 +19,22 @@ Supported operating systems:
 
 _CAVEAT EMPTOR_
 
-1. Although `uhppoted-httpd` does provide a functional and usable user interface for managing a small'ish access
-control system, the out-of-the-box look and feel is (deliberately) workaday, low key and plain with the intention
-of being a base for your own customisation (with your own logos, themes, functionality, etc) rather than a 
-finished, shippable product.
+1. Although _uhppoted-httpd_ does provide a functional and usable user interface for managing a small'ish access
+   control system, the out-of-the-box look and feel is (deliberately) workaday, low key and plain with the intention
+   of being a base for your own customisation (with your own logos, themes, functionality, etc) rather than a 
+   finished, shippable product.
 
 2. Also, please be aware that at this stage in its career, it is primarily a testbed for validating the design and
-implementation of the other `uhppoted` components when integrated into a working system. It is also intended to
-become a platform for exploring some alternative ideas around user interfaces and system architectures.
+   implementation of the other `uhppoted` components when integrated into a working system. It is also intended to
+   become a platform for exploring some alternative ideas around user interfaces and system architectures.
 
 3. It is intended as an adminstrative tool for use by system administrators (i.e. not card users) - it exposes far
-more functionality than is comfortable (or even safe) for untrusted users. Systems intended for use by not-completely-trusted
-users should rather build on the REST and MQTT services.
+   more functionality than is comfortable (or even safe) for untrusted users. Systems intended for use 
+   by not-completely-trusted users should rather build on the REST and MQTT services.
+
+4. By default, _uhppoted-httpd_ redirects to a _setup_ page to create an _admin_ user if none exists. This behaviour
+   can (and should) be disabled by setting the _httpd.security.no-setup_ config value to `true` in _uhppoted.conf_
+   once an _admin_ user has been created.
 
 ## Release Notes
 
@@ -289,6 +293,15 @@ The system data is (currently) stored as a set of JSON files, described (https:/
    OTP is a convenient alternative using something like e.g. Google Authenticator. Please note that is is less secure than
    using password-only access (of necessity, OTP secret keys are stored in plaintext on the server) so OTP should only be
    enabled if the server is secured.
+
+2. At login, `uhppoted-http` will automatically redirect to a _setup_ page to create an _admin_ user if one does not already 
+   exist (this supersedes the automatic creation of the default _admin_ user by _daemonize_). Although enabled by default,
+   this behaviour can (and should) be disabled by setting the _httpd.security.no-setup_ config value to `true` in _uhppoted.conf_
+   once an _admin_ user has been created.
+
+3. The _admin_ role is configurable by setting the _httpd.security.admin.role_ value in _uhppoted.conf_ (it defaults to _admin_).
+   Changing the _admin_ role requires the _auth.json_ file to be updated with the new role.
+
 
 
 
