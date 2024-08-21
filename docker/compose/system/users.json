@@ -1,13 +1,4 @@
 {
   "users": [
-    {
-      "OID": "0.8.1",
-      "uid": "wild",
-      "role": "admin",
-      "salt": "ed7a07b5e7b9d3b138dcd2e3b0a41f0e",
-      "password": "bb2daf87d5a8c47b47ed7cbcd8a1f28f8b4f8d825f1e8cbb318468adf39dfaa7",
-      "created": "2024-08-21 19:10:14 UTC",
-      "modified": ""
-    }
   ]
 }
