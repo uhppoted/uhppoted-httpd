@@ -900,6 +900,30 @@ tr.controller td input.IP {
   width: 112px;
 }
 
+tr.controller td label.protocol input[type=checkbox] {
+  display: none;
+}
+tr.controller td label.protocol img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  margin: auto;
+}
+tr.controller td label.protocol img.yes {
+  display: none;
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
+}
+tr.controller td label.protocol img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+tr.controller td label.protocol input[type=checkbox]:checked ~ img.yes {
+  display: block;
+}
+tr.controller td label.protocol input[type=checkbox]:checked ~ img.no {
+  display: none;
+}
+
 tr.controller td input.datetime {
   min-width: 176px;
 }

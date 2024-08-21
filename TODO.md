@@ -3,7 +3,7 @@
 - [x] `EndPoint() *net.UDPAddr
 - [x] FIX controller addresses
 - [x] TCP transport (cf. https://github.com/uhppoted/uhppote-core/issues/17)
-- [ ] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
+- [x] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
       - [x] user setup page
       - [x] setup endpoint
       - [x] rethink default user grules
@@ -11,11 +11,10 @@
       - [x] conf::httpd.security.no-setup
       - [x] grules: isAdmin(ROLE)
       - [x] docker: update default rules to check for 'admin' role
-      - [ ] docker: add setup.html, etc
+      - [x] docker: add setup.html, etc
             - [x] dev
             - [x] ghcr
             - [x] compose
-            - [ ] rebuild compose with latest ghcr
       - [x] Remove admin user logic in daemonize
       - [x] CHANGELOG
       - [x] README

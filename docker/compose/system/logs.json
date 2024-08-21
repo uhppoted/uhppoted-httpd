@@ -1,24 +1,14 @@
 {
   "logs": [
     {
-      "timestamp": "2023-06-07T13:06:22.103971-07:00",
+      "timestamp": "2023-07-12T11:05:07.727339-07:00",
       "UID": "admin",
-      "OID": "0.7.53",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "interlock",
-      "details": "Updated interlock from '2' to '1'"
-    },
-    {
-      "timestamp": "2023-03-02T09:54:57.402759-08:00",
-      "UID": "admin",
-      "OID": "0.7.15",
+      "OID": "0.7.70",
       "item": "door",
-      "id": "0/0",
-      "name": "",
-      "field": "name",
-      "details": "Updated name from  to Slytherin"
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "keypad",
+      "details": "Updated keypad from true to false"
     },
     {
       "timestamp": "2023-03-02T09:55:22.511896-08:00",
@@ -31,24 +21,34 @@
       "details": "Updated door:4 from '' to '0.3.8'"
     },
     {
-      "timestamp": "2023-07-12T10:53:27.707991-07:00",
+      "timestamp": "2023-03-02T09:55:22.510586-08:00",
       "UID": "admin",
-      "OID": "0.7.69",
+      "OID": "0.7.19",
+      "item": "controller",
+      "id": "405419896",
+      "name": "Alpha",
+      "field": "door:3",
+      "details": "Updated door:3 from '' to '0.3.3'"
+    },
+    {
+      "timestamp": "2023-09-25T11:01:23.014652-07:00",
+      "UID": "admin",
+      "OID": "0.7.107",
       "item": "door",
       "id": "405419896/1",
       "name": "Great Hall",
-      "field": "door",
-      "details": "Activate keypad for Great Hall"
+      "field": "passcodes",
+      "details": "Updated passcodes"
     },
     {
-      "timestamp": "2023-03-02T11:48:54.731805-08:00",
+      "timestamp": "2023-07-12T10:53:27.705101-07:00",
       "UID": "admin",
-      "OID": "0.7.46",
-      "item": "card",
-      "id": "8165539",
-      "name": "Dumbledore",
-      "field": "to",
-      "details": "Updated VALID UNTIL date from  to 2023-12-31"
+      "OID": "0.7.68",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "keypad",
+      "details": "Updated keypad from false to true"
     },
     {
       "timestamp": "2023-07-12T10:48:44.607186-07:00",
@@ -61,64 +61,44 @@
       "details": "Deactivated keypad for Great Hall"
     },
     {
-      "timestamp": "2023-03-02T09:55:35.21732-08:00",
+      "timestamp": "2023-03-02T11:48:54.731805-08:00",
       "UID": "admin",
-      "OID": "0.7.24",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "door:4",
-      "details": "Updated door:4 from '' to '0.3.7'"
-    },
-    {
-      "timestamp": "2023-03-02T11:48:54.728634-08:00",
-      "UID": "admin",
-      "OID": "0.7.45",
+      "OID": "0.7.46",
       "item": "card",
       "id": "8165539",
       "name": "Dumbledore",
-      "field": "from",
-      "details": "Updated VALID FROM date from  to 2023-01-01"
+      "field": "to",
+      "details": "Updated VALID UNTIL date from  to 2023-12-31"
     },
     {
-      "timestamp": "2023-03-02T09:55:22.510586-08:00",
+      "timestamp": "2023-03-02T09:54:57.402759-08:00",
       "UID": "admin",
-      "OID": "0.7.19",
-      "item": "controller",
-      "id": "405419896",
-      "name": "Alpha",
-      "field": "door:3",
-      "details": "Updated door:3 from '' to '0.3.3'"
-    },
-    {
-      "timestamp": "2023-03-02T09:53:08.481886-08:00",
-      "UID": "admin",
-      "OID": "0.7.9",
+      "OID": "0.7.15",
       "item": "door",
       "id": "0/0",
       "name": "",
       "field": "name",
-      "details": "Updated name from  to Great Hall"
+      "details": "Updated name from  to Slytherin"
     },
     {
-      "timestamp": "2023-07-12T11:25:27.848173-07:00",
+      "timestamp": "2023-07-12T11:23:34.007675-07:00",
       "UID": "admin",
-      "OID": "0.7.95",
+      "OID": "0.7.88",
       "item": "door",
-      "id": "303986753/1",
-      "name": "Gryffindor ",
-      "field": "door",
-      "details": "Activate keypad for Gryffindor "
-    },
-    {
-      "timestamp": "2023-07-12T11:23:16.906093-07:00",
-      "UID": "admin",
-      "OID": "0.7.80",
-      "item": "door",
-      "id": "405419896/2",
-      "name": "Kitchen",
+      "id": "303986753/4",
+      "name": "Slytherin",
       "field": "keypad",
-      "details": "Updated keypad from false to true"
+      "details": "Updated keypad from true to false"
+    },
+    {
+      "timestamp": "2023-02-13T14:45:24.420373-08:00",
+      "UID": "admin",
+      "OID": "0.7.4",
+      "item": "controller",
+      "id": "0",
+      "name": "Alpha",
+      "field": "name",
+      "details": "Updated name from '' to 'Alpha'"
     },
     {
       "timestamp": "2023-07-12T11:23:25.140552-07:00",
@@ -131,6 +111,36 @@
       "details": "Activate keypad for Slytherin"
     },
     {
+      "timestamp": "2023-03-02T09:56:31.250328-08:00",
+      "UID": "admin",
+      "OID": "0.7.31",
+      "item": "card",
+      "id": "8165537",
+      "name": "Harry",
+      "field": "group",
+      "details": "Granted access to Gryffindor"
+    },
+    {
+      "timestamp": "2023-07-12T11:25:27.844955-07:00",
+      "UID": "admin",
+      "OID": "0.7.94",
+      "item": "door",
+      "id": "303986753/1",
+      "name": "Gryffindor ",
+      "field": "keypad",
+      "details": "Updated keypad from false to true"
+    },
+    {
+      "timestamp": "2023-03-02T09:52:12.115016-08:00",
+      "UID": "admin",
+      "OID": "0.7.7",
+      "item": "controller",
+      "id": "405419896",
+      "name": "Alpha",
+      "field": "name",
+      "details": "Updated name from '' to 'Alpha'"
+    },
+    {
       "timestamp": "2023-03-02T10:44:17.234277-08:00",
       "UID": "admin",
       "OID": "0.7.37",
@@ -139,6 +149,276 @@
       "name": "Harry",
       "field": "to",
       "details": "Updated VALID UNTIL date from  to 2023-12-31"
+    },
+    {
+      "timestamp": "2023-06-07T13:11:55.007503-07:00",
+      "UID": "admin",
+      "OID": "0.7.58",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "interlock",
+      "details": "Updated interlock from '3\u00264' to '1\u00262\u00263\u00264'"
+    },
+    {
+      "timestamp": "2023-06-07T13:11:50.87854-07:00",
+      "UID": "admin",
+      "OID": "0.7.57",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "interlock",
+      "details": "Updated interlock from '1\u00262\u00263' to '3\u00264'"
+    },
+    {
+      "timestamp": "2023-03-02T11:28:49.119625-08:00",
+      "UID": "admin",
+      "OID": "0.7.41",
+      "item": "card",
+      "id": "8165537",
+      "name": "Harry",
+      "field": "pin",
+      "details": "Updated card PIN"
+    },
+    {
+      "timestamp": "2023-03-02T09:55:03.548852-08:00",
+      "UID": "admin",
+      "OID": "0.7.16",
+      "item": "door",
+      "id": "0/0",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from  to Hogsmeade"
+    },
+    {
+      "timestamp": "2023-07-12T10:22:54.462111-07:00",
+      "UID": "admin",
+      "OID": "0.7.61",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "door",
+      "details": "Deactivated keypad for Great Hall"
+    },
+    {
+      "timestamp": "2023-03-02T09:54:49.906224-08:00",
+      "UID": "admin",
+      "OID": "0.7.14",
+      "item": "door",
+      "id": "0/0",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from  to Ravensclaw"
+    },
+    {
+      "timestamp": "2023-07-12T11:24:20.580009-07:00",
+      "UID": "admin",
+      "OID": "0.7.91",
+      "item": "door",
+      "id": "405419896/4",
+      "name": "Hogsmeade",
+      "field": "door",
+      "details": "Activate keypad for Hogsmeade"
+    },
+    {
+      "timestamp": "2023-07-12T10:53:27.707991-07:00",
+      "UID": "admin",
+      "OID": "0.7.69",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "door",
+      "details": "Activate keypad for Great Hall"
+    },
+    {
+      "timestamp": "2023-06-07T13:09:08.898814-07:00",
+      "UID": "admin",
+      "OID": "0.7.54",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "interlock",
+      "details": "Updated interlock from '1\u00262' to '1\u00262'"
+    },
+    {
+      "timestamp": "2023-07-12T11:23:34.004683-07:00",
+      "UID": "admin",
+      "OID": "0.7.87",
+      "item": "door",
+      "id": "405419896/2",
+      "name": "Kitchen",
+      "field": "door",
+      "details": "Deactivated keypad for Kitchen"
+    },
+    {
+      "timestamp": "2023-07-12T11:23:16.909026-07:00",
+      "UID": "admin",
+      "OID": "0.7.81",
+      "item": "door",
+      "id": "405419896/2",
+      "name": "Kitchen",
+      "field": "door",
+      "details": "Activate keypad for Kitchen"
+    },
+    {
+      "timestamp": "2023-03-02T09:55:35.214521-08:00",
+      "UID": "admin",
+      "OID": "0.7.22",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "door:2",
+      "details": "Updated door:2 from '' to '0.3.5'"
+    },
+    {
+      "timestamp": "2023-03-02T09:56:10.441755-08:00",
+      "UID": "admin",
+      "OID": "0.7.25",
+      "item": "card",
+      "id": "8165539",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from '' to 'Dumbledore'"
+    },
+    {
+      "timestamp": "2023-03-02T10:36:13.296703-08:00",
+      "UID": "admin",
+      "OID": "0.7.35",
+      "item": "card",
+      "id": "8165537",
+      "name": "Harry",
+      "field": "pin",
+      "details": "Updated card PIN"
+    },
+    {
+      "timestamp": "2023-03-03T11:46:11.701448-08:00",
+      "UID": "admin",
+      "OID": "0.7.48",
+      "item": "card",
+      "id": "8165537",
+      "name": "Harryx",
+      "field": "name",
+      "details": "Updated name from 'Harryx' to 'Harry'"
+    },
+    {
+      "timestamp": "2023-03-02T11:25:55.619344-08:00",
+      "UID": "admin",
+      "OID": "0.7.40",
+      "item": "card",
+      "id": "8165537",
+      "name": "Harry",
+      "field": "pin",
+      "details": "Updated card PIN"
+    },
+    {
+      "timestamp": "2023-08-01T09:38:08.663789-07:00",
+      "UID": "admin",
+      "OID": "0.7.100",
+      "item": "controller",
+      "id": "303986753",
+      "name": "BetaX",
+      "field": "name",
+      "details": "Updated name from 'Beta' to 'BetaX'"
+    },
+    {
+      "timestamp": "2023-09-25T11:34:34.323341-07:00",
+      "UID": "admin",
+      "OID": "0.7.111",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "passcodes",
+      "details": "Updated passcodes"
+    },
+    {
+      "timestamp": "2023-03-03T11:46:03.892607-08:00",
+      "UID": "admin",
+      "OID": "0.7.47",
+      "item": "card",
+      "id": "8165537",
+      "name": "Harry",
+      "field": "name",
+      "details": "Updated name from 'Harry' to 'Harryx'"
+    },
+    {
+      "timestamp": "2023-07-12T11:25:27.848173-07:00",
+      "UID": "admin",
+      "OID": "0.7.95",
+      "item": "door",
+      "id": "303986753/1",
+      "name": "Gryffindor ",
+      "field": "door",
+      "details": "Activate keypad for Gryffindor "
+    },
+    {
+      "timestamp": "2023-07-12T10:24:45.366601-07:00",
+      "UID": "admin",
+      "OID": "0.7.62",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "keypad",
+      "details": "Updated keypad from false to false"
+    },
+    {
+      "timestamp": "2023-07-12T11:24:20.576476-07:00",
+      "UID": "admin",
+      "OID": "0.7.90",
+      "item": "door",
+      "id": "405419896/4",
+      "name": "Hogsmeade",
+      "field": "keypad",
+      "details": "Updated keypad from false to true"
+    },
+    {
+      "timestamp": "2023-07-12T11:23:34.00121-07:00",
+      "UID": "admin",
+      "OID": "0.7.86",
+      "item": "door",
+      "id": "405419896/2",
+      "name": "Kitchen",
+      "field": "keypad",
+      "details": "Updated keypad from true to false"
+    },
+    {
+      "timestamp": "2023-03-02T09:56:10.445077-08:00",
+      "UID": "admin",
+      "OID": "0.7.27",
+      "item": "card",
+      "id": "8165538",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from '' to 'Hermione'"
+    },
+    {
+      "timestamp": "2023-06-07T12:58:18.219602-07:00",
+      "UID": "admin",
+      "OID": "0.7.52",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "interlock",
+      "details": "Updated interlock from '1' to '2'"
+    },
+    {
+      "timestamp": "2023-03-02T09:53:00.395498-08:00",
+      "UID": "admin",
+      "OID": "0.7.8",
+      "item": "door",
+      "id": "0/0",
+      "name": "",
+      "field": "door",
+      "details": "Added 'new' door"
+    },
+    {
+      "timestamp": "2023-02-13T14:45:14.098131-08:00",
+      "UID": "admin",
+      "OID": "0.7.3",
+      "item": "controller",
+      "id": "0",
+      "name": "",
+      "field": "controller",
+      "details": "Added 'new' controller"
     },
     {
       "timestamp": "2023-09-25T11:31:11.988901-07:00",
@@ -151,22 +431,252 @@
       "details": "Updated passcodes"
     },
     {
-      "timestamp": "2023-03-02T09:56:31.250328-08:00",
+      "timestamp": "2023-03-02T10:44:17.231668-08:00",
       "UID": "admin",
-      "OID": "0.7.31",
+      "OID": "0.7.36",
+      "item": "card",
+      "id": "8165537",
+      "name": "Harry",
+      "field": "from",
+      "details": "Updated VALID FROM date from  to 2023-01-01"
+    },
+    {
+      "timestamp": "2023-07-12T10:30:00.275004-07:00",
+      "UID": "admin",
+      "OID": "0.7.65",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "door",
+      "details": "Activate keypad for Great Hall"
+    },
+    {
+      "timestamp": "2023-03-02T09:56:31.251822-08:00",
+      "UID": "admin",
+      "OID": "0.7.32",
+      "item": "card",
+      "id": "8165538",
+      "name": "Hermione",
+      "field": "group",
+      "details": "Granted access to Student"
+    },
+    {
+      "timestamp": "2023-03-02T11:48:39.723478-08:00",
+      "UID": "admin",
+      "OID": "0.7.44",
+      "item": "card",
+      "id": "8165538",
+      "name": "Hermione",
+      "field": "to",
+      "details": "Updated VALID UNTIL date from  to 2023-12-31"
+    },
+    {
+      "timestamp": "2023-03-02T11:32:19.893668-08:00",
+      "UID": "admin",
+      "OID": "0.7.42",
+      "item": "card",
+      "id": "8165537",
+      "name": "Harry",
+      "field": "pin",
+      "details": "Updated card PIN"
+    },
+    {
+      "timestamp": "2023-03-02T11:25:45.157897-08:00",
+      "UID": "admin",
+      "OID": "0.7.38",
+      "item": "card",
+      "id": "8165537",
+      "name": "Harry",
+      "field": "name",
+      "details": "Updated name from 'Harry' to 'HarryX'"
+    },
+    {
+      "timestamp": "2024-08-21T19:10:14.9421684Z",
+      "UID": "",
+      "OID": "0.7.116",
+      "item": "user",
+      "id": "wild",
+      "name": "",
+      "field": "user",
+      "details": "Added 'admin' user"
+    },
+    {
+      "timestamp": "2023-08-01T09:13:32.792641-07:00",
+      "UID": "admin",
+      "OID": "0.7.98",
+      "item": "controller",
+      "id": "303986753",
+      "name": "BetaX",
+      "field": "name",
+      "details": "Updated name from 'Beta' to 'BetaX'"
+    },
+    {
+      "timestamp": "2023-03-02T09:56:31.255437-08:00",
+      "UID": "admin",
+      "OID": "0.7.34",
+      "item": "card",
+      "id": "8165538",
+      "name": "Hermione",
+      "field": "group",
+      "details": "Granted access to Mage"
+    },
+    {
+      "timestamp": "2023-08-01T09:38:28.290373-07:00",
+      "UID": "admin",
+      "OID": "0.7.101",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "name",
+      "details": "Updated name from 'BetaX' to 'Beta'"
+    },
+    {
+      "timestamp": "2023-07-12T10:22:54.459098-07:00",
+      "UID": "admin",
+      "OID": "0.7.60",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "keypad",
+      "details": "Updated keypad from false to false"
+    },
+    {
+      "timestamp": "2023-09-25T11:04:19.388377-07:00",
+      "UID": "admin",
+      "OID": "0.7.108",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "passcodes",
+      "details": "Updated passcodes"
+    },
+    {
+      "timestamp": "2023-09-25T11:49:54.826009-07:00",
+      "UID": "admin",
+      "OID": "0.7.113",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "passcodes",
+      "details": "Updated passcodes"
+    },
+    {
+      "timestamp": "2023-06-07T12:31:59.511937-07:00",
+      "UID": "admin",
+      "OID": "0.7.49",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "interlock",
+      "details": "Updated interlock from '0' to '1'"
+    },
+    {
+      "timestamp": "2023-07-12T11:23:25.134605-07:00",
+      "UID": "admin",
+      "OID": "0.7.83",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "door",
+      "details": "Activate keypad for Great Hall"
+    },
+    {
+      "timestamp": "2023-03-02T09:56:31.245939-08:00",
+      "UID": "admin",
+      "OID": "0.7.28",
+      "item": "card",
+      "id": "8165539",
+      "name": "Dumbledore",
+      "field": "group",
+      "details": "Granted access to Teacher"
+    },
+    {
+      "timestamp": "2023-03-02T09:54:27.692746-08:00",
+      "UID": "admin",
+      "OID": "0.7.12",
+      "item": "door",
+      "id": "0/0",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from  to Gryffindor "
+    },
+    {
+      "timestamp": "2023-08-01T09:10:56.707083-07:00",
+      "UID": "admin",
+      "OID": "0.7.96",
+      "item": "controller",
+      "id": "303986753",
+      "name": "BetaX",
+      "field": "name",
+      "details": "Updated name from 'Beta' to 'BetaX'"
+    },
+    {
+      "timestamp": "2023-03-02T09:56:31.248779-08:00",
+      "UID": "admin",
+      "OID": "0.7.30",
       "item": "card",
       "id": "8165537",
       "name": "Harry",
       "field": "group",
-      "details": "Granted access to Gryffindor"
+      "details": "Granted access to Student"
     },
     {
-      "timestamp": "2023-07-12T11:23:34.00121-07:00",
+      "timestamp": "2023-03-02T09:56:31.247386-08:00",
       "UID": "admin",
-      "OID": "0.7.86",
+      "OID": "0.7.29",
+      "item": "card",
+      "id": "8165539",
+      "name": "Dumbledore",
+      "field": "group",
+      "details": "Granted access to Mage"
+    },
+    {
+      "timestamp": "2023-07-12T11:06:08.416797-07:00",
+      "UID": "admin",
+      "OID": "0.7.73",
       "item": "door",
-      "id": "405419896/2",
-      "name": "Kitchen",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "door",
+      "details": "Activate keypad for Great Hall"
+    },
+    {
+      "timestamp": "2023-09-25T10:54:43.152765-07:00",
+      "UID": "admin",
+      "OID": "0.7.104",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "passcodes",
+      "details": "Updated passcodes"
+    },
+    {
+      "timestamp": "2023-03-02T09:53:08.481886-08:00",
+      "UID": "admin",
+      "OID": "0.7.9",
+      "item": "door",
+      "id": "0/0",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from  to Great Hall"
+    },
+    {
+      "timestamp": "2023-06-07T13:10:30.39282-07:00",
+      "UID": "admin",
+      "OID": "0.7.56",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "interlock",
+      "details": "Updated interlock from '3\u00264' to '1\u00262\u00263'"
+    },
+    {
+      "timestamp": "2023-07-12T10:48:44.604344-07:00",
+      "UID": "admin",
+      "OID": "0.7.66",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
       "field": "keypad",
       "details": "Updated keypad from true to false"
     },
@@ -181,494 +691,14 @@
       "details": "Added 'new' card"
     },
     {
-      "timestamp": "2023-09-25T10:53:35.322947-07:00",
+      "timestamp": "2023-07-12T11:23:16.906093-07:00",
       "UID": "admin",
-      "OID": "0.7.103",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "passcodes",
-      "details": "Updated passcodes"
-    },
-    {
-      "timestamp": "2023-07-12T11:22:12.069931-07:00",
-      "UID": "admin",
-      "OID": "0.7.76",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "keypad",
-      "details": "Updated keypad from false to true"
-    },
-    {
-      "timestamp": "2023-07-12T11:05:07.732243-07:00",
-      "UID": "admin",
-      "OID": "0.7.71",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "door",
-      "details": "Deactivated keypad for Great Hall"
-    },
-    {
-      "timestamp": "2023-07-12T11:23:34.007675-07:00",
-      "UID": "admin",
-      "OID": "0.7.88",
-      "item": "door",
-      "id": "303986753/4",
-      "name": "Slytherin",
-      "field": "keypad",
-      "details": "Updated keypad from true to false"
-    },
-    {
-      "timestamp": "2023-07-12T10:24:45.366601-07:00",
-      "UID": "admin",
-      "OID": "0.7.62",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "keypad",
-      "details": "Updated keypad from false to false"
-    },
-    {
-      "timestamp": "2023-03-02T09:53:47.281677-08:00",
-      "UID": "admin",
-      "OID": "0.7.11",
-      "item": "door",
-      "id": "0/0",
-      "name": "",
-      "field": "name",
-      "details": "Updated name from  to Dungeon"
-    },
-    {
-      "timestamp": "2023-07-12T11:25:27.844955-07:00",
-      "UID": "admin",
-      "OID": "0.7.94",
-      "item": "door",
-      "id": "303986753/1",
-      "name": "Gryffindor ",
-      "field": "keypad",
-      "details": "Updated keypad from false to true"
-    },
-    {
-      "timestamp": "2023-08-01T09:13:32.792641-07:00",
-      "UID": "admin",
-      "OID": "0.7.98",
-      "item": "controller",
-      "id": "303986753",
-      "name": "BetaX",
-      "field": "name",
-      "details": "Updated name from 'Beta' to 'BetaX'"
-    },
-    {
-      "timestamp": "2023-03-02T09:54:49.906224-08:00",
-      "UID": "admin",
-      "OID": "0.7.14",
-      "item": "door",
-      "id": "0/0",
-      "name": "",
-      "field": "name",
-      "details": "Updated name from  to Ravensclaw"
-    },
-    {
-      "timestamp": "2023-08-01T09:10:56.707083-07:00",
-      "UID": "admin",
-      "OID": "0.7.96",
-      "item": "controller",
-      "id": "303986753",
-      "name": "BetaX",
-      "field": "name",
-      "details": "Updated name from 'Beta' to 'BetaX'"
-    },
-    {
-      "timestamp": "2023-03-03T11:46:03.892607-08:00",
-      "UID": "admin",
-      "OID": "0.7.47",
-      "item": "card",
-      "id": "8165537",
-      "name": "Harry",
-      "field": "name",
-      "details": "Updated name from 'Harry' to 'Harryx'"
-    },
-    {
-      "timestamp": "2023-07-12T11:25:18.933501-07:00",
-      "UID": "admin",
-      "OID": "0.7.92",
-      "item": "door",
-      "id": "405419896/4",
-      "name": "Hogsmeade",
-      "field": "keypad",
-      "details": "Updated keypad from true to false"
-    },
-    {
-      "timestamp": "2023-07-12T11:20:24.366086-07:00",
-      "UID": "admin",
-      "OID": "0.7.75",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "door",
-      "details": "Deactivated keypad for Great Hall"
-    },
-    {
-      "timestamp": "2023-03-02T11:28:49.119625-08:00",
-      "UID": "admin",
-      "OID": "0.7.41",
-      "item": "card",
-      "id": "8165537",
-      "name": "Harry",
-      "field": "pin",
-      "details": "Updated card PIN"
-    },
-    {
-      "timestamp": "2023-03-02T09:54:42.610278-08:00",
-      "UID": "admin",
-      "OID": "0.7.13",
-      "item": "door",
-      "id": "0/0",
-      "name": "",
-      "field": "name",
-      "details": "Updated name from  to Hufflepuff"
-    },
-    {
-      "timestamp": "2023-03-02T09:56:10.443527-08:00",
-      "UID": "admin",
-      "OID": "0.7.26",
-      "item": "card",
-      "id": "8165537",
-      "name": "",
-      "field": "name",
-      "details": "Updated name from '' to 'Harry'"
-    },
-    {
-      "timestamp": "2023-09-25T10:48:38.818443-07:00",
-      "UID": "admin",
-      "OID": "0.7.102",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "passcodes",
-      "details": "Updated passcodes"
-    },
-    {
-      "timestamp": "2023-08-01T09:15:18.230276-07:00",
-      "UID": "admin",
-      "OID": "0.7.99",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "name",
-      "details": "Updated name from 'BetaX' to 'Beta'"
-    },
-    {
-      "timestamp": "2023-03-02T09:56:10.445077-08:00",
-      "UID": "admin",
-      "OID": "0.7.27",
-      "item": "card",
-      "id": "8165538",
-      "name": "",
-      "field": "name",
-      "details": "Updated name from '' to 'Hermione'"
-    },
-    {
-      "timestamp": "2023-03-02T09:56:10.441755-08:00",
-      "UID": "admin",
-      "OID": "0.7.25",
-      "item": "card",
-      "id": "8165539",
-      "name": "",
-      "field": "name",
-      "details": "Updated name from '' to 'Dumbledore'"
-    },
-    {
-      "timestamp": "2023-07-12T11:23:25.131827-07:00",
-      "UID": "admin",
-      "OID": "0.7.82",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "keypad",
-      "details": "Updated keypad from false to true"
-    },
-    {
-      "timestamp": "2023-06-07T13:11:55.007503-07:00",
-      "UID": "admin",
-      "OID": "0.7.58",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "interlock",
-      "details": "Updated interlock from '3\u00264' to '1\u00262\u00263\u00264'"
-    },
-    {
-      "timestamp": "2023-07-12T11:23:34.004683-07:00",
-      "UID": "admin",
-      "OID": "0.7.87",
+      "OID": "0.7.80",
       "item": "door",
       "id": "405419896/2",
       "name": "Kitchen",
-      "field": "door",
-      "details": "Deactivated keypad for Kitchen"
-    },
-    {
-      "timestamp": "2023-03-02T09:55:22.509211-08:00",
-      "UID": "admin",
-      "OID": "0.7.18",
-      "item": "controller",
-      "id": "405419896",
-      "name": "Alpha",
-      "field": "door:2",
-      "details": "Updated door:2 from '' to '0.3.2'"
-    },
-    {
-      "timestamp": "2023-07-12T10:22:54.459098-07:00",
-      "UID": "admin",
-      "OID": "0.7.60",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "keypad",
-      "details": "Updated keypad from false to false"
-    },
-    {
-      "timestamp": "2023-07-12T11:22:12.073017-07:00",
-      "UID": "admin",
-      "OID": "0.7.77",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "door",
-      "details": "Activate keypad for Great Hall"
-    },
-    {
-      "timestamp": "2023-02-13T14:44:45.716647-08:00",
-      "UID": "admin",
-      "OID": "0.7.1",
-      "item": "door",
-      "id": "0/0",
-      "name": "",
-      "field": "door",
-      "details": "Added 'new' door"
-    },
-    {
-      "timestamp": "2023-06-07T12:54:36.223963-07:00",
-      "UID": "admin",
-      "OID": "0.7.50",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "interlock",
-      "details": "Updated interlock from '1' to '2'"
-    },
-    {
-      "timestamp": "2023-07-12T11:23:25.134605-07:00",
-      "UID": "admin",
-      "OID": "0.7.83",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "door",
-      "details": "Activate keypad for Great Hall"
-    },
-    {
-      "timestamp": "2023-03-02T09:54:27.692746-08:00",
-      "UID": "admin",
-      "OID": "0.7.12",
-      "item": "door",
-      "id": "0/0",
-      "name": "",
-      "field": "name",
-      "details": "Updated name from  to Gryffindor "
-    },
-    {
-      "timestamp": "2023-09-25T10:54:43.152765-07:00",
-      "UID": "admin",
-      "OID": "0.7.104",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "passcodes",
-      "details": "Updated passcodes"
-    },
-    {
-      "timestamp": "2023-07-12T11:23:11.013013-07:00",
-      "UID": "admin",
-      "OID": "0.7.79",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "door",
-      "details": "Deactivated keypad for Great Hall"
-    },
-    {
-      "timestamp": "2023-03-02T11:25:45.157897-08:00",
-      "UID": "admin",
-      "OID": "0.7.38",
-      "item": "card",
-      "id": "8165537",
-      "name": "Harry",
-      "field": "name",
-      "details": "Updated name from 'Harry' to 'HarryX'"
-    },
-    {
-      "timestamp": "2023-03-02T09:52:11.36321-08:00",
-      "UID": "admin",
-      "OID": "0.7.6",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "name",
-      "details": "Updated name from '' to 'Beta'"
-    },
-    {
-      "timestamp": "2023-03-02T10:44:17.231668-08:00",
-      "UID": "admin",
-      "OID": "0.7.36",
-      "item": "card",
-      "id": "8165537",
-      "name": "Harry",
-      "field": "from",
-      "details": "Updated VALID FROM date from  to 2023-01-01"
-    },
-    {
-      "timestamp": "2023-03-02T09:56:31.251822-08:00",
-      "UID": "admin",
-      "OID": "0.7.32",
-      "item": "card",
-      "id": "8165538",
-      "name": "Hermione",
-      "field": "group",
-      "details": "Granted access to Student"
-    },
-    {
-      "timestamp": "2023-06-07T13:11:50.87854-07:00",
-      "UID": "admin",
-      "OID": "0.7.57",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "interlock",
-      "details": "Updated interlock from '1\u00262\u00263' to '3\u00264'"
-    },
-    {
-      "timestamp": "2023-06-07T12:31:59.511937-07:00",
-      "UID": "admin",
-      "OID": "0.7.49",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "interlock",
-      "details": "Updated interlock from '0' to '1'"
-    },
-    {
-      "timestamp": "2023-07-12T10:48:44.604344-07:00",
-      "UID": "admin",
-      "OID": "0.7.66",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "keypad",
-      "details": "Updated keypad from true to false"
-    },
-    {
-      "timestamp": "2023-09-25T10:56:48.156597-07:00",
-      "UID": "admin",
-      "OID": "0.7.105",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "passcodes",
-      "details": "Updated passcodes"
-    },
-    {
-      "timestamp": "2023-07-12T10:22:54.462111-07:00",
-      "UID": "admin",
-      "OID": "0.7.61",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "door",
-      "details": "Deactivated keypad for Great Hall"
-    },
-    {
-      "timestamp": "2023-09-25T11:34:41.145057-07:00",
-      "UID": "admin",
-      "OID": "0.7.112",
-      "item": "door",
-      "id": "405419896/2",
-      "name": "Kitchen",
-      "field": "passcodes",
-      "details": "Updated passcodes"
-    },
-    {
-      "timestamp": "2023-07-12T11:25:18.937155-07:00",
-      "UID": "admin",
-      "OID": "0.7.93",
-      "item": "door",
-      "id": "405419896/4",
-      "name": "Hogsmeade",
-      "field": "door",
-      "details": "Deactivated keypad for Hogsmeade"
-    },
-    {
-      "timestamp": "2023-07-12T11:23:16.909026-07:00",
-      "UID": "admin",
-      "OID": "0.7.81",
-      "item": "door",
-      "id": "405419896/2",
-      "name": "Kitchen",
-      "field": "door",
-      "details": "Activate keypad for Kitchen"
-    },
-    {
-      "timestamp": "2023-06-07T12:56:53.094251-07:00",
-      "UID": "admin",
-      "OID": "0.7.51",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "interlock",
-      "details": "Updated interlock from '2' to '1'"
-    },
-    {
-      "timestamp": "2023-03-02T09:52:12.115016-08:00",
-      "UID": "admin",
-      "OID": "0.7.7",
-      "item": "controller",
-      "id": "405419896",
-      "name": "Alpha",
-      "field": "name",
-      "details": "Updated name from '' to 'Alpha'"
-    },
-    {
-      "timestamp": "2023-07-12T10:53:27.705101-07:00",
-      "UID": "admin",
-      "OID": "0.7.68",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
       "field": "keypad",
       "details": "Updated keypad from false to true"
-    },
-    {
-      "timestamp": "2023-03-02T09:56:31.255437-08:00",
-      "UID": "admin",
-      "OID": "0.7.34",
-      "item": "card",
-      "id": "8165538",
-      "name": "Hermione",
-      "field": "group",
-      "details": "Granted access to Mage"
-    },
-    {
-      "timestamp": "2023-03-02T09:55:35.212952-08:00",
-      "UID": "admin",
-      "OID": "0.7.21",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "door:1",
-      "details": "Updated door:1 from '' to '0.3.4'"
     },
     {
       "timestamp": "2023-09-25T11:00:21.719401-07:00",
@@ -681,244 +711,14 @@
       "details": "Updated passcodes"
     },
     {
-      "timestamp": "2023-07-12T11:23:25.137886-07:00",
+      "timestamp": "2023-03-02T11:25:51.483411-08:00",
       "UID": "admin",
-      "OID": "0.7.84",
-      "item": "door",
-      "id": "303986753/4",
-      "name": "Slytherin",
-      "field": "keypad",
-      "details": "Updated keypad from false to true"
-    },
-    {
-      "timestamp": "2023-06-07T12:58:18.219602-07:00",
-      "UID": "admin",
-      "OID": "0.7.52",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "interlock",
-      "details": "Updated interlock from '1' to '2'"
-    },
-    {
-      "timestamp": "2023-03-02T09:55:03.548852-08:00",
-      "UID": "admin",
-      "OID": "0.7.16",
-      "item": "door",
-      "id": "0/0",
-      "name": "",
-      "field": "name",
-      "details": "Updated name from  to Hogsmeade"
-    },
-    {
-      "timestamp": "2023-03-02T09:55:35.215749-08:00",
-      "UID": "admin",
-      "OID": "0.7.23",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "door:3",
-      "details": "Updated door:3 from '' to '0.3.6'"
-    },
-    {
-      "timestamp": "2023-09-25T11:49:54.826009-07:00",
-      "UID": "admin",
-      "OID": "0.7.113",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "passcodes",
-      "details": "Updated passcodes"
-    },
-    {
-      "timestamp": "2023-07-12T10:30:00.275004-07:00",
-      "UID": "admin",
-      "OID": "0.7.65",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "door",
-      "details": "Activate keypad for Great Hall"
-    },
-    {
-      "timestamp": "2023-09-25T11:04:19.388377-07:00",
-      "UID": "admin",
-      "OID": "0.7.108",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "passcodes",
-      "details": "Updated passcodes"
-    },
-    {
-      "timestamp": "2023-07-12T11:05:07.727339-07:00",
-      "UID": "admin",
-      "OID": "0.7.70",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "keypad",
-      "details": "Updated keypad from true to false"
-    },
-    {
-      "timestamp": "2023-08-01T09:12:38.791268-07:00",
-      "UID": "admin",
-      "OID": "0.7.97",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "name",
-      "details": "Updated name from 'BetaX' to 'Beta'"
-    },
-    {
-      "timestamp": "2023-06-07T13:10:30.39282-07:00",
-      "UID": "admin",
-      "OID": "0.7.56",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "interlock",
-      "details": "Updated interlock from '3\u00264' to '1\u00262\u00263'"
-    },
-    {
-      "timestamp": "2023-02-13T14:45:24.420373-08:00",
-      "UID": "admin",
-      "OID": "0.7.4",
-      "item": "controller",
-      "id": "0",
-      "name": "Alpha",
-      "field": "name",
-      "details": "Updated name from '' to 'Alpha'"
-    },
-    {
-      "timestamp": "2023-09-25T11:01:23.014652-07:00",
-      "UID": "admin",
-      "OID": "0.7.107",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "passcodes",
-      "details": "Updated passcodes"
-    },
-    {
-      "timestamp": "2023-06-07T13:09:08.898814-07:00",
-      "UID": "admin",
-      "OID": "0.7.54",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "interlock",
-      "details": "Updated interlock from '1\u00262' to '1\u00262'"
-    },
-    {
-      "timestamp": "2023-09-25T11:34:34.323341-07:00",
-      "UID": "admin",
-      "OID": "0.7.111",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "passcodes",
-      "details": "Updated passcodes"
-    },
-    {
-      "timestamp": "2023-07-12T11:06:08.412998-07:00",
-      "UID": "admin",
-      "OID": "0.7.72",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "keypad",
-      "details": "Updated keypad from false to true"
-    },
-    {
-      "timestamp": "2023-03-02T11:32:19.893668-08:00",
-      "UID": "admin",
-      "OID": "0.7.42",
+      "OID": "0.7.39",
       "item": "card",
       "id": "8165537",
-      "name": "Harry",
-      "field": "pin",
-      "details": "Updated card PIN"
-    },
-    {
-      "timestamp": "2023-03-02T09:55:22.507816-08:00",
-      "UID": "admin",
-      "OID": "0.7.17",
-      "item": "controller",
-      "id": "405419896",
-      "name": "Alpha",
-      "field": "door:1",
-      "details": "Updated door:1 from '' to '0.3.1'"
-    },
-    {
-      "timestamp": "2023-07-12T10:24:45.369681-07:00",
-      "UID": "admin",
-      "OID": "0.7.63",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "door",
-      "details": "Deactivated keypad for Great Hall"
-    },
-    {
-      "timestamp": "2023-03-02T09:55:35.214521-08:00",
-      "UID": "admin",
-      "OID": "0.7.22",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "door:2",
-      "details": "Updated door:2 from '' to '0.3.5'"
-    },
-    {
-      "timestamp": "2023-07-12T11:20:24.362282-07:00",
-      "UID": "admin",
-      "OID": "0.7.74",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "keypad",
-      "details": "Updated keypad from true to false"
-    },
-    {
-      "timestamp": "2023-03-03T11:46:11.701448-08:00",
-      "UID": "admin",
-      "OID": "0.7.48",
-      "item": "card",
-      "id": "8165537",
-      "name": "Harryx",
+      "name": "HarryX",
       "field": "name",
-      "details": "Updated name from 'Harryx' to 'Harry'"
-    },
-    {
-      "timestamp": "2023-03-02T09:56:31.253575-08:00",
-      "UID": "admin",
-      "OID": "0.7.33",
-      "item": "card",
-      "id": "8165538",
-      "name": "Hermione",
-      "field": "group",
-      "details": "Granted access to Gryffindor"
-    },
-    {
-      "timestamp": "2023-03-02T11:25:55.619344-08:00",
-      "UID": "admin",
-      "OID": "0.7.40",
-      "item": "card",
-      "id": "8165537",
-      "name": "Harry",
-      "field": "pin",
-      "details": "Updated card PIN"
-    },
-    {
-      "timestamp": "2023-06-07T13:12:30.334648-07:00",
-      "UID": "admin",
-      "OID": "0.7.59",
-      "item": "controller",
-      "id": "405419896",
-      "name": "Alpha",
-      "field": "interlock",
-      "details": "Updated interlock from 'disabled' to '1\u00262'"
+      "details": "Updated name from 'HarryX' to 'Harry'"
     },
     {
       "timestamp": "2023-03-02T09:51:58.259833-08:00",
@@ -931,99 +731,149 @@
       "details": "Deleted controller Alpha"
     },
     {
-      "timestamp": "2023-03-02T11:48:39.721414-08:00",
+      "timestamp": "2023-07-12T11:23:11.009816-07:00",
       "UID": "admin",
-      "OID": "0.7.43",
-      "item": "card",
-      "id": "8165538",
-      "name": "Hermione",
-      "field": "from",
-      "details": "Updated VALID FROM date from  to 2023-01-01"
-    },
-    {
-      "timestamp": "2023-07-12T11:24:20.576476-07:00",
-      "UID": "admin",
-      "OID": "0.7.90",
+      "OID": "0.7.78",
       "item": "door",
-      "id": "405419896/4",
-      "name": "Hogsmeade",
+      "id": "405419896/1",
+      "name": "Great Hall",
       "field": "keypad",
-      "details": "Updated keypad from false to true"
+      "details": "Updated keypad from true to false"
     },
     {
-      "timestamp": "2023-03-02T09:56:31.247386-08:00",
+      "timestamp": "2023-06-07T12:54:36.223963-07:00",
       "UID": "admin",
-      "OID": "0.7.29",
-      "item": "card",
-      "id": "8165539",
-      "name": "Dumbledore",
-      "field": "group",
-      "details": "Granted access to Mage"
-    },
-    {
-      "timestamp": "2023-07-12T11:24:20.580009-07:00",
-      "UID": "admin",
-      "OID": "0.7.91",
-      "item": "door",
-      "id": "405419896/4",
-      "name": "Hogsmeade",
-      "field": "door",
-      "details": "Activate keypad for Hogsmeade"
-    },
-    {
-      "timestamp": "2023-03-02T11:25:51.483411-08:00",
-      "UID": "admin",
-      "OID": "0.7.39",
-      "item": "card",
-      "id": "8165537",
-      "name": "HarryX",
-      "field": "name",
-      "details": "Updated name from 'HarryX' to 'Harry'"
-    },
-    {
-      "timestamp": "2023-02-13T14:45:14.098131-08:00",
-      "UID": "admin",
-      "OID": "0.7.3",
+      "OID": "0.7.50",
       "item": "controller",
-      "id": "0",
-      "name": "",
-      "field": "controller",
-      "details": "Added 'new' controller"
+      "id": "303986753",
+      "name": "Beta",
+      "field": "interlock",
+      "details": "Updated interlock from '1' to '2'"
     },
     {
-      "timestamp": "2023-03-02T10:36:13.296703-08:00",
+      "timestamp": "2023-07-12T11:20:24.362282-07:00",
       "UID": "admin",
-      "OID": "0.7.35",
-      "item": "card",
-      "id": "8165537",
-      "name": "Harry",
-      "field": "pin",
-      "details": "Updated card PIN"
+      "OID": "0.7.74",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "keypad",
+      "details": "Updated keypad from true to false"
     },
     {
-      "timestamp": "2023-03-02T09:53:41.809177-08:00",
+      "timestamp": "2023-07-12T11:23:11.013013-07:00",
       "UID": "admin",
-      "OID": "0.7.10",
+      "OID": "0.7.79",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "door",
+      "details": "Deactivated keypad for Great Hall"
+    },
+    {
+      "timestamp": "2023-03-02T09:53:47.281677-08:00",
+      "UID": "admin",
+      "OID": "0.7.11",
       "item": "door",
       "id": "0/0",
       "name": "",
       "field": "name",
-      "details": "Updated name from  to Kitchen"
+      "details": "Updated name from  to Dungeon"
     },
     {
-      "timestamp": "2023-08-01T09:38:08.663789-07:00",
+      "timestamp": "2023-03-02T09:55:35.215749-08:00",
       "UID": "admin",
-      "OID": "0.7.100",
+      "OID": "0.7.23",
       "item": "controller",
       "id": "303986753",
-      "name": "BetaX",
-      "field": "name",
-      "details": "Updated name from 'Beta' to 'BetaX'"
+      "name": "Beta",
+      "field": "door:3",
+      "details": "Updated door:3 from '' to '0.3.6'"
     },
     {
-      "timestamp": "2023-03-02T09:53:00.395498-08:00",
+      "timestamp": "2023-09-25T10:53:35.322947-07:00",
       "UID": "admin",
-      "OID": "0.7.8",
+      "OID": "0.7.103",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "passcodes",
+      "details": "Updated passcodes"
+    },
+    {
+      "timestamp": "2023-06-07T12:56:53.094251-07:00",
+      "UID": "admin",
+      "OID": "0.7.51",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "interlock",
+      "details": "Updated interlock from '2' to '1'"
+    },
+    {
+      "timestamp": "2024-08-21T19:00:46.520696197Z",
+      "UID": "",
+      "OID": "0.7.114",
+      "item": "user",
+      "id": "wild",
+      "name": "",
+      "field": "user",
+      "details": "Added 'admin' user"
+    },
+    {
+      "timestamp": "2023-03-02T09:56:10.443527-08:00",
+      "UID": "admin",
+      "OID": "0.7.26",
+      "item": "card",
+      "id": "8165537",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from '' to 'Harry'"
+    },
+    {
+      "timestamp": "2023-03-02T09:55:35.21732-08:00",
+      "UID": "admin",
+      "OID": "0.7.24",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "door:4",
+      "details": "Updated door:4 from '' to '0.3.7'"
+    },
+    {
+      "timestamp": "2023-07-12T11:25:18.933501-07:00",
+      "UID": "admin",
+      "OID": "0.7.92",
+      "item": "door",
+      "id": "405419896/4",
+      "name": "Hogsmeade",
+      "field": "keypad",
+      "details": "Updated keypad from true to false"
+    },
+    {
+      "timestamp": "2023-07-12T11:06:08.412998-07:00",
+      "UID": "admin",
+      "OID": "0.7.72",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "keypad",
+      "details": "Updated keypad from false to true"
+    },
+    {
+      "timestamp": "2023-03-02T09:55:22.509211-08:00",
+      "UID": "admin",
+      "OID": "0.7.18",
+      "item": "controller",
+      "id": "405419896",
+      "name": "Alpha",
+      "field": "door:2",
+      "details": "Updated door:2 from '' to '0.3.2'"
+    },
+    {
+      "timestamp": "2023-02-13T14:44:45.716647-08:00",
+      "UID": "admin",
+      "OID": "0.7.1",
       "item": "door",
       "id": "0/0",
       "name": "",
@@ -1031,34 +881,24 @@
       "details": "Added 'new' door"
     },
     {
-      "timestamp": "2023-03-02T09:56:31.248779-08:00",
-      "UID": "admin",
-      "OID": "0.7.30",
-      "item": "card",
-      "id": "8165537",
-      "name": "Harry",
-      "field": "group",
-      "details": "Granted access to Student"
+      "timestamp": "2024-08-21T19:01:13.119335055Z",
+      "UID": "wild",
+      "OID": "0.7.115",
+      "item": "user",
+      "id": "wild",
+      "name": "",
+      "field": "user",
+      "details": "Deleted UID wild"
     },
     {
-      "timestamp": "2023-07-12T11:06:08.416797-07:00",
+      "timestamp": "2023-06-07T13:12:30.334648-07:00",
       "UID": "admin",
-      "OID": "0.7.73",
-      "item": "door",
-      "id": "405419896/1",
-      "name": "Great Hall",
-      "field": "door",
-      "details": "Activate keypad for Great Hall"
-    },
-    {
-      "timestamp": "2023-06-07T13:09:25.191225-07:00",
-      "UID": "admin",
-      "OID": "0.7.55",
+      "OID": "0.7.59",
       "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
+      "id": "405419896",
+      "name": "Alpha",
       "field": "interlock",
-      "details": "Updated interlock from '1\u00262' to '3\u00264'"
+      "details": "Updated interlock from 'disabled' to '1\u00262'"
     },
     {
       "timestamp": "2023-09-25T11:18:35.40722-07:00",
@@ -1071,14 +911,64 @@
       "details": "Updated passcodes"
     },
     {
-      "timestamp": "2023-03-02T11:48:39.723478-08:00",
+      "timestamp": "2023-07-12T11:22:12.073017-07:00",
       "UID": "admin",
-      "OID": "0.7.44",
+      "OID": "0.7.77",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "door",
+      "details": "Activate keypad for Great Hall"
+    },
+    {
+      "timestamp": "2023-03-02T11:48:54.728634-08:00",
+      "UID": "admin",
+      "OID": "0.7.45",
+      "item": "card",
+      "id": "8165539",
+      "name": "Dumbledore",
+      "field": "from",
+      "details": "Updated VALID FROM date from  to 2023-01-01"
+    },
+    {
+      "timestamp": "2023-08-01T09:12:38.791268-07:00",
+      "UID": "admin",
+      "OID": "0.7.97",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "name",
+      "details": "Updated name from 'BetaX' to 'Beta'"
+    },
+    {
+      "timestamp": "2023-09-25T10:56:48.156597-07:00",
+      "UID": "admin",
+      "OID": "0.7.105",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "passcodes",
+      "details": "Updated passcodes"
+    },
+    {
+      "timestamp": "2023-03-02T09:56:31.253575-08:00",
+      "UID": "admin",
+      "OID": "0.7.33",
       "item": "card",
       "id": "8165538",
       "name": "Hermione",
-      "field": "to",
-      "details": "Updated VALID UNTIL date from  to 2023-12-31"
+      "field": "group",
+      "details": "Granted access to Gryffindor"
+    },
+    {
+      "timestamp": "2023-07-12T10:24:45.369681-07:00",
+      "UID": "admin",
+      "OID": "0.7.63",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "door",
+      "details": "Deactivated keypad for Great Hall"
     },
     {
       "timestamp": "2023-07-12T10:30:00.272103-07:00",
@@ -1091,14 +981,164 @@
       "details": "Updated keypad from false to true"
     },
     {
-      "timestamp": "2023-07-12T11:23:11.009816-07:00",
+      "timestamp": "2023-03-02T11:48:39.721414-08:00",
       "UID": "admin",
-      "OID": "0.7.78",
+      "OID": "0.7.43",
+      "item": "card",
+      "id": "8165538",
+      "name": "Hermione",
+      "field": "from",
+      "details": "Updated VALID FROM date from  to 2023-01-01"
+    },
+    {
+      "timestamp": "2023-06-07T13:09:25.191225-07:00",
+      "UID": "admin",
+      "OID": "0.7.55",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "interlock",
+      "details": "Updated interlock from '1\u00262' to '3\u00264'"
+    },
+    {
+      "timestamp": "2023-03-02T09:53:41.809177-08:00",
+      "UID": "admin",
+      "OID": "0.7.10",
+      "item": "door",
+      "id": "0/0",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from  to Kitchen"
+    },
+    {
+      "timestamp": "2023-09-25T11:34:41.145057-07:00",
+      "UID": "admin",
+      "OID": "0.7.112",
+      "item": "door",
+      "id": "405419896/2",
+      "name": "Kitchen",
+      "field": "passcodes",
+      "details": "Updated passcodes"
+    },
+    {
+      "timestamp": "2023-09-25T10:48:38.818443-07:00",
+      "UID": "admin",
+      "OID": "0.7.102",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "passcodes",
+      "details": "Updated passcodes"
+    },
+    {
+      "timestamp": "2023-07-12T11:23:25.131827-07:00",
+      "UID": "admin",
+      "OID": "0.7.82",
       "item": "door",
       "id": "405419896/1",
       "name": "Great Hall",
       "field": "keypad",
-      "details": "Updated keypad from true to false"
+      "details": "Updated keypad from false to true"
+    },
+    {
+      "timestamp": "2023-07-12T11:20:24.366086-07:00",
+      "UID": "admin",
+      "OID": "0.7.75",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "door",
+      "details": "Deactivated keypad for Great Hall"
+    },
+    {
+      "timestamp": "2023-07-12T11:25:18.937155-07:00",
+      "UID": "admin",
+      "OID": "0.7.93",
+      "item": "door",
+      "id": "405419896/4",
+      "name": "Hogsmeade",
+      "field": "door",
+      "details": "Deactivated keypad for Hogsmeade"
+    },
+    {
+      "timestamp": "2023-06-07T13:06:22.103971-07:00",
+      "UID": "admin",
+      "OID": "0.7.53",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "interlock",
+      "details": "Updated interlock from '2' to '1'"
+    },
+    {
+      "timestamp": "2023-03-02T09:55:35.212952-08:00",
+      "UID": "admin",
+      "OID": "0.7.21",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "door:1",
+      "details": "Updated door:1 from '' to '0.3.4'"
+    },
+    {
+      "timestamp": "2023-03-02T09:55:22.507816-08:00",
+      "UID": "admin",
+      "OID": "0.7.17",
+      "item": "controller",
+      "id": "405419896",
+      "name": "Alpha",
+      "field": "door:1",
+      "details": "Updated door:1 from '' to '0.3.1'"
+    },
+    {
+      "timestamp": "2023-07-12T11:23:25.137886-07:00",
+      "UID": "admin",
+      "OID": "0.7.84",
+      "item": "door",
+      "id": "303986753/4",
+      "name": "Slytherin",
+      "field": "keypad",
+      "details": "Updated keypad from false to true"
+    },
+    {
+      "timestamp": "2023-03-02T09:52:11.36321-08:00",
+      "UID": "admin",
+      "OID": "0.7.6",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "name",
+      "details": "Updated name from '' to 'Beta'"
+    },
+    {
+      "timestamp": "2023-07-12T11:05:07.732243-07:00",
+      "UID": "admin",
+      "OID": "0.7.71",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "door",
+      "details": "Deactivated keypad for Great Hall"
+    },
+    {
+      "timestamp": "2023-03-02T09:54:42.610278-08:00",
+      "UID": "admin",
+      "OID": "0.7.13",
+      "item": "door",
+      "id": "0/0",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from  to Hufflepuff"
+    },
+    {
+      "timestamp": "2023-08-01T09:15:18.230276-07:00",
+      "UID": "admin",
+      "OID": "0.7.99",
+      "item": "controller",
+      "id": "303986753",
+      "name": "Beta",
+      "field": "name",
+      "details": "Updated name from 'BetaX' to 'Beta'"
     },
     {
       "timestamp": "2023-07-12T11:23:34.010125-07:00",
@@ -1111,24 +1151,14 @@
       "details": "Deactivated keypad for Slytherin"
     },
     {
-      "timestamp": "2023-08-01T09:38:28.290373-07:00",
+      "timestamp": "2023-07-12T11:22:12.069931-07:00",
       "UID": "admin",
-      "OID": "0.7.101",
-      "item": "controller",
-      "id": "303986753",
-      "name": "Beta",
-      "field": "name",
-      "details": "Updated name from 'BetaX' to 'Beta'"
-    },
-    {
-      "timestamp": "2023-03-02T09:56:31.245939-08:00",
-      "UID": "admin",
-      "OID": "0.7.28",
-      "item": "card",
-      "id": "8165539",
-      "name": "Dumbledore",
-      "field": "group",
-      "details": "Granted access to Teacher"
+      "OID": "0.7.76",
+      "item": "door",
+      "id": "405419896/1",
+      "name": "Great Hall",
+      "field": "keypad",
+      "details": "Updated keypad from false to true"
     }
   ]
 }
