@@ -14,8 +14,8 @@
       - [ ] docker: add setup.html, etc
             - [x] dev
             - [x] ghcr
-            - [ ] compose
-      - [ ] Remove admin user logic in daemonize
+            - [x] compose
+      - [x] Remove admin user logic in daemonize
       - [ ] **deleted user can log back in***
             - check cookie uid still exists
             - clear cookie if uid == self ?

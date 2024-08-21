@@ -208,8 +208,7 @@ func (cmd *Daemonize) execute() error {
 		return err
 	}
 
-	admin, pwd, err := cmd.users(i)
-	if err != nil {
+	if err := cmd.users(i); err != nil {
 		return err
 	}
 
@@ -254,14 +253,6 @@ func (cmd *Daemonize) execute() error {
 	fmt.Println()
 	fmt.Printf("     > sudo su %v\n", username)
 	fmt.Printf("     > ./%v --debug --console\n", SERVICE)
-	fmt.Println()
-
-	if admin != "" {
-		fmt.Println()
-		fmt.Printf("   *** THE %v USER PASSWORD IS %v ***\n", admin, pwd)
-		fmt.Println()
-	}
-
 	fmt.Println()
 
 	return nil

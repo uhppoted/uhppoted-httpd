@@ -3,17 +3,13 @@ package commands
 import (
 	"bufio"
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/uhppoted/uhppoted-lib/config"
 
@@ -74,7 +70,7 @@ const default_auth = `
     },
     {
       "path": "^/sys/controllers.html$",
-      "authorised": "^(admin)$"
+      "authorised": "^(admin|user)$"
     },
     {
       "path": "^/sys/cards.html$",
@@ -82,23 +78,23 @@ const default_auth = `
     },
     {
       "path": "^/sys/doors.html$",
-      "authorised": "^(admin)$"
+      "authorised": "^(admin|user)$"
     },
     {
       "path": "^/sys/groups.html$",
-      "authorised": "^(admin)$"
+      "authorised": "^(admin|user)$"
     },
     {
       "path": "^/sys/events.html$",
-      "authorised": "^(admin)$"
+      "authorised": "^(admin|user)$"
     },
     {
       "path": "^/sys/logs.html$",
-      "authorised": "^(admin)$"
+      "authorised": "^(admin|user)$"
     },
     {
       "path": "^/sys/users.html$",
-      "authorised": "^(admin)$"
+      "authorised": "^(admin|user)$"
     },
     {
       "path": "^/sys/password.html$",
@@ -366,12 +362,12 @@ func (cmd *Daemonize) grules(i info) (bool, error) {
 	return true, nil
 }
 
-func (cmd *Daemonize) users(i info) (string, string, error) {
+func (cmd *Daemonize) users(i info) error {
 	dir := filepath.Join(cmd.workdir, "system")
 
 	fmt.Printf("   ... creating folder '%v'\n", dir)
 	if err := os.MkdirAll(dir, 0744); err != nil {
-		return "", "", err
+		return err
 	}
 
 	file := filepath.Join(dir, "users.json")
@@ -382,82 +378,34 @@ func (cmd *Daemonize) users(i info) (string, string, error) {
 	info, err := os.Stat(file)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			return "", "", err
+			return err
 		}
 	} else if !info.IsDir() {
 		bytes, err := os.ReadFile(file)
 		if err != nil {
-			return "", "", err
+			return err
 		}
 
 		if err := json.Unmarshal(bytes, &users); err != nil {
-			return "", "", err
+			return err
 		}
 	}
 
 	if len(users.Users) > 0 {
-		return "", "", nil
+		return nil
 	}
 
-	// ... create initial 'admin' user?
-	stdin := bufio.NewReader(os.Stdin)
-
-	fmt.Println()
-	fmt.Printf("     Do you want to create a default 'admin' user (yes/no)? ")
-
-	text, err := stdin.ReadString('\n')
-	fmt.Println()
-	if err != nil || strings.ToLower(strings.TrimSpace(text)) != "yes" {
-		return "", "", nil
-	}
-
-	fmt.Println("   ... creating default 'admin' user")
-
-	// ... generate password and salt
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	letters := []byte("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-	password := make([]byte, 16)
-	salt := make([]byte, 16)
-
-	for i := range password {
-		password[i] = letters[r.Intn(len(letters))]
-	}
-
-	for i := range salt {
-		salt[i] = byte(r.Intn(256))
-	}
-
-	h := sha256.New()
-	h.Write(salt)
-	h.Write([]byte(password))
-
-	admin := struct {
-		OID      string `json:"OID"`
-		UID      string `json:"uid,omitempty"`
-		Role     string `json:"role,omitempty"`
-		Salt     string `json:"salt"`
-		Password string `json:"password"`
-	}{
-		OID:      "0.8.1",
-		UID:      "admin",
-		Role:     "admin",
-		Salt:     hex.EncodeToString(salt[:]),
-		Password: fmt.Sprintf("%0x", h.Sum(nil)),
-	}
-
-	users.Users = append(users.Users, admin)
-
-	// ... write default 'admin' user to users.json
+	// ... create initial 'users.json' file
 	if bytes, err := json.MarshalIndent(users, "  ", "  "); err != nil {
-		return "", "", err
+		return err
 	} else if err := toTextFile(string(bytes), file); err != nil {
-		return "", "", err
+		return err
 	}
 
-	fmt.Printf("   ... created default 'admin' user\n")
+	fmt.Printf("   ... created default 'users.json'\n")
 	fmt.Println()
 
-	return "admin", string(password), nil
+	return nil
 }
 
 func (cmd *Daemonize) sysinit(i info) error {

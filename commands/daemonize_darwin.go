@@ -147,8 +147,7 @@ func (cmd *Daemonize) execute() error {
 		return err
 	}
 
-	admin, pwd, err := cmd.users(i)
-	if err != nil {
+	if err := cmd.users(i); err != nil {
 		return err
 	}
 
@@ -165,14 +164,6 @@ func (cmd *Daemonize) execute() error {
 	fmt.Printf("       The daemon will start automatically on the next system restart - to start it manually, execute the following command:\n")
 	fmt.Println()
 	fmt.Printf("       > sudo launchctl load /Library/LaunchDaemons/com.github.uhppoted.%s.plist\n", SERVICE)
-	fmt.Println()
-
-	if admin != "" {
-		fmt.Println()
-		fmt.Printf("   *** THE %v USER PASSWORD IS %v ***\n", admin, pwd)
-		fmt.Println()
-	}
-
 	fmt.Println()
 
 	return nil
