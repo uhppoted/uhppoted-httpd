@@ -15,16 +15,18 @@
             - [x] dev
             - [x] ghcr
             - [x] compose
+            - [ ] rebuild compose with latest ghcr
       - [x] Remove admin user logic in daemonize
-      - [ ] **deleted user can log back in***
-            - check cookie uid still exists
-            - clear cookie if uid == self ?
-            - what happens if simultaneously logged in on different browser?
-            - should probably logout
-      - [ ] CHANGELOG
+      - [x] CHANGELOG
       - [ ] README
             - [x] disclaimer: for administering a system i.e. not for use by external users
             - [ ] Note on changing admin user - update auth.json
+
+- [ ] Deleting current user - remains logged in and can log back in (cf. https://github.com/uhppoted/uhppoted-httpd/issues/42)
+      - should probably logout
+      - check cookie uid still exists
+      - clear cookie if uid == self ?
+      - what happens if simultaneously logged in on different browser?
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

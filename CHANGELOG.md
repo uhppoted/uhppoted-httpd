@@ -4,6 +4,12 @@
 
 ### Added
 1. Implemented TCP/IP transport support.
+2. On startup, defers to 'setup' page to create an admin user if none exists.
+
+### Updated
+1. Removed creation of admin user in _daemonize_.
+2. Added ADMIN role check to default _grules_ rulesets.
+3. _admin_ role is configurable.
 
 
 ## [0.8.8](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.8) - 2024-03-27
