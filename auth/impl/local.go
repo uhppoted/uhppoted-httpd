@@ -379,6 +379,14 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 		return "", "", "", err
 	}
 
+	uid := claims.Session.LoggedInAs
+	role := claims.Session.Role
+	user, ok := system.GetUser(uid)
+
+	if !ok || user == nil || user.IsDeleted() {
+		return "", "", "", fmt.Errorf("invalid user")
+	}
+
 	p.touched(auth.Session, claims.Session.SessionId)
 
 	if keyID == 1 {
@@ -399,7 +407,7 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 		return "", "", "", err
 	}
 
-	return claims.Session.LoggedInAs, claims.Session.Role, token2.String(), nil
+	return uid, role, token2.String(), nil
 }
 
 func (p *Local) Options(uid, role string) auth.Options {

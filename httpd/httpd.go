@@ -238,6 +238,7 @@ func (d *dispatcher) authenticated(r *http.Request, w http.ResponseWriter) (stri
 	}
 
 	uid, role, cookie2, err := d.auth.Authenticated(cookie)
+
 	if err != nil {
 		warnf("HTTPD", "%v", err)
 		return "", "", false

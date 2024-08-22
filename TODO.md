@@ -7,7 +7,7 @@
 
 - [ ] Deleting current user - remains logged in and can log back in (cf. https://github.com/uhppoted/uhppoted-httpd/issues/42)
       - [x] Check uid has not been deleted
-      - should probably logout
+      - [x] Check uid has not been deleted in authenticated
       - clear cookie if uid == self ?
       - what happens if simultaneously logged in on different browser?
 
