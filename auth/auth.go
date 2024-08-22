@@ -42,6 +42,7 @@ type IUser interface {
 	OTPKey() string
 	Role() string
 	Locked() bool
+	IsDeleted() bool
 }
 
 type Authorizator struct {

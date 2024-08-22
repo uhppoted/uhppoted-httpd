@@ -190,18 +190,25 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	var role string
 	var locked bool
 
-	if u, ok := system.GetUser(uid); !ok || u == nil {
+	u, ok := system.GetUser(uid)
+	if !ok || u == nil {
 		err = fmt.Errorf("invalid login credentials")
 		return
-	} else {
-		salt, password = u.Password()
-		role = u.Role()
-		locked = u.Locked()
-
-		defer func() {
-			system.UserLogin(uid, role, err)
-		}()
 	}
+
+	if u.IsDeleted() {
+		err = fmt.Errorf("invalid login credentials")
+		return
+	}
+
+	// ... ok'ish
+	salt, password = u.Password()
+	role = u.Role()
+	locked = u.Locked()
+
+	defer func() {
+		system.UserLogin(uid, role, err)
+	}()
 
 	if locked {
 		err = fmt.Errorf("%v account locked", uid)

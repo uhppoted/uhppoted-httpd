@@ -4,26 +4,10 @@
 - [x] FIX controller addresses
 - [x] TCP transport (cf. https://github.com/uhppoted/uhppote-core/issues/17)
 - [x] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
-      - [x] user setup page
-      - [x] setup endpoint
-      - [x] rethink default user grules
-      - [x] check for admin user on GET
-      - [x] conf::httpd.security.no-setup
-      - [x] grules: isAdmin(ROLE)
-      - [x] docker: update default rules to check for 'admin' role
-      - [x] docker: add setup.html, etc
-            - [x] dev
-            - [x] ghcr
-            - [x] compose
-      - [x] Remove admin user logic in daemonize
-      - [x] CHANGELOG
-      - [x] README
-            - [x] Disclaimer: for administering a system i.e. not for use by external users
-            - [x] Note on changing admin user - update auth.json
 
 - [ ] Deleting current user - remains logged in and can log back in (cf. https://github.com/uhppoted/uhppoted-httpd/issues/42)
+      - [x] Check uid has not been deleted
       - should probably logout
-      - check cookie uid still exists
       - clear cookie if uid == self ?
       - what happens if simultaneously logged in on different browser?
 
