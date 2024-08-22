@@ -12,7 +12,7 @@
       - [x] Check what happens if simultaneously logged in on different browser
       - [x] CHANGELOG
       - [x] README
-      - [ ] Update docker images
+      - [x] Update docker images
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

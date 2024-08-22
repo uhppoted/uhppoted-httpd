@@ -7,6 +7,25 @@
 system based on UHPPOTE TCP/IP controllers. It is intended to supplement the existing command line tools and application
 integrations.
 
+**SECURITY NOTICE**
+
+Versions _v0.8.8 and earlier have a bug in the authentication logic that allows a deleted user to log in unless the system
+has been restarted. This has been fixed in:
+- the _main_ branch
+- the (as yet unreleased) version v0.8.9
+- the latest _ghcr.io_ _Docker_ image
+
+1. If you're running _uhppoted-httpd_ as a console application, please either
+   - Restart _uhppoted-httpd_
+   - Clone the repository and build an updated version with the fix
+
+2. If you're running _uhppoted-httpd_ as a service/daemon, please either
+   - Restart the _uhppoted-httpd_ service/daemon
+   - Clone the repository and build an updated version with the fix
+
+3. If you're running a Docker image, please update to the latest version on ghcr.io
+
+
 ## Status
 
 Supported operating systems:
@@ -35,11 +54,6 @@ _CAVEAT EMPTOR_
 4. By default, _uhppoted-httpd_ redirects to a _setup_ page to create an _admin_ user if none exists. This behaviour
    can (and should) be disabled by setting the _httpd.security.no-setup_ config value to `true` in _uhppoted.conf_
    once an _admin_ user has been created.
-
-5. **SECURITY NOTICE** : versions _v0.8.8 and earlier have a bug in the authentication logic that allows a deleted 
-   user to log in unless the system has been restarted. This has been fixed in the _main_ branch and (as yet 
-   unreleased) version v0.8.9.
-
 
 ## Release Notes
 
