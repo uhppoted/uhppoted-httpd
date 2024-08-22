@@ -36,6 +36,11 @@ _CAVEAT EMPTOR_
    can (and should) be disabled by setting the _httpd.security.no-setup_ config value to `true` in _uhppoted.conf_
    once an _admin_ user has been created.
 
+5. **SECURITY NOTICE** : versions _v0.8.8 and earlier have a bug in the authentication logic that allows a deleted 
+   user to log in unless the system has been restarted. This has been fixed in the _main_ branch and (as yet 
+   unreleased) version v0.8.9.
+
+
 ## Release Notes
 
 ### Current Release
@@ -302,6 +307,8 @@ The system data is (currently) stored as a set of JSON files, described (https:/
 3. The _admin_ role is configurable by setting the _httpd.security.admin.role_ value in _uhppoted.conf_ (it defaults to _admin_).
    Changing the _admin_ role requires the _auth.json_ file to be updated with the new role.
 
+4. **SECURITY** : versions v0.8.8 and earlier have a bug in the authentication mechanism that allows a deleted user to
+   log back in unless the system has been restarted. Fixed in the _main_ branch and (as yet unreleased) version v0.8.9.
 
 
 

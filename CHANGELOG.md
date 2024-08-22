@@ -10,6 +10,8 @@
 1. Removed creation of admin user in _daemonize_.
 2. Added ADMIN role check to default _grules_ rulesets.
 3. _admin_ role is configurable.
+4. Fixed bug in authentication that allowed deleted user to login unless system
+   had been restarted.
 
 
 ## [0.8.8](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.8) - 2024-03-27

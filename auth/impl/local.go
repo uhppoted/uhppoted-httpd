@@ -191,29 +191,23 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	var locked bool
 
 	u, ok := system.GetUser(uid)
-	if !ok || u == nil {
+	if !ok || u == nil || u.IsDeleted() {
 		err = fmt.Errorf("invalid login credentials")
 		return
 	}
 
-	if u.IsDeleted() {
-		err = fmt.Errorf("invalid login credentials")
+	if locked {
+		err = fmt.Errorf("%v account locked", uid)
 		return
 	}
 
 	// ... ok'ish
 	salt, password = u.Password()
 	role = u.Role()
-	locked = u.Locked()
 
 	defer func() {
 		system.UserLogin(uid, role, err)
 	}()
-
-	if locked {
-		err = fmt.Errorf("%v account locked", uid)
-		return
-	}
 
 	h := sha256.New()
 	h.Write(salt)
@@ -270,7 +264,7 @@ func (p *Local) Validate(uid, pwd string) error {
 	var salt []byte
 	var password string
 
-	if u, ok := system.GetUser(uid); !ok || u == nil {
+	if u, ok := system.GetUser(uid); !ok || u == nil || u.IsDeleted() {
 		return fmt.Errorf("invalid user ID or password")
 	} else {
 		salt, password = u.Password()
@@ -384,6 +378,8 @@ func (p *Local) Authenticated(cookie string) (string, string, string, error) {
 	user, ok := system.GetUser(uid)
 
 	if !ok || user == nil || user.IsDeleted() {
+		p.sessions.delete(claims.Session.SessionId)
+
 		return "", "", "", fmt.Errorf("invalid user")
 	}
 

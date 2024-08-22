@@ -5,11 +5,14 @@
 - [x] TCP transport (cf. https://github.com/uhppoted/uhppote-core/issues/17)
 - [x] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
 
-- [ ] Deleting current user - remains logged in and can log back in (cf. https://github.com/uhppoted/uhppoted-httpd/issues/42)
+- [x] Deleting current user - remains logged in and can log back in (cf. https://github.com/uhppoted/uhppoted-httpd/issues/42)
       - [x] Check uid has not been deleted
       - [x] Check uid has not been deleted in authenticated
-      - clear cookie if uid == self ?
-      - what happens if simultaneously logged in on different browser?
+      - [x] Clear cookies for deleted uid
+      - [x] Check what happens if simultaneously logged in on different browser
+      - [x] CHANGELOG
+      - [x] README
+      - [ ] Update docker images
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)
