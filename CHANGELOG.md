@@ -12,6 +12,7 @@
 3. _admin_ role is configurable.
 4. Fixed bug in authentication that allowed deleted user to login unless system
    had been restarted.
+5. Updated to Go 1.23.
 
 
 ## [0.8.8](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.8) - 2024-03-27
