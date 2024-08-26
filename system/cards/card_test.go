@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	core "github.com/uhppoted/uhppote-core/types"
+	lib "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog"
@@ -22,8 +22,8 @@ func TestCardAsObjects(t *testing.T) {
 	catalog.Init(memdb.NewCatalog())
 
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
-	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
+	from := lib.MustParseDate("2021-03-01")
+	to := lib.MustParseDate("2023-12-31")
 
 	c := Card{
 		CatalogCard: catalog.CatalogCard{
@@ -56,11 +56,85 @@ func TestCardAsObjects(t *testing.T) {
 	}
 }
 
+func TestCardWithMissingFromDateAsObjects(t *testing.T) {
+	catalog.Init(memdb.NewCatalog())
+
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	from := lib.Date{}
+	to := lib.MustParseDate("2023-12-31")
+
+	c := Card{
+		CatalogCard: catalog.CatalogCard{
+			OID:    "0.4.3",
+			CardID: 8165537,
+		},
+		name:    "Le Card",
+		pin:     7531,
+		to:      to,
+		created: created,
+	}
+
+	expected := []schema.Object{
+		{OID: "0.4.3", Value: ""},
+		{OID: "0.4.3.0.0", Value: types.StatusIncomplete},
+		{OID: "0.4.3.0.1", Value: created},
+		{OID: "0.4.3.0.2", Value: types.Timestamp{}},
+		{OID: "0.4.3.1", Value: "Le Card"},
+		{OID: "0.4.3.2", Value: uint32(8165537)},
+		{OID: "0.4.3.3", Value: from},
+		{OID: "0.4.3.4", Value: to},
+		{OID: "0.4.3.6", Value: uint32(7531)},
+	}
+
+	objects := c.AsObjects(nil)
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+}
+
+func TestCardWithMissingToDateAsObjects(t *testing.T) {
+	catalog.Init(memdb.NewCatalog())
+
+	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
+	from := lib.MustParseDate("2021-03-01")
+	to := lib.Date{}
+
+	c := Card{
+		CatalogCard: catalog.CatalogCard{
+			OID:    "0.4.3",
+			CardID: 8165537,
+		},
+		name:    "Le Card",
+		pin:     7531,
+		from:    from,
+		created: created,
+	}
+
+	expected := []schema.Object{
+		{OID: "0.4.3", Value: ""},
+		{OID: "0.4.3.0.0", Value: types.StatusIncomplete},
+		{OID: "0.4.3.0.1", Value: created},
+		{OID: "0.4.3.0.2", Value: types.Timestamp{}},
+		{OID: "0.4.3.1", Value: "Le Card"},
+		{OID: "0.4.3.2", Value: uint32(8165537)},
+		{OID: "0.4.3.3", Value: from},
+		{OID: "0.4.3.4", Value: to},
+		{OID: "0.4.3.6", Value: uint32(7531)},
+	}
+
+	objects := c.AsObjects(nil)
+
+	if !reflect.DeepEqual(objects, expected) {
+		t.Errorf("Incorrect return from AsObjects:\n   expected:%#v\n   got:     %#v", expected, objects)
+	}
+}
+
 func TestCardAsObjectsWithDeleted(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 	deleted := types.TimestampNow()
-	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
-	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
+	from := lib.MustParseDate("2021-03-01")
+	to := lib.MustParseDate("2023-12-31")
 
 	c := Card{
 		CatalogCard: catalog.CatalogCard{
@@ -87,8 +161,8 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 
 func TestCardAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
-	from := core.Date(time.Date(2021, time.March, 1, 0, 0, 056, 0, time.Local))
-	to := core.Date(time.Date(2023, time.December, 31, 23, 59, 59, 999, time.Local))
+	from := lib.MustParseDate("2021-03-01")
+	to := lib.MustParseDate("2023-12-31")
 
 	c := Card{
 		CatalogCard: catalog.CatalogCard{
@@ -144,6 +218,8 @@ func TestCardSet(t *testing.T) {
 			OID: "0.4.3",
 		},
 		name: "Le Carte",
+		from: lib.MustParseDate("2024-01-01"),
+		to:   lib.MustParseDate("2024-12-31"),
 	}
 
 	objects, err := c.set(nil, "0.4.3.1", "Ze Kardt", db.DBC{})
