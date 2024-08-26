@@ -6,6 +6,12 @@
 - [x] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
 - [x] Deleting current user - remains logged in and can log back in (cf. https://github.com/uhppoted/uhppoted-httpd/issues/42)
 - [x] Update to Go 1.23 (cf. https://github.com/uhppoted/uhppoted/issues/53)
+- [ ] Cards without a valid start/end date (cf. https://github.com/uhppoted/uhppoted-httpd/issues/29)
+      - [x] Lowlight cards without a valid start/end date
+      - [ ] Highlight default card start/end dates
+      - [ ] Only load valid'ish cards
+      - (?) Configurable default start date
+      - (?) Configurable default end date
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

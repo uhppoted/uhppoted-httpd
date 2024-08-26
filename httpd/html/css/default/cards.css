@@ -791,8 +791,18 @@ td input.name {
   width: 120px;
 }
 
+tr[data-status=incomplete] td input.name {
+  color: #eb7443;
+  font-style: italic;
+}
+
 td input.number {
   width: 72px;
+}
+
+tr[data-status=incomplete] td input.number {
+  color: #eb7443;
+  font-style: italic;
 }
 
 input.from {
@@ -807,6 +817,11 @@ input.from::-webkit-calendar-picker-indicator {
   margin-left: 0px;
 }
 
+tr[data-status=incomplete] td input.from {
+  color: #eb7443;
+  font-style: italic;
+}
+
 td input.to {
   font: 400 0.9em Arial;
 }
@@ -817,6 +832,11 @@ input.to::-webkit-datetime-edit {
 
 input.to::-webkit-calendar-picker-indicator {
   margin-left: 0px;
+}
+
+tr[data-status=incomplete] td input.to {
+  color: #eb7443;
+  font-style: italic;
 }
 
 td label.group {
@@ -850,4 +870,12 @@ td label.group input[type=checkbox]:checked ~ img.yes {
 
 td label.group input[type=checkbox]:checked ~ img.no {
   display: none;
+}
+
+tr[data-status=incomplete] td label.group img.yes {
+  filter: invert(85%) sepia(0%) saturate(269%) hue-rotate(148deg) brightness(93%) contrast(88%);
+}
+
+tr[data-status=incomplete] td label.group img.no {
+  filter: invert(85%) sepia(0%) saturate(269%) hue-rotate(148deg) brightness(93%) contrast(88%);
 }

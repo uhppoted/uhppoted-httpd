@@ -395,6 +395,8 @@ func (c *Card) Status() types.Status {
 		return types.StatusDeleted
 	} else if c.incorrect {
 		return types.StatusError
+	} else if c.from.IsZero() || c.to.IsZero() {
+		return types.StatusIncomplete
 	}
 
 	return types.StatusOk
