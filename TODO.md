@@ -16,6 +16,9 @@
       - [ ] CHANGELOG
       - [ ] README
 
+- [ ] Card from/to dates in Safari (https://github.com/uhppoted/uhppoted-httpd/issues/32)
+
+- [ ] Fonts in Safari
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)
 
