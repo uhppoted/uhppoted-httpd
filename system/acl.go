@@ -80,7 +80,9 @@ func (s *system) compareACL() {
 			}
 
 			for _, v := range v.Deleted {
-				cards[v.CardNumber] = struct{}{}
+				if !v.From.IsZero() && !v.To.IsZero() {
+					cards[v.CardNumber] = struct{}{}
+				}
 			}
 		}
 

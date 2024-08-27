@@ -9,7 +9,7 @@
 - [ ] Cards without a valid start/end date (cf. https://github.com/uhppoted/uhppoted-httpd/issues/29)
       - [x] Lowlight cards without a valid start/end date
       - [x] Only load cards with valid start and end dates
-      - [ ] Incomplete cards that cannot be loaded shouldn't be highlighted in red
+      - [x] Incomplete cards that cannot be loaded shouldn't be highlighted in red
       - (?) Configurable default start date
       - (?) Configurable default end date
       - [ ] Highlight default card start/end dates
