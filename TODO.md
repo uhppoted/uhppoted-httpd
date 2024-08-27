@@ -8,10 +8,13 @@
 - [x] Update to Go 1.23 (cf. https://github.com/uhppoted/uhppoted/issues/53)
 - [ ] Cards without a valid start/end date (cf. https://github.com/uhppoted/uhppoted-httpd/issues/29)
       - [x] Lowlight cards without a valid start/end date
-      - [ ] Highlight default card start/end dates
-      - [ ] Only load valid'ish cards
+      - [x] Only load cards with valid start and end dates
+      - [ ] Incomplete cards that cannot be loaded shouldn't be highlighted in red
       - (?) Configurable default start date
       - (?) Configurable default end date
+      - [ ] Highlight default card start/end dates
+      - [ ] CHANGELOG
+      - [ ] README
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

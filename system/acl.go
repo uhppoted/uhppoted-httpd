@@ -175,6 +175,8 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 
 	if card == nil || card.IsDeleted() || unconfigured {
 		s.interfaces.DeleteCard(controller, cardID)
+	} else if from.IsZero() || to.IsZero() {
+		s.interfaces.DeleteCard(controller, cardID)
 	} else {
 		s.interfaces.PutCard(controller, cardID, PIN, from, to, acl)
 	}
