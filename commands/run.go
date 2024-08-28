@@ -167,6 +167,11 @@ func (cmd *Run) run(conf config.Config, interrupt chan os.Signal) {
 
 	otp.SetIssuer(conf.Security.OTP.Issuer)
 
+	// ... initialise default card start/end dates
+
+	system.SetDefaultCardStartDate(conf.HTTPD.Cards.DefaultStartDate)
+	system.SetDefaultCardEndDate(conf.HTTPD.Cards.DefaultEndDate)
+
 	// ... run
 	h := httpd.HTTPD{
 		HTML:                     conf.HTTPD.HTML,

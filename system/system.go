@@ -12,9 +12,9 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/builder"
 	"github.com/hyperjumptech/grule-rule-engine/pkg"
 
-	core "github.com/uhppoted/uhppote-core/types"
+	lib "github.com/uhppoted/uhppote-core/types"
 	"github.com/uhppoted/uhppoted-lib/config"
-	lib "github.com/uhppoted/uhppoted-lib/os"
+	libos "github.com/uhppoted/uhppoted-lib/os"
 
 	"github.com/uhppoted/uhppoted-httpd/audit"
 	"github.com/uhppoted/uhppoted-httpd/log"
@@ -69,6 +69,11 @@ var sys = system{
 	withPIN:   false,
 	taskQ:     NewTaskQ(),
 	retention: 6 * time.Hour,
+
+	acl: struct {
+		defaultStartDate lib.Date
+		defaultEndDate   lib.Date
+	}{},
 }
 
 type system struct {
@@ -93,6 +98,11 @@ type system struct {
 	mode      types.RunMode
 	withPIN   bool
 	debug     bool
+
+	acl struct {
+		defaultStartDate lib.Date
+		defaultEndDate   lib.Date
+	}
 }
 
 type trail struct {
@@ -105,11 +115,11 @@ func (t trail) Write(records ...audit.AuditRecord) {
 	sys.history.Received(records...)
 
 	if err := save(TagLogs, &sys.logs); err != nil {
-		warnf("%v", err)
+		warnf("system", "%v", err)
 	}
 
 	if err := save(TagHistory, &sys.history); err != nil {
-		warnf("%v", err)
+		warnf("system", "%v", err)
 	}
 }
 
@@ -248,7 +258,7 @@ func (s *system) refresh() {
 }
 
 func (s *system) synchronize() {
-	infof("Checking system synchronization")
+	infof("system", "checking system synchronization")
 	controllers := sys.controllers.AsIControllers()
 
 	unsynchronized := struct {
@@ -259,7 +269,7 @@ func (s *system) synchronize() {
 
 	for _, c := range controllers {
 		if !c.DateTimeOk() {
-			warnf("Controller %v date/time out of synch", c.ID())
+			warnf("system", "Controller %v date/time out of synch", c.ID())
 			unsynchronized.datetime = true
 		}
 
@@ -267,7 +277,7 @@ func (s *system) synchronize() {
 			if oid, ok := c.Door(d); ok {
 				if door, ok := sys.doors.Door(oid); ok {
 					if !door.IsOk() {
-						warnf("Door '%v' out of synch", door)
+						warnf("system", "Door '%v' out of synch", door)
 						unsynchronized.doors = true
 					}
 				}
@@ -276,11 +286,11 @@ func (s *system) synchronize() {
 	}
 
 	if acl, err := s.permissions(controllers); err != nil {
-		warnf("%v", err)
+		warnf("system", "%v", err)
 	} else if diff, err := s.interfaces.CompareACL(controllers, acl, s.withPIN); err != nil {
-		warnf("%v", err)
+		warnf("system", "%v", err)
 	} else if diff == nil {
-		warnf("Invalid ACL diff (%v)", diff)
+		warnf("system", "Invalid ACL diff (%v)", diff)
 	} else {
 		count := 0
 		for _, v := range diff {
@@ -290,23 +300,23 @@ func (s *system) synchronize() {
 		}
 
 		if count > 0 {
-			warnf("ACL out of synch")
+			warnf("system", "ACL out of synch")
 			unsynchronized.ACL = true
 		}
 	}
 
 	if unsynchronized.datetime {
-		warnf("Resynchronizing all controller date/times")
+		warnf("system", "Resynchronizing all controller date/times")
 		SynchronizeDateTime()
 	}
 
 	if unsynchronized.doors {
-		warnf("Resynchronizing mode and delay for all doors")
+		warnf("system", "Resynchronizing mode and delay for all doors")
 		SynchronizeDoors()
 	}
 
 	if unsynchronized.ACL {
-		warnf("Resynchronizing ACL")
+		warnf("system", "Resynchronizing ACL")
 		SynchronizeACL()
 	}
 }
@@ -411,7 +421,7 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 			if c.OID() == oid {
 				controller := c
 				go func() {
-					s.interfaces.SetInterlock(controller, value.(core.Interlock))
+					s.interfaces.SetInterlock(controller, value.(lib.Interlock))
 				}()
 				return
 			}
@@ -424,7 +434,7 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 					controller := c
 					door := i
 					go func() {
-						s.interfaces.SetDoorControl(controller, door, value.(core.ControlState))
+						s.interfaces.SetDoorControl(controller, door, value.(lib.ControlState))
 					}()
 					return
 				}
@@ -533,7 +543,7 @@ func unpack(m map[string]interface{}) ([]object, []object, []schema.OID, error) 
 
 	blob, err := json.Marshal(m)
 	if err != nil {
-		warnf("%v", err)
+		warnf("system", "%v", err)
 		return nil, nil, nil, fmt.Errorf("invalid request (%v)", err)
 	}
 
@@ -542,7 +552,7 @@ func unpack(m map[string]interface{}) ([]object, []object, []schema.OID, error) 
 	}
 
 	if err := json.Unmarshal(blob, &o); err != nil {
-		warnf("%v", err)
+		warnf("system", "%v", err)
 		return nil, nil, nil, fmt.Errorf("invalid request (%v)", err)
 	}
 
@@ -559,7 +569,7 @@ func load(tag Tag, v serializable) error {
 				return err
 			}
 
-			warnf("%v", err)
+			warnf("system", "%v", err)
 			return nil
 		}
 
@@ -617,13 +627,21 @@ func save(tag Tag, v serializable) error {
 		return err
 	}
 
-	return lib.Rename(tmp.Name(), file)
+	return libos.Rename(tmp.Name(), file)
 }
 
-func infof(format string, args ...any) {
-	log.Infof(format, args...)
+func infof(tag string, format string, args ...any) {
+	if tag == "" {
+		log.Infof("%v", args...)
+	} else {
+		log.Infof(fmt.Sprintf("%-8v %v", tag, format), args...)
+	}
 }
 
-func warnf(format string, args ...any) {
-	log.Warnf(format, args...)
+func warnf(tag string, format string, args ...any) {
+	if tag == "" {
+		log.Warnf("%v", args...)
+	} else {
+		log.Warnf(fmt.Sprintf("%-8v %v", tag, format), args...)
+	}
 }

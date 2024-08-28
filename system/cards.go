@@ -1,10 +1,26 @@
 package system
 
 import (
+	lib "github.com/uhppoted/uhppote-core/types"
+
 	"github.com/uhppoted/uhppoted-httpd/auth"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 )
+
+func SetDefaultCardStartDate(v string) {
+	if date, err := lib.ParseDate(v); err == nil && !date.IsZero() {
+		sys.acl.defaultStartDate = date
+		infof("cards", "default card start date %v", date)
+	}
+}
+
+func SetDefaultCardEndDate(v string) {
+	if date, err := lib.ParseDate(v); err == nil && !date.IsZero() {
+		sys.acl.defaultEndDate = date
+		infof("cards", "default card end date   %v", date)
+	}
+}
 
 func Cards(uid, role string) []schema.Object {
 	sys.RLock()

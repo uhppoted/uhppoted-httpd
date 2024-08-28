@@ -40,7 +40,7 @@ func AppendEvents(list types.EventsList) {
 
 	if len(recent) > 0 {
 		if err := save(TagEvents, &sys.events); err != nil {
-			warnf("%v", err)
+			warnf("events", "%v", err)
 		}
 	}
 }

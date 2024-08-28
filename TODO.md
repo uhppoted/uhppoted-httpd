@@ -10,9 +10,12 @@
       - [x] Lowlight cards without a valid start/end date
       - [x] Only load cards with valid start and end dates
       - [x] Incomplete cards that cannot be loaded shouldn't be highlighted in red
-      - (?) Configurable default start date
-      - (?) Configurable default end date
+      - [x] Configurable default start date
+      - [x] Configurable default end date
+      - [ ] Display default card start/end dates
       - [ ] Highlight default card start/end dates
+      - [ ] Fix card 'error' when missing start date but valid default start date
+      - [ ] Fix card 'error' when missing start date but valid default start date
       - [ ] CHANGELOG
       - [ ] README
 

@@ -14,11 +14,11 @@ func (s *system) synchronizeACL() error {
 	controllers := s.controllers.AsIControllers()
 
 	if acl, err := s.permissions(controllers); err != nil {
-		warnf("%v", err)
+		warnf("ACL", "%v", err)
 	} else if diff, err := s.interfaces.CompareACL(controllers, acl, s.withPIN); err != nil {
-		warnf("%v", err)
+		warnf("ACL", "%v", err)
 	} else if diff == nil {
-		warnf("Invalid ACL diff (%v)", diff)
+		warnf("ACL", "invalid ACL diff (%v)", diff)
 	} else {
 		list := map[uint32]struct{}{}
 
@@ -61,11 +61,11 @@ func (s *system) compareACL() {
 	controllers := s.controllers.AsIControllers()
 
 	if acl, err := s.permissions(controllers); err != nil {
-		warnf("%v", err)
+		warnf("ACL", "%v", err)
 	} else if diff, err := s.interfaces.CompareACL(controllers, acl, s.withPIN); err != nil {
-		warnf("%v", err)
+		warnf("ACL", "%v", err)
 	} else if diff == nil {
-		warnf("Invalid ACL diff (%v)", diff)
+		warnf("ACL", "invalid ACL diff (%v)", diff)
 	} else {
 		found := map[uint32]struct{}{}
 		cards := map[uint32]struct{}{}
@@ -151,7 +151,7 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 		if sys.rules != nil {
 			allowed, forbidden, err := sys.rules.Eval(*card, sys.doors)
 			if err != nil {
-				warnf("%v", err)
+				warnf("ACL", "%v", err)
 				return
 			}
 
@@ -177,9 +177,21 @@ func (s *system) updateCardPermissions(controller types.IController, cardID uint
 
 	if card == nil || card.IsDeleted() || unconfigured {
 		s.interfaces.DeleteCard(controller, cardID)
-	} else if from.IsZero() || to.IsZero() {
+	} else if from.IsZero() && sys.acl.defaultStartDate.IsZero() {
+		warnf("ACL", "%v  excluding card %v (missing start date)", controller.ID(), card.CardID)
+		s.interfaces.DeleteCard(controller, cardID)
+	} else if to.IsZero() && sys.acl.defaultEndDate.IsZero() {
+		warnf("ACL", "%v  excluding card %v (missing end date)", controller.ID(), card.CardID)
 		s.interfaces.DeleteCard(controller, cardID)
 	} else {
+		if from.IsZero() {
+			from = sys.acl.defaultStartDate
+		}
+
+		if to.IsZero() {
+			to = sys.acl.defaultEndDate
+		}
+
 		s.interfaces.PutCard(controller, cardID, PIN, from, to, acl)
 	}
 }
