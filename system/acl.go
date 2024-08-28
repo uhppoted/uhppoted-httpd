@@ -259,6 +259,23 @@ func (s *system) permissions(controllers []types.IController) (acl.ACL, error) {
 		}
 	}
 
+	// ... post-process ACL with default start/end dates
+	for _, l := range acl {
+		for _, c := range cards {
+			card := l[c.CardID]
+
+			if card.From.IsZero() {
+				card.From = sys.acl.defaultStartDate
+			}
+
+			if card.To.IsZero() {
+				card.To = sys.acl.defaultEndDate
+			}
+
+			l[c.CardID] = card
+		}
+	}
+
 	// ... post-process ACL with rules
 	if sys.rules != nil {
 		for _, c := range cards {

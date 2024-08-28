@@ -12,10 +12,9 @@
       - [x] Incomplete cards that cannot be loaded shouldn't be highlighted in red
       - [x] Configurable default start date
       - [x] Configurable default end date
+      - [x] Rework ACL compare to use default start/end date for missing card start/end date
       - [ ] Display default card start/end dates
       - [ ] Highlight default card start/end dates
-      - [ ] Fix card 'error' when missing start date but valid default start date
-      - [ ] Fix card 'error' when missing start date but valid default start date
       - [ ] CHANGELOG
       - [ ] README
 
