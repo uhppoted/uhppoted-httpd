@@ -2,6 +2,7 @@ import { schema } from './schema.js'
 
 class DBC {
   constructor () {
+    this.system = new Map()
     this.interfaces = new Map()
     this.controllers = new Map()
     this.doors = new Map()
@@ -52,6 +53,25 @@ class DBC {
   }
 
   get (oid) {
+    // ... system.cards
+    if (`${oid}`.startsWith(`${schema.system.base}${schema.system.cards.base}`)) {
+      if (DB.system.has('cards')) {
+        if (`${oid}` === `${schema.system.base}${schema.system.cards.defaultStartDate}`) {
+          const v = DB.system.get('cards').defaultStartDate
+          if (v != null) {
+            return [v, true]
+          }
+        }
+
+        if (`${oid}` === `${schema.system.base}${schema.system.cards.defaultEndDate}`) {
+          const v = DB.system.get('cards').defaultEndDate
+          if (v != null) {
+            return [v, true]
+          }
+        }
+      }
+    }
+
     return [null, false]
   }
 
@@ -123,7 +143,9 @@ export const DB = new DBC()
 function object (o) {
   const oid = o.OID
 
-  if (oid.startsWith(schema.interfaces.base)) {
+  if (oid.startsWith(schema.system.base)) {
+    system(o)
+  } else if (oid.startsWith(schema.interfaces.base)) {
     interfaces(o)
   } else if (oid.startsWith(schema.controllers.base)) {
     controllers(o)
@@ -139,6 +161,27 @@ function object (o) {
     logs(o)
   } else if (oid.startsWith(schema.users.base)) {
     users(o)
+  }
+}
+
+function system (o) {
+  const oid = o.OID
+
+  if (!DB.system.has('cards')) {
+    DB.system.set('cards', {
+      defaultStartDate: '',
+      defaultEndDate: ''
+    })
+  }
+
+  switch (oid) {
+    case `${schema.system.base}${schema.system.cards.defaultStartDate}`:
+      DB.system.get('cards').defaultStartDate = o.value
+      break
+
+    case `${schema.system.base}${schema.system.cards.defaultEndDate}`:
+      DB.system.get('cards').defaultEndDate = o.value
+      break
   }
 }
 

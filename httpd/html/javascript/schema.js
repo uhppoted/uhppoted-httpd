@@ -1,4 +1,13 @@
 export const schema = {
+  system: {
+    base: '0.0',
+    cards: {
+      base: '.1',
+      defaultStartDate: '.1.1',
+      defaultEndDate: '.1.2'
+    }
+  },
+
   interfaces: {
     base: '0.1',
 

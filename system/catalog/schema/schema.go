@@ -1,6 +1,7 @@
 package schema
 
 type Schema struct {
+	System      System      `json:"system"`
 	Interfaces  Interfaces  `json:"interfaces"`
 	Controllers Controllers `json:"controllers"`
 	Doors       Doors       `json:"doors"`
@@ -18,6 +19,13 @@ type Metadata struct {
 	Modified Suffix `json:"modified"`
 	Type     Suffix `json:"type"`
 	Touched  Suffix `json:"touched"`
+}
+
+type System struct {
+	OID OID `json:"OID"`
+	Metadata
+	DefaultStartDate Suffix `json:"default-card-start-date"`
+	DefaultEndDate   Suffix `json:"default-card-end-date"`
 }
 
 type Interfaces struct {
@@ -159,6 +167,19 @@ func GetSchema() Schema {
 }
 
 var schema = Schema{
+	System: System{
+		OID: InterfacesOID,
+		Metadata: Metadata{
+			Status:   Status,
+			Created:  Created,
+			Deleted:  Deleted,
+			Modified: Modified,
+			Type:     Type,
+		},
+		DefaultStartDate: SystemCardStartDate,
+		DefaultEndDate:   SystemCardEndDate,
+	},
+
 	Interfaces: Interfaces{
 		OID: InterfacesOID,
 		Metadata: Metadata{
@@ -363,6 +384,7 @@ var schema = Schema{
 	},
 }
 
+const SystemOID OID = "0.0"
 const InterfacesOID OID = "0.1"
 const ControllersOID OID = "0.2"
 const DoorsOID OID = "0.3"
@@ -378,6 +400,9 @@ const Deleted Suffix = ".0.2"
 const Modified Suffix = ".0.3"
 const Type Suffix = ".0.4"
 const Touched Suffix = ".0.5"
+
+const SystemCardStartDate = ".1.1"
+const SystemCardEndDate = ".1.2"
 
 const InterfaceName Suffix = ".1"
 const InterfaceID Suffix = ".2"

@@ -1,9 +1,12 @@
 package system
 
 import (
+	"fmt"
+
 	lib "github.com/uhppoted/uhppote-core/types"
 
 	"github.com/uhppoted/uhppoted-httpd/auth"
+	"github.com/uhppoted/uhppoted-httpd/system/catalog"
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"github.com/uhppoted/uhppoted-httpd/system/db"
 )
@@ -27,7 +30,22 @@ func Cards(uid, role string) []schema.Object {
 	defer sys.RUnlock()
 
 	auth := auth.NewAuthorizator(uid, role)
-	objects := sys.cards.AsObjects(auth)
+	objects := []schema.Object{}
+	cards := sys.cards.AsObjects(auth)
+
+	defaultStartDate := catalog.NewObject2(schema.SystemOID, schema.SystemCardStartDate, "")
+	defaultEndDate := catalog.NewObject2(schema.SystemOID, schema.SystemCardEndDate, "")
+
+	if !sys.acl.defaultStartDate.IsZero() {
+		defaultStartDate.Value = fmt.Sprintf("%v", sys.acl.defaultStartDate)
+	}
+
+	if !sys.acl.defaultEndDate.IsZero() {
+		defaultEndDate.Value = fmt.Sprintf("%v", sys.acl.defaultEndDate)
+	}
+
+	catalog.Join(&objects, defaultStartDate, defaultEndDate)
+	catalog.Join(&objects, cards...)
 
 	return objects
 }

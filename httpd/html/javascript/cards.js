@@ -231,6 +231,20 @@ function updateFromDB (oid, record) {
   update(PIN, parseInt(record.PIN, 10) === 0 ? '' : record.PIN)
   // {{end}}
 
+  if (record.from === '') {
+    const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultStartDate}`)
+    if (defval != null && defval[0] != null && defval[1]) {
+      from.value = `${defval[0]}`
+    }
+  }
+
+  if (record.to === '') {
+    const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultEndDate}`)
+    if (defval != null && defval[0] != null && defval[1]) {
+      to.value = `${defval[0]}`
+    }
+  }
+
   groups.forEach(g => {
     const td = row.querySelector(`td[data-group="${g.OID}"]`)
 

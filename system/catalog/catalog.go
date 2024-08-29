@@ -45,14 +45,14 @@ func Join(p *[]schema.Object, q ...schema.Object) {
 	*p = append(*p, q...)
 }
 
-func NewObject(oid schema.OID, value interface{}) schema.Object {
+func NewObject(oid schema.OID, value any) schema.Object {
 	return schema.Object{
 		OID:   oid,
 		Value: value,
 	}
 }
 
-func NewObject2(oid schema.OID, suffix schema.Suffix, value interface{}) schema.Object {
+func NewObject2(oid schema.OID, suffix schema.Suffix, value any) schema.Object {
 	return schema.Object{
 		OID:   oid.Append(suffix),
 		Value: value,
