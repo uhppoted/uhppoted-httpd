@@ -17,10 +17,7 @@
       - [ ] Highlight default card start/end dates
       - [ ] CHANGELOG
       - [ ] README
-      - [ ] Logging:
-```
-Sweeping all items invalidated before %!v(MISSING) 2024-08-29 05:37:13
-```
+      - [x] Logging:
 
 - [ ] Card from/to dates in Safari (https://github.com/uhppoted/uhppoted-httpd/issues/32)
 

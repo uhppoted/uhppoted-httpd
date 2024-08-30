@@ -505,7 +505,7 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 func (s *system) sweep() {
 	cutoff := time.Now().Add(-s.retention)
 
-	infof("Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
+	infof("system", "Sweeping all items invalidated before %v", cutoff.Format("2006-01-02 15:04:05"))
 
 	s.controllers.Sweep(s.retention)
 	s.doors.Sweep(s.retention)
