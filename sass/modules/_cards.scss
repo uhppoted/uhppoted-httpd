@@ -47,6 +47,20 @@ tr[data-status="incomplete"] td input.number {
 
 input.from {
   font: 400 0.9em Arial;
+  padding-left: 6px;
+}
+
+input.from.defval {
+  font-weight: bold;
+  position: relative;
+
+   &::before {
+      content: "*";
+      position: absolute;
+      left: 0px;
+      top: 50%;
+      transform: translateY(-50%);   
+  }
 }
 
 input.from::-webkit-datetime-edit { 
@@ -62,8 +76,22 @@ tr[data-status="incomplete"] td input.from {
   font-style: italic;
 }
 
-td input.to {
+input.to {
   font: 400 0.9em Arial;
+  padding-left: 6px;
+}
+
+input.to.defval {
+  font-weight: bold;
+  position: relative;
+
+   &::before {
+      content: "*";
+      position: absolute;
+      left: 0px;
+      top: 50%;
+      transform: translateY(-50%);   
+  }
 }
 
 input.to::-webkit-datetime-edit { 

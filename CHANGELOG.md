@@ -5,6 +5,7 @@
 ### Added
 1. Implemented TCP/IP transport support.
 2. On startup, redirects to 'setup' page to create an admin user if none exists.
+3. Added support for configurable default card start and end dates.
 
 ### Updated
 1. Removed creation of admin user in _daemonize_.
@@ -13,6 +14,7 @@
 4. Fixed bug in authentication that allowed deleted user to login unless system
    had been restarted.
 5. Updated to Go 1.23.
+6. Excluded cards with missing start or end dates from the ACL loaded to the controllers.
 
 
 ## [0.8.8](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.8) - 2024-03-27

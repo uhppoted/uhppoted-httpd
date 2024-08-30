@@ -78,6 +78,7 @@ function add (oid, record) {
       { suffix: 'name', oid: `${oid}${schema.controllers.name}`, selector: 'td input.name' },
       { suffix: 'ID', oid: `${oid}${schema.controllers.deviceID}`, selector: 'td input.ID' },
       { suffix: 'IP', oid: `${oid}${schema.controllers.endpoint.address}`, selector: 'td input.IP' },
+      { suffix: 'protocol', oid: `${oid}${schema.controllers.endpoint.protocol}`, selector: 'td label.protocol input' },
       { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime.current}`, selector: 'td input.datetime' },
       { suffix: 'interlock', oid: `${oid}${schema.controllers.interlock}`, selector: 'td select.interlock' },
       { suffix: 'cards', oid: `${oid}${schema.controllers.cards.count}`, selector: 'td input.cards' },
@@ -113,6 +114,7 @@ function updateFromDB (oid, record) {
   const name = row.querySelector(`[data-oid="${oid}${schema.controllers.name}"]`)
   const deviceID = row.querySelector(`[data-oid="${oid}${schema.controllers.deviceID}"]`)
   const address = row.querySelector(`[data-oid="${oid}${schema.controllers.endpoint.address}"]`)
+  const protocol = row.querySelector(`[data-oid="${oid}${schema.controllers.endpoint.protocol}"]`)
   const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime.current}"]`)
   const interlock = row.querySelector(`[data-oid="${oid}${schema.controllers.interlock}"]`)
   const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards.count}"]`)
@@ -154,7 +156,6 @@ function updateFromDB (oid, record) {
   })
 
   // ... set record values
-
   row.dataset.status = record.status
 
   const dt = record.datetime.status === 'uncertain' ? record.datetime.configured : record.datetime.datetime
@@ -162,6 +163,7 @@ function updateFromDB (oid, record) {
   update(name, record.name)
   update(deviceID, record.deviceID)
   update(address, record.address.address, record.address.status)
+  update(protocol, record.protocol === 'tcp' ? 'tcp' : 'udp', null, (v) => { return v === 'tcp' })
   update(datetime, dt, record.datetime.status)
   update(interlock, record.interlock)
   update(cards, record.cards.cards, record.cards.status)

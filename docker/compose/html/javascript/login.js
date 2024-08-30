@@ -82,7 +82,6 @@ function warning (msg) {
   const text = document.getElementById('warning')
 
   console.log(msg)
-  console.log(text)
 
   if (text != null) {
     text.value = `${msg}`

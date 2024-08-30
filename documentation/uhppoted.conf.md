@@ -27,6 +27,7 @@ the _HTTPD_ section is relevant.
 | httpd.security.cookie.max-age          | Security cookie expiry (hours)                     | 24                                 |
 | httpd.security.login.expiry            | Login cookie expiry e.g. 5m                        | 1m                                 |
 | httpd.security.session.expiry          | Session cookie expiry e.g. 300s                    | 5m                                 |
+| httpd.security.admin.role              | Administrator role name                            | admin                              |
 | httpd.security.otp.issuer              | Issuer name for OTP QR code                        | uhppoted-httpd                     |
 | httpd.security.otp.login               | `allow` enables login using OTP                    | `no`                               |
 | httpd.request.timeout                  | Time limit for fulfilling an HTTP request          | 15s                                |
@@ -57,7 +58,8 @@ the _HTTPD_ section is relevant.
 | httpd.retention                        | Retention time for deleted items                   | 5m0s                               |
 | httpd.timezones                        | File for custom timezones e.g. Afica/Cairo         | _etc_/timezones                    |
 | httpd.PIN.enabled                      | Enables card keypad PIN codes                      | false                              |
-
+| httpd.cards.default-start-date         | Default start date for cards                       | '' (none)                          |
+| httpd.cards.default-end-date           | Default end date for cards                         | '' (none)                          |
 
 Sample HTTPD section:
 ```

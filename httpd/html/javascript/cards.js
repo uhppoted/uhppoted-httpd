@@ -235,14 +235,24 @@ function updateFromDB (oid, record) {
     const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultStartDate}`)
     if (defval != null && defval[0] != null && defval[1]) {
       from.value = `${defval[0]}`
+      from.classList.add('defval')
+    } else {
+      from.classList.remove('defval')
     }
+  } else {
+    from.classList.remove('defval')
   }
 
   if (record.to === '') {
     const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultEndDate}`)
     if (defval != null && defval[0] != null && defval[1]) {
       to.value = `${defval[0]}`
+      to.classList.add('defval')
+    } else {
+      to.classList.remove('defval')
     }
+  } else {
+    to.classList.remove('defval')
   }
 
   groups.forEach(g => {

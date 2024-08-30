@@ -2,134 +2,139 @@
 ```
 0                                                                            # root
 |
+|- 0.0                                                                       # system
+|    |- 0.1:                                                                 #   cards
+|         |- 0.1.1: _default start date_                                     #     default start date
+|         |- 0.1.2: _default end date_                                       #     default end date
+|
 |- 0.1                                                                       # interfaces
 |    |- 0.1.1:                                                               # interface #1
-|    |      |- 0.1.1.0: <metadata>                                           #    metadata
-|    |      |        |- 0.1.1.0.0: <status>                                  #       current status
-|    |      |        |- 0.1.1.0.1: <created>                                 #       created date/time
-|    |      |        |- 0.1.1.0.2: <deleted>                                 #       deleted date/time
-|    |      |        |- 0.1.1.0.3: <modified>                                #       modified timestamp
-|    |      |        |- 0.1.1.0.4: <type>                                            type
+|    |      |- 0.1.1.0: _metadata_                                           #    metadata
+|    |      |        |- 0.1.1.0.0: _status_                                  #       current status
+|    |      |        |- 0.1.1.0.1: _created_                                 #       created date/time
+|    |      |        |- 0.1.1.0.2: _deleted_                                 #       deleted date/time
+|    |      |        |- 0.1.1.0.3: _modified_                                #       modified timestamp
+|    |      |        |- 0.1.1.0.4: _type_                                            type
 |    |      |                                                                #
-|    |      |- 0.1.1.1: <name>                                               #    name
-|    |      |- 0.1.1.2: <ID>                                                 #    ID
-|    |      |- 0.1.1.3: <LAN>                                                #
-|    |      |        |- 0.1.1.3.1: <bind>                                    #    LAN bind address
-|    |      |        |- 0.1.1.3.2: <broadcast>                               #    LAN broadcast address
-|    |      |        |- 0.1.1.3.3: <listen>                                  #    LAN listen address
+|    |      |- 0.1.1.1: _name_                                               #    name
+|    |      |- 0.1.1.2: _ID_                                                 #    ID
+|    |      |- 0.1.1.3: _LAN_                                                #
+|    |      |        |- 0.1.1.3.1: _bind_                                    #    LAN bind address
+|    |      |        |- 0.1.1.3.2: _broadcast_                               #    LAN broadcast address
+|    |      |        |- 0.1.1.3.3: _listen_                                  #    LAN listen address
 |    |- ...
 | 
 |- 0.2                                                                       # boards
 |    |- 0.2.1:                                                               # board #1
-|    |      |- 0.2.1.0: <metadata>                                           #    metadata
-|    |      |        |- 0.2.1.0.0: <status>                                  #       current status
-|    |      |        |- 0.2.1.0.1: <created>                                 #       created date/time
-|    |      |        |- 0.2.1.0.2: <deleted>                                 #       deleted date/time
-|    |      |        |- 0.2.1.0.3: <modified>                                #       modified timestamp
-|    |      |        |- 0.2.1.0.4: <type>                                    #    type
-|    |      |        |- 0.2.1.0.5: <touched>                                 #    refreshed timestamp
+|    |      |- 0.2.1.0: _metadata_                                           #    metadata
+|    |      |        |- 0.2.1.0.0: _status_                                  #       current status
+|    |      |        |- 0.2.1.0.1: _created_                                 #       created date/time
+|    |      |        |- 0.2.1.0.2: _deleted_                                 #       deleted date/time
+|    |      |        |- 0.2.1.0.3: _modified_                                #       modified timestamp
+|    |      |        |- 0.2.1.0.4: _type_                                    #    type
+|    |      |        |- 0.2.1.0.5: _touched_                                 #    refreshed timestamp
 |    |      |
-|    |      |- 0.2.1.1: <name>                                               #    name
-|    |      |- 0.2.1.2: <ID>                                                 #    serial number
-|    |      |- 0.2.1.3: <address>                                            #    controller endpoint
-|    |      |        |- 0.2.1.3.0: <status>                                  #       address status
-|    |      |        |- 0.2.1.3.1: <endpoint>                                #       controller address:port
-|    |      |        |- 0.2.1.3.2: <configured>                              #       configured address:port
-|    |      |        |- 0.2.1.3.3: <protocol>                                #       transport (TCP or UDP)
-|    |      |- 0.2.1.4:  <datetime>                                          #    controller date/time
-|    |      |        |- 0.2.1.4.0: <status>                                  #       status
-|    |      |        |- 0.2.1.4.1: <current>                                 #       controller date/time
-|    |      |        |- 0.2.1.5.2: <system>                                  #       system date/time
-|    |      |        |- 0.2.1.6.3: <modified>                                #       modified
-|    |      |- 0.2.1.5:  <cards>                                             #    controller cards
-|    |      |        |- 0.2.1.5.0: <status>                                  #       cards status
-|    |      |        |- 0.2.1.5.1: <count>                                   #       number of card
-|    |      |- 0.2.1.6:  <events>                                            #    controller events
-|    |      |        |- 0.2.1.6.0: <status>                                  #       events status
-|    |      |        |- 0.2.1.6.1: <first>                                   #       index of first event
-|    |      |        |- 0.2.1.6.2: <last>                                    #       index of last event
-|    |      |        |- 0.2.1.6.3: <current>                                 #       index of current event
-|    |      |- 0.2.1.7:  <doors>                                             #    doors
-|    |      |        |- 0.2.1.7.1: <door1>                                   #       door 1 OID
-|    |      |        |- 0.2.1.7.2: <door2>                                   #       door 2 OID
-|    |      |        |- 0.2.1.7.3: <door3>                                   #       door 3 OID
-|    |      |        |- 0.2.1.7.4: <door4>                                   #       door 4 OID
+|    |      |- 0.2.1.1: _name_                                               #    name
+|    |      |- 0.2.1.2: _ID_                                                 #    serial number
+|    |      |- 0.2.1.3: _address_                                            #    controller endpoint
+|    |      |        |- 0.2.1.3.0: _status_                                  #       address status
+|    |      |        |- 0.2.1.3.1: _endpoint_                                #       controller address:port
+|    |      |        |- 0.2.1.3.2: _configured_                              #       configured address:port
+|    |      |        |- 0.2.1.3.3: _protocol_                                #       transport (TCP or UDP)
+|    |      |- 0.2.1.4:  _datetime_                                          #    controller date/time
+|    |      |        |- 0.2.1.4.0: _status_                                  #       status
+|    |      |        |- 0.2.1.4.1: _current_                                 #       controller date/time
+|    |      |        |- 0.2.1.5.2: _system_                                  #       system date/time
+|    |      |        |- 0.2.1.6.3: _modified_                                #       modified
+|    |      |- 0.2.1.5:  _cards_                                             #    controller cards
+|    |      |        |- 0.2.1.5.0: _status_                                  #       cards status
+|    |      |        |- 0.2.1.5.1: _count_                                   #       number of card
+|    |      |- 0.2.1.6:  _events_                                            #    controller events
+|    |      |        |- 0.2.1.6.0: _status_                                  #       events status
+|    |      |        |- 0.2.1.6.1: _first_                                   #       index of first event
+|    |      |        |- 0.2.1.6.2: _last_                                    #       index of last event
+|    |      |        |- 0.2.1.6.3: _current_                                 #       index of current event
+|    |      |- 0.2.1.7:  _doors_                                             #    doors
+|    |      |        |- 0.2.1.7.1: _door1_                                   #       door 1 OID
+|    |      |        |- 0.2.1.7.2: _door2_                                   #       door 2 OID
+|    |      |        |- 0.2.1.7.3: _door3_                                   #       door 3 OID
+|    |      |        |- 0.2.1.7.4: _door4_                                   #       door 4 OID
 |    |- ...
 |
 |- 0.3                                                                       # doors
 |    |- 0.3.1:                                                               # door #1
-|    |      |- 0.3.1.0: <metadata>                                           #    metadata
-|    |      |        |- 0.3.1.0.0: <status>                                  #       current status
-|    |      |        |- 0.3.1.0.1: <created>                                 #       created date/time
-|    |      |        |- 0.3.1.0.2: <deleted>                                 #       deleted date/time
-|    |      |        |- 0.3.1.0.3: <modified>                                #       modified timestamp
-|    |      |        |- 0.3.1.0.4: <controller>                              #       associated controller OID
-|    |      |                   |- 0.3.1.0.4.1: <created>                    #               controller created date/time
-|    |      |                   |- 0.3.1.0.4.2: <name>                       #               controller name
-|    |      |                   |- 0.3.1.0.4.3: <deviceID>                   #               controller serial number
-|    |      |                   |- 0.3.1.0.4.4: <door>                       #               controller door number
+|    |      |- 0.3.1.0: _metadata_                                           #    metadata
+|    |      |        |- 0.3.1.0.0: _status_                                  #       current status
+|    |      |        |- 0.3.1.0.1: _created_                                 #       created date/time
+|    |      |        |- 0.3.1.0.2: _deleted_                                 #       deleted date/time
+|    |      |        |- 0.3.1.0.3: _modified_                                #       modified timestamp
+|    |      |        |- 0.3.1.0.4: _controller_                              #       associated controller OID
+|    |      |                   |- 0.3.1.0.4.1: _created_                    #               controller created date/time
+|    |      |                   |- 0.3.1.0.4.2: _name_                       #               controller name
+|    |      |                   |- 0.3.1.0.4.3: _deviceID_                   #               controller serial number
+|    |      |                   |- 0.3.1.0.4.4: _door_                       #               controller door number
 |    |      |                                                                #
-|    |      |- 0.3.1.1: <name>                                               #    name
-|    |      |- 0.3.1.2: <delay>                                              #    door open delay value
-|    |               |- 0.3.1.2.1: <status>                                  #                    status
-|    |               |- 0.3.1.2.2: <configured>                              #                    configured value
-|    |               |- 0.3.1.2.3: <error>                                   #                    error info
-|    |               |- 0.3.1.2.4: <modified>                                #                    has been modified
-|    |      |- 0.3.1.3: <control>                                            #    door control state value
-|    |               |- 0.3.1.2.1: <status>                                  #    door control state status
-|    |               |- 0.3.1.2.2: <configured>                              #                       configured value
-|    |               |- 0.3.1.2.3: <error>                                   #                       error info
-|    |               |- 0.3.1.2.4: <modified>                                #                       has been modified
+|    |      |- 0.3.1.1: _name_                                               #    name
+|    |      |- 0.3.1.2: _delay_                                              #    door open delay value
+|    |               |- 0.3.1.2.1: _status_                                  #                    status
+|    |               |- 0.3.1.2.2: _configured_                              #                    configured value
+|    |               |- 0.3.1.2.3: _error_                                   #                    error info
+|    |               |- 0.3.1.2.4: _modified_                                #                    has been modified
+|    |      |- 0.3.1.3: _control_                                            #    door control state value
+|    |               |- 0.3.1.2.1: _status_                                  #    door control state status
+|    |               |- 0.3.1.2.2: _configured_                              #                       configured value
+|    |               |- 0.3.1.2.3: _error_                                   #                       error info
+|    |               |- 0.3.1.2.4: _modified_                                #                       has been modified
 |
 |- 0.4                                                                       # cards
 |    |- 0.4.1:                                                               # card #1
-|    |      |- 0.4.1.0: <metadata>                                           #    metadata
-|    |      |        |- 0.4.1.0.0: <status>                                  #       current status
-|    |      |        |- 0.4.1.0.1: <created>                                 #       created timestamp
-|    |      |        |- 0.4.1.0.2: <deleted>                                 #       deleted timestamp
-|    |      |        |- 0.4.1.0.3: <modified>                                #       modified timestamp
+|    |      |- 0.4.1.0: _metadata_                                           #    metadata
+|    |      |        |- 0.4.1.0.0: _status_                                  #       current status
+|    |      |        |- 0.4.1.0.1: _created_                                 #       created timestamp
+|    |      |        |- 0.4.1.0.2: _deleted_                                 #       deleted timestamp
+|    |      |        |- 0.4.1.0.3: _modified_                                #       modified timestamp
 |    |      |                                                                # 
-|    |      |- 0.4.1.1: <name>                                               #      name
-|    |      |- 0.4.1.2: <number>                                             #      card number
-|    |      |- 0.4.1.3: <from>                                               #      'valid from' date
-|    |      |- 0.4.1.4: <to>                                                 #      'valid until' date
+|    |      |- 0.4.1.1: _name_                                               #      name
+|    |      |- 0.4.1.2: _number_                                             #      card number
+|    |      |- 0.4.1.3: _from_                                               #      'valid from' date
+|    |      |- 0.4.1.4: _to_                                                 #      'valid until' date
 |    |      |- 0.4.1.5                                                       #      groups
-|    |               |- 0.4.1.5.1 <member>                                   #      group #1: member
-|    |               |           |- 0.4.1.5.1.1: <oid>                       #                group OID
+|    |               |- 0.4.1.5.1 _member_                                   #      group #1: member
+|    |               |           |- 0.4.1.5.1.1: _oid_                       #                group OID
 |    |               |                                                       #
 |    |               |- ...                                                  #      group #2...
 |    |- ...
 |
 |- 0.5                                                                       # groups
 |    |- 0.5.1                                                                # group #1
-|    |      |- 0.5.1.0: <metadata>                                           #    metadata
-|    |      |        |- 0.5.1.0.0: <status>                                  #       current status
-|    |      |        |- 0.5.1.0.1: <created>                                 #       created date/time
-|    |      |        |- 0.5.1.0.2: <deleted>                                 #       deleted date/time
-|    |      |        |- 0.5.1.0.3: <modified>                                #       modified timestamp
-|    |      |- 0.5.1.1: <name>                                               #       Name
-|    |      |- 0.5.1.2: <index>                                              #       Index (display order)
+|    |      |- 0.5.1.0: _metadata_                                           #    metadata
+|    |      |        |- 0.5.1.0.0: _status_                                  #       current status
+|    |      |        |- 0.5.1.0.1: _created_                                 #       created date/time
+|    |      |        |- 0.5.1.0.2: _deleted_                                 #       deleted date/time
+|    |      |        |- 0.5.1.0.3: _modified_                                #       modified timestamp
+|    |      |- 0.5.1.1: _name_                                               #       Name
+|    |      |- 0.5.1.2: _index_                                              #       Index (display order)
 |    |- ...
 |
 |- 0.6                                                                       # events
 |    |- 0.6.0                                                                #    metadata
-|    |      |- 0.6.0.0: <status>                                             #       synthesized status
+|    |      |- 0.6.0.0: _status_                                             #       synthesized status
 |    |      |- 0.6.0.1                                                       #       first event OID
 |    |      |- 0.6.0.2                                                       #       last event OID
 |    |
 |    |- 0.6.1                                                                #    event #1
-|    |      |- 0.6.1.1:  <timestamp>                                         #       event timestamp
-|    |      |- 0.6.1.2:  <deviceID>                                          #       device ID
-|    |      |- 0.6.1.3:  <index>                                             #       event index
-|    |      |- 0.6.1.4:  <type>                                              #       event type
-|    |      |- 0.6.1.5:  <door>                                              #       event door ID
-|    |      |- 0.6.1.6:  <direction>                                         #       event direction
-|    |      |- 0.6.1.7:  <cardNumber>                                        #       event card Number
-|    |      |- 0.6.1.8:  <accessGranted>                                     #       event access granted
-|    |      |- 0.6.1.9:  <reason>                                            #       event access reason
-|    |      |- 0.6.1.10: <deviceName>                                        #       (associated) controller name
-|    |      |- 0.6.1.11: <doorName>                                          #       (associated) door name
-|    |      |- 0.6.1.12: <cardName>                                          #       (associated) card holder
+|    |      |- 0.6.1.1:  _timestamp_                                         #       event timestamp
+|    |      |- 0.6.1.2:  _deviceID_                                          #       device ID
+|    |      |- 0.6.1.3:  _index_                                             #       event index
+|    |      |- 0.6.1.4:  _type_                                              #       event type
+|    |      |- 0.6.1.5:  _door_                                              #       event door ID
+|    |      |- 0.6.1.6:  _direction_                                         #       event direction
+|    |      |- 0.6.1.7:  _cardNumber_                                        #       event card Number
+|    |      |- 0.6.1.8:  _accessGranted_                                     #       event access granted
+|    |      |- 0.6.1.9:  _reason_                                            #       event access reason
+|    |      |- 0.6.1.10: _deviceName_                                        #       (associated) controller name
+|    |      |- 0.6.1.11: _doorName_                                          #       (associated) door name
+|    |      |- 0.6.1.12: _cardName_                                          #       (associated) card holder
 |    |- ...
 |
 |- 0.7                                                                       # logs
@@ -138,28 +143,28 @@
 |    |      |- 0.7.0.2                                                       #       last log entry OID
 |    |
 |    |- 0.7.1                                                                #    entry #1
-|    |      |- 0.7.1.1: <timestamp>                                          #       timestamp
-|    |      |- 0.7.1.2: <uid>                                                #       user ID
-|    |      |- 0.7.1.3: <item>                                               #       item type
-|    |      |- 0.7.1.4: <id>                                                 #       item ID
-|    |      |- 0.7.1.5: <name>                                               #       item name
-|    |      |- 0.7.1.6: <field>                                              #       item field
-|    |      |- 0.7.1.7: <details>                                            #       item details
+|    |      |- 0.7.1.1: _timestamp_                                          #       timestamp
+|    |      |- 0.7.1.2: _uid_                                                #       user ID
+|    |      |- 0.7.1.3: _item_                                               #       item type
+|    |      |- 0.7.1.4: _id_                                                 #       item ID
+|    |      |- 0.7.1.5: _name_                                               #       item name
+|    |      |- 0.7.1.6: _field_                                              #       item field
+|    |      |- 0.7.1.7: _details_                                            #       item details
 |
 |- 0.8                                                                       # users
 |    |- 0.8.1                                                                # user #1
-|    |      |- 0.8.1.0: <metadata>                                           #    metadata
-|    |      |        |- 0.8.1.0.0: <status>                                  #       status
-|    |      |        |- 0.8.1.0.1: <created>                                 #       created date/time
-|    |      |        |- 0.8.1.0.2: <deleted>                                 #       deleted date/time
-|    |      |        |- 0.8.1.0.3: <modified>                                #       modified timestamp
-|    |      |- 0.8.1.1: <name>                                               #       Name
-|    |      |- 0.8.1.2: <uid>                                                #       UID
-|    |      |- 0.8.1.3: <role>                                               #       Role
-|    |      |- 0.8.1.4: <password>                                           #       Password
-|    |      |- 0.8.1.5: <otp>                                                #       OTP (enabled)
-|    |      |        |- 0.8.1.5.1: <otpKey>                                  #       OTP secret key
-|    |      |- 0.8.1.6: <locked>                                             #       locked flag
+|    |      |- 0.8.1.0: _metadata_                                           #    metadata
+|    |      |        |- 0.8.1.0.0: _status_                                  #       status
+|    |      |        |- 0.8.1.0.1: _created_                                 #       created date/time
+|    |      |        |- 0.8.1.0.2: _deleted_                                 #       deleted date/time
+|    |      |        |- 0.8.1.0.3: _modified_                                #       modified timestamp
+|    |      |- 0.8.1.1: _name_                                               #       Name
+|    |      |- 0.8.1.2: _uid_                                                #       UID
+|    |      |- 0.8.1.3: _role_                                               #       Role
+|    |      |- 0.8.1.4: _password_                                           #       Password
+|    |      |- 0.8.1.5: _otp_                                                #       OTP (enabled)
+|    |      |        |- 0.8.1.5.1: _otpKey_                                  #       OTP secret key
+|    |      |- 0.8.1.6: _locked_                                             #       locked flag
 |    |- ...
 |
 

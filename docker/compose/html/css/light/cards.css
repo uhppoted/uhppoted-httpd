@@ -791,12 +791,35 @@ td input.name {
   width: 120px;
 }
 
+tr[data-status=incomplete] td input.name {
+  color: #eb7443;
+  font-style: italic;
+}
+
 td input.number {
   width: 72px;
 }
 
+tr[data-status=incomplete] td input.number {
+  color: #eb7443;
+  font-style: italic;
+}
+
 input.from {
   font: 400 0.9em Arial;
+  padding-left: 6px;
+}
+
+input.from.defval {
+  font-weight: bold;
+  position: relative;
+}
+input.from.defval::before {
+  content: "*";
+  position: absolute;
+  left: 0px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 input.from::-webkit-datetime-edit {
@@ -807,8 +830,26 @@ input.from::-webkit-calendar-picker-indicator {
   margin-left: 0px;
 }
 
-td input.to {
+tr[data-status=incomplete] td input.from {
+  color: #eb7443;
+  font-style: italic;
+}
+
+input.to {
   font: 400 0.9em Arial;
+  padding-left: 6px;
+}
+
+input.to.defval {
+  font-weight: bold;
+  position: relative;
+}
+input.to.defval::before {
+  content: "*";
+  position: absolute;
+  left: 0px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 input.to::-webkit-datetime-edit {
@@ -817,6 +858,11 @@ input.to::-webkit-datetime-edit {
 
 input.to::-webkit-calendar-picker-indicator {
   margin-left: 0px;
+}
+
+tr[data-status=incomplete] td input.to {
+  color: #eb7443;
+  font-style: italic;
 }
 
 td label.group {
@@ -850,4 +896,12 @@ td label.group input[type=checkbox]:checked ~ img.yes {
 
 td label.group input[type=checkbox]:checked ~ img.no {
   display: none;
+}
+
+tr[data-status=incomplete] td label.group img.yes {
+  filter: invert(85%) sepia(0%) saturate(269%) hue-rotate(148deg) brightness(93%) contrast(88%);
+}
+
+tr[data-status=incomplete] td label.group img.no {
+  filter: invert(85%) sepia(0%) saturate(269%) hue-rotate(148deg) brightness(93%) contrast(88%);
 }

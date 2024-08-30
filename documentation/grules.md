@@ -94,6 +94,11 @@ include:
 
 but can be any valid string.
 
+### `ADMIN`
+
+The `ADMIN` entity is the value of the configured _admin_ role. Defaults to 'admin' unless reconfigured in 
+_uhppoted.conf_.
+
 ### `RESULT`
 
 The `RESULT` entity contains the result of the evaluation of the ruleset and comprises two fields:

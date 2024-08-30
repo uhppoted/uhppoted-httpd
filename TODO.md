@@ -14,10 +14,12 @@
       - [x] Configurable default end date
       - [x] Rework ACL compare to use default start/end date for missing card start/end date
       - [x] Display default card start/end dates
-      - [ ] Highlight default card start/end dates
-      - [ ] CHANGELOG
-      - [ ] README
-      - [x] Logging:
+      - [x] Highlight default card start/end dates
+      - [x] Logging
+      - [x] CHANGELOG
+      - [x] README
+      - [x] FAQ
+      - [x] Docker images
 
 - [ ] Card from/to dates in Safari (https://github.com/uhppoted/uhppoted-httpd/issues/32)
 

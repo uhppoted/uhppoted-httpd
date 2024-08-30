@@ -2,15 +2,12 @@ import { schema } from './schema.js'
 
 class DBC {
   constructor () {
+    this.system = new Map()
     this.interfaces = new Map()
     this.controllers = new Map()
     this.doors = new Map()
     this.cards = new Map()
     this.groups = new Map()
-
-    this.init = function () {
-      setInterval(this.sweep, 15000)
-    }
 
     this.tables = {
       events: {
@@ -31,90 +28,113 @@ class DBC {
       }
     }
 
-    this.get = function (oid) {
-      return [null, false]
-    }
-
-    this.updated = function (tag, recordset) {
-      if (recordset) {
-        switch (tag) {
-          case 'interfaces':
-          case 'controllers':
-          case 'doors':
-          case 'cards':
-          case 'groups':
-          case 'events':
-          case 'logs':
-          case 'users':
-            recordset.forEach(o => object(o))
-            break
-        }
-      }
-    }
-
-    this.delete = function (tag, oid) {
-      if (oid) {
-        switch (tag) {
-          case 'interfaces':
-            this.interfaces.delete(oid)
-            break
-
-          case 'controllers':
-            this.controllers.delete(oid)
-            break
-
-          case 'doors':
-            this.doors.delete(oid)
-            break
-
-          case 'cards':
-            this.cards.delete(oid)
-            break
-
-          case 'groups':
-            this.groups.delete(oid)
-            break
-
-          case 'users':
-            this.tables.users.users.delete(oid)
-            break
-        }
-      }
-    }
-
-    this.events = function () {
-      return this.tables.events.events
-    }
-
-    this.firstEvent = function () {
-      return this.tables.events.first
-    }
-
-    this.lastEvent = function () {
-      return this.tables.events.last
-    }
-
-    this.logs = function () {
-      return this.tables.logs.logs
-    }
-
-    this.firstLog = function () {
-      return this.tables.logs.first
-    }
-
-    this.lastLog = function () {
-      return this.tables.logs.last
-    }
-
-    this.users = function () {
-      return this.tables.users.users
-    }
-
-    this.sweep = function () {
-      sweep()
-    }
-
     this.init()
+  }
+
+  init () {
+    setInterval(this.sweep, 15000)
+  }
+
+  updated (tag, recordset) {
+    if (recordset) {
+      switch (tag) {
+        case 'interfaces':
+        case 'controllers':
+        case 'doors':
+        case 'cards':
+        case 'groups':
+        case 'events':
+        case 'logs':
+        case 'users':
+          recordset.forEach(o => object(o))
+          break
+      }
+    }
+  }
+
+  get (oid) {
+    // ... system.cards
+    if (`${oid}`.startsWith(`${schema.system.base}${schema.system.cards.base}`)) {
+      if (DB.system.has('cards')) {
+        if (`${oid}` === `${schema.system.base}${schema.system.cards.defaultStartDate}`) {
+          const v = DB.system.get('cards').defaultStartDate
+          if (v != null) {
+            return [v, true]
+          }
+        }
+
+        if (`${oid}` === `${schema.system.base}${schema.system.cards.defaultEndDate}`) {
+          const v = DB.system.get('cards').defaultEndDate
+          if (v != null) {
+            return [v, true]
+          }
+        }
+      }
+    }
+
+    return [null, false]
+  }
+
+  delete (tag, oid) {
+    if (tag != null && oid != null) {
+      switch (tag) {
+        case 'interfaces':
+          this.interfaces.delete(oid)
+          break
+
+        case 'controllers':
+          this.controllers.delete(oid)
+          break
+
+        case 'doors':
+          this.doors.delete(oid)
+          break
+
+        case 'cards':
+          this.cards.delete(oid)
+          break
+
+        case 'groups':
+          this.groups.delete(oid)
+          break
+
+        case 'users':
+          this.tables.users.users.delete(oid)
+          break
+      }
+    }
+  }
+
+  events () {
+    return this.tables.events.events
+  }
+
+  firstEvent () {
+    return this.tables.events.first
+  }
+
+  lastEvent () {
+    return this.tables.events.last
+  }
+
+  logs () {
+    return this.tables.logs.logs
+  }
+
+  firstLog () {
+    return this.tables.logs.first
+  }
+
+  lastLog () {
+    return this.tables.logs.last
+  }
+
+  users () {
+    return this.tables.users.users
+  }
+
+  sweep () {
+    sweep()
   }
 }
 
@@ -123,7 +143,9 @@ export const DB = new DBC()
 function object (o) {
   const oid = o.OID
 
-  if (oid.startsWith(schema.interfaces.base)) {
+  if (oid.startsWith(schema.system.base)) {
+    system(o)
+  } else if (oid.startsWith(schema.interfaces.base)) {
     interfaces(o)
   } else if (oid.startsWith(schema.controllers.base)) {
     controllers(o)
@@ -139,6 +161,27 @@ function object (o) {
     logs(o)
   } else if (oid.startsWith(schema.users.base)) {
     users(o)
+  }
+}
+
+function system (o) {
+  const oid = o.OID
+
+  if (!DB.system.has('cards')) {
+    DB.system.set('cards', {
+      defaultStartDate: '',
+      defaultEndDate: ''
+    })
+  }
+
+  switch (oid) {
+    case `${schema.system.base}${schema.system.cards.defaultStartDate}`:
+      DB.system.get('cards').defaultStartDate = o.value
+      break
+
+    case `${schema.system.base}${schema.system.cards.defaultEndDate}`:
+      DB.system.get('cards').defaultEndDate = o.value
+      break
   }
 }
 
@@ -214,6 +257,7 @@ function controllers (o) {
       name: '',
       deviceID: '',
       address: { address: '', configured: '', status: 'unknown' },
+      protocol: '',
       datetime: { datetime: '', configured: '', status: 'unknown' },
       interlock: '',
       cards: { cards: '', status: 'unknown' },
@@ -255,6 +299,10 @@ function controllers (o) {
 
     case `${base}${schema.controllers.endpoint.address}`:
       v.address.address = o.value
+      break
+
+    case `${base}${schema.controllers.endpoint.protocol}`:
+      v.protocol = o.value
       break
 
     case `${base}${schema.controllers.endpoint.configured}`:

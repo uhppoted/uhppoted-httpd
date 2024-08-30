@@ -1,4 +1,13 @@
 export const schema = {
+  system: {
+    base: '0.0',
+    cards: {
+      base: '.1',
+      defaultStartDate: '.1.1',
+      defaultEndDate: '.1.2'
+    }
+  },
+
   interfaces: {
     base: '0.1',
 
@@ -30,7 +39,8 @@ export const schema = {
     endpoint: {
       status: '.3.0',
       address: '.3.1',
-      configured: '.3.2'
+      configured: '.3.2',
+      protocol: '.3.3'
     },
     datetime: {
       status: '.4.0',
