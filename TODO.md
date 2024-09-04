@@ -6,22 +6,8 @@
 - [x] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
 - [x] Deleting current user - remains logged in and can log back in (cf. https://github.com/uhppoted/uhppoted-httpd/issues/42)
 - [x] Update to Go 1.23 (cf. https://github.com/uhppoted/uhppoted/issues/53)
-- [ ] Cards without a valid start/end date (cf. https://github.com/uhppoted/uhppoted-httpd/issues/29)
-      - [x] Lowlight cards without a valid start/end date
-      - [x] Only load cards with valid start and end dates
-      - [x] Incomplete cards that cannot be loaded shouldn't be highlighted in red
-      - [x] Configurable default start date
-      - [x] Configurable default end date
-      - [x] Rework ACL compare to use default start/end date for missing card start/end date
-      - [x] Display default card start/end dates
-      - [x] Highlight default card start/end dates
-      - [x] Logging
-      - [x] CHANGELOG
-      - [x] README
-      - [x] FAQ
-      - [x] Docker images
-
-- [ ] Card from/to dates in Safari (https://github.com/uhppoted/uhppoted-httpd/issues/32)
+- [x] Cards without a valid start/end date (cf. https://github.com/uhppoted/uhppoted-httpd/issues/29)
+- [x] Card from/to dates in Safari (cf. https://github.com/uhppoted/uhppoted-httpd/issues/32)
 
 - [ ] Fonts in Safari
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_

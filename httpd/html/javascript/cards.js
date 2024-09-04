@@ -231,10 +231,25 @@ function updateFromDB (oid, record) {
   update(PIN, parseInt(record.PIN, 10) === 0 ? '' : record.PIN)
   // {{end}}
 
+  // ... sigh .. Safari date widget sets the current date as the placeholder value
+  if (`${navigator.vendor}`.toLowerCase().includes('apple')) {
+    name.classList.add('apple')
+    number.classList.add('apple')
+    from.classList.add('apple')
+    to.classList.add('apple')
+    // {{if .WithPIN}}
+    PIN.classList.add('apple')
+  // {{end}}
+  }
+
   if (record.from === '') {
     const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultStartDate}`)
-    if (defval != null && defval[0] != null && defval[1]) {
+
+    if (defval != null && defval[0] != null && defval[0] !== '' && defval[1]) {
       from.value = `${defval[0]}`
+    }
+
+    if (defval != null && defval[0] != null && defval[0] !== '' && defval[1]) {
       from.classList.add('defval')
     } else {
       from.classList.remove('defval')
@@ -245,8 +260,12 @@ function updateFromDB (oid, record) {
 
   if (record.to === '') {
     const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultEndDate}`)
-    if (defval != null && defval[0] != null && defval[1]) {
+
+    if (defval != null && defval[0] != null && defval[0] !== '' && defval[1]) {
       to.value = `${defval[0]}`
+    }
+
+    if (defval != null && defval[0] != null && defval[0] !== '' && defval[1]) {
       to.classList.add('defval')
     } else {
       to.classList.remove('defval')

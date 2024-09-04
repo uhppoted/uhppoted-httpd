@@ -63,17 +63,25 @@ input.from.defval {
   }
 }
 
+tr[data-status="incomplete"] td input.from {
+  color: $content-table-item-incomplete;
+  font-style: italic;
+}
+
+tr[data-status="incomplete"] td input.from.apple {
+  color: color-mix(in srgb, $content-table-item-incomplete 33.3%, transparent);
+}
+
+tr[data-status="incomplete"] td input.from.defval.apple {
+  color: $content-table-item-incomplete;
+}
+
 input.from::-webkit-datetime-edit { 
   max-width: 80px;
 }
 
 input.from::-webkit-calendar-picker-indicator { 
   margin-left: 0px;
-}
-
-tr[data-status="incomplete"] td input.from {
-  color: $content-table-item-incomplete;
-  font-style: italic;
 }
 
 input.to {
@@ -94,17 +102,25 @@ input.to.defval {
   }
 }
 
+tr[data-status="incomplete"] td input.to {
+  color: $content-table-item-incomplete;
+  font-style: italic;
+}
+
+tr[data-status="incomplete"] td input.to.apple {
+  color: color-mix(in srgb, $content-table-item-incomplete 33.3%, transparent);
+}
+
+tr[data-status="incomplete"] td input.to.defval.apple {
+  color: $content-table-item-incomplete;
+}
+
 input.to::-webkit-datetime-edit { 
   max-width: 80px;
 }
 
 input.to::-webkit-calendar-picker-indicator { 
   margin-left: 0px;
-}
-
-tr[data-status="incomplete"] td input.to {
-  color: $content-table-item-incomplete;
-  font-style: italic;
 }
 
 td label.group {
@@ -148,3 +164,23 @@ tr[data-status="incomplete"] td label.group img.no {
   filter: invert(85%) sepia(0%) saturate(269%) hue-rotate(148deg) brightness(93%) contrast(88%);
 }
 
+// Safari fixes
+input.apple {
+  font-size: 13.333px;
+}
+
+input.number.apple {
+  font-size: 12px;
+}
+
+input.from.apple {
+  font-size: 12px;
+}
+
+input.to.apple {
+  font-size: 12px;
+}
+
+input.PIN.apple {
+  font-size: 12px;
+}
