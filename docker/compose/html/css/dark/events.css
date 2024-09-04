@@ -913,3 +913,6 @@ td input.access {
     font-size: 0.88em;
   }
 }
+input.apple {
+  font-size: 13.333px;
+}

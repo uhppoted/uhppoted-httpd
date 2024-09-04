@@ -867,6 +867,14 @@ tr.door td input.passcodes {
   width: 224px;
 }
 
+input.apple {
+  font-size: 13.333px;
+}
+
+input.deviceID.apple {
+  font-size: 12px;
+}
+
 .combobox ul {
   display: none;
   background: #93a1a1;

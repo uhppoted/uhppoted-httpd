@@ -200,6 +200,11 @@ function add (oid, record) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
+
+        // ... sigh .. Safari is awful
+        if (`${navigator.vendor}`.toLowerCase().includes('apple')) {
+          field.classList.add('apple')
+        }
       } else {
         console.error(f)
       }
@@ -230,17 +235,6 @@ function updateFromDB (oid, record) {
   // {{if .WithPIN}}
   update(PIN, parseInt(record.PIN, 10) === 0 ? '' : record.PIN)
   // {{end}}
-
-  // ... sigh .. Safari date widget sets the current date as the placeholder value
-  if (`${navigator.vendor}`.toLowerCase().includes('apple')) {
-    name.classList.add('apple')
-    number.classList.add('apple')
-    from.classList.add('apple')
-    to.classList.add('apple')
-    // {{if .WithPIN}}
-    PIN.classList.add('apple')
-  // {{end}}
-  }
 
   if (record.from === '') {
     const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultStartDate}`)

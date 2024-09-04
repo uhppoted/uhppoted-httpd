@@ -56,3 +56,12 @@ td label.door input[type="checkbox"]:checked ~ img.yes {
 td label.door input[type="checkbox"]:checked ~ img.no {
   display: none;
 }
+
+// Safari fixes
+input.apple {
+  font-size: 13.333px;
+}
+
+input.deviceID.apple {
+  font-size: 12px;
+}

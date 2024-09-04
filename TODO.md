@@ -8,8 +8,8 @@
 - [x] Update to Go 1.23 (cf. https://github.com/uhppoted/uhppoted/issues/53)
 - [x] Cards without a valid start/end date (cf. https://github.com/uhppoted/uhppoted-httpd/issues/29)
 - [x] Card from/to dates in Safari (cf. https://github.com/uhppoted/uhppoted-httpd/issues/32)
+- [x] Fonts in Safari
 
-- [ ] Fonts in Safari
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)
 

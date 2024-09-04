@@ -815,6 +815,15 @@ div#controllers tr.controller td input.door1, div#controllers .door2, div#contro
   width: 72px;
   pointer-events: none;
 }
+div#controllers input.apple {
+  font-size: 13.333px;
+}
+div#controllers input.ID.apple {
+  font-size: 12px;
+}
+div#controllers input.datetime.apple {
+  font-size: 12.5px;
+}
 
 div#events {
   margin-top: 16px;
@@ -854,6 +863,9 @@ div#events td input {
   font-size: 1.2em;
   font-variant: small-caps;
   font-variant-caps: all-small-caps;
+}
+div#events td input.apple {
+  font-size: 14px;
 }
 div#events td input.timestamp {
   width: 140px;
@@ -916,6 +928,9 @@ div#logs td input {
   font-size: 1.2em;
   font-variant: small-caps;
   font-variant-caps: all-small-caps;
+}
+div#logs td input.apple {
+  font-size: 14px;
 }
 div#logs td input.timestamp {
   width: 140px;

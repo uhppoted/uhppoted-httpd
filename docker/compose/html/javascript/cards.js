@@ -200,6 +200,11 @@ function add (oid, record) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
+
+        // ... sigh .. Safari is awful
+        if (`${navigator.vendor}`.toLowerCase().includes('apple')) {
+          field.classList.add('apple')
+        }
       } else {
         console.error(f)
       }
@@ -233,8 +238,12 @@ function updateFromDB (oid, record) {
 
   if (record.from === '') {
     const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultStartDate}`)
-    if (defval != null && defval[0] != null && defval[1]) {
+
+    if (defval != null && defval[0] != null && defval[0] !== '' && defval[1]) {
       from.value = `${defval[0]}`
+    }
+
+    if (defval != null && defval[0] != null && defval[0] !== '' && defval[1]) {
       from.classList.add('defval')
     } else {
       from.classList.remove('defval')
@@ -245,8 +254,12 @@ function updateFromDB (oid, record) {
 
   if (record.to === '') {
     const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultEndDate}`)
-    if (defval != null && defval[0] != null && defval[1]) {
+
+    if (defval != null && defval[0] != null && defval[0] !== '' && defval[1]) {
       to.value = `${defval[0]}`
+    }
+
+    if (defval != null && defval[0] != null && defval[0] !== '' && defval[1]) {
       to.classList.add('defval')
     } else {
       to.classList.remove('defval')

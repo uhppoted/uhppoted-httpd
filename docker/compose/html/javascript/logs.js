@@ -139,6 +139,11 @@ function add (oid) {
         field.dataset.record = uuid
         field.dataset.original = ''
         field.dataset.value = ''
+
+        // ... sigh .. Safari is awful
+        if (`${navigator.vendor}`.toLowerCase().includes('apple')) {
+          field.classList.add('apple')
+        }
       } else {
         console.error(f)
       }

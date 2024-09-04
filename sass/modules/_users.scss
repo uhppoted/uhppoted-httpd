@@ -92,3 +92,8 @@ td label.locked input[type="checkbox"]:checked ~ img.yes {
 td label.locked input[type="checkbox"]:checked ~ img.no {
   display: none;
 }
+
+// Safari fixes
+input.apple {
+  font-size: 13.333px;
+}

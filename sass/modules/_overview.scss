@@ -72,6 +72,19 @@ div#controllers {
     width: 72px;
     pointer-events: none;
   }
+
+  // Safari fixes
+  input.apple {
+    font-size: 13.333px;
+  }
+
+  input.ID.apple {
+    font-size: 12px;
+  }
+
+  input.datetime.apple {
+    font-size: 12.5px;
+  }
 }
 
 div#events {
@@ -121,6 +134,11 @@ div#events {
     font-size: 1.2em;
     font-variant: small-caps;
     font-variant-caps: all-small-caps;
+  }
+
+  // Safari fixes
+  td input.apple {
+    font-size: 14px;
   }
 
   td input.timestamp {
@@ -202,7 +220,12 @@ div#logs {
     font-size: 1.2em;
     font-variant: small-caps;
     font-variant-caps: all-small-caps;  
-}
+  }
+
+  // Safari fixes
+  td input.apple {
+    font-size: 14px;
+  }
 
   td input.timestamp {
     width: 140px;

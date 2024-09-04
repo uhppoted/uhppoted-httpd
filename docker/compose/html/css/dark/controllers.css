@@ -968,6 +968,22 @@ tr.controller td select.door1, .door2, .door3, .door4 {
   width: 72px;
 }
 
+input.apple {
+  font-size: 13.333px;
+}
+
+input.ID.apple {
+  font-size: 12px;
+}
+
+input.IP.apple {
+  font-size: 12px;
+}
+
+input.datetime.apple {
+  font-size: 12px;
+}
+
 .combobox ul {
   display: none;
   background: #93a1a1;

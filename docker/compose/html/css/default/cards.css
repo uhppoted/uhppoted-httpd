@@ -822,17 +822,25 @@ input.from.defval::before {
   transform: translateY(-50%);
 }
 
+tr[data-status=incomplete] td input.from {
+  color: #eb7443;
+  font-style: italic;
+}
+
+tr[data-status=incomplete] td input.from.apple {
+  color: color-mix(in srgb, #eb7443 33.3%, transparent);
+}
+
+tr[data-status=incomplete] td input.from.defval.apple {
+  color: #eb7443;
+}
+
 input.from::-webkit-datetime-edit {
   max-width: 80px;
 }
 
 input.from::-webkit-calendar-picker-indicator {
   margin-left: 0px;
-}
-
-tr[data-status=incomplete] td input.from {
-  color: #eb7443;
-  font-style: italic;
 }
 
 input.to {
@@ -852,17 +860,25 @@ input.to.defval::before {
   transform: translateY(-50%);
 }
 
+tr[data-status=incomplete] td input.to {
+  color: #eb7443;
+  font-style: italic;
+}
+
+tr[data-status=incomplete] td input.to.apple {
+  color: color-mix(in srgb, #eb7443 33.3%, transparent);
+}
+
+tr[data-status=incomplete] td input.to.defval.apple {
+  color: #eb7443;
+}
+
 input.to::-webkit-datetime-edit {
   max-width: 80px;
 }
 
 input.to::-webkit-calendar-picker-indicator {
   margin-left: 0px;
-}
-
-tr[data-status=incomplete] td input.to {
-  color: #eb7443;
-  font-style: italic;
 }
 
 td label.group {
@@ -904,4 +920,24 @@ tr[data-status=incomplete] td label.group img.yes {
 
 tr[data-status=incomplete] td label.group img.no {
   filter: invert(85%) sepia(0%) saturate(269%) hue-rotate(148deg) brightness(93%) contrast(88%);
+}
+
+input.apple {
+  font-size: 13.333px;
+}
+
+input.number.apple {
+  font-size: 12px;
+}
+
+input.from.apple {
+  font-size: 12px;
+}
+
+input.to.apple {
+  font-size: 12px;
+}
+
+input.PIN.apple {
+  font-size: 12px;
 }
