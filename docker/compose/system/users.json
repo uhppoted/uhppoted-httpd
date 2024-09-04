@@ -1,4 +1,13 @@
 {
   "users": [
+    {
+      "OID": "0.8.1",
+      "uid": "woot",
+      "role": "admin",
+      "salt": "6b75923205c8dd6a2d67fc92074b545d",
+      "password": "11b8b0184e4375cacc3a81586a2f518428652d0786ee625ee0169ff648ad0566",
+      "created": "2024-09-04 17:33:46 UTC",
+      "modified": ""
+    }
   ]
 }

@@ -1,4 +1,44 @@
 {
   "logs": [
+    {
+      "timestamp": "2024-09-04T17:33:46.631234278Z",
+      "UID": "",
+      "OID": "0.7.1",
+      "item": "user",
+      "id": "woot",
+      "name": "",
+      "field": "user",
+      "details": "Added 'admin' user"
+    },
+    {
+      "timestamp": "2024-09-04T17:34:01.20211253Z",
+      "UID": "woot",
+      "OID": "0.7.2",
+      "item": "card",
+      "id": "",
+      "name": "",
+      "field": "card",
+      "details": "Added 'new' card"
+    },
+    {
+      "timestamp": "2024-09-04T17:34:10.214802638Z",
+      "UID": "woot",
+      "OID": "0.7.3",
+      "item": "card",
+      "id": "",
+      "name": "",
+      "field": "name",
+      "details": "Updated name from '' to 'Luna'"
+    },
+    {
+      "timestamp": "2024-09-04T17:34:10.23151103Z",
+      "UID": "woot",
+      "OID": "0.7.4",
+      "item": "card",
+      "id": "",
+      "name": "Luna",
+      "field": "card",
+      "details": "Updated card number from 0 to 10058401"
+    }
   ]
 }
