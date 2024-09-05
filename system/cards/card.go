@@ -268,17 +268,10 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	case oid == c.OID.Append(CardFrom):
 		if err := CanUpdate(a, c, "from", value); err != nil {
 			return nil, err
+		} else if from, err := lib.ParseDate(value); err != nil && value != "" {
+			return nil, err
 		} else {
-			from := lib.Date{}
-
-			if v, err := lib.ParseDate(value); err != nil && value != "" {
-				return nil, err
-			} else {
-				from = v
-			}
-
 			c.log(dbc, uid, "update", "from", c.from, value, "Updated VALID FROM date from %v to %v", c.from, value)
-
 			c.from = from
 			c.modified = types.TimestampNow()
 
@@ -288,15 +281,9 @@ func (c *Card) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DB
 	case oid == c.OID.Append(CardTo):
 		if err := CanUpdate(a, c, "to", value); err != nil {
 			return nil, err
+		} else if to, err := lib.ParseDate(value); err != nil && value != "" {
+			return nil, err
 		} else {
-			to := lib.Date{}
-
-			if v, err := lib.ParseDate(value); err != nil && value != "" {
-				return nil, err
-			} else {
-				to = v
-			}
-
 			c.log(dbc, uid, "update", "to", c.to, value, "Updated VALID UNTIL date from %v to %v", c.to, value)
 			c.to = to
 			c.modified = types.TimestampNow()
