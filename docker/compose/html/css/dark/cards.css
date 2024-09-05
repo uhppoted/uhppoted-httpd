@@ -851,12 +851,8 @@ tr[data-status=incomplete] td input.from {
   font-style: italic;
 }
 
-tr[data-status=incomplete] td input.from.apple {
+tr[data-status=incomplete] td input.from.apple:invalid {
   color: color-mix(in srgb, #eb7443 33.3%, transparent);
-}
-
-tr[data-status=incomplete] td input.from.defval.apple {
-  color: #eb7443;
 }
 
 input.from::-webkit-datetime-edit {
@@ -889,12 +885,8 @@ tr[data-status=incomplete] td input.to {
   font-style: italic;
 }
 
-tr[data-status=incomplete] td input.to.apple {
+tr[data-status=incomplete] td input.to.apple:invalid {
   color: color-mix(in srgb, #eb7443 33.3%, transparent);
-}
-
-tr[data-status=incomplete] td input.to.defval.apple {
-  color: #eb7443;
 }
 
 input.to::-webkit-datetime-edit {

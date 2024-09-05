@@ -188,6 +188,7 @@ docker-ghcr: build
 	cd dist/docker/ghcr && docker build --no-cache -f Dockerfile -t $(DOCKER) .
 
 docker-compose: 
+	rsync -av --exclude "html.go" httpd/html docker/compose/
 	cd docker && find . -name .DS_Store -delete && rm -f compose.zip && zip --recurse-paths compose.zip compose
 
 docker-run-dev:

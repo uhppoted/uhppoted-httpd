@@ -93,7 +93,7 @@
               <td>
                 <input class="field from"
                        type="date" 
-                       onchange="onEdited('card', event)" 
+                       onchange="onDateEdit('card.from', event)" 
                        data-record=""
                        data-original=""
                        data-value=""
@@ -103,7 +103,7 @@
               <td>
                 <input class="field to"
                        type="date" 
-                       onchange="onEdited('card', event)" 
+                       onchange="onDateEdit('card.to', event)" 
                        data-record=""
                        data-original=""
                        data-value=""
@@ -142,6 +142,7 @@
     {{template "uhppoted.js" .}}
     {{template "tabular.js"  .}}
     {{template "window.js"   .}}
+    {{template "cards.js"    .}}
 
     const refresh = function() {
       onRefresh('cards')
@@ -149,7 +150,7 @@
 
     resetIdle()
     refresh()
-    setRefresh(refresh)
+    // setRefresh(refresh)
   </script>
 
   <!-- global information initialised by Go template -->
@@ -166,6 +167,7 @@
         console.debug('onMenu is not defined')
       }
     }
+
   </script>
 
 </html>

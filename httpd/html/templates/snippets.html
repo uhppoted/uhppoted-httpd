@@ -87,6 +87,12 @@
              onRefresh } from "/javascript/tabular.js"
 {{end}}
 
+{{define "cards.js"}}
+    import { onDateEdit } from "/javascript/cards.js"
+
+    window.onDateEdit = onDateEdit
+{{end}}
+
 {{define "window.js"}}
     window.retheme = retheme
     window.dismiss = dismiss

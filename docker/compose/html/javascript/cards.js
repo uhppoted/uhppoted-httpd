@@ -1,4 +1,4 @@
-import { update, trim } from './tabular.js'
+import { update, trim, onEdited } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 
@@ -280,4 +280,39 @@ function updateFromDB (oid, record) {
   })
 
   return row
+}
+
+export function onDateEdit (tag, event) {
+  onEdited('card', event)
+
+  const field = event.currentTarget
+  let defval = ''
+
+  if (field.value === '') {
+    if (tag === 'card.from') {
+      const v = DB.get(`${schema.system.base}${schema.system.cards.defaultStartDate}`)
+      if (v != null && v[0] != null && v[1]) {
+        defval = `${v[0]}`
+      }
+    }
+
+    if (tag === 'card.to') {
+      const v = DB.get(`${schema.system.base}${schema.system.cards.defaultEndDate}`)
+      if (v != null && v[0] != null && v[1]) {
+        defval = `${v[0]}`
+      }
+    }
+
+    if (defval !== '') {
+      field.value = `${defval}`
+    }
+
+    if (defval !== '') {
+      field.classList.add('defval')
+    } else {
+      field.classList.remove('defval')
+    }
+  } else {
+    field.classList.remove('defval')
+  }
 }
