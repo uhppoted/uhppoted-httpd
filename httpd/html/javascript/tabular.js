@@ -389,7 +389,7 @@ export function unmark (clazz, ...elements) {
   })
 }
 
-export function set (element, value, status) {
+export function set (element, value, status, cache) {
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
@@ -409,7 +409,7 @@ export function set (element, value, status) {
     unmark('modified', element, td)
   }
 
-  percolate(oid)
+  percolate(oid, cache)
 }
 
 export function revert (row) {
@@ -433,7 +433,7 @@ export function revert (row) {
   row.classList.remove('modified')
 }
 
-export function update (element, value, status, checked) {
+export function update (element, value, status, checked, cache) {
   if (element && value !== undefined) {
     const v = value.toString()
     const oid = element.dataset.oid
@@ -484,25 +484,34 @@ export function update (element, value, status, checked) {
       }
     }
 
-    set(element, value, status)
+    set(element, value, status, cache)
   }
 }
 
-function modified (oid) {
-  const element = document.querySelector(`[data-oid="${oid}"]`)
+function query (oid, cache) {
+  if (cache != null) {
+    return cache.query(oid)
+  }
+
+  return document.querySelector(`[data-oid="${oid}"]`)
+}
+
+function queryModified (oid, cache) {
+  if (cache != null) {
+    return cache.queryModified(oid)
+  }
+
+  return document.querySelectorAll(`[data-oid^="${oid}."].modified`)
+}
+
+function modified (oid, cache) {
+  const element = query(oid, cache)
 
   if (element) {
-    const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
-    const set = new Set()
-
-    list.forEach(e => {
-      if (e.classList.contains('modified')) {
-        const oidx = e.dataset.oid
-        if (oidx.startsWith(oid)) {
-          set.add(oidx)
-        }
-      }
-    })
+    const list = queryModified(oid, cache)
+    const set = new Set(Array.from(list)
+      .map(e => e.dataset.oid)
+      .filter(v => v.startsWith(oid)))
 
     // <tr> and 'new' ?
     if (element.nodeName === 'TR') {
@@ -569,14 +578,14 @@ export function trim (tag, objects, rows) {
   })
 }
 
-function percolate (oid) {
+function percolate (oid, cache) {
   let oidx = oid
 
   while (oidx) {
     const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
     oidx = match ? match[1] : null
     if (oidx) {
-      modified(oidx)
+      modified(oidx, cache)
     }
   }
 }

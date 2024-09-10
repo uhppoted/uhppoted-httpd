@@ -1,14 +1,15 @@
 # TODO
 
-- [x] `EndPoint() *net.UDPAddr
-- [x] FIX controller addresses
-- [x] TCP transport (cf. https://github.com/uhppoted/uhppote-core/issues/17)
-- [x] Display user setup page (cf. https://github.com/uhppoted/uhppoted-httpd/issues/26)
-- [x] Deleting current user - remains logged in and can log back in (cf. https://github.com/uhppoted/uhppoted-httpd/issues/42)
-- [x] Update to Go 1.23 (cf. https://github.com/uhppoted/uhppoted/issues/53)
-- [x] Cards without a valid start/end date (cf. https://github.com/uhppoted/uhppoted-httpd/issues/29)
-- [x] Card from/to dates in Safari (cf. https://github.com/uhppoted/uhppoted-httpd/issues/32)
-- [x] Fonts in Safari
+- [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
+      - [ ] `tabular.modified`
+          - [x] cache querySelector
+          - [x] cache querySelectorAll
+          - [x] per page cache implementation i.e. pass it into `modified`
+          - [ ] windmill
+          - [ ] commit/revert are **really** slow
+          - [ ] incremental loading
+          - [ ] nightly builds
+
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

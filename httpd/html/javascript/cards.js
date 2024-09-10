@@ -1,15 +1,22 @@
 import { update, trim, onEdited } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
+import { Cache } from './cache.js'
 
-const pagesize = 5
+const pagesize = 20
 
 export function refreshed () {
+  console.log('cards:refresh')
+  const start = Date.now()
+
   const cards = [...DB.cards.values()]
     .filter(c => alive(c))
     .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(cards)
+
+  // initialise rendering cache
+  const cache = new Cache()
 
   // renders a 'page size' chunk of cards
   const f = function (offset) {
@@ -17,7 +24,7 @@ export function refreshed () {
     let count = 0
     while (count < pagesize && ix < cards.length) {
       const o = cards[ix]
-      const row = updateFromDB(o.OID, o)
+      const row = updateFromDB(o.OID, o, cache)
       if (row) {
         if (o.status === 'new') {
           row.classList.add('new')
@@ -46,6 +53,8 @@ export function refreshed () {
         return u.created.localeCompare(v.created)
       })
     }
+
+    console.log('cards:refreshed', Date.now() - start)
   }
 
   const chunk = offset => new Promise(resolve => {
@@ -214,9 +223,12 @@ function add (oid, record) {
   }
 }
 
-function updateFromDB (oid, record) {
-  const row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
+function updateFromDB (oid, record, cache) {
+  const f = (field, value) => {
+    update(field, value, undefined, undefined, cache)
+  }
 
+  const row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
   const name = row.querySelector(`[data-oid="${oid}${schema.cards.name}"]`)
   const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
   const from = row.querySelector(`[data-oid="${oid}${schema.cards.from}"]`)
@@ -228,12 +240,12 @@ function updateFromDB (oid, record) {
 
   row.dataset.status = record.status
 
-  update(name, record.name)
-  update(number, parseInt(record.number, 10) === 0 ? '' : record.number)
-  update(from, record.from)
-  update(to, record.to)
+  f(name, record.name)
+  f(number, parseInt(record.number, 10) === 0 ? '' : record.number)
+  f(from, record.from)
+  f(to, record.to)
   // {{if .WithPIN}}
-  update(PIN, parseInt(record.PIN, 10) === 0 ? '' : record.PIN)
+  f(PIN, parseInt(record.PIN, 10) === 0 ? '' : record.PIN)
   // {{end}}
 
   if (record.from === '') {
@@ -275,7 +287,7 @@ function updateFromDB (oid, record) {
       const e = td.querySelector('.field')
       const g = record.groups.get(`${e.dataset.oid}`)
 
-      update(e, g && g.member)
+      f(e, g && g.member)
     }
   })
 
