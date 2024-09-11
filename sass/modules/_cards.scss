@@ -6,21 +6,32 @@
   max-width:100%; 
 }
 
+#container.loading {
+  th.name {
+    min-width: 174px;
+  }
+
+  th.padding {
+    min-width: 500px;  
+  }
+}
+
 th.name {
   min-width: 144px;
   border-bottom: 1px;
 }
 
 th.number {
+  min-width: 82px;
   white-space: nowrap;
 }
 
 th.from {
-  min-width: 72px;
+  min-width: 108px;
 }
 
 th.to {
-  min-width: 72px;
+  min-width: 108px;
 }
 
 th.group {

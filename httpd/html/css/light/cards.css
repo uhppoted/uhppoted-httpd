@@ -65,11 +65,22 @@ nav ul li.selected {
 }
 
 main {
-  display: flex;
   grid-area: content;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: start;
+  align-items: start;
   overflow: hidden;
   margin: 8px 0px 8px 0px;
+}
+
+#container {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+#container.loading {
+  opacity: 0.5;
 }
 
 footer {
@@ -142,6 +153,44 @@ footer {
 }
 
 @keyframes windmill {
+  to {
+    transform: rotate(360deg);
+  }
+}
+#loading {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: center;
+  align-self: start;
+  display: none;
+  visibility: hidden;
+  margin-top: 120px;
+  margin-bottom: 0px;
+  margin-left: -120px;
+  margin-right: 0px;
+  z-index: 5;
+}
+
+#loading:before {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  margin: auto;
+  width: 120px;
+  height: 120px;
+  margin-top: 12px;
+  border-radius: 50%;
+  border-top: 5px solid #268bd2;
+  border-right: 5px solid transparent;
+  animation: windmill 0.9s linear infinite;
+}
+
+#loading.visible {
+  display: block;
+  visibility: visible;
+}
+
+@keyframes loading {
   to {
     transform: rotate(360deg);
   }
@@ -766,21 +815,29 @@ tr td select[data-status=error] {
   max-width: 100%;
 }
 
+#container.loading th.name {
+  min-width: 174px;
+}
+#container.loading th.padding {
+  min-width: 500px;
+}
+
 th.name {
   min-width: 144px;
   border-bottom: 1px;
 }
 
 th.number {
+  min-width: 82px;
   white-space: nowrap;
 }
 
 th.from {
-  min-width: 72px;
+  min-width: 108px;
 }
 
 th.to {
-  min-width: 72px;
+  min-width: 108px;
 }
 
 th.group {

@@ -5,10 +5,13 @@
           - [x] cache querySelector
           - [x] cache querySelectorAll
           - [x] per page cache implementation i.e. pass it into `modified`
-          - [ ] windmill
+          - [x] windmill
+          - [ ] pre-cache on refresh
           - [ ] commit/revert are **really** slow
           - [ ] incremental loading
           - [ ] nightly builds
+          - [ ] 'name' header overwritten on vscroll
+          - [ ] refresh windmill is not showing
 
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_

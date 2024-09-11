@@ -2,11 +2,11 @@ import { update, trim, onEdited } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 import { Cache } from './cache.js'
+import { loaded } from './uhppoted.js'
 
 const pagesize = 20
 
 export function refreshed () {
-  console.log('cards:refresh')
   const start = Date.now()
 
   const cards = [...DB.cards.values()]
@@ -54,7 +54,8 @@ export function refreshed () {
       })
     }
 
-    console.log('cards:refreshed', Date.now() - start)
+    loaded()
+    console.log(`cards:refreshed (${Date.now() - start}s)`)
   }
 
   const chunk = offset => new Promise(resolve => {

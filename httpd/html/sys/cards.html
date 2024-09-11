@@ -18,7 +18,11 @@
 
       <!-- MAIN -->
       <main>
-        <div id="container">
+        <div id="loading" class="overlay">
+          <span class="windmill"></span>
+        </div>
+
+        <div id="container" class="loading">
           <div id="controls" data-oid="{{ .schema.Cards.OID }}">
             <img id="commitall" class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('cards', event, 'cards')" draggable="false" />
             <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('cards', event)"  draggable="false"  />
@@ -134,6 +138,7 @@
 
       {{template "footer" .}}
     </div>
+
   </body>
 
   <!-- SCRIPTS -->
@@ -148,6 +153,7 @@
       onRefresh('cards')
     }
 
+    loading()
     resetIdle()
     refresh()
     setRefresh(refresh)
