@@ -1,0 +1,83 @@
+name: nightly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * 0"
+  release:
+    types: [published]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v5
+      with:
+        go-version: ^1.23
+        cache: false
+
+    - name: Install staticcheck
+      run: go install honnef.co/go/tools/cmd/staticcheck@latest
+
+    - name: Setup NPM
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install sass
+      run: npm install -g sass
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v4
+
+    - name: Install eslint
+      run: npm install eslint eslint-config-standard eslint-plugin-promise eslint-plugin-import eslint-plugin-node --save-dev
+
+    - name: Build
+      run: make build-all
+
+    - name: Upload Linux artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: dist/development/linux/uhppoted-httpd
+        name: uhppoted-httpd_linux-nightly
+
+    - name: Upload MacOS Intel artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: dist/development/darwin-x64/uhppoted-httpd
+        name: uhppoted-httpd_darwin-x64-nightly
+
+    - name: Upload MacOS Apple silicon artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: dist/development/darwin-arm64/uhppoted-httpd
+        name: uhppoted-httpd_darwin-arm64-nightly
+
+    - name: Upload Windows artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: dist/development/windows/uhppoted-httpd.exe
+        name: uhppoted-httpd_windows-nightly.exe
+
+    - name: Upload ARM artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: dist/development/arm/uhppoted-httpd
+        name: uhppoted-httpd_arm-nightly
+
+    - name: Upload ARM7 artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: dist/development/arm7/uhppoted-httpd
+        name: uhppoted-httpd_arm7-nightly
+
+    - name: Upload HTML artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: dist/development/html
+        name: html-nightly

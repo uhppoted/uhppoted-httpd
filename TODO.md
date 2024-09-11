@@ -6,7 +6,7 @@
           - [x] cache querySelectorAll
           - [x] per page cache implementation i.e. pass it into `modified`
           - [x] windmill
-          - [ ] pre-cache on refresh
+          - [ ] pre-populate cache on refresh
           - [ ] commit/revert are **really** slow
           - [ ] incremental loading
           - [ ] nightly builds
