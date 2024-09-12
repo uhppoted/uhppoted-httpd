@@ -59,7 +59,7 @@ export function refreshed () {
         const vnumber = `${v.number}`.padStart(12,' ')
 
         const ustr = `${ucreated}:${uname}:${unumber}`
-        const vstr = `${vcreated}:${uname}:${vnumber}`
+        const vstr = `${vcreated}:${vname}:${vnumber}`
 
         return ustr.localeCompare(vstr)
       })
