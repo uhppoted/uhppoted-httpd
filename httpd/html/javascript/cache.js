@@ -4,11 +4,19 @@ export class Cache {
     this.modified = new Map()
   }
 
+  put (oid, field) {
+    const key = `${oid}`
+
+    this.elements.set(key, field)
+  }
+
   query (oid) {
     const key = `${oid}`
 
     if (!this.elements.has(key)) {
-      this.elements.set(key, document.querySelector(`[data-oid="${oid}"]`))
+      const e = document.querySelector(`[data-oid="${oid}"]`)
+
+      this.elements.set(key, e)
     }
 
     return this.elements.get(key)

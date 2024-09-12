@@ -5,10 +5,10 @@ import { Cache } from './cache.js'
 import { loaded } from './uhppoted.js'
 
 const pagesize = 20
+const GROUPS_SUFFIX = `${schema.cards.group}`.replace(/\.+$/, '')
 
 export function refreshed () {
   const start = Date.now()
-
   const cards = [...DB.cards.values()]
     .filter(c => alive(c))
     .sort((p, q) => p.created.localeCompare(q.created))
@@ -226,6 +226,10 @@ function add (oid, record) {
 
 function updateFromDB (oid, record, cache) {
   const f = (field, value) => {
+    if (cache != null) {
+      cache.put(field.dataset.oid, field)
+    }
+
     update(field, value, undefined, undefined, cache)
   }
 
@@ -240,6 +244,11 @@ function updateFromDB (oid, record, cache) {
   // {{end}}
 
   row.dataset.status = record.status
+
+  if (cache != null) {
+    cache.put(row.dataset.oid, row)
+    cache.put(`${row.dataset.oid}${GROUPS_SUFFIX}`, null)
+  }
 
   f(name, record.name)
   f(number, parseInt(record.number, 10) === 0 ? '' : record.number)

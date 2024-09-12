@@ -8,11 +8,12 @@
           - [x] windmill
           - [x] nightly builds
           - [x] fade-in on loaded
+          - [x] pre-populate cache on refresh
           - [ ] commit/revert are **really** slow
-          - [ ] pre-populate cache on refresh
           - [ ] incremental loading
           - [ ] 'name' header overwritten on vscroll
           - [ ] refresh windmill is not showing
+          - [ ] sort rows by creation + name/number
 
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
