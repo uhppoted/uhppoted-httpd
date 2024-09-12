@@ -50,7 +50,18 @@ export function refreshed () {
         const u = DB.cards.get(p.dataset.oid)
         const v = DB.cards.get(q.dataset.oid)
 
-        return u.created.localeCompare(v.created)
+        const ucreated = new Date(Date.parse(u.created)).toISOString()
+        const uname = `${u.name}`.padStart(32,' ')
+        const unumber = `${u.number}`.padStart(12,' ')
+        
+        const vcreated = new Date(Date.parse(v.created)).toISOString()
+        const vname = `${v.name}`.padStart(32,' ')
+        const vnumber = `${v.number}`.padStart(12,' ')
+
+        const ustr = `${ucreated}:${uname}:${unumber}`
+        const vstr = `${vcreated}:${uname}:${vnumber}`
+
+        return ustr.localeCompare(vstr)
       })
     }
 
