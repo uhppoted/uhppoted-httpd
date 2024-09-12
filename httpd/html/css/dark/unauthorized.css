@@ -85,6 +85,8 @@ main {
 #container {
   grid-row: 1;
   grid-column: 1;
+  transition-property: opacity;
+  transition-duration: 250ms;
 }
 
 #container.loading {

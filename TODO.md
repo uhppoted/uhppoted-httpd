@@ -6,10 +6,11 @@
           - [x] cache querySelectorAll
           - [x] per page cache implementation i.e. pass it into `modified`
           - [x] windmill
-          - [ ] pre-populate cache on refresh
+          - [x] nightly builds
+          - [x] fade-in on loaded
           - [ ] commit/revert are **really** slow
+          - [ ] pre-populate cache on refresh
           - [ ] incremental loading
-          - [ ] nightly builds
           - [ ] 'name' header overwritten on vscroll
           - [ ] refresh windmill is not showing
 
