@@ -311,7 +311,9 @@ export function onRollbackAll (tag, event) {
   }
 
   const f = function (table, recordset, refreshed) {
-    const rows = document.getElementById(table).querySelector('table tbody').rows
+    // const rows = document.getElementById(table).querySelector('table tbody').rows
+    const rows = document.getElementById(table).querySelectorAll('table tbody tr.modified')
+
     for (let i = rows.length; i > 0; i--) {
       rollback(tag, rows[i - 1], refreshed, options)
     }
