@@ -8,6 +8,7 @@ import * as events from './events.js'
 import * as logs from './logs.js'
 import * as users from './users.js'
 import { DB } from './db.js'
+import { Cache } from './cache.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
 class Warning extends Error {
@@ -303,10 +304,16 @@ export function onRollback (tag, event) {
 }
 
 export function onRollbackAll (tag, event) {
+  const start = Date.now()
+  const cache = new Cache({ modified: false })
+  const options = {
+    cache: cache
+  }
+
   const f = function (table, recordset, refreshed) {
     const rows = document.getElementById(table).querySelector('table tbody').rows
     for (let i = rows.length; i > 0; i--) {
-      rollback(tag, rows[i - 1], refreshed)
+      rollback(tag, rows[i - 1], refreshed, options)
     }
   }
 
@@ -324,6 +331,7 @@ export function onRollbackAll (tag, event) {
 
     case 'cards':
       f('cards', 'cards', cards.refreshed)
+      console.log(`cards:rolled-back (${Date.now() - start}ms)`)
       break
 
     case 'groups':
@@ -389,7 +397,7 @@ export function unmark (clazz, ...elements) {
   })
 }
 
-export function set (element, value, status, options) {
+export function set (element, value, status, options = {}) {
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
@@ -412,7 +420,7 @@ export function set (element, value, status, options) {
   percolate(oid, options)
 }
 
-export function revert (row) {
+export function revert (row, options = {}) {
   const fields = row.querySelectorAll('.field')
 
   fields.forEach((item) => {
@@ -427,7 +435,7 @@ export function revert (row) {
       item.value = value
     }
 
-    set(item, value, item.dataset.status)
+    set(item, value, item.dataset.status, options)
   })
 
   row.classList.remove('modified')
@@ -640,12 +648,12 @@ function get (urls, refreshed) {
   })
 }
 
-function rollback (recordset, row, refreshed) {
+function rollback (recordset, row, refreshed, options) {
   if (row && row.classList.contains('new')) {
     DB.delete(recordset, row.dataset.oid)
     refreshed()
   } else {
-    revert(row)
+    revert(row, options)
   }
 }
 

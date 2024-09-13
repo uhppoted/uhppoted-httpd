@@ -4,7 +4,7 @@ import { schema } from './schema.js'
 import { Cache } from './cache.js'
 import { loaded } from './uhppoted.js'
 
-const pagesize = 20
+const pagesize = 5
 const GROUPS_SUFFIX = `${schema.cards.group}`.replace(/\.+$/, '')
 
 export function refreshed () {

@@ -11,11 +11,15 @@
           - [x] pre-populate cache on refresh
           - [x] sort rows by creation + name/number
           - [x] modified(...,options)
-          - [ ] commit/revert are **really** slow
+          - [ ] rollback-all is **really** slow
+                - [x] cache query
+                - [ ] only revert modified rows
+          - [ ] commit-all is **really** slow
+                - [ ] only commit modified rows
+
           - [ ] incremental loading
           - [ ] 'name' header overwritten on vscroll
           - [ ] refresh windmill is not showing
-          - (?) special `set` implementation for commit-all and revert-all
 
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
