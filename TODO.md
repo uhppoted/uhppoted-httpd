@@ -10,10 +10,12 @@
           - [x] fade-in on loaded
           - [x] pre-populate cache on refresh
           - [x] sort rows by creation + name/number
+          - [x] modified(...,options)
           - [ ] commit/revert are **really** slow
           - [ ] incremental loading
           - [ ] 'name' header overwritten on vscroll
           - [ ] refresh windmill is not showing
+          - (?) special `set` implementation for commit-all and revert-all
 
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_

@@ -51,12 +51,12 @@ export function refreshed () {
         const v = DB.cards.get(q.dataset.oid)
 
         const ucreated = new Date(Date.parse(u.created)).toISOString()
-        const uname = `${u.name}`.padStart(32,' ')
-        const unumber = `${u.number}`.padStart(12,' ')
-        
+        const uname = `${u.name}`.padStart(32, ' ')
+        const unumber = `${u.number}`.padStart(12, ' ')
+
         const vcreated = new Date(Date.parse(v.created)).toISOString()
-        const vname = `${v.name}`.padStart(32,' ')
-        const vnumber = `${v.number}`.padStart(12,' ')
+        const vname = `${v.name}`.padStart(32, ' ')
+        const vnumber = `${v.number}`.padStart(12, ' ')
 
         const ustr = `${ucreated}:${uname}:${unumber}`
         const vstr = `${vcreated}:${vname}:${vnumber}`
@@ -66,7 +66,7 @@ export function refreshed () {
     }
 
     loaded()
-    console.log(`cards:refreshed (${Date.now() - start}s)`)
+    console.log(`cards:refreshed (${Date.now() - start}ms)`)
   }
 
   const chunk = offset => new Promise(resolve => {
@@ -236,12 +236,14 @@ function add (oid, record) {
 }
 
 function updateFromDB (oid, record, cache) {
+  const options = { cache: cache }
+
   const f = (field, value) => {
     if (cache != null) {
       cache.put(field.dataset.oid, field)
     }
 
-    update(field, value, undefined, undefined, cache)
+    update(field, value, undefined, undefined, options)
   }
 
   const row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
