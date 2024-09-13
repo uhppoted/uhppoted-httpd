@@ -103,6 +103,7 @@ main {
   grid-column: 1;
   transition-property: opacity;
   transition-duration: 250ms;
+  overflow-y: auto;
 }
 
 #container.loading {

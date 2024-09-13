@@ -50,11 +50,11 @@ export function refreshed () {
         const u = DB.cards.get(p.dataset.oid)
         const v = DB.cards.get(q.dataset.oid)
 
-        const ucreated = new Date(Date.parse(u.created)).toISOString()
+        const ucreated = fmt(u.created)
         const uname = `${u.name}`.padStart(32, ' ')
         const unumber = `${u.number}`.padStart(12, ' ')
 
-        const vcreated = new Date(Date.parse(v.created)).toISOString()
+        const vcreated = fmt(v.created)
         const vname = `${v.name}`.padStart(32, ' ')
         const vnumber = `${v.number}`.padStart(12, ' ')
 
@@ -349,5 +349,13 @@ export function onDateEdit (tag, event) {
     }
   } else {
     field.classList.remove('defval')
+  }
+}
+
+function fmt (date) {
+  try {
+    return new Date(Date.parse(date)).toISOString()
+  } catch {
+    return ''
   }
 }

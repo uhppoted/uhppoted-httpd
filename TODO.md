@@ -11,11 +11,22 @@
           - [x] pre-populate cache on refresh
           - [x] sort rows by creation + name/number
           - [x] modified(...,options)
+          - [x] scrollbar is gone after change to grid layout?
+                - check Safari (https://dev.to/rashidshamloo/preventing-the-layout-shift-caused-by-scrollbars-2flp)
+          - [x] Safari loading windmill doesn't go away```
           - [ ] rollback-all is **really** slow
                 - [x] cache query
-                - [ ] only revert modified rows
+                - [x] only revert modified rows
+                - [ ] check what happens with 'new' row
+                      - https://stackoverflow.com/questions/7517429/css-selector-a-or-b-and-c
+                - (?) cache queryModified
+                      - (?) defer the modified count to the overarching function call
           - [ ] commit-all is **really** slow
+                - [ ] cache query
                 - [ ] only commit modified rows
+                - [ ] check what happens with new
+                - (?) cache queryModified
+                      - (?) defer the modified count to the overarching function call
 
           - [ ] incremental loading
           - [ ] 'name' header overwritten on vscroll
