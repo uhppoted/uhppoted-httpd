@@ -38,12 +38,12 @@ export class Cache {
 
     if (this.modified) {
       if (!this.modified.has(key)) {
-        this.modified.set(key, document.querySelectorAll(`[data-oid^="${oid}."].modified`))
+        this.modified.set(key, document.querySelectorAll(`[data-oid^="${oid}."]:is(.modified)`))
       }
 
       return this.modified.get(key)
     }
 
-    return document.querySelectorAll(`[data-oid^="${oid}."].modified`)
+    return document.querySelectorAll(`[data-oid^="${oid}."]:is(.modified)`)
   }
 }

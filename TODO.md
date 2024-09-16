@@ -12,25 +12,30 @@
           - [x] sort rows by creation + name/number
           - [x] modified(...,options)
           - [x] scrollbar is gone after change to grid layout?
-                - check Safari (https://dev.to/rashidshamloo/preventing-the-layout-shift-caused-by-scrollbars-2flp)
           - [x] Safari loading windmill doesn't go away```
           - [ ] rollback-all is **really** slow
                 - [x] cache query
                 - [x] only revert modified rows
                 - [ ] check what happens with 'new' row
+                      - modified count should include 'new'
+                      - rollback list should include 'new'
                       - https://stackoverflow.com/questions/7517429/css-selector-a-or-b-and-c
-                - (?) cache queryModified
-                      - (?) defer the modified count to the overarching function call
           - [ ] commit-all is **really** slow
                 - [ ] cache query
                 - [ ] only commit modified rows
                 - [ ] check what happens with new
                 - (?) cache queryModified
                       - (?) defer the modified count to the overarching function call
+          - [ ] only do _modified_ count at end of updated
+                - (?) do it top down
+                - (?) cache the _modified_ rows in _set_
+                - check performance with `const rows = document.getElementById(table).querySelector('table tbody').rows`
 
+          - [ ] // FIXME commented out for debugging
           - [ ] incremental loading
           - [ ] 'name' header overwritten on vscroll
           - [ ] refresh windmill is not showing
+          - [ ] scroll into view on 'new'
 
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_

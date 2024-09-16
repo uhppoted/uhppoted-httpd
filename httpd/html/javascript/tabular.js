@@ -311,8 +311,7 @@ export function onRollbackAll (tag, event) {
   }
 
   const f = function (table, recordset, refreshed) {
-    // const rows = document.getElementById(table).querySelector('table tbody').rows
-    const rows = document.getElementById(table).querySelectorAll('table tbody tr.modified')
+    const rows = document.getElementById(table).querySelectorAll('table tbody tr:is(.modified,.new)')
 
     for (let i = rows.length; i > 0; i--) {
       rollback(tag, rows[i - 1], refreshed, options)
@@ -333,7 +332,6 @@ export function onRollbackAll (tag, event) {
 
     case 'cards':
       f('cards', 'cards', cards.refreshed)
-      console.log(`cards:rolled-back (${Date.now() - start}ms)`)
       break
 
     case 'groups':
@@ -344,6 +342,8 @@ export function onRollbackAll (tag, event) {
       f('users', 'users', users.refreshed)
       break
   }
+
+  console.log(`cards:rolled-back (${Date.now() - start}ms)`)
 }
 
 export function onNew (tag, event) {
@@ -498,6 +498,10 @@ export function update (element, value, status, checked, options = {}) {
   }
 }
 
+export function recount() {
+  console.log('recount')
+}
+
 function query (oid, options) {
   if (options != null && options.cache != null) {
     return options.cache.query(oid)
@@ -511,7 +515,7 @@ function queryModified (oid, options) {
     return options.cache.queryModified(oid)
   }
 
-  return document.querySelectorAll(`[data-oid^="${oid}."].modified`)
+  return document.querySelectorAll(`[data-oid^="${oid}."]:is(.modified)`)
 }
 
 function modified (oid, options) {

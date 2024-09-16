@@ -1,4 +1,4 @@
-import { update, trim, onEdited } from './tabular.js'
+import { update, trim, recount, onEdited } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 import { Cache } from './cache.js'
@@ -78,6 +78,8 @@ export function refreshed () {
     for (let ix = 0; ix < cards.length; ix += pagesize) {
       yield chunk(ix).then(() => ix)
     }
+
+    recount()
   }
 
   (async function loop () {
