@@ -498,8 +498,8 @@ export function update (element, value, status, checked, options = {}) {
   }
 }
 
-export function recount() {
-  console.log('recount')
+export function recount(root) {
+  console.log('recount', root)
 }
 
 function query (oid, options) {
@@ -515,7 +515,7 @@ function queryModified (oid, options) {
     return options.cache.queryModified(oid)
   }
 
-  return document.querySelectorAll(`[data-oid^="${oid}."]:is(.modified)`)
+  return document.querySelectorAll(`[data-oid^="${oid}."]:is(.modified,.new)`)
 }
 
 function modified (oid, options) {

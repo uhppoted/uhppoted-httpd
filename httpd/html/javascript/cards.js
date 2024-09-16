@@ -79,7 +79,7 @@ export function refreshed () {
       yield chunk(ix).then(() => ix)
     }
 
-    recount()
+    recount(`${schema.cards.base}`)
   }
 
   (async function loop () {
