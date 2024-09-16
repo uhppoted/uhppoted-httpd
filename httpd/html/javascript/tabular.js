@@ -498,7 +498,7 @@ export function update (element, value, status, checked, options = {}) {
   }
 }
 
-export function recount(root) {
+export function recount (root) {
   console.log('recount', root)
 }
 
@@ -530,6 +530,7 @@ function modified (oid, options) {
     // <tr> and 'new' ?
     if (element.nodeName === 'TR') {
       const page = pageForRow(element)
+
       if (element.classList.contains('new') && page && page.deletable(element)) {
         element.classList.add('newish')
       } else {

@@ -23,15 +23,9 @@ export function refreshed () {
     let ix = offset
     let count = 0
     while (count < pagesize && ix < cards.length) {
-      const o = cards[ix]
-      const row = updateFromDB(o.OID, o, cache)
-      if (row) {
-        if (o.status === 'new') {
-          row.classList.add('new')
-        } else {
-          row.classList.remove('new')
-        }
-      }
+      const record = cards[ix]
+
+      updateFromDB(record.OID, record, cache)
 
       count++
       ix++
@@ -259,6 +253,12 @@ function updateFromDB (oid, record, cache) {
   // {{end}}
 
   row.dataset.status = record.status
+
+  if (record.status === 'new') {
+    row.classList.add('new')
+  } else {
+    row.classList.remove('new')
+  }
 
   if (cache != null) {
     cache.put(row.dataset.oid, row)

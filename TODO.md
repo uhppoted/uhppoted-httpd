@@ -17,21 +17,21 @@
                 - [x] cache query
                 - [x] only revert modified rows
                 - [ ] check what happens with 'new' row
-                      - modified count should include 'new'
-                      - rollback list should include 'new'
-                      - https://stackoverflow.com/questions/7517429/css-selector-a-or-b-and-c
+                      - [x] modified count should include 'new'
+                      - [x] rollback list should include 'new'
+                      - [ ] 'new' card after modifying existing card should enable rollback-all and commit-all
           - [ ] commit-all is **really** slow
                 - [ ] cache query
                 - [ ] only commit modified rows
                 - [ ] check what happens with new
                 - (?) cache queryModified
                       - (?) defer the modified count to the overarching function call
+
           - [ ] only do _modified_ count at end of updated
                 - (?) do it top down
                 - (?) cache the _modified_ rows in _set_
                 - check performance with `const rows = document.getElementById(table).querySelector('table tbody').rows`
 
-          - [ ] // FIXME commented out for debugging
           - [ ] incremental loading
           - [ ] 'name' header overwritten on vscroll
           - [ ] refresh windmill is not showing
