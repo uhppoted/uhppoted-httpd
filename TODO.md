@@ -13,7 +13,7 @@
           - [x] modified(...,options)
           - [x] scrollbar is gone after change to grid layout?
           - [x] Safari loading windmill doesn't go away```
-          - [ ] rollback-all is **really** slow
+          - [x] rollback-all is **really** slow
                 - [x] cache query
                 - [x] only revert modified rows
                 - [x] check what happens with 'new' row
@@ -21,11 +21,12 @@
                       - [x] rollback list should include 'new'
                       - [x] 'new' card after modifying existing card should enable rollback-all and commit-all
           - [ ] commit-all is **really** slow
-                - [ ] cache query
-                - [ ] only commit modified rows
-                - [ ] check what happens with new
-                - (?) cache queryModified
-                      - (?) defer the modified count to the overarching function call
+                - [x] optimize query
+                - [x] only commit modified rows
+                - [x] check what happens with new
+
+          - [ ] commit: existing cards get duplicated
+                - (?) something to do with invalid start/end dates
 
           - [ ] only do _modified_ count at end of updated
                 - (?) do it top down

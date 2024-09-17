@@ -248,17 +248,8 @@ export function onCommit (tag, event) {
 }
 
 export function onCommitAll (tag, event, table) {
-  const tbody = document.getElementById(table).querySelector('table tbody')
-  const rows = tbody.rows
-  const list = []
-  let page
-
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i]
-    if (row.classList.contains('modified') || row.classList.contains('new')) {
-      list.push(row)
-    }
-  }
+  const rows = Array.from(document.querySelectorAll('table tr:is(.modified,.new)'))
+  const page = getPage(tag)
 
   switch (tag) {
     case 'controllers':
@@ -266,8 +257,7 @@ export function onCommitAll (tag, event, table) {
     case 'cards':
     case 'groups':
     case 'users':
-      page = getPage(tag)
-      commit(page, changeset(page, ...list))
+      commit(page, changeset(page, ...rows))
       break
   }
 }
