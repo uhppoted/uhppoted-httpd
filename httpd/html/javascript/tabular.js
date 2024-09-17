@@ -499,44 +499,43 @@ export function update (element, value, status, checked, options = {}) {
 }
 
 /**
-  * Recounts all the modified rows under the 'root' OID to enable/disable commit-all and
-  * rollback-all.
+  * Updates the 'modified' flag for the page root OID without caching.
   *
   * Interim fix for the edge cases introduced by the caching introduced to optimize 'modified'
-  * for not tiny cards lists.
+  * for not-so-small cards lists.
   *
   */
 export function recount (root) {
-  if (root != null) {
-    modified(`${root}`)
-  }
+  // const rows = Array.from(document.querySelectorAll(`tr[data-oid^="${root}"]`)).map((row) => row.dataset.oid)
+  //
+  // for (const row of rows) {
+  //   modified(`${row}`)
+  // }
+
+  modified(`${root}`)
 }
 
-function query (oid, options) {
-  if (options != null && options.cache != null) {
-    return options.cache.query(oid)
+function query (oid, cache) {
+  if (cache != null) {
+    return cache.query(oid)
   }
 
   return document.querySelector(`[data-oid="${oid}"]`)
 }
 
-function queryModified (oid, options) {
-  if (options != null && options.cache != null) {
-    return options.cache.queryModified(oid)
+function queryModified (oid, cache) {
+  if (cache != null) {
+    return cache.queryModified(oid)
   }
 
   return document.querySelectorAll(`[data-oid^="${oid}."]:is(.modified,.new)`)
 }
 
-function modified (oid, options) {
-  const element = query(oid, options)
+function modified (oid, options = {}) {
+  const { cache = null, recount = true } = options
+  const element = query(oid, cache)
 
   if (element) {
-    const list = queryModified(oid, options)
-    const set = new Set(Array.from(list)
-      .map(e => e.dataset.oid)
-      .filter(v => v.startsWith(oid)))
-
     // <tr> and 'new' ?
     if (element.nodeName === 'TR') {
       const page = pageForRow(element)
@@ -548,27 +547,36 @@ function modified (oid, options) {
       }
     }
 
-    // .. count the 'unique parent' OIDs
-    const f = (p, q) => p.length > q.length
-    const r = (acc, v) => {
-      if (!acc.find(e => v.startsWith(e + '.'))) {
-        acc.push(v)
+    // ... update 'modified' hierarchy
+
+    if (recount) {
+      const list = queryModified(oid, cache)
+      const set = new Set(Array.from(list)
+        .map(e => e.dataset.oid)
+        .filter(v => v.startsWith(oid)))
+
+      // .. count the 'unique parent' OIDs
+      const f = (p, q) => p.length > q.length
+      const r = (acc, v) => {
+        if (!acc.find(e => v.startsWith(e + '.'))) {
+          acc.push(v)
+        }
+
+        return acc
       }
 
-      return acc
-    }
+      const count = [...set].sort(f).reduce(r, []).length
 
-    const count = [...set].sort(f).reduce(r, []).length
-
-    if (count > 1) {
-      element.dataset.modified = 'multiple'
-      element.classList.add('modified')
-    } else if (count > 0) {
-      element.dataset.modified = 'single'
-      element.classList.add('modified')
-    } else {
-      element.dataset.modified = null
-      element.classList.remove('modified')
+      if (count > 1) {
+        element.dataset.modified = 'multiple'
+        element.classList.add('modified')
+      } else if (count > 0) {
+        element.dataset.modified = 'single'
+        element.classList.add('modified')
+      } else {
+        element.dataset.modified = null
+        element.classList.remove('modified')
+      }
     }
   }
 }

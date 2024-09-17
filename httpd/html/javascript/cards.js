@@ -16,7 +16,9 @@ export function refreshed () {
   realize(cards)
 
   // initialise rendering cache
-  const cache = new Cache()
+  const options = {
+    cache: new Cache()
+  }
 
   // renders a 'page size' chunk of cards
   const f = function (offset) {
@@ -25,7 +27,7 @@ export function refreshed () {
     while (count < pagesize && ix < cards.length) {
       const record = cards[ix]
 
-      updateFromDB(record.OID, record, cache)
+      updateFromDB(record.OID, record, options)
 
       count++
       ix++
@@ -231,8 +233,8 @@ function add (oid, record) {
   }
 }
 
-function updateFromDB (oid, record, cache) {
-  const options = { cache: cache }
+function updateFromDB (oid, record, options) {
+  const { cache } = options
 
   const f = (field, value) => {
     if (cache != null) {
