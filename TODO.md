@@ -16,10 +16,10 @@
           - [ ] rollback-all is **really** slow
                 - [x] cache query
                 - [x] only revert modified rows
-                - [ ] check what happens with 'new' row
+                - [x] check what happens with 'new' row
                       - [x] modified count should include 'new'
                       - [x] rollback list should include 'new'
-                      - [ ] 'new' card after modifying existing card should enable rollback-all and commit-all
+                      - [x] 'new' card after modifying existing card should enable rollback-all and commit-all
           - [ ] commit-all is **really** slow
                 - [ ] cache query
                 - [ ] only commit modified rows

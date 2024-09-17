@@ -498,8 +498,18 @@ export function update (element, value, status, checked, options = {}) {
   }
 }
 
+/**
+  * Recounts all the modified rows under the 'root' OID to enable/disable commit-all and
+  * rollback-all.
+  *
+  * Interim fix for the edge cases introduced by the caching introduced to optimize 'modified'
+  * for not tiny cards lists.
+  *
+  */
 export function recount (root) {
-  console.log('recount', root)
+  if (root != null) {
+    modified(`${root}`)
+  }
 }
 
 function query (oid, options) {
