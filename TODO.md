@@ -14,29 +14,11 @@
           - [x] scrollbar is gone after change to grid layout?
           - [x] Safari loading windmill doesn't go away```
           - [x] rollback-all is **really** slow
-                - [x] cache query
-                - [x] only revert modified rows
-                - [x] check what happens with 'new' row
-                      - [x] modified count should include 'new'
-                      - [x] rollback list should include 'new'
-                      - [x] 'new' card after modifying existing card should enable rollback-all and commit-all
-          - [ ] commit-all is **really** slow
-                - [x] optimize query
-                - [x] only commit modified rows
-                - [x] check what happens with new
-
-          - [ ] commit: existing cards get duplicated
-                - (?) something to do with invalid start/end dates
-
-          - [ ] only do _modified_ count at end of updated
-                - (?) do it top down
-                - (?) cache the _modified_ rows in _set_
-                - check performance with `const rows = document.getElementById(table).querySelector('table tbody').rows`
-
-          - [ ] incremental loading
-          - [ ] 'name' header overwritten on vscroll
+          - [x] commit-all is **really** slow
+          - [x] 'name' header overwritten on vscroll
+          - [ ] scroll 'new' row into view
           - [ ] refresh windmill is not showing
-          - [ ] scroll into view on 'new'
+          - [ ] incremental loading
 
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_

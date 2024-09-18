@@ -483,7 +483,14 @@ div.tabular table {
 div.tabular table thead {
   position: sticky;
   top: 0px;
-  z-index: 2;
+  z-index: 3;
+}
+
+div.tabular table thead th.topleft {
+  position: sticky;
+  top: 0px;
+  left: 0px;
+  z-index: 3;
 }
 
 div.tabular table thead th.rowheader {
