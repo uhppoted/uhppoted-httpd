@@ -28,7 +28,7 @@
             <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('cards', event)"  draggable="false"  />
             {{template "message"   .}}
             <img id="add"     class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('card')" />
-            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh()" />
+            <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('cards', event)" />
           </div>
 
           <div id="cards" class="tabular">
@@ -156,7 +156,8 @@
     loading()
     resetIdle()
     refresh()
-    setRefresh(refresh)
+    // FIXME uncomment
+    // setRefresh(refresh)
   </script>
 
   <!-- global information initialised by Go template -->

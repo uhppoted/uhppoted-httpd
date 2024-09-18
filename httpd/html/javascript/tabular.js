@@ -620,8 +620,6 @@ function get (urls, refreshed) {
     promises.push(new Promise((resolve, reject) => {
       getAsJSON(url)
         .then(response => {
-          unbusy()
-
           if (response.redirected) {
             window.location = response.url
           } else if (response.status === 200) {
@@ -660,6 +658,8 @@ function get (urls, refreshed) {
     } else {
       console.error(err)
     }
+  }).finally(() => {
+    unbusy()
   })
 }
 

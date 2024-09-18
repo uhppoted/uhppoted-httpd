@@ -29,6 +29,7 @@ header {
   display: flex;
   height: auto;
   overflow: hidden;
+  padding-right: 128px;
 }
 
 nav {
@@ -130,8 +131,8 @@ footer {
 
 #windmill {
   display: none;
-  float: right;
   visibility: hidden;
+  float: right;
   margin-top: 8px;
   margin-right: 32px;
 }
@@ -405,7 +406,7 @@ footer {
 
 .windmill {
   height: fit-content;
-  display: none;
+  display: block;
 }
 
 .windmill.visible {
