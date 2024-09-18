@@ -16,28 +16,12 @@
           - [x] rollback-all is **really** slow
           - [x] commit-all is **really** slow
           - [x] 'name' header overwritten on vscroll
+          - [ ] overview refresh error
+                - [x] crash on doors select.options
+                - [ ] refresh shows door OIDs
           - [ ] refresh windmill is not showing
           - [ ] scroll 'new' row into view
           - (?) incremental loading
-          - [ ] overview refresh error
-```
-TypeError: Cannot read properties of undefined (reading 'length')
-    at controllers.js:145:24
-    at Array.forEach (<anonymous>)
-    at controllers.js:141:11
-    at Array.forEach (<anonymous>)
-    at updateFromDB (controllers.js:137:32)
-    at controllers.js:15:17
-    at Array.forEach (<anonymous>)
-    at Module.refreshed (controllers.js:14:8)
-    at refreshed (tabular.js:52:19)
-    at tabular.js:653:7
-(anonymous) @ tabular.js:659
-Promise.catch
-get @ tabular.js:655
-onRefresh @ tabular.js:372
-onclick @ overview.html:71
-```
 
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_

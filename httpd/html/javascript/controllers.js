@@ -136,27 +136,31 @@ function updateFromDB (oid, record) {
 
   [door1, door2, door3, door4].forEach(select => {
     const options = select.options
-    let ix = 1
 
-    doors.forEach(d => {
-      const value = d.OID
-      const label = d.name !== '' ? d.name : `<D${d.OID}>`.replaceAll('.', '')
+    // NTS: overview page controller.doors does not have options
+    if (options != null) {
+      let ix = 1
 
-      if (ix < options.length) {
-        if (options[ix].value !== value) {
-          options.add(new Option(label, value, false, false), ix)
-        } else if (options[ix].label !== label) {
-          options[ix].label = label
+      doors.forEach(d => {
+        const value = d.OID
+        const label = d.name !== '' ? d.name : `<D${d.OID}>`.replaceAll('.', '')
+
+        if (ix < options.length) {
+          if (options[ix].value !== value) {
+            options.add(new Option(label, value, false, false), ix)
+          } else if (options[ix].label !== label) {
+            options[ix].label = label
+          }
+        } else {
+          options.add(new Option(label, value, false, false))
         }
-      } else {
-        options.add(new Option(label, value, false, false))
+
+        ix++
+      })
+
+      while (options.length > (doors.length + 1)) {
+        options.remove(options.length - 1)
       }
-
-      ix++
-    })
-
-    while (options.length > (doors.length + 1)) {
-      options.remove(options.length - 1)
     }
   })
 
@@ -178,7 +182,11 @@ function updateFromDB (oid, record) {
   update(door3, record.doors[3])
   update(door4, record.doors[4])
 
-  address.dataset.original = record.address.configured
+  // NTS: overview page does not have an address
+  if (address != null) {
+  address.dataset.original = record.address.configured    
+  }
+
   datetime.dataset.original = record.datetime.configured
 
   return row

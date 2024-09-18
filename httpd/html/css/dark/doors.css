@@ -430,7 +430,7 @@ footer {
 
 .windmill {
   height: fit-content;
-  display: block;
+  display: none;
 }
 
 .windmill.visible {
