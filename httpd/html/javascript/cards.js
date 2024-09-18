@@ -1,7 +1,7 @@
 import { update, trim, recount, onEdited } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
-// import { Cache } from './cache.js'
+import { Cache } from './cache.js'
 import { loaded } from './uhppoted.js'
 
 const pagesize = 5
@@ -17,7 +17,7 @@ export function refreshed () {
 
   // initialise rendering cache
   const options = {
-    // cache: new Cache()
+    cache: new Cache()
   }
 
   // renders a 'page size' chunk of cards

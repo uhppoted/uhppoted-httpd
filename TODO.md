@@ -16,13 +16,23 @@
           - [x] rollback-all is **really** slow
           - [x] commit-all is **really** slow
           - [x] 'name' header overwritten on vscroll
-          - [ ] overview refresh error
+          - [x] overview refresh errors
                 - [x] crash on doors select.options
-                - [ ] refresh shows door OIDs
+                - [x] refresh shows door OIDs
           - [ ] refresh windmill is not showing
+                - [x] fix busy/unbusy
+                - [x] windmill is hidden behind avatar block
+                - [ ] move windmill to controls bar
           - [ ] scroll 'new' row into view
           - (?) incremental loading
-
+          - [ ] Firefox: controllers page
+```
+RangeError: invalid time zone in DateTimeFormat(): PST
+    short http://127.0.0.1:8888/javascript/timezones.js:28
+    options http://127.0.0.1:8888/javascript/controllers.js:197
+    combobox http://127.0.0.1:8888/javascript/controllers.js:197
+    add http://127.0.0.1:8888/javascript/controllers.js:110
+```
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)
