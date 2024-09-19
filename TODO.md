@@ -1,5 +1,6 @@
 # TODO
 
+- [x] Firefox: controllers page
 - [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
       - [ ] content-visiblity
             - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility
@@ -27,14 +28,6 @@
                 - [ ] add 'loading' windmill to all pages
           - [ ] scroll 'new' row into view
           - [ ] incremental loading
-          - [ ] Firefox: controllers page
-```
-RangeError: invalid time zone in DateTimeFormat(): PST
-    short http://127.0.0.1:8888/javascript/timezones.js:28
-    options http://127.0.0.1:8888/javascript/controllers.js:197
-    combobox http://127.0.0.1:8888/javascript/controllers.js:197
-    add http://127.0.0.1:8888/javascript/controllers.js:110
-```
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)
