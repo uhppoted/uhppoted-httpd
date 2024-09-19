@@ -61,7 +61,6 @@ export function refreshed () {
       })
     }
 
-    loaded()
     console.log(`cards:refreshed (${Date.now() - start}ms)`)
   }
 
@@ -85,6 +84,9 @@ export function refreshed () {
   })()
     .then(() => g())
     .catch(err => console.error(err))
+    .finally(() => {
+      loaded()
+    })
 }
 
 export function deletable (row) {

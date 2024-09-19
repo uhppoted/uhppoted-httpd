@@ -18,7 +18,9 @@
 
       <!-- MAIN -->
       <main>
-        <div id="container">
+        {{template "loading" .}}
+
+        <div id="container" class="loading">
           <div id="controls" data-oid="{{ .schema.Users.OID }}">
             <img id="commitall" class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('users', event, 'users')" draggable="false" />
             <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('users', event)"  draggable="false"  />

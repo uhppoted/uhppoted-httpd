@@ -1,6 +1,7 @@
 import { trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
+import { loaded } from './uhppoted.js'
 
 const pagesize = 5
 
@@ -82,6 +83,9 @@ export function refreshed () {
     .then(() => g())
     .then(() => h())
     .catch(err => console.error(err))
+    .finally(() => {
+      loaded()
+    })
 }
 
 function realize (events) {

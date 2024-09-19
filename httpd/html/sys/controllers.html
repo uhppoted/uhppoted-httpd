@@ -18,7 +18,9 @@
 
       <!-- MAIN -->
       <main>
-        <div id="container">
+        {{template "loading" .}}
+
+        <div id="container" class="loading">
           <table id="interface" class="interface" data-oid="{{ .schema.Interfaces.OID }}.1">
             <tr>
               <td colspan="3">

@@ -18,9 +18,7 @@
 
       <!-- MAIN -->
       <main>
-        <div id="loading" class="overlay">
-          <span class="windmill"></span>
-        </div>
+        {{template "loading" .}}
 
         <div id="container" class="loading">
           <div id="controls" data-oid="{{ .schema.Cards.OID }}">

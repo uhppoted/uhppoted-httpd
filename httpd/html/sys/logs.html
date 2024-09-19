@@ -18,7 +18,9 @@
 
       <!-- MAIN -->
       <main>
-        <div id="container">
+        {{template "loading" .}}
+
+        <div id="container" class="loading">
           <div id="controls" data-oid="{{ .schema.Logs.OID }}">
             {{template "message"   .}}
             {{template "windmill"  .}}

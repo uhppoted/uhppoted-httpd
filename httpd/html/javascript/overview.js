@@ -1,6 +1,7 @@
 import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
+import { loaded } from './uhppoted.js'
 
 const pagesize = 5
 
@@ -8,6 +9,7 @@ export function refreshed () {
   refreshControllers()
   refreshEvents()
   refreshLogs()
+  loaded()
 }
 
 function refreshControllers () {

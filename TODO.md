@@ -25,7 +25,7 @@
                 - [x] fix busy/unbusy
                 - [x] windmill is hidden behind avatar block
                 - [x] move windmill to controls bar
-                - [ ] add 'loading' windmill to all pages
+                - [x] add 'loading' windmill to all pages
           - [ ] scroll 'new' row into view
           - [ ] incremental loading
 
