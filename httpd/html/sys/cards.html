@@ -27,6 +27,7 @@
             <img id="commitall" class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('cards', event, 'cards')" draggable="false" />
             <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('cards', event)"  draggable="false"  />
             {{template "message"   .}}
+            {{template "windmill"  .}}
             <img id="add"     class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('card')" />
             <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('cards', event)" />
           </div>

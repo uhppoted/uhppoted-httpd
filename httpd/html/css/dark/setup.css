@@ -138,9 +138,9 @@ footer {
 }
 
 #windmill {
+  align-self: center;
   display: none;
   visibility: hidden;
-  float: right;
   margin-top: 8px;
   margin-right: 32px;
 }
@@ -152,7 +152,6 @@ footer {
   margin: auto;
   width: 20px;
   height: 20px;
-  margin-top: 12 px;
   border-radius: 50%;
   border-top: 2px solid #268bd2;
   border-right: 2px solid transparent;

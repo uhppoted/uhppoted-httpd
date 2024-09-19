@@ -134,10 +134,9 @@ footer {
 }
 
 #windmill {
+  align-self: center;
   display: none;
   visibility: hidden;
-
-  float:right;
   margin-top: 8px;
   margin-right: 32px;
 }
@@ -149,9 +148,8 @@ footer {
   margin: auto;
   width: 20px;
   height: 20px;
-  margin-top: 12  px;
   border-radius: 50%;
-  border-top: 2px solid $dashboard-windmill;
+  border-top: 2px solid $windmill;
   border-right: 2px solid transparent;
   animation: windmill 0.6s linear infinite;
 }
@@ -189,7 +187,7 @@ footer {
   height: 120px;
   margin-top: 12px;
   border-radius: 50%;
-  border-top: 5px solid $dashboard-windmill;
+  border-top: 5px solid $windmill;
   border-right: 5px solid transparent;
   animation: windmill 0.9s linear infinite;
 }

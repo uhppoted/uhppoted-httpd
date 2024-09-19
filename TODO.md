@@ -1,6 +1,9 @@
 # TODO
 
 - [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
+      - [ ] content-visiblity
+            - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility
+            - https://github.com/google/tachometer
       - [ ] `tabular.modified`
           - [x] cache querySelector
           - [x] cache querySelectorAll
@@ -17,14 +20,13 @@
           - [x] commit-all is **really** slow
           - [x] 'name' header overwritten on vscroll
           - [x] overview refresh errors
-                - [x] crash on doors select.options
-                - [x] refresh shows door OIDs
-          - [ ] refresh windmill is not showing
+          - [x] refresh windmill is not showing
                 - [x] fix busy/unbusy
                 - [x] windmill is hidden behind avatar block
-                - [ ] move windmill to controls bar
+                - [x] move windmill to controls bar
+                - [ ] add 'loading' windmill to all pages
           - [ ] scroll 'new' row into view
-          - (?) incremental loading
+          - [ ] incremental loading
           - [ ] Firefox: controllers page
 ```
 RangeError: invalid time zone in DateTimeFormat(): PST

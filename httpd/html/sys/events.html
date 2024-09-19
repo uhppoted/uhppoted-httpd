@@ -21,6 +21,7 @@
         <div id="container">
           <div id="controls" data-oid="{{ .schema.Events.OID }}">
             {{template "message"   .}}
+            {{template "windmill"  .}}
             <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('events', event)" />
           </div>
 

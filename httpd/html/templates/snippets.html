@@ -24,9 +24,7 @@
           <img id="logo" src="/images/{{$.context.Theme}}/logo.png" />
           <div id="disconnected">offline</div>
         </div>
-        <div id="dashboard">
-          <span id="windmill"></span>
-        </div>
+        <div id="dashboard"></div>
       </header>
 {{end}}
 
@@ -58,6 +56,12 @@
             <div id="message" class="message">
               <input id="warning" class="warning" readonly />
               <button class="dismiss" onclick="dismiss()">&#9746;</button>
+            </div>
+{{end}}
+
+{{define "windmill"}}
+            <div id="windmills" style="height: 100%;">
+              <span id="windmill"></span>
             </div>
 {{end}}
 
