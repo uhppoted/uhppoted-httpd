@@ -738,7 +738,16 @@ function create (page) {
   const reset = function () {}
   const cleanup = function () {}
 
-  post(page.post, created, null, null, page.refreshed, reset, cleanup)
+  const f = () => {
+    page.refreshed()
+
+    const list = Array.from(document.querySelectorAll('tr'))
+    const last = list.at(-1)
+
+    last.scrollIntoView()
+  }
+
+  post(page.post, created, null, null, f, reset, cleanup)
 }
 
 function more (page) {

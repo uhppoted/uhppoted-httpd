@@ -2,9 +2,6 @@
 
 - [x] Firefox: controllers page
 - [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
-      - [ ] content-visiblity
-            - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility
-            - https://github.com/google/tachometer
       - [ ] `tabular.modified`
           - [x] cache querySelector
           - [x] cache querySelectorAll
@@ -22,12 +19,13 @@
           - [x] 'name' header overwritten on vscroll
           - [x] overview refresh errors
           - [x] refresh windmill is not showing
-                - [x] fix busy/unbusy
-                - [x] windmill is hidden behind avatar block
-                - [x] move windmill to controls bar
-                - [x] add 'loading' windmill to all pages
-          - [ ] scroll 'new' row into view
+          - [x] scroll 'new' row into view
           - [ ] incremental loading
+          - [ ] :has
+                - https://www.joshwcomeau.com/css/has/
+          - [ ] content-visiblity
+                - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility
+                - https://github.com/google/tachometer
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)
