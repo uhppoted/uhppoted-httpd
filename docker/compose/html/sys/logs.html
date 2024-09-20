@@ -18,9 +18,12 @@
 
       <!-- MAIN -->
       <main>
-        <div id="container">
+        {{template "loading" .}}
+
+        <div id="container" class="loading">
           <div id="controls" data-oid="{{ .schema.Logs.OID }}">
             {{template "message"   .}}
+            {{template "windmill"  .}}
             <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('logs', event)" />
           </div>
 

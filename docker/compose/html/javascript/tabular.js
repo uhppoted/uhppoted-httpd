@@ -8,6 +8,7 @@ import * as events from './events.js'
 import * as logs from './logs.js'
 import * as users from './users.js'
 import { DB } from './db.js'
+import { Cache } from './cache.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
 class Warning extends Error {
@@ -247,17 +248,8 @@ export function onCommit (tag, event) {
 }
 
 export function onCommitAll (tag, event, table) {
-  const tbody = document.getElementById(table).querySelector('table tbody')
-  const rows = tbody.rows
-  const list = []
-  let page
-
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i]
-    if (row.classList.contains('modified') || row.classList.contains('new')) {
-      list.push(row)
-    }
-  }
+  const rows = Array.from(document.querySelectorAll('table tr:is(.modified,.new)'))
+  const page = getPage(tag)
 
   switch (tag) {
     case 'controllers':
@@ -265,8 +257,7 @@ export function onCommitAll (tag, event, table) {
     case 'cards':
     case 'groups':
     case 'users':
-      page = getPage(tag)
-      commit(page, changeset(page, ...list))
+      commit(page, changeset(page, ...rows))
       break
   }
 }
@@ -303,10 +294,17 @@ export function onRollback (tag, event) {
 }
 
 export function onRollbackAll (tag, event) {
+  const start = Date.now()
+  const cache = new Cache({ modified: false })
+  const options = {
+    cache: cache
+  }
+
   const f = function (table, recordset, refreshed) {
-    const rows = document.getElementById(table).querySelector('table tbody').rows
+    const rows = document.getElementById(table).querySelectorAll('table tbody tr:is(.modified,.new)')
+
     for (let i = rows.length; i > 0; i--) {
-      rollback(tag, rows[i - 1], refreshed)
+      rollback(tag, rows[i - 1], refreshed, options)
     }
   }
 
@@ -334,6 +332,8 @@ export function onRollbackAll (tag, event) {
       f('users', 'users', users.refreshed)
       break
   }
+
+  console.log(`cards:rolled-back (${Date.now() - start}ms)`)
 }
 
 export function onNew (tag, event) {
@@ -389,7 +389,7 @@ export function unmark (clazz, ...elements) {
   })
 }
 
-export function set (element, value, status) {
+export function set (element, value, status, options = {}) {
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
@@ -409,10 +409,10 @@ export function set (element, value, status) {
     unmark('modified', element, td)
   }
 
-  percolate(oid)
+  percolate(oid, options)
 }
 
-export function revert (row) {
+export function revert (row, options = {}) {
   const fields = row.querySelectorAll('.field')
 
   fields.forEach((item) => {
@@ -427,13 +427,13 @@ export function revert (row) {
       item.value = value
     }
 
-    set(item, value, item.dataset.status)
+    set(item, value, item.dataset.status, options)
   })
 
   row.classList.remove('modified')
 }
 
-export function update (element, value, status, checked) {
+export function update (element, value, status, checked, options = {}) {
   if (element && value !== undefined) {
     const v = value.toString()
     const oid = element.dataset.oid
@@ -484,29 +484,52 @@ export function update (element, value, status, checked) {
       }
     }
 
-    set(element, value, status)
+    set(element, value, status, options)
   }
 }
 
-function modified (oid) {
-  const element = document.querySelector(`[data-oid="${oid}"]`)
+/**
+  * Updates the 'modified' flag for the page root OID without caching.
+  *
+  * Interim fix for the edge cases introduced by the caching introduced to optimize 'modified'
+  * for not-so-small cards lists.
+  *
+  */
+export function recount (root) {
+  // const rows = Array.from(document.querySelectorAll(`tr[data-oid^="${root}"]`)).map((row) => row.dataset.oid)
+  //
+  // for (const row of rows) {
+  //   modified(`${row}`)
+  // }
+
+  modified(`${root}`)
+}
+
+function query (oid, cache) {
+  if (cache != null) {
+    return cache.query(oid)
+  }
+
+  return document.querySelector(`[data-oid="${oid}"]`)
+}
+
+function queryModified (oid, cache) {
+  if (cache != null) {
+    return cache.queryModified(oid)
+  }
+
+  return document.querySelectorAll(`[data-oid^="${oid}."]:is(.modified,.new)`)
+}
+
+function modified (oid, options = {}) {
+  const { cache = null, recount = true } = options
+  const element = query(oid, cache)
 
   if (element) {
-    const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
-    const set = new Set()
-
-    list.forEach(e => {
-      if (e.classList.contains('modified')) {
-        const oidx = e.dataset.oid
-        if (oidx.startsWith(oid)) {
-          set.add(oidx)
-        }
-      }
-    })
-
     // <tr> and 'new' ?
     if (element.nodeName === 'TR') {
       const page = pageForRow(element)
+
       if (element.classList.contains('new') && page && page.deletable(element)) {
         element.classList.add('newish')
       } else {
@@ -514,27 +537,36 @@ function modified (oid) {
       }
     }
 
-    // .. count the 'unique parent' OIDs
-    const f = (p, q) => p.length > q.length
-    const r = (acc, v) => {
-      if (!acc.find(e => v.startsWith(e + '.'))) {
-        acc.push(v)
+    // ... update 'modified' hierarchy
+
+    if (recount) {
+      const list = queryModified(oid, cache)
+      const set = new Set(Array.from(list)
+        .map(e => e.dataset.oid)
+        .filter(v => v.startsWith(oid)))
+
+      // .. count the 'unique parent' OIDs
+      const f = (p, q) => p.length > q.length
+      const r = (acc, v) => {
+        if (!acc.find(e => v.startsWith(e + '.'))) {
+          acc.push(v)
+        }
+
+        return acc
       }
 
-      return acc
-    }
+      const count = [...set].sort(f).reduce(r, []).length
 
-    const count = [...set].sort(f).reduce(r, []).length
-
-    if (count > 1) {
-      element.dataset.modified = 'multiple'
-      element.classList.add('modified')
-    } else if (count > 0) {
-      element.dataset.modified = 'single'
-      element.classList.add('modified')
-    } else {
-      element.dataset.modified = null
-      element.classList.remove('modified')
+      if (count > 1) {
+        element.dataset.modified = 'multiple'
+        element.classList.add('modified')
+      } else if (count > 0) {
+        element.dataset.modified = 'single'
+        element.classList.add('modified')
+      } else {
+        element.dataset.modified = null
+        element.classList.remove('modified')
+      }
     }
   }
 }
@@ -569,14 +601,14 @@ export function trim (tag, objects, rows) {
   })
 }
 
-function percolate (oid) {
+function percolate (oid, options) {
   let oidx = oid
 
   while (oidx) {
     const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)
     oidx = match ? match[1] : null
     if (oidx) {
-      modified(oidx)
+      modified(oidx, options)
     }
   }
 }
@@ -588,8 +620,6 @@ function get (urls, refreshed) {
     promises.push(new Promise((resolve, reject) => {
       getAsJSON(url)
         .then(response => {
-          unbusy()
-
           if (response.redirected) {
             window.location = response.url
           } else if (response.status === 200) {
@@ -628,15 +658,17 @@ function get (urls, refreshed) {
     } else {
       console.error(err)
     }
+  }).finally(() => {
+    unbusy()
   })
 }
 
-function rollback (recordset, row, refreshed) {
+function rollback (recordset, row, refreshed, options) {
   if (row && row.classList.contains('new')) {
     DB.delete(recordset, row.dataset.oid)
     refreshed()
   } else {
-    revert(row)
+    revert(row, options)
   }
 }
 
@@ -706,7 +738,16 @@ function create (page) {
   const reset = function () {}
   const cleanup = function () {}
 
-  post(page.post, created, null, null, page.refreshed, reset, cleanup)
+  const f = () => {
+    page.refreshed()
+
+    const list = Array.from(document.querySelectorAll('tr'))
+    const last = list.at(-1)
+
+    last.scrollIntoView()
+  }
+
+  post(page.post, created, null, null, f, reset, cleanup)
 }
 
 function more (page) {

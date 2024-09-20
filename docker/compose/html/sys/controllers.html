@@ -18,7 +18,9 @@
 
       <!-- MAIN -->
       <main>
-        <div id="container">
+        {{template "loading" .}}
+
+        <div id="container" class="loading">
           <table id="interface" class="interface" data-oid="{{ .schema.Interfaces.OID }}.1">
             <tr>
               <td colspan="3">
@@ -58,6 +60,7 @@
             <img id="commitall"   class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('controllers', event, 'controllers')" />
             <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('controllers', event, 'controllers')" />
             {{template "message"   .}}
+            {{template "windmill"  .}}
             <img id="add" class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('controller')" />
             <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('controllers', event)" />
           </div>

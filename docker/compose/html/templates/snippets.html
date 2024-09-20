@@ -24,9 +24,7 @@
           <img id="logo" src="/images/{{$.context.Theme}}/logo.png" />
           <div id="disconnected">offline</div>
         </div>
-        <div id="dashboard">
-          <span id="windmill"></span>
-        </div>
+        <div id="dashboard"></div>
       </header>
 {{end}}
 
@@ -61,9 +59,22 @@
             </div>
 {{end}}
 
+{{define "windmill"}}
+            <div id="windmills" style="height: 100%;">
+              <span id="windmill"></span>
+            </div>
+{{end}}
+
+{{define "loading"}}
+        <div id="loading" class="overlay">
+          <span class="windmill"></span>
+        </div>
+{{end}}
+
 {{define "uhppoted.js"}}
     import { retheme, 
              dismiss, 
+             loading,
              resetIdle, 
              onMenu, 
              onSignOut, 

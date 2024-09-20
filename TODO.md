@@ -2,6 +2,7 @@
 
 - [x] Firefox: controllers page
 - [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
+      - [ ] network request is taking 1.5s
       - [ ] `tabular.modified`
           - [x] cache querySelector
           - [x] cache querySelectorAll
@@ -20,12 +21,13 @@
           - [x] overview refresh errors
           - [x] refresh windmill is not showing
           - [x] scroll 'new' row into view
-          - [ ] incremental loading
           - [ ] :has
                 - https://www.joshwcomeau.com/css/has/
-          - [ ] content-visiblity
-                - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility
-                - https://github.com/google/tachometer
+          - [ ] incremental loading
+                - [ ] pre-sort cards list and skip table sort
+                - (?) content-visiblity
+                   - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility
+                   - https://github.com/google/tachometer
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

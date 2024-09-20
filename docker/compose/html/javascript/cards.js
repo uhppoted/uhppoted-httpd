@@ -1,30 +1,33 @@
-import { update, trim, onEdited } from './tabular.js'
+import { update, trim, recount, onEdited } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
+import { Cache } from './cache.js'
+import { loaded } from './uhppoted.js'
 
 const pagesize = 5
+const GROUPS_SUFFIX = `${schema.cards.group}`.replace(/\.+$/, '')
 
 export function refreshed () {
+  const start = Date.now()
   const cards = [...DB.cards.values()]
     .filter(c => alive(c))
     .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(cards)
 
+  // initialise rendering cache
+  const options = {
+    cache: new Cache()
+  }
+
   // renders a 'page size' chunk of cards
   const f = function (offset) {
     let ix = offset
     let count = 0
     while (count < pagesize && ix < cards.length) {
-      const o = cards[ix]
-      const row = updateFromDB(o.OID, o)
-      if (row) {
-        if (o.status === 'new') {
-          row.classList.add('new')
-        } else {
-          row.classList.remove('new')
-        }
-      }
+      const record = cards[ix]
+
+      updateFromDB(record.OID, record, options)
 
       count++
       ix++
@@ -43,9 +46,22 @@ export function refreshed () {
         const u = DB.cards.get(p.dataset.oid)
         const v = DB.cards.get(q.dataset.oid)
 
-        return u.created.localeCompare(v.created)
+        const ucreated = fmt(u.created)
+        const uname = `${u.name}`.padStart(32, ' ')
+        const unumber = `${u.number}`.padStart(12, ' ')
+
+        const vcreated = fmt(v.created)
+        const vname = `${v.name}`.padStart(32, ' ')
+        const vnumber = `${v.number}`.padStart(12, ' ')
+
+        const ustr = `${ucreated}:${uname}:${unumber}`
+        const vstr = `${vcreated}:${vname}:${vnumber}`
+
+        return ustr.localeCompare(vstr)
       })
     }
+
+    console.log(`cards:refreshed (${Date.now() - start}ms)`)
   }
 
   const chunk = offset => new Promise(resolve => {
@@ -57,6 +73,8 @@ export function refreshed () {
     for (let ix = 0; ix < cards.length; ix += pagesize) {
       yield chunk(ix).then(() => ix)
     }
+
+    recount(`${schema.cards.base}`)
   }
 
   (async function loop () {
@@ -66,6 +84,9 @@ export function refreshed () {
   })()
     .then(() => g())
     .catch(err => console.error(err))
+    .finally(() => {
+      loaded()
+    })
 }
 
 export function deletable (row) {
@@ -214,9 +235,18 @@ function add (oid, record) {
   }
 }
 
-function updateFromDB (oid, record) {
-  const row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
+function updateFromDB (oid, record, options) {
+  const { cache } = options
 
+  const f = (field, value) => {
+    if (cache != null) {
+      cache.put(field.dataset.oid, field)
+    }
+
+    update(field, value, undefined, undefined, options)
+  }
+
+  const row = document.querySelector("div#cards tr[data-oid='" + oid + "']")
   const name = row.querySelector(`[data-oid="${oid}${schema.cards.name}"]`)
   const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
   const from = row.querySelector(`[data-oid="${oid}${schema.cards.from}"]`)
@@ -228,12 +258,23 @@ function updateFromDB (oid, record) {
 
   row.dataset.status = record.status
 
-  update(name, record.name)
-  update(number, parseInt(record.number, 10) === 0 ? '' : record.number)
-  update(from, record.from)
-  update(to, record.to)
+  if (record.status === 'new') {
+    row.classList.add('new')
+  } else {
+    row.classList.remove('new')
+  }
+
+  if (cache != null) {
+    cache.put(row.dataset.oid, row)
+    cache.put(`${row.dataset.oid}${GROUPS_SUFFIX}`, null)
+  }
+
+  f(name, record.name)
+  f(number, parseInt(record.number, 10) === 0 ? '' : record.number)
+  f(from, record.from)
+  f(to, record.to)
   // {{if .WithPIN}}
-  update(PIN, parseInt(record.PIN, 10) === 0 ? '' : record.PIN)
+  f(PIN, parseInt(record.PIN, 10) === 0 ? '' : record.PIN)
   // {{end}}
 
   if (record.from === '') {
@@ -275,7 +316,7 @@ function updateFromDB (oid, record) {
       const e = td.querySelector('.field')
       const g = record.groups.get(`${e.dataset.oid}`)
 
-      update(e, g && g.member)
+      f(e, g && g.member)
     }
   })
 
@@ -314,5 +355,13 @@ export function onDateEdit (tag, event) {
     }
   } else {
     field.classList.remove('defval')
+  }
+}
+
+function fmt (date) {
+  try {
+    return new Date(Date.parse(date)).toISOString()
+  } catch {
+    return ''
   }
 }

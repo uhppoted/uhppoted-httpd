@@ -1,6 +1,7 @@
 import { update, trim } from './tabular.js'
 import { DB, alive } from './db.js'
 import { schema } from './schema.js'
+import { loaded } from './uhppoted.js'
 
 export function refreshed () {
   const groups = [...DB.groups.values()]
@@ -19,6 +20,8 @@ export function refreshed () {
       }
     }
   })
+
+  loaded()
 }
 
 export function deletable (row) {

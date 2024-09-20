@@ -53,6 +53,7 @@ header {
   display: flex;
   height: auto;
   overflow: hidden;
+  padding-right: 128px;
 }
 
 nav {
@@ -89,11 +90,25 @@ nav ul li.selected {
 }
 
 main {
-  display: flex;
   grid-area: content;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: start;
+  align-items: start;
   overflow: hidden;
   margin: 8px 0px 8px 0px;
+}
+
+#container {
+  grid-row: 1;
+  grid-column: 1;
+  transition-property: opacity;
+  transition-duration: 250ms;
+  overflow-y: auto;
+}
+
+#container.loading {
+  opacity: 0.5;
 }
 
 footer {
@@ -139,8 +154,8 @@ footer {
 }
 
 #windmill {
+  align-self: center;
   display: none;
-  float: right;
   visibility: hidden;
   margin-top: 8px;
   margin-right: 32px;
@@ -153,7 +168,6 @@ footer {
   margin: auto;
   width: 20px;
   height: 20px;
-  margin-top: 12 px;
   border-radius: 50%;
   border-top: 2px solid #268bd2;
   border-right: 2px solid transparent;
@@ -166,6 +180,44 @@ footer {
 }
 
 @keyframes windmill {
+  to {
+    transform: rotate(360deg);
+  }
+}
+#loading {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: center;
+  align-self: start;
+  display: none;
+  visibility: hidden;
+  margin-top: 120px;
+  margin-bottom: 0px;
+  margin-left: -120px;
+  margin-right: 0px;
+  z-index: 5;
+}
+
+#loading:before {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  margin: auto;
+  width: 120px;
+  height: 120px;
+  margin-top: 12px;
+  border-radius: 50%;
+  border-top: 5px solid #268bd2;
+  border-right: 5px solid transparent;
+  animation: windmill 0.9s linear infinite;
+}
+
+#loading.visible {
+  display: block;
+  visibility: visible;
+}
+
+@keyframes loading {
   to {
     transform: rotate(360deg);
   }
@@ -455,7 +507,14 @@ div.tabular table {
 div.tabular table thead {
   position: sticky;
   top: 0px;
-  z-index: 2;
+  z-index: 3;
+}
+
+div.tabular table thead th.topleft {
+  position: sticky;
+  top: 0px;
+  left: 0px;
+  z-index: 3;
 }
 
 div.tabular table thead th.rowheader {

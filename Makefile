@@ -168,7 +168,7 @@ undaemonize: build
 config: build
 	$(CMD) config
 
-docker: docker-dev docker-ghcr
+docker: docker-dev docker-ghcr docker-compose
 	cd docker && find . -name .DS_Store -delete && rm -f compose.zip && zip --recurse-paths compose.zip compose
 	
 docker-dev: build

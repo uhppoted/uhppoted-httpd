@@ -370,9 +370,12 @@ export function resetIdle () {
 
 export function busy () {
   const windmill = document.getElementById('windmill')
-  const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
 
-  windmill.dataset.count = (queued + 1).toString()
+  if (windmill) {
+    const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
+
+    windmill.dataset.count = (queued + 1).toString()
+  }
 }
 
 export function unbusy () {
@@ -386,6 +389,32 @@ export function unbusy () {
     } else {
       delete (windmill.dataset.count)
     }
+  }
+}
+
+export function loading () {
+  const windmill = document.getElementById('loading')
+  const container = document.getElementById('container')
+
+  if (windmill) {
+    windmill.classList.add('visible')
+  }
+
+  if (container) {
+    container.classList.add('loading')
+  }
+}
+
+export function loaded () {
+  const windmill = document.getElementById('loading')
+  const container = document.getElementById('container')
+
+  if (windmill) {
+    windmill.classList.remove('visible')
+  }
+
+  if (container) {
+    container.classList.remove('loading')
   }
 }
 

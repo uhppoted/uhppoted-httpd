@@ -1,5 +1,19 @@
 // Ref. https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 
+const LOCALE = 'en-ca-iso8601'
+
+const DEFAULT = new Intl.DateTimeFormat(LOCALE, {
+  timeZone: undefined,
+  timeZoneName: 'short',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: 'numeric',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false
+})
+
 export const timezones = new Map([
   ['local', local],
   ['UTC', short],
@@ -11,48 +25,60 @@ export const timezones = new Map([
 ])
 
 function local (dt, tz) {
-  const fmt = new Intl.DateTimeFormat('en-ca-iso8601', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  })
+  try {
+    const fmt = new Intl.DateTimeFormat(LOCALE, {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    })
 
-  return fmt.format(dt).replaceAll(',', '')
+    return fmt.format(dt).replaceAll(',', '')
+  } catch (err) {
+    return DEFAULT.format(dt).replaceAll(',', '')
+  }
 }
 
 function short (dt, tz) {
-  const fmt = new Intl.DateTimeFormat('en-ca-iso8601', {
-    timeZone: tz,
-    timeZoneName: 'short',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  })
+  try {
+    const fmt = new Intl.DateTimeFormat(LOCALE, {
+      timeZone: tz,
+      timeZoneName: 'short',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    })
 
-  return fmt.format(dt).replaceAll(',', '')
+    return fmt.format(dt).replaceAll(',', '')
+  } catch (err) {
+    return DEFAULT.format(dt).replaceAll(',', '')
+  }
 }
 
 function long (dt, tz) {
-  const fmt = new Intl.DateTimeFormat('en-ca-iso8601', {
-    timeZone: tz,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  })
+  try {
+    const fmt = new Intl.DateTimeFormat(LOCALE, {
+      timeZone: tz,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    })
 
-  const formatted = fmt.format(dt).replaceAll(',', '')
+    const formatted = fmt.format(dt).replaceAll(',', '')
 
-  return `${formatted} ${tz}`
+    return `${formatted} ${tz}`
+  } catch (err) {
+    return DEFAULT.format(dt).replaceAll(',', '')
+  }
 }

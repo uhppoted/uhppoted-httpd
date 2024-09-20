@@ -18,11 +18,14 @@
 
       <!-- MAIN -->
       <main>
-        <div id="container">
+        {{template "loading" .}}
+
+        <div id="container" class="loading">
           <div id="controls" data-oid="{{ .schema.Users.OID }}">
             <img id="commitall" class='button' src="/images/{{$.context.Theme}}/check-solid.svg" onclick="onCommitAll('users', event, 'users')" draggable="false" />
             <img id="rollbackall" class='button' src="/images/{{$.context.Theme}}/times-solid.svg" onclick="onRollbackAll('users', event)"  draggable="false"  />
             {{template "message"   .}}
+            {{template "windmill"  .}}
             <img id="add"     class='button' src="/images/{{$.context.Theme}}/plus-solid.svg" onclick="onNew('user')" />
             <img id="refresh" class='button' src="/images/{{$.context.Theme}}/sync-alt-solid.svg" onclick="onRefresh('users', event)" />
           </div>

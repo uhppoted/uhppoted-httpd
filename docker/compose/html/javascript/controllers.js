@@ -3,6 +3,7 @@ import { DB, alive } from './db.js'
 import { schema } from './schema.js'
 import { Combobox } from './combobox.js'
 import { timezones } from './timezones.js'
+import { loaded } from './uhppoted.js'
 
 export function refreshed () {
   const list = [...DB.controllers.values()]
@@ -21,6 +22,8 @@ export function refreshed () {
       }
     }
   })
+
+  loaded()
 }
 
 export function deletable (row) {
@@ -136,6 +139,7 @@ function updateFromDB (oid, record) {
 
   [door1, door2, door3, door4].forEach(select => {
     const options = select.options
+
     let ix = 1
 
     doors.forEach(d => {
