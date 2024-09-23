@@ -253,6 +253,10 @@ func (c Controller) AsRuleEntity() (string, interface{}) {
 	return "controller", &v
 }
 
+func (c Controller) Hash() string {
+	return ""
+}
+
 func (c *Controller) AsIController() types.IController {
 	var endpoint lib.ControllerAddr
 	var location *time.Location = time.Local

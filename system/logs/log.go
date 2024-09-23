@@ -87,6 +87,10 @@ func (l LogEntry) AsRuleEntity() (string, interface{}) {
 	return "log", &entity
 }
 
+func (l LogEntry) Hash() string {
+	return ""
+}
+
 func (l *LogEntry) set(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 

@@ -107,6 +107,10 @@ func (g Group) AsRuleEntity() (string, interface{}) {
 	return "group", &entity
 }
 
+func (g Group) Hash() string {
+	return ""
+}
+
 func (g Group) Status() types.Status {
 	if g.IsDeleted() {
 		return types.StatusDeleted

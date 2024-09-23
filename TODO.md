@@ -3,6 +3,16 @@
 - [x] Firefox: controllers page
 - [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
       - [ ] network request is taking 1.5s
+            - [ ] cache _grules_ evaluations (per uid)
+            - [ ] clear _grules_ cache on reload rulesets
+            - [ ] clear _grules_ cache on user login
+            - [ ] clear _grules_ cache on user logout
+            - [ ] clear _grules_ cache on user idle/stale
+            - (?) prepopulate _grules_ cache on user login
+            - [ ] optionally disable _grules_ in _uhppoted.conf_
+            - [ ] optionally disable _grules_ cache in _uhppoted.conf_
+            - [ ] _grules_ cache/no-cache rule (cached obviously)
+
       - [ ] `tabular.modified`
           - [x] cache querySelector
           - [x] cache querySelectorAll

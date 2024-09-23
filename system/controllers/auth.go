@@ -8,6 +8,7 @@ type TAuthable interface {
 	Controller | *Controller
 
 	AsRuleEntity() (string, any)
+	Hash() string
 }
 
 var rulesets = []auth.RuleSet{auth.Controllers}

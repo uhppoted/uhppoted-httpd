@@ -2,9 +2,7 @@ package auth
 
 import (
 	"embed"
-	"errors"
 	"fmt"
-	"log"
 	"os"
 	"reflect"
 	"strings"
@@ -15,10 +13,13 @@ import (
 	"github.com/hyperjumptech/grule-rule-engine/builder"
 	"github.com/hyperjumptech/grule-rule-engine/engine"
 	"github.com/hyperjumptech/grule-rule-engine/pkg"
+
+	"github.com/uhppoted/uhppoted-httpd/log"
 )
 
 type TAuthable interface {
 	AsRuleEntity() (string, any)
+	Hash() string
 }
 
 type authorizator struct {
@@ -53,8 +54,6 @@ var grules = struct {
 		admin: "admin",
 	},
 }
-
-var ErrUnauthorised = errors.New("not authorised")
 
 //go:embed grules
 var GRULES embed.FS
@@ -159,8 +158,16 @@ func isNil(v any) bool {
 	return false
 }
 
-func (a *authorizator) CanView(operant Operant, field string, value interface{}, rulesets ...RuleSet) error {
+func (a *authorizator) CanView(operant Operant, field string, value any, rulesets ...RuleSet) error {
 	if a != nil && operant != nil {
+		if rs, ok := cacheCanView(a.uid, operant, field); ok {
+			if !rs.Allow || rs.Refuse {
+				return ErrUnauthorised
+			}
+
+			return nil
+		}
+
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("view::%v", tag)
 
@@ -361,7 +368,17 @@ func getKB(r RuleSet) (*ast.KnowledgeLibrary, error) {
 		touched: touched,
 	}
 
-	log.Printf("INFO  loaded '%v' grule file from %v", tag, v.file)
+	cacheClear()
+
+	infof("AUTH", "loaded '%v' grule file from %v", tag, v.file)
 
 	return kb, nil
+}
+
+func infof(tag string, format string, args ...any) {
+	if tag == "" {
+		log.Infof("%v", args...)
+	} else {
+		log.Infof(fmt.Sprintf("%-8v %v", tag, format), args...)
+	}
 }

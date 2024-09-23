@@ -125,6 +125,10 @@ func (u User) AsRuleEntity() (string, interface{}) {
 	return "user", &entity
 }
 
+func (u User) Hash() string {
+	return ""
+}
+
 func (u *User) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if u == nil {
 		return []schema.Object{}, nil

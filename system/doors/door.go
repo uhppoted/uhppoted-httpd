@@ -201,7 +201,7 @@ func (d *Door) AsObjects(a *auth.Authorizator) []schema.Object {
 	return d.toObjects(list, a)
 }
 
-func (d Door) AsRuleEntity() (string, interface{}) {
+func (d Door) AsRuleEntity() (string, any) {
 	entity := struct {
 		Name string
 	}{
@@ -209,6 +209,10 @@ func (d Door) AsRuleEntity() (string, interface{}) {
 	}
 
 	return "door", &entity
+}
+
+func (d Door) Hash() string {
+	return ""
 }
 
 func (d *Door) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {

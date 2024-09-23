@@ -203,6 +203,10 @@ func (e Event) AsRuleEntity() (string, interface{}) {
 	return "event", &entity
 }
 
+func (e Event) Hash() string {
+	return ""
+}
+
 func (e *Event) set(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
 	objects := []interface{}{}
 

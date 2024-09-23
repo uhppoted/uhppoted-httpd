@@ -8,6 +8,7 @@ type TAuthable interface {
 	Event
 
 	AsRuleEntity() (string, any)
+	Hash() string
 }
 
 var rulesets = []auth.RuleSet{auth.Events}

@@ -385,6 +385,10 @@ func (c Card) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	return objects
 }
 
+func (c Card) Hash() string {
+	return ""
+}
+
 func (c *Card) Status() types.Status {
 	if c.IsDeleted() {
 		return types.StatusDeleted

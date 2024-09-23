@@ -96,6 +96,10 @@ func (l LAN) AsRuleEntity() (string, interface{}) {
 	return "lan", &entity
 }
 
+func (l LAN) Hash() string {
+	return ""
+}
+
 func (l *LAN) set(a *auth.Authorizator, oid schema.OID, value string, dbc db.DBC) ([]schema.Object, error) {
 	if l == nil {
 		return []schema.Object{}, nil

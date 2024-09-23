@@ -8,6 +8,7 @@ type TAuthable interface {
 	Group | *Group
 
 	AsRuleEntity() (string, any)
+	Hash() string
 }
 
 var rulesets = []auth.RuleSet{auth.Groups}
