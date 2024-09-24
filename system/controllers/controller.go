@@ -253,7 +253,7 @@ func (c Controller) AsRuleEntity() (string, interface{}) {
 	return "controller", &v
 }
 
-func (c Controller) Hash() string {
+func (c Controller) CacheKey() string {
 	return ""
 }
 

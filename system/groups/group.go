@@ -107,7 +107,7 @@ func (g Group) AsRuleEntity() (string, interface{}) {
 	return "group", &entity
 }
 
-func (g Group) Hash() string {
+func (g Group) CacheKey() string {
 	return ""
 }
 

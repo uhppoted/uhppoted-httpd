@@ -19,7 +19,7 @@ import (
 
 type TAuthable interface {
 	AsRuleEntity() (string, any)
-	Hash() string
+	CacheKey() string
 }
 
 type authorizator struct {
@@ -159,15 +159,7 @@ func isNil(v any) bool {
 }
 
 func (a *authorizator) CanView(operant Operant, field string, value any, rulesets ...RuleSet) error {
-	if a != nil && operant != nil {
-		if rs, ok := cacheCanView(a.uid, operant, field); ok {
-			if !rs.Allow || rs.Refuse {
-				return ErrUnauthorised
-			}
-
-			return nil
-		}
-
+	f := func() (result, error) {
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("view::%v", tag)
 
@@ -184,11 +176,17 @@ func (a *authorizator) CanView(operant Operant, field string, value any, ruleset
 
 		for _, r := range rulesets {
 			if err := a.eval(r, op, &rs, m); err != nil {
-				return ErrUnauthorised
+				return rs, ErrUnauthorised
 			}
 		}
 
-		if !rs.Allow || rs.Refuse {
+		return rs, nil
+	}
+
+	if a != nil && operant != nil {
+		if rs, err := cacheCanView(a.uid, operant, field, f); err != nil {
+			return ErrUnauthorised
+		} else if !rs.Allow || rs.Refuse {
 			return ErrUnauthorised
 		}
 	}

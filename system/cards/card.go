@@ -385,8 +385,8 @@ func (c Card) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 	return objects
 }
 
-func (c Card) Hash() string {
-	return ""
+func (c Card) CacheKey() string {
+	return fmt.Sprintf("%v", c.OID)
 }
 
 func (c *Card) Status() types.Status {

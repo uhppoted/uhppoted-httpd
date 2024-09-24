@@ -125,7 +125,7 @@ func (u User) AsRuleEntity() (string, interface{}) {
 	return "user", &entity
 }
 
-func (u User) Hash() string {
+func (u User) CacheKey() string {
 	return ""
 }
 

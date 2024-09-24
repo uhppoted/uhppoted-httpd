@@ -8,7 +8,7 @@ type TAuthable interface {
 	LAN | *LAN
 
 	AsRuleEntity() (string, any)
-	Hash() string
+	CacheKey() string
 }
 
 var rulesets = []auth.RuleSet{auth.Interfaces}

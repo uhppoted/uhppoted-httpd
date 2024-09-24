@@ -87,7 +87,7 @@ func (l LogEntry) AsRuleEntity() (string, interface{}) {
 	return "log", &entity
 }
 
-func (l LogEntry) Hash() string {
+func (l LogEntry) CacheKey() string {
 	return ""
 }
 

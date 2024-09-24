@@ -211,7 +211,7 @@ func (d Door) AsRuleEntity() (string, any) {
 	return "door", &entity
 }
 
-func (d Door) Hash() string {
+func (d Door) CacheKey() string {
 	return ""
 }
 

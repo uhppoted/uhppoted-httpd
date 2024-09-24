@@ -203,7 +203,7 @@ func (e Event) AsRuleEntity() (string, interface{}) {
 	return "event", &entity
 }
 
-func (e Event) Hash() string {
+func (e Event) CacheKey() string {
 	return ""
 }
 

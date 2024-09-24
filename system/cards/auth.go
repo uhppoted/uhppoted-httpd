@@ -8,7 +8,7 @@ type TAuthable interface {
 	Card | *Card
 
 	AsRuleEntity() (string, any)
-	Hash() string
+	CacheKey() string
 }
 
 var rulesets = []auth.RuleSet{auth.Cards}

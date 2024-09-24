@@ -96,7 +96,7 @@ func (l LAN) AsRuleEntity() (string, interface{}) {
 	return "lan", &entity
 }
 
-func (l LAN) Hash() string {
+func (l LAN) CacheKey() string {
 	return ""
 }
 

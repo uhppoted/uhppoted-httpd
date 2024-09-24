@@ -67,7 +67,7 @@ type Options struct {
 
 type Operant interface {
 	AsRuleEntity() (string, any)
-	Hash() string
+	CacheKey() string
 }
 
 func NewAuthorizator(uid, role string) *Authorizator {

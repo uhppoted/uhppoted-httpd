@@ -5,10 +5,12 @@ import (
 )
 
 func Get(uid, role string) interface{} {
+	cards := system.Cards(uid, role)
+
 	return struct {
 		Cards interface{} `json:"cards"`
 	}{
-		Cards: system.Cards(uid, role),
+		Cards: cards,
 	}
 }
 

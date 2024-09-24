@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Updated
+1. Fixed Firefox controller 'invalid timezone' error.
+2. Reduced cards page load times with cached 'modified' flags and grules evaluations.
+
 
 ## [0.8.9](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.9) - 2024-09-06
 
