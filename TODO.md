@@ -5,9 +5,9 @@
       - [ ] network request is taking 1.5s
             - [x] cache _grules_ evaluations (per uid)
             - [x] clear _grules_ cache on user idle/stale
+            - [x] clear _grules_ cache on reload rulesets
             - [x] rwmutex on _cache
-            - [ ] rwmutex on cache
-            - [ ] clear _grules_ cache on reload rulesets
+            - [x] rwmutex on cache
             - [ ] cache by uid:role
             - [ ] _grules_ CanCache rule (cached obviously)
 
