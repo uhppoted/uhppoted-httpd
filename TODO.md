@@ -1,6 +1,14 @@
 # TODO
 
 - [x] Firefox: controllers page
+
+- [ ] setup: redirect to login if admin user exists
+- [ ] setup: toggle visibility
+```
+eye-solid.svg:1 
+ GET http://127.0.0.1:8888/sys/images/default/eye-solid.svg 404 (Not Found)
+```
+
 - [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
       - [ ] network request is taking 1.5s
             - [x] cache _grules_ evaluations (per uid)
@@ -8,7 +16,7 @@
             - [x] clear _grules_ cache on reload rulesets
             - [x] rwmutex on _cache
             - [x] rwmutex on cache
-            - [ ] cache by uid:role
+            - [x] cache by uid:role
             - [ ] _grules_ CanCache rule (cached obviously)
 
       - [ ] `tabular.modified`

@@ -38,11 +38,11 @@ func cacheClear() {
 	infof("AUTH", "cleared grules cache")
 }
 
-func cacheCanView(uid string, operant Operant, field string, f func() (result, error)) (result, error) {
+func cacheCanView(uid string, role string, operant Operant, field string, f func() (result, error)) (result, error) {
 	key := operant.CacheKey()
 
 	if uid != "" && key != "" {
-		v, _ := _cache.LoadOrStore(uid, &cache{
+		v, _ := _cache.LoadOrStore(uid+":"+role, &cache{
 			canView: map[string]result{},
 			guard:   sync.RWMutex{},
 			touched: time.Now(),

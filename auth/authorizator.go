@@ -184,7 +184,7 @@ func (a *authorizator) CanView(operant Operant, field string, value any, ruleset
 	}
 
 	if a != nil && operant != nil {
-		if rs, err := cacheCanView(a.uid, operant, field, f); err != nil {
+		if rs, err := cacheCanView(a.uid, a.role, operant, field, f); err != nil {
 			return ErrUnauthorised
 		} else if !rs.Allow || rs.Refuse {
 			return ErrUnauthorised
