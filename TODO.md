@@ -5,13 +5,11 @@
       - [ ] network request is taking 1.5s
             - [x] cache _grules_ evaluations (per uid)
             - [x] clear _grules_ cache on user idle/stale
-            - [ ] rwmutex on cache(s)
+            - [x] rwmutex on _cache
+            - [ ] rwmutex on cache
             - [ ] clear _grules_ cache on reload rulesets
-            - [ ] clear _grules_ cache on user login
-            - [ ] clear _grules_ cache on user logout
-            - [ ] _grules_ cache/no-cache rule (cached obviously)
-            - [ ] prepopulate _grules_ cache on user login
-                  - service worker
+            - [ ] cache by uid:role
+            - [ ] _grules_ CanCache rule (cached obviously)
 
       - [ ] `tabular.modified`
           - [x] cache querySelector
@@ -31,10 +29,11 @@
           - [x] overview refresh errors
           - [x] refresh windmill is not showing
           - [x] scroll 'new' row into view
-          - [ ] :has
+          - [ ] Rework percolate/modified to use :has selector
                 - https://www.joshwcomeau.com/css/has/
           - [ ] incremental loading
                 - [ ] pre-sort cards list and skip table sort
+                - (?) service worker
                 - (?) content-visiblity
                    - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility
                    - https://github.com/google/tachometer
