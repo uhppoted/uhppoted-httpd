@@ -3,11 +3,7 @@
 - [x] Firefox: controllers page
 
 - [ ] setup: redirect to login if admin user exists
-- [ ] setup: toggle visibility
-```
-eye-solid.svg:1 
- GET http://127.0.0.1:8888/sys/images/default/eye-solid.svg 404 (Not Found)
-```
+- [x] setup: toggle visibility
 
 - [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
       - [ ] network request is taking 1.5s
