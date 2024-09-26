@@ -1,8 +1,7 @@
 # TODO
 
 - [x] Firefox: controllers page
-
-- [ ] setup: redirect to login if admin user exists
+- [x] setup: redirect to login if admin user exists
 - [x] setup: toggle visibility
 
 - [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)

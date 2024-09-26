@@ -29,8 +29,15 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if path == "/setup" && !d.noSetup {
+	// ... setup?
+	role := d.auth.AdminRole()
+	if !d.noSetup && !system.HasAdmin(role) && path != "/setup" {
 		d.setup(w, r)
+		return
+	}
+
+	if (d.noSetup || system.HasAdmin(role)) && path == "/setup" {
+		http.Redirect(w, r, "/index.html", http.StatusFound)
 		return
 	}
 
