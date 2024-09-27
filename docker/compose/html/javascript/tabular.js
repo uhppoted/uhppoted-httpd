@@ -614,12 +614,15 @@ function percolate (oid, options) {
 }
 
 function get (urls, refreshed) {
+  const start = Date.now()
   const promises = []
 
   urls.forEach(url => {
     promises.push(new Promise((resolve, reject) => {
       getAsJSON(url)
         .then(response => {
+          console.log(`tabular:get ${url} (${Date.now() - start}ms)`)
+
           if (response.redirected) {
             window.location = response.url
           } else if (response.status === 200) {
