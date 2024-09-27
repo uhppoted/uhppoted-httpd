@@ -7,9 +7,10 @@ import (
 )
 
 type cache struct {
-	canView map[string]result
-	guard   sync.RWMutex
-	touched time.Time
+	canView  map[string]result
+	canCache map[string]bool
+	guard    sync.RWMutex
+	touched  time.Time
 }
 
 var _cache = sync.Map{}
@@ -38,39 +39,51 @@ func cacheClear() {
 	infof("AUTH", "cleared grules cache")
 }
 
-func cacheCanView(uid string, role string, operant Operant, field string, f func() (result, error)) (result, error) {
+func cacheCanView(a *authorizator, operant Operant, field string, f func() (result, error), rulesets ...RuleSet) (result, error) {
+	if a == nil || a.uid == "" {
+		return f()
+	}
+
+	// ... make cache key
 	key := operant.CacheKey()
+	if key == "" {
+		return f()
+	} else if field != "" {
+		key = strings.Join([]string{key, field}, "::")
+	}
 
-	if uid != "" && key != "" {
-		v, _ := _cache.LoadOrStore(uid+":"+role, &cache{
-			canView: map[string]result{},
-			guard:   sync.RWMutex{},
-			touched: time.Now(),
-		})
+	// ... get cache for uid:role
+	cacheId := strings.Join([]string{a.uid, a.role}, ":")
+	v, _ := _cache.LoadOrStore(cacheId, &cache{
+		canView:  map[string]result{},
+		canCache: map[string]bool{},
+		guard:    sync.RWMutex{},
+		touched:  time.Now(),
+	})
 
-		if c, ok := v.(*cache); ok {
-			c.touched = time.Now()
+	if c, ok := v.(*cache); ok {
+		c.touched = time.Now()
 
-			// ... make cache key
-			var b strings.Builder
-
-			b.WriteString(key)
-
-			if field != "" {
-				b.WriteString("::")
-				b.WriteString(field)
-			}
-
-			k := b.String()
-
-			// ... get cache entry for operant+field
-			if rs, ok := cacheGet(c, k); ok {
-				return rs, nil
-			} else if rs, err := f(); err != nil {
-				return rs, err
+		// ... cacheable?
+		if _, ok := c.canCache[key]; !ok {
+			if err := CanCache(a, operant, field, "CanView", rulesets...); err != nil {
+				c.canCache[key] = false
 			} else {
-				return cacheTryPut(c, k, rs), nil
+				c.canCache[key] = true
 			}
+		}
+
+		cacheable := c.canCache[key]
+
+		// ... get cache entry for operant+field
+		if rs, ok := cacheGet(c, key); ok {
+			return rs, nil
+		} else if rs, err := f(); err != nil {
+			return rs, err
+		} else if cacheable {
+			return cacheTryPut(c, key, rs), nil
+		} else {
+			return rs, nil
 		}
 	}
 

@@ -5,14 +5,14 @@
 - [x] setup: toggle visibility
 
 - [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
-      - [ ] network request is taking 1.5s
+      - [x] network request is taking 1.5s
             - [x] cache _grules_ evaluations (per uid)
             - [x] clear _grules_ cache on user idle/stale
             - [x] clear _grules_ cache on reload rulesets
             - [x] rwmutex on _cache
             - [x] rwmutex on cache
             - [x] cache by uid:role
-            - [ ] _grules_ CanCache rule (cached obviously)
+            - [x] _grules_ CanCache rule
 
       - [ ] `tabular.modified`
           - [x] cache querySelector

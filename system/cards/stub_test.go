@@ -18,12 +18,12 @@ var hagrid = makeCard("0.4.1", "Hagrid", 6514231)
 var dobby = makeCard("0.4.2", "Dobby", 1234567, "G05")
 
 type stub struct {
-	canView       func(auth.RuleSet, auth.Operant, string, interface{}) error
-	canUpdateCard func(auth.Operant, string, interface{}) error
+	canView       func(auth.RuleSet, auth.Operant, string, any) error
+	canUpdateCard func(auth.Operant, string, any) error
 	write         func(e audit.AuditRecord)
 }
 
-func (x *stub) CanView(object auth.Operant, field string, value interface{}, rulesets ...auth.RuleSet) error {
+func (x *stub) CanView(object auth.Operant, field string, value any, rulesets ...auth.RuleSet) error {
 	if x.canView != nil && len(rulesets) > 0 {
 		return x.canView(rulesets[0], object, field, value)
 	}
@@ -35,7 +35,7 @@ func (x *stub) CanAdd(operant auth.Operant, rulesets ...auth.RuleSet) error {
 	return fmt.Errorf("not authorised")
 }
 
-func (x *stub) CanUpdate(operant auth.Operant, field string, value interface{}, rulesets ...auth.RuleSet) error {
+func (x *stub) CanUpdate(operant auth.Operant, field string, value any, rulesets ...auth.RuleSet) error {
 	if len(rulesets) > 0 {
 		switch rulesets[0] {
 		case auth.Cards:
@@ -50,6 +50,10 @@ func (x *stub) CanUpdate(operant auth.Operant, field string, value interface{}, 
 
 func (x *stub) CanDelete(operant auth.Operant, rulesets ...auth.RuleSet) error {
 	return fmt.Errorf("not authorised")
+}
+
+func (x *stub) CanCache(object auth.Operant, field string, cache string, rulesets ...auth.RuleSet) error {
+	return nil
 }
 
 func (x *stub) Write(e audit.AuditRecord) {
@@ -100,7 +104,7 @@ func makeCard(oid schema.OID, name string, card uint32, groups ...string) Card {
 	return cardholder
 }
 
-func compare(got, expected interface{}, t *testing.T) {
+func compare(got, expected any, t *testing.T) {
 	p, _ := json.Marshal(got)
 	q, _ := json.Marshal(expected)
 

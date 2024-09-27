@@ -141,6 +141,14 @@ func CanDelete[T TAuthable](a OpAuth, u T, rulesets ...RuleSet) error {
 	return nil
 }
 
+func CanCache[T TAuthable](a OpAuth, u T, field string, cache string, rulesets ...RuleSet) error {
+	if !isNil(a) {
+		return a.CanCache(u, field, cache, rulesets...)
+	}
+
+	return nil
+}
+
 func isNil(v any) bool {
 	if v == nil {
 		return true
@@ -184,7 +192,7 @@ func (a *authorizator) CanView(operant Operant, field string, value any, ruleset
 	}
 
 	if a != nil && operant != nil {
-		if rs, err := cacheCanView(a.uid, a.role, operant, field, f); err != nil {
+		if rs, err := cacheCanView(a, operant, field, f, rulesets...); err != nil {
 			return ErrUnauthorised
 		} else if !rs.Allow || rs.Refuse {
 			return ErrUnauthorised
@@ -280,6 +288,35 @@ func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
 	}
 
 	return ErrUnauthorised
+}
+
+func (a *authorizator) CanCache(operant Operant, field string, cache string, rulesets ...RuleSet) error {
+	if a != nil && operant != nil {
+		tag, object := operant.AsRuleEntity()
+		op := fmt.Sprintf("cache::%v", tag)
+
+		m := map[string]interface{}{
+			"OBJECT": object,
+			"FIELD":  field,
+		}
+
+		rs := result{
+			Allow:  true,
+			Refuse: false,
+		}
+
+		for _, r := range rulesets {
+			if err := a.eval(r, op, &rs, m); err != nil {
+				return ErrDoNotCache
+			}
+		}
+
+		if !rs.Allow || rs.Refuse {
+			return ErrDoNotCache
+		}
+	}
+
+	return nil
 }
 
 func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]interface{}) error {

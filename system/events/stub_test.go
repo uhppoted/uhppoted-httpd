@@ -5,10 +5,10 @@ import (
 )
 
 type stub struct {
-	canView func(auth.RuleSet, auth.Operant, string, interface{}) error
+	canView func(auth.RuleSet, auth.Operant, string, any) error
 }
 
-func (x *stub) CanView(object auth.Operant, field string, value interface{}, rulesets ...auth.RuleSet) error {
+func (x *stub) CanView(object auth.Operant, field string, value any, rulesets ...auth.RuleSet) error {
 	if x.canView != nil && len(rulesets) > 0 {
 		return x.canView(rulesets[0], object, field, value)
 	}
@@ -20,10 +20,14 @@ func (x *stub) CanAdd(operant auth.Operant, rulesets ...auth.RuleSet) error {
 	return nil
 }
 
-func (x *stub) CanUpdate(operant auth.Operant, field string, value interface{}, rulesets ...auth.RuleSet) error {
+func (x *stub) CanUpdate(operant auth.Operant, field string, value any, rulesets ...auth.RuleSet) error {
 	return nil
 }
 
 func (x *stub) CanDelete(operant auth.Operant, rulesets ...auth.RuleSet) error {
+	return nil
+}
+
+func (x *stub) CanCache(object auth.Operant, field string, cache string, rulesets ...auth.RuleSet) error {
 	return nil
 }

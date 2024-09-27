@@ -52,10 +52,11 @@ type Authorizator struct {
 }
 
 type OpAuth interface {
-	CanView(o Operant, field string, value interface{}, rulesets ...RuleSet) error
+	CanView(o Operant, field string, value any, rulesets ...RuleSet) error
 	CanAdd(o Operant, rulesets ...RuleSet) error
-	CanUpdate(o Operant, field string, value interface{}, rulesets ...RuleSet) error
+	CanUpdate(o Operant, field string, value any, rulesets ...RuleSet) error
 	CanDelete(o Operant, rulesets ...RuleSet) error
+	CanCache(o Operant, field string, cache string, rulesets ...RuleSet) error
 }
 
 type Options struct {
