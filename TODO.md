@@ -33,17 +33,20 @@
           - [x] overview refresh errors
           - [x] refresh windmill is not showing
           - [x] scroll 'new' row into view
-          - [ ] Rework percolate/modified to use :has selector
-                - https://www.joshwcomeau.com/css/has/
           - [ ] incremental loading
-                - [ ] pre-sort cards list and skip table sort
+                - [x] sort cards list server side
+                - [ ] range query
+                - (?) pre-sort cards list and skip table sort
                 - (?) service worker
                 - (?) content-visiblity
                    - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility
                    - https://github.com/google/tachometer
+          - [ ] Rework percolate/modified to use :has selector
+                - https://www.joshwcomeau.com/css/has/
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)
+      - Check load order in HTML
 
 ### To Be Done Sometime
 

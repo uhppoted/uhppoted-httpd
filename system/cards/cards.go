@@ -1,8 +1,11 @@
 package cards
 
 import (
+	"cmp"
 	"encoding/json"
 	"fmt"
+	"maps"
+	"slices"
 	"sync"
 	"time"
 
@@ -45,8 +48,25 @@ func (cc *Cards) AsObjects(a *auth.Authorizator) []schema.Object {
 	guard.RLock()
 	defer guard.RUnlock()
 
+	list := slices.Collect(maps.Values(cc.cards))
+
+	compare := func(p, q *Card) int {
+		pt := time.Time(p.created).Truncate(time.Second)
+		qt := time.Time(q.created).Truncate(time.Second)
+
+		if v := pt.Compare(qt); v != 0 {
+			return v
+		} else if v := cmp.Compare(p.name, q.name); v != 0 {
+			return v
+		} else {
+			return cmp.Compare(p.CardID, q.CardID)
+		}
+	}
+
+	slices.SortStableFunc(list, compare)
+
 	objects := []schema.Object{}
-	for _, card := range cc.cards {
+	for _, card := range list {
 		if card.IsValid() || card.IsDeleted() {
 			catalog.Join(&objects, card.AsObjects(a)...)
 		}

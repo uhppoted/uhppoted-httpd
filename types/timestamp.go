@@ -15,6 +15,10 @@ func (ts Timestamp) IsZero() bool {
 	return time.Time(ts).IsZero()
 }
 
+func (ts Timestamp) Compare(u Timestamp) int {
+	return time.Time(ts).Compare(time.Time(u))
+}
+
 // Because time.Truncate does not in any way behave like your would expect it to :-(
 func (ts Timestamp) Before(t time.Time) bool {
 	p := time.Time(ts).UnixMilli() / 1000
