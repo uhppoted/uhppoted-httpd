@@ -8,7 +8,7 @@ import (
 
 type cache struct {
 	canView  map[string]result
-	canCache map[string]bool
+	canCache sync.Map
 	guard    sync.RWMutex
 	touched  time.Time
 }
@@ -39,6 +39,9 @@ func cacheClear() {
 	infof("AUTH", "cleared grules cache")
 }
 
+// NTS: slightly weird caching logic spreads expensive grules evaluations over two invocations
+//
+//	for the relatively minor cost of possibly unnecessarily caching a 'can view' result
 func cacheCanView(a *authorizator, operant Operant, field string, f func() (result, error), rulesets ...RuleSet) (result, error) {
 	if a == nil || a.uid == "" {
 		return f()
@@ -52,11 +55,25 @@ func cacheCanView(a *authorizator, operant Operant, field string, f func() (resu
 		key = strings.Join([]string{key, field}, "::")
 	}
 
+	cacheable := func(c *cache) bool {
+		if v, ok := c.canCache.Load(key); ok {
+			return v.(bool)
+		}
+
+		if err := CanCache(a, operant, field, "CanView", rulesets...); err != nil {
+			c.canCache.Store(key, false)
+			return false
+		}
+
+		c.canCache.Store(key, true)
+		return true
+	}
+
 	// ... get cache for uid:role
 	cacheId := strings.Join([]string{a.uid, a.role}, ":")
 	v, _ := _cache.LoadOrStore(cacheId, &cache{
 		canView:  map[string]result{},
-		canCache: map[string]bool{},
+		canCache: sync.Map{},
 		guard:    sync.RWMutex{},
 		touched:  time.Now(),
 	})
@@ -64,26 +81,14 @@ func cacheCanView(a *authorizator, operant Operant, field string, f func() (resu
 	if c, ok := v.(*cache); ok {
 		c.touched = time.Now()
 
-		// ... cacheable?
-		if _, ok := c.canCache[key]; !ok {
-			if err := CanCache(a, operant, field, "CanView", rulesets...); err != nil {
-				c.canCache[key] = false
-			} else {
-				c.canCache[key] = true
-			}
-		}
-
-		cacheable := c.canCache[key]
-
-		// ... get cache entry for operant+field
 		if rs, ok := cacheGet(c, key); ok {
-			return rs, nil
+			if cacheable(c) {
+				return rs, nil
+			}
 		} else if rs, err := f(); err != nil {
 			return rs, err
-		} else if cacheable {
-			return cacheTryPut(c, key, rs), nil
 		} else {
-			return rs, nil
+			return cacheTryPut(c, key, rs), nil
 		}
 	}
 

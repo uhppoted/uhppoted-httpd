@@ -13,6 +13,7 @@
             - [x] rwmutex on cache
             - [x] cache by uid:role
             - [x] _grules_ CanCache rule
+            - [x] only check canCache on second call
 
       - [ ] `tabular.modified`
           - [x] cache querySelector
