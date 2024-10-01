@@ -3,19 +3,12 @@
 - [x] Firefox: controllers page
 - [x] setup: redirect to login if admin user exists
 - [x] setup: toggle visibility
-
-- [ ] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
+- [x] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
       - [x] network request is taking 1.5s
-            - [x] cache _grules_ evaluations (per uid)
-            - [x] clear _grules_ cache on user idle/stale
-            - [x] clear _grules_ cache on reload rulesets
-            - [x] rwmutex on _cache
-            - [x] rwmutex on cache
-            - [x] cache by uid:role
-            - [x] _grules_ CanCache rule
-            - [x] only check canCache on second call
-
-      - [ ] `tabular.modified`
+      - [x] incremental loading
+          - [x] sort cards list server side
+          - [x] prefetch
+      - [x] `tabular.modified`
           - [x] cache querySelector
           - [x] cache querySelectorAll
           - [x] per page cache implementation i.e. pass it into `modified`
@@ -33,16 +26,13 @@
           - [x] overview refresh errors
           - [x] refresh windmill is not showing
           - [x] scroll 'new' row into view
-          - [ ] incremental loading
-                - [x] sort cards list server side
-                - [ ] range query
-                - (?) pre-sort cards list and skip table sort
-                - (?) service worker
-                - (?) content-visiblity
-                   - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility
-                   - https://github.com/google/tachometer
-          - [ ] Rework percolate/modified to use :has selector
-                - https://www.joshwcomeau.com/css/has/
+
+- [ ] Virtual lists
+      - (?) content-visiblity
+            - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility
+            - https://github.com/google/tachometer
+      - [ ] Rework percolate/modified to use :has selector
+            - https://www.joshwcomeau.com/css/has/
 
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)

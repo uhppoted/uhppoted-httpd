@@ -25,13 +25,13 @@ func SetDefaultCardEndDate(v string) {
 	}
 }
 
-func Cards(uid, role string) []schema.Object {
+func Cards(uid, role string, start int, count int) []schema.Object {
 	sys.RLock()
 	defer sys.RUnlock()
 
 	auth := auth.NewAuthorizator(uid, role)
 	objects := []schema.Object{}
-	cards := sys.cards.AsObjects(auth)
+	cards := sys.cards.AsObjects(auth, start, count)
 
 	defaultStartDate := catalog.NewObject2(schema.SystemOID, schema.SystemCardStartDate, "")
 	defaultEndDate := catalog.NewObject2(schema.SystemOID, schema.SystemCardEndDate, "")

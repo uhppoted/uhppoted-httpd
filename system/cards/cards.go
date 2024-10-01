@@ -44,7 +44,7 @@ func (cc Cards) Lookup(card uint32) (*Card, bool) {
 	return nil, false
 }
 
-func (cc *Cards) AsObjects(a *auth.Authorizator) []schema.Object {
+func (cc *Cards) AsObjects(a *auth.Authorizator, start, count int) []schema.Object {
 	guard.RLock()
 	defer guard.RUnlock()
 
@@ -65,8 +65,17 @@ func (cc *Cards) AsObjects(a *auth.Authorizator) []schema.Object {
 
 	slices.SortStableFunc(list, compare)
 
+	slice := []*Card{}
+	if start >= 0 && start < len(list) {
+		if (start + count) < len(list) {
+			slice = list[start : start+count]
+		} else {
+			slice = list[start:]
+		}
+	}
+
 	objects := []schema.Object{}
-	for _, card := range list {
+	for _, card := range slice {
 		if card.IsValid() || card.IsDeleted() {
 			catalog.Join(&objects, card.AsObjects(a)...)
 		}
