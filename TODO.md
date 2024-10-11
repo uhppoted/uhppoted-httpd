@@ -255,6 +255,7 @@
 - https://maori.geek.nz/golang-desktop-app-webview-vs-lorca-vs-electron-a5e6b2869391
 - https://github.com/wailsapp/wails
 - https://blog.chromium.org/2022/12/introducing-passkeys-in-chrome.html
+- https://replicache.dev/
 
 # REFERENCES
 
