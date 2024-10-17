@@ -41,14 +41,12 @@ const pages = {
   interfaces: {
     get: ['/interfaces'],
     post: '/interfaces',
-    prefetch: ['/interfaces'],
     refreshed: LAN.refreshed
   },
 
   controllers: {
     get: ['/interfaces', '/controllers', '/doors'],
     post: '/controllers',
-    prefetch: ['/interfaces', '/controllers', '/doors'],
     refreshed: function () {
       LAN.refreshed()
       controllers.refreshed()
@@ -59,7 +57,6 @@ const pages = {
   doors: {
     get: ['/doors', '/controllers'],
     post: '/doors',
-    prefetch: ['/doors', '/controllers'],
     refreshed: doors.refreshed,
     deletable: doors.deletable
   },
@@ -75,7 +72,6 @@ const pages = {
   groups: {
     get: ['/groups', '/doors'],
     post: '/groups',
-    prefetch: ['/groups', '/doors'],
     refreshed: groups.refreshed,
     deletable: groups.deletable
   },
@@ -83,7 +79,6 @@ const pages = {
   events: {
     get: ['/events?range=' + encodeURIComponent('0,15')],
     post: '/events',
-    prefetch: ['/events?range=' + encodeURIComponent('0,15')],
     recordset: DB.events(),
     refreshed: events.refreshed
   },
@@ -91,7 +86,6 @@ const pages = {
   logs: {
     get: ['/logs?range=' + encodeURIComponent('0,15')],
     post: '/logs',
-    prefetch: ['/logs?range=' + encodeURIComponent('0,15')],
     recordset: DB.logs(),
     refreshed: logs.refreshed
   },
@@ -99,7 +93,6 @@ const pages = {
   users: {
     get: ['/users'],
     post: '/users',
-    prefetch: ['/users'],
     refreshed: users.refreshed,
     deletable: users.deletable
   }

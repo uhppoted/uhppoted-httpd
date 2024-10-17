@@ -31,7 +31,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 
 	// ... setup?
 	role := d.auth.AdminRole()
-	if !d.noSetup && !system.HasAdmin(role) && path != "/setup" {
+	if !d.noSetup && !system.HasAdmin(role) && path == "/setup" {
 		d.setup(w, r)
 		return
 	}
