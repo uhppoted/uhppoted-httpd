@@ -6,10 +6,10 @@ require (
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.6.0
 	github.com/hyperjumptech/grule-rule-engine v1.15.0
-	github.com/pquerna/otp v1.3.0
-	github.com/uhppoted/uhppote-core v0.8.10-0.20241004174540-7675ee2e4254
-	github.com/uhppoted/uhppoted-lib v0.8.10-0.20241007153101-aa559cf3e032
-	golang.org/x/sys v0.28.0
+	github.com/pquerna/otp v1.4.0
+	github.com/uhppoted/uhppote-core v0.8.9
+	github.com/uhppoted/uhppoted-lib v0.8.9
+	golang.org/x/sys v0.29.0
 )
 
 require (
@@ -19,7 +19,7 @@ require (
 	github.com/antlr/antlr4/runtime/Go/antlr v1.4.10 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
-	github.com/cloudflare/circl v1.3.7 // indirect
+	github.com/cloudflare/circl v1.3.3 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
@@ -35,9 +35,9 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.25.0 // indirect
-	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/crypto v0.18.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
+	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )

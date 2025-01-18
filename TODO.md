@@ -34,6 +34,9 @@
       - [ ] Rework percolate/modified to use :has selector
             - https://www.joshwcomeau.com/css/has/
 
+- [ ] preload images, javascript, etc
+      - https://www.youtube.com/watch?v=-Ln-8QM8KhQ
+
 - [ ] Occasional initialisation error: _./db.js does not provide an export named DB_
       - Browser load issue maybe? (fixes itself with a page reload)
       - Check load order in HTML
@@ -41,6 +44,7 @@
 ### To Be Done Sometime
 
 - (?) https://www.pgrs.net/2024/03/21/duckdb-as-the-new-jq/
+- (?) https://bugs.rocicorp.dev/issue/0
 - [ ] Rationalise SASS styles
       - [ ] Everything everywhere should import _uhppoted first
 

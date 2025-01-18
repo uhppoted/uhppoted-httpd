@@ -43,7 +43,7 @@ jobs:
     - name: Upload Linux artifact
       uses: actions/upload-artifact@v4
       with:
-        path: dist/development/linux/uhppoted-httpd
+        path: dist/development/linux/uhppoted-mqtt
         name: uhppoted-httpd_linux-nightly
 
     - name: Upload MacOS Intel artifact
