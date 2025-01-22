@@ -301,14 +301,12 @@ footer {
   align-items: flex-end;
   margin-bottom: 2px;
 }
-
 #controls #message {
   flex-grow: 1;
   margin-left: 0px;
   margin-right: 6px;
   visibility: hidden;
 }
-
 #controls #message.visible {
   visibility: visible;
 }
@@ -404,11 +402,9 @@ footer {
   border-radius: 4px;
   visibility: hidden;
 }
-
 .message .visible {
   visibility: visible;
 }
-
 .message .warning {
   color: #dc322f;
   text-align: center;
@@ -857,71 +853,57 @@ tr td select[data-status=error] {
 div#controllers {
   border-bottom-right-radius: 0px;
 }
-
 div#controllers th.name {
   min-width: 90px;
   border-bottom: 1px;
 }
-
 div#controllers th.ID {
   min-width: 88px;
 }
-
 div#controllers th.datetime {
   min-width: 176px;
 }
-
 div#controllers th.cards {
   text-align: center;
 }
-
 div#controllers th.events {
   text-align: center;
 }
-
 div#controllers tr.controller td input.name {
   margin-top: 5px;
   margin-bottom: 5px;
   width: 132px;
   pointer-events: none;
 }
-
 div#controllers tr.controller td input.ID {
   width: 88px;
   pointer-events: none;
   -moz-appearance: textfield;
 }
-
 div#controllers tr.controller td input.datetime {
   min-width: 176px;
   pointer-events: none;
 }
-
 div#controllers tr.controller td input.cards {
   width: 72px;
   text-align: center;
   pointer-events: none;
 }
-
 div#controllers tr.controller td input.events {
   width: 72px;
   text-align: center;
   pointer-events: none;
 }
-
 div#controllers tr.controller td input.door1, div#controllers .door2, div#controllers .door3, div#controllers .door4 {
   width: 72px;
   pointer-events: none;
 }
-
 div#controllers input.apple {
   font-size: 13.333px;
 }
-
 div#controllers input.ID.apple {
   font-size: 12px;
 }
-
 div#controllers input.datetime.apple {
   font-size: 12.5px;
 }
@@ -930,84 +912,65 @@ div#events {
   margin-top: 16px;
   border-bottom-right-radius: 0px;
 }
-
 div#events th.timestamp {
   border-bottom: 1px;
   white-space: nowrap;
   min-width: 140px;
 }
-
 div#events th.deviceID {
   min-width: 80px;
 }
-
 div#events th.eventType {
   min-width: 56px;
 }
-
 div#events th.direction {
   min-width: 16px;
 }
-
 div#events th.door {
   min-width: 104px;
 }
-
 div#events th.cardno {
   min-width: 56px;
 }
-
 div#events th.card {
   min-width: 120px;
 }
-
 div#events th.access {
   min-width: 60px;
 }
-
 div#events th.reason {
   min-width: 100px;
 }
-
 div#events td input {
   height: 18px;
   font-size: 1.2em;
   font-variant: small-caps;
   font-variant-caps: all-small-caps;
 }
-
 div#events td input.apple {
   font-size: 14px;
 }
-
 div#events td input.timestamp {
   width: 140px;
 }
-
 div#events td input.device {
   width: 72px;
 }
-
 div#events td input.eventType {
   width: 56px;
 }
-
 div#events td input.door {
   width: 96px;
 }
-
 div#events td input.cardno {
   width: 56px;
 }
-
 div#events td input.card {
   width: 120px;
 }
-
 div#events td input.access {
   width: 72px;
 }
-
 @-moz-document url-prefix("") {
   div#events td input {
     font-family: "Arial", san-serif;
@@ -1026,53 +989,45 @@ div#events td input.access {
     font-size: 0.88em;
   }
 }
+
 div#logs {
   margin-top: 16px;
 }
-
 div#logs th.timestamp {
   border-bottom: 1px;
   white-space: nowrap;
   min-width: 140px;
 }
-
 div#logs th.uid {
   white-space: nowrap;
   min-width: 72px;
 }
-
 div#logs th.details {
   white-space: nowrap;
   min-width: 140px;
 }
-
 div#logs td input {
   height: 18px;
   font-size: 1.2em;
   font-variant: small-caps;
   font-variant-caps: all-small-caps;
 }
-
 div#logs td input.apple {
   font-size: 14px;
 }
-
 div#logs td input.timestamp {
   width: 140px;
 }
-
 div#logs td input.uid {
   width: 72px;
   white-space: nowrap;
 }
-
 div#logs td input.details {
   width: 90%;
   font-variant: normal;
   font-style: italic;
   font-size: 0.9em;
 }
-
 @-moz-document url-prefix("") {
   div#logs td input {
     font-family: "Arial", san-serif;
@@ -1085,6 +1040,7 @@ div#logs td input.details {
     font-size: 0.9em;
   }
 }
+
 .combobox ul {
   display: none;
   background: #eee8d5;
