@@ -301,12 +301,14 @@ footer {
   align-items: flex-end;
   margin-bottom: 2px;
 }
+
 #controls #message {
   flex-grow: 1;
   margin-left: 0px;
   margin-right: 6px;
   visibility: hidden;
 }
+
 #controls #message.visible {
   visibility: visible;
 }
@@ -402,9 +404,11 @@ footer {
   border-radius: 4px;
   visibility: hidden;
 }
+
 .message .visible {
   visibility: visible;
 }
+
 .message .warning {
   color: #dc322f;
   text-align: center;
@@ -850,7 +854,7 @@ tr td select[data-status=error] {
 }
 
 table.interface {
-  background: #05232b;
+  background: #e7dec3;
   color: #586e75;
   width: min-content;
   margin-bottom: 4px;
@@ -938,11 +942,11 @@ table.interface td span.control {
 }
 
 table.interface td span.commit {
-  color: #227dbc;
+  color: #859900;
 }
 
 table.interface td span.rollback {
-  color: #b9221f;
+  color: #dc322f;
 }
 
 table.interface.modified td span.control {
@@ -986,23 +990,28 @@ tr.controller td input.IP {
 tr.controller td label.protocol input[type=checkbox] {
   display: none;
 }
+
 tr.controller td label.protocol img {
   width: 14px;
   height: 14px;
   padding: 2px;
   margin: auto;
 }
+
 tr.controller td label.protocol img.yes {
   display: none;
   filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
 }
+
 tr.controller td label.protocol img.no {
   display: block;
   filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
 }
+
 tr.controller td label.protocol input[type=checkbox]:checked ~ img.yes {
   display: block;
 }
+
 tr.controller td label.protocol input[type=checkbox]:checked ~ img.no {
   display: none;
 }

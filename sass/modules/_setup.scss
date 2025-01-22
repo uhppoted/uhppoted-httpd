@@ -1,3 +1,5 @@
+@use "../base/default";
+
 #container {
   justify-self: center;
   flex-grow: 1;
@@ -16,11 +18,11 @@
 
 #setup {
   display: block;
-  border: $fieldset-border;
+  border: default.$fieldset-border;
   margin: 80px 0px 4px 0px;
   padding: 8px;
   border-radius: 4px;
-  color: $fieldset-text;
+  color: default.$fieldset-text;
 }
 
 #setup form {
@@ -46,7 +48,7 @@
   margin-bottom: 3px;
   padding-top: 6px;
   padding-bottom: 6px;
-  border: $field-border;
+  border: default.$field-border;
 }
 
 .field > input {
@@ -60,16 +62,16 @@
   border: none;
   border-radius: 4px;
   outline: none;
-  color: $fieldset-text;
+  color: default.$fieldset-text;
 }
 
 .field > input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px $field-input-background inset;
+  -webkit-box-shadow: 0 0 0px 1000px default.$field-input-background inset;
 }
 
 .field > input::placeholder {
   font-style: italic;
-  color: $fieldset-text;
+  color: default.$fieldset-text;
 }
 
 .field > img {
@@ -88,8 +90,8 @@ form button {
   padding: 4px 16px 4px 16px;
   border-radius: 4px;
   outline: none;
-  color: $fieldset-text;
-  border: $fieldset-button-border;
+  color: default.$fieldset-text;
+  border: default.$fieldset-button-border;
 }
 
 #message { 

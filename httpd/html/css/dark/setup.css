@@ -285,12 +285,14 @@ footer {
   align-items: flex-end;
   margin-bottom: 2px;
 }
+
 #controls #message {
   flex-grow: 1;
   margin-left: 0px;
   margin-right: 6px;
   visibility: hidden;
 }
+
 #controls #message.visible {
   visibility: visible;
 }
@@ -386,9 +388,11 @@ footer {
   border-radius: 4px;
   visibility: hidden;
 }
+
 .message .visible {
   visibility: visible;
 }
+
 .message .warning {
   color: #dc322f;
   text-align: center;
@@ -635,11 +639,11 @@ tr td select[data-status=error] {
 
 #setup {
   display: block;
-  border: 1px solid #586e75;
+  border: 1px solid silver;
   margin: 80px 0px 4px 0px;
   padding: 8px;
   border-radius: 4px;
-  color: #839496;
+  color: #002b36;
 }
 
 #setup form {
@@ -679,7 +683,7 @@ tr td select[data-status=error] {
   border: none;
   border-radius: 4px;
   outline: none;
-  color: #839496;
+  color: #002b36;
 }
 
 .field > input:-webkit-autofill {
@@ -688,7 +692,7 @@ tr td select[data-status=error] {
 
 .field > input::placeholder {
   font-style: italic;
-  color: #839496;
+  color: #002b36;
 }
 
 .field > img {
@@ -707,8 +711,8 @@ form button {
   padding: 4px 16px 4px 16px;
   border-radius: 4px;
   outline: none;
-  color: #839496;
-  border: 2px solid #268bd2;
+  color: #002b36;
+  border: 2px solid #dc322f;
 }
 
 #message {

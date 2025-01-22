@@ -1,7 +1,7 @@
 @charset 'UTF-8';
  
-@import '../modules/_uhppoted';
-@import '../modules/_tabular';
-@import '../modules/_common';
-@import '../modules/_controllers';
-@import '../modules/_combobox';
+@use '../modules/_uhppoted';
+@use '../modules/_tabular';
+@use '../modules/_common';
+@use '../modules/_controllers';
+@use '../modules/_combobox';

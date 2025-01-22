@@ -1,3 +1,5 @@
+@use "../base/default";
+
 @use "../base/palette";
 
 #container {
@@ -9,7 +11,7 @@
 }
 
 table.interface {
-  background: $content-table-background-header;
+  background: default.$content-table-background-header;
   color: palette.$palette-base01;
   width: min-content;
   margin-bottom: 4px;
@@ -43,7 +45,7 @@ table.interface td.modified::before {
   width: 6px;
   height: 6px;
   line-height:0px;  // only hack that works :-(
-  filter: $content-table-flag-modified;
+  filter: default.$content-table-flag-modified;
 }
 
 table.interface td.conflict::before {
@@ -54,7 +56,7 @@ table.interface td.conflict::before {
   width: 6px;
   height: 6px;
   line-height:0px;  // only hack that works :-(
-  filter: $content-table-flag-conflict;
+  filter: default.$content-table-flag-conflict;
 }
 
 table.interface td.pending::before {
@@ -65,7 +67,7 @@ table.interface td.pending::before {
   width: 6px;
   height: 6px;
   line-height:0px;  // only hack that works :-(
-  filter: $content-table-flag-pending;
+  filter: default.$content-table-flag-pending;
 }
 
 table.interface td input {
@@ -97,11 +99,11 @@ table.interface td span.control {
 }
 
 table.interface td span.commit {
-  color: $content-table-commit;  
+  color: default.$content-table-commit;  
 }
 
 table.interface td span.rollback {
-  color: $content-table-rollback;  
+  color: default.$content-table-rollback;  
 }
 
 table.interface.modified td span.control {
