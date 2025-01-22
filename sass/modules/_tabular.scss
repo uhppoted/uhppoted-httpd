@@ -1,3 +1,4 @@
+@use "sass:color";
 div.tabular {
   overflow: auto;
   border: 1px solid $content-table-border;
@@ -15,7 +16,7 @@ div.tabular::-webkit-scrollbar-track {
 }
 
 div.tabular::-webkit-scrollbar-thumb {
-  background: darken($palette-base2, 10%);
+  background: color.adjust($palette-base2, $lightness: -10%);
   border: 2px solid $palette-base3;
   border-radius: 10px;
 }
@@ -99,11 +100,11 @@ div.tabular table tbody tr[data-status="error"] {
 }
 
 div.tabular table tbody tr:nth-child(odd) td.rowheader {
-  background: darken($content-table-background-odd,5%);
+  background: color.adjust($content-table-background-odd,$lightness: -5%);
 }
 
 div.tabular table tbody tr:nth-child(even) td.rowheader {
-  background: darken($content-table-background-even,5%);
+  background: color.adjust($content-table-background-even,$lightness: -5%);
 }
 
 div.tabular table tbody tr.modified td.rowheader {

@@ -7,7 +7,6 @@
 - [x] ARM6 target (cf. https://github.com/uhppoted/uhppoted/issues/55)
 - [ ] `DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.`
 
-
 - [ ] Virtual lists
       - (?) content-visiblity
             - https://nolanlawson.com/2024/09/18/improving-rendering-performance-with-css-content-visibility

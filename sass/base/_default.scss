@@ -1,3 +1,4 @@
+@use "sass:color";
 @charset "UTF-8";
 
 @import '_palette';
@@ -20,7 +21,7 @@ $user-menu-item: $palette-base01                     !default;
 $user-menu-item-highlight: $palette-base2            !default;
 $user-menu-item-highlight-background: $palette-base1 !default;
 
-$nav-background: darken($palette-base2, 5%) !default;
+$nav-background: color.adjust($palette-base2, $lightness: -5%) !default;
 $nav-text-colour: $palette-blue;
 
 $footer-background: $palette-base2 !default;
@@ -35,21 +36,21 @@ $fieldset-button-border-cancel: 2px solid $palette-base1 !default;
 $fieldset-warning-text: $palette-red !default;
 
 $field-border: 1px solid $palette-base00;
-$field-border-readonly: 1px solid lighten($palette-base1,10%);
+$field-border-readonly: 1px solid color.adjust($palette-base1,$lightness: 10%);
 $field-input-background: $palette-base3 !default;
 
 
 $content-table-background:          $palette-base2                !default;
-$content-table-background-header:   darken($palette-base2, 5%)    !default;
+$content-table-background-header:   color.adjust($palette-base2, $lightness: -5%)    !default;
 $content-table-background-odd:      $palette-base3                !default;
 $content-table-background-even:     $palette-base2                !default;
-$content-table-row-error:           lighten($palette-red, 20%)    !default;
-$content-table-row-modified:        lighten($palette-yellow, 50%) !default;
-$content-table-row-new:             lighten($palette-blue, 30%)   !default;
+$content-table-row-error:           color.adjust($palette-red, $lightness: 20%)    !default;
+$content-table-row-modified:        color.adjust($palette-yellow, $lightness: 50%) !default;
+$content-table-row-new:             color.adjust($palette-blue, $lightness: 30%)   !default;
 $content-table-row-unconfigured:    $palette-yellow               !default;
 $content-table-row-uncertain:       $palette-violet               !default;
-$content-table-background-pending:  transparentize($palette-violet, 0.5);
-$content-table-item-conflict:       transparentize($palette-orange, 0.75);
+$content-table-background-pending:  color.adjust($palette-violet, $alpha: -0.5);
+$content-table-item-conflict:       color.adjust($palette-orange, $alpha: -0.75);
 $content-table-border:              $palette-blue !default;
 $content-table-yes:                 $palette-base02;
 $content-table-no:                  $palette-base0;
@@ -61,7 +62,7 @@ $content-table-item-normal:         $palette-base03 !default;
 $content-table-item-unknown:        $palette-base1  !default;
 $content-table-item-unconfigured:   $palette-yellow !default;
 $content-table-item-uncertain:      $palette-violet !default;
-$content-table-item-incomplete:     lighten($palette-orange,15%) !default;
+$content-table-item-incomplete:     color.adjust($palette-orange,$lightness: 15%) !default;
 $content-table-item-error:          $palette-red    !default;
 $content-table-scrollbar-color:     auto             !default;
 $content-table-flag:                url('/images/default/corner.svg');  
@@ -84,7 +85,7 @@ $combobox-border: 1px solid #93a1a1;
 $combobox-li-colour: #666666;
 $combobox-li-selected: #def;
 
-$combobox-mode-background: lighten($palette-base3,10%);
+$combobox-mode-background: color.adjust($palette-base3,$lightness: 10%);
 
 $eye-colour: $palette-green;
 $windmill: $palette-blue;
