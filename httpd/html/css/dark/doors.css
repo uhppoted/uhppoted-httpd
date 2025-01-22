@@ -301,14 +301,12 @@ footer {
   align-items: flex-end;
   margin-bottom: 2px;
 }
-
 #controls #message {
   flex-grow: 1;
   margin-left: 0px;
   margin-right: 6px;
   visibility: hidden;
 }
-
 #controls #message.visible {
   visibility: visible;
 }
@@ -404,11 +402,9 @@ footer {
   border-radius: 4px;
   visibility: hidden;
 }
-
 .message .visible {
   visibility: visible;
 }
-
 .message .warning {
   color: #dc322f;
   text-align: center;
@@ -902,32 +898,26 @@ tr.door input.mode + ul li {
 td label.keypad {
   cursor: pointer;
 }
-
 td label.keypad input[type=checkbox] {
   display: none;
 }
-
 td label.keypad img {
   width: 14px;
   height: 14px;
   padding: 2px;
   margin: auto;
 }
-
 td label.keypad img.yes {
   display: none;
   filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
 }
-
 td label.keypad img.no {
   display: block;
   filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
 }
-
 td label.keypad input[type=checkbox]:checked ~ img.yes {
   display: block;
 }
-
 td label.keypad input[type=checkbox]:checked ~ img.no {
   display: none;
 }

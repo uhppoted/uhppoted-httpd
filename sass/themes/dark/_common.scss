@@ -1,4 +1,6 @@
+@use "../../base/palette";
 @use "sass:color";
-$combobox-background: $palette-base1;
-$combobox-mode-background: color.adjust($palette-base01,$lightness: 10%);
+
+$combobox-background: palette.$palette-base1;
+$combobox-mode-background: color.adjust(palette.$palette-base01,$lightness: 10%);
 

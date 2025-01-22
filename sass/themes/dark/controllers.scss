@@ -1,11 +1,11 @@
 @charset 'UTF-8';
 
-@import '../../base/_default';
+@use '../../base/_default';
  
-@import '_uhppoted';
-@import '_tabular';
-@import '_common';
-@import '../../stylesheets/controllers';
+@use '_uhppoted';
+@use '_tabular';
+@use '_common';
+@use '../../stylesheets/controllers';
 
 tr.controller td input[data-status="error"] {
   font-weight: normal; 
