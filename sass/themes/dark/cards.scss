@@ -1,11 +1,11 @@
 @charset 'UTF-8';
 
-@import '../../base/_default';
+@use '../../base/_default';
 
-@import '_uhppoted';
-@import '_tabular';
-@import '_common';
-@import '../../stylesheets/cards';
+@use '_uhppoted';
+@use '_tabular';
+@use '_common';
+@use '../../stylesheets/cards';
 
 td label.group img.yes {
   filter: invert(0%) sepia(0%) saturate(10%) hue-rotate(0deg) brightness(0%) contrast(0%)

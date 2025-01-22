@@ -301,14 +301,12 @@ footer {
   align-items: flex-end;
   margin-bottom: 2px;
 }
-
 #controls #message {
   flex-grow: 1;
   margin-left: 0px;
   margin-right: 6px;
   visibility: hidden;
 }
-
 #controls #message.visible {
   visibility: visible;
 }
@@ -404,11 +402,9 @@ footer {
   border-radius: 4px;
   visibility: hidden;
 }
-
 .message .visible {
   visibility: visible;
 }
-
 .message .warning {
   color: #dc322f;
   text-align: center;
@@ -856,7 +852,6 @@ tr td select[data-status=error] {
 #container.loading th.name {
   min-width: 174px;
 }
-
 #container.loading th.padding {
   min-width: 500px;
 }
@@ -910,7 +905,6 @@ input.from.defval {
   font-weight: bold;
   position: relative;
 }
-
 input.from.defval::before {
   content: "*";
   position: absolute;
@@ -945,7 +939,6 @@ input.to.defval {
   font-weight: bold;
   position: relative;
 }
-
 input.to.defval::before {
   content: "*";
   position: absolute;
