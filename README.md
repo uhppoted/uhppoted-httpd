@@ -32,7 +32,7 @@ Supported operating systems:
 - Linux
 - MacOS
 - Windows
-- ARM7 _(e.g. RaspberryPi)_
+- RaspberryPi (ARM/ARM7/ARM6)
 
 ## Raison d'être
 

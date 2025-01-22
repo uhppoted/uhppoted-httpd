@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added
+1. ARMv6 build target (for Pi ZeroW).
+
 ### Updated
 1. Reduced cards page load times with:
    - In-browser cards cache

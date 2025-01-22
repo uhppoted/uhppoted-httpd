@@ -4,28 +4,9 @@
 - [x] setup: redirect to login if admin user exists
 - [x] setup: toggle visibility
 - [x] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
-      - [x] network request is taking 1.5s
-      - [x] incremental loading
-          - [x] sort cards list server side
-          - [x] prefetch
-      - [x] `tabular.modified`
-          - [x] cache querySelector
-          - [x] cache querySelectorAll
-          - [x] per page cache implementation i.e. pass it into `modified`
-          - [x] windmill
-          - [x] nightly builds
-          - [x] fade-in on loaded
-          - [x] pre-populate cache on refresh
-          - [x] sort rows by creation + name/number
-          - [x] modified(...,options)
-          - [x] scrollbar is gone after change to grid layout?
-          - [x] Safari loading windmill doesn't go away```
-          - [x] rollback-all is **really** slow
-          - [x] commit-all is **really** slow
-          - [x] 'name' header overwritten on vscroll
-          - [x] overview refresh errors
-          - [x] refresh windmill is not showing
-          - [x] scroll 'new' row into view
+- [x] ARM6 target (cf. https://github.com/uhppoted/uhppoted/issues/55)
+- [ ] `DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.`
+
 
 - [ ] Virtual lists
       - (?) content-visiblity

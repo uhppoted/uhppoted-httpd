@@ -76,6 +76,12 @@ jobs:
         path: dist/development/arm7/uhppoted-httpd
         name: uhppoted-httpd_arm7-nightly
 
+    - name: Upload ARM6 artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: dist/development/arm6/uhppoted-httpd
+        name: uhppoted-httpd_arm6-nightly
+
     - name: Upload HTML artifact
       uses: actions/upload-artifact@v4
       with:

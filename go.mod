@@ -7,8 +7,8 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hyperjumptech/grule-rule-engine v1.15.0
 	github.com/pquerna/otp v1.4.0
-	github.com/uhppoted/uhppote-core v0.8.9
-	github.com/uhppoted/uhppoted-lib v0.8.9
+	github.com/uhppoted/uhppote-core v0.8.10-0.20250121172632-08d73ff3689e
+	github.com/uhppoted/uhppoted-lib v0.8.10-0.20250121173211-01a4a14fc786
 	golang.org/x/sys v0.29.0
 )
 
@@ -35,9 +35,9 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.25.0 // indirect
-	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.19.0 // indirect
+	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
