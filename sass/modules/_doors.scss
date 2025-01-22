@@ -1,3 +1,5 @@
+@use "../base/default";
+
 #container {
   width: fit-content;
   height:100%;
@@ -44,7 +46,7 @@ tr.door td input.delay {
 }
 
 tr.door input.mode + ul {
-  background: $combobox-mode-background;
+  background: default.$combobox-mode-background;
 }
 
 tr.door input.mode + ul li {

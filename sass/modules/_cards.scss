@@ -1,3 +1,5 @@
+@use "../base/default";
+
 #container {
   display: flex; 
   flex-direction:column; 
@@ -43,7 +45,7 @@ td input.name {
 }
 
 tr[data-status="incomplete"] td input.name {
-  color: $content-table-item-incomplete;
+  color: default.$content-table-item-incomplete;
   font-style: italic;
 }
 
@@ -52,7 +54,7 @@ td input.number {
 }
 
 tr[data-status="incomplete"] td input.number {
-  color: $content-table-item-incomplete;
+  color: default.$content-table-item-incomplete;
   font-style: italic;
 }
 
@@ -75,12 +77,12 @@ input.from.defval {
 }
 
 tr[data-status="incomplete"] td input.from {
-  color: $content-table-item-incomplete;
+  color: default.$content-table-item-incomplete;
   font-style: italic;
 }
 
 tr[data-status="incomplete"] td input.from.apple:invalid {
-  color: color-mix(in srgb, $content-table-item-incomplete 33.3%, transparent);
+  color: color-mix(in srgb, default.$content-table-item-incomplete 33.3%, transparent);
 }
 
 input.from::-webkit-datetime-edit { 
@@ -110,12 +112,12 @@ input.to.defval {
 }
 
 tr[data-status="incomplete"] td input.to {
-  color: $content-table-item-incomplete;
+  color: default.$content-table-item-incomplete;
   font-style: italic;
 }
 
 tr[data-status="incomplete"] td input.to.apple:invalid {
-  color: color-mix(in srgb, $content-table-item-incomplete 33.3%, transparent);
+  color: color-mix(in srgb, default.$content-table-item-incomplete 33.3%, transparent);
 }
 
 input.to::-webkit-datetime-edit { 

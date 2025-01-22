@@ -1,3 +1,5 @@
+@use "../base/palette";
+
 #container {
   display: flex; 
   flex-direction:column; 
@@ -8,7 +10,7 @@
 
 table.interface {
   background: $content-table-background-header;
-  color: $palette-base01;
+  color: palette.$palette-base01;
   width: min-content;
   margin-bottom: 4px;
   padding-top: 0px;
@@ -72,7 +74,7 @@ table.interface td input {
   border-radius: 3px;
   outline: none;
   margin-left: 2px;
-  color: $palette-base01;
+  color: palette.$palette-base01;
   font: 400 0.9em Arial;
 }
 

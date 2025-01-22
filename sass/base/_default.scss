@@ -1,69 +1,68 @@
 @use "sass:color";
+@use '_palette';
 @charset "UTF-8";
 
-@import '_palette';
+$content-background: palette.$palette-base3         !default;
+$content-controls-border: palette.$palette-blue     !default;
 
-$content-background: $palette-base3         !default;
-$content-controls-border: $palette-blue     !default;
+$message-background: palette.$palette-base2 !default;
 
-$message-background: $palette-base2 !default;
+$warning-colour: palette.$palette-red            !default;
+$warning-dismiss-colour: palette.$palette-base03 !default;
+$enabled-colour: palette.$palette-yellow         !default;
 
-$warning-colour: $palette-red            !default;
-$warning-dismiss-colour: $palette-base03 !default;
-$enabled-colour: $palette-yellow         !default;
+$user-avatar-background: palette.$palette-base2              !default;
+$user-avatar-text: palette.$palette-base01                   !default;
+$user-avatar-shadow: 3px 3px 3px #d8d8d8                     !default;
+$user-menu-background: palette.$palette-base2                !default;
+$user-menu-shadow: 3px 3px 3px #d8d8d8                       !default;
+$user-menu-item: palette.$palette-base01                     !default;
+$user-menu-item-highlight: palette.$palette-base2            !default;
+$user-menu-item-highlight-background: palette.$palette-base1 !default;
 
-$user-avatar-background: $palette-base2              !default;
-$user-avatar-text: $palette-base01                   !default;
-$user-avatar-shadow: 3px 3px 3px #d8d8d8              !default;
-$user-menu-background: $palette-base2                !default;
-$user-menu-shadow: 3px 3px 3px #d8d8d8                !default;
-$user-menu-item: $palette-base01                     !default;
-$user-menu-item-highlight: $palette-base2            !default;
-$user-menu-item-highlight-background: $palette-base1 !default;
+$nav-background: color.adjust(palette.$palette-base2, $lightness: -5%) !default;
+$nav-text-colour: palette.$palette-blue;
 
-$nav-background: color.adjust($palette-base2, $lightness: -5%) !default;
-$nav-text-colour: $palette-blue;
+$footer-background: palette.$palette-base2 !default;
+$footer-text: palette.$palette-base03 !default;
 
-$footer-background: $palette-base2 !default;
-$footer-text: $palette-base03 !default;
-
-$fieldset-text: $palette-base03 !default;
-$fieldset-hint: $palette-base1  !default;
+$fieldset-text: palette.$palette-base03 !default;
+$fieldset-hint: palette.$palette-base1  !default;
 $fieldset-border: 1px solid silver !default;
-$fieldset-button-border: 2px solid $palette-red !default;
-$fieldset-button-border-plain: 2px solid $palette-base1  !default;
-$fieldset-button-border-cancel: 2px solid $palette-base1 !default;
-$fieldset-warning-text: $palette-red !default;
+$fieldset-button-border: 2px solid palette.$palette-red !default;
+$fieldset-button-border-plain: 2px solid palette.$palette-base1  !default;
+$fieldset-button-border-cancel: 2px solid palette.$palette-base1 !default;
+$fieldset-warning-text: palette.$palette-red !default;
 
-$field-border: 1px solid $palette-base00;
-$field-border-readonly: 1px solid color.adjust($palette-base1,$lightness: 10%);
-$field-input-background: $palette-base3 !default;
+$field-border: 1px solid palette.$palette-base00;
+$field-border-readonly: 1px solid color.adjust(palette.$palette-base1,$lightness: 10%);
+$field-input-background: palette.$palette-base3 !default;
 
 
-$content-table-background:          $palette-base2                !default;
-$content-table-background-header:   color.adjust($palette-base2, $lightness: -5%)    !default;
-$content-table-background-odd:      $palette-base3                !default;
-$content-table-background-even:     $palette-base2                !default;
-$content-table-row-error:           color.adjust($palette-red, $lightness: 20%)    !default;
-$content-table-row-modified:        color.adjust($palette-yellow, $lightness: 50%) !default;
-$content-table-row-new:             color.adjust($palette-blue, $lightness: 30%)   !default;
-$content-table-row-unconfigured:    $palette-yellow               !default;
-$content-table-row-uncertain:       $palette-violet               !default;
-$content-table-background-pending:  color.adjust($palette-violet, $alpha: -0.5);
-$content-table-item-conflict:       color.adjust($palette-orange, $alpha: -0.75);
-$content-table-border:              $palette-blue !default;
-$content-table-yes:                 $palette-base02;
-$content-table-no:                  $palette-base0;
-$content-table-changed:             $palette-red;
-$content-table-commit:              $palette-green  !default;
-$content-table-rollback:            $palette-red    !default;
-$content-table-text:                $palette-base03 !default;
-$content-table-item-normal:         $palette-base03 !default;
-$content-table-item-unknown:        $palette-base1  !default;
-$content-table-item-unconfigured:   $palette-yellow !default;
-$content-table-item-uncertain:      $palette-violet !default;
-$content-table-item-incomplete:     color.adjust($palette-orange,$lightness: 15%) !default;
-$content-table-item-error:          $palette-red    !default;
+$content-table-background:          palette.$palette-base2                !default;
+$content-table-background-header:   color.adjust(palette.$palette-base2, $lightness: -5%)    !default;
+$content-table-background-odd:      palette.$palette-base3                !default;
+$content-table-background-even:     palette.$palette-base2                !default;
+$content-table-row-error:           color.adjust(palette.$palette-red, $lightness: 20%)    !default;
+$content-table-row-modified:        color.adjust(palette.$palette-yellow, $lightness: 50%) !default;
+$content-table-row-new:             color.adjust(palette.$palette-blue, $lightness: 30%)   !default;
+$content-table-row-unconfigured:    palette.$palette-yellow               !default;
+$content-table-row-uncertain:       palette.$palette-violet               !default;
+$content-table-background-pending:  color.adjust(palette.$palette-violet, $alpha: -0.5);
+$content-table-item-conflict:       color.adjust(palette.$palette-orange, $alpha: -0.75);
+$content-table-border:              palette.$palette-blue !default;
+$content-table-yes:                 palette.$palette-base02;
+$content-table-no:                  palette.$palette-base0;
+$content-table-changed:             palette.$palette-red;
+$content-table-commit:              palette.$palette-green  !default;
+$content-table-rollback:            palette.$palette-red    !default;
+$content-table-text:                palette.$palette-base03 !default;
+$content-table-item-normal:         palette.$palette-base03 !default;
+$content-table-item-unknown:        palette.$palette-base1  !default;
+$content-table-item-unconfigured:   palette.$palette-yellow !default;
+$content-table-item-uncertain:      palette.$palette-violet !default;
+$content-table-item-incomplete:     color.adjust(palette.$palette-orange,$lightness: 15%) !default;
+$content-table-item-error:          palette.$palette-red    !default;
 $content-table-scrollbar-color:     auto             !default;
 $content-table-flag:                url('/images/default/corner.svg');  
 $content-table-flag-modified:       invert(61%) sepia(14%) saturate(250%)  hue-rotate(138deg) brightness(92%) contrast(92%);
@@ -73,25 +72,25 @@ $content-table-flag-pending:        invert(38%) sepia(78%) saturate(999%) hue-ro
 $content-svg-filter-commit:   invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%) !default;
 $content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%) !default;
 
-$controls-background: $palette-base2;
+$controls-background: palette.$palette-base2;
 
-$tab-background: $palette-base2;
-$tab-background-selected: $palette-base1;
+$tab-background: palette.$palette-base2;
+$tab-background-selected: palette.$palette-base1;
 
-$button-border: 2px solid $palette-red;
+$button-border: 2px solid palette.$palette-red;
 
-$combobox-background: $palette-base2;
+$combobox-background: palette.$palette-base2;
 $combobox-border: 1px solid #93a1a1;
 $combobox-li-colour: #666666;
 $combobox-li-selected: #def;
 
-$combobox-mode-background: color.adjust($palette-base3,$lightness: 10%);
+$combobox-mode-background: color.adjust(palette.$palette-base3,$lightness: 10%);
 
-$eye-colour: $palette-green;
-$windmill: $palette-blue;
-$link-colour: $palette-blue;
-$offline-border: $palette-red;
-$offline-colour: $palette-base0;
+$eye-colour: palette.$palette-green;
+$windmill: palette.$palette-blue;
+$link-colour: palette.$palette-blue;
+$offline-border: palette.$palette-red;
+$offline-colour: palette.$palette-base0;
 
 $shaded-background: repeating-linear-gradient(-55deg, #808080ff, #22222220 1px, #22222220 20px);
 $password-credentials-background: $message-background;
