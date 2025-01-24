@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## [0.8.10](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.10) - 2025-01-30
 
 ### Added
 1. ARMv6 build target (RaspberryPi ZeroW).

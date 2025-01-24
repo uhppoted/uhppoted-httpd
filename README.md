@@ -59,17 +59,14 @@ _CAVEAT EMPTOR_
 
 ### Current Release
 
-**[v0.8.9](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.9) - 2024-09-06**
+**[v0.8.10](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.10) - 2024-01-30**
 
-1. Added TCP/IP transport support.
-2. Fixed bug in authentication that allowed deleted user to login unless system had been restarted.
-3. On startup, redirects to 'setup' page to create an admin user if none exists.
-4. Added configurable _admin_ role.
-5. Removed creation of admin user in _daemonize_.
-6. Added ADMIN role check to default _grules_ rulesets.
-7. Added support for configurable default card start and end dates.
-8. Excluded cards with missing start or end dates from the ACL loaded to the controllers.
-9. Updated to Go 1.23.
+1. Added ARMv6 build target (RaspberryPi ZeroW).
+2. Reduced cards page load times with:
+   - In-browser cards cache
+   - Server side cached grules evaluations
+   - Initial 'prefetch' on page load
+3. Fixed Firefox controller 'invalid timezone' error.
 
 
 ## Installation
