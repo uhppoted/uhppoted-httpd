@@ -11,7 +11,7 @@ const DEFAULT = new Intl.DateTimeFormat(LOCALE, {
   hour: 'numeric',
   minute: '2-digit',
   second: '2-digit',
-  hour12: false
+  hour12: false,
 })
 
 export const timezones = new Map([
@@ -21,10 +21,10 @@ export const timezones = new Map([
   ['PST', short],
   ['PST8PDT', short],
   ['Africa/Cairo', long],
-  ['Etc/GMT-2', short]
+  ['Etc/GMT-2', short],
 ])
 
-function local (dt, _tz) {
+function local(dt, _tz) {
   try {
     const fmt = new Intl.DateTimeFormat(LOCALE, {
       year: 'numeric',
@@ -33,7 +33,7 @@ function local (dt, _tz) {
       hour: 'numeric',
       minute: '2-digit',
       second: '2-digit',
-      hour12: false
+      hour12: false,
     })
 
     return fmt.format(dt).replaceAll(',', '')
@@ -42,7 +42,7 @@ function local (dt, _tz) {
   }
 }
 
-function short (dt, tz) {
+function short(dt, tz) {
   try {
     const fmt = new Intl.DateTimeFormat(LOCALE, {
       timeZone: tz,
@@ -53,7 +53,7 @@ function short (dt, tz) {
       hour: 'numeric',
       minute: '2-digit',
       second: '2-digit',
-      hour12: false
+      hour12: false,
     })
 
     return fmt.format(dt).replaceAll(',', '')
@@ -62,7 +62,7 @@ function short (dt, tz) {
   }
 }
 
-function long (dt, tz) {
+function long(dt, tz) {
   try {
     const fmt = new Intl.DateTimeFormat(LOCALE, {
       timeZone: tz,
@@ -72,7 +72,7 @@ function long (dt, tz) {
       hour: 'numeric',
       minute: '2-digit',
       second: '2-digit',
-      hour12: false
+      hour12: false,
     })
 
     const formatted = fmt.format(dt).replaceAll(',', '')

@@ -1,5 +1,5 @@
 export class Cache {
-  constructor (options = {}) {
+  constructor(options = {}) {
     const { elements = true, modified = true } = options
 
     if (elements) {
@@ -11,13 +11,13 @@ export class Cache {
     }
   }
 
-  put (oid, field) {
+  put(oid, field) {
     const key = `${oid}`
 
     this.elements.set(key, field)
   }
 
-  query (oid) {
+  query(oid) {
     const key = `${oid}`
 
     if (this.elements) {
@@ -33,12 +33,15 @@ export class Cache {
     return document.querySelector(`[data-oid="${oid}"]`)
   }
 
-  queryModified (oid) {
+  queryModified(oid) {
     const key = `${oid}`
 
     if (this.modified) {
       if (!this.modified.has(key)) {
-        this.modified.set(key, document.querySelectorAll(`[data-oid^="${oid}."]:is(.modified,.new)`))
+        this.modified.set(
+          key,
+          document.querySelectorAll(`[data-oid^="${oid}."]:is(.modified,.new)`),
+        )
       }
 
       return this.modified.get(key)

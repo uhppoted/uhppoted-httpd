@@ -5,34 +5,34 @@ import { loaded } from './uhppoted.js'
 
 const pagesize = 5
 
-export function refreshed () {
+export function refreshed() {
   refreshControllers()
   refreshEvents()
   refreshLogs()
   loaded()
 }
 
-function refreshControllers () {
+function refreshControllers() {
   const list = [...DB.controllers.values()]
-    .filter(c => alive(c))
+    .filter((c) => alive(c))
     .sort((p, q) => p.created.localeCompare(q.created))
 
   realizeControllers(list)
 
-  list.forEach(o => {
+  list.forEach((o) => {
     updateController(o.OID, o)
   })
 }
 
-function refreshEvents () {
+function refreshEvents() {
   const events = [...DB.events().values()]
-    .filter(e => alive(e))
+    .filter((e) => alive(e))
     .sort((p, q) => q.timestamp.localeCompare(p.timestamp))
     .slice(0, pagesize)
 
   realizeEvents(events)
 
-  events.forEach(o => {
+  events.forEach((o) => {
     updateEvent(o.OID, o)
   })
 
@@ -47,15 +47,15 @@ function refreshEvents () {
   })
 }
 
-function refreshLogs () {
+function refreshLogs() {
   const logs = [...DB.logs().values()]
-    .filter(l => alive(l))
+    .filter((l) => alive(l))
     .sort((p, q) => q.timestamp.localeCompare(p.timestamp))
     .slice(0, pagesize)
 
   realizeLogs(logs)
 
-  logs.forEach(o => {
+  logs.forEach((o) => {
     updateLog(o.OID, o)
   })
 
@@ -71,13 +71,13 @@ function refreshLogs () {
   })
 }
 
-function realizeControllers (controllers) {
+function realizeControllers(controllers) {
   const table = document.querySelector('#controllers table')
   const tbody = table.tBodies[0]
 
   trim('controllers', controllers, tbody.querySelectorAll('tr.controller'))
 
-  controllers.forEach(o => {
+  controllers.forEach((o) => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
 
     if (!row) {
@@ -86,9 +86,11 @@ function realizeControllers (controllers) {
   })
 }
 
-function addController (oid, _record) {
+function addController(oid, _record) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
-  const tbody = document.getElementById('controllers').querySelector('table tbody')
+  const tbody = document
+    .getElementById('controllers')
+    .querySelector('table tbody')
 
   if (tbody) {
     const template = document.querySelector('#controller')
@@ -101,18 +103,54 @@ function addController (oid, _record) {
     row.innerHTML = template.innerHTML
 
     const fields = [
-      { suffix: 'name', oid: `${oid}${schema.controllers.name}`, selector: 'td input.name' },
-      { suffix: 'ID', oid: `${oid}${schema.controllers.deviceID}`, selector: 'td input.ID' },
-      { suffix: 'datetime', oid: `${oid}${schema.controllers.datetime.current}`, selector: 'td input.datetime' },
-      { suffix: 'cards', oid: `${oid}${schema.controllers.cards.count}`, selector: 'td input.cards' },
-      { suffix: 'events', oid: `${oid}${schema.controllers.events.last}`, selector: 'td input.events' },
-      { suffix: 'door-1', oid: `${oid}${schema.controllers.door1}`, selector: 'td input.door1' },
-      { suffix: 'door-2', oid: `${oid}${schema.controllers.door2}`, selector: 'td input.door2' },
-      { suffix: 'door-3', oid: `${oid}${schema.controllers.door3}`, selector: 'td input.door3' },
-      { suffix: 'door-4', oid: `${oid}${schema.controllers.door4}`, selector: 'td input.door4' }
+      {
+        suffix: 'name',
+        oid: `${oid}${schema.controllers.name}`,
+        selector: 'td input.name',
+      },
+      {
+        suffix: 'ID',
+        oid: `${oid}${schema.controllers.deviceID}`,
+        selector: 'td input.ID',
+      },
+      {
+        suffix: 'datetime',
+        oid: `${oid}${schema.controllers.datetime.current}`,
+        selector: 'td input.datetime',
+      },
+      {
+        suffix: 'cards',
+        oid: `${oid}${schema.controllers.cards.count}`,
+        selector: 'td input.cards',
+      },
+      {
+        suffix: 'events',
+        oid: `${oid}${schema.controllers.events.last}`,
+        selector: 'td input.events',
+      },
+      {
+        suffix: 'door-1',
+        oid: `${oid}${schema.controllers.door1}`,
+        selector: 'td input.door1',
+      },
+      {
+        suffix: 'door-2',
+        oid: `${oid}${schema.controllers.door2}`,
+        selector: 'td input.door2',
+      },
+      {
+        suffix: 'door-3',
+        oid: `${oid}${schema.controllers.door3}`,
+        selector: 'td input.door3',
+      },
+      {
+        suffix: 'door-4',
+        oid: `${oid}${schema.controllers.door4}`,
+        selector: 'td input.door4',
+      },
     ]
 
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const field = row.querySelector(f.selector)
       if (field) {
         field.id = uuid + '-' + f.suffix
@@ -133,21 +171,41 @@ function addController (oid, _record) {
   }
 }
 
-function updateController (oid, record) {
-  const row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
+function updateController(oid, record) {
+  const row = document.querySelector(
+    "div#controllers tr[data-oid='" + oid + "']",
+  )
 
-  const name = row.querySelector(`[data-oid="${oid}${schema.controllers.name}"]`)
-  const deviceID = row.querySelector(`[data-oid="${oid}${schema.controllers.deviceID}"]`)
-  const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime.current}"]`)
-  const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards.count}"]`)
-  const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.last}"]`)
-  const door1 = row.querySelector(`[data-oid="${oid}${schema.controllers.door1}"]`)
-  const door2 = row.querySelector(`[data-oid="${oid}${schema.controllers.door2}"]`)
-  const door3 = row.querySelector(`[data-oid="${oid}${schema.controllers.door3}"]`)
-  const door4 = row.querySelector(`[data-oid="${oid}${schema.controllers.door4}"]`)
+  const name = row.querySelector(
+    `[data-oid="${oid}${schema.controllers.name}"]`,
+  )
+  const deviceID = row.querySelector(
+    `[data-oid="${oid}${schema.controllers.deviceID}"]`,
+  )
+  const datetime = row.querySelector(
+    `[data-oid="${oid}${schema.controllers.datetime.current}"]`,
+  )
+  const cards = row.querySelector(
+    `[data-oid="${oid}${schema.controllers.cards.count}"]`,
+  )
+  const events = row.querySelector(
+    `[data-oid="${oid}${schema.controllers.events.last}"]`,
+  )
+  const door1 = row.querySelector(
+    `[data-oid="${oid}${schema.controllers.door1}"]`,
+  )
+  const door2 = row.querySelector(
+    `[data-oid="${oid}${schema.controllers.door2}"]`,
+  )
+  const door3 = row.querySelector(
+    `[data-oid="${oid}${schema.controllers.door3}"]`,
+  )
+  const door4 = row.querySelector(
+    `[data-oid="${oid}${schema.controllers.door4}"]`,
+  )
 
   // ... set record values
-  const doors = new Map([...DB.doors.values()].map(o => [o.OID, o.name]))
+  const doors = new Map([...DB.doors.values()].map((o) => [o.OID, o.name]))
 
   row.dataset.status = record.status
 
@@ -166,13 +224,13 @@ function updateController (oid, record) {
   return row
 }
 
-function realizeEvents (events) {
+function realizeEvents(events) {
   const table = document.querySelector('#events table')
   const tbody = table.tBodies[0]
 
   trim('events', events, tbody.querySelectorAll('tr.event'))
 
-  events.forEach(o => {
+  events.forEach((o) => {
     let row = tbody.querySelector(`tr[data-oid="${o.OID}"]`)
     if (!row) {
       row = addEvent(o.OID, o)
@@ -180,7 +238,7 @@ function realizeEvents (events) {
   })
 }
 
-function addEvent (oid) {
+function addEvent(oid) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('events').querySelector('table tbody')
 
@@ -195,17 +253,49 @@ function addEvent (oid) {
     row.innerHTML = template.innerHTML
 
     const fields = [
-      { suffix: 'timestamp', oid: `${oid}${schema.events.timestamp}`, selector: 'td input.timestamp' },
-      { suffix: 'device', oid: `${oid}${schema.events.deviceName}`, selector: 'td input.device' },
-      { suffix: 'eventType', oid: `${oid}${schema.events.type}`, selector: 'td input.eventType' },
-      { suffix: 'door', oid: `${oid}${schema.events.doorName}`, selector: 'td input.door' },
-      { suffix: 'cardno', oid: `${oid}${schema.events.card}`, selector: 'td input.cardno' },
-      { suffix: 'card', oid: `${oid}${schema.events.cardName}`, selector: 'td input.card' },
-      { suffix: 'access', oid: `${oid}${schema.events.granted}`, selector: 'td input.access' },
-      { suffix: 'reason', oid: `${oid}${schema.events.reason}`, selector: 'td input.reason' }
+      {
+        suffix: 'timestamp',
+        oid: `${oid}${schema.events.timestamp}`,
+        selector: 'td input.timestamp',
+      },
+      {
+        suffix: 'device',
+        oid: `${oid}${schema.events.deviceName}`,
+        selector: 'td input.device',
+      },
+      {
+        suffix: 'eventType',
+        oid: `${oid}${schema.events.type}`,
+        selector: 'td input.eventType',
+      },
+      {
+        suffix: 'door',
+        oid: `${oid}${schema.events.doorName}`,
+        selector: 'td input.door',
+      },
+      {
+        suffix: 'cardno',
+        oid: `${oid}${schema.events.card}`,
+        selector: 'td input.cardno',
+      },
+      {
+        suffix: 'card',
+        oid: `${oid}${schema.events.cardName}`,
+        selector: 'td input.card',
+      },
+      {
+        suffix: 'access',
+        oid: `${oid}${schema.events.granted}`,
+        selector: 'td input.access',
+      },
+      {
+        suffix: 'reason',
+        oid: `${oid}${schema.events.reason}`,
+        selector: 'td input.reason',
+      },
     ]
 
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const field = row.querySelector(f.selector)
       if (field) {
         field.id = uuid + '-' + f.suffix
@@ -228,19 +318,31 @@ function addEvent (oid) {
   }
 }
 
-function updateEvent (oid, record) {
+function updateEvent(oid, record) {
   const row = document.querySelector("div#events tr[data-oid='" + oid + "']")
 
-  const timestamp = row.querySelector(`[data-oid="${oid}${schema.events.timestamp}"]`)
-  const deviceID = row.querySelector(`[data-oid="${oid}${schema.events.deviceID}"]`)
-  const device = row.querySelector(`[data-oid="${oid}${schema.events.deviceName}"]`)
-  const eventType = row.querySelector(`[data-oid="${oid}${schema.events.type}"]`)
+  const timestamp = row.querySelector(
+    `[data-oid="${oid}${schema.events.timestamp}"]`,
+  )
+  const deviceID = row.querySelector(
+    `[data-oid="${oid}${schema.events.deviceID}"]`,
+  )
+  const device = row.querySelector(
+    `[data-oid="${oid}${schema.events.deviceName}"]`,
+  )
+  const eventType = row.querySelector(
+    `[data-oid="${oid}${schema.events.type}"]`,
+  )
   const doorid = row.querySelector(`[data-oid="${oid}${schema.events.door}"]`)
   const door = row.querySelector(`[data-oid="${oid}${schema.events.doorName}"]`)
-  const direction = row.querySelector(`[data-oid="${oid}${schema.events.direction}"]`)
+  const direction = row.querySelector(
+    `[data-oid="${oid}${schema.events.direction}"]`,
+  )
   const cardno = row.querySelector(`[data-oid="${oid}${schema.events.card}"]`)
   const card = row.querySelector(`[data-oid="${oid}${schema.events.cardName}"]`)
-  const access = row.querySelector(`[data-oid="${oid}${schema.events.granted}"]`)
+  const access = row.querySelector(
+    `[data-oid="${oid}${schema.events.granted}"]`,
+  )
   const reason = row.querySelector(`[data-oid="${oid}${schema.events.reason}"]`)
 
   row.dataset.status = record.status
@@ -254,19 +356,26 @@ function updateEvent (oid, record) {
   update(direction, record.direction)
   update(cardno, record.card)
   update(card, record.cardName.toLowerCase())
-  update(access, record.granted === 'true' ? 'granted' : (record.granted === 'false' ? 'denied' : ''))
+  update(
+    access,
+    record.granted === 'true'
+      ? 'granted'
+      : record.granted === 'false'
+        ? 'denied'
+        : '',
+  )
   update(reason, record.reason)
 
   return row
 }
 
-function realizeLogs (logs) {
+function realizeLogs(logs) {
   const table = document.querySelector('#logs table')
   const tbody = table.tBodies[0]
 
   trim('logs', logs, tbody.querySelectorAll('tr.entry'))
 
-  logs.forEach(o => {
+  logs.forEach((o) => {
     let row = tbody.querySelector(`tr[data-oid='${o.OID}']`)
     if (!row) {
       row = addLog(o.OID, o)
@@ -274,7 +383,7 @@ function realizeLogs (logs) {
   })
 }
 
-function addLog (oid) {
+function addLog(oid) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('logs').querySelector('table tbody')
 
@@ -289,12 +398,24 @@ function addLog (oid) {
     row.innerHTML = template.innerHTML
 
     const fields = [
-      { suffix: 'timestamp', oid: `${oid}${schema.logs.timestamp}`, selector: 'td input.timestamp' },
-      { suffix: 'uid', oid: `${oid}${schema.logs.uid}`, selector: 'td input.uid' },
-      { suffix: 'details', oid: `${oid}${schema.logs.details}`, selector: 'td input.details' }
+      {
+        suffix: 'timestamp',
+        oid: `${oid}${schema.logs.timestamp}`,
+        selector: 'td input.timestamp',
+      },
+      {
+        suffix: 'uid',
+        oid: `${oid}${schema.logs.uid}`,
+        selector: 'td input.uid',
+      },
+      {
+        suffix: 'details',
+        oid: `${oid}${schema.logs.details}`,
+        selector: 'td input.details',
+      },
     ]
 
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const field = row.querySelector(f.selector)
       if (field) {
         field.id = uuid + '-' + f.suffix
@@ -317,10 +438,12 @@ function addLog (oid) {
   }
 }
 
-function updateLog (oid, record) {
+function updateLog(oid, record) {
   const row = document.querySelector("div#logs tr[data-oid='" + oid + "']")
 
-  const timestamp = row.querySelector(`[data-oid="${oid}${schema.logs.timestamp}"]`)
+  const timestamp = row.querySelector(
+    `[data-oid="${oid}${schema.logs.timestamp}"]`,
+  )
   const uid = row.querySelector(`[data-oid="${oid}${schema.logs.uid}"]`)
   const details = row.querySelector(`[data-oid="${oid}${schema.logs.details}"]`)
 
@@ -333,7 +456,7 @@ function updateLog (oid, record) {
   return row
 }
 
-function format (timestamp) {
+function format(timestamp) {
   const dt = Date.parse(timestamp)
   const fmt = function (v) {
     return v < 10 ? '0' + v.toString() : v.toString()

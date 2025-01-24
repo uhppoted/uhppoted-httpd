@@ -1,5 +1,5 @@
 export class Combobox {
-  constructor (input, list) {
+  constructor(input, list) {
     this.input = input
     this.list = list
 
@@ -24,8 +24,8 @@ export class Combobox {
     this.list.addEventListener('mouseout', this.onMouseOut.bind(this))
   }
 
-  initialise (options) {
-    for (const e of [...(this.list.children)]) {
+  initialise(options) {
+    for (const e of [...this.list.children]) {
       this.list.removeChild(e)
     }
 
@@ -33,7 +33,7 @@ export class Combobox {
     this.first = null
     this.last = null
 
-    options.forEach(o => {
+    options.forEach((o) => {
       const li = document.createElement('li')
 
       li.appendChild(document.createTextNode(o))
@@ -51,32 +51,32 @@ export class Combobox {
     }
   }
 
-  setValue (value) {
+  setValue(value) {
     this.input.value = value
   }
 
-  setOption (option) {
+  setOption(option) {
     if (option) {
       this.option = option
       this.setCurrentOptionStyle(this.option)
     }
   }
 
-  setFocusCombobox () {
+  setFocusCombobox() {
     this.list.classList.remove('focus')
     this.input.parentNode.classList.add('focus')
     this.inputHasFocus = true
     this.listHasFocus = false
   }
 
-  setVisualFocusListbox () {
+  setVisualFocusListbox() {
     this.input.parentNode.classList.remove('focus')
     this.inputHasFocus = false
     this.listHasFocus = true
     this.list.classList.add('focus')
   }
 
-  removeVisualFocusAll () {
+  removeVisualFocusAll() {
     this.input.parentNode.classList.remove('focus')
     this.inputHasFocus = false
     this.listHasFocus = false
@@ -84,13 +84,17 @@ export class Combobox {
     this.option = null
   }
 
-  setCurrentOptionStyle (option) {
+  setCurrentOptionStyle(option) {
     for (let i = 0; i < this.options.length; i++) {
       const opt = this.options[i]
       if (opt === option) {
         opt.classList.add('selected')
-        if (this.list.scrollTop + this.list.offsetHeight < opt.offsetTop + opt.offsetHeight) {
-          this.list.scrollTop = opt.offsetTop + opt.offsetHeight - this.list.offsetHeight
+        if (
+          this.list.scrollTop + this.list.offsetHeight <
+          opt.offsetTop + opt.offsetHeight
+        ) {
+          this.list.scrollTop =
+            opt.offsetTop + opt.offsetHeight - this.list.offsetHeight
         } else if (this.list.scrollTop > opt.offsetTop + 2) {
           this.list.scrollTop = opt.offsetTop
         }
@@ -100,7 +104,7 @@ export class Combobox {
     }
   }
 
-  getPreviousOption (currentOption) {
+  getPreviousOption(currentOption) {
     if (currentOption !== this.first) {
       const index = this.options.indexOf(currentOption)
       return this.options[index - 1]
@@ -108,7 +112,7 @@ export class Combobox {
     return this.last
   }
 
-  getNextOption (currentOption) {
+  getNextOption(currentOption) {
     if (currentOption !== this.last) {
       const index = this.options.indexOf(currentOption)
       return this.options[index + 1]
@@ -117,19 +121,19 @@ export class Combobox {
     return this.first
   }
 
-  isOpen () {
+  isOpen() {
     return this.list.style.display === 'block'
   }
 
-  isClosed () {
+  isClosed() {
     return this.list.style.display !== 'block'
   }
 
-  hasOptions () {
+  hasOptions() {
     return this.options.length
   }
 
-  open () {
+  open() {
     const rect = this.input.getBoundingClientRect()
 
     this.list.style.top = `${rect.y + rect.height}px`
@@ -137,19 +141,22 @@ export class Combobox {
     this.list.style.display = 'block'
   }
 
-  close (force) {
+  close(force) {
     if (typeof force !== 'boolean') {
       force = false
     }
 
-    if (force || (!this.inputHasFocus && !this.listHasFocus && !this.hasHover)) {
+    if (
+      force ||
+      (!this.inputHasFocus && !this.listHasFocus && !this.hasHover)
+    ) {
       this.setCurrentOptionStyle(false)
       this.list.style.display = 'none'
     }
   }
 
   // input field events
-  onInputKeyDown (event) {
+  onInputKeyDown(event) {
     let flag = false
     const altKey = event.altKey
 
@@ -161,7 +168,9 @@ export class Combobox {
       case 'Enter':
         if (this.listHasFocus) {
           this.setValue(this.option.textContent)
-          this.input.dispatchEvent(new Event('change', { bubbles: false, cancelable: true }))
+          this.input.dispatchEvent(
+            new Event('change', { bubbles: false, cancelable: true }),
+          )
         }
         this.close(true)
         this.setFocusCombobox()
@@ -230,11 +239,12 @@ export class Combobox {
         flag = true
         break
 
-      case 'End': {
-        const length = this.input.value.length
-        this.input.setSelectionRange(length, length)
-        flag = true
-      }
+      case 'End':
+        {
+          const length = this.input.value.length
+          this.input.setSelectionRange(length, length)
+          flag = true
+        }
         break
     }
 
@@ -244,7 +254,7 @@ export class Combobox {
     }
   }
 
-  onInputKeyUp (event) {
+  onInputKeyUp(event) {
     if (event.key === 'Escape' || event.key === 'Esc') {
       return
     }
@@ -275,7 +285,7 @@ export class Combobox {
     }
   }
 
-  onInputClick () {
+  onInputClick() {
     if (this.isOpen()) {
       this.close(true)
     } else {
@@ -283,13 +293,13 @@ export class Combobox {
     }
   }
 
-  onInputFocus () {
+  onInputFocus() {
     this.setFocusCombobox()
     this.option = null
     this.setCurrentOptionStyle(null)
   }
 
-  onInputBlur () {
+  onInputBlur() {
     this.inputHasFocus = false
     this.setCurrentOptionStyle(null)
     this.removeVisualFocusAll()
@@ -297,20 +307,22 @@ export class Combobox {
   }
 
   // option events
-  onOptionClick (event) {
+  onOptionClick(event) {
     this.input.title = event.target.textContent
     this.input.value = event.target.textContent
     this.close(true)
 
-    this.input.dispatchEvent(new Event('change', { bubbles: false, cancelable: true }))
+    this.input.dispatchEvent(
+      new Event('change', { bubbles: false, cancelable: true }),
+    )
   }
 
   // mouse events
-  onMouseOver () {
+  onMouseOver() {
     this.hasHover = true
   }
 
-  onMouseOut () {
+  onMouseOut() {
     this.hasHover = false
     setTimeout(this.close.bind(this, false), 100)
   }

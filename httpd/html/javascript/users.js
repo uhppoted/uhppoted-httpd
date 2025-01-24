@@ -5,9 +5,9 @@ import { loaded } from './uhppoted.js'
 
 const pagesize = 5
 
-export function refreshed () {
+export function refreshed() {
   const users = [...DB.users().values()]
-    .filter(u => alive(u))
+    .filter((u) => alive(u))
     .sort((p, q) => p.created.localeCompare(q.created))
 
   realize(users)
@@ -49,49 +49,56 @@ export function refreshed () {
     }
   }
 
-  const chunk = offset => new Promise(resolve => {
-    f(offset)
-    resolve(true)
-  })
+  const chunk = (offset) =>
+    new Promise((resolve) => {
+      f(offset)
+      resolve(true)
+    })
 
-  async function * render () {
+  async function* render() {
     for (let ix = 0; ix < users.length; ix += pagesize) {
       yield chunk(ix).then(() => ix)
     }
   }
 
-  (async function loop () {
+  ;(async function loop() {
     for await (const _ of render()) {
       // empty
     }
   })()
     .then(() => g())
-    .catch(err => console.error(err))
+    .catch((err) => console.error(err))
     .finally(() => {
       loaded()
     })
 }
 
-export function deletable (row) {
+export function deletable(row) {
   const name = row.querySelector('td input.name')
   const uid = row.querySelector('td input.uid')
   const re = /^\s*$/
 
-  if (name && name.dataset.oid !== '' && re.test(name.dataset.value) &&
-      uid && uid.dataset.oid !== '' && re.test(uid.dataset.value)) {
+  if (
+    name &&
+    name.dataset.oid !== '' &&
+    re.test(name.dataset.value) &&
+    uid &&
+    uid.dataset.oid !== '' &&
+    re.test(uid.dataset.value)
+  ) {
     return true
   }
 
   return false
 }
 
-function realize (users) {
+function realize(users) {
   const table = document.querySelector('#users table')
   const tbody = table.tBodies[0]
 
   trim('users', users, tbody.querySelectorAll('tr.user'))
 
-  users.forEach(o => {
+  users.forEach((o) => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
     if (!row) {
       row = add(o.OID, o)
@@ -99,7 +106,7 @@ function realize (users) {
   })
 }
 
-function add (oid, _record) {
+function add(oid, _record) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('users').querySelector('table tbody')
 
@@ -122,15 +129,39 @@ function add (oid, _record) {
     rollback.dataset.record = uuid
 
     const fields = [
-      { suffix: 'name', oid: `${oid}${schema.users.name}`, selector: 'td input.name' },
-      { suffix: 'uid', oid: `${oid}${schema.users.uid}`, selector: 'td input.uid' },
-      { suffix: 'role', oid: `${oid}${schema.users.role}`, selector: 'td input.role' },
-      { suffix: 'password', oid: `${oid}${schema.users.password}`, selector: 'td input.password' },
-      { suffix: 'otp', oid: `${oid}${schema.users.otp}`, selector: 'td label.otp input' },
-      { suffix: 'locked', oid: `${oid}${schema.users.locked}`, selector: 'td label.locked input' }
+      {
+        suffix: 'name',
+        oid: `${oid}${schema.users.name}`,
+        selector: 'td input.name',
+      },
+      {
+        suffix: 'uid',
+        oid: `${oid}${schema.users.uid}`,
+        selector: 'td input.uid',
+      },
+      {
+        suffix: 'role',
+        oid: `${oid}${schema.users.role}`,
+        selector: 'td input.role',
+      },
+      {
+        suffix: 'password',
+        oid: `${oid}${schema.users.password}`,
+        selector: 'td input.password',
+      },
+      {
+        suffix: 'otp',
+        oid: `${oid}${schema.users.otp}`,
+        selector: 'td label.otp input',
+      },
+      {
+        suffix: 'locked',
+        oid: `${oid}${schema.users.locked}`,
+        selector: 'td label.locked input',
+      },
     ]
 
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const field = row.querySelector(f.selector)
       if (field) {
         field.id = uuid + '-' + f.suffix
@@ -153,13 +184,15 @@ function add (oid, _record) {
   }
 }
 
-function updateFromDB (oid, record) {
+function updateFromDB(oid, record) {
   const row = document.querySelector("div#users tr[data-oid='" + oid + "']")
 
   const name = row.querySelector(`[data-oid="${oid}${schema.users.name}"]`)
   const uid = row.querySelector(`[data-oid="${oid}${schema.users.uid}"]`)
   const role = row.querySelector(`[data-oid="${oid}${schema.users.role}"]`)
-  const password = row.querySelector(`[data-oid="${oid}${schema.users.password}"]`)
+  const password = row.querySelector(
+    `[data-oid="${oid}${schema.users.password}"]`,
+  )
   const otp = row.querySelector(`[data-oid="${oid}${schema.users.otp}"]`)
   const locked = row.querySelector(`[data-oid="${oid}${schema.users.locked}"]`)
 

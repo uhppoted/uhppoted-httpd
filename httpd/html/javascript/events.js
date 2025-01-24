@@ -5,10 +5,10 @@ import { loaded } from './uhppoted.js'
 
 const pagesize = 5
 
-export function refreshed () {
+export function refreshed() {
   const events = [...DB.events().values()]
-    .filter(e => alive(e))
-    .filter(e => e.timestamp !== '')
+    .filter((e) => alive(e))
+    .filter((e) => e.timestamp !== '')
     .sort((p, q) => q.timestamp.localeCompare(p.timestamp))
 
   realize(events)
@@ -64,37 +64,38 @@ export function refreshed () {
   }
 
   // initialises the rows asynchronously in small'ish chunks
-  const chunk = offset => new Promise(resolve => {
-    f(offset)
-    resolve(true)
-  })
+  const chunk = (offset) =>
+    new Promise((resolve) => {
+      f(offset)
+      resolve(true)
+    })
 
-  async function * render () {
+  async function* render() {
     for (let ix = 0; ix < events.length; ix += pagesize) {
       yield chunk(ix).then(() => ix)
     }
   }
 
-  (async function loop () {
+  ;(async function loop() {
     for await (const _ of render()) {
       // empty
     }
   })()
     .then(() => g())
     .then(() => h())
-    .catch(err => console.error(err))
+    .catch((err) => console.error(err))
     .finally(() => {
       loaded()
     })
 }
 
-function realize (events) {
+function realize(events) {
   const table = document.querySelector('#events table')
   const tbody = table.tBodies[0]
 
   trim('events', events, tbody.querySelectorAll('tr.event'))
 
-  events.forEach(o => {
+  events.forEach((o) => {
     let row = tbody.querySelector(`tr[data-oid="${o.OID}"]`)
     if (!row) {
       row = add(o.OID, o)
@@ -102,7 +103,7 @@ function realize (events) {
   })
 }
 
-function add (oid) {
+function add(oid) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('events').querySelector('table tbody')
 
@@ -129,20 +130,64 @@ function add (oid) {
     }
 
     const fields = [
-      { suffix: 'timestamp', oid: `${oid}${schema.events.timestamp}`, selector: 'td input.timestamp' },
-      { suffix: 'deviceID', oid: `${oid}${schema.events.deviceID}`, selector: 'td input.deviceID' },
-      { suffix: 'device', oid: `${oid}${schema.events.deviceName}`, selector: 'td input.device' },
-      { suffix: 'eventType', oid: `${oid}${schema.events.type}`, selector: 'td input.eventType' },
-      { suffix: 'doorid', oid: `${oid}${schema.events.door}`, selector: 'td input.doorid' },
-      { suffix: 'door', oid: `${oid}${schema.events.doorName}`, selector: 'td input.door' },
-      { suffix: 'direction', oid: `${oid}${schema.events.direction}`, selector: 'td input.direction' },
-      { suffix: 'cardno', oid: `${oid}${schema.events.card}`, selector: 'td input.cardno' },
-      { suffix: 'card', oid: `${oid}${schema.events.cardName}`, selector: 'td input.card' },
-      { suffix: 'access', oid: `${oid}${schema.events.granted}`, selector: 'td input.access' },
-      { suffix: 'reason', oid: `${oid}${schema.events.reason}`, selector: 'td input.reason' }
+      {
+        suffix: 'timestamp',
+        oid: `${oid}${schema.events.timestamp}`,
+        selector: 'td input.timestamp',
+      },
+      {
+        suffix: 'deviceID',
+        oid: `${oid}${schema.events.deviceID}`,
+        selector: 'td input.deviceID',
+      },
+      {
+        suffix: 'device',
+        oid: `${oid}${schema.events.deviceName}`,
+        selector: 'td input.device',
+      },
+      {
+        suffix: 'eventType',
+        oid: `${oid}${schema.events.type}`,
+        selector: 'td input.eventType',
+      },
+      {
+        suffix: 'doorid',
+        oid: `${oid}${schema.events.door}`,
+        selector: 'td input.doorid',
+      },
+      {
+        suffix: 'door',
+        oid: `${oid}${schema.events.doorName}`,
+        selector: 'td input.door',
+      },
+      {
+        suffix: 'direction',
+        oid: `${oid}${schema.events.direction}`,
+        selector: 'td input.direction',
+      },
+      {
+        suffix: 'cardno',
+        oid: `${oid}${schema.events.card}`,
+        selector: 'td input.cardno',
+      },
+      {
+        suffix: 'card',
+        oid: `${oid}${schema.events.cardName}`,
+        selector: 'td input.card',
+      },
+      {
+        suffix: 'access',
+        oid: `${oid}${schema.events.granted}`,
+        selector: 'td input.access',
+      },
+      {
+        suffix: 'reason',
+        oid: `${oid}${schema.events.reason}`,
+        selector: 'td input.reason',
+      },
     ]
 
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const field = row.querySelector(f.selector)
 
       if (field) {
@@ -166,19 +211,31 @@ function add (oid) {
   }
 }
 
-function updateFromDB (oid, record) {
+function updateFromDB(oid, record) {
   const row = document.querySelector("div#events tr[data-oid='" + oid + "']")
 
-  const timestamp = row.querySelector(`[data-oid="${oid}${schema.events.timestamp}"]`)
-  const deviceID = row.querySelector(`[data-oid="${oid}${schema.events.deviceID}"]`)
-  const device = row.querySelector(`[data-oid="${oid}${schema.events.deviceName}"]`)
-  const eventType = row.querySelector(`[data-oid="${oid}${schema.events.type}"]`)
+  const timestamp = row.querySelector(
+    `[data-oid="${oid}${schema.events.timestamp}"]`,
+  )
+  const deviceID = row.querySelector(
+    `[data-oid="${oid}${schema.events.deviceID}"]`,
+  )
+  const device = row.querySelector(
+    `[data-oid="${oid}${schema.events.deviceName}"]`,
+  )
+  const eventType = row.querySelector(
+    `[data-oid="${oid}${schema.events.type}"]`,
+  )
   const doorid = row.querySelector(`[data-oid="${oid}${schema.events.door}"]`)
   const door = row.querySelector(`[data-oid="${oid}${schema.events.doorName}"]`)
-  const direction = row.querySelector(`[data-oid="${oid}${schema.events.direction}"]`)
+  const direction = row.querySelector(
+    `[data-oid="${oid}${schema.events.direction}"]`,
+  )
   const cardno = row.querySelector(`[data-oid="${oid}${schema.events.card}"]`)
   const card = row.querySelector(`[data-oid="${oid}${schema.events.cardName}"]`)
-  const access = row.querySelector(`[data-oid="${oid}${schema.events.granted}"]`)
+  const access = row.querySelector(
+    `[data-oid="${oid}${schema.events.granted}"]`,
+  )
   const reason = row.querySelector(`[data-oid="${oid}${schema.events.reason}"]`)
 
   row.dataset.status = record.status
@@ -192,13 +249,20 @@ function updateFromDB (oid, record) {
   update(direction, record.direction)
   update(cardno, record.card)
   update(card, record.cardName)
-  update(access, record.granted === 'true' ? 'granted' : (record.granted === 'false' ? 'denied' : ''))
+  update(
+    access,
+    record.granted === 'true'
+      ? 'granted'
+      : record.granted === 'false'
+        ? 'denied'
+        : '',
+  )
   update(reason, record.reason)
 
   return row
 }
 
-function update (element, value) {
+function update(element, value) {
   if (element && value !== undefined) {
     element.value = value.toString()
   }
