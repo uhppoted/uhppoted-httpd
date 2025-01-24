@@ -3,7 +3,7 @@
 ## Unreleased
 
 ### Added
-1. ARMv6 build target (for Pi ZeroW).
+1. ARMv6 build target (RaspberryPi ZeroW).
 
 ### Updated
 1. Reduced cards page load times with:

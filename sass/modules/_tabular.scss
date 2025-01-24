@@ -1,26 +1,22 @@
-@use "../base/default";
-@use "../base/palette";
-@use "sass:color";
-
 div.tabular {
   overflow: auto;
-  border: 1px solid default.$content-table-border;
+  border: 1px solid $content-table-border;
   border-bottom-right-radius: 4px;
 }  
 
 div.tabular::-webkit-scrollbar {
   background: transparent;
-  border-left: 2px solid palette.$palette-base2;
+  border-left: 2px solid $palette-base2;
 }
 
 div.tabular::-webkit-scrollbar-track {
   background: transparent;
-  border-left: 2px solid palette.$palette-base2;
+  border-left: 2px solid $palette-base2;
 }
 
 div.tabular::-webkit-scrollbar-thumb {
-  background: color.adjust(palette.$palette-base2, $lightness: -10%);
-  border: 2px solid palette.$palette-base3;
+  background: darken($palette-base2, 10%);
+  border: 2px solid $palette-base3;
   border-radius: 10px;
 }
 
@@ -30,8 +26,8 @@ div.tabular::-webkit-scrollbar-corner {
 }
 
 div.tabular table  {
-  background: default.$content-table-background;
-  color: default.$content-table-text;
+  background: $content-table-background;
+  color: $content-table-text;
   border: none;
   border-collapse: collapse;
 }
@@ -55,8 +51,8 @@ div.tabular table thead th.rowheader {
 }
 
 div.tabular table thead tr th {
-  background: default.$content-table-background-header;
-  color: default.$content-table-text;  
+  background: $content-table-background-header;
+  color: $content-table-text;  
   padding: 0.5rem;
   font-size: 0.9em;
   font-weight: 500;
@@ -68,19 +64,19 @@ div.tabular table tbody tr {
 }
 
 div.tabular table tbody tr:nth-child(odd) {
-  background: default.$content-table-background-odd;
+  background: $content-table-background-odd;
 }
 
 div.tabular table tbody tr:nth-child(even) {
-  background: default.$content-table-background-even;
+  background: $content-table-background-even;
 }
 
 div.tabular table tbody tr.modified {
-  background: default.$content-table-row-modified;
+  background: $content-table-row-modified;
 }
 
 div.tabular table tbody tr.new {
-  background: default.$content-table-row-new;
+  background: $content-table-row-new;
 }
 
 div.tabular table tbody td {
@@ -99,27 +95,27 @@ div.tabular table tbody td.rowheader {
 }
 
 div.tabular table tbody tr[data-status="error"] {
-  background: default.$content-table-row-error;
+  background: $content-table-row-error;
 }
 
 div.tabular table tbody tr:nth-child(odd) td.rowheader {
-  background: color.adjust(default.$content-table-background-odd,$lightness: -5%);
+  background: darken($content-table-background-odd,5%);
 }
 
 div.tabular table tbody tr:nth-child(even) td.rowheader {
-  background: color.adjust(default.$content-table-background-even,$lightness: -5%);
+  background: darken($content-table-background-even,5%);
 }
 
 div.tabular table tbody tr.modified td.rowheader {
-  background: default.$content-table-row-modified;
+  background: $content-table-row-modified;
 }
 
 div.tabular table tbody tr[data-status="error"] td.rowheader {
-  background: default.$content-table-row-error;
+  background: $content-table-row-error;
 }
 
 div.tabular table tbody tr.new td.rowheader {
-  background: default.$content-table-row-new;
+  background: $content-table-row-new;
 }
 
 div.tabular table tbody tr td input {
@@ -131,37 +127,37 @@ div.tabular table tbody tr td input:read-only {
 }
 
 div.tabular table tbody tr td.modified::before {
-  content: default.$content-table-flag;
+  content: $content-table-flag;
   position: absolute;
   left: 0px;
   top: -4px;
   width: 10px;
   height: 10px;
-  filter: default.$content-table-flag-modified;
+  filter: $content-table-flag-modified;
 }
 
 div.tabular table tbody tr td.conflict::before {
-  content: default.$content-table-flag;
+  content: $content-table-flag;
   position: absolute;
   left: 0px;
   top: -4px;
   width: 10px;
   height: 10px;
-  filter: default.$content-table-flag-conflict;
+  filter: $content-table-flag-conflict;
 }
 
 div.tabular table tbody tr td.pending::before {
-  content: default.$content-table-flag;
+  content: $content-table-flag;
   position: absolute;
   left: 0px;
   top: -4px;
   width: 10px;
   height: 10px;
-  filter: default.$content-table-flag-pending;
+  filter: $content-table-flag-pending;
 }
 
 div.tabular table td.conflict input {
-  background-color: default.$content-table-item-conflict;
+  background-color: $content-table-item-conflict;
 }
 
 div.tabular table td span.control {
@@ -183,7 +179,7 @@ div.tabular table td span.control img {
 }
 
 div.tabular table td span.commit {
-  color: default.$content-table-commit;  
+  color: $content-table-commit;  
 }
 
 div.tabular table td span.commit img {
@@ -193,7 +189,7 @@ div.tabular table td span.commit img {
 }
 
 div.tabular table td span.rollback {
-  color: default.$content-table-rollback;  
+  color: $content-table-rollback;  
 }
 
 div.tabular table td span.rollback img {

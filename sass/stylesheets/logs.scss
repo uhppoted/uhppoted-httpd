@@ -1,6 +1,6 @@
 @charset 'UTF-8';
  
-@use '../modules/_uhppoted';
-@use '../modules/_tabular';
-@use '../modules/_common';
-@use '../modules/_logs';
+@import '../modules/_uhppoted';
+@import '../modules/_tabular';
+@import '../modules/_common';
+@import '../modules/_logs';

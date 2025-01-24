@@ -5,7 +5,11 @@
 - [x] setup: toggle visibility
 - [x] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
 - [x] ARM6 target (cf. https://github.com/uhppoted/uhppoted/issues/55)
-- [ ] `DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.`
+- [ ] `npm warn deprecated eslint@7.32.0: This version is no longer supported`
+
+- [ ] _sass_ deprecation warnings (cf. https://github.com/uhppoted/uhppoted-httpd/issues/50)
+      - [ ] Themes no longer work
+      
 
 - [ ] Virtual lists
       - (?) content-visiblity

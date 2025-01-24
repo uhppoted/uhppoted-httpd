@@ -1,62 +1,61 @@
-@use "sass:color";
 @charset 'UTF-8';
 
-@use '../../base/_palette';
+@import '../../base/_palette';
 
-$content-background: palette.$palette-base03;
-$message-background: palette.$palette-base02;
+$content-background: $palette-base03;
+$message-background: $palette-base02;
 
-$warning-colour: palette.$palette-base0;
-$warning-dismiss-colour: color.adjust(palette.$palette-blue, $lightness: -5%);
-$enabled-colour: palette.$palette-yellow;
+$warning-colour: $palette-base0;
+$warning-dismiss-colour: darken($palette-blue, 5%);
+$enabled-colour: $palette-yellow;
 
-$nav-background: color.adjust(palette.$palette-base02, $lightness: -5%);
+$nav-background: darken($palette-base02, 5%);
 
-$footer-background: palette.$palette-base01;
-$footer-text: palette.$palette-base03;
+$footer-background: $palette-base01;
+$footer-text: $palette-base03;
 
-$user-avatar-background: color.adjust(palette.$palette-base02, $lightness: 3%);
-$user-avatar-text: palette.$palette-base1;
-$user-avatar-shadow: 3px 3px 3px color.adjust(palette.$palette-base02, $lightness: -10%);
-$user-menu-background: color.adjust(palette.$palette-base02, $lightness: 1%);
-$user-menu-shadow: 3px 3px 3px color.adjust(palette.$palette-base02, $lightness: -10%);
-$user-menu-item: palette.$palette-base00;
-$user-menu-item-highlight: palette.$palette-base2;
-$user-menu-item-highlight-background: palette.$palette-base1;
+$user-avatar-background: lighten($palette-base02, 3%);
+$user-avatar-text: $palette-base1;
+$user-avatar-shadow: 3px 3px 3px darken($palette-base02, 10%);
+$user-menu-background: lighten($palette-base02, 1%);
+$user-menu-shadow: 3px 3px 3px darken($palette-base02, 10%);
+$user-menu-item: $palette-base00;
+$user-menu-item-highlight: $palette-base2;
+$user-menu-item-highlight-background: $palette-base1;
 
-$fieldset-text: palette.$palette-base0;
-$fieldset-border: 1px solid palette.$palette-base01;
-$fieldset-button-border: 2px solid palette.$palette-blue;
-$fieldset-warning-text: palette.$palette-base03;
+$fieldset-text: $palette-base0;
+$fieldset-border: 1px solid $palette-base01;
+$fieldset-button-border: 2px solid $palette-blue;
+$fieldset-warning-text: $palette-base03;
 
-$content-controls-border: color.adjust(palette.$palette-blue, $lightness: -25%);
+$content-controls-border: darken($palette-blue, 25%);
 
-$content-table-background: color.adjust(palette.$palette-base02, $lightness: -5%);
-$content-table-background-header: color.adjust(palette.$palette-base02, $lightness: -5%);
-$content-table-background-odd: palette.$palette-base03;
-$content-table-background-even: palette.$palette-base02;
-$content-table-border: color.adjust(palette.$palette-blue, $lightness: -25%);
-$content-table-scrollbar-color:  palette.$palette-base01 palette.$palette-base0;
-$content-table-text: palette.$palette-base0;
-$content-table-row-modified: color.adjust(palette.$palette-blue, $lightness: -25%);
-$content-table-row-unconfigured: color.adjust(palette.$palette-yellow, $lightness: -2.5%);
-$content-table-item-normal: palette.$palette-base00;
-$content-table-item-unknown: palette.$palette-base00;
-$content-table-item-uncertain: palette.$palette-base01;
-$content-table-item-error: color.adjust(palette.$palette-red, $lightness: -10%);
-$content-table-commit:   color.adjust(palette.$palette-blue, $lightness: -5%);
-$content-table-rollback: color.adjust(palette.$palette-red, $lightness: -10%);
+$content-table-background: darken($palette-base02, 5%);
+$content-table-background-header: darken($palette-base02, 5%);
+$content-table-background-odd: $palette-base03;
+$content-table-background-even: $palette-base02;
+$content-table-border: darken($palette-blue, 25%);
+$content-table-scrollbar-color:  $palette-base01 $palette-base0;
+$content-table-text: $palette-base0;
+$content-table-row-modified: darken($palette-blue, 25%);
+$content-table-row-unconfigured: darken($palette-yellow, 2.5%);
+$content-table-item-normal: $palette-base00;
+$content-table-item-unknown: $palette-base00;
+$content-table-item-uncertain: $palette-base01;
+$content-table-item-error: darken($palette-red, 10%);
+$content-table-commit:   darken($palette-blue, 5%);
+$content-table-rollback: darken($palette-red, 10%);
 
 $content-svg-filter-commit:   none;
 $content-svg-filter-rollback: none;
 
-$password-credentials-background: palette.$palette-base01;
+$password-credentials-background: $palette-base01;
 
 input::selection {
-  background: palette.$palette-base2;
+  background: $palette-base2;
 }
 
 input::-moz-selection { 
-  background: palette.$palette-base2;
+  background: $palette-base2;
 }
 

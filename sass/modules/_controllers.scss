@@ -1,7 +1,3 @@
-@use "../base/default";
-
-@use "../base/palette";
-
 #container {
   display: flex; 
   flex-direction:column; 
@@ -11,8 +7,8 @@
 }
 
 table.interface {
-  background: default.$content-table-background-header;
-  color: palette.$palette-base01;
+  background: $content-table-background-header;
+  color: $palette-base01;
   width: min-content;
   margin-bottom: 4px;
   padding-top: 0px;
@@ -45,7 +41,7 @@ table.interface td.modified::before {
   width: 6px;
   height: 6px;
   line-height:0px;  // only hack that works :-(
-  filter: default.$content-table-flag-modified;
+  filter: $content-table-flag-modified;
 }
 
 table.interface td.conflict::before {
@@ -56,7 +52,7 @@ table.interface td.conflict::before {
   width: 6px;
   height: 6px;
   line-height:0px;  // only hack that works :-(
-  filter: default.$content-table-flag-conflict;
+  filter: $content-table-flag-conflict;
 }
 
 table.interface td.pending::before {
@@ -67,7 +63,7 @@ table.interface td.pending::before {
   width: 6px;
   height: 6px;
   line-height:0px;  // only hack that works :-(
-  filter: default.$content-table-flag-pending;
+  filter: $content-table-flag-pending;
 }
 
 table.interface td input {
@@ -76,7 +72,7 @@ table.interface td input {
   border-radius: 3px;
   outline: none;
   margin-left: 2px;
-  color: palette.$palette-base01;
+  color: $palette-base01;
   font: 400 0.9em Arial;
 }
 
@@ -99,11 +95,11 @@ table.interface td span.control {
 }
 
 table.interface td span.commit {
-  color: default.$content-table-commit;  
+  color: $content-table-commit;  
 }
 
 table.interface td span.rollback {
-  color: default.$content-table-rollback;  
+  color: $content-table-rollback;  
 }
 
 table.interface.modified td span.control {

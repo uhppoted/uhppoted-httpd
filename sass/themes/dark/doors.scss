@@ -1,25 +1,23 @@
 @charset 'UTF-8';
 
-@use "sass:color";
-@use '../../base/_default';
-@use "../../base/palette";
+@import '../../base/_default';
 
-@use '_uhppoted';
-@use '_tabular';
-@use '_common';
+@import '_uhppoted';
+@import '_tabular';
+@import '_common';
 
-@use '../../stylesheets/doors';
+@import '../../stylesheets/doors';
 
 tr.door input.mode + ul {
-  background: color.adjust(palette.$palette-base01,$lightness: 10%);
+  background: lighten($palette-base01,10%);
 }
 
 tr.door input.mode + ul li {
-  color: palette.$palette-base02;
+  color: $palette-base02;
 }
 
 .tooltip-wrap .tooltip-content {
   color: #800000ff;
-  background-color: color.adjust(palette.$palette-base01,$lightness: 10%);
+  background-color: lighten($palette-base01,10%);
 }
 

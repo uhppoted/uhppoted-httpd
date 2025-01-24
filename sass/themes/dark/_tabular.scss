@@ -1,19 +1,17 @@
-@use "../../base/palette";
-
 // Ref. https://css-tricks.com/custom-scrollbars-in-webkit/
 // Ref. https://superuser.com/questions/852298/how-can-i-change-the-scroll-bar-in-google-chrome-to-have-different-colors
 // Ref. https://css-tricks.com/almanac/properties/s/scrollbar/
 
 ::-webkit-scrollbar {
-  background-color: palette.$palette_base0;
+  background-color: $palette_base0;
 }
  
 ::-webkit-scrollbar-track {
-  background-color: palette.$palette-base0;
+  background-color: $palette-base0;
 }
  
 ::-webkit-scrollbar-thumb {
-  background-color: palette.$palette-base01;
+  background-color: $palette-base01;
 }
 
 ::-webkit-scrollbar-corner {

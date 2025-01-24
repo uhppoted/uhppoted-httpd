@@ -1,11 +1,9 @@
-@use "../base/default";
-
 .combobox {
 }
 
 .combobox ul {
   display: none;
-  background: default.$combobox-background;
+  background: $combobox-background;
   width:fit-content; 
   max-height:32em;
   margin-top: 4px;
@@ -22,7 +20,7 @@
 
   list-style: none;
   box-sizing: border-box;
-  border: default.$combobox-border;
+  border: $combobox-border;
   border-radius: 2px;
   font-size: 0.95em;
 }
@@ -37,13 +35,13 @@
   padding-bottom: 0.2em;
   padding-right: 8px;
   text-align: left;
-  color: default.$combobox-li-colour;
+  color: $combobox-li-colour;
 }
 
 .combobox ul li.selected {
-  background-color: default.$combobox-li-selected;
+  background-color: $combobox-li-selected;
 }
 
 .combobox ul li:hover {
-  background-color: default.$combobox-li-selected;
+  background-color: $combobox-li-selected;
 }

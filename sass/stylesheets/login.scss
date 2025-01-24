@@ -1,5 +1,5 @@
 @charset 'UTF-8';
  
-@use '../modules/_uhppoted';
-@use '../modules/_common';
-@use '../modules/_login';
+@import '../modules/_uhppoted';
+@import '../modules/_common';
+@import '../modules/_login';

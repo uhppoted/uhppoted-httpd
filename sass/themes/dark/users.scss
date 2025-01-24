@@ -1,8 +1,8 @@
 @charset 'UTF-8';
 
-@use '../../base/_default';
-@use '_uhppoted';
-@use '_tabular';
-@use '_common';
-@use '../../stylesheets/users';
+@import '../../base/_default';
+@import '_uhppoted';
+@import '_tabular';
+@import '_common';
+@import '../../stylesheets/users';
 
