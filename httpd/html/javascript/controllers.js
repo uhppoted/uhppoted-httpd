@@ -54,7 +54,7 @@ function realize (controllers) {
   })
 }
 
-function add (oid, record) {
+function add (oid, _record) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('controllers').querySelector('table tbody')
 

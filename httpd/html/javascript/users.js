@@ -99,7 +99,7 @@ function realize (users) {
   })
 }
 
-function add (oid, record) {
+function add (oid, _record) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('users').querySelector('table tbody')
 

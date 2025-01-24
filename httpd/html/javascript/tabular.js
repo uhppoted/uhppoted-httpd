@@ -191,7 +191,7 @@ export function onEnter (tag, event) {
   }
 }
 
-export function onMore (tag, event) {
+export function onMore (tag, _event) {
   switch (tag) {
     case 'events':
       more(pages.events)
@@ -248,7 +248,7 @@ export function onCommit (tag, event) {
   }
 }
 
-export function onCommitAll (tag, event, table) {
+export function onCommitAll (tag, _event, _table) {
   const rows = Array.from(document.querySelectorAll('table tr:is(.modified,.new)'))
   const page = getPage(tag)
 
@@ -294,7 +294,7 @@ export function onRollback (tag, event) {
   }
 }
 
-export function onRollbackAll (tag, event) {
+export function onRollbackAll (tag, _event) {
   const start = Date.now()
   const cache = new Cache({ modified: false })
   const options = {
@@ -337,7 +337,7 @@ export function onRollbackAll (tag, event) {
   console.log(`cards:rolled-back (${Date.now() - start}ms)`)
 }
 
-export function onNew (tag, event) {
+export function onNew (tag, _event) {
   switch (tag) {
     case 'controller':
       create(pages.controllers)
@@ -644,7 +644,7 @@ function get (urls, refreshed) {
             })
           }
         })
-        .then((resolved, rejected) => {
+        .then((resolved, _rejected) => {
           if (resolved) {
             for (const k in resolved) {
               DB.updated(k, resolved[k])
@@ -656,7 +656,7 @@ function get (urls, refreshed) {
     }))
   })
 
-  Promise.all(promises).then((resolved, rejected) => {
+  Promise.all(promises).then((resolved, _rejected) => {
     if (resolved) {
       const timestamp = document.querySelector('footer #timestamp')
 

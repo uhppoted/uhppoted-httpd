@@ -24,7 +24,7 @@ export const timezones = new Map([
   ['Etc/GMT-2', short]
 ])
 
-function local (dt, tz) {
+function local (dt, _tz) {
   try {
     const fmt = new Intl.DateTimeFormat(LOCALE, {
       year: 'numeric',
@@ -37,7 +37,7 @@ function local (dt, tz) {
     })
 
     return fmt.format(dt).replaceAll(',', '')
-  } catch (err) {
+  } catch {
     return DEFAULT.format(dt).replaceAll(',', '')
   }
 }
@@ -57,7 +57,7 @@ function short (dt, tz) {
     })
 
     return fmt.format(dt).replaceAll(',', '')
-  } catch (err) {
+  } catch {
     return DEFAULT.format(dt).replaceAll(',', '')
   }
 }
@@ -78,7 +78,7 @@ function long (dt, tz) {
     const formatted = fmt.format(dt).replaceAll(',', '')
 
     return `${formatted} ${tz}`
-  } catch (err) {
+  } catch {
     return DEFAULT.format(dt).replaceAll(',', '')
   }
 }

@@ -161,7 +161,7 @@ export function retheme (theme) {
   document.cookie = 'uhppoted-settings=theme:' + theme + '; expires=' + expires.toUTCString()
 
   stylesheets.forEach(link => {
-    const re = new RegExp('(.+?/css)/(.+?)/(.+)', 'i') // eslint-disable-line prefer-regex-literals
+    const re = new RegExp('(.+?/css)/(.+?)/(.+)', 'i')  
 
     if (re.test(link.href)) {
       const match = link.href.match(re)
@@ -171,7 +171,7 @@ export function retheme (theme) {
   })
 
   images.forEach(img => {
-    const re = new RegExp('(.+?/images)/(.+?)/(.+)', 'i') // eslint-disable-line prefer-regex-literals
+    const re = new RegExp('(.+?/images)/(.+?)/(.+)', 'i')  
 
     if (re.test(img.src)) {
       const match = img.src.match(re)
@@ -430,7 +430,7 @@ export function onReload () {
     credentials: 'same-origin',
     redirect: 'follow',
     referrerPolicy: 'no-referrer'
-  }).then(response => {
+  }).then(_response => {
     window.location = '/index.html'
   }).catch(function (err) {
     console.error(err)

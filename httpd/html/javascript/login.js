@@ -17,7 +17,7 @@ export function login (event) {
           throw new Error(response.statusText)
       }
     })
-    .then(v => {
+    .then(_v => {
       auth()
     })
     .catch(function (err) {

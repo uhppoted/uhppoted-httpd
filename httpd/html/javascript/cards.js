@@ -179,7 +179,7 @@ function realize (cards) {
   })
 }
 
-function add (oid, record) {
+function add (oid, _record) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('cards').querySelector('table tbody')
 

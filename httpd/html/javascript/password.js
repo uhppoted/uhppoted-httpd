@@ -52,7 +52,7 @@ export function onPassword (event) {
     })
 }
 
-export function onEnableOTP (event) {
+export function onEnableOTP (_event) {
   const fieldset = document.querySelector('#OTP fieldset')
   const enable = document.querySelector('#otp-enable')
   const qrcode = document.getElementById('qrcode')
@@ -95,7 +95,7 @@ export function onRevokeOTP (event) {
   })
 }
 
-export function onHideOTP (event) {
+export function onHideOTP (_event) {
   const fieldset = document.querySelector('#OTP fieldset')
   const qrcode = document.getElementById('qrcode')
   const url = qrcode.src
@@ -106,7 +106,7 @@ export function onHideOTP (event) {
   clearTimeout(expired)
 }
 
-export function onShowOTP (event) {
+export function onShowOTP (_event) {
   const fieldset = document.querySelector('#OTP fieldset')
   const qrcode = document.getElementById('qrcode')
 
@@ -156,7 +156,7 @@ export function onVerifyOTP (event) {
             .then(err => { throw new Error(err) })
       }
     })
-    .then((v) => {
+    .then((_v) => {
       fieldset.dataset.enabled = 'true'
       checkbox.disabled = true
       warning('OTP verified and enabled')
@@ -166,7 +166,7 @@ export function onVerifyOTP (event) {
     })
 }
 
-async function getOTP (event) {
+async function getOTP (_event) {
   const uid = document.getElementById('uid').value
   const pwd = document.getElementById('pwd').value
   const qr = document.getElementById('qrcode')

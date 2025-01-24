@@ -22,7 +22,7 @@ function updateFromDB (oid, record) {
   }
 }
 
-export function set (element, value, status) {
+export function set (element, value, _status) {
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
@@ -39,7 +39,7 @@ export function set (element, value, status) {
   percolate(oid)
 }
 
-export function rollback (tag, element) {
+export function rollback (tag, _element) {
   const section = document.getElementById(tag)
   const oid = section.dataset.oid
 
@@ -58,7 +58,7 @@ export function rollback (tag, element) {
   section.classList.remove('modified')
 }
 
-export function changeset (element) {
+export function changeset (_element) {
   const section = document.getElementById('interface')
   const oid = section.dataset.oid
   const list = []
@@ -94,7 +94,7 @@ function modified (oid) {
   }
 }
 
-function update (element, value, status) {
+function update (element, value, _status) {
   if (element) {
     const v = value.toString()
     const oid = element.dataset.oid

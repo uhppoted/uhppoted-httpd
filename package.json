@@ -3,8 +3,7 @@
   "version": "0.8.9",
   "description": "Management system for an access control system based on the UHPPOTE Wiegand access controllers",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/uhppoted/uhppoted-httpd.git"
@@ -16,12 +15,14 @@
   },
   "homepage": "https://github.com/uhppoted/uhppoted-httpd#readme",
   "devDependencies": {
-    "eslint": "^7.20.0",
+    "@eslint/js": "^9.19.0",
+    "eslint": "^9.19.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^4.0.1",
+    "globals": "^15.14.0",
     "hosted-git-info": ">=2.8.9",
     "lodash": ">=4.17.21"
   }

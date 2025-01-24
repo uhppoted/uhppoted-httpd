@@ -8,8 +8,6 @@
 - [ ] `npm warn deprecated eslint@7.32.0: This version is no longer supported`
 
 - [ ] _sass_ deprecation warnings (cf. https://github.com/uhppoted/uhppoted-httpd/issues/50)
-      - [ ] Themes no longer work
-      
 
 - [ ] Virtual lists
       - (?) content-visiblity
