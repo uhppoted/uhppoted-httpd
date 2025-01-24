@@ -49,6 +49,8 @@ update-all:
 
 format: 
 	go fmt ./...
+	# find html/javascript -name "*.js" -exec npx prettier --write {} +
+	npx prettier --write httpd/html/javascript/*.js
 
 build: format
 	mkdir -p httpd/html/images/default
