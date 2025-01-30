@@ -1,6 +1,6 @@
 {
   "name": "uhppoted-httpd",
-  "version": "0.8.9",
+  "version": "0.8.11",
   "description": "Management system for an access control system based on the UHPPOTE Wiegand access controllers",
   "main": "index.js",
   "scripts": {},
