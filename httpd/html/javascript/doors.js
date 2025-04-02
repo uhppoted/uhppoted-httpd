@@ -4,9 +4,7 @@ import { Combobox } from './combobox.js'
 import { loaded } from './uhppoted.js'
 
 export function refreshed() {
-  const doors = [...DB.doors.values()]
-    .filter((d) => alive(d))
-    .sort((p, q) => p.created.localeCompare(q.created))
+  const doors = [...DB.doors.values()].filter((d) => alive(d)).sort((p, q) => p.created.localeCompare(q.created))
 
   realize(doors)
 
@@ -133,14 +131,8 @@ function updateFromDB(oid, record) {
 
   row.dataset.status = record.status
 
-  const d =
-    record.delay.status === 'uncertain'
-      ? record.delay.configured
-      : record.delay.delay
-  const m =
-    record.mode.status === 'uncertain'
-      ? record.mode.configured
-      : record.mode.mode
+  const d = record.delay.status === 'uncertain' ? record.delay.configured : record.delay.delay
+  const m = record.mode.status === 'uncertain' ? record.mode.configured : record.mode.mode
   const c = lookup(record)
 
   update(name, record.name)
@@ -154,14 +146,11 @@ function updateFromDB(oid, record) {
 
   // ... set tooltips for error'd values
   {
-    const tooltip = row.querySelector(
-      `[data-oid="${oid}.2"] + div.tooltip-content`,
-    )
+    const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)
 
     if (tooltip) {
       const p = tooltip.querySelector('p')
-      const err =
-        record.delay.err && record.delay.err !== '' ? record.delay.err : ''
+      const err = record.delay.err && record.delay.err !== '' ? record.delay.err : ''
       const enabled = !!(record.delay.err && record.delay.err !== '')
 
       p.innerHTML = err
@@ -179,8 +168,7 @@ function updateFromDB(oid, record) {
 
     if (tooltip) {
       const p = tooltip.querySelector('p')
-      const err =
-        record.mode.err && record.mode.err !== '' ? record.mode.err : ''
+      const err = record.mode.err && record.mode.err !== '' ? record.mode.err : ''
       const enabled = !!(record.mode.err && record.mode.err !== '')
 
       p.innerHTML = err

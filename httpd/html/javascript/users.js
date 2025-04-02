@@ -6,9 +6,7 @@ import { loaded } from './uhppoted.js'
 const pagesize = 5
 
 export function refreshed() {
-  const users = [...DB.users().values()]
-    .filter((u) => alive(u))
-    .sort((p, q) => p.created.localeCompare(q.created))
+  const users = [...DB.users().values()].filter((u) => alive(u)).sort((p, q) => p.created.localeCompare(q.created))
 
   realize(users)
 
@@ -78,14 +76,7 @@ export function deletable(row) {
   const uid = row.querySelector('td input.uid')
   const re = /^\s*$/
 
-  if (
-    name &&
-    name.dataset.oid !== '' &&
-    re.test(name.dataset.value) &&
-    uid &&
-    uid.dataset.oid !== '' &&
-    re.test(uid.dataset.value)
-  ) {
+  if (name && name.dataset.oid !== '' && re.test(name.dataset.value) && uid && uid.dataset.oid !== '' && re.test(uid.dataset.value)) {
     return true
   }
 
@@ -190,9 +181,7 @@ function updateFromDB(oid, record) {
   const name = row.querySelector(`[data-oid="${oid}${schema.users.name}"]`)
   const uid = row.querySelector(`[data-oid="${oid}${schema.users.uid}"]`)
   const role = row.querySelector(`[data-oid="${oid}${schema.users.role}"]`)
-  const password = row.querySelector(
-    `[data-oid="${oid}${schema.users.password}"]`,
-  )
+  const password = row.querySelector(`[data-oid="${oid}${schema.users.password}"]`)
   const otp = row.querySelector(`[data-oid="${oid}${schema.users.otp}"]`)
   const locked = row.querySelector(`[data-oid="${oid}${schema.users.locked}"]`)
 

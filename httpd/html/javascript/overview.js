@@ -13,9 +13,7 @@ export function refreshed() {
 }
 
 function refreshControllers() {
-  const list = [...DB.controllers.values()]
-    .filter((c) => alive(c))
-    .sort((p, q) => p.created.localeCompare(q.created))
+  const list = [...DB.controllers.values()].filter((c) => alive(c)).sort((p, q) => p.created.localeCompare(q.created))
 
   realizeControllers(list)
 
@@ -88,9 +86,7 @@ function realizeControllers(controllers) {
 
 function addController(oid, _record) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
-  const tbody = document
-    .getElementById('controllers')
-    .querySelector('table tbody')
+  const tbody = document.getElementById('controllers').querySelector('table tbody')
 
   if (tbody) {
     const template = document.querySelector('#controller')
@@ -172,37 +168,17 @@ function addController(oid, _record) {
 }
 
 function updateController(oid, record) {
-  const row = document.querySelector(
-    "div#controllers tr[data-oid='" + oid + "']",
-  )
+  const row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
 
-  const name = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.name}"]`,
-  )
-  const deviceID = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.deviceID}"]`,
-  )
-  const datetime = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.datetime.current}"]`,
-  )
-  const cards = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.cards.count}"]`,
-  )
-  const events = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.events.last}"]`,
-  )
-  const door1 = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.door1}"]`,
-  )
-  const door2 = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.door2}"]`,
-  )
-  const door3 = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.door3}"]`,
-  )
-  const door4 = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.door4}"]`,
-  )
+  const name = row.querySelector(`[data-oid="${oid}${schema.controllers.name}"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}${schema.controllers.deviceID}"]`)
+  const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime.current}"]`)
+  const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards.count}"]`)
+  const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.last}"]`)
+  const door1 = row.querySelector(`[data-oid="${oid}${schema.controllers.door1}"]`)
+  const door2 = row.querySelector(`[data-oid="${oid}${schema.controllers.door2}"]`)
+  const door3 = row.querySelector(`[data-oid="${oid}${schema.controllers.door3}"]`)
+  const door4 = row.querySelector(`[data-oid="${oid}${schema.controllers.door4}"]`)
 
   // ... set record values
   const doors = new Map([...DB.doors.values()].map((o) => [o.OID, o.name]))
@@ -321,28 +297,16 @@ function addEvent(oid) {
 function updateEvent(oid, record) {
   const row = document.querySelector("div#events tr[data-oid='" + oid + "']")
 
-  const timestamp = row.querySelector(
-    `[data-oid="${oid}${schema.events.timestamp}"]`,
-  )
-  const deviceID = row.querySelector(
-    `[data-oid="${oid}${schema.events.deviceID}"]`,
-  )
-  const device = row.querySelector(
-    `[data-oid="${oid}${schema.events.deviceName}"]`,
-  )
-  const eventType = row.querySelector(
-    `[data-oid="${oid}${schema.events.type}"]`,
-  )
+  const timestamp = row.querySelector(`[data-oid="${oid}${schema.events.timestamp}"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}${schema.events.deviceID}"]`)
+  const device = row.querySelector(`[data-oid="${oid}${schema.events.deviceName}"]`)
+  const eventType = row.querySelector(`[data-oid="${oid}${schema.events.type}"]`)
   const doorid = row.querySelector(`[data-oid="${oid}${schema.events.door}"]`)
   const door = row.querySelector(`[data-oid="${oid}${schema.events.doorName}"]`)
-  const direction = row.querySelector(
-    `[data-oid="${oid}${schema.events.direction}"]`,
-  )
+  const direction = row.querySelector(`[data-oid="${oid}${schema.events.direction}"]`)
   const cardno = row.querySelector(`[data-oid="${oid}${schema.events.card}"]`)
   const card = row.querySelector(`[data-oid="${oid}${schema.events.cardName}"]`)
-  const access = row.querySelector(
-    `[data-oid="${oid}${schema.events.granted}"]`,
-  )
+  const access = row.querySelector(`[data-oid="${oid}${schema.events.granted}"]`)
   const reason = row.querySelector(`[data-oid="${oid}${schema.events.reason}"]`)
 
   row.dataset.status = record.status
@@ -356,14 +320,7 @@ function updateEvent(oid, record) {
   update(direction, record.direction)
   update(cardno, record.card)
   update(card, record.cardName.toLowerCase())
-  update(
-    access,
-    record.granted === 'true'
-      ? 'granted'
-      : record.granted === 'false'
-        ? 'denied'
-        : '',
-  )
+  update(access, record.granted === 'true' ? 'granted' : record.granted === 'false' ? 'denied' : '')
   update(reason, record.reason)
 
   return row
@@ -441,9 +398,7 @@ function addLog(oid) {
 function updateLog(oid, record) {
   const row = document.querySelector("div#logs tr[data-oid='" + oid + "']")
 
-  const timestamp = row.querySelector(
-    `[data-oid="${oid}${schema.logs.timestamp}"]`,
-  )
+  const timestamp = row.querySelector(`[data-oid="${oid}${schema.logs.timestamp}"]`)
   const uid = row.querySelector(`[data-oid="${oid}${schema.logs.uid}"]`)
   const details = row.querySelector(`[data-oid="${oid}${schema.logs.details}"]`)
 

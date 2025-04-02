@@ -6,9 +6,7 @@ import { loaded } from './uhppoted.js'
 const pagesize = 5
 
 export function refreshed() {
-  const entries = [...DB.logs().values()]
-    .filter((l) => alive(l))
-    .sort((p, q) => q.timestamp.localeCompare(p.timestamp))
+  const entries = [...DB.logs().values()].filter((l) => alive(l)).sort((p, q) => q.timestamp.localeCompare(p.timestamp))
 
   realize(entries)
 
@@ -189,15 +187,11 @@ function add(oid) {
 function updateFromDB(oid, record) {
   const row = document.querySelector("div#logs tr[data-oid='" + oid + "']")
 
-  const timestamp = row.querySelector(
-    `[data-oid="${oid}${schema.logs.timestamp}"]`,
-  )
+  const timestamp = row.querySelector(`[data-oid="${oid}${schema.logs.timestamp}"]`)
   const uid = row.querySelector(`[data-oid="${oid}${schema.logs.uid}"]`)
   const item = row.querySelector(`[data-oid="${oid}${schema.logs.item}"]`)
   const itemID = row.querySelector(`[data-oid="${oid}${schema.logs.itemID}"]`)
-  const itemName = row.querySelector(
-    `[data-oid="${oid}${schema.logs.itemName}"]`,
-  )
+  const itemName = row.querySelector(`[data-oid="${oid}${schema.logs.itemName}"]`)
   const itemField = row.querySelector(`[data-oid="${oid}${schema.logs.field}"]`)
   const details = row.querySelector(`[data-oid="${oid}${schema.logs.details}"]`)
 

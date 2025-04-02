@@ -89,12 +89,8 @@ export class Combobox {
       const opt = this.options[i]
       if (opt === option) {
         opt.classList.add('selected')
-        if (
-          this.list.scrollTop + this.list.offsetHeight <
-          opt.offsetTop + opt.offsetHeight
-        ) {
-          this.list.scrollTop =
-            opt.offsetTop + opt.offsetHeight - this.list.offsetHeight
+        if (this.list.scrollTop + this.list.offsetHeight < opt.offsetTop + opt.offsetHeight) {
+          this.list.scrollTop = opt.offsetTop + opt.offsetHeight - this.list.offsetHeight
         } else if (this.list.scrollTop > opt.offsetTop + 2) {
           this.list.scrollTop = opt.offsetTop
         }
@@ -146,10 +142,7 @@ export class Combobox {
       force = false
     }
 
-    if (
-      force ||
-      (!this.inputHasFocus && !this.listHasFocus && !this.hasHover)
-    ) {
+    if (force || (!this.inputHasFocus && !this.listHasFocus && !this.hasHover)) {
       this.setCurrentOptionStyle(false)
       this.list.style.display = 'none'
     }
@@ -168,9 +161,7 @@ export class Combobox {
       case 'Enter':
         if (this.listHasFocus) {
           this.setValue(this.option.textContent)
-          this.input.dispatchEvent(
-            new Event('change', { bubbles: false, cancelable: true }),
-          )
+          this.input.dispatchEvent(new Event('change', { bubbles: false, cancelable: true }))
         }
         this.close(true)
         this.setFocusCombobox()
@@ -312,9 +303,7 @@ export class Combobox {
     this.input.value = event.target.textContent
     this.close(true)
 
-    this.input.dispatchEvent(
-      new Event('change', { bubbles: false, cancelable: true }),
-    )
+    this.input.dispatchEvent(new Event('change', { bubbles: false, cancelable: true }))
   }
 
   // mouse events

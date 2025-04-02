@@ -20,12 +20,13 @@ import (
 
 type Controller struct {
 	catalog.CatalogController
-	name      string
-	IP        lib.ControllerAddr
-	doors     map[uint8]schema.OID
-	interlock lib.Interlock
-	timezone  string
-	protocol  string
+	name         string
+	IP           lib.ControllerAddr
+	doors        map[uint8]schema.OID
+	interlock    lib.Interlock
+	antipassback lib.AntiPassback
+	timezone     string
+	protocol     string
 
 	created  types.Timestamp
 	modified types.Timestamp
@@ -41,6 +42,7 @@ type icontroller struct {
 	protocol     string
 	doors        map[uint8]schema.OID
 	interlock    lib.Interlock
+	antipassback lib.AntiPassback
 	synchronized types.Status
 }
 
@@ -50,10 +52,11 @@ type kv = struct {
 }
 
 type cached struct {
-	touched  time.Time
-	address  lib.ControllerAddr
-	protocol string
-	datetime struct {
+	touched      time.Time
+	address      lib.ControllerAddr
+	protocol     string
+	antipassback lib.AntiPassback
+	datetime     struct {
 		datetime lib.DateTime
 		modified bool
 	}
@@ -127,6 +130,7 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		events := einfo{}
 		doors := map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
 		interlock := ""
+		antipassback := ""
 
 		if c.DeviceID != 0 {
 			deviceID = fmt.Sprintf("%v", c.DeviceID)
@@ -206,6 +210,9 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 				events.first = cached.events.first
 				events.last = cached.events.last
 				events.current = cached.events.current
+
+				// ... get anti-passback field from cached value
+				antipassback = fmt.Sprintf("%v", uint8(cached.antipassback))
 			}
 		}
 
@@ -236,6 +243,7 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{ControllerDoor3, doors[3]})
 		list = append(list, kv{ControllerDoor4, doors[4]})
 		list = append(list, kv{ControllerInterlock, interlock})
+		list = append(list, kv{ControllerAntiPassback, antipassback})
 	}
 
 	return c.toObjects(list, a)
@@ -304,6 +312,7 @@ func (c *Controller) AsIController() types.IController {
 		protocol:     c.protocol,
 		doors:        doors,
 		interlock:    c.interlock,
+		antipassback: c.antipassback,
 		synchronized: synchronized,
 	}
 }
@@ -414,6 +423,12 @@ func (c *Controller) get() *cached {
 	if v := catalog.GetV(c.OID, ControllerCardsStatus); v != nil {
 		if acl, ok := v.(types.Status); ok {
 			e.acl = acl
+		}
+	}
+
+	if v := catalog.GetV(c.OID, ControllerAntiPassback); v != nil {
+		if antipassback, ok := v.(lib.AntiPassback); ok {
+			e.antipassback = antipassback
 		}
 	}
 
@@ -601,6 +616,23 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 			dbc.Updated(c.OID, ControllerInterlock, c.interlock)
 			c.updated(dbc, uid, "interlock", clone.interlock, c.interlock)
 		}
+
+	case c.OID.Append(ControllerAntiPassback):
+		if err := CanUpdate(a, c, "antipassback", value); err != nil {
+			return nil, err
+		} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
+			return nil, err
+		} else if v != 0 && v != 1 && v != 2 && v != 3 && v != 4 {
+			return nil, fmt.Errorf("invalid anti-passback mode (%v)", v)
+		} else {
+			c.antipassback = lib.AntiPassback(v)
+			c.modified = types.TimestampNow()
+
+			list = append(list, kv{ControllerAntiPassback, uint8(c.antipassback)})
+
+			dbc.Updated(c.OID, ControllerAntiPassback, c.antipassback)
+			c.updated(dbc, uid, "antipassback", clone.antipassback, c.antipassback)
+		}
 	}
 
 	list = append(list, kv{ControllerStatus, c.Status()})
@@ -662,27 +694,29 @@ func (c Controller) serialize() ([]byte, error) {
 	}
 
 	record := struct {
-		OID       schema.OID           `json:"OID,omitempty"`
-		Name      string               `json:"name,omitempty"`
-		DeviceID  uint32               `json:"device-id,omitempty"`
-		Address   lib.ControllerAddr   `json:"address,omitempty"`
-		Doors     map[uint8]schema.OID `json:"doors"`
-		Interlock lib.Interlock        `json:"interlock"`
-		TimeZone  string               `json:"timezone,omitempty"`
-		Protocol  string               `json:"protocol,omitempty"`
-		Created   types.Timestamp      `json:"created,omitempty"`
-		Modified  types.Timestamp      `json:"modified,omitempty"`
+		OID          schema.OID           `json:"OID,omitempty"`
+		Name         string               `json:"name,omitempty"`
+		DeviceID     uint32               `json:"device-id,omitempty"`
+		Address      lib.ControllerAddr   `json:"address,omitempty"`
+		Doors        map[uint8]schema.OID `json:"doors"`
+		Interlock    lib.Interlock        `json:"interlock"`
+		AntiPassback lib.AntiPassback     `json:"antipassback"`
+		TimeZone     string               `json:"timezone,omitempty"`
+		Protocol     string               `json:"protocol,omitempty"`
+		Created      types.Timestamp      `json:"created,omitempty"`
+		Modified     types.Timestamp      `json:"modified,omitempty"`
 	}{
-		OID:       c.OID,
-		Name:      c.name,
-		DeviceID:  c.DeviceID,
-		Address:   c.IP,
-		Doors:     map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
-		Interlock: c.interlock,
-		TimeZone:  c.timezone,
-		Protocol:  c.protocol,
-		Created:   c.created.UTC(),
-		Modified:  c.modified.UTC(),
+		OID:          c.OID,
+		Name:         c.name,
+		DeviceID:     c.DeviceID,
+		Address:      c.IP,
+		Doors:        map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
+		Interlock:    c.interlock,
+		AntiPassback: c.antipassback,
+		TimeZone:     c.timezone,
+		Protocol:     c.protocol,
+		Created:      c.created.UTC(),
+		Modified:     c.modified.UTC(),
 	}
 
 	for k, v := range c.doors {
@@ -696,16 +730,17 @@ func (c *Controller) deserialize(bytes []byte) error {
 	created = created.Add(1 * time.Minute)
 
 	record := struct {
-		OID       schema.OID         `json:"OID"`
-		Name      string             `json:"name,omitempty"`
-		DeviceID  uint32             `json:"device-id,omitempty"`
-		Address   lib.ControllerAddr `json:"address,omitempty"`
-		Doors     map[uint8]string   `json:"doors"`
-		Interlock lib.Interlock      `json:"interlock"`
-		TimeZone  string             `json:"timezone,omitempty"`
-		Protocol  string             `json:"protocol,omitempty"`
-		Created   types.Timestamp    `json:"created,omitempty"`
-		Modified  types.Timestamp    `json:"modified,omitempty"`
+		OID          schema.OID         `json:"OID"`
+		Name         string             `json:"name,omitempty"`
+		DeviceID     uint32             `json:"device-id,omitempty"`
+		Address      lib.ControllerAddr `json:"address,omitempty"`
+		Doors        map[uint8]string   `json:"doors"`
+		Interlock    lib.Interlock      `json:"interlock"`
+		AntiPassback lib.AntiPassback   `json:"antipassback"`
+		TimeZone     string             `json:"timezone,omitempty"`
+		Protocol     string             `json:"protocol,omitempty"`
+		Created      types.Timestamp    `json:"created,omitempty"`
+		Modified     types.Timestamp    `json:"modified,omitempty"`
 	}{
 		Created:  created,
 		Protocol: "udp",
@@ -721,6 +756,7 @@ func (c *Controller) deserialize(bytes []byte) error {
 	c.IP = record.Address
 	c.doors = map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
 	c.interlock = record.Interlock
+	c.antipassback = record.AntiPassback
 	c.timezone = record.TimeZone
 	c.protocol = record.Protocol
 	c.created = record.Created
@@ -740,12 +776,13 @@ func (c *Controller) clone() *Controller {
 				OID:      c.OID,
 				DeviceID: c.DeviceID,
 			},
-			name:      c.name,
-			IP:        c.IP,
-			timezone:  c.timezone,
-			protocol:  c.protocol,
-			doors:     map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
-			interlock: c.interlock,
+			name:         c.name,
+			IP:           c.IP,
+			timezone:     c.timezone,
+			protocol:     c.protocol,
+			doors:        map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""},
+			interlock:    c.interlock,
+			antipassback: c.antipassback,
 
 			created:  c.created,
 			modified: c.modified,

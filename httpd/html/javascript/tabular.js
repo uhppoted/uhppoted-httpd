@@ -9,14 +9,7 @@ import * as logs from './logs.js'
 import * as users from './users.js'
 import { DB } from './db.js'
 import { Cache } from './cache.js'
-import {
-  busy,
-  unbusy,
-  warning,
-  dismiss,
-  getAsJSON,
-  postAsJSON,
-} from './uhppoted.js'
+import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
 class Warning extends Error {
   constructor(...params) {
@@ -41,12 +34,7 @@ HTMLTableSectionElement.prototype.sort = function (cb) {
 
 const pages = {
   overview: {
-    get: [
-      '/controllers',
-      '/doors',
-      '/events?range=' + encodeURIComponent('0,15'),
-      '/logs?range=' + encodeURIComponent('0,15'),
-    ],
+    get: ['/controllers', '/doors', '/events?range=' + encodeURIComponent('0,15'), '/logs?range=' + encodeURIComponent('0,15')],
     refreshed: overview.refreshed,
   },
 
@@ -261,9 +249,7 @@ export function onCommit(tag, event) {
 }
 
 export function onCommitAll(tag, _event, _table) {
-  const rows = Array.from(
-    document.querySelectorAll('table tr:is(.modified,.new)'),
-  )
+  const rows = Array.from(document.querySelectorAll('table tr:is(.modified,.new)'))
   const page = getPage(tag)
 
   switch (tag) {
@@ -316,9 +302,7 @@ export function onRollbackAll(tag, _event) {
   }
 
   const f = function (table, recordset, refreshed) {
-    const rows = document
-      .getElementById(table)
-      .querySelectorAll('table tbody tr:is(.modified,.new)')
+    const rows = document.getElementById(table).querySelectorAll('table tbody tr:is(.modified,.new)')
 
     for (let i = rows.length; i > 0; i--) {
       rollback(tag, rows[i - 1], refreshed, options)
@@ -557,11 +541,7 @@ function modified(oid, options = {}) {
     if (element.nodeName === 'TR') {
       const page = pageForRow(element)
 
-      if (
-        element.classList.contains('new') &&
-        page &&
-        page.deletable(element)
-      ) {
+      if (element.classList.contains('new') && page && page.deletable(element)) {
         element.classList.add('newish')
       } else {
         element.classList.remove('newish')
@@ -904,12 +884,7 @@ function cell(element) {
 
   if (parent && parent.nodeName === 'TD') {
     return parent
-  } else if (
-    parent &&
-    parent.nodeName === 'LABEL' &&
-    parent.parentElement &&
-    parent.parentElement.nodeName === 'TD'
-  ) {
+  } else if (parent && parent.nodeName === 'LABEL' && parent.parentElement && parent.parentElement.nodeName === 'TD') {
     return parent.parentElement
   }
 

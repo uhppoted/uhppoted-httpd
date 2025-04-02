@@ -240,7 +240,7 @@ func (l *LAN) refresh(c types.IController) {
 	if info, err := api.GetDevice(uhppoted.GetDeviceRequest{DeviceID: deviceID}); err != nil {
 		log.Warnf("%v", err)
 	} else if info == nil {
-		log.Warnf("Got %v response to get-device request for %v", info, deviceID)
+		log.Warnf("<%v> response to get-device request for %v", info, deviceID)
 	} else {
 		catalog.PutV(c.OID(), ControllerTouched, time.Now())
 		catalog.PutV(c.OID(), ControllerEndpointAddress, lib.ControllerAddrFrom(info.Address, 60000))
@@ -249,7 +249,7 @@ func (l *LAN) refresh(c types.IController) {
 	if status, err := api.UHPPOTE.GetStatus(deviceIDu); err != nil {
 		log.Warnf("%v", err)
 	} else if status == nil {
-		log.Warnf("Got %v response to get-status request for %v", status, deviceID)
+		log.Warnf("<%v> response to get-status request for %v", status, deviceID)
 	} else {
 		catalog.PutV(c.OID(), ControllerTouched, time.Now())
 		catalog.PutV(c.OID(), ControllerDateTimeCurrent, status.SystemDateTime)
@@ -258,7 +258,7 @@ func (l *LAN) refresh(c types.IController) {
 	if cards, err := api.GetCardRecords(uhppoted.GetCardRecordsRequest{DeviceID: deviceID}); err != nil {
 		log.Warnf("%v", err)
 	} else if cards == nil {
-		log.Warnf("Got %v response to get-card-records request for %v", cards, deviceID)
+		log.Warnf("<%v> response to get-card-records request for %v", cards, deviceID)
 	} else {
 		catalog.PutV(c.OID(), ControllerTouched, time.Now())
 		catalog.PutV(c.OID(), ControllerCardsCount, cards.Cards)
@@ -268,7 +268,7 @@ func (l *LAN) refresh(c types.IController) {
 		if delay, err := api.GetDoorDelay(uhppoted.GetDoorDelayRequest{DeviceID: deviceID, Door: d}); err != nil {
 			log.Warnf("%v", err)
 		} else if delay == nil {
-			log.Warnf("Got %v response to get-door-delay request for %v", delay, deviceID)
+			log.Warnf("<%v> response to get-door-delay request for %v", delay, deviceID)
 		} else if door, ok := c.Door(delay.Door); ok {
 			catalog.PutV(door, DoorDelay, delay.Delay)
 		}
@@ -278,10 +278,17 @@ func (l *LAN) refresh(c types.IController) {
 		if control, err := api.GetDoorControl(uhppoted.GetDoorControlRequest{DeviceID: deviceID, Door: d}); err != nil {
 			log.Warnf("%v", err)
 		} else if control == nil {
-			log.Warnf("Got %v response to get-door-control request for %v", control, deviceID)
+			log.Warnf("<%v> response to get-door-control request for %v", control, deviceID)
 		} else if door, ok := c.Door(control.Door); ok {
 			catalog.PutV(door, DoorControl, control.Control)
 		}
+	}
+
+	if antipassback, err := api.UHPPOTE.GetAntiPassback(deviceIDu); err != nil {
+		log.Warnf("%v", err)
+	} else {
+		catalog.PutV(c.OID(), ControllerTouched, time.Now())
+		catalog.PutV(c.OID(), ControllerAntiPassback, antipassback)
 	}
 }
 

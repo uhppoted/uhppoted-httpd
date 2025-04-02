@@ -987,6 +987,10 @@ tr.controller td input.datetime {
   min-width: 176px;
 }
 
+tr.controller td select.antipassback {
+  font-size: 0.75em;
+}
+
 tr.controller td input.cards {
   width: 72px;
   text-align: center;

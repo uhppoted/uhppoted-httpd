@@ -69,16 +69,17 @@
             <table>
               <thead>
                 <tr>
-                  <th class="name      topleft">Controller</th>
-                  <th class="ID        colheader">ID</th>
-                  <th class="IP        colheader">Endpoint</th>
-                  <th class="protocol  colheader">TCP</th>
-                  <th class="datetime  colheader">Date/Time</th>
-                  <th class="interlock colheader">Interlock</th>
-                  <th class="cards     colheader">Cards</th>
-                  <th class="events    colheader">Events</th>
-                  <th class="doors     colheader" colspan="4">Doors</th>
-                  <th class="padding   colheader" ></th>
+                  <th class="topleft   name">Controller</th>
+                  <th class="colheader ID">ID</th>
+                  <th class="colheader IP">Endpoint</th>
+                  <th class="colheader protocol">TCP</th>
+                  <th class="colheader datetime">Date/Time</th>
+                  <th class="colheader interlock">Interlocks</th>
+                  <th class="colheader antipassback">Anti-Passback</th>
+                  <th class="colheader cards">Cards</th>
+                  <th class="colheader events">Events</th>
+                  <th class="colheader doors" colspan="4">Doors</th>
+                  <th class="colheader padding"></th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -178,6 +179,24 @@
                     <option value="3">1&amp;2,3&amp;4</option>
                     <option value="4">1&amp;2&amp;3</option>
                     <option value="8">1&amp;2&amp;3&amp;4</option>
+                  </select>
+                </td>
+
+                <td>
+                  <select class="field antipassback"
+                          type="text" 
+                          value=""
+                          placeholder="-"
+                          onchange="onEdited('controller', event)" 
+                          data-record=""
+                          data-original=""
+                          data-value=""
+                          {{if .readonly}}disabled{{end}} >
+                    <option value="0">DISABLED</option>
+                    <option value="1">(1:2);(3:4)</option>
+                    <option value="2">(1,3):(2,4)</option>
+                    <option value="3">1:(2,3)</option>
+                    <option value="4">1:(2,3,4)</option>
                   </select>
                 </td>
 

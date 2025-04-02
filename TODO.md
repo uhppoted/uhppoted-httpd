@@ -1,13 +1,16 @@
 # TODO
 
-- [x] Firefox: controllers page
-- [x] setup: redirect to login if admin user exists
-- [x] setup: toggle visibility
-- [x] Fix cards page loading performance (cf. https://github.com/uhppoted/uhppoted-httpd/issues/43)
-- [x] ARM6 target (cf. https://github.com/uhppoted/uhppoted/issues/55)
-- [x] `npm warn deprecated eslint@7.32.0: This version is no longer supported`
+- [ ] anti-passback (cf. https://github.com/uhppoted/uhppoted/issues/60)
+      - [x] _controllers_ page
+      - [x] get-antipassback
+      - [ ] set-antipassback
+      - [ ] opt-in/opt-out
+      - [ ] CHANGELOG
+      - [ ] README
 
 - [ ] _sass_ deprecation warnings (cf. https://github.com/uhppoted/uhppoted-httpd/issues/50)
+
+- [ ] doors: https://developer.chrome.com/blog/a-customizable-select
 
 - [ ] Virtual lists
       - (?) content-visiblity

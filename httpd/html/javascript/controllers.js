@@ -6,9 +6,7 @@ import { timezones } from './timezones.js'
 import { loaded } from './uhppoted.js'
 
 export function refreshed() {
-  const list = [...DB.controllers.values()]
-    .filter((c) => alive(c))
-    .sort((p, q) => p.created.localeCompare(q.created))
+  const list = [...DB.controllers.values()].filter((c) => alive(c)).sort((p, q) => p.created.localeCompare(q.created))
 
   realize(list)
 
@@ -31,14 +29,7 @@ export function deletable(row) {
   const id = row.querySelector('td input.ID')
   const re = /^\s*$/
 
-  if (
-    name &&
-    name.dataset.oid !== '' &&
-    re.test(name.dataset.value) &&
-    id &&
-    id.dataset.oid !== '' &&
-    re.test(id.dataset.value)
-  ) {
+  if (name && name.dataset.oid !== '' && re.test(name.dataset.value) && id && id.dataset.oid !== '' && re.test(id.dataset.value)) {
     return true
   }
 
@@ -62,9 +53,7 @@ function realize(controllers) {
 
 function add(oid, _record) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
-  const tbody = document
-    .getElementById('controllers')
-    .querySelector('table tbody')
+  const tbody = document.getElementById('controllers').querySelector('table tbody')
 
   if (tbody) {
     const template = document.querySelector('#controller')
@@ -115,6 +104,11 @@ function add(oid, _record) {
         suffix: 'interlock',
         oid: `${oid}${schema.controllers.interlock}`,
         selector: 'td select.interlock',
+      },
+      {
+        suffix: 'antipassback',
+        oid: `${oid}${schema.controllers.antipassback}`,
+        selector: 'td select.antipassback',
       },
       {
         suffix: 'cards',
@@ -173,46 +167,21 @@ function add(oid, _record) {
 }
 
 function updateFromDB(oid, record) {
-  const row = document.querySelector(
-    "div#controllers tr[data-oid='" + oid + "']",
-  )
+  const row = document.querySelector("div#controllers tr[data-oid='" + oid + "']")
 
-  const name = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.name}"]`,
-  )
-  const deviceID = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.deviceID}"]`,
-  )
-  const address = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.endpoint.address}"]`,
-  )
-  const protocol = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.endpoint.protocol}"]`,
-  )
-  const datetime = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.datetime.current}"]`,
-  )
-  const interlock = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.interlock}"]`,
-  )
-  const cards = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.cards.count}"]`,
-  )
-  const events = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.events.last}"]`,
-  )
-  const door1 = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.door1}"]`,
-  )
-  const door2 = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.door2}"]`,
-  )
-  const door3 = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.door3}"]`,
-  )
-  const door4 = row.querySelector(
-    `[data-oid="${oid}${schema.controllers.door4}"]`,
-  )
+  const name = row.querySelector(`[data-oid="${oid}${schema.controllers.name}"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}${schema.controllers.deviceID}"]`)
+  const address = row.querySelector(`[data-oid="${oid}${schema.controllers.endpoint.address}"]`)
+  const protocol = row.querySelector(`[data-oid="${oid}${schema.controllers.endpoint.protocol}"]`)
+  const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime.current}"]`)
+  const interlock = row.querySelector(`[data-oid="${oid}${schema.controllers.interlock}"]`)
+  const antipassback = row.querySelector(`[data-oid="${oid}${schema.controllers.antipassback}"]`)
+  const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards.count}"]`)
+  const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.last}"]`)
+  const door1 = row.querySelector(`[data-oid="${oid}${schema.controllers.door1}"]`)
+  const door2 = row.querySelector(`[data-oid="${oid}${schema.controllers.door2}"]`)
+  const door3 = row.querySelector(`[data-oid="${oid}${schema.controllers.door3}"]`)
+  const door4 = row.querySelector(`[data-oid="${oid}${schema.controllers.door4}"]`)
 
   // ... populate door dropdowns
   const doors = [...DB.doors.values()]
@@ -249,10 +218,7 @@ function updateFromDB(oid, record) {
   // ... set record values
   row.dataset.status = record.status
 
-  const dt =
-    record.datetime.status === 'uncertain'
-      ? record.datetime.configured
-      : record.datetime.datetime
+  const dt = record.datetime.status === 'uncertain' ? record.datetime.configured : record.datetime.datetime
 
   update(name, record.name)
   update(deviceID, record.deviceID)
@@ -262,6 +228,7 @@ function updateFromDB(oid, record) {
   })
   update(datetime, dt, record.datetime.status)
   update(interlock, record.interlock)
+  update(antipassback, record.antipassback)
   update(cards, record.cards.cards, record.cards.status)
   update(events, record.events.last, record.events.status)
   update(door1, record.doors[1])

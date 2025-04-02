@@ -40,8 +40,9 @@ func TestControllerAsObjects(t *testing.T) {
 			3: "0.3.9",
 			4: "0.3.11",
 		},
-		interlock: core.Interlock123,
-		created:   created,
+		interlock:    core.Interlock123,
+		antipassback: core.Readers13_24,
+		created:      created,
 	}
 
 	expected := []schema.Object{
@@ -69,6 +70,7 @@ func TestControllerAsObjects(t *testing.T) {
 		{OID: "0.2.3.7.3", Value: schema.OID("0.3.9")},
 		{OID: "0.2.3.7.4", Value: schema.OID("0.3.11")},
 		{OID: "0.2.3.8", Value: "4"},
+		{OID: "0.2.3.9", Value: "2"},
 	}
 
 	objects := c.AsObjects(nil)
@@ -133,8 +135,9 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 			3: "0.3.9",
 			4: "0.3.11",
 		},
-		interlock: core.Interlock123,
-		created:   created,
+		interlock:    core.Interlock123,
+		antipassback: core.Readers13_24,
+		created:      created,
 	}
 
 	expected := []schema.Object{
@@ -161,6 +164,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.2.3.7.3", Value: schema.OID("0.3.9")},
 		{OID: "0.2.3.7.4", Value: schema.OID("0.3.11")},
 		{OID: "0.2.3.8", Value: "4"},
+		{OID: "0.2.3.9", Value: "2"},
 	}
 
 	a := auth.Authorizator{

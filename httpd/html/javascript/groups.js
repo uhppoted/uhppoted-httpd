@@ -4,9 +4,7 @@ import { schema } from './schema.js'
 import { loaded } from './uhppoted.js'
 
 export function refreshed() {
-  const groups = [...DB.groups.values()]
-    .filter((g) => alive(g))
-    .sort((p, q) => p.created.localeCompare(q.created))
+  const groups = [...DB.groups.values()].filter((g) => alive(g)).sort((p, q) => p.created.localeCompare(q.created))
 
   realize(groups)
 
@@ -50,9 +48,7 @@ function realize(groups) {
   // ... columns
   const columns = table.querySelectorAll('th.door')
   const cols = new Map([...columns].map((c) => [c.dataset.door, c]))
-  const missing = [...doors.values()].filter(
-    (o) => o.OID === '' || !cols.has(o.OID),
-  )
+  const missing = [...doors.values()].filter((o) => o.OID === '' || !cols.has(o.OID))
   const surplus = [...cols].filter(([k]) => !doors.has(k))
 
   missing.forEach((o) => {
@@ -83,9 +79,7 @@ function realize(groups) {
 
     const columns = row.querySelectorAll('td.door')
     const cols = new Map([...columns].map((c) => [c.dataset.door, c]))
-    const missing = [...doors.values()].filter(
-      (o) => o.OID === '' || !cols.has(o.OID),
-    )
+    const missing = [...doors.values()].filter((o) => o.OID === '' || !cols.has(o.OID))
     const surplus = [...cols].filter(([k]) => !doors.has(k))
 
     missing.forEach((o) => {
@@ -140,9 +134,7 @@ function add(oid, _record) {
     rollback.id = uuid + '_rollback'
     rollback.dataset.record = uuid
 
-    const fields = [
-      { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name' },
-    ]
+    const fields = [{ suffix: 'name', oid: `${oid}.1`, selector: 'td input.name' }]
 
     fields.forEach((f) => {
       const field = row.querySelector(f.selector)
@@ -171,9 +163,7 @@ function updateFromDB(oid, record) {
   const row = document.querySelector("div#groups tr[data-oid='" + oid + "']")
 
   const name = row.querySelector(`[data-oid="${oid}${schema.groups.name}"]`)
-  const doors = [...DB.doors.values()].filter(
-    (o) => o.status && o.status !== '<new>' && alive(o),
-  )
+  const doors = [...DB.doors.values()].filter((o) => o.status && o.status !== '<new>' && alive(o))
 
   row.dataset.status = record.status
 

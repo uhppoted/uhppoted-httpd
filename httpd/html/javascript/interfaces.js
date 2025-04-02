@@ -12,15 +12,9 @@ function updateFromDB(oid, record) {
   const section = document.querySelector(`[data-oid="${oid}"]`)
 
   if (section) {
-    const name = section.querySelector(
-      `[data-oid="${oid}${schema.interfaces.name}"]`,
-    )
-    const bind = section.querySelector(
-      `[data-oid="${oid}${schema.interfaces.bind}"]`,
-    )
-    const broadcast = section.querySelector(
-      `[data-oid="${oid}${schema.interfaces.broadcast}"]`,
-    )
+    const name = section.querySelector(`[data-oid="${oid}${schema.interfaces.name}"]`)
+    const bind = section.querySelector(`[data-oid="${oid}${schema.interfaces.bind}"]`)
+    const broadcast = section.querySelector(`[data-oid="${oid}${schema.interfaces.broadcast}"]`)
 
     update(name, record.name)
     update(bind, record.bind)

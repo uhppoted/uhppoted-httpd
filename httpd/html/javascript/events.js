@@ -214,28 +214,16 @@ function add(oid) {
 function updateFromDB(oid, record) {
   const row = document.querySelector("div#events tr[data-oid='" + oid + "']")
 
-  const timestamp = row.querySelector(
-    `[data-oid="${oid}${schema.events.timestamp}"]`,
-  )
-  const deviceID = row.querySelector(
-    `[data-oid="${oid}${schema.events.deviceID}"]`,
-  )
-  const device = row.querySelector(
-    `[data-oid="${oid}${schema.events.deviceName}"]`,
-  )
-  const eventType = row.querySelector(
-    `[data-oid="${oid}${schema.events.type}"]`,
-  )
+  const timestamp = row.querySelector(`[data-oid="${oid}${schema.events.timestamp}"]`)
+  const deviceID = row.querySelector(`[data-oid="${oid}${schema.events.deviceID}"]`)
+  const device = row.querySelector(`[data-oid="${oid}${schema.events.deviceName}"]`)
+  const eventType = row.querySelector(`[data-oid="${oid}${schema.events.type}"]`)
   const doorid = row.querySelector(`[data-oid="${oid}${schema.events.door}"]`)
   const door = row.querySelector(`[data-oid="${oid}${schema.events.doorName}"]`)
-  const direction = row.querySelector(
-    `[data-oid="${oid}${schema.events.direction}"]`,
-  )
+  const direction = row.querySelector(`[data-oid="${oid}${schema.events.direction}"]`)
   const cardno = row.querySelector(`[data-oid="${oid}${schema.events.card}"]`)
   const card = row.querySelector(`[data-oid="${oid}${schema.events.cardName}"]`)
-  const access = row.querySelector(
-    `[data-oid="${oid}${schema.events.granted}"]`,
-  )
+  const access = row.querySelector(`[data-oid="${oid}${schema.events.granted}"]`)
   const reason = row.querySelector(`[data-oid="${oid}${schema.events.reason}"]`)
 
   row.dataset.status = record.status
@@ -249,14 +237,7 @@ function updateFromDB(oid, record) {
   update(direction, record.direction)
   update(cardno, record.card)
   update(card, record.cardName)
-  update(
-    access,
-    record.granted === 'true'
-      ? 'granted'
-      : record.granted === 'false'
-        ? 'denied'
-        : '',
-  )
+  update(access, record.granted === 'true' ? 'granted' : record.granted === 'false' ? 'denied' : '')
   update(reason, record.reason)
 
   return row

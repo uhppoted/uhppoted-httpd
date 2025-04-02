@@ -9,9 +9,7 @@ const GROUPS_SUFFIX = `${schema.cards.group}`.replace(/\.+$/, '')
 
 export function refreshed() {
   const start = Date.now()
-  const cards = [...DB.cards.values()]
-    .filter((c) => alive(c))
-    .sort((p, q) => p.created.localeCompare(q.created))
+  const cards = [...DB.cards.values()].filter((c) => alive(c)).sort((p, q) => p.created.localeCompare(q.created))
 
   realize(cards)
 
@@ -119,9 +117,7 @@ function realize(cards) {
   // ... columns
   const columns = table.querySelectorAll('th.group')
   const cols = new Map([...columns].map((c) => [c.dataset.group, c]))
-  const missing = [...groups.values()].filter(
-    (o) => o.OID === '' || !cols.has(o.OID),
-  )
+  const missing = [...groups.values()].filter((o) => o.OID === '' || !cols.has(o.OID))
   const surplus = [...cols].filter(([k]) => !groups.has(k))
 
   missing.forEach((o) => {
@@ -152,9 +148,7 @@ function realize(cards) {
 
     const columns = row.querySelectorAll('td.group')
     const cols = new Map([...columns].map((c) => [c.dataset.group, c]))
-    const missing = [...groups.values()].filter(
-      (o) => o.OID === '' || !cols.has(o.OID),
-    )
+    const missing = [...groups.values()].filter((o) => o.OID === '' || !cols.has(o.OID))
     const surplus = [...cols].filter(([k]) => !groups.has(k))
 
     missing.forEach((o) => {
@@ -278,9 +272,7 @@ function updateFromDB(oid, record, options) {
   const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
   const from = row.querySelector(`[data-oid="${oid}${schema.cards.from}"]`)
   const to = row.querySelector(`[data-oid="${oid}${schema.cards.to}"]`)
-  const groups = [...DB.groups.values()].filter(
-    (g) => g.status && g.status !== '<new>' && alive(g),
-  )
+  const groups = [...DB.groups.values()].filter((g) => g.status && g.status !== '<new>' && alive(g))
   // {{if .WithPIN}}
   const PIN = row.querySelector(`[data-oid="${oid}${schema.cards.PIN}"]`)
   // {{end}}
@@ -307,9 +299,7 @@ function updateFromDB(oid, record, options) {
   // {{end}}
 
   if (record.from === '') {
-    const defval = DB.get(
-      `${schema.system.base}${schema.system.cards.defaultStartDate}`,
-    )
+    const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultStartDate}`)
 
     if (defval != null && defval[0] != null && defval[0] !== '' && defval[1]) {
       from.value = `${defval[0]}`
@@ -325,9 +315,7 @@ function updateFromDB(oid, record, options) {
   }
 
   if (record.to === '') {
-    const defval = DB.get(
-      `${schema.system.base}${schema.system.cards.defaultEndDate}`,
-    )
+    const defval = DB.get(`${schema.system.base}${schema.system.cards.defaultEndDate}`)
 
     if (defval != null && defval[0] != null && defval[0] !== '' && defval[1]) {
       to.value = `${defval[0]}`
@@ -364,18 +352,14 @@ export function onDateEdit(tag, event) {
 
   if (field.value === '') {
     if (tag === 'card.from') {
-      const v = DB.get(
-        `${schema.system.base}${schema.system.cards.defaultStartDate}`,
-      )
+      const v = DB.get(`${schema.system.base}${schema.system.cards.defaultStartDate}`)
       if (v != null && v[0] != null && v[1]) {
         defval = `${v[0]}`
       }
     }
 
     if (tag === 'card.to') {
-      const v = DB.get(
-        `${schema.system.base}${schema.system.cards.defaultEndDate}`,
-      )
+      const v = DB.get(`${schema.system.base}${schema.system.cards.defaultEndDate}`)
       if (v != null && v[0] != null && v[1]) {
         defval = `${v[0]}`
       }

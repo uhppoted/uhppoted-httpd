@@ -54,24 +54,16 @@ class DBC {
 
   get(oid) {
     // ... system.cards
-    if (
-      `${oid}`.startsWith(`${schema.system.base}${schema.system.cards.base}`)
-    ) {
+    if (`${oid}`.startsWith(`${schema.system.base}${schema.system.cards.base}`)) {
       if (DB.system.has('cards')) {
-        if (
-          `${oid}` ===
-          `${schema.system.base}${schema.system.cards.defaultStartDate}`
-        ) {
+        if (`${oid}` === `${schema.system.base}${schema.system.cards.defaultStartDate}`) {
           const v = DB.system.get('cards').defaultStartDate
           if (v != null) {
             return [v, true]
           }
         }
 
-        if (
-          `${oid}` ===
-          `${schema.system.base}${schema.system.cards.defaultEndDate}`
-        ) {
+        if (`${oid}` === `${schema.system.base}${schema.system.cards.defaultEndDate}`) {
           const v = DB.system.get('cards').defaultEndDate
           if (v != null) {
             return [v, true]
@@ -268,6 +260,7 @@ function controllers(o) {
       protocol: '',
       datetime: { datetime: '', configured: '', status: 'unknown' },
       interlock: '',
+      antipassback: '',
       cards: { cards: '', status: 'unknown' },
       events: { events: '', status: 'unknown' },
       doors: { 1: '', 2: '', 3: '', 4: '' },
@@ -331,6 +324,10 @@ function controllers(o) {
 
     case `${base}${schema.controllers.interlock}`:
       v.interlock = o.value
+      break
+
+    case `${base}${schema.controllers.antipassback}`:
+      v.antipassback = o.value
       break
 
     case `${base}${schema.controllers.cards.status}`:

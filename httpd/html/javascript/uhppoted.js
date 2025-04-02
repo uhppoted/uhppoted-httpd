@@ -158,8 +158,7 @@ export function retheme(theme) {
 
   expires.setFullYear(expires.getFullYear() + 1)
 
-  document.cookie =
-    'uhppoted-settings=theme:' + theme + '; expires=' + expires.toUTCString()
+  document.cookie = 'uhppoted-settings=theme:' + theme + '; expires=' + expires.toUTCString()
 
   stylesheets.forEach((link) => {
     const re = new RegExp('(.+?/css)/(.+?)/(.+)', 'i')
@@ -373,10 +372,7 @@ export function busy() {
   const windmill = document.getElementById('windmill')
 
   if (windmill) {
-    const queued = Math.max(
-      0,
-      (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0,
-    )
+    const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
 
     windmill.dataset.count = (queued + 1).toString()
   }
@@ -386,10 +382,7 @@ export function unbusy() {
   const windmill = document.getElementById('windmill')
 
   if (windmill) {
-    const queued = Math.max(
-      0,
-      (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0,
-    )
+    const queued = Math.max(0, (windmill.dataset.count && parseInt(windmill.dataset.count)) | 0)
 
     if (queued > 1) {
       windmill.dataset.count = (queued - 1).toString()
@@ -451,11 +444,7 @@ function connected(ok) {
   const element = document.querySelector('header #disconnected')
   let monitor = false
 
-  if (
-    window.constants &&
-    window.constants.mode &&
-    window.constants.mode === 'monitor'
-  ) {
+  if (window.constants && window.constants.mode && window.constants.mode === 'monitor') {
     monitor = true
   }
 
