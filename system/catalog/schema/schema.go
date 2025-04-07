@@ -72,7 +72,12 @@ type Controllers struct {
 		Door4 Suffix `json:"4"`
 	} `json:"doors"`
 	Interlock    Suffix `json:"interlock"`
-	AntiPassback Suffix `json:"antipassback"`
+	AntiPassback struct {
+		Status       Suffix `json:"status"`
+		AntiPassback Suffix `json:"antipassback"`
+		Configured   Suffix `json:"configured"`
+		Modified     Suffix `json:"modified"`
+	} `json:"antipassback"`
 }
 
 type Doors struct {
@@ -259,8 +264,18 @@ var schema = Schema{
 			Door3: ControllerDoor3,
 			Door4: ControllerDoor4,
 		},
-		Interlock:    ControllerInterlock,
-		AntiPassback: ControllerAntiPassback,
+		Interlock: ControllerInterlock,
+		AntiPassback: struct {
+			Status       Suffix `json:"status"`
+			AntiPassback Suffix `json:"antipassback"`
+			Configured   Suffix `json:"configured"`
+			Modified     Suffix `json:"modified"`
+		}{
+			Status:       ControllerAntiPassbackStatus,
+			AntiPassback: ControllerAntiPassback,
+			Configured:   ControllerAntiPassbackConfigured,
+			Modified:     ControllerAntiPassbackModified,
+		},
 	},
 
 	Doors: Doors{
@@ -435,7 +450,10 @@ const ControllerDoor2 Suffix = ".7.2"
 const ControllerDoor3 Suffix = ".7.3"
 const ControllerDoor4 Suffix = ".7.4"
 const ControllerInterlock Suffix = ".8"
-const ControllerAntiPassback Suffix = ".9"
+const ControllerAntiPassbackStatus Suffix = ".9.0"
+const ControllerAntiPassback Suffix = ".9.1"
+const ControllerAntiPassbackConfigured Suffix = ".9.2"
+const ControllerAntiPassbackModified Suffix = ".9.3"
 
 const DoorName Suffix = ".1"
 const DoorDelay Suffix = ".2"

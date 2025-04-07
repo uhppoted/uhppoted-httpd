@@ -307,13 +307,6 @@ func (ii *Interfaces) SetAntiPassback(controller types.IController, antipassback
 	if lan, ok := ii.LAN(); ok {
 		if err := lan.setAntiPassback(controller, antipassback); err != nil {
 			log.Warnf("%v", err)
-		} else {
-			oid := controller.OID()
-
-			catalog.PutV(oid, ControllerAntiPassback, antipassback)
-			// catalog.PutV(oid, ControllerAntiPassbackModified, false)
-
-			log.Infof("%v  set antipassback %v", controller.ID(), antipassback)
 		}
 	}
 }

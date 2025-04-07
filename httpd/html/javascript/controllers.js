@@ -107,7 +107,7 @@ function add(oid, _record) {
       },
       {
         suffix: 'antipassback',
-        oid: `${oid}${schema.controllers.antipassback}`,
+        oid: `${oid}${schema.controllers.antipassback.antipassback}`,
         selector: 'td select.antipassback',
       },
       {
@@ -175,7 +175,7 @@ function updateFromDB(oid, record) {
   const protocol = row.querySelector(`[data-oid="${oid}${schema.controllers.endpoint.protocol}"]`)
   const datetime = row.querySelector(`[data-oid="${oid}${schema.controllers.datetime.current}"]`)
   const interlock = row.querySelector(`[data-oid="${oid}${schema.controllers.interlock}"]`)
-  const antipassback = row.querySelector(`[data-oid="${oid}${schema.controllers.antipassback}"]`)
+  const antipassback = row.querySelector(`[data-oid="${oid}${schema.controllers.antipassback.antipassback}"]`)
   const cards = row.querySelector(`[data-oid="${oid}${schema.controllers.cards.count}"]`)
   const events = row.querySelector(`[data-oid="${oid}${schema.controllers.events.last}"]`)
   const door1 = row.querySelector(`[data-oid="${oid}${schema.controllers.door1}"]`)

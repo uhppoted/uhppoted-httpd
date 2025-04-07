@@ -62,7 +62,12 @@ export const schema = {
     door3: '.7.3',
     door4: '.7.4',
     interlock: '.8',
-    antipassback: '.9',
+    antipassback: {
+      status: '.9.0',
+      antipassback: '.9.1',
+      configured: '.9.2',
+      modified: '.9.3',
+    },
 
     regex: /^(0\.2\.[1-9][0-9]*).*$/,
   },

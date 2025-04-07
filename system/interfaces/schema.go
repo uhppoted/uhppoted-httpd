@@ -25,6 +25,7 @@ const ControllerEventsFirst = schema.ControllerEventsFirst
 const ControllerEventsLast = schema.ControllerEventsLast
 const ControllerEventsCurrent = schema.ControllerEventsCurrent
 const ControllerAntiPassback = schema.ControllerAntiPassback
+const ControllerAntiPassbackModified = schema.ControllerAntiPassbackModified
 
 const DoorDelay = schema.DoorDelay
 const DoorDelayConfigured = schema.DoorDelayConfigured

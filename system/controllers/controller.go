@@ -244,6 +244,8 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{ControllerDoor4, doors[4]})
 		list = append(list, kv{ControllerInterlock, interlock})
 		list = append(list, kv{ControllerAntiPassback, antipassback})
+		// FIXME list = append(list, kv{ControllerAntiPassback, antipassback.antipassback})
+		// FIXME list = append(list, kv{ControllerAntiPassbackConfigured, antipassback.configured})
 	}
 
 	return c.toObjects(list, a)

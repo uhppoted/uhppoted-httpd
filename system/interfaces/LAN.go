@@ -474,6 +474,16 @@ func (l *LAN) setAntiPassback(c types.IController, antipassback lib.AntiPassback
 	} else if !ok {
 		return fmt.Errorf("%v  failed to set anti-passback (%v)", deviceID, antipassback)
 	} else {
+		catalog.PutV(c.OID(), ControllerAntiPassbackModified, false)
+
+		if v, err := api.UHPPOTE.GetAntiPassback(deviceID); err != nil {
+			log.Warnf("%v", err)
+		} else {
+			catalog.PutV(c.OID(), ControllerAntiPassback, v)
+		}
+
+		log.Infof("%v  set antipassback %v", c.ID(), antipassback)
+
 		return nil
 	}
 }

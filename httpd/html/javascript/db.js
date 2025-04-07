@@ -326,7 +326,7 @@ function controllers(o) {
       v.interlock = o.value
       break
 
-    case `${base}${schema.controllers.antipassback}`:
+    case `${base}${schema.controllers.antipassback.antipassback}`:
       v.antipassback = o.value
       break
 
