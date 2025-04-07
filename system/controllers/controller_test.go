@@ -70,7 +70,7 @@ func TestControllerAsObjects(t *testing.T) {
 		{OID: "0.2.3.7.3", Value: schema.OID("0.3.9")},
 		{OID: "0.2.3.7.4", Value: schema.OID("0.3.11")},
 		{OID: "0.2.3.8", Value: "4"},
-		{OID: "0.2.3.9", Value: "0"},
+		{OID: "0.2.3.9.1", Value: "0"},
 	}
 
 	objects := c.AsObjects(nil)
@@ -164,7 +164,7 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 		{OID: "0.2.3.7.3", Value: schema.OID("0.3.9")},
 		{OID: "0.2.3.7.4", Value: schema.OID("0.3.11")},
 		{OID: "0.2.3.8", Value: "4"},
-		{OID: "0.2.3.9", Value: "0"},
+		{OID: "0.2.3.9.1", Value: "0"},
 	}
 
 	a := auth.Authorizator{

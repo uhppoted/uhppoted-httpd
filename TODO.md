@@ -4,7 +4,7 @@
       - [x] _controllers_ page
       - [x] get-antipassback
       - [x] set-antipassback
-      - [ ] status/modified
+      - [ ] status/configured/modified
       - [ ] CHANGELOG
       - [ ] README
 
