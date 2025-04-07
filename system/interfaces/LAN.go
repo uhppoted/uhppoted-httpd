@@ -462,6 +462,22 @@ func (l *LAN) setInterlock(c types.IController, interlock lib.Interlock) error {
 	}
 }
 
+func (l *LAN) setAntiPassback(c types.IController, antipassback lib.AntiPassback) error {
+	lock(c.ID())
+	defer unlock(c.ID())
+
+	api := l.api([]types.IController{c})
+	deviceID := c.ID()
+
+	if ok, err := api.UHPPOTE.SetAntiPassback(deviceID, antipassback); err != nil {
+		return err
+	} else if !ok {
+		return fmt.Errorf("%v  failed to set anti-passback (%v)", deviceID, antipassback)
+	} else {
+		return nil
+	}
+}
+
 func (l *LAN) activateKeypads(c types.IController, keypads map[uint8]bool) error {
 	lock(c.ID())
 	defer unlock(c.ID())

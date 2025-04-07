@@ -303,6 +303,21 @@ func (ii *Interfaces) SetInterlock(controller types.IController, interlock lib.I
 	}
 }
 
+func (ii *Interfaces) SetAntiPassback(controller types.IController, antipassback lib.AntiPassback) {
+	if lan, ok := ii.LAN(); ok {
+		if err := lan.setAntiPassback(controller, antipassback); err != nil {
+			log.Warnf("%v", err)
+		} else {
+			oid := controller.OID()
+
+			catalog.PutV(oid, ControllerAntiPassback, antipassback)
+			// catalog.PutV(oid, ControllerAntiPassbackModified, false)
+
+			log.Infof("%v  set antipassback %v", controller.ID(), antipassback)
+		}
+	}
+}
+
 func (ii *Interfaces) ActivateKeypads(controller types.IController, keypads map[uint8]bool) {
 	if lan, ok := ii.LAN(); ok {
 		if err := lan.activateKeypads(controller, keypads); err != nil {

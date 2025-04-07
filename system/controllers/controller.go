@@ -623,7 +623,7 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 		} else if v, err := strconv.ParseUint(value, 10, 8); err != nil {
 			return nil, err
 		} else if v != 0 && v != 1 && v != 2 && v != 3 && v != 4 {
-			return nil, fmt.Errorf("invalid anti-passback mode (%v)", v)
+			return nil, fmt.Errorf("invalid antipassback mode (%v)", v)
 		} else {
 			c.antipassback = lib.AntiPassback(v)
 			c.modified = types.TimestampNow()

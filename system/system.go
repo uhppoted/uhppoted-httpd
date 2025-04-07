@@ -427,6 +427,17 @@ func (s *system) Update(oid schema.OID, field schema.Suffix, value any) {
 			}
 		}
 
+	case oid.HasPrefix(schema.ControllersOID) && field == schema.ControllerAntiPassback:
+		for _, c := range controllers {
+			if c.OID() == oid {
+				controller := c
+				go func() {
+					s.interfaces.SetAntiPassback(controller, value.(lib.AntiPassback))
+				}()
+				return
+			}
+		}
+
 	case oid.HasPrefix(schema.DoorsOID) && field == schema.DoorControl:
 		for _, c := range controllers {
 			for _, i := range []uint8{1, 2, 3, 4} {

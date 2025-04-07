@@ -3,8 +3,8 @@
 - [ ] anti-passback (cf. https://github.com/uhppoted/uhppoted/issues/60)
       - [x] _controllers_ page
       - [x] get-antipassback
-      - [ ] set-antipassback
-      - [ ] opt-in/opt-out
+      - [x] set-antipassback
+      - [ ] modified/synchronized
       - [ ] CHANGELOG
       - [ ] README
 
