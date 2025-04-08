@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## Added
+1. Added anti-passback field to controller page.
+
 ### Updated
 1. Updated to Go 1.24.
 

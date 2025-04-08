@@ -56,6 +56,8 @@ in the _var_ folder:
         "3": "0.3.3",
         "4": "0.3.4"
       },
+      "interlock": 0,
+      "antipassback": 0,
       "timezone": "UTC",
       "created": "2022-04-02 18:32:51 UTC",
       "modified": "2022-05-19 16:18:02 UTC"

@@ -1,12 +1,12 @@
 # TODO
 
-- [ ] anti-passback (cf. https://github.com/uhppoted/uhppoted/issues/60)
+- [x] anti-passback (cf. https://github.com/uhppoted/uhppoted/issues/60)
       - [x] _controllers_ page
       - [x] get-antipassback
       - [x] set-antipassback
-      - [ ] status/configured/modified
-      - [ ] CHANGELOG
-      - [ ] README
+      - [x] status/configured/modified
+      - [x] CHANGELOG
+      - [x] README
 
 - [ ] _sass_ deprecation warnings (cf. https://github.com/uhppoted/uhppoted-httpd/issues/50)
 

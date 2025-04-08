@@ -43,6 +43,9 @@ const ControllerDoor3 = schema.ControllerDoor3
 const ControllerDoor4 = schema.ControllerDoor4
 const ControllerInterlock = schema.ControllerInterlock
 const ControllerAntiPassback = schema.ControllerAntiPassback
+const ControllerAntiPassbackStatus = schema.ControllerAntiPassbackStatus
+const ControllerAntiPassbackConfigured = schema.ControllerAntiPassbackConfigured
+const ControllerAntiPassbackModified = schema.ControllerAntiPassbackModified
 
 var lookup = map[schema.Suffix]string{
 	ControllerStatus:             "controller.status",

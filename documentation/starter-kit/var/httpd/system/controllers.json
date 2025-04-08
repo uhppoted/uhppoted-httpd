@@ -12,6 +12,8 @@
         "3": "0.3.7",
         "4": "0.3.8"
       },
+      "interlock": 0,
+      "antipassback": 0,
       "timezone": "GMT+2",
       "created": "2022-04-01 18:32:51 UTC",
       "modified": "2022-06-08 19:02:44 UTC"
@@ -28,6 +30,8 @@
         "3": "0.3.3",
         "4": "0.3.4"
       },
+      "interlock": 0,
+      "antipassback": 0,
       "timezone": "UTC",
       "created": "2022-04-02 18:32:51 UTC",
       "modified": "2022-05-19 16:18:02 UTC"

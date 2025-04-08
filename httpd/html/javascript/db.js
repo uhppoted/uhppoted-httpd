@@ -260,7 +260,7 @@ function controllers(o) {
       protocol: '',
       datetime: { datetime: '', configured: '', status: 'unknown' },
       interlock: '',
-      antipassback: '',
+      antipassback: { antipassback: '', configured: '', status: 'unknown' },
       cards: { cards: '', status: 'unknown' },
       events: { events: '', status: 'unknown' },
       doors: { 1: '', 2: '', 3: '', 4: '' },
@@ -327,7 +327,15 @@ function controllers(o) {
       break
 
     case `${base}${schema.controllers.antipassback.antipassback}`:
-      v.antipassback = o.value
+      v.antipassback.antipassback = o.value
+      break
+
+    case `${base}${schema.controllers.antipassback.configured}`:
+      v.antipassback.configured = o.value
+      break
+
+    case `${base}${schema.controllers.antipassback.status}`:
+      v.antipassback.status = o.value
       break
 
     case `${base}${schema.controllers.cards.status}`:

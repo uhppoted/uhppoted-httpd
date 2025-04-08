@@ -223,12 +223,10 @@ function updateFromDB(oid, record) {
   update(name, record.name)
   update(deviceID, record.deviceID)
   update(address, record.address.address, record.address.status)
-  update(protocol, record.protocol === 'tcp' ? 'tcp' : 'udp', null, (v) => {
-    return v === 'tcp'
-  })
+  update(protocol, record.protocol === 'tcp' ? 'tcp' : 'udp', null, (v) => v === 'tcp')
   update(datetime, dt, record.datetime.status)
   update(interlock, record.interlock)
-  update(antipassback, record.antipassback)
+  update(antipassback, record.antipassback.antipassback, record.antipassback.status)
   update(cards, record.cards.cards, record.cards.status)
   update(events, record.events.last, record.events.status)
   update(door1, record.doors[1])
@@ -238,6 +236,18 @@ function updateFromDB(oid, record) {
 
   address.dataset.original = record.address.configured
   datetime.dataset.original = record.datetime.configured
+  antipassback.dataset.original = record.antipassback.configured
+
+  // ... set antipassback tooltip
+  const tooltips = {
+    0: 'configured DISABLED',
+    1: 'configured (1:2);(3:4)',
+    2: 'configured (1,3):(2,4)',
+    3: 'configured 1:(2,3)',
+    4: 'configured 1:(2,3,4)',
+  }
+
+  antipassback.title = record.antipassback.status === 'error' ? (tooltips[record.antipassback.configured] ?? '') : ''
 
   return row
 }

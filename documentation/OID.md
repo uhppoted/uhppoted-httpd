@@ -59,6 +59,12 @@
 |    |      |        |- 0.2.1.7.2: _door2_                                   #       door 2 OID
 |    |      |        |- 0.2.1.7.3: _door3_                                   #       door 3 OID
 |    |      |        |- 0.2.1.7.4: _door4_                                   #       door 4 OID
+|    |      |- 0.2.1.8:  _interlock_                                         #    doors interlock mode
+|    |      |- 0.2.1.9:  _antipassback_                                      #    card anti-passback mode
+|    |      |        |- 0.2.1.9.0: _status_                                  #       anti-passback status (ok, uncertain, error)
+|    |      |        |- 0.2.1.9.1: _antipassback_                            #       current anti-passback mode
+|    |      |        |- 0.2.1.9.2: _configured_                              #       configured anti-passback mode
+|    |      |        |- 0.2.1.9.3: _modified_                                #       anti-passback modified
 |    |- ...
 |
 |- 0.3                                                                       # doors

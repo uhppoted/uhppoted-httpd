@@ -55,8 +55,11 @@ type cached struct {
 	touched      time.Time
 	address      lib.ControllerAddr
 	protocol     string
-	antipassback lib.AntiPassback
-	datetime     struct {
+	antipassback struct {
+		antipassback lib.AntiPassback
+		modified     bool
+	}
+	datetime struct {
 		datetime lib.DateTime
 		modified bool
 	}
@@ -130,7 +133,11 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		events := einfo{}
 		doors := map[uint8]schema.OID{1: "", 2: "", 3: "", 4: ""}
 		interlock := ""
-		antipassback := ""
+		antipassback := struct {
+			antipassback string
+			configured   string
+			status       types.Status
+		}{}
 
 		if c.DeviceID != 0 {
 			deviceID = fmt.Sprintf("%v", c.DeviceID)
@@ -212,7 +219,20 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 				events.current = cached.events.current
 
 				// ... get anti-passback field from cached value
-				antipassback = fmt.Sprintf("%v", uint8(cached.antipassback))
+				antipassback.antipassback = fmt.Sprintf("%v", uint8(cached.antipassback.antipassback))
+				antipassback.configured = fmt.Sprintf("%v", uint8(c.antipassback))
+
+				switch {
+				case cached.antipassback.modified:
+					antipassback.status = types.StatusUncertain
+
+				case antipassback.antipassback == antipassback.configured:
+					antipassback.status = types.StatusOk
+
+				default:
+					antipassback.status = types.StatusError
+				}
+
 			}
 		}
 
@@ -229,9 +249,11 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{ControllerEndpointAddress, address.address})
 		list = append(list, kv{ControllerEndpointProtocol, c.protocol})
 		list = append(list, kv{ControllerEndpointConfigured, address.configured})
+
 		list = append(list, kv{ControllerDateTimeStatus, datetime.status})
 		list = append(list, kv{ControllerDateTimeCurrent, datetime.datetime})
 		list = append(list, kv{ControllerDateTimeConfigured, datetime.configured})
+
 		list = append(list, kv{ControllerCardsStatus, cards.status})
 		list = append(list, kv{ControllerCardsCount, cards.cards})
 		list = append(list, kv{ControllerEventsStatus, events.status})
@@ -243,9 +265,10 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 		list = append(list, kv{ControllerDoor3, doors[3]})
 		list = append(list, kv{ControllerDoor4, doors[4]})
 		list = append(list, kv{ControllerInterlock, interlock})
-		list = append(list, kv{ControllerAntiPassback, antipassback})
-		// FIXME list = append(list, kv{ControllerAntiPassback, antipassback.antipassback})
-		// FIXME list = append(list, kv{ControllerAntiPassbackConfigured, antipassback.configured})
+
+		list = append(list, kv{ControllerAntiPassbackStatus, antipassback.status})
+		list = append(list, kv{ControllerAntiPassback, antipassback.antipassback})
+		list = append(list, kv{ControllerAntiPassbackConfigured, antipassback.configured})
 	}
 
 	return c.toObjects(list, a)
@@ -430,7 +453,7 @@ func (c *Controller) get() *cached {
 
 	if v := catalog.GetV(c.OID, ControllerAntiPassback); v != nil {
 		if antipassback, ok := v.(lib.AntiPassback); ok {
-			e.antipassback = antipassback
+			e.antipassback.antipassback = antipassback
 		}
 	}
 
@@ -630,7 +653,9 @@ func (c *Controller) set(a *auth.Authorizator, oid schema.OID, value string, dbc
 			c.antipassback = lib.AntiPassback(v)
 			c.modified = types.TimestampNow()
 
-			list = append(list, kv{ControllerAntiPassback, uint8(c.antipassback)})
+			list = append(list, kv{ControllerAntiPassbackStatus, types.StatusUncertain})
+			list = append(list, kv{ControllerAntiPassbackConfigured, uint8(c.antipassback)})
+			list = append(list, kv{ControllerAntiPassbackModified, true})
 
 			dbc.Updated(c.OID, ControllerAntiPassback, c.antipassback)
 			c.updated(dbc, uid, "antipassback", clone.antipassback, c.antipassback)
