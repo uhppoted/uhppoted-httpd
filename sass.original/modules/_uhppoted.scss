@@ -43,31 +43,6 @@ nav {
   border-bottom-left-radius: 4px;
 }
 
-nav ul {
-  margin-top: 8px;
-  margin-left: 16px;
-  list-style-type: none;
-}
-
-nav ul li {
-  color: $nav-text-colour;
-  font-family: Sans-Serif;
-  font-size: 0.7em;
-  font-weight: lighter;
-  padding-top: 0.2em;
-  padding-bottom: 0.2em;
-}
-
-nav ul li a {
-  color: $nav-text-colour;
-  text-decoration: none;
-}
-
-nav ul li.selected {
-  font-size: 0.74em;
-  font-weight: bold;
-}
-
 main {
   grid-area: content;
 

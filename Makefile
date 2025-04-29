@@ -54,10 +54,8 @@ format:
 
 build: format
 	mkdir -p httpd/html/images/default
-	sass --no-source-map sass/themes/light:httpd/html/css/default
-	sass --no-source-map sass/themes/light:httpd/html/css/light
-	sass --no-source-map sass/themes/dark:httpd/html/css/dark
 	cp httpd/html/images/light/* httpd/html/images/default
+	npx sass sass:httpd/html/css --no-source-map --style=expanded
 	npx eslint --fix httpd/html/javascript/*.js
 	go build -trimpath -o bin/ ./...
 
@@ -132,17 +130,22 @@ publish: release
 debug: build
 	$(CMD) --debug --console
 
-delve: format
-	go build -trimpath -o bin ./...
-#	dlv exec ./bin/uhppoted-httpd -- --debug --console
-	dlv test github.com/uhppoted/uhppoted-httpd/system/interfaces -- run TestLANSet
+sass:
+	# sass --watch sass:httpd/html/css --no-source-map --style=expanded
+	# npx sass sass:httpd/html/css --no-source-map --style=expanded
+	npx sass --watch sass:httpd/html/css --no-source-map  --style=expanded
 
 # NTS: 1. sass --watch doesn't seem to consistently pick up changes in themed partials
 #      2. For development only - doesn't build the default CSS because the duplication 
 #         of light and default creates a naming conflict if run in the same command
 #         i.e. find sass -name "*.scss" | entr sass --no-source-map sass/stylesheets:html/css/default sass/themes/light:html/css/light sass/themes/dark:html/css/dark
-sass:
-	find sass -name "*.scss" | entr sass --no-source-map sass/themes/light:httpd/html/css/light sass/themes/dark:httpd/html/css/dark
+# sass:
+# 	find sass -name "*.scss" | entr sass --no-source-map sass/themes/light:httpd/html/css/light sass/themes/dark:httpd/html/css/dark
+
+delve: format
+	go build -trimpath -o bin ./...
+#	dlv exec ./bin/uhppoted-httpd -- --debug --console
+	dlv test github.com/uhppoted/uhppoted-httpd/system/interfaces -- run TestLANSet
 
 godoc:
 	godoc -http=:80	-index_interval=60s

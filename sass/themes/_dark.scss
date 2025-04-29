@@ -1,0 +1,8 @@
+@use '../palettes/solarize' as colours;
+
+$base03: colours.$base03;
+
+[data-theme="dark"] {
+  --background-colour: #{$base03};
+}
+

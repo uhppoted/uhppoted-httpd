@@ -2,7 +2,8 @@
 
 - [x] anti-passback (cf. https://github.com/uhppoted/uhppoted/issues/60)
 - [ ] _sass_ deprecation warnings (cf. https://github.com/uhppoted/uhppoted-httpd/issues/50)
-      - [ ] rework sass
+      - [ ] themes
+      - [ ] package original css as a theme
       - [ ] CHANGELOG
       - [ ] README
 

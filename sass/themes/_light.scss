@@ -1,0 +1,7 @@
+@use '../palettes/solarize' as colours;
+
+$base3: colours.$base3;
+
+[data-theme="light"] {
+  --background-colour: #{$base3};
+}

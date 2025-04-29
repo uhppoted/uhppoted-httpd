@@ -1,0 +1,7 @@
+@use '../palettes/solarize' as colours;
+
+$base3: colours.$base3;
+
+:root {
+  --background-colour: #{$base3};
+}
