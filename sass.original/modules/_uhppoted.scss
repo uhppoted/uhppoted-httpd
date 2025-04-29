@@ -1,0 +1,456 @@
+* { 
+  background: transparent;
+  margin: 0; 
+  padding: 0; 
+}
+
+html { 
+  background: $content-background;
+  height: 100%;
+}
+
+body { 
+  background: $content-background;
+  height: 100%;
+  padding: 0px;
+}
+
+#content {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 120px 1fr 60px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header header"
+    "left  content right"
+    "footer footer footer";
+}
+
+header {
+  grid-area: header;
+  display: flex;
+  height: auto;
+  overflow: hidden;
+  padding-right: 128px;
+}
+
+nav {
+  grid-area: left;
+  background: $nav-background;
+  margin: 8px 8px 8px 8px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+nav ul {
+  margin-top: 8px;
+  margin-left: 16px;
+  list-style-type: none;
+}
+
+nav ul li {
+  color: $nav-text-colour;
+  font-family: Sans-Serif;
+  font-size: 0.7em;
+  font-weight: lighter;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+
+nav ul li a {
+  color: $nav-text-colour;
+  text-decoration: none;
+}
+
+nav ul li.selected {
+  font-size: 0.74em;
+  font-weight: bold;
+}
+
+main {
+  grid-area: content;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: start;
+  align-items: start;
+  overflow: hidden;
+  margin: 8px 0px 8px 0px;
+}
+
+#container {
+  grid-row: 1;
+  grid-column: 1;
+  transition-property: opacity;
+  transition-duration: 250ms;
+  overflow-y: auto;
+}
+
+#container.loading {
+  opacity: 0.5;
+}
+
+footer {
+  grid-area: footer;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+  height: auto;
+  overflow: hidden;
+  text-align: center;
+  font-size: 0.8em;
+  background: $footer-background;
+  color: $footer-text;
+}
+
+#logo {
+  width: 88px;
+  height: 88px;
+  padding-left: 12px;
+  padding-top: 12px;
+  padding-right: 12px;
+}
+
+#disconnected {
+  display: block;
+  text-align: center;
+  color: $warning-colour;
+  font-size: 0.8em;
+  font-family: sans-serif;
+  font-variant: small-caps;
+  visibility: hidden;
+}
+
+#disconnected.visible {
+  visibility: visible;
+}
+
+#dashboard {
+  flex-grow: 1;
+}
+
+#windmill {
+  align-self: center;
+  display: none;
+  visibility: hidden;
+  margin-top: 8px;
+  margin-right: 32px;
+}
+
+#windmill:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border-top: 2px solid $windmill;
+  border-right: 2px solid transparent;
+  animation: windmill 0.6s linear infinite;
+}
+
+#windmill[data-count] {
+  display: block;
+  visibility: visible;
+}
+
+@keyframes windmill {
+  to {transform: rotate(360deg);}
+}
+
+#loading {
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: center;
+  align-self: start;
+
+  display: none;
+  visibility: hidden;
+  margin-top: 120px;
+  margin-bottom: 0px;
+  margin-left: -120px;
+  margin-right: 0px;
+  z-index: 5;
+}
+
+#loading:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  margin: auto;
+  width: 120px;
+  height: 120px;
+  margin-top: 12px;
+  border-radius: 50%;
+  border-top: 5px solid $windmill;
+  border-right: 5px solid transparent;
+  animation: windmill 0.9s linear infinite;
+}
+
+#loading.visible {
+  display: block;
+  visibility: visible;
+}
+
+@keyframes loading {
+  to {transform: rotate(360deg);}
+}
+
+#user {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: top; 
+  z-index: 3;  
+}
+
+#avatar {
+  background: $user-avatar-background;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;    
+  align-items: center;
+  padding-right: 8px;
+  cursor: pointer;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  box-shadow: $user-avatar-shadow;
+}
+
+#avatar p {
+  font-size: 0.9em;  
+  padding: 0px 8px 0px 12px;
+  color: $user-avatar-text;
+  user-select: none;
+}
+
+#avatar img {
+  width: 32px;
+  height: 32px;
+  padding: 1px 0px 1px 0px;
+}
+
+#avatar img svg {
+   color: red;
+}
+
+#user .menu {
+  background-color: $user-menu-background;
+  display: none;
+  width: 100%;
+  margin-top: 1px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  z-index: 1;
+  font-size: 1em;  
+  border: none;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  box-shadow: $user-menu-shadow;
+}
+
+.menu a {
+  display: block;
+  padding: 2px 8px 2px 8px;
+  color: $user-menu-item;
+  font-size: 0.9em;  
+  font-family: sans-serif;
+  font-variant: small-caps;
+  font-variant-caps: all-small-caps;
+  text-decoration: none;
+  text-align: left;
+}
+
+.menu a:hover {
+  color: $user-menu-item-highlight;
+  background: $user-menu-item-highlight-background;
+}
+
+#controls {  
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-bottom:2px;
+
+  #message {
+    flex-grow: 1;
+    margin-left: 0px;
+    margin-right: 6px;
+    visibility: hidden;
+  }
+
+  #message.visible {
+    visibility: visible;
+  }
+}
+
+#controls img.button {  
+  width: 16px;
+  height: 16px;
+  padding: 4px 4px 4px 4px;
+  border: solid 1px $content-controls-border;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#controls #commitall {  
+  display: none;
+  margin-right: 6px;
+  filter: $content-svg-filter-commit;
+}
+
+#controls #rollbackall {  
+  display: none;
+  filter: $content-svg-filter-rollback;
+  margin-right: 6px;
+}
+
+#controls #refresh {  
+  margin-left: 6px;
+}
+
+#offline {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;  
+  padding-top: 96px;
+}
+
+#offline > div {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;  
+  padding: 16px 32px 16px 32px;
+  border-radius: 4px;
+  border: solid 1px $offline-border;
+}
+
+#offline p {
+  font-family: Sans-Serif;
+  font-size: 0.75em;
+  color: $offline-colour;
+  margin-bottom: 16px;
+}
+
+#offline a {
+  font-family: Sans-Serif;
+  font-size: 0.6em;
+  color: $link-colour;
+  text-decoration: none;
+}
+
+#offline a:hover,visited {
+  color: $link-colour;
+  text-decoration: none;
+}
+
+#offline div a {
+  font-family: Sans-Serif;
+  font-size: 0.7em;
+  color: $link-colour;
+}
+
+#offline + div > p {
+  font-family: Sans-Serif;
+  font-size: 0.75em;
+  font-weight: normal;
+  text-align: center;
+  color: $offline-colour;
+  margin-top: 4px;
+}
+
+.message { 
+  background: $message-background;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 4px;
+  font-size: 0.9em;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-radius: 4px;
+  visibility: hidden;
+
+  .visible { 
+    visibility: visible;
+  }
+
+  .warning { 
+    color: $warning-colour;;
+    text-align: center;
+    text-overflow: ellipsis;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-family: sans-serif;
+    border: none;
+    outline: none;
+  }
+}
+
+.dismiss {  
+  flex: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: $warning-dismiss-colour;
+}
+
+.windmill {
+  height: fit-content;
+  display: none;
+}
+
+.windmill.visible {
+  display: block;
+}
+
+.windmill progress {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  animation: fill-bar 3s alternate infinite;
+}
+
+.windmill progress::-webkit-progress-bar {
+  background: #405e6d;
+  border-radius: 3px;
+}
+
+.windmill progress::-webkit-progress-value {
+  background: #405e6d;
+  border-radius: 3px;
+}
+
+.windmill progress::-moz-progress-bar {
+  background: #405e6d;
+  border-radius: 3px;
+}
+
+@keyframes fill-bar {
+  from {
+    margin-left: 75%;
+    width: 25%;
+  }
+  to {
+    margin-left: 0%;
+    width: 25%;
+  }
+}
+

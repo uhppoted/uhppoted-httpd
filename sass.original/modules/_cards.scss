@@ -1,0 +1,189 @@
+#container {
+  display: flex; 
+  flex-direction:column; 
+  width: fit-content;
+  height:100%;
+  max-width:100%; 
+}
+
+#container.loading {
+  th.name {
+    min-width: 174px;
+  }
+
+  th.padding {
+    min-width: 500px;  
+  }
+}
+
+th.name {
+  min-width: 144px;
+  border-bottom: 1px;
+}
+
+th.number {
+  min-width: 82px;
+  white-space: nowrap;
+}
+
+th.from {
+  min-width: 108px;
+}
+
+th.to {
+  min-width: 108px;
+}
+
+th.group {
+  white-space: nowrap;
+}
+
+td input.name {
+  width: 120px;
+}
+
+tr[data-status="incomplete"] td input.name {
+  color: $content-table-item-incomplete;
+  font-style: italic;
+}
+
+td input.number {
+  width: 72px;
+}
+
+tr[data-status="incomplete"] td input.number {
+  color: $content-table-item-incomplete;
+  font-style: italic;
+}
+
+input.from {
+  font: 400 0.9em Arial;
+  padding-left: 6px;
+}
+
+input.from.defval {
+  font-weight: bold;
+  position: relative;
+
+   &::before {
+      content: "*";
+      position: absolute;
+      left: 0px;
+      top: 50%;
+      transform: translateY(-50%);   
+  }
+}
+
+tr[data-status="incomplete"] td input.from {
+  color: $content-table-item-incomplete;
+  font-style: italic;
+}
+
+tr[data-status="incomplete"] td input.from.apple:invalid {
+  color: color-mix(in srgb, $content-table-item-incomplete 33.3%, transparent);
+}
+
+input.from::-webkit-datetime-edit { 
+  max-width: 80px;
+}
+
+input.from::-webkit-calendar-picker-indicator { 
+  margin-left: 0px;
+}
+
+input.to {
+  font: 400 0.9em Arial;
+  padding-left: 6px;
+}
+
+input.to.defval {
+  font-weight: bold;
+  position: relative;
+
+   &::before {
+      content: "*";
+      position: absolute;
+      left: 0px;
+      top: 50%;
+      transform: translateY(-50%);   
+  }
+}
+
+tr[data-status="incomplete"] td input.to {
+  color: $content-table-item-incomplete;
+  font-style: italic;
+}
+
+tr[data-status="incomplete"] td input.to.apple:invalid {
+  color: color-mix(in srgb, $content-table-item-incomplete 33.3%, transparent);
+}
+
+input.to::-webkit-datetime-edit { 
+  max-width: 80px;
+}
+
+input.to::-webkit-calendar-picker-indicator { 
+  margin-left: 0px;
+}
+
+td label.group {
+  cursor: pointer;  
+}
+
+td label.group input[type="checkbox"] {
+  display: none;
+}
+
+td label.group img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  margin: auto;
+}
+
+td label.group img.yes {
+  display: none;
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%)
+}
+
+td label.group img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+
+td label.group input[type="checkbox"]:checked ~ img.yes {
+  display: block;
+}
+
+td label.group input[type="checkbox"]:checked ~ img.no {
+  display: none;
+}
+
+tr[data-status="incomplete"] td label.group img.yes {
+  filter: invert(85%) sepia(0%) saturate(269%) hue-rotate(148deg) brightness(93%) contrast(88%);
+}
+
+tr[data-status="incomplete"] td label.group img.no {
+  filter: invert(85%) sepia(0%) saturate(269%) hue-rotate(148deg) brightness(93%) contrast(88%);
+}
+
+// Safari fixes
+input.apple {
+  font-size: 13.333px;
+}
+
+input.number.apple {
+  font-size: 12px;
+}
+
+input.from.apple {
+  font-size: 12px;
+}
+
+input.to.apple {
+  font-size: 12px;
+}
+
+input.PIN.apple {
+  font-size: 12px;
+}

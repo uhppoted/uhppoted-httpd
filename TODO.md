@@ -1,14 +1,11 @@
 # TODO
 
 - [x] anti-passback (cf. https://github.com/uhppoted/uhppoted/issues/60)
-      - [x] _controllers_ page
-      - [x] get-antipassback
-      - [x] set-antipassback
-      - [x] status/configured/modified
-      - [x] CHANGELOG
-      - [x] README
-
 - [ ] _sass_ deprecation warnings (cf. https://github.com/uhppoted/uhppoted-httpd/issues/50)
+      - [ ] rework sass
+      - [ ] CHANGELOG
+      - [ ] README
+
 
 - [ ] doors: https://developer.chrome.com/blog/a-customizable-select
 
