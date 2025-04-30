@@ -18,11 +18,11 @@ html.login {
 
   #login {
     display: block;
-    // FIXME border: $fieldset-border;
+    border: var(--fieldset-border);
     margin: 80px 0px 4px 0px;
     padding: 8px;
     border-radius: 4px;
-    // FIXME color: $fieldset-text;
+    color: var(--fieldset-text);
 
     form {
       display: flex;
@@ -48,7 +48,7 @@ html.login {
     margin-bottom: 3px;
     padding-top: 6px;
     padding-bottom: 6px;
-    // FIXME border: $field-border;
+    border: var(--field-border);
   }
 
   .field > input {
@@ -62,16 +62,16 @@ html.login {
     border: none;
     border-radius: 4px;
     outline: none;
-    // FIXME color: $fieldset-text;
+    color: var(--fieldset-text);
   }
 
   .field > input:-webkit-autofill {
-    // FIXME -webkit-box-shadow: 0 0 0px 1000px $field-input-background inset;
+    -webkit-box-shadow: 0 0 0px 1000px var(--field-input-background) inset;
   }
 
   .field > input::placeholder {
     font-style: italic;
-    // FIXME color: $fieldset-text;
+    color: var(--fieldset-text);
   }
 
   .field > img {
@@ -90,8 +90,8 @@ html.login {
     padding: 4px 16px 4px 16px;
     border-radius: 4px;
     outline: none;
-    // FIXME color: $fieldset-text;
-    // FIXME border: $fieldset-button-border;
+    color: var(--fieldset-text);
+    border: var(--fieldset-button-border);
   }
 
   #message { 

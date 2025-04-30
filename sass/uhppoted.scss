@@ -53,6 +53,22 @@ header {
   }
 }
 
+footer {
+  grid-area: footer;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 8px;
+  padding-right: 8px;
+  height: auto;
+  overflow: hidden;
+  text-align: center;
+  font-size: 0.8em;
+  background: var(--footer-background-colour);
+  color: var(--footer-text-colour);
+}
+
 main {
   grid-area: content;
 
@@ -110,4 +126,35 @@ nav {
   }
 }
 */
+
+.message { 
+  background: var(--message-background-colour);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 4px;
+  font-size: 0.9em;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-radius: 4px;
+  visibility: hidden;
+
+  .visible { 
+    visibility: visible;
+  }
+
+  .warning { 
+    color: var(--warning-colour);
+    text-align: center;
+    text-overflow: ellipsis;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-family: sans-serif;
+    border: none;
+    outline: none;
+  }
+}
+
 

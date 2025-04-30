@@ -1,8 +1,25 @@
 @use '../palettes/solarize' as colours;
 
 $base03: colours.$base03;
+$base02: colours.$base02;
+$base01: colours.$base01;
+$base00: colours.$base00;
+$base0: colours.$base0;
+$base3: colours.$base3;
+$blue: colours.$blue;
 
 [data-theme="dark"] {
   --background-colour: #{$base03};
-}
+  --footer-background-colour: #{$base01};
+  --footer-text-colour: #{$base03};
 
+  --fieldset-border: #{$base01};
+  --fieldset-text: #{$base0};
+  --fieldset-button-border: 2px solid #{$blue};
+
+  --field-border: 1px solid #{$base00};
+  --field-input-background: #{$base3};
+
+  --message-background-colour: #{$base02};
+  --warning-colour: #($base0);
+}
