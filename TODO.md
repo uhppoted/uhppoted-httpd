@@ -5,6 +5,9 @@
       - [x] themes
       - [x] github workflow
       - [x] login
+      - [ ] overview
+      - [ ] online/disconnected
+      - [ ] windmill
       - [ ] CHANGELOG
       - [ ] README
       - (?) package original css as a theme

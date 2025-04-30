@@ -1,17 +1,42 @@
 @use '../palettes/solarize' as colours;
+@use 'sass:color';
 
 $base03: colours.$base03;
 $base02: colours.$base02;
 $base01: colours.$base01;
 $base00: colours.$base00;
 $base0: colours.$base0;
+$base1: colours.$base1;
+$base2: colours.$base2;
 $base3: colours.$base3;
+$red: colours.$red;
 $blue: colours.$blue;
 
 [data-theme="dark"] {
   --background-colour: #{$base03};
   --footer-background-colour: #{$base01};
   --footer-text-colour: #{$base03};
+
+  --nav-background: #{color.adjust($base02, $lightness: -5%)};
+  --nav-text-colour: #{$blue};
+
+  --offline-border: solid 1px #{$red};
+  --offline-colour: #{$base0};
+  --link-colour: #{$blue};
+
+  --user-avatar-background: #{color.adjust($base02, $lightness: 3%)};
+  --user-avatar-shadow: 3px 3px 3px #{color.adjust($base02, $lightness: -10%)};
+  --user-avatar-text-colour: #{$base01};
+
+  --user-menu-background: #{color.adjust($base02, $lightness: 1%)};  
+  --user-menu-shadow: 3px 3px 3px #{color.adjust($base02, $lightness: -10%)};
+  --user-menu-item-colour: #{$base00};
+  --user-menu-item-highlight-colour: #{$base2};
+  --user-menu-item-highlight-background: #{$base1};
+
+  --content-controls-border: solid 1px #{color.adjust($blue, $lightness: -25%)};
+  --content-svg-filter-commit: none;
+  --content-svg-filter-rollback: none;
 
   --fieldset-border: #{$base01};
   --fieldset-text: #{$base0};

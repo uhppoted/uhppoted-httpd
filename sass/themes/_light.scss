@@ -1,15 +1,41 @@
 @use '../palettes/solarize' as colours;
+@use 'sass:color';
 
 $base03: colours.$base03;
+$base01: colours.$base01;
 $base00: colours.$base00;
+$base0: colours.$base0;
+$base1: colours.$base1;
 $base2: colours.$base2;
 $base3: colours.$base3;
 $red: colours.$red;
+$blue: colours.$blue;
 
 [data-theme="light"] {
   --background-colour: #{$base3};
   --footer-background-colour: #{$base2};
   --footer-text-colour: #{$base03};
+
+  --nav-background: #{color.adjust($base2, $lightness: -5%)};
+  --nav-text-colour: #{$blue};
+
+  --offline-border: solid 1px #{$red};
+  --offline-colour: #{$base0};
+  --link-colour: #{$blue};
+
+  --user-avatar-background: #{$base2};
+  --user-avatar-shadow: 3px 3px 3px #d8d8d8;
+  --user-avatar-text-colour: #{$base1};
+
+  --user-menu-background: #{$base2};
+  --user-menu-shadow: 3px 3px 3px #d8d8d8;
+  --user-menu-item-colour: #{$base01};
+  --user-menu-item-highlight-colour: #{$base2};
+  --user-menu-item-highlight-background: #{$base1};
+
+  --content-controls-border: solid 1px #{$blue};
+  --content-svg-filter-commit: invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
+  --content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
 
   --fieldset-border: 1px solid silver;
   --fieldset-text: #{$base03};
