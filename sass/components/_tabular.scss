@@ -1,0 +1,229 @@
+div.tabular {
+  overflow: auto;
+  border: var(--content-table-border);
+  border-bottom-right-radius: 4px;
+}  
+
+div.tabular::-webkit-scrollbar {
+  background: transparent;
+  border-left: var(--content-table-border-left);
+}
+
+div.tabular::-webkit-scrollbar-track {
+  background: transparent;
+  border-left: var(--content-table-border-left);
+}
+
+div.tabular::-webkit-scrollbar-thumb {
+  background: var(--content-table-thumb-background);
+  border: var(--content-table-thumb-border);
+  border-radius: 10px;
+}
+
+div.tabular::-webkit-scrollbar-corner {
+  background: transparent;
+  border: none;
+}
+
+div.tabular table  {
+  background: var(--content-table-background);
+  color: var(--content-table-text-colour);
+  border: none;
+  border-collapse: collapse;
+
+  thead {
+    position: sticky; 
+    top: 0px; 
+    z-index: 3;
+
+    th.topleft {
+      position: sticky; 
+      top: 0px; 
+      left: 0px;
+      z-index: 3;  
+    }
+
+    th.rowheader {
+      position: sticky;
+      left: 0px;
+    }
+
+    tr th {
+      background: var(--content-table-background-header);
+      color: var(--content-table-text-colour);
+      padding: 0.5rem;
+      font-size: 0.9em;
+      font-weight: 500;
+      font-style: normal;
+      text-align: center;
+    }
+  }
+
+  tbody {
+    // NTS: moved/copied from common
+    tr {
+      td input {
+        color: var(--content-table-item-normal-colour);
+        border: 1px solid transparent;
+        border-radius: 3px;
+        padding: 2px 4px 2px 4px;
+        outline: none;
+        text-overflow: ellipsis;
+        -moz-appearance:textfield;
+      }
+
+      td:last-child { 
+        width:100% 
+      } 
+    }
+  }
+}
+
+div.tabular table tbody tr:nth-child(odd) {
+  background: var(--content-table-background-odd);
+}
+
+div.tabular table tbody tr:nth-child(even) {
+  background: var(--content-table-background-even);
+}
+
+div.tabular table tbody tr.modified {
+  background: var(--content-table-row-modified);
+}
+
+div.tabular table tbody tr.new {
+  background: var(--content-table-row-new);
+}
+
+div.tabular table tbody td {
+  position: relative; 
+  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+  text-align: left;
+  font-size: 0.9em;
+  font-weight: normal;
+  font-style: normal;
+}
+
+div.tabular table tbody td.rowheader {
+  position: sticky;
+  left: 0px;
+  z-index: 2;
+}
+
+div.tabular table tbody tr[data-status="error"] {
+  // FIXME background: $content-table-row-error;
+}
+
+div.tabular table tbody tr:nth-child(odd) td.rowheader {
+  // FIXME background: darken($content-table-background-odd,5%);
+}
+
+div.tabular table tbody tr:nth-child(even) td.rowheader {
+  // FIXME background: darken($content-table-background-even,5%);
+}
+
+div.tabular table tbody tr.modified td.rowheader {
+  background: var(--content-table-row-modified);
+}
+
+div.tabular table tbody tr[data-status="error"] td.rowheader {
+  // FIXME background: $content-table-row-error;
+}
+
+div.tabular table tbody tr.new td.rowheader {
+  background: var(--content-table-row-new);
+}
+
+div.tabular table tbody tr td input {
+}
+
+div.tabular table tbody tr td input:read-only {
+  outline: none;
+  border: none;
+}
+
+div.tabular table tbody tr td.modified::before {
+  // FIXME content: $content-table-flag;
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  // FIXME filter: $content-table-flag-modified;
+}
+
+div.tabular table tbody tr td.conflict::before {
+  // FIXME content: $content-table-flag;
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  // FIXME filter: $content-table-flag-conflict;
+}
+
+div.tabular table tbody tr td.pending::before {
+  // FIXME content: $content-table-flag;
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  // FIXME filter: $content-table-flag-pending;
+}
+
+div.tabular table td.conflict input {
+  // FIXME background-color: $content-table-item-conflict;
+}
+
+div.tabular table td span.control {
+  padding: 0px 0px 0px 0px;
+  font-size: 1.5rem;  
+  font-weight: bold;
+  visibility: hidden;
+  cursor: pointer;
+}
+
+div.tabular table td span.control img {
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-top: 8px;
+  margin-bottom: 0px;
+  border: solid 1px #268bd2;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+div.tabular table td span.commit {
+  // FIXME color: $content-table-commit;  
+}
+
+div.tabular table td span.commit img {
+  width: 12px;
+  padding: 2px;
+  filter: invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
+}
+
+div.tabular table td span.rollback {
+  // FIXME color: $content-table-rollback;  
+}
+
+div.tabular table td span.rollback img {
+  width: 14px;
+  height: 14px;
+  padding: 1px;
+  filter: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
+}
+
+div.tabular table tbody tr.modified:not(.newish) td span.commit {
+  visibility: visible;
+}
+
+div.tabular table tbody tr.modified td span.rollback {
+  visibility: visible;
+}
+
+div.tabular table tbody tr.new td span.rollback {
+  visibility: visible;
+}
+

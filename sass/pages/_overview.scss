@@ -1,2 +1,262 @@
 html.overview {
+  #container {
+    width: fit-content;
+    height:100%;
+    max-width:100%; 
+    min-width: 90%;
+
+    display: flex; 
+    flex-direction:column; 
+  }
+
+  div#controllers {
+    border-bottom-right-radius: 0px;
+
+    th.name {
+      min-width: 90px;
+      border-bottom: 1px;
+    }
+
+    th.ID {
+      min-width: 88px;
+    }
+
+    th.datetime {
+      min-width: 176px;
+    }
+
+    th.cards {
+      text-align: center; 
+    }
+
+    th.events {
+      text-align: center; 
+    }
+
+    th.doors {
+    }
+
+    tr.controller td {
+    }
+
+    tr.controller td input.name {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      width: 132px;
+      pointer-events: none;
+    }
+
+    tr.controller td input.ID {
+      width: 88px;
+      pointer-events: none;
+      -moz-appearance:textfield;
+    }
+
+    tr.controller td input.datetime {
+      min-width: 176px;
+      pointer-events: none;
+    }
+
+    tr.controller td input.cards {
+      width: 72px;
+      text-align: center; 
+      pointer-events: none;
+    }
+
+    tr.controller td input.events {
+      width: 72px;
+      text-align: center; 
+      pointer-events: none;
+    }
+
+    tr.controller td input.door1,.door2,.door3,.door4 {
+      width: 72px;
+      pointer-events: none;
+    }
+
+    // Safari fixes
+    input.apple {
+      font-size: 13.333px;
+    }
+
+    input.ID.apple {
+      font-size: 12px;
+    }
+
+    input.datetime.apple {
+      font-size: 12.5px;
+    }
+  }
+
+  div#events {
+    margin-top: 16px;
+    border-bottom-right-radius: 0px;
+
+    th.timestamp {
+      border-bottom: 1px;
+      white-space: nowrap;
+      min-width: 140px; 
+    }
+
+    th.deviceID {
+      min-width: 80px;
+    }
+
+    th.eventType {
+      min-width: 56px;
+    }
+
+    th.direction {
+      min-width: 16px;
+    }
+
+    th.door {
+      min-width: 104px;
+    }
+
+    th.cardno {
+      min-width: 56px;
+    }
+
+    th.card {
+      min-width: 120px;
+    }
+
+    th.access {
+      min-width: 60px;
+    }
+
+    th.reason {
+      min-width: 100px;
+    }
+
+    td input {
+      height: 18px;
+      font-size: 1.2em;
+      font-variant: small-caps;
+      font-variant-caps: all-small-caps;
+    }
+
+    // Safari fixes
+    td input.apple {
+      font-size: 14px;
+    }
+
+    td input.timestamp {
+      width: 140px;
+    }
+
+    td input.device {
+      width: 72px;
+    }
+
+    td input.eventType {
+      width: 56px;
+    }
+
+    td input.door {
+      width: 96px;
+    }
+
+    td input.cardno {
+      width: 72px;
+    }
+
+    td input.card {
+      width: 120px;
+    }
+
+    td input.access {
+      width: 72px;
+    }
+
+    td input.reason {
+    }
+
+    @-moz-document url-prefix("") {
+      td input {
+        font-family: "Arial", san-serif;
+        font-size: 1em;
+      }
+  
+      td input.timestamp {
+        font-size: 0.88em;
+      }
+  
+      td input.deviceID {
+        font-size: 0.88em;
+      }
+  
+      td input.doorid {
+        font-size: 0.88em;
+      }
+  
+      td input.cardno {
+        font-size: 0.88em;
+      }
+    }
+  }
+
+  div#logs {
+    margin-top: 16px;
+
+    th.timestamp {
+      border-bottom: 1px;
+      white-space: nowrap;
+      min-width: 140px;
+    }
+
+    th.uid {
+      white-space: nowrap;
+      min-width: 72px;
+    }
+
+    th.details {
+      white-space: nowrap;
+      min-width: 140px;
+    }
+
+    td input {
+      height: 18px;
+      font-size: 1.2em;
+      font-variant: small-caps;
+      font-variant-caps: all-small-caps;  
+    }
+
+    // Safari fixes
+    td input.apple {
+      font-size: 14px;
+    }
+
+    td input.timestamp {
+      width: 140px;
+    }
+
+    td input.uid {
+      width: 72px;
+      white-space: nowrap;
+    }
+
+    td input.details {
+      width: 90%;
+      font-variant: normal;
+      font-style: italic;
+      font-size: 0.9em;
+    }
+
+    @-moz-document url-prefix("") {
+      td input {
+        font-family: "Arial", san-serif;
+        font-size: 1em;
+      }
+  
+      td input.timestamp {
+        font-size: 0.88em;
+      }
+  
+      td input.details {
+        font-size: 0.9em;
+      }
+    }
+  }
 }

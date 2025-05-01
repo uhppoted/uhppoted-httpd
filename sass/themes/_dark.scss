@@ -38,6 +38,19 @@ $blue: colours.$blue;
   --content-svg-filter-commit: none;
   --content-svg-filter-rollback: none;
 
+  --content-table-background: #{color.adjust($base02, $lightness: -5%)};
+  --content-table-background-header: #{color.adjust($base02, $lightness: -5%)};
+  --content-table-background-odd: #{$base03};
+  --content-table-background-even: #{$base02};
+  --content-table-border: 1px solid #{$blue};
+  --content-table-border-left: 2px #{color.adjust($blue, $lightness: -25%)};
+  --content-table-thumb-background: #{color.adjust($base2, $lightness: -10%)};
+  --content-table-thumb-border: 2px solid #{$base3};
+  --content-table-text-colour: #{$base0};
+  --content-table-row-modified: #{color.adjust($blue, $lightness: -25%)};
+  --content-table-row-new: #{color.adjust($blue, $lightness: 30%)};
+  --content-table-item-normal-colour: #{$base00};
+
   --fieldset-border: #{$base01};
   --fieldset-text: #{$base0};
   --fieldset-button-border: 2px solid #{$blue};

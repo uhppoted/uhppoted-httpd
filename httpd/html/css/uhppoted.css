@@ -33,6 +33,7 @@
   --link-colour: #268bd2;
   --user-avatar-background: #eee8d5;
   --user-avatar-shadow: 3px 3px 3px #d8d8d8;
+  --user-avatar-text-colour: #93a1a1;
   --user-menu-background: #eee8d5;
   --user-menu-shadow: 3px 3px 3px #d8d8d8;
   --user-menu-item-colour: #586e75;
@@ -41,6 +42,18 @@
   --content-controls-border: solid 1px #268bd2;
   --content-svg-filter-commit: invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
   --content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
+  --content-table-background: #eee8d5;
+  --content-table-background-header: rgb(230.6525423729, 222.0593220339, 194.8474576271);
+  --content-table-background-odd: #fdf6e3;
+  --content-table-background-even: #eee8d5;
+  --content-table-border: 1px solid #268bd2;
+  --content-table-border-left: 2px solid #eee8d5;
+  --content-table-thumb-background: rgb(223.3050847458, 212.1186440678, 176.6949152542);
+  --content-table-thumb-border: 2px solid #fdf6e3;
+  --content-table-text-colour: #002b36;
+  --content-table-row-modified: rgb(255, 237.0110497238, 181);
+  --content-table-row-new: rgb(162.7016129032, 207.0927419355, 238.2983870968);
+  --content-table-item-normal-colour: #002b36;
   --fieldset-border: 1px solid silver;
   --fieldset-text: #002b36;
   --fieldset-button-border: 2px solid #dc322f;
@@ -70,6 +83,18 @@
   --content-controls-border: solid 1px #268bd2;
   --content-svg-filter-commit: invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
   --content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
+  --content-table-background: #eee8d5;
+  --content-table-background-header: rgb(230.6525423729, 222.0593220339, 194.8474576271);
+  --content-table-background-odd: #fdf6e3;
+  --content-table-background-even: #eee8d5;
+  --content-table-border: 1px solid #268bd2;
+  --content-table-border-left: 2px solid #eee8d5;
+  --content-table-thumb-background: rgb(223.3050847458, 212.1186440678, 176.6949152542);
+  --content-table-thumb-border: 2px solid #fdf6e3;
+  --content-table-text-colour: #002b36;
+  --content-table-row-modified: rgb(255, 237.0110497238, 181);
+  --content-table-row-new: rgb(162.7016129032, 207.0927419355, 238.2983870968);
+  --content-table-item-normal-colour: #002b36;
   --fieldset-border: 1px solid silver;
   --fieldset-text: #002b36;
   --fieldset-button-border: 2px solid #dc322f;
@@ -99,6 +124,18 @@
   --content-controls-border: solid 1px rgb(18.4637096774, 67.5383064516, 102.0362903226);
   --content-svg-filter-commit: none;
   --content-svg-filter-rollback: none;
+  --content-table-background: rgb(4.5547945205, 35.1369863014, 42.9452054795);
+  --content-table-background-header: rgb(4.5547945205, 35.1369863014, 42.9452054795);
+  --content-table-background-odd: #002b36;
+  --content-table-background-even: #073642;
+  --content-table-border: 1px solid #268bd2;
+  --content-table-border-left: 2px rgb(18.4637096774, 67.5383064516, 102.0362903226);
+  --content-table-thumb-background: rgb(223.3050847458, 212.1186440678, 176.6949152542);
+  --content-table-thumb-border: 2px solid #fdf6e3;
+  --content-table-text-colour: #839496;
+  --content-table-row-modified: rgb(18.4637096774, 67.5383064516, 102.0362903226);
+  --content-table-row-new: rgb(162.7016129032, 207.0927419355, 238.2983870968);
+  --content-table-item-normal-colour: #657b83;
   --fieldset-border: #586e75;
   --fieldset-text: #839496;
   --fieldset-button-border: 2px solid #268bd2;
@@ -198,6 +235,432 @@ html.login #message {
   border-radius: 4px;
 }
 html.login #message.visible {
+  visibility: visible;
+}
+
+html.overview #container {
+  width: fit-content;
+  height: 100%;
+  max-width: 100%;
+  min-width: 90%;
+  display: flex;
+  flex-direction: column;
+}
+html.overview div#controllers {
+  border-bottom-right-radius: 0px;
+}
+html.overview div#controllers th.name {
+  min-width: 90px;
+  border-bottom: 1px;
+}
+html.overview div#controllers th.ID {
+  min-width: 88px;
+}
+html.overview div#controllers th.datetime {
+  min-width: 176px;
+}
+html.overview div#controllers th.cards {
+  text-align: center;
+}
+html.overview div#controllers th.events {
+  text-align: center;
+}
+html.overview div#controllers tr.controller td input.name {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  width: 132px;
+  pointer-events: none;
+}
+html.overview div#controllers tr.controller td input.ID {
+  width: 88px;
+  pointer-events: none;
+  -moz-appearance: textfield;
+}
+html.overview div#controllers tr.controller td input.datetime {
+  min-width: 176px;
+  pointer-events: none;
+}
+html.overview div#controllers tr.controller td input.cards {
+  width: 72px;
+  text-align: center;
+  pointer-events: none;
+}
+html.overview div#controllers tr.controller td input.events {
+  width: 72px;
+  text-align: center;
+  pointer-events: none;
+}
+html.overview div#controllers tr.controller td input.door1, html.overview div#controllers .door2, html.overview div#controllers .door3, html.overview div#controllers .door4 {
+  width: 72px;
+  pointer-events: none;
+}
+html.overview div#controllers input.apple {
+  font-size: 13.333px;
+}
+html.overview div#controllers input.ID.apple {
+  font-size: 12px;
+}
+html.overview div#controllers input.datetime.apple {
+  font-size: 12.5px;
+}
+html.overview div#events {
+  margin-top: 16px;
+  border-bottom-right-radius: 0px;
+}
+html.overview div#events th.timestamp {
+  border-bottom: 1px;
+  white-space: nowrap;
+  min-width: 140px;
+}
+html.overview div#events th.deviceID {
+  min-width: 80px;
+}
+html.overview div#events th.eventType {
+  min-width: 56px;
+}
+html.overview div#events th.direction {
+  min-width: 16px;
+}
+html.overview div#events th.door {
+  min-width: 104px;
+}
+html.overview div#events th.cardno {
+  min-width: 56px;
+}
+html.overview div#events th.card {
+  min-width: 120px;
+}
+html.overview div#events th.access {
+  min-width: 60px;
+}
+html.overview div#events th.reason {
+  min-width: 100px;
+}
+html.overview div#events td input {
+  height: 18px;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  font-variant-caps: all-small-caps;
+}
+html.overview div#events td input.apple {
+  font-size: 14px;
+}
+html.overview div#events td input.timestamp {
+  width: 140px;
+}
+html.overview div#events td input.device {
+  width: 72px;
+}
+html.overview div#events td input.eventType {
+  width: 56px;
+}
+html.overview div#events td input.door {
+  width: 96px;
+}
+html.overview div#events td input.cardno {
+  width: 72px;
+}
+html.overview div#events td input.card {
+  width: 120px;
+}
+html.overview div#events td input.access {
+  width: 72px;
+}
+@-moz-document url-prefix("") {
+  html.overview div#events td input {
+    font-family: "Arial", san-serif;
+    font-size: 1em;
+  }
+  html.overview div#events td input.timestamp {
+    font-size: 0.88em;
+  }
+  html.overview div#events td input.deviceID {
+    font-size: 0.88em;
+  }
+  html.overview div#events td input.doorid {
+    font-size: 0.88em;
+  }
+  html.overview div#events td input.cardno {
+    font-size: 0.88em;
+  }
+}
+html.overview div#logs {
+  margin-top: 16px;
+}
+html.overview div#logs th.timestamp {
+  border-bottom: 1px;
+  white-space: nowrap;
+  min-width: 140px;
+}
+html.overview div#logs th.uid {
+  white-space: nowrap;
+  min-width: 72px;
+}
+html.overview div#logs th.details {
+  white-space: nowrap;
+  min-width: 140px;
+}
+html.overview div#logs td input {
+  height: 18px;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  font-variant-caps: all-small-caps;
+}
+html.overview div#logs td input.apple {
+  font-size: 14px;
+}
+html.overview div#logs td input.timestamp {
+  width: 140px;
+}
+html.overview div#logs td input.uid {
+  width: 72px;
+  white-space: nowrap;
+}
+html.overview div#logs td input.details {
+  width: 90%;
+  font-variant: normal;
+  font-style: italic;
+  font-size: 0.9em;
+}
+@-moz-document url-prefix("") {
+  html.overview div#logs td input {
+    font-family: "Arial", san-serif;
+    font-size: 1em;
+  }
+  html.overview div#logs td input.timestamp {
+    font-size: 0.88em;
+  }
+  html.overview div#logs td input.details {
+    font-size: 0.9em;
+  }
+}
+
+#controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-bottom: 2px;
+  background: var(--content-table-background-header);
+  padding: 4px 4px 4px 4px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+#controls #message {
+  flex-grow: 1;
+  margin-left: 0px;
+  margin-right: 6px;
+  visibility: hidden;
+}
+#controls #message.visible {
+  visibility: visible;
+}
+#controls img.button {
+  width: 16px;
+  height: 16px;
+  padding: 4px 4px 4px 4px;
+  border: var(--content-controls-border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+#controls #commitall {
+  display: none;
+  margin-right: 6px;
+  filter: var(--content-svg-filter-commit);
+}
+#controls #rollbackall {
+  display: none;
+  filter: var(--content-svg-filter-rollback);
+  margin-right: 6px;
+}
+#controls #refresh {
+  margin-left: 6px;
+}
+
+#controls.modified[data-modified^=multiple] #commitall {
+  display: block;
+}
+#controls.modified[data-modified^=multiple] #rollbackall {
+  display: block;
+}
+
+div.tabular {
+  overflow: auto;
+  border: var(--content-table-border);
+  border-bottom-right-radius: 4px;
+}
+
+div.tabular::-webkit-scrollbar {
+  background: transparent;
+  border-left: var(--content-table-border-left);
+}
+
+div.tabular::-webkit-scrollbar-track {
+  background: transparent;
+  border-left: var(--content-table-border-left);
+}
+
+div.tabular::-webkit-scrollbar-thumb {
+  background: var(--content-table-thumb-background);
+  border: var(--content-table-thumb-border);
+  border-radius: 10px;
+}
+
+div.tabular::-webkit-scrollbar-corner {
+  background: transparent;
+  border: none;
+}
+
+div.tabular table {
+  background: var(--content-table-background);
+  color: var(--content-table-text-colour);
+  border: none;
+  border-collapse: collapse;
+}
+div.tabular table thead {
+  position: sticky;
+  top: 0px;
+  z-index: 3;
+}
+div.tabular table thead th.topleft {
+  position: sticky;
+  top: 0px;
+  left: 0px;
+  z-index: 3;
+}
+div.tabular table thead th.rowheader {
+  position: sticky;
+  left: 0px;
+}
+div.tabular table thead tr th {
+  background: var(--content-table-background-header);
+  color: var(--content-table-text-colour);
+  padding: 0.5rem;
+  font-size: 0.9em;
+  font-weight: 500;
+  font-style: normal;
+  text-align: center;
+}
+div.tabular table tbody tr td input {
+  color: var(--content-table-item-normal-colour);
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 2px 4px 2px 4px;
+  outline: none;
+  text-overflow: ellipsis;
+  -moz-appearance: textfield;
+}
+div.tabular table tbody tr td:last-child {
+  width: 100%;
+}
+
+div.tabular table tbody tr:nth-child(odd) {
+  background: var(--content-table-background-odd);
+}
+
+div.tabular table tbody tr:nth-child(even) {
+  background: var(--content-table-background-even);
+}
+
+div.tabular table tbody tr.modified {
+  background: var(--content-table-row-modified);
+}
+
+div.tabular table tbody tr.new {
+  background: var(--content-table-row-new);
+}
+
+div.tabular table tbody td {
+  position: relative;
+  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+  text-align: left;
+  font-size: 0.9em;
+  font-weight: normal;
+  font-style: normal;
+}
+
+div.tabular table tbody td.rowheader {
+  position: sticky;
+  left: 0px;
+  z-index: 2;
+}
+
+div.tabular table tbody tr.modified td.rowheader {
+  background: var(--content-table-row-modified);
+}
+
+div.tabular table tbody tr.new td.rowheader {
+  background: var(--content-table-row-new);
+}
+
+div.tabular table tbody tr td input:read-only {
+  outline: none;
+  border: none;
+}
+
+div.tabular table tbody tr td.modified::before {
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+}
+
+div.tabular table tbody tr td.conflict::before {
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+}
+
+div.tabular table tbody tr td.pending::before {
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+}
+
+div.tabular table td span.control {
+  padding: 0px 0px 0px 0px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  visibility: hidden;
+  cursor: pointer;
+}
+
+div.tabular table td span.control img {
+  margin-left: 2px;
+  margin-right: 2px;
+  margin-top: 8px;
+  margin-bottom: 0px;
+  border: solid 1px #268bd2;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+div.tabular table td span.commit img {
+  width: 12px;
+  padding: 2px;
+  filter: invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
+}
+
+div.tabular table td span.rollback img {
+  width: 14px;
+  height: 14px;
+  padding: 1px;
+  filter: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
+}
+
+div.tabular table tbody tr.modified:not(.newish) td span.commit {
+  visibility: visible;
+}
+
+div.tabular table tbody tr.modified td span.rollback {
+  visibility: visible;
+}
+
+div.tabular table tbody tr.new td span.rollback {
   visibility: visible;
 }
 
@@ -397,47 +860,6 @@ main #container.loading {
 .menu a:hover {
   color: var(--user-menu-item-highlight-colour);
   background: var(--user-menu-item-highlight-background);
-}
-
-#controls {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-  margin-bottom: 2px;
-}
-#controls #message {
-  flex-grow: 1;
-  margin-left: 0px;
-  margin-right: 6px;
-  visibility: hidden;
-}
-#controls #message.visible {
-  visibility: visible;
-}
-
-#controls img.button {
-  width: 16px;
-  height: 16px;
-  padding: 4px 4px 4px 4px;
-  border: var(--content-controls-border);
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-#controls #commitall {
-  display: none;
-  margin-right: 6px;
-  filter: var(--content-svg-filter-commit);
-}
-
-#controls #rollbackall {
-  display: none;
-  filter: var(--content-svg-filter-rollback);
-  margin-right: 6px;
-}
-
-#controls #refresh {
-  margin-left: 6px;
 }
 
 #offline {

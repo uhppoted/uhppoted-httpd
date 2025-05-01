@@ -10,6 +10,7 @@ $base2: colours.$base2;
 $base3: colours.$base3;
 $red: colours.$red;
 $blue: colours.$blue;
+$yellow: colours.$yellow;
 
 :root {
   --background-colour: #{$base3};
@@ -36,6 +37,19 @@ $blue: colours.$blue;
   --content-controls-border: solid 1px #{$blue};
   --content-svg-filter-commit: invert(58%) sepia(89%) saturate(3723%) hue-rotate(41deg) brightness(98%) contrast(101%);
   --content-svg-filter-rollback: invert(30%) sepia(41%) saturate(3835%) hue-rotate(344deg) brightness(89%) contrast(92%);
+
+  --content-table-background: #{$base2};
+  --content-table-background-header: #{color.adjust($base2, $lightness: -5%)};
+  --content-table-background-odd: #{$base3};
+  --content-table-background-even: #{$base2};
+  --content-table-border: 1px solid #{$blue};
+  --content-table-border-left: 2px solid #{$base2};
+  --content-table-thumb-background: #{color.adjust($base2, $lightness: -10%)};
+  --content-table-thumb-border: 2px solid #{$base3};
+  --content-table-text-colour: #{$base03};
+  --content-table-row-modified: #{color.adjust($yellow, $lightness: 50%)};
+  --content-table-row-new: #{color.adjust($blue, $lightness: 30%)};
+  --content-table-item-normal-colour: #{$base03};
 
   --fieldset-border: 1px solid silver;
   --fieldset-text: #{$base03};
