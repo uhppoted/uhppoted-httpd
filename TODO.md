@@ -6,7 +6,7 @@
       - [x] github workflow
       - [x] login
       - [x] overview
-      - [ ] online/disconnected
+      - [x] online/disconnected
       - [ ] windmill
       - [ ] loading
       - [ ] CHANGELOG

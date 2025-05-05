@@ -60,7 +60,7 @@
   --field-border: 1px solid #657b83;
   --field-input-background: #fdf6e3;
   --message-background-colour: #eee8d5;
-  --warning-colour: #($red);
+  --warning-colour: #dc322f;
 }
 
 [data-theme=light] {
@@ -101,7 +101,7 @@
   --field-border: 1px solid #657b83;
   --field-input-background: #fdf6e3;
   --message-background-colour: #eee8d5;
-  --warning-colour: #($red);
+  --warning-colour: #dc322f;
 }
 
 [data-theme=dark] {
@@ -142,7 +142,7 @@
   --field-border: 1px solid #657b83;
   --field-input-background: #fdf6e3;
   --message-background-colour: #073642;
-  --warning-colour: #($base0);
+  --warning-colour: #839496;
 }
 
 html.login #container {
