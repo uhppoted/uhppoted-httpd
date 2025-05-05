@@ -73,6 +73,7 @@ $violet: colours.$violet;
   --combobox-border: 1px solid #93a1a1;
   --combobox-li-colour: #666666;
   --combobox-li-selected: #def;
+  --combobox-mode-background: #{color.adjust($base3, $lightness: 10%)};
 
   --message-background-colour: #{$base2};
   --warning-colour: #{$red};

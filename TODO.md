@@ -7,11 +7,20 @@
       - [x] login
       - [x] overview
       - [x] controllers
-      - [ ] doors
+      - [x] doors
+      - [ ] cards
+      - [ ] groups
+      - [ ] events
+      - [ ] logs
+      - [ ] users
+      - [ ] other
+      - [ ] password
+      - [ ] setup
+      - [ ] unauthorized
       - [x] online/disconnected
+      - [x] tooltips
       - [ ] windmill
       - [ ] loading
-      - [ ] tooltips
       - [ ] CHANGELOG
       - [ ] README
 

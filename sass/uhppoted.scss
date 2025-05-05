@@ -1,13 +1,16 @@
 @use 'base/fonts';
 @use 'themes';
+
 @use 'pages/login';
 @use 'pages/overview';
 @use 'pages/controllers';
+@use 'pages/doors';
 
 @use 'components/controls';
 @use 'components/tabular';
 @use 'components/combobox';
 @use 'components/select';
+@use 'components/tooltips';
 
 * { 
   background: transparent;

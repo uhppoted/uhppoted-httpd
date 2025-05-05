@@ -72,6 +72,7 @@
   --combobox-border: 1px solid #93a1a1;
   --combobox-li-colour: #666666;
   --combobox-li-selected: #def;
+  --combobox-mode-background: hsl(43.8461538462, 86.6666666667%, 104.1176470588%);
   --message-background-colour: #eee8d5;
   --warning-colour: #dc322f;
   --colour-base01: #586e75;
@@ -127,6 +128,7 @@
   --combobox-border: 1px solid #93a1a1;
   --combobox-li-colour: #666666;
   --combobox-li-selected: #def;
+  --combobox-mode-background: hsl(43.8461538462, 86.6666666667%, 104.1176470588%);
   --message-background-colour: #eee8d5;
   --warning-colour: #dc322f;
   --colour-base01: #586e75;
@@ -182,6 +184,7 @@
   --combobox-border: 1px solid #93a1a1;
   --combobox-li-colour: #666666;
   --combobox-li-selected: #def;
+  --combobox-mode-background: rgb(110.0341463415, 137.2926829268, 145.9658536585);
   --message-background-colour: #073642;
   --warning-colour: #839496;
   --colour-base01: #586e75;
@@ -651,6 +654,86 @@ html.controllers input.datetime.apple {
   font-size: 12px;
 }
 
+html.doors #container {
+  width: fit-content;
+  height: 100%;
+  max-width: 100%;
+  min-width: 80%;
+  display: flex;
+  flex-direction: column;
+}
+html.doors th.name {
+  min-width: 90px;
+  border-bottom: 1px;
+  text-align: left !important;
+}
+html.doors tr.door td input.name {
+  width: 90px;
+}
+html.doors tr.door td input.controller {
+  pointer-events: none;
+}
+html.doors tr.door td input.deviceID {
+  pointer-events: none;
+}
+html.doors tr.door td input.doorID {
+  width: 16px;
+  pointer-events: none;
+}
+html.doors tr.door td input.mode {
+  width: 140px;
+  text-align: left;
+  font-size: 1.1em;
+  font-family: sans-serif;
+  font-variant: small-caps;
+}
+html.doors tr.door td input.delay {
+  text-align: center;
+}
+html.doors tr.door input.mode + ul {
+  background: var(--combobox-mode-background);
+}
+html.doors tr.door input.mode + ul li {
+  font-family: sans-serif;
+  font-variant: small-caps;
+  font-caps-variant: all-small-caps;
+}
+html.doors td label.keypad {
+  cursor: pointer;
+}
+html.doors td label.keypad input[type=checkbox] {
+  display: none;
+}
+html.doors td label.keypad img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  margin: auto;
+}
+html.doors td label.keypad img.yes {
+  display: none;
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
+}
+html.doors td label.keypad img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+html.doors td label.keypad input[type=checkbox]:checked ~ img.yes {
+  display: block;
+}
+html.doors td label.keypad input[type=checkbox]:checked ~ img.no {
+  display: none;
+}
+html.doors tr.door td input.passcodes {
+  width: 224px;
+}
+html.doors input.apple {
+  font-size: 13.333px;
+}
+html.doors input.deviceID.apple {
+  font-size: 12px;
+}
+
 #controls {
   display: flex;
   justify-content: flex-end;
@@ -969,6 +1052,31 @@ tr td select[data-status=uncertain] {
 tr td select[data-status=error] {
   color: var(--content-table-item-error-colour);
   font-weight: bold;
+}
+
+.tooltip-wrap {
+  position: relative;
+}
+
+.tooltip-wrap .tooltip-content {
+  color: maroon;
+  background-color: rgba(255, 0, 0, 0.1254901961);
+  width: fit-content;
+  white-space: nowrap;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  display: none;
+  position: absolute;
+  top: 28px;
+  left: 28px;
+  overflow: visible;
+  border-radius: 2px;
+}
+
+.tooltip-wrap:hover .tooltip-content.enabled {
+  display: block;
 }
 
 * {
