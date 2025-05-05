@@ -53,14 +53,28 @@
   --content-table-text-colour: #002b36;
   --content-table-row-modified: rgb(255, 237.0110497238, 181);
   --content-table-row-new: rgb(162.7016129032, 207.0927419355, 238.2983870968);
+  --content-table-row-unconfigured: #b58900;
   --content-table-item-normal-colour: #002b36;
+  --content-table-item-unknown-colour: #93a1a1;
+  --content-table-item-uncertain-colour: #6c71c4;
+  --content-table-item-error-colour: #dc322f;
+  --content-table-flag-modified: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+  --content-table-flag-conflict: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
+  --content-table-flag-pending: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
+  --content-table-commit: #859900;
+  --content-table-rollback: #dc322f;
   --fieldset-border: 1px solid silver;
   --fieldset-text: #002b36;
   --fieldset-button-border: 2px solid #dc322f;
   --field-border: 1px solid #657b83;
   --field-input-background: #fdf6e3;
+  --combobox-background: #eee8d5;
+  --combobox-border: 1px solid #93a1a1;
+  --combobox-li-colour: #666666;
+  --combobox-li-selected: #def;
   --message-background-colour: #eee8d5;
   --warning-colour: #dc322f;
+  --colour-base01: #586e75;
 }
 
 [data-theme=light] {
@@ -94,14 +108,28 @@
   --content-table-text-colour: #002b36;
   --content-table-row-modified: rgb(255, 237.0110497238, 181);
   --content-table-row-new: rgb(162.7016129032, 207.0927419355, 238.2983870968);
+  --content-table-row-unconfigured: #b58900;
   --content-table-item-normal-colour: #002b36;
+  --content-table-item-unknown-colour: #93a1a1;
+  --content-table-item-uncertain-colour: #6c71c4;
+  --content-table-item-error-colour: #dc322f;
+  --content-table-flag-modified: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+  --content-table-flag-conflict: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
+  --content-table-flag-pending: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
+  --content-table-commit: #859900;
+  --content-table-rollback: #dc322f;
   --fieldset-border: 1px solid silver;
   --fieldset-text: #002b36;
   --fieldset-button-border: 2px solid #dc322f;
   --field-border: 1px solid #657b83;
   --field-input-background: #fdf6e3;
+  --combobox-background: #eee8d5;
+  --combobox-border: 1px solid #93a1a1;
+  --combobox-li-colour: #666666;
+  --combobox-li-selected: #def;
   --message-background-colour: #eee8d5;
   --warning-colour: #dc322f;
+  --colour-base01: #586e75;
 }
 
 [data-theme=dark] {
@@ -135,14 +163,28 @@
   --content-table-text-colour: #839496;
   --content-table-row-modified: rgb(18.4637096774, 67.5383064516, 102.0362903226);
   --content-table-row-new: rgb(162.7016129032, 207.0927419355, 238.2983870968);
+  --content-table-row-unconfigured: rgb(168.25, 127.3494475138, 0);
   --content-table-item-normal-colour: #657b83;
+  --content-table-item-unknown-colour: #657b83;
+  --content-table-item-uncertain-colour: #586e75;
+  --content-table-item-error-colour: rgb(184.8888888889, 33.7777777778, 31.1111111111);
+  --content-table-flag-modified: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
+  --content-table-flag-conflict: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
+  --content-table-flag-pending: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
+  --content-table-commit: #859900;
+  --content-table-rollback: #dc322f;
   --fieldset-border: #586e75;
   --fieldset-text: #839496;
   --fieldset-button-border: 2px solid #268bd2;
   --field-border: 1px solid #657b83;
   --field-input-background: #fdf6e3;
+  --combobox-background: #93a1a1;
+  --combobox-border: 1px solid #93a1a1;
+  --combobox-li-colour: #666666;
+  --combobox-li-selected: #def;
   --message-background-colour: #073642;
   --warning-colour: #839496;
+  --colour-base01: #586e75;
 }
 
 html.login #container {
@@ -435,6 +477,180 @@ html.overview div#logs td input.details {
   }
 }
 
+html.controllers #container {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  height: 100%;
+  max-width: 100%;
+}
+html.controllers table.interface {
+  background: var(--content-table-background-header);
+  color: var(--colour-base01);
+  width: min-content;
+  margin-bottom: 4px;
+  padding-top: 0px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+  font: 400 0.9em Arial;
+  border-radius: 3px;
+}
+html.controllers table.interface tr {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+html.controllers table.interface td {
+  position: relative;
+  font-variant: small-caps;
+}
+html.controllers table.interface tr td:last-child {
+  width: min-content;
+}
+html.controllers table.interface td.modified::before {
+  content: url("/images/default/block.svg");
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 6px;
+  height: 6px;
+  line-height: 0px;
+  filter: var(--content-table-flag-modified);
+}
+html.controllers table.interface td.conflict::before {
+  content: url("/images/default/block.svg");
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 6px;
+  height: 6px;
+  line-height: 0px;
+  filter: var(--content-table-flag-conflict);
+}
+html.controllers table.interface td.pending::before {
+  content: url("/images/default/block.svg");
+  position: absolute;
+  left: 0px;
+  top: -4px;
+  width: 6px;
+  height: 6px;
+  line-height: 0px;
+  filter: var(--content-table-flag-pending);
+}
+html.controllers table.interface td input {
+  padding: 2px 4px 2px 4px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  outline: none;
+  margin-left: 2px;
+  color: var(--colour-base01);
+  font: 400 0.9em Arial;
+}
+html.controllers table.interface td input:focus {
+  border: 1px solid red;
+}
+html.controllers table.interface td input.name {
+  padding: 0px 0px 0px 0px;
+  border: none;
+  font-weight: bold;
+}
+html.controllers table.interface td span.control {
+  padding: 0px 0px 0px 0px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  cursor: pointer;
+  visibility: hidden;
+}
+html.controllers table.interface td span.commit {
+  color: var(--content-table-commit);
+}
+html.controllers table.interface td span.rollback {
+  color: var(--content-table-rollback);
+}
+html.controllers table.interface.modified td span.control {
+  visibility: visible;
+}
+html.controllers th.name {
+  min-width: 90px;
+  border-bottom: 1px;
+}
+html.controllers th.ID {
+  min-width: 88px;
+}
+html.controllers th.datetime {
+  min-width: 176px;
+}
+html.controllers th.cards {
+  text-align: center;
+}
+html.controllers th.events {
+  text-align: center;
+}
+html.controllers tr.controller td input.name {
+  width: 90px;
+}
+html.controllers tr.controller td input.ID {
+  width: 88px;
+  -moz-appearance: textfield;
+}
+html.controllers tr.controller td input.IP {
+  width: 112px;
+}
+html.controllers tr.controller td label.protocol input[type=checkbox] {
+  display: none;
+}
+html.controllers tr.controller td label.protocol img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  margin: auto;
+}
+html.controllers tr.controller td label.protocol img.yes {
+  display: none;
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
+}
+html.controllers tr.controller td label.protocol img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+html.controllers tr.controller td label.protocol input[type=checkbox]:checked ~ img.yes {
+  display: block;
+}
+html.controllers tr.controller td label.protocol input[type=checkbox]:checked ~ img.no {
+  display: none;
+}
+html.controllers tr.controller td input.datetime {
+  min-width: 176px;
+}
+html.controllers tr.controller td select.antipassback {
+  font-size: 0.75em;
+}
+html.controllers tr.controller td input.cards {
+  width: 72px;
+  text-align: center;
+  pointer-events: none;
+}
+html.controllers tr.controller td input.events {
+  width: 72px;
+  text-align: center;
+  pointer-events: none;
+}
+html.controllers tr.controller td select.door1, html.controllers .door2, html.controllers .door3, html.controllers .door4 {
+  width: 72px;
+}
+html.controllers input.apple {
+  font-size: 13.333px;
+}
+html.controllers input.ID.apple {
+  font-size: 12px;
+}
+html.controllers input.IP.apple {
+  font-size: 12px;
+}
+html.controllers input.datetime.apple {
+  font-size: 12px;
+}
+
 #controls {
   display: flex;
   justify-content: flex-end;
@@ -662,6 +878,97 @@ div.tabular table tbody tr.modified td span.rollback {
 
 div.tabular table tbody tr.new td span.rollback {
   visibility: visible;
+}
+
+.combobox ul {
+  display: none;
+  background: var(--combobox-background);
+  width: fit-content;
+  max-height: 32em;
+  margin-top: 4px;
+  margin-left: 4px;
+  padding-left: 1px;
+  padding-top: 2px;
+  padding-bottom: 4px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow: auto;
+  z-index: 2;
+  list-style: none;
+  box-sizing: border-box;
+  border: var(--combobox-border);
+  border-radius: 2px;
+  font-size: 0.95em;
+}
+
+.combobox ul li {
+  display: block;
+  padding-left: 0.4em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  padding-right: 8px;
+  text-align: left;
+  color: var(--combobox-li-colour);
+}
+
+.combobox ul li.selected {
+  background-color: var(--combobox-li-selected);
+}
+
+.combobox ul li:hover {
+  background-color: var(--combobox-li-selected);
+}
+
+tr td select {
+  color: var(----content-table-item-normal-colour);
+  border: none;
+  outline: none;
+  font: 400 0.9em Arial;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+tr[data-status=unconfigured] td select {
+  color: var(--content-table-row-unconfigured);
+  font-style: italic;
+}
+
+tr[data-status=unknown] td select {
+  color: var(--content-table-item-unknown-colour);
+  font-style: italic;
+}
+
+tr[data-status=uncertain] td select {
+  color: var(--content-table-item-uncertain-colour);
+  font-style: italic;
+  font-weight: bold;
+}
+
+tr[data-status=error] td select {
+  color: var(--content-table-item-error-colour);
+}
+
+tr td select[data-status=unknown] {
+  color: var(--content-table-item-unknown-colour);
+  font-style: italic;
+}
+
+tr td select[data-status=unconfigured] {
+  color: var(--content-table-row-unconfigured);
+  font-style: italic;
+}
+
+tr td select[data-status=uncertain] {
+  color: var(content-table-item-uncertain-colour);
+  font-style: italic;
+  font-weight: bold;
+}
+
+tr td select[data-status=error] {
+  color: var(--content-table-item-error-colour);
+  font-weight: bold;
 }
 
 * {

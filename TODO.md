@@ -6,12 +6,14 @@
       - [x] github workflow
       - [x] login
       - [x] overview
+      - [x] controllers
+      - [ ] doors
       - [x] online/disconnected
       - [ ] windmill
       - [ ] loading
+      - [ ] tooltips
       - [ ] CHANGELOG
       - [ ] README
-      - (?) package original css as a theme
 
 - [ ] doors: https://developer.chrome.com/blog/a-customizable-select
 

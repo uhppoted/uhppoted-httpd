@@ -9,8 +9,10 @@ $base1: colours.$base1;
 $base2: colours.$base2;
 $base3: colours.$base3;
 $red: colours.$red;
-$blue: colours.$blue;
 $yellow: colours.$yellow;
+$green: colours.$green;
+$blue: colours.$blue;
+$violet: colours.$violet;
 
 :root {
   --background-colour: #{$base3};
@@ -49,7 +51,16 @@ $yellow: colours.$yellow;
   --content-table-text-colour: #{$base03};
   --content-table-row-modified: #{color.adjust($yellow, $lightness: 50%)};
   --content-table-row-new: #{color.adjust($blue, $lightness: 30%)};
+  --content-table-row-unconfigured: #{$yellow};
   --content-table-item-normal-colour: #{$base03};
+  --content-table-item-unknown-colour: #{$base1};
+  --content-table-item-uncertain-colour: #{$violet};
+  --content-table-item-error-colour: #{$red};
+  --content-table-flag-modified: invert(61%) sepia(14%) saturate(250%)  hue-rotate(138deg) brightness(92%) contrast(92%);
+  --content-table-flag-conflict: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
+  --content-table-flag-pending: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
+  --content-table-commit: #{$green};
+  --content-table-rollback: #{$red};
 
   --fieldset-border: 1px solid silver;
   --fieldset-text: #{$base03};
@@ -58,6 +69,12 @@ $yellow: colours.$yellow;
   --field-border: 1px solid #{$base00};
   --field-input-background: #{$base3};
 
+  --combobox-background: #{$base2};
+  --combobox-border: 1px solid #93a1a1;
+  --combobox-li-colour: #666666;
+  --combobox-li-selected: #def;
+
   --message-background-colour: #{$base2};
   --warning-colour: #{$red};
+  --colour-base01: #{$base01};
 }

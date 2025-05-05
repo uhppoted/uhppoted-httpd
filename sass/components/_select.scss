@@ -1,0 +1,53 @@
+// NTS: probably belongs in tabular
+
+tr td select {
+  color: var(----content-table-item-normal-colour);
+  border: none;
+  outline: none;
+  font: 400 0.9em Arial;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+tr[data-status="unconfigured"] td select {
+  color: var(--content-table-row-unconfigured);
+  font-style: italic;
+}
+
+tr[data-status="unknown"] td select {
+  color: var(--content-table-item-unknown-colour);
+  font-style: italic;
+}
+
+tr[data-status="uncertain"] td select {
+  color: var(--content-table-item-uncertain-colour);
+  font-style: italic;
+  font-weight: bold; 
+}
+
+tr[data-status="error"] td select {
+  color: var(--content-table-item-error-colour);
+}
+
+tr td select[data-status="unknown"] {
+  color: var(--content-table-item-unknown-colour);
+  font-style: italic;
+}
+
+tr td select[data-status="unconfigured"] {
+  color: var(--content-table-row-unconfigured);
+  font-style: italic;
+}
+
+tr td select[data-status="uncertain"] {
+  color: var(content-table-item-uncertain-colour);
+  font-style: italic;
+  font-weight: bold; 
+}
+
+tr td select[data-status="error"] {
+  color: var(--content-table-item-error-colour);
+  font-weight: bold; 
+}
+

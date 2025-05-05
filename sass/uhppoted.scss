@@ -2,9 +2,12 @@
 @use 'themes';
 @use 'pages/login';
 @use 'pages/overview';
+@use 'pages/controllers';
 
 @use 'components/controls';
 @use 'components/tabular';
+@use 'components/combobox';
+@use 'components/select';
 
 * { 
   background: transparent;
