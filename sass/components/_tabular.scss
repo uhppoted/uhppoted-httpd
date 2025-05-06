@@ -2,27 +2,27 @@ div.tabular {
   overflow: auto;
   border: var(--content-table-border);
   border-bottom-right-radius: 4px;
-}  
 
-div.tabular::-webkit-scrollbar {
-  background: transparent;
-  border-left: var(--content-table-border-left);
-}
+  ::-webkit-scrollbar {
+    background: transparent;
+    border-left: var(--content-table-border-left);
+  }
 
-div.tabular::-webkit-scrollbar-track {
-  background: transparent;
-  border-left: var(--content-table-border-left);
-}
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    border-left: var(--content-table-border-left);
+  }
 
-div.tabular::-webkit-scrollbar-thumb {
-  background: var(--content-table-thumb-background);
-  border: var(--content-table-thumb-border);
-  border-radius: 10px;
-}
+  ::-webkit-scrollbar-thumb {
+    background: var(--content-table-thumb-background);
+    border: var(--content-table-thumb-border);
+    border-radius: 10px;
+  }
 
-div.tabular::-webkit-scrollbar-corner {
-  background: transparent;
-  border: none;
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+    border: none;
+  }
 }
 
 div.tabular table  {
@@ -32,15 +32,15 @@ div.tabular table  {
   border-collapse: collapse;
 
   thead {
-    position: sticky; 
-    top: 0px; 
+    position: sticky;
+    top: 0px;
     z-index: 3;
 
     th.topleft {
-      position: sticky; 
-      top: 0px; 
+      position: sticky;
+      top: 0px;
       left: 0px;
-      z-index: 3;  
+      z-index: 3;
     }
 
     th.rowheader {
@@ -72,9 +72,9 @@ div.tabular table  {
         -moz-appearance:textfield;
       }
 
-      td:last-child { 
-        width:100% 
-      } 
+      td:last-child {
+        width:100%
+      }
     }
   }
 }
@@ -96,7 +96,7 @@ div.tabular table tbody tr.new {
 }
 
 div.tabular table tbody td {
-  position: relative; 
+  position: relative;
   padding: 0.1rem 0.5rem 0.1rem 0.5rem;
   text-align: left;
   font-size: 0.9em;
@@ -111,15 +111,15 @@ div.tabular table tbody td.rowheader {
 }
 
 div.tabular table tbody tr[data-status="error"] {
-  // FIXME background: $content-table-row-error;
+  background: var(--content-table-row-error);
 }
 
 div.tabular table tbody tr:nth-child(odd) td.rowheader {
-  // FIXME background: darken($content-table-background-odd,5%);
+  background: var(--content-table-background-odd-th);
 }
 
 div.tabular table tbody tr:nth-child(even) td.rowheader {
-  // FIXME background: darken($content-table-background-even,5%);
+  background: var(--content-table-background-even-th);
 }
 
 div.tabular table tbody tr.modified td.rowheader {
@@ -127,7 +127,7 @@ div.tabular table tbody tr.modified td.rowheader {
 }
 
 div.tabular table tbody tr[data-status="error"] td.rowheader {
-  // FIXME background: $content-table-row-error;
+  background: var(--content-table-row-error);
 }
 
 div.tabular table tbody tr.new td.rowheader {
@@ -143,42 +143,42 @@ div.tabular table tbody tr td input:read-only {
 }
 
 div.tabular table tbody tr td.modified::before {
-  // FIXME content: $content-table-flag;
+  content: var(--content-table-flag);
   position: absolute;
   left: 0px;
   top: -4px;
   width: 10px;
   height: 10px;
-  // FIXME filter: $content-table-flag-modified;
+  filter: var(--content-table-flag-modified);
 }
 
 div.tabular table tbody tr td.conflict::before {
-  // FIXME content: $content-table-flag;
+  content: var(--content-table-flag);
   position: absolute;
   left: 0px;
   top: -4px;
   width: 10px;
   height: 10px;
-  // FIXME filter: $content-table-flag-conflict;
+  filter: var(--content-table-flag-conflict);
 }
 
 div.tabular table tbody tr td.pending::before {
-  // FIXME content: $content-table-flag;
+  content: var(--content-table-flag);
   position: absolute;
   left: 0px;
   top: -4px;
   width: 10px;
   height: 10px;
-  // FIXME filter: $content-table-flag-pending;
+  filter: var(--content-table-flag-pending);
 }
 
 div.tabular table td.conflict input {
-  // FIXME background-color: $content-table-item-conflict;
+  background-color: var(--content-table-item-conflict);
 }
 
 div.tabular table td span.control {
   padding: 0px 0px 0px 0px;
-  font-size: 1.5rem;  
+  font-size: 1.5rem;
   font-weight: bold;
   visibility: hidden;
   cursor: pointer;
@@ -195,7 +195,7 @@ div.tabular table td span.control img {
 }
 
 div.tabular table td span.commit {
-  // FIXME color: $content-table-commit;  
+  color: var(--content-table-commit);
 }
 
 div.tabular table td span.commit img {
@@ -205,7 +205,7 @@ div.tabular table td span.commit img {
 }
 
 div.tabular table td span.rollback {
-  // FIXME color: $content-table-rollback;  
+  color: var(--content-table-rollback);
 }
 
 div.tabular table td span.rollback img {
@@ -226,4 +226,3 @@ div.tabular table tbody tr.modified td span.rollback {
 div.tabular table tbody tr.new td span.rollback {
   visibility: visible;
 }
-

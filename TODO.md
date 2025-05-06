@@ -8,7 +8,7 @@
       - [x] overview
       - [x] controllers
       - [x] doors
-      - [ ] cards
+      - [x] cards
       - [ ] groups
       - [ ] events
       - [ ] logs
