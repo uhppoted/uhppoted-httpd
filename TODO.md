@@ -9,7 +9,7 @@
       - [x] controllers
       - [x] doors
       - [x] cards
-      - [ ] groups
+      - [x] groups
       - [ ] events
       - [ ] logs
       - [ ] users

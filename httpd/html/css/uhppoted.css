@@ -900,6 +900,57 @@ html.cards input.PIN.apple {
   font-size: 12px;
 }
 
+html.groups #container {
+  width: fit-content;
+  height: 100%;
+  max-width: 100%;
+  min-width: 80%;
+  display: flex;
+  flex-direction: column;
+}
+html.groups th.name {
+  min-width: 90px;
+  border-bottom: 1px;
+}
+html.groups th.door {
+  white-space: nowrap;
+}
+html.groups tr.group td input.name {
+  width: 90px;
+}
+html.groups td label.door {
+  cursor: pointer;
+}
+html.groups td label.door input[type=checkbox] {
+  display: none;
+}
+html.groups td label.door img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  margin: auto;
+}
+html.groups td label.door img.yes {
+  display: none;
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
+}
+html.groups td label.door img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+html.groups td label.door input[type=checkbox]:checked ~ img.yes {
+  display: block;
+}
+html.groups td label.door input[type=checkbox]:checked ~ img.no {
+  display: none;
+}
+html.groups input.apple {
+  font-size: 13.333px;
+}
+html.groups input.deviceID.apple {
+  font-size: 12px;
+}
+
 #controls {
   display: flex;
   justify-content: flex-end;
