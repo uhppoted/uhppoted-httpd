@@ -951,6 +951,117 @@ html.groups input.deviceID.apple {
   font-size: 12px;
 }
 
+html.events #container {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+html.events div#events table tfoot.hidden {
+  display: none;
+}
+html.events td.ellipsis {
+  text-align: center;
+}
+html.events td.ellipsis img.button {
+  height: 16px;
+  vertical-align: middle;
+  padding: 4px 32px 4px 32px;
+  border: solid 1px #268bd2;
+  border-radius: 4px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+html.events th.timestamp {
+  border-bottom: 1px;
+  white-space: nowrap;
+  min-width: 140px;
+}
+html.events th.deviceID {
+  min-width: 80px;
+}
+html.events th.eventType {
+  min-width: 56px;
+}
+html.events th.direction {
+  min-width: 16px;
+}
+html.events th.door {
+  min-width: 104px;
+}
+html.events th.cardno {
+  min-width: 56px;
+}
+html.events th.card {
+  min-width: 120px;
+}
+html.events th.access {
+  min-width: 60px;
+}
+html.events th.reason {
+  min-width: 100px;
+}
+html.events td input {
+  height: 18px;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  font-variant-caps: all-small-caps;
+}
+html.events td input.timestamp {
+  width: 140px;
+}
+html.events td input.deviceID {
+  width: 80px;
+}
+html.events td input.device {
+  width: 72px;
+}
+html.events td input.eventType {
+  width: 56px;
+}
+html.events td input.direction {
+  width: 16px;
+}
+html.events td input.doorid {
+  width: 8px;
+  text-align: center;
+}
+html.events td input.door {
+  width: 96px;
+}
+html.events td input.cardno {
+  width: 56px;
+}
+html.events td input.card {
+  width: 120px;
+}
+html.events td input.access {
+  width: 60px;
+}
+@-moz-document url-prefix("") {
+  html.events td input {
+    font-family: "Arial", san-serif;
+    font-size: 1em;
+  }
+  html.events td input.timestamp {
+    font-size: 0.88em;
+  }
+  html.events td input.deviceID {
+    font-size: 0.88em;
+  }
+  html.events td input.doorid {
+    font-size: 0.88em;
+  }
+  html.events td input.cardno {
+    font-size: 0.88em;
+  }
+}
+html.events input.apple {
+  font-size: 13.333px;
+}
+
 #controls {
   display: flex;
   justify-content: flex-end;

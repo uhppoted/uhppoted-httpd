@@ -10,7 +10,7 @@
       - [x] doors
       - [x] cards
       - [x] groups
-      - [ ] events
+      - [x] events
       - [ ] logs
       - [ ] users
       - [ ] other
