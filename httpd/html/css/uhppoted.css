@@ -1062,6 +1062,83 @@ html.events input.apple {
   font-size: 13.333px;
 }
 
+html.logs #container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+html.logs div#logs table tfoot.hidden {
+  display: none;
+}
+html.logs th.uid {
+  white-space: nowrap;
+}
+html.logs td.ellipsis {
+  text-align: center;
+}
+html.logs td.ellipsis img.button {
+  height: 16px;
+  vertical-align: middle;
+  padding: 4px 32px 4px 32px;
+  border: solid 1px #268bd2;
+  border-radius: 4px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+html.logs th.timestamp {
+  border-bottom: 1px;
+  white-space: nowrap;
+}
+html.logs td input {
+  height: 18px;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  font-variant-caps: all-small-caps;
+}
+html.logs td input.timestamp {
+  width: 140px;
+}
+html.logs td input.uid {
+  width: 72px;
+}
+html.logs td input.item {
+  width: 96px;
+}
+html.logs td input.item-id {
+  width: 72px;
+}
+html.logs td input.item-name {
+  width: 120px;
+}
+html.logs td input.item-field {
+  width: 96px;
+}
+html.logs td input.details {
+  width: 90%;
+  font-style: italic;
+  font-variant: normal;
+  font-variant-caps: normal;
+  font-size: 0.9em;
+}
+@-moz-document url-prefix("") {
+  html.logs td input {
+    font-family: "Arial", san-serif;
+    font-size: 1em;
+    font-variant-numeric: proportional-nums;
+  }
+  html.logs td input.timestamp {
+    font-size: 0.88em;
+  }
+  html.logs td input.item-id {
+    font-size: 0.88em;
+  }
+}
+html.logs input.apple {
+  font-size: 13.333px;
+}
+
 #controls {
   display: flex;
   justify-content: flex-end;
