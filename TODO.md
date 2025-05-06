@@ -14,7 +14,7 @@
       - [x] logs
       - [x] users
       - [x] other
-      - [ ] password
+      - [x] password
       - [ ] setup
       - [x] unauthorized
       - [x] online/disconnected

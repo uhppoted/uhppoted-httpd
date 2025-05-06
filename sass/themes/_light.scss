@@ -71,10 +71,14 @@ $violet: colours.$violet;
 
   --fieldset-border: 1px solid silver;
   --fieldset-text: #{$base03};
+  --fieldset-hint: #{$base1};
   --fieldset-button-border: 2px solid #{$red};
+  --fieldset-button-border-plain: 2px solid #{$base1};
 
   --field-border: 1px solid #{$base00};
+  --field-border-readonly: 1px solid #{color.adjust($base1, $lightness: 10%)};
   --field-input-background: #{$base3};
+  --field-password-credentials-background:  #{$base2};
 
   --combobox-background: #{$base2};
   --combobox-border: 1px solid #93a1a1;
@@ -83,7 +87,8 @@ $violet: colours.$violet;
   --combobox-mode-background: #{color.adjust($base3, $lightness: 10%)};
 
   --message-background-colour: #{$base2};
+  --enabled-colour: #{$yellow};
   --warning-colour: #{$red};
   --colour-base01: #{$base01};
-
+  --shaded-background: repeating-linear-gradient(-55deg, #808080ff, #22222220 1px, #22222220 20px);
 }
