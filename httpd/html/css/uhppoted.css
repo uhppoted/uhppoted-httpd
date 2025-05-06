@@ -1139,6 +1139,108 @@ html.logs input.apple {
   font-size: 13.333px;
 }
 
+html.users #container {
+  width: fit-content;
+  height: 100%;
+  max-width: 100%;
+  min-width: 80%;
+  display: flex;
+  flex-direction: column;
+}
+html.users th.name {
+  min-width: 90px;
+  border-bottom: 1px;
+}
+html.users tr.user td input.name {
+  width: 90px;
+}
+html.users td label.otp {
+  cursor: pointer;
+  visibility: hidden;
+}
+html.users td label.otp.visible {
+  visibility: visible;
+}
+html.users td label.otp input[type=checkbox] {
+  display: none;
+}
+html.users td label.otp img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  margin: auto;
+}
+html.users td label.otp img.yes {
+  display: none;
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
+}
+html.users td label.otp img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+html.users td label.otp input[type=checkbox]:checked ~ img.yes {
+  display: block;
+}
+html.users td label.otp input[type=checkbox]:checked ~ img.no {
+  display: none;
+}
+html.users td label.locked {
+  cursor: pointer;
+  visibility: hidden;
+}
+html.users td label.locked.visible {
+  visibility: visible;
+}
+html.users td label.locked input[type=checkbox] {
+  display: none;
+}
+html.users td label.locked img {
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  margin: auto;
+}
+html.users td label.locked img.yes {
+  display: none;
+  filter: invert(42%) sepia(93%) saturate(703%) hue-rotate(35deg) brightness(101%) contrast(101%);
+}
+html.users td label.locked img.no {
+  display: block;
+  filter: invert(100%) sepia(30%) saturate(7%) hue-rotate(292deg) brightness(81%) contrast(103%);
+}
+html.users td label.locked input[type=checkbox]:checked ~ img.yes {
+  display: block;
+}
+html.users td label.locked input[type=checkbox]:checked ~ img.no {
+  display: none;
+}
+html.users input.apple {
+  font-size: 13.333px;
+}
+
+html.unauthorised #container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "header header header" "left  content right" "footer footer footer";
+}
+html.unauthorised #unauthorized {
+  grid-area: content;
+  display: flex;
+  flex-flow: column nowrap;
+  text-align: center;
+  justify-content: start;
+  align-items: center;
+  width: 100%;
+  padding: 96px 0px 4px 0px;
+  font-size: 0.9em;
+}
+html.unauthorised #unauthorized div {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
 #controls {
   display: flex;
   justify-content: flex-end;

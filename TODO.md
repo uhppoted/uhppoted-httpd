@@ -11,12 +11,12 @@
       - [x] cards
       - [x] groups
       - [x] events
-      - [ ] logs
-      - [ ] users
-      - [ ] other
+      - [x] logs
+      - [x] users
+      - [x] other
       - [ ] password
       - [ ] setup
-      - [ ] unauthorized
+      - [x] unauthorized
       - [x] online/disconnected
       - [x] tooltips
       - [ ] windmill

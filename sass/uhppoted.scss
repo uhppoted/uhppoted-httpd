@@ -9,6 +9,9 @@
 @use 'pages/groups';
 @use 'pages/events';
 @use 'pages/logs';
+@use 'pages/users';
+@use 'pages/other';
+@use 'pages/unauthorised';
 
 @use 'components/controls';
 @use 'components/tabular';
