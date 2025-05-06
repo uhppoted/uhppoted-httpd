@@ -15,7 +15,7 @@
       - [x] users
       - [x] other
       - [x] password
-      - [ ] setup
+      - [x] setup
       - [x] unauthorized
       - [x] online/disconnected
       - [x] tooltips
