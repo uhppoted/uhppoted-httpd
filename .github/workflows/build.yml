@@ -27,14 +27,14 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install sass
-      run: npm install -g sass
-
     - name: Check out code into the Go module directory
       uses: actions/checkout@v4
 
     - name: Install eslint
       run: npm install eslint prettier --save-dev
+
+    - name: Install sass
+      run: npm install sass --save-dev
 
     - name: Build
       run: make build-all
