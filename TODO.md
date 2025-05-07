@@ -21,9 +21,10 @@
       - [x] tooltips
       - [x] windmill
       - [x] loading
-      - [ ] trim light and dark styles to overrides only
+      - [x] trim light and dark styles to overrides only
       - [x] CHANGELOG
       - [x] README
+      - [ ] Merge into _main_
 
 - [ ] doors: https://developer.chrome.com/blog/a-customizable-select
 

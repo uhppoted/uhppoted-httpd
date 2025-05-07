@@ -2,6 +2,7 @@
 @use 'sass:color';
 
 $base03: colours.$base03;
+$base02: colours.$base02;
 $base01: colours.$base01;
 $base00: colours.$base00;
 $base0: colours.$base0;
@@ -21,7 +22,7 @@ $violet: colours.$violet;
   --footer-text-colour: #{$base03};
 
   --nav-background: #{color.adjust($base2, $lightness: -5%)};
-  --nav-text-colour: #{$blue}
+  --nav-text-colour: #{$blue};
 
   --offline-border: solid 1px #{$red};
   --offline-colour: #{$base0};

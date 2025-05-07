@@ -14,18 +14,13 @@ $orange: colours.$orange;
 $yellow: colours.$yellow;
 $green: colours.$green;
 $blue: colours.$blue;
+$violet: colours.$violet;
 
 [data-theme="dark"] {
   --background-colour: #{$base03};
   --footer-background-colour: #{$base01};
-  --footer-text-colour: #{$base03};
 
   --nav-background: #{color.adjust($base02, $lightness: -5%)};
-  --nav-text-colour: #{$blue};
-
-  --offline-border: solid 1px #{$red};
-  --offline-colour: #{$base0};
-  --link-colour: #{$blue};
 
   --user-avatar-background: #{color.adjust($base02, $lightness: 3%)};
   --user-avatar-shadow: 3px 3px 3px #{color.adjust($base02, $lightness: -10%)};
@@ -34,8 +29,6 @@ $blue: colours.$blue;
   --user-menu-background: #{color.adjust($base02, $lightness: 1%)};  
   --user-menu-shadow: 3px 3px 3px #{color.adjust($base02, $lightness: -10%)};
   --user-menu-item-colour: #{$base00};
-  --user-menu-item-highlight-colour: #{$base2};
-  --user-menu-item-highlight-background: #{$base1};
 
   --content-controls-border: solid 1px #{color.adjust($blue, $lightness: -25%)};
   --content-svg-filter-commit: none;
@@ -47,51 +40,24 @@ $blue: colours.$blue;
   --content-table-background-even: #{$base02};
   --content-table-background-odd-th: #{color.adjust($base03,$lightness: -5%)};
   --content-table-background-even-th: #{color.adjust($base02,$lightness: -5%)};
-  --content-table-border: 1px solid #{$blue};
   --content-table-border-left: 2px #{color.adjust($blue, $lightness: -25%)};
-  --content-table-thumb-background: #{color.adjust($base2, $lightness: -10%)};
-  --content-table-thumb-border: 2px solid #{$base3};
   --content-table-text-colour: #{$base0};
   --content-table-row-modified: #{color.adjust($blue, $lightness: -25%)};
-  --content-table-row-new: #{color.adjust($blue, $lightness: 30%)};
   --content-table-row-unconfigured: #{color.adjust($yellow, $lightness: -2.5%)};
-  --content-table-row-error: #{color.adjust($red, $lightness: 20%)};
   --content-table-item-normal-colour: #{$base00};
   --content-table-item-unknown-colour: #{$base00};
   --content-table-item-uncertain-colour: #{$base01};
-  --content-table-item-incomplete-colour: #{color.adjust($orange, $lightness: 15%)};
   --content-table-item-error-colour: #{color.adjust($red, $lightness: -10%)};
-  --content-table-item-conflict-colour: #{color.change($orange, $alpha: 0.25)};
-  --content-table-flag: url('/images/default/corner.svg');  
-  --content-table-flag-modified: invert(61%) sepia(14%) saturate(250%)  hue-rotate(138deg) brightness(92%) contrast(92%);
-  --content-table-flag-conflict: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
-  --content-table-flag-pending: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
-  --content-table-commit: #{$green};
-  --content-table-rollback: #{$red};
 
   --fieldset-border: #{$base01};
   --fieldset-text: #{$base0};
-  --fieldset-hint: #{$base1};
   --fieldset-button-border: 2px solid #{$blue};
-  --fieldset-button-border-plain: 2px solid #{$base1};
 
-  --field-border: 1px solid #{$base00};
-  --field-border-readonly: 1px solid #{color.adjust($base1, $lightness: 10%)};
-  --field-input-background: #{$base3};
   --field-password-credentials-background:  #{$base01};
 
   --combobox-background: #{$base1};
-  --combobox-border: 1px solid #93a1a1;
-  --combobox-li-colour: #666666;
-  --combobox-li-selected: #def;
   --combobox-mode-background: #{color.adjust($base01, $lightness: 10%)};
 
-  --windmill-border: 2px solid #{$blue};
-  --loading-border: 5px solid #{$blue};
-
   --message-background-colour: #{$base02};
-  --enabled-colour: #{$yellow};
   --warning-colour: #{$base0};
-  --colour-base01: #{$base01};
-  --shaded-background: repeating-linear-gradient(-55deg, #808080ff, #22222220 1px, #22222220 20px);
 }
