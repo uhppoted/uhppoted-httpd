@@ -86,6 +86,8 @@ $blue: colours.$blue;
   --combobox-li-selected: #def;
   --combobox-mode-background: #{color.adjust($base01, $lightness: 10%)};
 
+  --windmill-border: 2px solid #{$blue};
+
   --message-background-colour: #{$base02};
   --enabled-colour: #{$yellow};
   --warning-colour: #{$base0};

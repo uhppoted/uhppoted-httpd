@@ -19,7 +19,7 @@
       - [x] unauthorized
       - [x] online/disconnected
       - [x] tooltips
-      - [ ] windmill
+      - [x] windmill
       - [ ] loading
       - [ ] CHANGELOG
       - [ ] README

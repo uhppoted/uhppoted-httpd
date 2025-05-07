@@ -83,6 +83,7 @@
   --combobox-li-colour: #666666;
   --combobox-li-selected: #def;
   --combobox-mode-background: hsl(43.8461538462, 86.6666666667%, 104.1176470588%);
+  --windmill-border: 2px solid #268bd2;
   --message-background-colour: #eee8d5;
   --enabled-colour: #b58900;
   --warning-colour: #dc322f;
@@ -151,6 +152,7 @@
   --combobox-li-colour: #666666;
   --combobox-li-selected: #def;
   --combobox-mode-background: hsl(43.8461538462, 86.6666666667%, 104.1176470588%);
+  --windmill-border: 2px solid #268bd2;
   --message-background-colour: #eee8d5;
   --enabled-colour: #b58900;
   --warning-colour: #dc322f;
@@ -219,6 +221,7 @@
   --combobox-li-colour: #666666;
   --combobox-li-selected: #def;
   --combobox-mode-background: rgb(110.0341463415, 137.2926829268, 145.9658536585);
+  --windmill-border: 2px solid #268bd2;
   --message-background-colour: #073642;
   --enabled-colour: #b58900;
   --warning-colour: #839496;
@@ -1785,6 +1788,114 @@ html.setup #message.visible {
   visibility: visible;
 }
 
+#offline {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  padding-top: 96px;
+}
+
+#offline > div {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 32px 16px 32px;
+  border-radius: 4px;
+  border: var(--offline-border);
+}
+
+#offline p {
+  font-family: Sans-Serif;
+  font-size: 0.75em;
+  color: var(--offline-colour);
+  margin-bottom: 16px;
+}
+
+#offline a {
+  font-family: Sans-Serif;
+  font-size: 0.6em;
+  color: var(--link-colour);
+  text-decoration: none;
+}
+
+#offline a:hover, visited {
+  color: var(--link-colour);
+  text-decoration: none;
+}
+
+#offline div a {
+  font-family: Sans-Serif;
+  font-size: 0.7em;
+  color: var(--link-colour);
+}
+
+#offline + div > p {
+  font-family: Sans-Serif;
+  font-size: 0.75em;
+  font-weight: normal;
+  text-align: center;
+  color: var(--offline-colour);
+  margin-top: 4px;
+}
+
+#avatar {
+  background: var(--user-avatar-background);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding-right: 8px;
+  cursor: pointer;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  box-shadow: var(--user-avatar-shadow);
+}
+
+#avatar p {
+  font-size: 0.9em;
+  padding: 0px 8px 0px 12px;
+  color: var(--user-avatar-text-colour);
+  user-select: none;
+}
+
+#avatar img {
+  width: 32px;
+  height: 32px;
+  padding: 1px 0px 1px 0px;
+}
+
+#avatar img svg {
+  color: red;
+}
+
+#user {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: top;
+  z-index: 3;
+}
+
+#user .menu {
+  background: var(--user-menu-background);
+  display: none;
+  width: 100%;
+  margin-top: 1px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  z-index: 1;
+  font-size: 1em;
+  border: none;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  box-shadow: var(--user-menu-shadow);
+}
+
 #controls {
   display: flex;
   justify-content: flex-end;
@@ -2160,6 +2271,46 @@ tr td select[data-status=error] {
   display: block;
 }
 
+div#windmills {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
+  justify-items: center;
+  align-items: center;
+}
+
+#windmill {
+  display: none;
+  visibility: hidden;
+  margin-top: 0px;
+  margin-right: 32px;
+}
+
+#windmill:before {
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  top: 3px;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border-top: var(--windmill-border);
+  border-right: 2px solid transparent;
+  animation: windmill 0.6s linear infinite;
+}
+
+#windmill[data-count] {
+  display: block;
+  visibility: visible;
+}
+
+@keyframes windmill {
+  to {
+    transform: rotate(360deg);
+  }
+}
 * {
   background: transparent;
   margin: 0px;
@@ -2285,62 +2436,6 @@ main #container.loading {
   opacity: 0.5;
 }
 
-#user {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: top;
-  z-index: 3;
-}
-
-#avatar {
-  background: var(--user-avatar-background);
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding-right: 8px;
-  cursor: pointer;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  box-shadow: var(--user-avatar-shadow);
-}
-
-#avatar p {
-  font-size: 0.9em;
-  padding: 0px 8px 0px 12px;
-  color: var(--user-avatar-text-colour);
-  user-select: none;
-}
-
-#avatar img {
-  width: 32px;
-  height: 32px;
-  padding: 1px 0px 1px 0px;
-}
-
-#avatar img svg {
-  color: red;
-}
-
-#user .menu {
-  background: var(--user-menu-background);
-  display: none;
-  width: 100%;
-  margin-top: 1px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  z-index: 1;
-  font-size: 1em;
-  border: none;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  box-shadow: var(--user-menu-shadow);
-}
-
 .menu a {
   display: block;
   padding: 2px 8px 2px 8px;
@@ -2356,58 +2451,6 @@ main #container.loading {
 .menu a:hover {
   color: var(--user-menu-item-highlight-colour);
   background: var(--user-menu-item-highlight-background);
-}
-
-#offline {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-  padding-top: 96px;
-}
-
-#offline > div {
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  align-items: center;
-  padding: 16px 32px 16px 32px;
-  border-radius: 4px;
-  border: var(--offline-border);
-}
-
-#offline p {
-  font-family: Sans-Serif;
-  font-size: 0.75em;
-  color: var(--offline-colour);
-  margin-bottom: 16px;
-}
-
-#offline a {
-  font-family: Sans-Serif;
-  font-size: 0.6em;
-  color: var(--link-colour);
-  text-decoration: none;
-}
-
-#offline a:hover, visited {
-  color: var(--link-colour);
-  text-decoration: none;
-}
-
-#offline div a {
-  font-family: Sans-Serif;
-  font-size: 0.7em;
-  color: var(--link-colour);
-}
-
-#offline + div > p {
-  font-family: Sans-Serif;
-  font-size: 0.75em;
-  font-weight: normal;
-  text-align: center;
-  color: var(--offline-colour);
-  margin-top: 4px;
 }
 
 .message {
