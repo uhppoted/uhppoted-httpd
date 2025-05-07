@@ -1,7 +1,7 @@
 # TODO
 
 - [x] anti-passback (cf. https://github.com/uhppoted/uhppoted/issues/60)
-- [ ] _sass_ deprecation warnings (cf. https://github.com/uhppoted/uhppoted-httpd/issues/50)
+- [x] _sass_ deprecation warnings (cf. https://github.com/uhppoted/uhppoted-httpd/issues/50)
       - [x] themes
       - [x] github workflow
       - [x] login
@@ -24,7 +24,7 @@
       - [x] trim light and dark styles to overrides only
       - [x] CHANGELOG
       - [x] README
-      - [ ] Merge into _main_
+      - [x] Merge into _main_
 
 - [ ] doors: https://developer.chrome.com/blog/a-customizable-select
 
