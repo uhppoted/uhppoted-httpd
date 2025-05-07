@@ -20,7 +20,8 @@
       - [x] online/disconnected
       - [x] tooltips
       - [x] windmill
-      - [ ] loading
+      - [x] loading
+      - [ ] trim light and dark styles to overrides only
       - [ ] CHANGELOG
       - [ ] README
 

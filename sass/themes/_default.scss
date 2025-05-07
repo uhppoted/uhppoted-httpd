@@ -87,6 +87,7 @@ $violet: colours.$violet;
   --combobox-mode-background: #{color.adjust($base3, $lightness: 10%)};
 
   --windmill-border: 2px solid #{$blue};
+  --loading-border: 5px solid #{$blue};
 
   --message-background-colour: #{$base2};
   --enabled-colour: #{$yellow};
