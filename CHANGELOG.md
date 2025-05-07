@@ -7,6 +7,7 @@
 
 ### Updated
 1. Updated to Go 1.24.
+2. Replaced deprecated sass with dart-sass.
 
 
 ## [0.8.10](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.10) - 2025-01-30

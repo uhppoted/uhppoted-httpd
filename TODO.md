@@ -22,8 +22,8 @@
       - [x] windmill
       - [x] loading
       - [ ] trim light and dark styles to overrides only
-      - [ ] CHANGELOG
-      - [ ] README
+      - [x] CHANGELOG
+      - [x] README
 
 - [ ] doors: https://developer.chrome.com/blog/a-customizable-select
 

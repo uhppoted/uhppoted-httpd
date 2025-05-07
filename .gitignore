@@ -5,7 +5,6 @@ runtime
 tmp
 html/css
 node_modules
-archive
 go.xxx
 go.work
 go.work.sum
