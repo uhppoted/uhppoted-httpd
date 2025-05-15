@@ -2,13 +2,13 @@
 
 import { postAsForm } from './uhppoted.js'
 
-export function login (event) {
+export function login(event) {
   dismiss()
 
   event.preventDefault()
 
   preauth()
-    .then(response => {
+    .then((response) => {
       switch (response.status) {
         case 200:
           return true
@@ -17,7 +17,7 @@ export function login (event) {
           throw new Error(response.statusText)
       }
     })
-    .then(v => {
+    .then((_v) => {
       auth()
     })
     .catch(function (err) {
@@ -27,30 +27,29 @@ export function login (event) {
 
 // HEAD request to refresh the uhppoted-httpd-login cookie.
 // (preempts the double login needed if the cookie has expired)
-async function preauth () {
+async function preauth() {
   const init = {
     method: 'HEAD',
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'same-origin',
     redirect: 'follow',
-    referrerPolicy: 'no-referrer'
+    referrerPolicy: 'no-referrer',
   }
 
-  return await fetch('/authenticate', init)
-    .then(response => {
-      return response
-    })
+  return await fetch('/authenticate', init).then((response) => {
+    return response
+  })
 }
 
-function auth () {
+function auth() {
   const credentials = {
     uid: document.getElementById('uid').value,
-    pwd: document.getElementById('pwd').value
+    pwd: document.getElementById('pwd').value,
   }
 
   postAsForm('/authenticate', credentials)
-    .then(response => {
+    .then((response) => {
       switch (response.status) {
         case 200:
           if (response.redirected) {
@@ -67,7 +66,7 @@ function auth () {
           return response.text()
       }
     })
-    .then(msg => {
+    .then((msg) => {
       if (msg) {
         throw new Error(msg.trim())
       }
@@ -77,7 +76,7 @@ function auth () {
     })
 }
 
-function warning (msg) {
+function warning(msg) {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 
@@ -91,7 +90,7 @@ function warning (msg) {
   }
 }
 
-function dismiss () {
+function dismiss() {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 

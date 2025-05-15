@@ -4,8 +4,8 @@ export const schema = {
     cards: {
       base: '.1',
       defaultStartDate: '.1.1',
-      defaultEndDate: '.1.2'
-    }
+      defaultEndDate: '.1.2',
+    },
   },
 
   interfaces: {
@@ -22,7 +22,7 @@ export const schema = {
     broadcast: '.3.2',
     listen: '.3.3',
 
-    regex: /^(0\.1\.[1-9][0-9]*).*$/
+    regex: /^(0\.1\.[1-9][0-9]*).*$/,
   },
 
   controllers: {
@@ -40,30 +40,36 @@ export const schema = {
       status: '.3.0',
       address: '.3.1',
       configured: '.3.2',
-      protocol: '.3.3'
+      protocol: '.3.3',
     },
     datetime: {
       status: '.4.0',
       current: '.4.1',
-      configured: '.4.2'
+      configured: '.4.2',
     },
     cards: {
       status: '.5.0',
-      count: '.5.1'
+      count: '.5.1',
     },
     events: {
       status: '.6.0',
       first: '.6.1',
       last: '.6.2',
-      current: '.6.3'
+      current: '.6.3',
     },
     door1: '.7.1',
     door2: '.7.2',
     door3: '.7.3',
     door4: '.7.4',
     interlock: '.8',
+    antipassback: {
+      status: '.9.0',
+      antipassback: '.9.1',
+      configured: '.9.2',
+      modified: '.9.3',
+    },
 
-    regex: /^(0\.2\.[1-9][0-9]*).*$/
+    regex: /^(0\.2\.[1-9][0-9]*).*$/,
   },
 
   doors: {
@@ -75,7 +81,7 @@ export const schema = {
     modified: '.0.3',
     type: '.0.4',
 
-    regex: /^(0\.3\.([1-9][0-9]*)).*$/
+    regex: /^(0\.3\.([1-9][0-9]*)).*$/,
   },
 
   cards: {
@@ -97,7 +103,7 @@ export const schema = {
     // {{end}}
 
     regex: /^(0\.4\.[1-9][0-9]*).*$/,
-    groups: /^(0\.4\.[1-9][0-9]*\.5\.[1-9][0-9]*)(\.[1-3])?$/
+    groups: /^(0\.4\.[1-9][0-9]*\.5\.[1-9][0-9]*)(\.[1-3])?$/,
   },
 
   groups: {
@@ -113,7 +119,7 @@ export const schema = {
     door: '.2',
 
     regex: /^(0\.5\.([1-9][0-9]*)).*$/,
-    doors: /^(0\.5\.[1-9][0-9]*\.2\.[1-9][0-9]*)(\.[1-3])?$/
+    doors: /^(0\.5\.[1-9][0-9]*\.2\.[1-9][0-9]*)(\.[1-3])?$/,
   },
 
   events: {
@@ -136,7 +142,7 @@ export const schema = {
     doorName: '.11',
     cardName: '.12',
 
-    regex: /^(0\.6\.[1-9][0-9]*).*$/
+    regex: /^(0\.6\.[1-9][0-9]*).*$/,
   },
 
   logs: {
@@ -153,7 +159,7 @@ export const schema = {
     field: '.6',
     details: '.7',
 
-    regex: /^(0\.7\.[1-9][0-9]*).*$/
+    regex: /^(0\.7\.[1-9][0-9]*).*$/,
   },
 
   users: {
@@ -171,6 +177,6 @@ export const schema = {
     otp: '.5',
     locked: '.6',
 
-    regex: /^(0\.8\.[1-9][0-9]*).*$/
-  }
+    regex: /^(0\.8\.[1-9][0-9]*).*$/,
+  },
 }

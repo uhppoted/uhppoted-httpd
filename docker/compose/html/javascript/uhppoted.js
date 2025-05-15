@@ -2,31 +2,31 @@ let refreshTimer
 let idleTimer
 let disconnected
 
-document.addEventListener('mousedown', event => {
+document.addEventListener('mousedown', (event) => {
   resetIdle(event)
 })
 
-document.addEventListener('click', event => {
+document.addEventListener('click', (event) => {
   resetIdle(event)
 })
 
-document.addEventListener('scroll', event => {
+document.addEventListener('scroll', (event) => {
   resetIdle(event)
 })
 
-document.addEventListener('keypress', event => {
+document.addEventListener('keypress', (event) => {
   resetIdle(event)
 })
 
-export function setRefresh (f) {
+export function setRefresh(f) {
   refreshTimer = setInterval(f, 15000)
 }
 
-export function onIdle () {
+export function onIdle() {
   onSignOut()
 }
 
-export function onMenu (event, show) {
+export function onMenu(event, show) {
   if (show) {
     document.querySelector('#user div.menu').style.display = 'block'
   } else {
@@ -34,20 +34,20 @@ export function onMenu (event, show) {
   }
 }
 
-export function onSignOut (event) {
+export function onSignOut(event) {
   if (event != null) {
     event.preventDefault()
   }
 
   postAsJSON('/logout', {})
-    .then(response => {
+    .then((response) => {
       if (response.status === 200 && response.redirected) {
         window.location = response.url
       } else {
         return response.text()
       }
     })
-    .then(msg => {
+    .then((msg) => {
       if (msg) {
         warning(msg)
       }
@@ -58,7 +58,7 @@ export function onSignOut (event) {
     })
 }
 
-export function onSynchronizeACL (event) {
+export function onSynchronizeACL(event) {
   if (event != null) {
     event.preventDefault()
   }
@@ -66,7 +66,7 @@ export function onSynchronizeACL (event) {
   const location = window.location
 
   postAsJSON('/synchronize/ACL', {})
-    .then(response => {
+    .then((response) => {
       if (response.status === 200 && response.redirected) {
         window.location = response.url
       } else if (response.status === 200) {
@@ -75,7 +75,7 @@ export function onSynchronizeACL (event) {
         return response.text()
       }
     })
-    .then(msg => {
+    .then((msg) => {
       warning(msg)
     })
     .catch(function (err) {
@@ -84,7 +84,7 @@ export function onSynchronizeACL (event) {
     })
 }
 
-export function onSynchronizeDateTime (event) {
+export function onSynchronizeDateTime(event) {
   if (event != null) {
     event.preventDefault()
   }
@@ -92,7 +92,7 @@ export function onSynchronizeDateTime (event) {
   const location = window.location
 
   postAsJSON('/synchronize/datetime', {})
-    .then(response => {
+    .then((response) => {
       if (response.status === 200 && response.redirected) {
         window.location = response.url
       } else if (response.status === 200) {
@@ -101,7 +101,7 @@ export function onSynchronizeDateTime (event) {
         return response.text()
       }
     })
-    .then(msg => {
+    .then((msg) => {
       warning(msg)
     })
     .catch(function (err) {
@@ -110,7 +110,7 @@ export function onSynchronizeDateTime (event) {
     })
 }
 
-export function onSynchronizeDoors (event) {
+export function onSynchronizeDoors(event) {
   console.log('onSynchronizeDoors')
   if (event != null) {
     event.preventDefault()
@@ -119,7 +119,7 @@ export function onSynchronizeDoors (event) {
   const location = window.location
 
   postAsJSON('/synchronize/doors', {})
-    .then(response => {
+    .then((response) => {
       console.error('> 1', response)
       if (response.status === 200 && response.redirected) {
         window.location = response.url
@@ -129,7 +129,7 @@ export function onSynchronizeDoors (event) {
         return response.text()
       }
     })
-    .then(msg => {
+    .then((msg) => {
       warning(msg)
     })
     .catch(function (err) {
@@ -138,7 +138,7 @@ export function onSynchronizeDoors (event) {
     })
 }
 
-export function onShowHidePassword (event, id) {
+export function onShowHidePassword(event, id) {
   const pwd = document.getElementById(id)
   const eye = event.target
 
@@ -151,7 +151,7 @@ export function onShowHidePassword (event, id) {
   }
 }
 
-export function retheme (theme) {
+export function retheme(theme) {
   const expires = new Date()
   const stylesheets = document.querySelectorAll("link[rel='stylesheet']")
   const images = document.querySelectorAll('img')
@@ -160,8 +160,8 @@ export function retheme (theme) {
 
   document.cookie = 'uhppoted-settings=theme:' + theme + '; expires=' + expires.toUTCString()
 
-  stylesheets.forEach(link => {
-    const re = new RegExp('(.+?/css)/(.+?)/(.+)', 'i') // eslint-disable-line prefer-regex-literals
+  stylesheets.forEach((link) => {
+    const re = new RegExp('(.+?/css)/(.+?)/(.+)', 'i')
 
     if (re.test(link.href)) {
       const match = link.href.match(re)
@@ -170,8 +170,8 @@ export function retheme (theme) {
     }
   })
 
-  images.forEach(img => {
-    const re = new RegExp('(.+?/images)/(.+?)/(.+)', 'i') // eslint-disable-line prefer-regex-literals
+  images.forEach((img) => {
+    const re = new RegExp('(.+?/images)/(.+?)/(.+)', 'i')
 
     if (re.test(img.src)) {
       const match = img.src.match(re)
@@ -181,7 +181,7 @@ export function retheme (theme) {
   })
 }
 
-export function warning (msg) {
+export function warning(msg) {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 
@@ -198,7 +198,7 @@ export function warning (msg) {
   }
 }
 
-export function dismiss () {
+export function dismiss() {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 
@@ -211,7 +211,7 @@ export function dismiss () {
   }
 }
 
-export async function GET (url = '', authorization = '') {
+export async function GET(url = '', authorization = '') {
   const init = {
     method: 'GET',
     mode: 'cors',
@@ -219,11 +219,11 @@ export async function GET (url = '', authorization = '') {
     credentials: 'same-origin',
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
-    headers: { Authorization: authorization }
+    headers: { Authorization: authorization },
   }
 
   return await fetch(url, init)
-    .then(response => {
+    .then((response) => {
       connected(true)
       return response
     })
@@ -233,7 +233,7 @@ export async function GET (url = '', authorization = '') {
     })
 }
 
-export async function POST (url = '', authorization = '', data = {}) {
+export async function POST(url = '', authorization = '', data = {}) {
   dismiss()
 
   const body = Object.entries(data)
@@ -248,15 +248,15 @@ export async function POST (url = '', authorization = '', data = {}) {
     credentials: 'same-origin',
     headers: {
       Authorization: authorization,
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
-    body: body
+    body: body,
   }
 
   return await fetch(url, init)
-    .then(response => {
+    .then((response) => {
       return response
     })
     .catch(function (err) {
@@ -264,7 +264,7 @@ export async function POST (url = '', authorization = '', data = {}) {
     })
 }
 
-export async function DELETE (url = '', authorization = '') {
+export async function DELETE(url = '', authorization = '') {
   const init = {
     method: 'DELETE',
     mode: 'cors',
@@ -272,11 +272,11 @@ export async function DELETE (url = '', authorization = '') {
     credentials: 'same-origin',
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
-    headers: { Authorization: authorization }
+    headers: { Authorization: authorization },
   }
 
   return await fetch(url, init)
-    .then(response => {
+    .then((response) => {
       return response
     })
     .catch(function (err) {
@@ -284,18 +284,18 @@ export async function DELETE (url = '', authorization = '') {
     })
 }
 
-export async function getAsJSON (url = '') {
+export async function getAsJSON(url = '') {
   const init = {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'same-origin',
     redirect: 'follow',
-    referrerPolicy: 'no-referrer'
+    referrerPolicy: 'no-referrer',
   }
 
   return await fetch(url, init)
-    .then(response => {
+    .then((response) => {
       connected(true)
       return response
     })
@@ -305,7 +305,7 @@ export async function getAsJSON (url = '') {
     })
 }
 
-export async function postAsForm (url = '', data = {}) {
+export async function postAsForm(url = '', data = {}) {
   dismiss()
 
   const pairs = []
@@ -321,11 +321,11 @@ export async function postAsForm (url = '', data = {}) {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
-    body: pairs.join('&').replace(/%20/g, '+')
+    body: pairs.join('&').replace(/%20/g, '+'),
   }
 
   return await fetch(url, init)
-    .then(response => {
+    .then((response) => {
       connected(true)
       return response
     })
@@ -335,7 +335,7 @@ export async function postAsForm (url = '', data = {}) {
     })
 }
 
-export async function postAsJSON (url = '', data = {}) {
+export async function postAsJSON(url = '', data = {}) {
   dismiss()
 
   const init = {
@@ -346,11 +346,11 @@ export async function postAsJSON (url = '', data = {}) {
     headers: { 'Content-Type': 'application/json' },
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   }
 
   return await fetch(url, init)
-    .then(response => {
+    .then((response) => {
       connected(true)
       return response
     })
@@ -360,7 +360,7 @@ export async function postAsJSON (url = '', data = {}) {
     })
 }
 
-export function resetIdle () {
+export function resetIdle() {
   if (idleTimer != null) {
     clearTimeout(idleTimer)
   }
@@ -368,7 +368,7 @@ export function resetIdle () {
   idleTimer = setTimeout(onIdle, 5 * 60 * 1000)
 }
 
-export function busy () {
+export function busy() {
   const windmill = document.getElementById('windmill')
 
   if (windmill) {
@@ -378,7 +378,7 @@ export function busy () {
   }
 }
 
-export function unbusy () {
+export function unbusy() {
   const windmill = document.getElementById('windmill')
 
   if (windmill) {
@@ -387,12 +387,12 @@ export function unbusy () {
     if (queued > 1) {
       windmill.dataset.count = (queued - 1).toString()
     } else {
-      delete (windmill.dataset.count)
+      delete windmill.dataset.count
     }
   }
 }
 
-export function loading () {
+export function loading() {
   const windmill = document.getElementById('loading')
   const container = document.getElementById('container')
 
@@ -405,7 +405,7 @@ export function loading () {
   }
 }
 
-export function loaded () {
+export function loaded() {
   const windmill = document.getElementById('loading')
   const container = document.getElementById('container')
 
@@ -418,7 +418,7 @@ export function loaded () {
   }
 }
 
-export function onReload () {
+export function onReload() {
   const message = document.querySelector('#offline + div > p')
 
   message.innerHTML = '.... trying ....'
@@ -429,16 +429,18 @@ export function onReload () {
     cache: 'no-cache',
     credentials: 'same-origin',
     redirect: 'follow',
-    referrerPolicy: 'no-referrer'
-  }).then(response => {
-    window.location = '/index.html'
-  }).catch(function (err) {
-    console.error(err)
-    message.innerHTML = '(still offline)'
+    referrerPolicy: 'no-referrer',
   })
+    .then((_response) => {
+      window.location = '/index.html'
+    })
+    .catch(function (err) {
+      console.error(err)
+      message.innerHTML = '(still offline)'
+    })
 }
 
-function connected (ok) {
+function connected(ok) {
   const element = document.querySelector('header #disconnected')
   let monitor = false
 
@@ -463,7 +465,7 @@ function connected (ok) {
   } else if (!disconnected) {
     disconnected = new Date()
   } else {
-    const duration = (new Date() - disconnected)
+    const duration = new Date() - disconnected
     const seconds = Math.floor(Math.max(0, Math.round(duration / 1000)))
 
     if (seconds > 60) {
@@ -473,7 +475,7 @@ function connected (ok) {
   }
 }
 
-function offline () {
+function offline() {
   const cookies = document.cookie.split(';')
 
   for (let i = 0; i < cookies.length; i++) {
@@ -486,7 +488,8 @@ function offline () {
     }
   }
 
-  document.body.innerHTML = '<div id="offline"><div><div><p>SYSTEM OFFLINE</p></div><div><a onclick="onReload()">RELOAD</a></div></div></div><div><p/></div>'
+  document.body.innerHTML =
+    '<div id="offline"><div><div><p>SYSTEM OFFLINE</p></div><div><a onclick="onReload()">RELOAD</a></div></div></div><div><p/></div>'
 
   clearInterval(refreshTimer)
 }

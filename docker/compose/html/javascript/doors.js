@@ -3,14 +3,12 @@ import { DB, alive } from './db.js'
 import { Combobox } from './combobox.js'
 import { loaded } from './uhppoted.js'
 
-export function refreshed () {
-  const doors = [...DB.doors.values()]
-    .filter(d => alive(d))
-    .sort((p, q) => p.created.localeCompare(q.created))
+export function refreshed() {
+  const doors = [...DB.doors.values()].filter((d) => alive(d)).sort((p, q) => p.created.localeCompare(q.created))
 
   realize(doors)
 
-  doors.forEach(d => {
+  doors.forEach((d) => {
     const row = updateFromDB(d.OID, d)
     if (row) {
       if (d.status === 'new') {
@@ -24,7 +22,7 @@ export function refreshed () {
   loaded()
 }
 
-export function deletable (row) {
+export function deletable(row) {
   const name = row.querySelector('td input.name')
   const re = /^\s*$/
 
@@ -35,14 +33,14 @@ export function deletable (row) {
   return false
 }
 
-function realize (doors) {
+function realize(doors) {
   const table = document.querySelector('#doors table')
   const tbody = table.tBodies[0]
 
   // ... rows
   trim('doors', doors, tbody.querySelectorAll('tr.door'))
 
-  doors.forEach(o => {
+  doors.forEach((o) => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
 
     if (!row) {
@@ -51,7 +49,7 @@ function realize (doors) {
   })
 }
 
-function add (oid) {
+function add(oid) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('doors').querySelector('table tbody')
 
@@ -76,16 +74,24 @@ function add (oid) {
 
     const fields = [
       { suffix: 'name', oid: `${oid}.1`, selector: 'td input.name' },
-      { suffix: 'controller', oid: `${oid}.0.4.2`, selector: 'td input.controller' },
-      { suffix: 'deviceID', oid: `${oid}.0.4.3`, selector: 'td input.deviceID' },
+      {
+        suffix: 'controller',
+        oid: `${oid}.0.4.2`,
+        selector: 'td input.controller',
+      },
+      {
+        suffix: 'deviceID',
+        oid: `${oid}.0.4.3`,
+        selector: 'td input.deviceID',
+      },
       { suffix: 'doorID', oid: `${oid}.0.4.4`, selector: 'td input.doorID' },
       { suffix: 'delay', oid: `${oid}.2`, selector: 'td input.delay' },
       { suffix: 'mode', oid: `${oid}.3`, selector: 'td input.mode' },
       { suffix: 'keypad', oid: `${oid}.4`, selector: 'td label.keypad input' },
-      { suffix: 'passcodes', oid: `${oid}.5`, selector: 'td input.passcodes' }
+      { suffix: 'passcodes', oid: `${oid}.5`, selector: 'td input.passcodes' },
     ]
 
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const field = row.querySelector(f.selector)
 
       if (field) {
@@ -111,7 +117,7 @@ function add (oid) {
   }
 }
 
-function updateFromDB (oid, record) {
+function updateFromDB(oid, record) {
   const row = document.querySelector("div#doors tr[data-oid='" + oid + "']")
 
   const name = row.querySelector(`[data-oid="${oid}.1"]`)
@@ -139,7 +145,8 @@ function updateFromDB (oid, record) {
   update(passcodes, record.passcodes)
 
   // ... set tooltips for error'd values
-  { const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)
+  {
+    const tooltip = row.querySelector(`[data-oid="${oid}.2"] + div.tooltip-content`)
 
     if (tooltip) {
       const p = tooltip.querySelector('p')
@@ -156,7 +163,8 @@ function updateFromDB (oid, record) {
     }
   }
 
-  { const tooltip = row.querySelector(`[data-oid="${oid}.3"] + ul + div`)
+  {
+    const tooltip = row.querySelector(`[data-oid="${oid}.3"] + ul + div`)
 
     if (tooltip) {
       const p = tooltip.querySelector('p')
@@ -176,16 +184,16 @@ function updateFromDB (oid, record) {
   return row
 }
 
-function lookup (record) {
+function lookup(record) {
   const oid = record.OID
 
   const object = {
     name: '',
     deviceID: '',
-    door: ''
+    door: '',
   }
 
-  const controller = [...DB.controllers.values()].find(c => {
+  const controller = [...DB.controllers.values()].find((c) => {
     for (const d of [1, 2, 3, 4]) {
       if (c.doors[d] === oid) {
         return true
@@ -209,7 +217,7 @@ function lookup (record) {
   return object
 }
 
-function combobox (div) {
+function combobox(div) {
   const input = div.querySelector('input')
   const list = div.querySelector('ul')
   const options = new Set(['controlled', 'normally open', 'normally closed'])

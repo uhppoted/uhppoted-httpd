@@ -1,6 +1,6 @@
 import { postAsForm } from './uhppoted.js'
 
-export function setup (event) {
+export function setup(event) {
   dismiss()
 
   event.preventDefault()
@@ -8,11 +8,11 @@ export function setup (event) {
   const info = {
     name: '',
     uid: document.getElementById('uid').value,
-    pwd: document.getElementById('pwd').value
+    pwd: document.getElementById('pwd').value,
   }
 
   postAsForm('/setup', info)
-    .then(response => {
+    .then((response) => {
       switch (response.status) {
         case 200:
           if (response.redirected) {
@@ -26,7 +26,7 @@ export function setup (event) {
           return response.text()
       }
     })
-    .then(msg => {
+    .then((msg) => {
       if (msg) {
         throw new Error(msg.trim())
       }
@@ -36,7 +36,7 @@ export function setup (event) {
     })
 }
 
-function warning (msg) {
+function warning(msg) {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 
@@ -50,7 +50,7 @@ function warning (msg) {
   }
 }
 
-function dismiss () {
+function dismiss() {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 

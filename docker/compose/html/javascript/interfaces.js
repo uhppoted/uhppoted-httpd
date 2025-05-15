@@ -2,13 +2,13 @@ import { mark, unmark } from './tabular.js'
 import { DB } from './db.js'
 import { schema } from './schema.js'
 
-export function refreshed () {
-  DB.interfaces.forEach(c => {
+export function refreshed() {
+  DB.interfaces.forEach((c) => {
     updateFromDB(c.OID, c)
   })
 }
 
-function updateFromDB (oid, record) {
+function updateFromDB(oid, record) {
   const section = document.querySelector(`[data-oid="${oid}"]`)
 
   if (section) {
@@ -22,7 +22,7 @@ function updateFromDB (oid, record) {
   }
 }
 
-export function set (element, value, status) {
+export function set(element, value, _status) {
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
@@ -39,12 +39,12 @@ export function set (element, value, status) {
   percolate(oid)
 }
 
-export function rollback (tag, element) {
+export function rollback(tag, _element) {
   const section = document.getElementById(tag)
   const oid = section.dataset.oid
 
   const children = section.querySelectorAll(`[data-oid^="${oid}."]`)
-  children.forEach(e => {
+  children.forEach((e) => {
     const parent = e.parentElement
 
     e.dataset.value = e.dataset.original
@@ -58,13 +58,13 @@ export function rollback (tag, element) {
   section.classList.remove('modified')
 }
 
-export function changeset (element) {
+export function changeset(_element) {
   const section = document.getElementById('interface')
   const oid = section.dataset.oid
   const list = []
 
   const children = section.querySelectorAll(`[data-oid^="${oid}."]`)
-  children.forEach(e => {
+  children.forEach((e) => {
     if (e.dataset.value !== e.dataset.original) {
       list.push(e)
     }
@@ -72,17 +72,17 @@ export function changeset (element) {
 
   return {
     updated: list,
-    deleted: []
+    deleted: [],
   }
 }
 
-function modified (oid) {
+function modified(oid) {
   const container = document.querySelector(`[data-oid="${oid}"]`)
   let changed = false
 
   if (container) {
     const list = document.querySelectorAll(`[data-oid^="${oid}."]`)
-    list.forEach(e => {
+    list.forEach((e) => {
       changed = changed || e.classList.contains('modified')
     })
 
@@ -94,7 +94,7 @@ function modified (oid) {
   }
 }
 
-function update (element, value, status) {
+function update(element, value, _status) {
   if (element) {
     const v = value.toString()
     const oid = element.dataset.oid
@@ -138,7 +138,7 @@ function update (element, value, status) {
   }
 }
 
-function percolate (oid) {
+function percolate(oid) {
   let oidx = oid
   while (oidx) {
     const match = /(.*?)(?:[.][0-9]+)$/.exec(oidx)

@@ -7,17 +7,15 @@ import { loaded } from './uhppoted.js'
 const pagesize = 5
 const GROUPS_SUFFIX = `${schema.cards.group}`.replace(/\.+$/, '')
 
-export function refreshed () {
+export function refreshed() {
   const start = Date.now()
-  const cards = [...DB.cards.values()]
-    .filter(c => alive(c))
-    .sort((p, q) => p.created.localeCompare(q.created))
+  const cards = [...DB.cards.values()].filter((c) => alive(c)).sort((p, q) => p.created.localeCompare(q.created))
 
   realize(cards)
 
   // initialise rendering cache
   const options = {
-    cache: new Cache()
+    cache: new Cache(),
   }
 
   // renders a 'page size' chunk of cards
@@ -64,12 +62,13 @@ export function refreshed () {
     console.log(`cards:refreshed (${Date.now() - start}ms)`)
   }
 
-  const chunk = offset => new Promise(resolve => {
-    f(offset)
-    resolve(true)
-  })
+  const chunk = (offset) =>
+    new Promise((resolve) => {
+      f(offset)
+      resolve(true)
+    })
 
-  async function * render () {
+  async function* render() {
     for (let ix = 0; ix < cards.length; ix += pagesize) {
       yield chunk(ix).then(() => ix)
     }
@@ -77,19 +76,19 @@ export function refreshed () {
     recount(`${schema.cards.base}`)
   }
 
-  (async function loop () {
+  ;(async function loop() {
     for await (const _ of render()) {
       // empty
     }
   })()
     .then(() => g())
-    .catch(err => console.error(err))
+    .catch((err) => console.error(err))
     .finally(() => {
       loaded()
     })
 }
 
-export function deletable (row) {
+export function deletable(row) {
   const name = row.querySelector('td input.name')
   const card = row.querySelector('td input.number')
   const re = /^\s*$/
@@ -103,23 +102,25 @@ export function deletable (row) {
   return false
 }
 
-function realize (cards) {
+function realize(cards) {
   const table = document.querySelector('#cards table')
   const thead = table.tHead
   const tbody = table.tBodies[0]
 
-  const groups = new Map([...DB.groups.values()]
-    .filter(g => g.status && g.status !== '<new>' && alive(g))
-    .sort((p, q) => p.created.localeCompare(q.created))
-    .map(o => [o.OID, o]))
+  const groups = new Map(
+    [...DB.groups.values()]
+      .filter((g) => g.status && g.status !== '<new>' && alive(g))
+      .sort((p, q) => p.created.localeCompare(q.created))
+      .map((o) => [o.OID, o]),
+  )
 
   // ... columns
   const columns = table.querySelectorAll('th.group')
-  const cols = new Map([...columns].map(c => [c.dataset.group, c]))
-  const missing = [...groups.values()].filter(o => o.OID === '' || !cols.has(o.OID))
+  const cols = new Map([...columns].map((c) => [c.dataset.group, c]))
+  const missing = [...groups.values()].filter((o) => o.OID === '' || !cols.has(o.OID))
   const surplus = [...cols].filter(([k]) => !groups.has(k))
 
-  missing.forEach(o => {
+  missing.forEach((o) => {
     const th = thead.rows[0].lastElementChild
     const padding = thead.rows[0].appendChild(document.createElement('th'))
 
@@ -138,7 +139,7 @@ function realize (cards) {
   // ... rows
   trim('cards', cards, tbody.querySelectorAll('tr.card'))
 
-  cards.forEach(o => {
+  cards.forEach((o) => {
     let row = tbody.querySelector("tr[data-oid='" + o.OID + "']")
 
     if (!row) {
@@ -146,11 +147,11 @@ function realize (cards) {
     }
 
     const columns = row.querySelectorAll('td.group')
-    const cols = new Map([...columns].map(c => [c.dataset.group, c]))
-    const missing = [...groups.values()].filter(o => o.OID === '' || !cols.has(o.OID))
+    const cols = new Map([...columns].map((c) => [c.dataset.group, c]))
+    const missing = [...groups.values()].filter((o) => o.OID === '' || !cols.has(o.OID))
     const surplus = [...cols].filter(([k]) => !groups.has(k))
 
-    missing.forEach(o => {
+    missing.forEach((o) => {
       const group = o.OID.match(schema.groups.regex)[2]
       const template = document.querySelector('#group')
 
@@ -179,7 +180,7 @@ function realize (cards) {
   })
 }
 
-function add (oid, record) {
+function add(oid, _record) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('cards').querySelector('table tbody')
 
@@ -202,16 +203,36 @@ function add (oid, record) {
     rollback.dataset.record = uuid
 
     const fields = [
-      { suffix: 'name', oid: `${oid}${schema.cards.name}`, selector: 'td input.name' },
-      { suffix: 'number', oid: `${oid}${schema.cards.card}`, selector: 'td input.number' },
-      { suffix: 'from', oid: `${oid}${schema.cards.from}`, selector: 'td input.from' },
-      { suffix: 'to', oid: `${oid}${schema.cards.to}`, selector: 'td input.to' },
+      {
+        suffix: 'name',
+        oid: `${oid}${schema.cards.name}`,
+        selector: 'td input.name',
+      },
+      {
+        suffix: 'number',
+        oid: `${oid}${schema.cards.card}`,
+        selector: 'td input.number',
+      },
+      {
+        suffix: 'from',
+        oid: `${oid}${schema.cards.from}`,
+        selector: 'td input.from',
+      },
+      {
+        suffix: 'to',
+        oid: `${oid}${schema.cards.to}`,
+        selector: 'td input.to',
+      },
       // {{if .WithPIN}}
-      { suffix: 'PIN', oid: `${oid}${schema.cards.PIN}`, selector: 'td input.PIN' }
+      {
+        suffix: 'PIN',
+        oid: `${oid}${schema.cards.PIN}`,
+        selector: 'td input.PIN',
+      },
       // {{end}}
     ]
 
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const field = row.querySelector(f.selector)
 
       if (field) {
@@ -235,7 +256,7 @@ function add (oid, record) {
   }
 }
 
-function updateFromDB (oid, record, options) {
+function updateFromDB(oid, record, options) {
   const { cache } = options
 
   const f = (field, value) => {
@@ -251,7 +272,7 @@ function updateFromDB (oid, record, options) {
   const number = row.querySelector(`[data-oid="${oid}${schema.cards.card}"]`)
   const from = row.querySelector(`[data-oid="${oid}${schema.cards.from}"]`)
   const to = row.querySelector(`[data-oid="${oid}${schema.cards.to}"]`)
-  const groups = [...DB.groups.values()].filter(g => g.status && g.status !== '<new>' && alive(g))
+  const groups = [...DB.groups.values()].filter((g) => g.status && g.status !== '<new>' && alive(g))
   // {{if .WithPIN}}
   const PIN = row.querySelector(`[data-oid="${oid}${schema.cards.PIN}"]`)
   // {{end}}
@@ -309,7 +330,7 @@ function updateFromDB (oid, record, options) {
     to.classList.remove('defval')
   }
 
-  groups.forEach(g => {
+  groups.forEach((g) => {
     const td = row.querySelector(`td[data-group="${g.OID}"]`)
 
     if (td) {
@@ -323,7 +344,7 @@ function updateFromDB (oid, record, options) {
   return row
 }
 
-export function onDateEdit (tag, event) {
+export function onDateEdit(tag, event) {
   onEdited('card', event)
 
   const field = event.currentTarget
@@ -358,7 +379,7 @@ export function onDateEdit (tag, event) {
   }
 }
 
-function fmt (date) {
+function fmt(date) {
   try {
     return new Date(Date.parse(date)).toISOString()
   } catch {

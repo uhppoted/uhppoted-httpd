@@ -4,7 +4,7 @@ import { GET, POST, DELETE } from './uhppoted.js'
 
 let expired = -1
 
-export function onPassword (event) {
+export function onPassword(event) {
   event.preventDefault()
 
   dismiss()
@@ -21,11 +21,11 @@ export function onPassword (event) {
   }
 
   const credentials = {
-    password: pwd1
+    password: pwd1,
   }
 
   POST('/password', `Basic ${auth}`, credentials)
-    .then(response => {
+    .then((response) => {
       switch (response.status) {
         case 200:
           if (response.redirected) {
@@ -42,7 +42,7 @@ export function onPassword (event) {
           return response.text()
       }
     })
-    .then(msg => {
+    .then((msg) => {
       if (msg) {
         throw new Error(msg.trim())
       }
@@ -52,7 +52,7 @@ export function onPassword (event) {
     })
 }
 
-export function onEnableOTP (event) {
+export function onEnableOTP(_event) {
   const fieldset = document.querySelector('#OTP fieldset')
   const enable = document.querySelector('#otp-enable')
   const qrcode = document.getElementById('qrcode')
@@ -75,7 +75,7 @@ export function onEnableOTP (event) {
   })
 }
 
-export function onRevokeOTP (event) {
+export function onRevokeOTP(event) {
   event.preventDefault()
 
   const fieldset = document.querySelector('#OTP fieldset')
@@ -95,7 +95,7 @@ export function onRevokeOTP (event) {
   })
 }
 
-export function onHideOTP (event) {
+export function onHideOTP(_event) {
   const fieldset = document.querySelector('#OTP fieldset')
   const qrcode = document.getElementById('qrcode')
   const url = qrcode.src
@@ -106,7 +106,7 @@ export function onHideOTP (event) {
   clearTimeout(expired)
 }
 
-export function onShowOTP (event) {
+export function onShowOTP(_event) {
   const fieldset = document.querySelector('#OTP fieldset')
   const qrcode = document.getElementById('qrcode')
 
@@ -122,7 +122,7 @@ export function onShowOTP (event) {
   })
 }
 
-export function onVerifyOTP (event) {
+export function onVerifyOTP(event) {
   event.preventDefault()
 
   dismiss()
@@ -135,11 +135,11 @@ export function onVerifyOTP (event) {
   const auth = btoa(`${uid}:${pwd}`)
 
   const body = {
-    otp: otp
+    otp: otp,
   }
 
   POST('/otp', `Basic ${auth}`, body)
-    .then(response => {
+    .then((response) => {
       switch (response.status) {
         case 200:
           if (response.redirected) {
@@ -151,12 +151,12 @@ export function onVerifyOTP (event) {
           throw new Error(messages.unauthorized)
 
         default:
-          return response
-            .text()
-            .then(err => { throw new Error(err) })
+          return response.text().then((err) => {
+            throw new Error(err)
+          })
       }
     })
-    .then((v) => {
+    .then((_v) => {
       fieldset.dataset.enabled = 'true'
       checkbox.disabled = true
       warning('OTP verified and enabled')
@@ -166,7 +166,7 @@ export function onVerifyOTP (event) {
     })
 }
 
-async function getOTP (event) {
+async function getOTP(_event) {
   const uid = document.getElementById('uid').value
   const pwd = document.getElementById('pwd').value
   const qr = document.getElementById('qrcode')
@@ -177,7 +177,7 @@ async function getOTP (event) {
   dismiss()
 
   return GET('/otp', `Basic ${auth}`)
-    .then(response => {
+    .then((response) => {
       switch (response.status) {
         case 200:
           if (response.redirected) {
@@ -201,9 +201,9 @@ async function getOTP (event) {
           throw new Error(messages.unauthorized)
 
         default:
-          return response
-            .text()
-            .then(err => { throw new Error(err) })
+          return response.text().then((err) => {
+            throw new Error(err)
+          })
       }
     })
     .then((blob) => {
@@ -218,7 +218,7 @@ async function getOTP (event) {
     })
 }
 
-async function revokeOTP () {
+async function revokeOTP() {
   const uid = document.getElementById('uid').value
   const pwd = document.getElementById('pwd').value
   const auth = btoa(`${uid}:${pwd}`)
@@ -226,7 +226,7 @@ async function revokeOTP () {
   dismiss()
 
   return DELETE('/otp', `Basic ${auth}`)
-    .then(response => {
+    .then((response) => {
       switch (response.status) {
         case 200:
           console.log(response)
@@ -241,9 +241,9 @@ async function revokeOTP () {
           throw new Error(messages.unauthorized)
 
         default:
-          return response
-            .text()
-            .then(err => { throw new Error(err) })
+          return response.text().then((err) => {
+            throw new Error(err)
+          })
       }
     })
     .catch(function (err) {
@@ -252,7 +252,7 @@ async function revokeOTP () {
     })
 }
 
-function otpExpired () {
+function otpExpired() {
   const fieldset = document.querySelector('#OTP fieldset')
   const qrcode = document.getElementById('qrcode')
 
@@ -263,7 +263,7 @@ function otpExpired () {
   }
 }
 
-function warning (msg) {
+function warning(msg) {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 
@@ -275,7 +275,7 @@ function warning (msg) {
   }
 }
 
-function dismiss () {
+function dismiss() {
   const message = document.getElementById('message')
   const text = document.getElementById('warning')
 

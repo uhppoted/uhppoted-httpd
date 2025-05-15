@@ -1,7 +1,7 @@
 import { schema } from './schema.js'
 
 class DBC {
-  constructor () {
+  constructor() {
     this.system = new Map()
     this.interfaces = new Map()
     this.controllers = new Map()
@@ -14,28 +14,28 @@ class DBC {
         status: 'unknown',
         first: null,
         last: null,
-        events: new Map()
+        events: new Map(),
       },
 
       logs: {
         first: null,
         last: null,
-        logs: new Map()
+        logs: new Map(),
       },
 
       users: {
-        users: new Map()
-      }
+        users: new Map(),
+      },
     }
 
     this.init()
   }
 
-  init () {
+  init() {
     setInterval(this.sweep, 15000)
   }
 
-  updated (tag, recordset) {
+  updated(tag, recordset) {
     if (recordset) {
       switch (tag) {
         case 'interfaces':
@@ -46,13 +46,13 @@ class DBC {
         case 'events':
         case 'logs':
         case 'users':
-          recordset.forEach(o => object(o))
+          recordset.forEach((o) => object(o))
           break
       }
     }
   }
 
-  get (oid) {
+  get(oid) {
     // ... system.cards
     if (`${oid}`.startsWith(`${schema.system.base}${schema.system.cards.base}`)) {
       if (DB.system.has('cards')) {
@@ -75,7 +75,7 @@ class DBC {
     return [null, false]
   }
 
-  delete (tag, oid) {
+  delete(tag, oid) {
     if (tag != null && oid != null) {
       switch (tag) {
         case 'interfaces':
@@ -105,42 +105,42 @@ class DBC {
     }
   }
 
-  events () {
+  events() {
     return this.tables.events.events
   }
 
-  firstEvent () {
+  firstEvent() {
     return this.tables.events.first
   }
 
-  lastEvent () {
+  lastEvent() {
     return this.tables.events.last
   }
 
-  logs () {
+  logs() {
     return this.tables.logs.logs
   }
 
-  firstLog () {
+  firstLog() {
     return this.tables.logs.first
   }
 
-  lastLog () {
+  lastLog() {
     return this.tables.logs.last
   }
 
-  users () {
+  users() {
     return this.tables.users.users
   }
 
-  sweep () {
+  sweep() {
     sweep()
   }
 }
 
 export const DB = new DBC()
 
-function object (o) {
+function object(o) {
   const oid = o.OID
 
   if (oid.startsWith(schema.system.base)) {
@@ -164,13 +164,13 @@ function object (o) {
   }
 }
 
-function system (o) {
+function system(o) {
   const oid = o.OID
 
   if (!DB.system.has('cards')) {
     DB.system.set('cards', {
       defaultStartDate: '',
-      defaultEndDate: ''
+      defaultEndDate: '',
     })
   }
 
@@ -185,7 +185,7 @@ function system (o) {
   }
 }
 
-function interfaces (o) {
+function interfaces(o) {
   const oid = o.OID
   const match = oid.match(schema.interfaces.regex)
 
@@ -204,7 +204,7 @@ function interfaces (o) {
       broadcast: '',
       listen: '',
       status: '',
-      touched: new Date()
+      touched: new Date(),
     })
   }
 
@@ -239,7 +239,7 @@ function interfaces (o) {
   }
 }
 
-function controllers (o) {
+function controllers(o) {
   const oid = o.OID
   const match = oid.match(schema.controllers.regex)
 
@@ -260,11 +260,12 @@ function controllers (o) {
       protocol: '',
       datetime: { datetime: '', configured: '', status: 'unknown' },
       interlock: '',
+      antipassback: { antipassback: '', configured: '', status: 'unknown' },
       cards: { cards: '', status: 'unknown' },
       events: { events: '', status: 'unknown' },
       doors: { 1: '', 2: '', 3: '', 4: '' },
       status: o.value,
-      touched: new Date()
+      touched: new Date(),
     })
   }
 
@@ -325,6 +326,18 @@ function controllers (o) {
       v.interlock = o.value
       break
 
+    case `${base}${schema.controllers.antipassback.antipassback}`:
+      v.antipassback.antipassback = o.value
+      break
+
+    case `${base}${schema.controllers.antipassback.configured}`:
+      v.antipassback.configured = o.value
+      break
+
+    case `${base}${schema.controllers.antipassback.status}`:
+      v.antipassback.status = o.value
+      break
+
     case `${base}${schema.controllers.cards.status}`:
       v.cards.status = o.value
       break
@@ -367,7 +380,7 @@ function controllers (o) {
   }
 }
 
-function doors (o) {
+function doors(o) {
   const oid = o.OID
   const match = oid.match(schema.doors.regex)
 
@@ -388,7 +401,7 @@ function doors (o) {
       keypad: false,
       passcodes: '',
       status: o.value,
-      touched: new Date()
+      touched: new Date(),
     })
   }
 
@@ -455,7 +468,7 @@ function doors (o) {
   }
 }
 
-function cards (o) {
+function cards(o) {
   const oid = o.OID
   const match = oid.match(schema.cards.regex)
 
@@ -479,7 +492,7 @@ function cards (o) {
       to: '',
       groups: new Map(),
       status: o.value,
-      touched: new Date()
+      touched: new Date(),
     })
   }
 
@@ -512,7 +525,7 @@ function cards (o) {
     case `${base}${schema.cards.PIN}`:
       v.PIN = o.value
       break
-      // {{end}}
+    // {{end}}
 
     case `${base}${schema.cards.from}`:
       v.from = o.value
@@ -544,7 +557,7 @@ function cards (o) {
   }
 }
 
-function groups (o) {
+function groups(o) {
   const oid = o.OID
   const match = oid.match(schema.groups.regex)
 
@@ -562,7 +575,7 @@ function groups (o) {
       name: '',
       doors: new Map(),
       status: o.value,
-      touched: new Date()
+      touched: new Date(),
     })
   }
 
@@ -609,7 +622,7 @@ function groups (o) {
   }
 }
 
-function events (o) {
+function events(o) {
   const oid = o.OID
 
   if (oid === `${schema.events.base}${schema.events.status}`) {
@@ -650,7 +663,7 @@ function events (o) {
       deviceName: '',
       doorName: '',
       cardName: '',
-      touched: new Date()
+      touched: new Date(),
     })
   }
 
@@ -709,7 +722,7 @@ function events (o) {
   }
 }
 
-function logs (o) {
+function logs(o) {
   const oid = o.OID
 
   if (oid === `${schema.logs.base}${schema.logs.first}`) {
@@ -739,10 +752,10 @@ function logs (o) {
         type: '',
         ID: '',
         name: '',
-        field: ''
+        field: '',
       },
       details: '',
-      touched: new Date()
+      touched: new Date(),
     })
   }
 
@@ -781,7 +794,7 @@ function logs (o) {
   }
 }
 
-function users (o) {
+function users(o) {
   const oid = o.OID
 
   const match = oid.match(schema.users.regex)
@@ -805,7 +818,7 @@ function users (o) {
       created: '',
       deleted: '',
       status: o.value,
-      touched: new Date()
+      touched: new Date(),
     })
   }
 
@@ -852,12 +865,12 @@ function users (o) {
   }
 }
 
-function sweep () {
+function sweep() {
   const tables = [DB.interfaces, DB.controllers, DB.doors, DB.cards, DB.groups]
   const now = new Date()
   const sweepable = 5 * 60 * 1000 // 5 minutes
 
-  tables.forEach(t => {
+  tables.forEach((t) => {
     t.forEach((v, k) => {
       const dt = now - v.touched
       if (!Number.isNaN(dt) && dt > sweepable && !alive(v)) {
@@ -867,7 +880,7 @@ function sweep () {
   })
 }
 
-export function alive (object) {
+export function alive(object) {
   if (object) {
     return !(object.deleted && object.deleted !== '')
   }

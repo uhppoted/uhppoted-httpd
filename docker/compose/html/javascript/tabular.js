@@ -12,7 +12,7 @@ import { Cache } from './cache.js'
 import { busy, unbusy, warning, dismiss, getAsJSON, postAsJSON } from './uhppoted.js'
 
 class Warning extends Error {
-  constructor (...params) {
+  constructor(...params) {
     super(...params)
 
     if (Error.captureStackTrace) {
@@ -24,24 +24,24 @@ class Warning extends Error {
 }
 
 HTMLTableSectionElement.prototype.sort = function (cb) {
-  Array
-    .prototype
-    .slice
+  Array.prototype.slice
     .call(this.rows)
     .sort(cb)
-    .forEach((e) => { this.appendChild(this.removeChild(e)) }, this)
+    .forEach((e) => {
+      this.appendChild(this.removeChild(e))
+    }, this)
 }
 
 const pages = {
   overview: {
     get: ['/controllers', '/doors', '/events?range=' + encodeURIComponent('0,15'), '/logs?range=' + encodeURIComponent('0,15')],
-    refreshed: overview.refreshed
+    refreshed: overview.refreshed,
   },
 
   interfaces: {
     get: ['/interfaces'],
     post: '/interfaces',
-    refreshed: LAN.refreshed
+    refreshed: LAN.refreshed,
   },
 
   controllers: {
@@ -51,14 +51,14 @@ const pages = {
       LAN.refreshed()
       controllers.refreshed()
     },
-    deletable: controllers.deletable
+    deletable: controllers.deletable,
   },
 
   doors: {
     get: ['/doors', '/controllers'],
     post: '/doors',
     refreshed: doors.refreshed,
-    deletable: doors.deletable
+    deletable: doors.deletable,
   },
 
   cards: {
@@ -66,39 +66,39 @@ const pages = {
     post: '/cards',
     prefetch: [`/cards?range=${encodeURIComponent('0,25')}`, '/groups'],
     refreshed: cards.refreshed,
-    deletable: cards.deletable
+    deletable: cards.deletable,
   },
 
   groups: {
     get: ['/groups', '/doors'],
     post: '/groups',
     refreshed: groups.refreshed,
-    deletable: groups.deletable
+    deletable: groups.deletable,
   },
 
   events: {
     get: ['/events?range=' + encodeURIComponent('0,15')],
     post: '/events',
     recordset: DB.events(),
-    refreshed: events.refreshed
+    refreshed: events.refreshed,
   },
 
   logs: {
     get: ['/logs?range=' + encodeURIComponent('0,15')],
     post: '/logs',
     recordset: DB.logs(),
-    refreshed: logs.refreshed
+    refreshed: logs.refreshed,
   },
 
   users: {
     get: ['/users'],
     post: '/users',
     refreshed: users.refreshed,
-    deletable: users.deletable
-  }
+    deletable: users.deletable,
+  },
 }
 
-export function onEdited (tag, event) {
+export function onEdited(tag, event) {
   const status = event.target.dataset.status
 
   switch (tag) {
@@ -141,7 +141,7 @@ export function onEdited (tag, event) {
   }
 }
 
-export function onEnter (tag, event) {
+export function onEnter(tag, event) {
   const element = event.target
   const tr = row(element)
   const td = cell(element)
@@ -191,7 +191,7 @@ export function onEnter (tag, event) {
   }
 }
 
-export function onMore (tag, event) {
+export function onMore(tag, _event) {
   switch (tag) {
     case 'events':
       more(pages.events)
@@ -203,7 +203,7 @@ export function onMore (tag, event) {
   }
 }
 
-export function onTick (tag, event) {
+export function onTick(tag, event) {
   switch (tag) {
     case 'controller':
       set(event.target, event.target.checked ? 'tcp' : 'udp')
@@ -227,7 +227,7 @@ export function onTick (tag, event) {
   }
 }
 
-export function onCommit (tag, event) {
+export function onCommit(tag, event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
   let page
@@ -248,7 +248,7 @@ export function onCommit (tag, event) {
   }
 }
 
-export function onCommitAll (tag, event, table) {
+export function onCommitAll(tag, _event, _table) {
   const rows = Array.from(document.querySelectorAll('table tr:is(.modified,.new)'))
   const page = getPage(tag)
 
@@ -263,7 +263,7 @@ export function onCommitAll (tag, event, table) {
   }
 }
 
-export function onRollback (tag, event) {
+export function onRollback(tag, event) {
   const id = event.target.dataset.record
   const row = document.getElementById(id)
 
@@ -294,11 +294,11 @@ export function onRollback (tag, event) {
   }
 }
 
-export function onRollbackAll (tag, event) {
+export function onRollbackAll(tag, _event) {
   const start = Date.now()
   const cache = new Cache({ modified: false })
   const options = {
-    cache: cache
+    cache: cache,
   }
 
   const f = function (table, recordset, refreshed) {
@@ -337,7 +337,7 @@ export function onRollbackAll (tag, event) {
   console.log(`cards:rolled-back (${Date.now() - start}ms)`)
 }
 
-export function onNew (tag, event) {
+export function onNew(tag, _event) {
   switch (tag) {
     case 'controller':
       create(pages.controllers)
@@ -361,7 +361,7 @@ export function onNew (tag, event) {
   }
 }
 
-export function prefetch (tag) {
+export function prefetch(tag) {
   const page = getPage(tag)
 
   if (page && page.prefetch) {
@@ -371,7 +371,7 @@ export function prefetch (tag) {
   onRefresh(tag)
 }
 
-export function onRefresh (tag, event) {
+export function onRefresh(tag, event) {
   const page = getPage(tag)
 
   if (page) {
@@ -384,23 +384,23 @@ export function onRefresh (tag, event) {
   }
 }
 
-export function mark (clazz, ...elements) {
-  elements.forEach(e => {
+export function mark(clazz, ...elements) {
+  elements.forEach((e) => {
     if (e) {
       e.classList.add(clazz)
     }
   })
 }
 
-export function unmark (clazz, ...elements) {
-  elements.forEach(e => {
+export function unmark(clazz, ...elements) {
+  elements.forEach((e) => {
     if (e) {
       e.classList.remove(clazz)
     }
   })
 }
 
-export function set (element, value, status, options = {}) {
+export function set(element, value, status, options = {}) {
   const oid = element.dataset.oid
   const original = element.dataset.original
   const v = value.toString()
@@ -423,7 +423,7 @@ export function set (element, value, status, options = {}) {
   percolate(oid, options)
 }
 
-export function revert (row, options = {}) {
+export function revert(row, options = {}) {
   const fields = row.querySelectorAll('.field')
 
   fields.forEach((item) => {
@@ -444,7 +444,7 @@ export function revert (row, options = {}) {
   row.classList.remove('modified')
 }
 
-export function update (element, value, status, checked, options = {}) {
+export function update(element, value, status, checked, options = {}) {
   if (element && value !== undefined) {
     const v = value.toString()
     const oid = element.dataset.oid
@@ -486,7 +486,7 @@ export function update (element, value, status, checked, options = {}) {
           if (checked != null) {
             element.checked = checked(v)
           } else {
-            element.checked = (v === 'true')
+            element.checked = v === 'true'
           }
           break
 
@@ -500,13 +500,13 @@ export function update (element, value, status, checked, options = {}) {
 }
 
 /**
-  * Updates the 'modified' flag for the page root OID without caching.
-  *
-  * Interim fix for the edge cases introduced by the caching introduced to optimize 'modified'
-  * for not-so-small cards lists.
-  *
-  */
-export function recount (root) {
+ * Updates the 'modified' flag for the page root OID without caching.
+ *
+ * Interim fix for the edge cases introduced by the caching introduced to optimize 'modified'
+ * for not-so-small cards lists.
+ *
+ */
+export function recount(root) {
   // const rows = Array.from(document.querySelectorAll(`tr[data-oid^="${root}"]`)).map((row) => row.dataset.oid)
   //
   // for (const row of rows) {
@@ -516,7 +516,7 @@ export function recount (root) {
   modified(`${root}`)
 }
 
-function query (oid, cache) {
+function query(oid, cache) {
   if (cache != null) {
     return cache.query(oid)
   }
@@ -524,7 +524,7 @@ function query (oid, cache) {
   return document.querySelector(`[data-oid="${oid}"]`)
 }
 
-function queryModified (oid, cache) {
+function queryModified(oid, cache) {
   if (cache != null) {
     return cache.queryModified(oid)
   }
@@ -532,7 +532,7 @@ function queryModified (oid, cache) {
   return document.querySelectorAll(`[data-oid^="${oid}."]:is(.modified,.new)`)
 }
 
-function modified (oid, options = {}) {
+function modified(oid, options = {}) {
   const { cache = null, recount = true } = options
   const element = query(oid, cache)
 
@@ -552,14 +552,16 @@ function modified (oid, options = {}) {
 
     if (recount) {
       const list = queryModified(oid, cache)
-      const set = new Set(Array.from(list)
-        .map(e => e.dataset.oid)
-        .filter(v => v.startsWith(oid)))
+      const set = new Set(
+        Array.from(list)
+          .map((e) => e.dataset.oid)
+          .filter((v) => v.startsWith(oid)),
+      )
 
       // .. count the 'unique parent' OIDs
       const f = (p, q) => p.length > q.length
       const r = (acc, v) => {
-        if (!acc.find(e => v.startsWith(e + '.'))) {
+        if (!acc.find((e) => v.startsWith(e + '.'))) {
           acc.push(v)
         }
 
@@ -582,7 +584,7 @@ function modified (oid, options = {}) {
   }
 }
 
-export function deleted (tag, row) {
+export function deleted(tag, row) {
   const tbody = document.getElementById(tag).querySelector('table tbody')
 
   if (tbody && row) {
@@ -597,22 +599,22 @@ export function deleted (tag, row) {
   }
 }
 
-export function trim (tag, objects, rows) {
-  const list = new Set(objects.map(o => o.OID))
+export function trim(tag, objects, rows) {
+  const list = new Set(objects.map((o) => o.OID))
   const remove = []
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     if (!list.has(row.dataset.oid)) {
       remove.push(row)
     }
   })
 
-  remove.forEach(row => {
+  remove.forEach((row) => {
     deleted(tag, row)
   })
 }
 
-function percolate (oid, options) {
+function percolate(oid, options) {
   let oidx = oid
 
   while (oidx) {
@@ -624,60 +626,65 @@ function percolate (oid, options) {
   }
 }
 
-function get (urls, refreshed) {
+function get(urls, refreshed) {
   const start = Date.now()
   const promises = []
 
-  urls.forEach(url => {
-    promises.push(new Promise((resolve, reject) => {
-      getAsJSON(url)
-        .then(response => {
-          console.log(`tabular:get ${url} (${Date.now() - start}ms)`)
+  urls.forEach((url) => {
+    promises.push(
+      new Promise((resolve, reject) => {
+        getAsJSON(url)
+          .then((response) => {
+            console.log(`tabular:get ${url} (${Date.now() - start}ms)`)
 
-          if (response.redirected) {
-            window.location = response.url
-          } else if (response.status === 200) {
-            return response.json()
-          } else {
-            response.text().then(message => {
-              reject(new Warning(message))
-            })
-          }
-        })
-        .then((resolved, rejected) => {
-          if (resolved) {
-            for (const k in resolved) {
-              DB.updated(k, resolved[k])
+            if (response.redirected) {
+              window.location = response.url
+            } else if (response.status === 200) {
+              return response.json()
+            } else {
+              response.text().then((message) => {
+                reject(new Warning(message))
+              })
             }
+          })
+          .then((resolved, _rejected) => {
+            if (resolved) {
+              for (const k in resolved) {
+                DB.updated(k, resolved[k])
+              }
 
-            resolve()
-          }
-        })
-    }))
+              resolve()
+            }
+          })
+      }),
+    )
   })
 
-  Promise.all(promises).then((resolved, rejected) => {
-    if (resolved) {
-      const timestamp = document.querySelector('footer #timestamp')
+  Promise.all(promises)
+    .then((resolved, _rejected) => {
+      if (resolved) {
+        const timestamp = document.querySelector('footer #timestamp')
 
-      if (timestamp) {
-        timestamp.innerHTML = datetime(new Date())
+        if (timestamp) {
+          timestamp.innerHTML = datetime(new Date())
+        }
+
+        refreshed()
       }
-
-      refreshed()
-    }
-  }).catch(err => {
-    if (err instanceof Warning) {
-      warning(err.message)
-    } else {
-      console.error(err)
-    }
-  }).finally(() => {
-    unbusy()
-  })
+    })
+    .catch((err) => {
+      if (err instanceof Warning) {
+        warning(err.message)
+      } else {
+        console.error(err)
+      }
+    })
+    .finally(() => {
+      unbusy()
+    })
 }
 
-function rollback (recordset, row, refreshed, options) {
+function rollback(recordset, row, refreshed, options) {
   if (row && row.classList.contains('new')) {
     DB.delete(recordset, row.dataset.oid)
     refreshed()
@@ -686,20 +693,20 @@ function rollback (recordset, row, refreshed, options) {
   }
 }
 
-function commit (page, recordset) {
+function commit(page, recordset) {
   const elements = recordset.updated
   const created = []
   const updated = []
   const deleted = recordset.deleted
 
-  elements.forEach(e => {
+  elements.forEach((e) => {
     const oid = e.dataset.oid
     const value = e.dataset.value
     updated.push({ oid: oid, value: value })
   })
 
   const reset = function () {
-    elements.forEach(e => {
+    elements.forEach((e) => {
       const td = e.parentElement
       unmark('pending', e, td)
       mark('modified', e, td)
@@ -707,13 +714,13 @@ function commit (page, recordset) {
   }
 
   const cleanup = function () {
-    elements.forEach(e => {
+    elements.forEach((e) => {
       const td = e.parentElement
       unmark('pending', e, td)
     })
   }
 
-  elements.forEach(e => {
+  elements.forEach((e) => {
     const td = e.parentElement
     mark('pending', e, td)
     unmark('modified', e, td)
@@ -722,18 +729,18 @@ function commit (page, recordset) {
   post(page.post, created, updated, deleted, page.refreshed, reset, cleanup)
 }
 
-function changeset (page, ...rows) {
+function changeset(page, ...rows) {
   const updated = []
   const deleted = []
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const oid = row.dataset.oid
 
     if (page.deletable && page.deletable(row)) {
       deleted.push(oid)
     } else {
       const children = row.querySelectorAll(`[data-oid^="${oid}."]`)
-      children.forEach(e => {
+      children.forEach((e) => {
         if (e.classList.contains('modified')) {
           updated.push(e)
         }
@@ -743,11 +750,11 @@ function changeset (page, ...rows) {
 
   return {
     updated: updated,
-    deleted: deleted
+    deleted: deleted,
   }
 }
 
-function create (page) {
+function create(page) {
   const created = [{ oid: '<new>', value: '' }]
   const reset = function () {}
   const cleanup = function () {}
@@ -764,7 +771,7 @@ function create (page) {
   post(page.post, created, null, null, f, reset, cleanup)
 }
 
-function more (page) {
+function more(page) {
   if (page.recordset) {
     const N = page.recordset.size
     const url = page.post + '?range=' + encodeURIComponent(`${N},+15`)
@@ -773,17 +780,17 @@ function more (page) {
   }
 }
 
-function post (url, created, updated, deleted, refreshed, reset, cleanup) {
+function post(url, created, updated, deleted, refreshed, reset, cleanup) {
   busy()
 
   postAsJSON(url, { created: created, updated: updated, deleted: deleted })
-    .then(response => {
+    .then((response) => {
       if (response.redirected) {
         window.location = response.url
       } else {
         switch (response.status) {
           case 200:
-            response.json().then(object => {
+            response.json().then((object) => {
               for (const k in object) {
                 DB.updated(k, object[k])
               }
@@ -794,12 +801,16 @@ function post (url, created, updated, deleted, refreshed, reset, cleanup) {
 
           case 401:
             reset()
-            response.text().then(message => { warning(message.toUpperCase()) })
+            response.text().then((message) => {
+              warning(message.toUpperCase())
+            })
             break
 
           default:
             reset()
-            response.text().then(message => { warning(message) })
+            response.text().then((message) => {
+              warning(message)
+            })
         }
       }
     })
@@ -813,7 +824,7 @@ function post (url, created, updated, deleted, refreshed, reset, cleanup) {
     })
 }
 
-function getPage (tag) {
+function getPage(tag) {
   switch (tag) {
     case 'overview':
       return pages.overview
@@ -848,13 +859,13 @@ function getPage (tag) {
   return null
 }
 
-function pageForRow (row) {
+function pageForRow(row) {
   const list = [
     { tag: 'controller', page: pages.controllers },
     { tag: 'door', page: pages.doors },
     { tag: 'card', page: pages.cards },
     { tag: 'group', page: pages.groups },
-    { tag: 'user', page: pages.users }
+    { tag: 'user', page: pages.users },
   ]
 
   for (const v of list) {
@@ -868,7 +879,7 @@ function pageForRow (row) {
 
 /* Returns the enclosing <td> element for an input/checkbox field
  */
-function cell (element) {
+function cell(element) {
   const parent = element.parentElement
 
   if (parent && parent.nodeName === 'TD') {
@@ -882,7 +893,7 @@ function cell (element) {
 
 /* Returns the enclosing <tr> element for an input/checkbox field
  */
-function row (element) {
+function row(element) {
   const td = cell(element)
   const parent = td ? td.parentElement : null
 
@@ -893,7 +904,7 @@ function row (element) {
   return null
 }
 
-function datetime (time) {
+function datetime(time) {
   const df = new Intl.DateTimeFormat('default', {
     year: 'numeric',
     month: '2-digit',
@@ -901,10 +912,10 @@ function datetime (time) {
     hour12: false,
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'
+    second: '2-digit',
   })
 
-  const m = new Map(df.formatToParts(time).map(o => [o.type, o.value]))
+  const m = new Map(df.formatToParts(time).map((o) => [o.type, o.value]))
   const year = m.get('year')
   const month = m.get('month')
   const day = m.get('day')

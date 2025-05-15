@@ -5,10 +5,8 @@ import { loaded } from './uhppoted.js'
 
 const pagesize = 5
 
-export function refreshed () {
-  const entries = [...DB.logs().values()]
-    .filter(l => alive(l))
-    .sort((p, q) => q.timestamp.localeCompare(p.timestamp))
+export function refreshed() {
+  const entries = [...DB.logs().values()].filter((l) => alive(l)).sort((p, q) => q.timestamp.localeCompare(p.timestamp))
 
   realize(entries)
 
@@ -59,37 +57,38 @@ export function refreshed () {
   }
 
   // initialises the rows asynchronously in small'ish chunks
-  const chunk = offset => new Promise(resolve => {
-    f(offset)
-    resolve(true)
-  })
+  const chunk = (offset) =>
+    new Promise((resolve) => {
+      f(offset)
+      resolve(true)
+    })
 
-  async function * render () {
+  async function* render() {
     for (let ix = 0; ix < entries.length; ix += pagesize) {
       yield chunk(ix).then(() => ix)
     }
   }
 
-  (async function loop () {
+  ;(async function loop() {
     for await (const _ of render()) {
       // empty
     }
   })()
     .then(() => g())
     .then(() => h())
-    .catch(err => console.error(err))
+    .catch((err) => console.error(err))
     .finally(() => {
       loaded()
     })
 }
 
-function realize (logs) {
+function realize(logs) {
   const table = document.querySelector('#logs table')
   const tbody = table.tBodies[0]
 
   trim('logs', logs, tbody.querySelectorAll('tr.entry'))
 
-  logs.forEach(o => {
+  logs.forEach((o) => {
     let row = tbody.querySelector(`tr[data-oid='${o.OID}']`)
     if (!row) {
       row = add(o.OID, o)
@@ -97,7 +96,7 @@ function realize (logs) {
   })
 }
 
-function add (oid) {
+function add(oid) {
   const uuid = 'R' + oid.replaceAll(/[^0-9]/g, '')
   const tbody = document.getElementById('logs').querySelector('table tbody')
 
@@ -124,16 +123,44 @@ function add (oid) {
     }
 
     const fields = [
-      { suffix: 'timestamp', oid: `${oid}${schema.logs.timestamp}`, selector: 'td input.timestamp' },
-      { suffix: 'uid', oid: `${oid}${schema.logs.uid}`, selector: 'td input.uid' },
-      { suffix: 'item', oid: `${oid}${schema.logs.item}`, selector: 'td input.item' },
-      { suffix: 'item-id', oid: `${oid}${schema.logs.itemID}`, selector: 'td input.item-id' },
-      { suffix: 'item-name', oid: `${oid}${schema.logs.itemName}`, selector: 'td input.item-name' },
-      { suffix: 'item-field', oid: `${oid}${schema.logs.field}`, selector: 'td input.item-field' },
-      { suffix: 'details', oid: `${oid}${schema.logs.details}`, selector: 'td input.details' }
+      {
+        suffix: 'timestamp',
+        oid: `${oid}${schema.logs.timestamp}`,
+        selector: 'td input.timestamp',
+      },
+      {
+        suffix: 'uid',
+        oid: `${oid}${schema.logs.uid}`,
+        selector: 'td input.uid',
+      },
+      {
+        suffix: 'item',
+        oid: `${oid}${schema.logs.item}`,
+        selector: 'td input.item',
+      },
+      {
+        suffix: 'item-id',
+        oid: `${oid}${schema.logs.itemID}`,
+        selector: 'td input.item-id',
+      },
+      {
+        suffix: 'item-name',
+        oid: `${oid}${schema.logs.itemName}`,
+        selector: 'td input.item-name',
+      },
+      {
+        suffix: 'item-field',
+        oid: `${oid}${schema.logs.field}`,
+        selector: 'td input.item-field',
+      },
+      {
+        suffix: 'details',
+        oid: `${oid}${schema.logs.details}`,
+        selector: 'td input.details',
+      },
     ]
 
-    fields.forEach(f => {
+    fields.forEach((f) => {
       const field = row.querySelector(f.selector)
 
       if (field) {
@@ -157,7 +184,7 @@ function add (oid) {
   }
 }
 
-function updateFromDB (oid, record) {
+function updateFromDB(oid, record) {
   const row = document.querySelector("div#logs tr[data-oid='" + oid + "']")
 
   const timestamp = row.querySelector(`[data-oid="${oid}${schema.logs.timestamp}"]`)
@@ -181,13 +208,13 @@ function updateFromDB (oid, record) {
   return row
 }
 
-function update (element, value) {
+function update(element, value) {
   if (element && value !== undefined) {
     element.value = value.toString()
   }
 }
 
-function format (timestamp) {
+function format(timestamp) {
   const dt = Date.parse(timestamp)
   const fmt = function (v) {
     return v < 10 ? '0' + v.toString() : v.toString()
