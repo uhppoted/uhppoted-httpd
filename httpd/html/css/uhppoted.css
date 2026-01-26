@@ -63,7 +63,7 @@
   --content-table-item-error-colour: #dc322f;
   --content-table-item-incomplete-colour: rgb(234.6133333333, 116, 66.8866666667);
   --content-table-item-conflict-colour: rgba(203, 75, 22, 0.25);
-  --content-table-flag: url("/images/default/corner.svg");
+  --content-table-flag: url('/images/default/corner.svg');
   --content-table-flag-modified: invert(61%) sepia(14%) saturate(250%) hue-rotate(138deg) brightness(92%) contrast(92%);
   --content-table-flag-conflict: invert(56%) sepia(94%) saturate(7076%) hue-rotate(349deg) brightness(95%) contrast(82%);
   --content-table-flag-pending: invert(38%) sepia(78%) saturate(999%) hue-rotate(174deg) brightness(102%) contrast(78%);
