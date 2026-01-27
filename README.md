@@ -45,11 +45,9 @@ _CAVEAT EMPTOR_
 
 ### Current Release
 
-**[v0.8.11](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.8.11) - 2025-07-01**
-
-1. Added anti-passback field to controller page.
-2. Replaced deprecated sass with dart-sass.
-3. Updated to Go 1.24.
+**[v0.9.0](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.9.0) - 2026-01-27**
+1. Updated to Go 1.25.
+2. Updated dependencies for security patches.
 
 
 ## Installation
