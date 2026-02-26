@@ -3,6 +3,7 @@ package groups
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"regexp"
 	"strings"
 	"time"
@@ -26,7 +27,7 @@ type Group struct {
 
 type kv = struct {
 	field schema.Suffix
-	value interface{}
+	value any
 }
 
 const BLANK = "'blank'"
@@ -85,7 +86,7 @@ func (g *Group) AsObjects(a *auth.Authorizator) []schema.Object {
 	return g.toObjects(list, a)
 }
 
-func (g Group) AsRuleEntity() (string, interface{}) {
+func (g Group) AsRuleEntity() (string, any) {
 	entity := struct {
 		Name  string
 		Doors map[string]bool
@@ -218,8 +219,8 @@ func (g Group) serialize() ([]byte, error) {
 		OID      schema.OID      `json:"OID"`
 		Name     string          `json:"name,omitempty"`
 		Doors    []schema.OID    `json:"doors"`
-		Created  types.Timestamp `json:"created,omitempty"`
-		Modified types.Timestamp `json:"modified,omitempty"`
+		Created  types.Timestamp `json:"created"`
+		Modified types.Timestamp `json:"modified"`
 	}{
 		OID:      g.OID,
 		Name:     g.Name,
@@ -246,8 +247,8 @@ func (g *Group) deserialize(bytes []byte) error {
 		OID      string          `json:"OID"`
 		Name     string          `json:"name,omitempty"`
 		Doors    []schema.OID    `json:"doors"`
-		Created  types.Timestamp `json:"created,omitempty"`
-		Modified types.Timestamp `json:"modified,omitempty"`
+		Created  types.Timestamp `json:"created"`
+		Modified types.Timestamp `json:"modified"`
 	}{
 		Created: created,
 	}
@@ -281,9 +282,7 @@ func (g Group) clone() Group {
 		deleted:  g.deleted,
 	}
 
-	for k, v := range g.Doors {
-		group.Doors[k] = v
-	}
+	maps.Copy(group.Doors, g.Doors)
 
 	return group
 }

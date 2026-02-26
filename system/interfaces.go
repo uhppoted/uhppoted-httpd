@@ -16,7 +16,7 @@ func Interfaces(uid, role string) []schema.Object {
 	return objects
 }
 
-func UpdateInterfaces(uid, role string, m map[string]interface{}) (interface{}, error) {
+func UpdateInterfaces(uid, role string, m map[string]any) (any, error) {
 	sys.Lock()
 	defer sys.Unlock()
 

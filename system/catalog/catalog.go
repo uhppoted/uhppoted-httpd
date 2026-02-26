@@ -73,7 +73,7 @@ func DeleteT[T CatalogType](v T, oid schema.OID) {
 	catalog.DeleteT(v, oid)
 }
 
-func GetV(oid schema.OID, suffix schema.Suffix) interface{} {
+func GetV(oid schema.OID, suffix schema.Suffix) any {
 	return catalog.GetV(oid, suffix)
 }
 

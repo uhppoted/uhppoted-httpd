@@ -545,7 +545,7 @@ func subsystems() []struct {
 	}
 }
 
-func unpack(m map[string]interface{}) ([]object, []object, []schema.OID, error) {
+func unpack(m map[string]any) ([]object, []object, []schema.OID, error) {
 	o := struct {
 		Created []object     `json:"created"`
 		Updated []object     `json:"updated"`

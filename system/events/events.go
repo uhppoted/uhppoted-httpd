@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"slices"
 	"sort"
 	"sync"
 	"time"
@@ -129,11 +130,11 @@ func (ee *Events) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 }
 
 // FIXME searches events list sequentially to find matching OID. But not ever actually invoked (as yet...)
-func (ee *Events) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
+func (ee *Events) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string) ([]any, error) {
 	ee.Lock()
 	defer ee.Unlock()
 
-	var objects = []interface{}{}
+	var objects = []any{}
 	var err error
 
 	for k, e := range ee.events {
@@ -263,7 +264,7 @@ func (ee *Events) Missing(gaps int, controllers ...uint32) map[uint32][]types.In
 		}
 
 		for k, list := range m {
-			sort.Slice(list, func(i, j int) bool { return list[i] < list[j] })
+			slices.Sort(list)
 			m[k] = list
 		}
 

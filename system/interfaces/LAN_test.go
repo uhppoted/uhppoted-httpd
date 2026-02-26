@@ -116,7 +116,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 
 	auth := auth.Authorizator{
 		OpAuth: &stub{
-			canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value interface{}) error {
+			canView: func(ruleset auth.RuleSet, object auth.Operant, field string, value any) error {
 				if strings.HasPrefix(field, "LAN.address.listen") {
 					return errors.New("test")
 				}

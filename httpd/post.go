@@ -68,7 +68,7 @@ func (d *dispatcher) post(w http.ResponseWriter, r *http.Request) {
 			warnf("HTTPD", "POST request in 'monitor' mode")
 			http.Error(w, "Configuration changes are disabled in monitor-only mode", http.StatusBadRequest)
 		} else {
-			d.exec(w, r, func(m map[string]interface{}) (interface{}, error) {
+			d.exec(w, r, func(m map[string]any) (any, error) {
 				return handler.post(uid, role, m)
 			})
 		}

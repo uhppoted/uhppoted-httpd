@@ -410,7 +410,7 @@ func TestCardHolderDeleteWithAuth(t *testing.T) {
 	cards := makeCards(hagrid, dobby)
 	auth := auth.Authorizator{
 		OpAuth: &stub{
-			canUpdateCard: func(card auth.Operant, field string, value interface{}) error {
+			canUpdateCard: func(card auth.Operant, field string, value any) error {
 				return nil
 			},
 		},

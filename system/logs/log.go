@@ -48,7 +48,7 @@ func (l LogEntry) IsDeleted() bool {
 func (l LogEntry) AsObjects(a auth.OpAuth) []schema.Object {
 	type E = struct {
 		field schema.Suffix
-		value interface{}
+		value any
 	}
 
 	list := []E{}
@@ -77,7 +77,7 @@ func (l LogEntry) AsObjects(a auth.OpAuth) []schema.Object {
 	return objects
 }
 
-func (l LogEntry) AsRuleEntity() (string, interface{}) {
+func (l LogEntry) AsRuleEntity() (string, any) {
 	entity := struct {
 		Timestamp string
 	}{
@@ -91,8 +91,8 @@ func (l LogEntry) CacheKey() string {
 	return ""
 }
 
-func (l *LogEntry) set(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
-	objects := []interface{}{}
+func (l *LogEntry) set(auth auth.OpAuth, oid schema.OID, value string) ([]any, error) {
+	objects := []any{}
 
 	return objects, nil
 }

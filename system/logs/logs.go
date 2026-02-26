@@ -114,7 +114,7 @@ func (ll *Logs) AsObjects(start, max int, auth auth.OpAuth) []schema.Object {
 	return objects
 }
 
-func (ll *Logs) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
+func (ll *Logs) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string) ([]any, error) {
 	if ll == nil {
 		return nil, nil
 	}
@@ -130,7 +130,7 @@ func (ll *Logs) UpdateByOID(auth auth.OpAuth, oid schema.OID, value string) ([]i
 		}
 	}
 
-	return []interface{}{}, nil
+	return []any{}, nil
 }
 
 func (ll *Logs) Load(blob json.RawMessage) error {

@@ -11,8 +11,8 @@ type filesystem struct {
 }
 
 func (fss filesystem) Open(name string) (http.File, error) {
-	parts := strings.Split(name, "/")
-	for _, part := range parts {
+	parts := strings.SplitSeq(name, "/")
+	for part := range parts {
 		if strings.HasPrefix(part, ".") {
 			return nil, os.ErrPermission
 		}

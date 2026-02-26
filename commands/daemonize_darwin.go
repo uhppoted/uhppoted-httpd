@@ -80,7 +80,7 @@ func (cmd *Daemonize) Help() {
 	helpOptions(cmd.FlagSet())
 }
 
-func (cmd *Daemonize) Execute(args ...interface{}) error {
+func (cmd *Daemonize) Execute(args ...any) error {
 	dir := filepath.Dir(cmd.config)
 	r := bufio.NewReader(os.Stdin)
 
@@ -222,7 +222,7 @@ func (cmd *Daemonize) parse(path string) (*plist, error) {
 	return &p, nil
 }
 
-func (cmd *Daemonize) daemonize(path string, p interface{}) error {
+func (cmd *Daemonize) daemonize(path string, p any) error {
 	fmt.Printf("   ... creating '%s'\n", path)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {

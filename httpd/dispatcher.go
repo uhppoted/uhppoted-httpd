@@ -13,7 +13,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/auth"
 )
 
-func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[string]interface{}) (interface{}, error)) {
+func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[string]any) (any, error)) {
 	ch := make(chan struct{})
 	ctx, cancel := context.WithTimeout(d.context, d.timeout)
 
@@ -41,7 +41,7 @@ func (d *dispatcher) exec(w http.ResponseWriter, r *http.Request, f func(map[str
 			}
 		}
 
-		body := map[string]interface{}{}
+		body := map[string]any{}
 
 		switch contentType {
 		case "application/x-www-form-urlencoded":

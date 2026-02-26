@@ -50,7 +50,7 @@ func Cards(uid, role string, start int, count int) []schema.Object {
 	return objects
 }
 
-func UpdateCards(uid, role string, m map[string]interface{}) (interface{}, error) {
+func UpdateCards(uid, role string, m map[string]any) (any, error) {
 	sys.Lock()
 
 	defer sys.Unlock()

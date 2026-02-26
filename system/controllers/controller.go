@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"math"
 	"regexp"
 	"strconv"
@@ -274,7 +275,7 @@ func (c *Controller) AsObjects(a *auth.Authorizator) []schema.Object {
 	return c.toObjects(list, a)
 }
 
-func (c Controller) AsRuleEntity() (string, interface{}) {
+func (c Controller) AsRuleEntity() (string, any) {
 	v := struct {
 		Name     string
 		DeviceID uint32
@@ -724,14 +725,14 @@ func (c Controller) serialize() ([]byte, error) {
 		OID          schema.OID           `json:"OID,omitempty"`
 		Name         string               `json:"name,omitempty"`
 		DeviceID     uint32               `json:"device-id,omitempty"`
-		Address      lib.ControllerAddr   `json:"address,omitempty"`
+		Address      lib.ControllerAddr   `json:"address"`
 		Doors        map[uint8]schema.OID `json:"doors"`
 		Interlock    lib.Interlock        `json:"interlock"`
 		AntiPassback lib.AntiPassback     `json:"antipassback"`
 		TimeZone     string               `json:"timezone,omitempty"`
 		Protocol     string               `json:"protocol,omitempty"`
-		Created      types.Timestamp      `json:"created,omitempty"`
-		Modified     types.Timestamp      `json:"modified,omitempty"`
+		Created      types.Timestamp      `json:"created"`
+		Modified     types.Timestamp      `json:"modified"`
 	}{
 		OID:          c.OID,
 		Name:         c.name,
@@ -746,9 +747,7 @@ func (c Controller) serialize() ([]byte, error) {
 		Modified:     c.modified.UTC(),
 	}
 
-	for k, v := range c.doors {
-		record.Doors[k] = v
-	}
+	maps.Copy(record.Doors, c.doors)
 
 	return json.MarshalIndent(record, "", "  ")
 }
@@ -760,14 +759,14 @@ func (c *Controller) deserialize(bytes []byte) error {
 		OID          schema.OID         `json:"OID"`
 		Name         string             `json:"name,omitempty"`
 		DeviceID     uint32             `json:"device-id,omitempty"`
-		Address      lib.ControllerAddr `json:"address,omitempty"`
+		Address      lib.ControllerAddr `json:"address"`
 		Doors        map[uint8]string   `json:"doors"`
 		Interlock    lib.Interlock      `json:"interlock"`
 		AntiPassback lib.AntiPassback   `json:"antipassback"`
 		TimeZone     string             `json:"timezone,omitempty"`
 		Protocol     string             `json:"protocol,omitempty"`
-		Created      types.Timestamp    `json:"created,omitempty"`
-		Modified     types.Timestamp    `json:"modified,omitempty"`
+		Created      types.Timestamp    `json:"created"`
+		Modified     types.Timestamp    `json:"modified"`
 	}{
 		Created:  created,
 		Protocol: "udp",
@@ -816,9 +815,7 @@ func (c *Controller) clone() *Controller {
 			deleted:  c.deleted,
 		}
 
-		for k, v := range c.doors {
-			replicant.doors[k] = v
-		}
+		maps.Copy(replicant.doors, c.doors)
 
 		return &replicant
 	}
@@ -826,7 +823,7 @@ func (c *Controller) clone() *Controller {
 	return nil
 }
 
-func (c Controller) updated(dbc db.DBC, uid, field string, before, after interface{}) {
+func (c Controller) updated(dbc db.DBC, uid, field string, before, after any) {
 	c.log(dbc, uid, "update", field, before, after, "Updated %[1]v from '%[2]v' to '%[3]v'", field, before, after)
 }
 

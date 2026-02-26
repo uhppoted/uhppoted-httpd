@@ -37,7 +37,7 @@ type User struct {
 
 type kv = struct {
 	field schema.Suffix
-	value interface{}
+	value any
 }
 
 var created = types.TimestampNow()
@@ -111,7 +111,7 @@ func (u User) AsObjects(a *auth.Authorizator) []schema.Object {
 	return u.toObjects(list, a)
 }
 
-func (u User) AsRuleEntity() (string, interface{}) {
+func (u User) AsRuleEntity() (string, any) {
 	entity := struct {
 		Name string
 		UID  string
@@ -333,8 +333,8 @@ func (u User) serialize() ([]byte, error) {
 		Salt     string          `json:"salt"`
 		Password string          `json:"password"`
 		OTP      string          `json:"otp,omitempty"`
-		Created  types.Timestamp `json:"created,omitempty"`
-		Modified types.Timestamp `json:"modified,omitempty"`
+		Created  types.Timestamp `json:"created"`
+		Modified types.Timestamp `json:"modified"`
 	}{
 		OID:      u.OID,
 		Name:     strings.TrimSpace(u.name),
@@ -361,8 +361,8 @@ func (u *User) deserialize(bytes []byte) error {
 		Salt     string          `json:"salt"`
 		Password string          `json:"password"`
 		OTP      string          `json:"otp,omitempty"`
-		Created  types.Timestamp `json:"created,omitempty"`
-		Modified types.Timestamp `json:"modified,omitempty"`
+		Created  types.Timestamp `json:"created"`
+		Modified types.Timestamp `json:"modified"`
 	}{
 		Created:  created,
 		Modified: types.TimestampNow(),

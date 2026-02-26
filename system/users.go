@@ -16,7 +16,7 @@ func Users(uid, role string) []schema.Object {
 	return objects
 }
 
-func UpdateUsers(uid, role string, m map[string]interface{}) (interface{}, error) {
+func UpdateUsers(uid, role string, m map[string]any) (any, error) {
 	sys.Lock()
 	defer sys.Unlock()
 

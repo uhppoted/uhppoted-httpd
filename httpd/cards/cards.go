@@ -44,20 +44,20 @@ func Get(uid, role string, rq *http.Request) any {
 	cards := system.Cards(uid, role, start, count)
 
 	return struct {
-		Cards interface{} `json:"cards"`
+		Cards any `json:"cards"`
 	}{
 		Cards: cards,
 	}
 }
 
-func Post(uid, role string, body map[string]interface{}) (interface{}, error) {
+func Post(uid, role string, body map[string]any) (any, error) {
 	updated, err := system.UpdateCards(uid, role, body)
 	if err != nil {
 		return nil, err
 	}
 
 	return struct {
-		Cards interface{} `json:"cards"`
+		Cards any `json:"cards"`
 	}{
 		Cards: updated,
 	}, nil

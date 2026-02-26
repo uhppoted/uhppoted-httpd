@@ -115,7 +115,7 @@ func (h History) LookupDoor(timestamp time.Time, deviceID uint32, door uint8) st
 
 	if deviceID != 0 && door >= 1 && door <= 4 {
 		if controller := catalog.FindController(deviceID); controller != "" {
-			var u interface{}
+			var u any
 
 			switch door {
 			case 1:

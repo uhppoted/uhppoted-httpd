@@ -162,7 +162,7 @@ func genClientKey(CA *rsa.PrivateKey) (*keyset, error) {
 	}, nil
 }
 
-func encode(p interface{}) []byte {
+func encode(p any) []byte {
 	var b bytes.Buffer
 
 	switch v := p.(type) {

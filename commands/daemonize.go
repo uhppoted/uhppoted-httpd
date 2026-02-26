@@ -372,7 +372,7 @@ func (cmd *Daemonize) users(i info) error {
 
 	file := filepath.Join(dir, "users.json")
 	users := struct {
-		Users []interface{} `json:"users"`
+		Users []any `json:"users"`
 	}{}
 
 	info, err := os.Stat(file)
@@ -497,7 +497,7 @@ func (cmd *Daemonize) genTLSkeys(i info) (bool, error) {
 	}
 
 	list := []struct {
-		item interface{}
+		item any
 		file string
 	}{
 		{keys.CA.privateKey, "ca.key"},

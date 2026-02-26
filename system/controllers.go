@@ -19,7 +19,7 @@ func Controllers(uid, role string) []schema.Object {
 	return objects
 }
 
-func UpdateControllers(m map[string]interface{}, a *auth.Authorizator) (interface{}, error) {
+func UpdateControllers(m map[string]any, a *auth.Authorizator) (any, error) {
 	sys.Lock()
 
 	defer sys.Unlock()

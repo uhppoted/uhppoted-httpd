@@ -155,7 +155,7 @@ func isNil(v any) bool {
 	}
 
 	switch reflect.TypeOf(v).Kind() {
-	case reflect.Ptr,
+	case reflect.Pointer,
 		reflect.Map,
 		reflect.Array,
 		reflect.Chan,
@@ -171,7 +171,7 @@ func (a *authorizator) CanView(operant Operant, field string, value any, ruleset
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("view::%v", tag)
 
-		m := map[string]interface{}{
+		m := map[string]any{
 			"OBJECT": object,
 			"FIELD":  field,
 			"VALUE":  value,
@@ -207,7 +207,7 @@ func (a *authorizator) CanAdd(operant Operant, rulesets ...RuleSet) error {
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("add::%v", tag)
 
-		m := map[string]interface{}{
+		m := map[string]any{
 			"OBJECT": object,
 			"FIELD":  "",
 		}
@@ -231,12 +231,12 @@ func (a *authorizator) CanAdd(operant Operant, rulesets ...RuleSet) error {
 	return ErrUnauthorised
 }
 
-func (a *authorizator) CanUpdate(operant Operant, field string, value interface{}, rulesets ...RuleSet) error {
+func (a *authorizator) CanUpdate(operant Operant, field string, value any, rulesets ...RuleSet) error {
 	if a != nil && operant != nil {
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("update::%v", tag)
 
-		m := map[string]interface{}{
+		m := map[string]any{
 			"OBJECT": object,
 			"FIELD":  field,
 			"VALUE":  value,
@@ -271,7 +271,7 @@ func (a *authorizator) CanDelete(operant Operant, rulesets ...RuleSet) error {
 			Refuse: false,
 		}
 
-		m := map[string]interface{}{
+		m := map[string]any{
 			"OBJECT": object,
 			"FIELD":  "",
 		}
@@ -295,7 +295,7 @@ func (a *authorizator) CanCache(operant Operant, field string, cache string, rul
 		tag, object := operant.AsRuleEntity()
 		op := fmt.Sprintf("cache::%v", tag)
 
-		m := map[string]interface{}{
+		m := map[string]any{
 			"OBJECT": object,
 			"FIELD":  field,
 		}
@@ -319,7 +319,7 @@ func (a *authorizator) CanCache(operant Operant, field string, cache string, rul
 	return nil
 }
 
-func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]interface{}) error {
+func (a *authorizator) eval(ruleset RuleSet, op string, r *result, m map[string]any) error {
 	context := ast.NewDataContext()
 	tag := fmt.Sprintf("%v", ruleset)
 

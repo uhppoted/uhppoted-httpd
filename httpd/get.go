@@ -68,7 +68,7 @@ func (d *dispatcher) getNoAuth(w http.ResponseWriter, r *http.Request) {
 
 	// ... parse headers, etc
 	acceptsGzip := parseHeader(r)
-	context := map[string]interface{}{
+	context := map[string]any{
 		"Theme":   parseSettings(r),
 		"Mode":    d.mode,
 		"WithPIN": d.withPIN,
@@ -280,7 +280,7 @@ func (d *dispatcher) translate(file string, context map[string]any, authorised m
 			return v
 		},
 
-		"nav": func(page string) interface{} {
+		"nav": func(page string) any {
 			return struct {
 				Page       string
 				Authorised nav
@@ -363,7 +363,7 @@ func (d *dispatcher) fetch(r *http.Request, w http.ResponseWriter, h handler) {
 
 	defer cancel()
 
-	var response interface{}
+	var response any
 
 	go func() {
 		response = h.get(uid, role, r)
@@ -439,8 +439,8 @@ func parseSettings(r *http.Request) string {
 
 	if cookie, err := r.Cookie(cookies.SettingsCookie); err == nil {
 		re := regexp.MustCompile("(.*?):(.+)")
-		tokens := strings.Split(cookie.Value, ",")
-		for _, token := range tokens {
+		tokens := strings.SplitSeq(cookie.Value, ",")
+		for token := range tokens {
 			match := re.FindStringSubmatch(token)
 			if len(match) > 2 {
 				if strings.TrimSpace(match[1]) == "theme" {

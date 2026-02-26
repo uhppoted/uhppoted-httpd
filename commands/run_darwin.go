@@ -20,7 +20,7 @@ var RUN = Run{
 	logFileSize:   10,
 }
 
-func (cmd *Run) Execute(args ...interface{}) error {
+func (cmd *Run) Execute(args ...any) error {
 	log.Printf("%s service %s - %s (PID %d)\n", SERVICE, uhppote.VERSION, "MacOS", os.Getpid())
 
 	f := func(c config.Config) {

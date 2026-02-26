@@ -14,22 +14,22 @@ import (
 
 const GZIP_MINIMUM = 16384
 
-func Get(uid, role string) interface{} {
+func Get(uid, role string) any {
 	return struct {
-		Users interface{} `json:"users"`
+		Users any `json:"users"`
 	}{
 		Users: system.Users(uid, role),
 	}
 }
 
-func Post(uid, role string, body map[string]interface{}) (interface{}, error) {
+func Post(uid, role string, body map[string]any) (any, error) {
 	updated, err := system.UpdateUsers(uid, role, body)
 	if err != nil {
 		return nil, err
 	}
 
 	return struct {
-		Users interface{} `json:"users"`
+		Users any `json:"users"`
 	}{
 		Users: updated,
 	}, nil

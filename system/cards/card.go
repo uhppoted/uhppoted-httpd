@@ -3,6 +3,7 @@ package cards
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"regexp"
 	"strconv"
 	"strings"
@@ -34,7 +35,7 @@ type Card struct {
 
 type kv = struct {
 	field schema.Suffix
-	value interface{}
+	value any
 }
 
 var created = types.TimestampNow()
@@ -151,7 +152,7 @@ func (c *Card) AsObjects(a *auth.Authorizator) []schema.Object {
 	return c.toObjects(list, a)
 }
 
-func (c Card) AsRuleEntity() (string, interface{}) {
+func (c Card) AsRuleEntity() (string, any) {
 	entity := struct {
 		Name   string
 		Number uint32
@@ -407,11 +408,11 @@ func (c Card) serialize() ([]byte, error) {
 		Name     string          `json:"name,omitempty"`
 		Card     types.Uint32    `json:"card,omitempty"`
 		PIN      types.Uint32    `json:"PIN,omitempty"`
-		From     lib.Date        `json:"from,omitempty"`
-		To       lib.Date        `json:"to,omitempty"`
+		From     lib.Date        `json:"from"`
+		To       lib.Date        `json:"to"`
 		Groups   []schema.OID    `json:"groups"`
-		Created  types.Timestamp `json:"created,omitempty"`
-		Modified types.Timestamp `json:"modified,omitempty"`
+		Created  types.Timestamp `json:"created"`
+		Modified types.Timestamp `json:"modified"`
 	}{
 		OID:      c.OID,
 		Name:     strings.TrimSpace(c.name),
@@ -443,11 +444,11 @@ func (c *Card) deserialize(bytes []byte) error {
 		Name     string          `json:"name,omitempty"`
 		Card     types.Uint32    `json:"card,omitempty"`
 		PIN      types.Uint32    `json:"PIN,omitempty"`
-		From     lib.Date        `json:"from,omitempty"`
-		To       lib.Date        `json:"to,omitempty"`
+		From     lib.Date        `json:"from"`
+		To       lib.Date        `json:"to"`
 		Groups   []schema.OID    `json:"groups"`
-		Created  types.Timestamp `json:"created,omitempty"`
-		Modified types.Timestamp `json:"modified,omitempty"`
+		Created  types.Timestamp `json:"created"`
+		Modified types.Timestamp `json:"modified"`
 	}{
 		Groups:  []schema.OID{},
 		Created: created,
@@ -477,9 +478,7 @@ func (c *Card) deserialize(bytes []byte) error {
 func (c *Card) clone() *Card {
 	var groups = map[schema.OID]bool{}
 
-	for gid, g := range c.groups {
-		groups[gid] = g
-	}
+	maps.Copy(groups, c.groups)
 
 	replicant := &Card{
 		CatalogCard: catalog.CatalogCard{

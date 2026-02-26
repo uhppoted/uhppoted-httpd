@@ -21,7 +21,7 @@ type controller struct {
 	deleted bool
 }
 
-func (t *controllers) New(v interface{}) schema.OID {
+func (t *controllers) New(v any) schema.OID {
 	u := v.(catalog.CatalogController)
 	suffix := t.last
 
@@ -51,7 +51,7 @@ loop:
 	}
 }
 
-func (t *controllers) Put(oid schema.OID, v interface{}) {
+func (t *controllers) Put(oid schema.OID, v any) {
 	if !oid.HasPrefix(t.base) {
 		panic(fmt.Sprintf("PUT: illegal oid %v for base %v", oid, t.base))
 	}

@@ -5,15 +5,15 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system"
 )
 
-func Get(uid, role string) interface{} {
+func Get(uid, role string) any {
 	return struct {
-		Controllers interface{} `json:"controllers"`
+		Controllers any `json:"controllers"`
 	}{
 		Controllers: system.Controllers(uid, role),
 	}
 }
 
-func Post(uid, role string, body map[string]interface{}) (interface{}, error) {
+func Post(uid, role string, body map[string]any) (any, error) {
 	auth := auth.NewAuthorizator(uid, role)
 
 	updated, err := system.UpdateControllers(body, auth)
@@ -22,7 +22,7 @@ func Post(uid, role string, body map[string]interface{}) (interface{}, error) {
 	}
 
 	return struct {
-		Controllers interface{} `json:"controllers"`
+		Controllers any `json:"controllers"`
 	}{
 		Controllers: updated,
 	}, nil

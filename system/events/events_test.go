@@ -26,7 +26,7 @@ func TestEventsAsObjects(t *testing.T) {
 	base := time.Date(2022, time.April, 20, 12, 34, 50, 0, time.UTC)
 	delta := 5 * time.Minute
 
-	for i := 0; i < 32; i++ {
+	for i := range 32 {
 		ix := uint32(1001 + i)
 		k := eventKey{deviceID: 201020304, index: ix}
 		e := Event{
@@ -88,7 +88,7 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 	oid := schema.EventsOID
 	base := time.Date(2022, time.April, 20, 12, 34, 50, 0, time.UTC)
 	delta := 5 * time.Minute
-	for i := 0; i < 32; i++ {
+	for i := range 32 {
 		ix := uint32(1001 + i)
 		timestamp := base.Add(time.Duration(i) * delta)
 		k := eventKey{deviceID: 201020304, index: ix}
@@ -105,7 +105,7 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 	}
 
 	delta = 5 * time.Minute
-	for i := 0; i < 32; i++ {
+	for i := range 32 {
 		ix := uint32(1 + i)
 		timestamp := base.Add(time.Duration(i)*delta + time.Minute)
 		k := eventKey{deviceID: 405419896, index: ix}
@@ -169,7 +169,7 @@ func TestEventsAsObjectsFromZero(t *testing.T) {
 	base := time.Date(2022, time.April, 20, 12, 34, 50, 0, time.UTC)
 	delta := 5 * time.Minute
 
-	for i := 0; i < 32; i++ {
+	for i := range 32 {
 		ix := uint32(1001 + i)
 		k := eventKey{deviceID: 201020304, index: ix}
 		e := Event{
@@ -509,7 +509,7 @@ func BenchmarkEventsAsObjectsWithoutCaching(b *testing.B) {
 	delta := 5 * time.Minute
 	list := []Event{}
 
-	for i := 0; i < 100000; i++ {
+	for i := range 100000 {
 		ix := uint32(1001 + i)
 		dt := time.Duration(i+rand.Intn(50)-25) * delta
 
@@ -556,7 +556,7 @@ func BenchmarkEventsAsObjectsWithCaching(b *testing.B) {
 	delta := 5 * time.Minute
 	list := []Event{}
 
-	for i := 0; i < 100000; i++ {
+	for i := range 100000 {
 		ix := uint32(1001 + i)
 		dt := time.Duration(i+rand.Intn(50)-25) * delta
 

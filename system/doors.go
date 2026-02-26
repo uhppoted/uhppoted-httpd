@@ -18,7 +18,7 @@ func Doors(uid, role string) []schema.Object {
 	return objects
 }
 
-func UpdateDoors(uid, role string, m map[string]interface{}) (interface{}, error) {
+func UpdateDoors(uid, role string, m map[string]any) (any, error) {
 	sys.Lock()
 	defer sys.Unlock()
 

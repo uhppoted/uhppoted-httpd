@@ -12,7 +12,7 @@ import (
 
 const GZIP_MINIMUM = 16384
 
-func Get(uid, role string, rq *http.Request) interface{} {
+func Get(uid, role string, rq *http.Request) any {
 	start := 0
 	count := math.MaxInt32
 
@@ -44,7 +44,7 @@ func Get(uid, role string, rq *http.Request) interface{} {
 	}
 
 	return struct {
-		Logs interface{} `json:"logs"`
+		Logs any `json:"logs"`
 	}{
 		Logs: system.Logs(uid, role, start, count),
 	}

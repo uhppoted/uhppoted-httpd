@@ -38,7 +38,7 @@ type LAN struct {
 
 type kv = struct {
 	field schema.Suffix
-	value interface{}
+	value any
 }
 
 var created = types.TimestampNow()
@@ -84,7 +84,7 @@ func (l *LAN) AsObjects(a *auth.Authorizator) []schema.Object {
 	return l.toObjects(list, a)
 }
 
-func (l LAN) AsRuleEntity() (string, interface{}) {
+func (l LAN) AsRuleEntity() (string, any) {
 	entity := struct {
 		Type string
 		Name string
@@ -348,10 +348,7 @@ func (l *LAN) getEvents(c types.IController, intervals []types.Interval) {
 
 		for _, interval := range intervals {
 			if interval.Contains(last) {
-				index := interval.From
-				if index < first {
-					index = first
-				}
+				index := max(interval.From, first)
 
 				for index <= last && count < MAX {
 					f(index)
@@ -360,10 +357,7 @@ func (l *LAN) getEvents(c types.IController, intervals []types.Interval) {
 			}
 
 			if interval.Contains(first) {
-				index := interval.To
-				if index > last {
-					index = last
-				}
+				index := min(interval.To, last)
 
 				for index >= first && count < MAX {
 					f(index)
@@ -662,11 +656,11 @@ func (l LAN) serialize() ([]byte, error) {
 	record := struct {
 		OID              schema.OID        `json:"OID"`
 		Name             string            `json:"name,omitempty"`
-		BindAddress      lib.BindAddr      `json:"bind-address,omitempty"`
-		BroadcastAddress lib.BroadcastAddr `json:"broadcast-address,omitempty"`
-		ListenAddress    lib.ListenAddr    `json:"listen-address,omitempty"`
-		Created          types.Timestamp   `json:"created,omitempty"`
-		Modified         types.Timestamp   `json:"modified,omitempty"`
+		BindAddress      lib.BindAddr      `json:"bind-address"`
+		BroadcastAddress lib.BroadcastAddr `json:"broadcast-address"`
+		ListenAddress    lib.ListenAddr    `json:"listen-address"`
+		Created          types.Timestamp   `json:"created"`
+		Modified         types.Timestamp   `json:"modified"`
 	}{
 		OID:              l.OID,
 		Name:             l.Name,
@@ -686,11 +680,11 @@ func (l *LAN) deserialize(bytes []byte) error {
 	record := struct {
 		OID              schema.OID        `json:"OID"`
 		Name             string            `json:"name,omitempty"`
-		BindAddress      lib.BindAddr      `json:"bind-address,omitempty"`
-		BroadcastAddress lib.BroadcastAddr `json:"broadcast-address,omitempty"`
-		ListenAddress    lib.ListenAddr    `json:"listen-address,omitempty"`
-		Created          types.Timestamp   `json:"created,omitempty"`
-		Modified         types.Timestamp   `json:"modified,omitempty"`
+		BindAddress      lib.BindAddr      `json:"bind-address"`
+		BroadcastAddress lib.BroadcastAddr `json:"broadcast-address"`
+		ListenAddress    lib.ListenAddr    `json:"listen-address"`
+		Created          types.Timestamp   `json:"created"`
+		Modified         types.Timestamp   `json:"modified"`
 	}{
 		Created: created,
 	}

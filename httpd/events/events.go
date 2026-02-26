@@ -12,7 +12,7 @@ import (
 
 const GZIP_MINIMUM = 16384
 
-func Get(uid, role string, rq *http.Request) interface{} {
+func Get(uid, role string, rq *http.Request) any {
 	start := 0
 	count := math.MaxInt32
 
@@ -44,7 +44,7 @@ func Get(uid, role string, rq *http.Request) interface{} {
 	}
 
 	return struct {
-		Events interface{} `json:"events"`
+		Events any `json:"events"`
 	}{
 		Events: system.Events(uid, role, start, count),
 	}

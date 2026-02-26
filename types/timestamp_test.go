@@ -101,7 +101,7 @@ func TestTimestampString(t *testing.T) {
 	var timestamp = Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 789, tz))
 
 	tests := []struct {
-		dt       interface{}
+		dt       any
 		expected string
 	}{
 		{timestamp, "2021-02-28 12:34:56 UTC"},

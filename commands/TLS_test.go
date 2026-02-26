@@ -11,7 +11,7 @@ func TestGenKeys(t *testing.T) {
 		t.Fatalf("Unexpected error creating CA (%v)", err)
 	}
 
-	f := func(v interface{}) string {
+	f := func(v any) string {
 		return string(encode(v))
 	}
 

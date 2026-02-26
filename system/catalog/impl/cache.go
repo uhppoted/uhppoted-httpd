@@ -8,7 +8,7 @@ import (
 	"github.com/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
-type value interface{}
+type value any
 
 var cache = struct {
 	cache map[schema.OID]value
@@ -17,7 +17,7 @@ var cache = struct {
 	cache: map[schema.OID]value{},
 }
 
-func Get(oid schema.OID) interface{} {
+func Get(oid schema.OID) any {
 	cache.RLock()
 	defer cache.RUnlock()
 
@@ -28,7 +28,7 @@ func Get(oid schema.OID) interface{} {
 	return nil
 }
 
-func (cc *db) GetV(oid schema.OID, suffix schema.Suffix) interface{} {
+func (cc *db) GetV(oid schema.OID, suffix schema.Suffix) any {
 	cache.RLock()
 	defer cache.RUnlock()
 
@@ -39,7 +39,7 @@ func (cc *db) GetV(oid schema.OID, suffix schema.Suffix) interface{} {
 	return nil
 }
 
-func (cc *db) Put(oid schema.OID, v interface{}) {
+func (cc *db) Put(oid schema.OID, v any) {
 	cache.Lock()
 	defer cache.Unlock()
 
@@ -64,7 +64,7 @@ func PutL(objects []schema.Object) {
 	}
 }
 
-func (cc *db) Find(prefix schema.OID, suffix schema.Suffix, value interface{}) (schema.OID, bool) {
+func (cc *db) Find(prefix schema.OID, suffix schema.Suffix, value any) (schema.OID, bool) {
 	cache.RLock()
 	defer cache.RUnlock()
 

@@ -4,6 +4,7 @@
 
 ### Updated
 1. Updated to Go 1.26.
+2. Updated to _modern Go_ with `go fix`.
 
 
 ## [0.9.0](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.9.0) - 2026-01-27

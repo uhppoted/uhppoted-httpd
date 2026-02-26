@@ -33,7 +33,7 @@ type Door struct {
 
 type kv = struct {
 	field schema.Suffix
-	value interface{}
+	value any
 }
 
 var created = types.TimestampNow()
@@ -400,8 +400,8 @@ func (d Door) serialize() ([]byte, error) {
 		Delay    uint8             `json:"delay,omitempty"`
 		Mode     core.ControlState `json:"mode,omitempty"`
 		Keypad   bool              `json:"keypad,omitempty"`
-		Created  types.Timestamp   `json:"created,omitempty"`
-		Modified types.Timestamp   `json:"modified,omitempty"`
+		Created  types.Timestamp   `json:"created"`
+		Modified types.Timestamp   `json:"modified"`
 	}{
 		OID:      d.OID,
 		Name:     d.name,
@@ -424,8 +424,8 @@ func (d *Door) deserialize(bytes []byte) error {
 		Delay    uint8             `json:"delay,omitempty"`
 		Mode     core.ControlState `json:"mode,omitempty"`
 		Keypad   bool              `json:"keypad,omitempty"`
-		Created  types.Timestamp   `json:"created,omitempty"`
-		Modified types.Timestamp   `json:"modified,omitempty"`
+		Created  types.Timestamp   `json:"created"`
+		Modified types.Timestamp   `json:"modified"`
 	}{
 		Delay:   5,
 		Mode:    core.Controlled,

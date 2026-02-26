@@ -157,7 +157,7 @@ func (e Event) IsDeleted() bool {
 func (e Event) AsObjects(a auth.OpAuth) []schema.Object {
 	type E = struct {
 		field schema.Suffix
-		value interface{}
+		value any
 	}
 
 	list := []E{}
@@ -191,7 +191,7 @@ func (e Event) AsObjects(a auth.OpAuth) []schema.Object {
 	return objects
 }
 
-func (e Event) AsRuleEntity() (string, interface{}) {
+func (e Event) AsRuleEntity() (string, any) {
 	entity := struct {
 		DeviceID uint32
 		Index    uint32
@@ -207,8 +207,8 @@ func (e Event) CacheKey() string {
 	return ""
 }
 
-func (e *Event) set(auth auth.OpAuth, oid schema.OID, value string) ([]interface{}, error) {
-	objects := []interface{}{}
+func (e *Event) set(auth auth.OpAuth, oid schema.OID, value string) ([]any, error) {
+	objects := []any{}
 
 	return objects, nil
 }
