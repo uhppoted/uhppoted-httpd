@@ -1,14 +1,14 @@
 module github.com/uhppoted/uhppoted-httpd
 
-go 1.25
+go 1.26
 
 require (
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.6.0
 	github.com/hyperjumptech/grule-rule-engine v1.15.0
 	github.com/pquerna/otp v1.4.0
-	github.com/uhppoted/uhppote-core v0.9.1-0.20260127232830-3d007371e22e
-	github.com/uhppoted/uhppoted-lib v0.9.0
+	github.com/uhppoted/uhppote-core v0.9.1-0.20260219172325-1dd279d6cc53
+	github.com/uhppoted/uhppoted-lib v0.9.1-0.20260220173047-f3a88dcbc696
 	golang.org/x/sys v0.41.0
 )
 

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Updated
+1. Updated to Go 1.26.
+
 
 ## [0.9.0](https://github.com/uhppoted/uhppoted-httpd/releases/tag/v0.9.0) - 2026-01-27
 
