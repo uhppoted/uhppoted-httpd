@@ -10,7 +10,6 @@ import (
 
 	"codeberg.org/uhppoted/uhppoted-httpd/audit"
 	"codeberg.org/uhppoted/uhppoted-httpd/auth"
-	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog"
 	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog/schema"
 )
 
@@ -87,10 +86,8 @@ func makeCards(list ...Card) *Cards {
 
 func makeCard(oid schema.OID, name string, card uint32, groups ...string) Card {
 	cardholder := Card{
-		CatalogCard: catalog.CatalogCard{
-			OID:    oid,
-			CardID: card,
-		},
+		OID:    oid,
+		CardID: card,
 		name:   name,
 		from:   date("2021-01-02"),
 		to:     date("2021-12-30"),

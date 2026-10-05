@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"codeberg.org/uhppoted/uhppoted-httpd/auth"
-	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog"
 	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"codeberg.org/uhppoted/uhppoted-httpd/types"
 )
@@ -17,9 +16,7 @@ func TestLogEntryAsObjects(t *testing.T) {
 	timestamp := time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local)
 
 	l := LogEntry{
-		CatalogLogEntry: catalog.CatalogLogEntry{
-			OID: "0.7.3",
-		},
+		OID:       "0.7.3",
 		Timestamp: timestamp,
 		UID:       "admin",
 		Item:      "thing1",
@@ -51,9 +48,7 @@ func TestLogEntryAsObjectsWithAuth(t *testing.T) {
 	timestamp := time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local)
 
 	l := LogEntry{
-		CatalogLogEntry: catalog.CatalogLogEntry{
-			OID: "0.7.3",
-		},
+		OID:       "0.7.3",
 		Timestamp: timestamp,
 		UID:       "admin",
 		Item:      "thing1",

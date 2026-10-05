@@ -196,9 +196,7 @@ func (l LAN) toObjects(list []kv, a *auth.Authorizator) []schema.Object {
 
 func (l LAN) Clone() LAN {
 	return LAN{
-		CatalogInterface: catalog.CatalogInterface{
-			OID: l.OID,
-		},
+		OID:              l.OID,
 		Name:             l.Name,
 		BindAddress:      l.BindAddress,
 		BroadcastAddress: l.BroadcastAddress,

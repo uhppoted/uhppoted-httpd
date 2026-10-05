@@ -28,10 +28,8 @@ func TestControllerAsObjects(t *testing.T) {
 	address := lib.MustParseControllerAddr("192.168.1.101")
 
 	c := Controller{
-		CatalogController: catalog.CatalogController{
-			OID:      "0.2.3",
-			DeviceID: deviceID,
-		},
+		OID:      "0.2.3",
+		DeviceID: deviceID,
 		name:     name,
 		IP:       address,
 		protocol: "tcp",
@@ -91,12 +89,10 @@ func TestControllerAsObjectsWithDeleted(t *testing.T) {
 	address := lib.MustParseControllerAddr("192.168.1.101")
 
 	c := Controller{
-		CatalogController: catalog.CatalogController{
-			OID:      "0.2.3",
-			DeviceID: deviceID,
-		},
-		name: name,
-		IP:   address,
+		OID:      "0.2.3",
+		DeviceID: deviceID,
+		name:     name,
+		IP:       address,
 		doors: map[uint8]schema.OID{
 			1: "0.3.5",
 			2: "0.3.7",
@@ -125,10 +121,8 @@ func TestControllerAsObjectsWithAuth(t *testing.T) {
 	address := lib.MustParseControllerAddr("192.168.1.101")
 
 	c := Controller{
-		CatalogController: catalog.CatalogController{
-			OID:      "0.2.3",
-			DeviceID: deviceID,
-		},
+		OID:      "0.2.3",
+		DeviceID: deviceID,
 		name:     name,
 		IP:       address,
 		protocol: "udp",
@@ -199,9 +193,7 @@ func TestControllerSet(t *testing.T) {
 	}
 
 	c := Controller{
-		CatalogController: catalog.CatalogController{
-			OID: "0.2.3",
-		},
+		OID:  "0.2.3",
 		name: "Le Controlleur",
 	}
 
@@ -221,9 +213,7 @@ func TestControllerSet(t *testing.T) {
 
 func TestControllerSetWithDeleted(t *testing.T) {
 	c := Controller{
-		CatalogController: catalog.CatalogController{
-			OID: "0.2.3",
-		},
+		OID:  "0.2.3",
 		name: "Le Controlleur",
 
 		deleted: types.TimestampNow(),
@@ -269,10 +259,8 @@ func TestControllerUnmarshalJSON(t *testing.T) {
     }`
 
 	expected := Controller{
-		CatalogController: catalog.CatalogController{
-			OID:      "0.2.2",
-			DeviceID: 405419896,
-		},
+		OID:      "0.2.2",
+		DeviceID: 405419896,
 
 		name: "Alpha",
 		IP:   lib.MustParseControllerAddr("192.168.1.125"),
@@ -325,10 +313,8 @@ func TestControllerUnmarshalJSONWithMissingAddress(t *testing.T) {
     }`
 
 	expected := Controller{
-		CatalogController: catalog.CatalogController{
-			OID:      "0.2.2",
-			DeviceID: 405419896,
-		},
+		OID:      "0.2.2",
+		DeviceID: 405419896,
 
 		name: "Alpha",
 		IP:   lib.ControllerAddr{},

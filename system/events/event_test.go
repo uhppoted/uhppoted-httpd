@@ -11,7 +11,6 @@ import (
 	core "codeberg.org/uhppoted/uhppoted-core/types"
 
 	"codeberg.org/uhppoted/uhppoted-httpd/auth"
-	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog"
 	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"codeberg.org/uhppoted/uhppoted-httpd/types"
 )
@@ -20,11 +19,9 @@ func TestEventAsObjects(t *testing.T) {
 	timestamp := core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	e := Event{
-		CatalogEvent: catalog.CatalogEvent{
-			OID:      "0.6.3",
-			DeviceID: 405419896,
-			Index:    79,
-		},
+		OID:        "0.6.3",
+		DeviceID:   405419896,
+		Index:      79,
 		Timestamp:  timestamp,
 		Type:       6,
 		Door:       3,
@@ -68,11 +65,9 @@ func TestEventAsObjectsWithAuth(t *testing.T) {
 	timestamp := core.DateTime(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	e := Event{
-		CatalogEvent: catalog.CatalogEvent{
-			OID:      "0.6.3",
-			DeviceID: 405419896,
-			Index:    79,
-		},
+		OID:        "0.6.3",
+		DeviceID:   405419896,
+		Index:      79,
 		Timestamp:  timestamp,
 		Type:       6,
 		Door:       3,

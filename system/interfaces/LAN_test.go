@@ -10,7 +10,6 @@ import (
 	core "codeberg.org/uhppoted/uhppoted-core/types"
 
 	"codeberg.org/uhppoted/uhppoted-httpd/auth"
-	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog"
 	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"codeberg.org/uhppoted/uhppoted-httpd/system/db"
 	"codeberg.org/uhppoted/uhppoted-httpd/types"
@@ -23,9 +22,7 @@ func TestLANAsObjects(t *testing.T) {
 	listen := core.MustParseListenAddr("192.168.1.103:54321")
 
 	l := LAN{
-		CatalogInterface: catalog.CatalogInterface{
-			OID: "0.1.3",
-		},
+		OID:              "0.1.3",
 		Name:             "Le LAN",
 		BindAddress:      bind,
 		BroadcastAddress: broadcast,
@@ -61,9 +58,7 @@ func TestLANAsObjectsWithDeleted(t *testing.T) {
 	listen := core.MustParseListenAddr("192.168.1.103:54321")
 
 	l := LAN{
-		CatalogInterface: catalog.CatalogInterface{
-			OID: "0.1.3",
-		},
+		OID:              "0.1.3",
 		Name:             "Le LAN",
 		BindAddress:      bind,
 		BroadcastAddress: broadcast,
@@ -91,9 +86,7 @@ func TestLANAsObjectsWithAuth(t *testing.T) {
 	listen := core.MustParseListenAddr("192.168.1.103:54321")
 
 	l := LAN{
-		CatalogInterface: catalog.CatalogInterface{
-			OID: "0.1.3",
-		},
+		OID:              "0.1.3",
 		Name:             "Le LAN",
 		BindAddress:      bind,
 		BroadcastAddress: broadcast,
@@ -141,9 +134,7 @@ func TestLANSet(t *testing.T) {
 	}
 
 	l := LAN{
-		CatalogInterface: catalog.CatalogInterface{
-			OID: "0.1.3",
-		},
+		OID:  "0.1.3",
 		Name: "Le LAN",
 	}
 
@@ -163,9 +154,7 @@ func TestLANSet(t *testing.T) {
 
 func TestLANSetWithDeleted(t *testing.T) {
 	l := LAN{
-		CatalogInterface: catalog.CatalogInterface{
-			OID: "0.1.3",
-		},
+		OID:  "0.1.3",
 		Name: "Le LAN",
 
 		deleted: types.TimestampNow(),

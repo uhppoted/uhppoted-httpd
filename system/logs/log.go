@@ -24,9 +24,7 @@ type LogEntry struct {
 
 func NewLogEntry(oid schema.OID, timestamp time.Time, record audit.AuditRecord) LogEntry {
 	return LogEntry{
-		CatalogLogEntry: catalog.CatalogLogEntry{
-			OID: oid,
-		},
+		OID:       oid,
 		Timestamp: timestamp,
 		UID:       record.UID,
 		Item:      record.Component,
@@ -160,9 +158,7 @@ func (l *LogEntry) deserialize(bytes []byte) error {
 
 func (l LogEntry) clone() LogEntry {
 	log := LogEntry{
-		CatalogLogEntry: catalog.CatalogLogEntry{
-			OID: l.OID,
-		},
+		OID:       l.OID,
 		Timestamp: l.Timestamp,
 	}
 

@@ -26,10 +26,8 @@ func TestCardAsObjects(t *testing.T) {
 	to := lib.MustParseDate("2023-12-31")
 
 	c := Card{
-		CatalogCard: catalog.CatalogCard{
-			OID:    "0.4.3",
-			CardID: 8165537,
-		},
+		OID:     "0.4.3",
+		CardID:  8165537,
 		name:    "Le Card",
 		pin:     7531,
 		from:    from,
@@ -64,10 +62,8 @@ func TestCardWithMissingFromDateAsObjects(t *testing.T) {
 	to := lib.MustParseDate("2023-12-31")
 
 	c := Card{
-		CatalogCard: catalog.CatalogCard{
-			OID:    "0.4.3",
-			CardID: 8165537,
-		},
+		OID:     "0.4.3",
+		CardID:  8165537,
 		name:    "Le Card",
 		pin:     7531,
 		to:      to,
@@ -101,10 +97,8 @@ func TestCardWithMissingToDateAsObjects(t *testing.T) {
 	to := lib.Date{}
 
 	c := Card{
-		CatalogCard: catalog.CatalogCard{
-			OID:    "0.4.3",
-			CardID: 8165537,
-		},
+		OID:     "0.4.3",
+		CardID:  8165537,
 		name:    "Le Card",
 		pin:     7531,
 		from:    from,
@@ -137,10 +131,8 @@ func TestCardAsObjectsWithDeleted(t *testing.T) {
 	to := lib.MustParseDate("2023-12-31")
 
 	c := Card{
-		CatalogCard: catalog.CatalogCard{
-			OID:    "0.4.3",
-			CardID: 8165537,
-		},
+		OID:     "0.4.3",
+		CardID:  8165537,
 		name:    "Le Card",
 		from:    from,
 		to:      to,
@@ -165,10 +157,8 @@ func TestCardAsObjectsWithAuth(t *testing.T) {
 	to := lib.MustParseDate("2023-12-31")
 
 	c := Card{
-		CatalogCard: catalog.CatalogCard{
-			OID:    "0.4.3",
-			CardID: 8165537,
-		},
+		OID:     "0.4.3",
+		CardID:  8165537,
 		name:    "Le Card",
 		pin:     7531,
 		from:    from,
@@ -214,9 +204,7 @@ func TestCardSet(t *testing.T) {
 	}
 
 	c := Card{
-		CatalogCard: catalog.CatalogCard{
-			OID: "0.4.3",
-		},
+		OID:  "0.4.3",
 		name: "Le Carte",
 		from: lib.MustParseDate("2024-01-01"),
 		to:   lib.MustParseDate("2024-12-31"),
@@ -238,9 +226,7 @@ func TestCardSet(t *testing.T) {
 
 func TestCardSetWithDeleted(t *testing.T) {
 	c := Card{
-		CatalogCard: catalog.CatalogCard{
-			OID: "0.4.3",
-		},
+		OID:  "0.4.3",
 		name: "Le Carte",
 
 		deleted: types.TimestampNow(),

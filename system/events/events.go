@@ -322,10 +322,8 @@ func (ee *Events) Received(deviceID uint32, recent []uhppoted.Event, lookup func
 		}
 
 		event := Event{
-			CatalogEvent: catalog.CatalogEvent{
-				DeviceID: e.DeviceID,
-				Index:    e.Index,
-			},
+			DeviceID: e.DeviceID,
+			Index:    e.Index,
 		}
 
 		oid := catalog.NewT(event.CatalogEvent)

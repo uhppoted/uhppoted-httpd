@@ -156,11 +156,9 @@ func (p *Local) Preauthenticate() (string, error) {
 	}
 
 	claims := &claims{
-		StandardClaims: jwt.StandardClaims{
-			ID:        UUID.String(),
-			Audience:  []string{"login"},
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))),
-		},
+		ID:        UUID.String(),
+		Audience:  []string{"login"},
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))),
 		Login: &login{
 			LoginId: loginId,
 			Salt:    salt,
@@ -237,11 +235,9 @@ func (p *Local) Authenticate(uid, pwd string) (token string, err error) {
 	}
 
 	claims := &claims{
-		StandardClaims: jwt.StandardClaims{
-			ID:        UUID.String(),
-			Audience:  []string{"admin"},
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))),
-		},
+		ID:        UUID.String(),
+		Audience:  []string{"admin"},
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expiry))),
 		Session: &session{
 			LoggedInAs: uid,
 			SessionId:  sessionId,

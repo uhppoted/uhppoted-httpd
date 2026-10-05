@@ -128,11 +128,9 @@ func (r reason) String() string {
 
 func NewEvent(oid schema.OID, e uhppoted.Event, device, door, card string) Event {
 	return Event{
-		CatalogEvent: catalog.CatalogEvent{
-			OID:      oid,
-			DeviceID: e.DeviceID,
-			Index:    e.Index,
-		},
+		OID:        oid,
+		DeviceID:   e.DeviceID,
+		Index:      e.Index,
 		Timestamp:  e.Timestamp,
 		Type:       eventType(e.Type),
 		Door:       e.Door,
@@ -287,9 +285,7 @@ func (e *Event) deserialize(bytes []byte) error {
 
 func (e Event) clone() Event {
 	event := Event{
-		CatalogEvent: catalog.CatalogEvent{
-			OID: e.OID,
-		},
+		OID:       e.OID,
 		Timestamp: e.Timestamp,
 	}
 

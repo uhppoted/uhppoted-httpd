@@ -11,7 +11,6 @@ import (
 
 	core "codeberg.org/uhppoted/uhppoted-core/types"
 
-	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog"
 	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog/schema"
 	"codeberg.org/uhppoted/uhppoted-httpd/types"
 )
@@ -30,11 +29,9 @@ func TestEventsAsObjects(t *testing.T) {
 		ix := uint32(1001 + i)
 		k := eventKey{deviceID: 201020304, index: ix}
 		e := Event{
-			CatalogEvent: catalog.CatalogEvent{
-				OID:      oid.AppendS(strconv.Itoa(int(ix))),
-				DeviceID: 201020304,
-				Index:    uint32(ix),
-			},
+			OID:       oid.AppendS(strconv.Itoa(int(ix))),
+			DeviceID:  201020304,
+			Index:     uint32(ix),
 			Timestamp: core.DateTime(base.Add(time.Duration(i) * delta)),
 		}
 
@@ -93,11 +90,9 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 		timestamp := base.Add(time.Duration(i) * delta)
 		k := eventKey{deviceID: 201020304, index: ix}
 		e := Event{
-			CatalogEvent: catalog.CatalogEvent{
-				OID:      oid.AppendS(strconv.Itoa(int(ix))),
-				DeviceID: 201020304,
-				Index:    uint32(ix),
-			},
+			OID:       oid.AppendS(strconv.Itoa(int(ix))),
+			DeviceID:  201020304,
+			Index:     uint32(ix),
 			Timestamp: core.DateTime(timestamp),
 		}
 
@@ -110,11 +105,9 @@ func TestEventsAsObjectsWithMultipleDevices(t *testing.T) {
 		timestamp := base.Add(time.Duration(i)*delta + time.Minute)
 		k := eventKey{deviceID: 405419896, index: ix}
 		e := Event{
-			CatalogEvent: catalog.CatalogEvent{
-				OID:      oid.AppendS(strconv.Itoa(int(ix))),
-				DeviceID: 405419896,
-				Index:    uint32(ix),
-			},
+			OID:       oid.AppendS(strconv.Itoa(int(ix))),
+			DeviceID:  405419896,
+			Index:     uint32(ix),
 			Timestamp: core.DateTime(timestamp),
 		}
 
@@ -173,11 +166,9 @@ func TestEventsAsObjectsFromZero(t *testing.T) {
 		ix := uint32(1001 + i)
 		k := eventKey{deviceID: 201020304, index: ix}
 		e := Event{
-			CatalogEvent: catalog.CatalogEvent{
-				OID:      oid.AppendS(strconv.Itoa(int(ix))),
-				DeviceID: 201020304,
-				Index:    uint32(ix),
-			},
+			OID:       oid.AppendS(strconv.Itoa(int(ix))),
+			DeviceID:  201020304,
+			Index:     uint32(ix),
 			Timestamp: core.DateTime(base.Add(time.Duration(i) * delta)),
 		}
 
@@ -214,7 +205,7 @@ func TestEventsMissingWithNoGaps(t *testing.T) {
 	for ix := uint32(1001); ix <= 1032; ix++ {
 		k := eventKey{deviceID: 201020304, index: ix}
 		e := Event{
-			CatalogEvent: catalog.CatalogEvent{DeviceID: 201020304, Index: ix},
+			DeviceID: 201020304, Index: ix,
 		}
 
 		events.events[k] = e
@@ -223,7 +214,7 @@ func TestEventsMissingWithNoGaps(t *testing.T) {
 	for ix := uint32(1); ix <= 69; ix++ {
 		k := eventKey{deviceID: 405419896, index: ix}
 		e := Event{
-			CatalogEvent: catalog.CatalogEvent{DeviceID: 405419896, Index: ix},
+			DeviceID: 405419896, Index: ix,
 		}
 
 		events.events[k] = e
@@ -258,7 +249,7 @@ func TestEventsMissingWithGaps(t *testing.T) {
 		if ix < 37 || ix > 43 {
 			k := eventKey{deviceID: 405419896, index: ix}
 			e := Event{
-				CatalogEvent: catalog.CatalogEvent{DeviceID: 405419896, Index: ix},
+				DeviceID: 405419896, Index: ix,
 			}
 
 			events.events[k] = e
@@ -289,7 +280,7 @@ func TestEventsMissingWithMultipleGaps(t *testing.T) {
 		if !(ix >= 13 && ix <= 19) && !(ix >= 37 && ix <= 43) && !(ix >= 53 && ix <= 59) {
 			k := eventKey{deviceID: 405419896, index: ix}
 			e := Event{
-				CatalogEvent: catalog.CatalogEvent{DeviceID: 405419896, Index: ix},
+				DeviceID: 405419896, Index: ix,
 			}
 
 			events.events[k] = e
@@ -327,7 +318,7 @@ func TestEventsMissingWithGapsLimit(t *testing.T) {
 			!(ix >= 57 && ix <= 61) {
 			k := eventKey{deviceID: 405419896, index: ix}
 			e := Event{
-				CatalogEvent: catalog.CatalogEvent{DeviceID: 405419896, Index: ix},
+				DeviceID: 405419896, Index: ix,
 			}
 
 			events.events[k] = e
@@ -417,9 +408,8 @@ func BenchmarkMissingEvents(b *testing.B) {
 		}
 
 		e := Event{
-			CatalogEvent: catalog.CatalogEvent{
-				DeviceID: 405419896,
-				Index:    ix}}
+			DeviceID: 405419896,
+			Index:    ix}
 
 		list = append(list, e)
 	}
@@ -464,7 +454,7 @@ func BenchmarkMissingEventsWithCache(b *testing.B) {
 		}
 
 		e := Event{
-			CatalogEvent: catalog.CatalogEvent{DeviceID: 405419896, Index: ix},
+			DeviceID: 405419896, Index: ix,
 		}
 
 		list = append(list, e)
@@ -514,11 +504,9 @@ func BenchmarkEventsAsObjectsWithoutCaching(b *testing.B) {
 		dt := time.Duration(i+rand.Intn(50)-25) * delta
 
 		list = append(list, Event{
-			CatalogEvent: catalog.CatalogEvent{
-				OID:      oid.AppendS(strconv.Itoa(int(ix))),
-				DeviceID: 201020304,
-				Index:    uint32(ix),
-			},
+			OID:       oid.AppendS(strconv.Itoa(int(ix))),
+			DeviceID:  201020304,
+			Index:     uint32(ix),
 			Timestamp: core.DateTime(base.Add(dt)),
 		})
 	}
@@ -561,11 +549,9 @@ func BenchmarkEventsAsObjectsWithCaching(b *testing.B) {
 		dt := time.Duration(i+rand.Intn(50)-25) * delta
 
 		list = append(list, Event{
-			CatalogEvent: catalog.CatalogEvent{
-				OID:      oid.AppendS(strconv.Itoa(int(ix))),
-				DeviceID: 201020304,
-				Index:    uint32(ix),
-			},
+			OID:       oid.AppendS(strconv.Itoa(int(ix))),
+			DeviceID:  201020304,
+			Index:     uint32(ix),
 			Timestamp: core.DateTime(base.Add(dt)),
 		})
 	}

@@ -229,9 +229,7 @@ func TestLookupDefaultCardName(t *testing.T) {
 
 func TestLookupCardName(t *testing.T) {
 	card := cards.Card{
-		CatalogCard: catalog.CatalogCard{
-			OID: "0.4.1",
-		},
+		OID: "0.4.1",
 	}
 
 	catalog.Init(memdb.NewCatalog())
@@ -252,9 +250,7 @@ func TestLookupCardName(t *testing.T) {
 
 func TestLookupCurrentCardName(t *testing.T) {
 	card := cards.Card{
-		CatalogCard: catalog.CatalogCard{
-			OID: "0.4.1",
-		},
+		OID: "0.4.1",
 	}
 
 	catalog.Init(memdb.NewCatalog())
@@ -275,9 +271,7 @@ func TestLookupCurrentCardName(t *testing.T) {
 
 func TestLookupHistoricalCardName(t *testing.T) {
 	card := cards.Card{
-		CatalogCard: catalog.CatalogCard{
-			OID: "0.4.1",
-		},
+		OID: "0.4.1",
 	}
 
 	catalog.Init(memdb.NewCatalog())
@@ -312,9 +306,7 @@ func TestLookupDefaultDoorName(t *testing.T) {
 
 func TestLookupDoorName(t *testing.T) {
 	door := doors.Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.1",
-		},
+		OID: "0.3.1",
 	}
 
 	catalog.Init(memdb.NewCatalog())
@@ -338,9 +330,7 @@ func TestLookupDoorName(t *testing.T) {
 
 func TestLookupHistoricalDoorName(t *testing.T) {
 	door := doors.Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.1",
-		},
+		OID: "0.3.1",
 	}
 
 	catalog.Init(memdb.NewCatalog())

@@ -481,10 +481,8 @@ func (c *Card) clone() *Card {
 	maps.Copy(groups, c.groups)
 
 	replicant := &Card{
-		CatalogCard: catalog.CatalogCard{
-			OID:    c.OID,
-			CardID: c.CardID,
-		},
+		OID:    c.OID,
+		CardID: c.CardID,
 		name:   c.name,
 		pin:    c.pin,
 		from:   c.from,

@@ -65,9 +65,7 @@ func TestCardAdd(t *testing.T) {
 
 	cards := makeCards(hagrid)
 	final := makeCards(hagrid, Card{
-		CatalogCard: catalog.CatalogCard{
-			OID: "0.4.2",
-		},
+		OID: "0.4.2",
 	})
 
 	catalog.PutT(hagrid.CatalogCard)
@@ -315,9 +313,7 @@ func TestCardNumberSwap(t *testing.T) {
 func TestCardUpdateAddGroup(t *testing.T) {
 	oid := schema.GroupsOID.Append("10")
 	group := groups.Group{
-		CatalogGroup: catalog.CatalogGroup{
-			OID: oid,
-		},
+		OID: oid,
 	}
 
 	catalog.PutT(group.CatalogGroup)
@@ -346,9 +342,7 @@ func TestCardUpdateAddGroup(t *testing.T) {
 func TestCardUpdateRemoveGroup(t *testing.T) {
 	oid := schema.GroupsOID.Append("10")
 	group := groups.Group{
-		CatalogGroup: catalog.CatalogGroup{
-			OID: oid,
-		},
+		OID: oid,
 	}
 	catalog.PutT(group.CatalogGroup)
 
@@ -471,10 +465,8 @@ func TestValidateWithInvalidCard(t *testing.T) {
 	cc := Cards{
 		cards: map[schema.OID]*Card{
 			"0.4.3": &Card{
-				CatalogCard: catalog.CatalogCard{
-					OID:    "0.4.3",
-					CardID: 0,
-				},
+				OID:      "0.4.3",
+				CardID:   0,
 				name:     "",
 				created:  types.TimestampNow(),
 				modified: types.TimestampNow(),
@@ -491,10 +483,8 @@ func TestValidateWithNewCard(t *testing.T) {
 	cc := Cards{
 		cards: map[schema.OID]*Card{
 			"0.4.3": &Card{
-				CatalogCard: catalog.CatalogCard{
-					OID:    "0.4.3",
-					CardID: 0,
-				},
+				OID:     "0.4.3",
+				CardID:  0,
 				name:    "",
 				created: types.TimestampNow(),
 			},

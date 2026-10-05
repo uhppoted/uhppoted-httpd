@@ -3,7 +3,6 @@ package controllers
 import (
 	"testing"
 
-	"codeberg.org/uhppoted/uhppoted-httpd/system/catalog"
 	"codeberg.org/uhppoted/uhppoted-httpd/types"
 )
 
@@ -11,10 +10,8 @@ func TestValidateWithInvalidController(t *testing.T) {
 	cc := Controllers{
 		controllers: []*Controller{
 			&Controller{
-				CatalogController: catalog.CatalogController{
-					OID:      "0.2.1",
-					DeviceID: 0,
-				},
+				OID:      "0.2.1",
+				DeviceID: 0,
 				name:     "",
 				created:  types.TimestampNow(),
 				modified: types.TimestampNow(),
@@ -31,12 +28,10 @@ func TestValidateWithNewController(t *testing.T) {
 	cc := Controllers{
 		controllers: []*Controller{
 			&Controller{
-				CatalogController: catalog.CatalogController{
-					OID:      "0.2.1",
-					DeviceID: 0,
-				},
-				name:    "",
-				created: types.TimestampNow(),
+				OID:      "0.2.1",
+				DeviceID: 0,
+				name:     "",
+				created:  types.TimestampNow(),
 			},
 		},
 	}

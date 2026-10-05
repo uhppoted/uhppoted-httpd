@@ -208,9 +208,7 @@ loop:
 
 	for _, c := range add {
 		card := Card{
-			CatalogCard: catalog.CatalogCard{
-				CardID: c,
-			},
+			CardID: c,
 		}
 
 		oid := catalog.NewT(card.CatalogCard)

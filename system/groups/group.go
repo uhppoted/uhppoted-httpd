@@ -299,9 +299,7 @@ func (g *Group) deserialize(bytes []byte) error {
 
 func (g Group) clone() Group {
 	group := Group{
-		CatalogGroup: catalog.CatalogGroup{
-			OID: g.OID,
-		},
+		OID:       g.OID,
 		Name:      g.Name,
 		Doors:     map[schema.OID]bool{},
 		FirstCard: g.FirstCard,

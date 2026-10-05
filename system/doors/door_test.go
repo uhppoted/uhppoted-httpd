@@ -23,9 +23,7 @@ func TestDoorAsObjects(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:       "0.3.3",
 		name:      "Le Door",
 		delay:     7,
 		mode:      core.NormallyOpen,
@@ -87,9 +85,7 @@ func TestDoorAsObjectsWithDeleted(t *testing.T) {
 	deleted := types.TimestampNow()
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:       "0.3.3",
 		name:      "Le Door",
 		delay:     7,
 		mode:      core.NormallyOpen,
@@ -114,9 +110,7 @@ func TestDoorAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:       "0.3.3",
 		name:      "Le Door",
 		delay:     7,
 		mode:      core.NormallyOpen,
@@ -189,9 +183,7 @@ func TestDoorSet(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 7,
 		mode:  core.NormallyOpen,
@@ -219,9 +211,7 @@ func TestDoorSetFirstCardStartTime(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -249,9 +239,7 @@ func TestDoorSetFirstCardEndTime(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -279,9 +267,7 @@ func TestDoorSetFirstCardActiveMode(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -309,9 +295,7 @@ func TestDoorSetFirstCardInvalidActiveMode(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -342,9 +326,7 @@ func TestDoorSetFirstCardInactiveMode(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -375,9 +357,7 @@ func TestDoorSetFirstCardInvalidInactiveMode(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -408,9 +388,7 @@ func TestDoorSetFirstCardMonday(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -473,9 +451,7 @@ func TestDoorSetFirstCardTuesday(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -538,9 +514,7 @@ func TestDoorSetFirstCardWednesday(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -603,9 +577,7 @@ func TestDoorSetFirstCardThursday(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -668,9 +640,7 @@ func TestDoorSetFirstCardFriday(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -733,9 +703,7 @@ func TestDoorSetFirstCardSaturday(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -798,9 +766,7 @@ func TestDoorSetFirstCardSunday(t *testing.T) {
 	}
 
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 5,
 		mode:  core.NormallyOpen,
@@ -857,9 +823,7 @@ func TestDoorSetFirstCardSunday(t *testing.T) {
 
 func TestDoorSetWithDeleted(t *testing.T) {
 	d := Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: "0.3.3",
-		},
+		OID:   "0.3.3",
 		name:  "Le Door",
 		delay: 7,
 		mode:  core.NormallyOpen,

@@ -20,9 +20,7 @@ func TestGroupDeserialize(t *testing.T) {
 
 	encoded := `{ "OID":"0.5.3", "name":"Le Groupe", "doors":["0.3.3","0.3.7"], "created":"2022-04-01 00:00:00" }`
 	expected := Group{
-		CatalogGroup: catalog.CatalogGroup{
-			OID: "0.5.3",
-		},
+		OID:  "0.5.3",
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -47,9 +45,7 @@ func TestGroupDeserializeWithDefaultCreated(t *testing.T) {
 
 	encoded := `{ "OID":"0.5.3", "name":"Le Groupe", "doors":["0.3.3","0.3.7"] }`
 	expected := Group{
-		CatalogGroup: catalog.CatalogGroup{
-			OID: "0.5.3",
-		},
+		OID:  "0.5.3",
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -76,9 +72,7 @@ func TestGroupAsObjects(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	g := Group{
-		CatalogGroup: catalog.CatalogGroup{
-			OID: "0.5.3",
-		},
+		OID:  "0.5.3",
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -109,9 +103,7 @@ func TestGroupAsObjectsWithDeleted(t *testing.T) {
 	deleted := types.TimestampNow()
 
 	g := Group{
-		CatalogGroup: catalog.CatalogGroup{
-			OID: "0.5.3",
-		},
+		OID:  "0.5.3",
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -136,9 +128,7 @@ func TestGroupAsObjectsWithAuth(t *testing.T) {
 	created = types.Timestamp(time.Date(2021, time.February, 28, 12, 34, 56, 0, time.Local))
 
 	g := Group{
-		CatalogGroup: catalog.CatalogGroup{
-			OID: "0.5.3",
-		},
+		OID:  "0.5.3",
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -184,9 +174,7 @@ func TestGroupSet(t *testing.T) {
 	}
 
 	g := Group{
-		CatalogGroup: catalog.CatalogGroup{
-			OID: "0.5.3",
-		},
+		OID:  "0.5.3",
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,
@@ -210,9 +198,7 @@ func TestGroupSet(t *testing.T) {
 
 func TestGroupSetWithDeleted(t *testing.T) {
 	g := Group{
-		CatalogGroup: catalog.CatalogGroup{
-			OID: "0.5.3",
-		},
+		OID:  "0.5.3",
 		Name: "Le Groupe",
 		Doors: map[schema.OID]bool{
 			"0.3.3": true,

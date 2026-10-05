@@ -392,9 +392,7 @@ func (u *User) deserialize(bytes []byte) error {
 
 func (u User) clone() *User {
 	replicant := User{
-		CatalogUser: catalog.CatalogUser{
-			OID: u.OID,
-		},
+		OID:      u.OID,
 		name:     u.name,
 		uid:      u.uid,
 		role:     u.role,

@@ -808,10 +808,8 @@ func (c *Controller) UnmarshalJSON(bytes []byte) error {
 func (c *Controller) clone() *Controller {
 	if c != nil {
 		replicant := Controller{
-			CatalogController: catalog.CatalogController{
-				OID:      c.OID,
-				DeviceID: c.DeviceID,
-			},
+			OID:          c.OID,
+			DeviceID:     c.DeviceID,
 			name:         c.name,
 			IP:           c.IP,
 			timezone:     c.timezone,

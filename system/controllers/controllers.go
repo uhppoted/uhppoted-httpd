@@ -216,10 +216,8 @@ loop:
 
 		id := v // because .. Go loop variable gotcha (the loop variable is mutable)
 		c := Controller{
-			CatalogController: catalog.CatalogController{
-				DeviceID: id,
-			},
-			created: types.TimestampNow(),
+			DeviceID: id,
+			created:  types.TimestampNow(),
 		}
 
 		c.OID = catalog.NewT(c.CatalogController)

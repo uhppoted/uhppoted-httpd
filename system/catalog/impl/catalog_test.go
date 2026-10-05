@@ -33,21 +33,15 @@ func TestNewController(t *testing.T) {
 	db := NewCatalog()
 
 	p := controller{
-		CatalogController: catalog.CatalogController{
-			DeviceID: 1234,
-		},
+		DeviceID: 1234,
 	}
 
 	q := controller{
-		CatalogController: catalog.CatalogController{
-			DeviceID: 5678,
-		},
+		DeviceID: 5678,
 	}
 
 	r := controller{
-		CatalogController: catalog.CatalogController{
-			DeviceID: 1234,
-		},
+		DeviceID: 1234,
 	}
 
 	if oid := db.NewT(p.CatalogController); oid != "0.2.1" {

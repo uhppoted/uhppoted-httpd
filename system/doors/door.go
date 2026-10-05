@@ -697,9 +697,7 @@ func (d *Door) deserialize(bytes []byte) error {
 
 func (d *Door) clone() Door {
 	return Door{
-		CatalogDoor: catalog.CatalogDoor{
-			OID: d.OID,
-		},
+		OID:       d.OID,
 		name:      d.name,
 		delay:     d.delay,
 		mode:      d.mode,
