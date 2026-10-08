@@ -1,13 +1,13 @@
 # CHANGELOG
 
-## Unreleased
+## [0.9.1](https://codeberg.org/uhppoted/uhppoted-httpd/releases/tag/v0.9.1) - 2026-10-08
 
 ## Added
 1. Added _first card_ privileges to ACL (groups and cards).
 2. Added _doors::first-card_ to manage first card configurations for controller managed doors.
 
 ### Updated
-1. Updated to Go 1.26.
+1. Updated to Go 1.27.
 2. Updated to _modern Go_ with `go fix`.
 3. Migrated from _github.com/uhppoted/uhppoted-httpd_ to _codeberg.org/uhppoted/uhppoted-httpd_.
 

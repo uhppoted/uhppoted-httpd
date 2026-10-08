@@ -46,9 +46,12 @@ _CAVEAT EMPTOR_
 
 ### Current Release
 
-**[v0.9.0](https://codeberg.org/uhppoted/uhppoted-httpd/releases/tag/v0.9.0) - 2026-01-27**
-1. Updated to Go 1.25.
-2. Updated dependencies for security patches.
+## [0.9.1](https://codeberg.org/uhppoted/uhppoted-httpd/releases/tag/v0.9.1) - 2026-10-08
+
+1. Migrated from _github_ to _codeberg_.
+2. Updated to Go 1.27.
+3. Added _first card_ privileges to ACL (groups and cards).
+4. Added _doors::first-card_ field to manage _first card_ swipe configurations for controller managed doors.
 
 
 ## Installation
