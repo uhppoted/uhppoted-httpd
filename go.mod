@@ -3,13 +3,13 @@ module codeberg.org/uhppoted/uhppoted-httpd
 go 1.27
 
 require (
-	codeberg.org/uhppoted/uhppoted-core v0.9.1
-	codeberg.org/uhppoted/uhppoted-lib v0.9.1
+	codeberg.org/uhppoted/uhppoted-core v0.9.2-0.20261014183359-5df0d5ae8e15
+	codeberg.org/uhppoted/uhppoted-lib v0.9.2-0.20261015152020-8cd729c59036
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.6.0
 	github.com/hyperjumptech/grule-rule-engine v1.15.0
 	github.com/pquerna/otp v1.4.0
-	golang.org/x/sys v0.48.0
+	golang.org/x/sys v0.49.0
 )
 
 require (

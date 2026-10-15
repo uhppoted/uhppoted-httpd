@@ -212,7 +212,7 @@ docker-ghcr: build
 	cp -r docker/ghcr/grules     dist/docker/ghcr
 	cp -r docker/ghcr/system     dist/docker/ghcr
 	rsync -av --exclude='**/html.go' httpd/html dist/docker/ghcr
-	cd dist/docker/ghcr && docker build --no-cache -f Dockerfile -t $(DOCKER) .
+	cd dist/docker/ghcr && docker build --no-cache -f Dockerfile -t $(GHCR) .
 
 docker-publish:
 	make docker-dockerhub DOCKER=uhppoted/httpd:${VERSION}

@@ -1,9 +1,9 @@
 # TODO
 
-- [x] menu popup hidden by Muggle
-- [x] 'first card' API (cf. https://codeberg.org/uhppoted/uhppoted/issues/2)
-- [x] unit test for controller deserialization
-    - https://codeberg.org/uhppoted/uhppoted-httpd/pulls/1
+## In Progress
+
+
+## To Be Done
 
 - [ ] make light/dark theme toggle immediately
 - [ ] doors: https://developer.chrome.com/blog/a-customizable-select
@@ -23,7 +23,6 @@
       - Check load order in HTML
 
 
-### To Be Done Sometime
 
 - (?) https://www.pgrs.net/2024/03/21/duckdb-as-the-new-jq/
 - (?) https://bugs.rocicorp.dev/issue/0
